@@ -1,0 +1,16 @@
+*__pycache__/*
+*.pyc
+*.egg-info/*
+
+.env
+
+/source_data/*
+/data/*
+/examples/*
+/tiles/*
+
+/scratch/*
+
+
+data.zip
+tiles.zip

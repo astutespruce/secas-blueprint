@@ -1,0 +1,39 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+black = "==19.3b0"
+pylint = "*"
+watchgod = "*"
+flake8 = "*"
+raster-tilecutter = {editable = true,path = "./../raster-tilecutter"}
+
+[packages]
+affine = "*"
+aiofiles = "*"
+arq = "*"
+fastapi = "*"
+geopandas = "*"
+httpx = "*"
+jinja2 = "*"
+numpy = "*"
+pandas = "*"
+pillow = "*"
+progress = "*"
+pygeos = "*"
+# pyogrio = {editable = true,path = "./../pyogrio"}
+python-dotenv = "*"
+python-multipart = "*"
+rasterio = "*"
+sentry-sdk = "*"
+uvicorn = "*"
+weasyprint = "*"
+
+
+[requires]
+python_version = "3.8"
+
+[pipenv]
+allow_prereleases = true
