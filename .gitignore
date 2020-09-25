@@ -8,10 +8,12 @@
 /source_data/ARCHIVE/*
 /source_data/boundaries/*
 /source_data/ownership/*
+/source_data/urban/*
 /source_data/summary_units/*
 /source_data/chat/*
 /source_data/fl/*
 /source_data/midSE/*
+
 
 /data/*
 /examples/*

@@ -1,0 +1,25 @@
+[
+    {
+        "value": 0,
+        "label": "Not a priority",
+        "percent": 50,
+        "description": "",
+        "color": "#ffebc2"
+    },
+    {
+        "value": 1,
+        "label": "Medium conservation value",
+        "percent": 20,
+        "description": "Areas that might require more restoration, but are important for buffering high value areas and maintaining connectivity.",
+        "report_description": "This class covers an additional 20% of the Southeast Blueprint geography",
+        "color": "#4FAFEE"
+    },
+    {
+        "value": 2,
+        "label": "High conservation value",
+        "percent": 30,
+        "description": "The most important for ecosystem health, function, and connectivity.",
+        "report_description": "This class covers roughly 30% of the Southeast Blueprint geography.",
+        "color": "#0B316B"
+    }
+]
