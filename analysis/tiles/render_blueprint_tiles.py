@@ -1,11 +1,10 @@
 """
-Render tiles to mbtiles files, zooms 0-15
+Render tiles to mbtiles files, zooms 0-14
 
 NOTE: this is sensitive to the version of GDAL / rasterio; otherwise it raises errors about negative dimensions.
 This appears to work properly on locally-built rasterio / GDAL.
 
-Creating blueprint tiles takes about 3 hours sequentially.  Zoom 15 takes 2 hours.
-This can be done more quickly (total time) in batches and merge them back later.
+Creating blueprint tiles takes at least 10 hours sequentially.
 """
 
 from time import time
@@ -26,6 +25,10 @@ tmp_dir = Path("/tmp")
 blueprint_filename = src_dir / "blueprint_4.tif"
 tileset_filename = tile_dir / "blueprint_4.mbtiles"
 
+# rendering times
+# 0 - 12: approx 2 hours
+# 13 2:15 hours
+# 14 6 hours
 
 ### Render Blueprint sequentially
 start = time()
@@ -44,4 +47,3 @@ render_tif_to_mbtiles(
     },
 )
 print("Tiles done in {:.2f} min".format((time() - start) / 60.0))
-

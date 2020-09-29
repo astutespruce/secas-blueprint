@@ -100,7 +100,7 @@ for year in URBAN_YEARS:
         "compress": "lzw",
     }
 
-    with rasterio.open(out_dir / f"urb_indexed_{year}.tif", "w", **meta) as outfile:
+    with rasterio.open(out_dir / f"urban_{year}.tif", "w", **meta) as outfile:
         outfile.write(out, 1)
 
         outfile.build_overviews(factors, Resampling.nearest)
