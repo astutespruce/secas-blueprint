@@ -30,7 +30,7 @@ rasterio = "*"
 sentry-sdk = "*"
 uvicorn = "*"
 weasyprint = "*"
-
+pyarrow = "*"
 
 [requires]
 python_version = "3.8"
