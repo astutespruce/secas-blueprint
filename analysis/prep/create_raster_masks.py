@@ -83,8 +83,5 @@ create_mask(
 print("Creating urban mask...")
 src_dir = Path("data/inputs/threats/urban")
 create_mask(
-    src_dir / "urb_indexed_2060.tif",
-    src_dir / "urban_mask.tif",
-    factor=8,
-    ignore_zero=True,
+    src_dir / "urban_2100.tif", src_dir / "urban_mask.tif", factor=8, ignore_zero=True
 )

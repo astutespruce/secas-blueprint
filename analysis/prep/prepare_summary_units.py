@@ -91,6 +91,29 @@ marine["name"] = (
 # there are a couple blocks without proper names and 0 area; drop them
 marine = marine[["id", "name", "geometry"]].dropna().to_crs(DATA_CRS)
 
+# some blocks have multiple parts, merge them
+grouped = marine.groupby("id")
+
+# save as DataFrame instead of GeoDataFrame for easier processing
+marine = pd.DataFrame(
+    grouped.geometry.apply(lambda g: g.values.data).apply(
+        lambda g: pg.union_all(g) if len(g) > 1 else g[0]
+    )
+).join(grouped.name.first())
+
+# coerce all to MultiPolygons
+ix = pg.get_type_id(marine.geometry.values) == 3
+marine.loc[ix, "geometry"] = marine.loc[ix].geometry.apply(
+    lambda g: pg.multipolygons([g])
+)
+
+marine = (
+    gp.GeoDataFrame(marine, geometry="geometry", crs=DATA_CRS)
+    .reset_index()
+    .rename(columns={"index": "id"})
+)
+
+
 # select out those within the SE boundary
 print("Selecting Marine blocks in region...")
 tree = pg.STRtree(marine.geometry.values.data)

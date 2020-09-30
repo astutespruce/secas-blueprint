@@ -32,5 +32,5 @@ for filename in [blueprint_filename, hubs_connectors_filename]:
 
 for year in URBAN_YEARS:
     print(f"Processing urban {year}...")
-    with rasterio.open(urban_dir / f"urb_indexed_{year}.tif", "r+") as src:
+    with rasterio.open(urban_dir / f"urban_{year}.tif", "r+") as src:
         src.build_overviews(factors, Resampling.nearest)

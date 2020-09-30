@@ -50,11 +50,6 @@ def extract_blueprint_area(geometries, bounds):
 
     results = {}
 
-    # prescreen area to make sure data are present
-    with rasterio.open(str(blueprint_filename).replace(".tif", "_mask.tif")) as src:
-        if not detect_data(src, geometries, bounds):
-            return None
-
     # create mask and window
     with rasterio.open(blueprint_filename) as src:
         try:
