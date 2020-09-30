@@ -26,6 +26,8 @@ src_dir = Path("data/inputs")
 indicators_dir = src_dir / "indicators"
 continuous_indicator_dir = Path("data/continuous_indicators")
 blueprint_filename = src_dir / "blueprint_4.tif"
+bp_inputs_filename = src_dir / "input_areas.tif"
+bp_inputs_table_filename = src_dir / "input_area_values.feather"
 hubs_connectors_filename = src_dir / "hubs_connectors.tif"
 urban_dir = src_dir / "threats/urban"
 slr_dir = src_dir / "threats/slr"
@@ -86,7 +88,15 @@ def extract_blueprint_area(geometries, bounds):
     results["blueprint"] = (
         (blueprint_counts * cellsize).round(ACRES_PRECISION).astype("float32")
     )
-    blueprint_total = blueprint_counts.sum()
+
+    bp_input_values = pd.read_feather(bp_inputs_table_filename)
+
+    bp_input_counts = extract_count_in_geometry(
+        bp_inputs_filename, shape_mask, window, bp_input_values.index, boundless=True
+    )
+    results["inputs"] = (
+        (bp_input_counts * cellsize).round(ACRES_PRECISION).astype("float32")
+    )
 
     # prescreen area to make sure data are present
     with rasterio.open(

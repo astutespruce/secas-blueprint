@@ -21,11 +21,12 @@ factors = [2, 4, 8, 16, 32]
 src_dir = Path("data/inputs")
 blueprint_filename = src_dir / "blueprint_4.tif"
 hubs_connectors_filename = src_dir / "hubs_connectors.tif"
+input_areas_filename = src_dir / "input_areas.tif"
 
 urban_dir = src_dir / "threats/urban"
 
 
-for filename in [blueprint_filename, hubs_connectors_filename]:
+for filename in [blueprint_filename, hubs_connectors_filename, input_areas_filename]:
     print(f"Processing {filename.name}...")
     with rasterio.open(filename, "r+") as src:
         src.build_overviews(factors, Resampling.nearest)
