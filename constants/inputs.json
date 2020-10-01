@@ -4,16 +4,14 @@
         "label": "Florida Conservation Blueprint",
         "version": "1.3",
         "dataURL": "https://flcpa.databasin.org/galleries/20b5bfb654ee426b84165e9228c4009c",
-        "infoURL": "https://flcpa.databasin.org/galleries/20b5bfb654ee426b84165e9228c4009c",
-        "viewerURL": ""
+        "infoURL": "https://flcpa.databasin.org/galleries/20b5bfb654ee426b84165e9228c4009c"
     },
     {
         "id": "flm",
         "label": "Florida Marine Blueprint",
         "version": "1.0",
         "dataURL": "https://flcpa.databasin.org/galleries/1bf67d31d64448b6a255888f43f3d601",
-        "infoURL": "https://flcpa.databasin.org/galleries/1bf67d31d64448b6a255888f43f3d601",
-        "viewerURL": ""
+        "infoURL": "https://flcpa.databasin.org/galleries/1bf67d31d64448b6a255888f43f3d601"
     },
     {
         "id": "sa",
@@ -21,46 +19,49 @@
         "version": "2020",
         "dataURL": "https://salcc.databasin.org/datasets/c04c8229467f49e88f8774346a17052a",
         "infoURL": "http://www.southatlanticlcc.org/blueprint/",
-        "viewerURL": "https://blueprint.southatlanticlcc.org"
+        "viewerURL": "https://blueprint.southatlanticlcc.org",
+        "viewerName": "South Atlantic Conservation Blueprint Simple Viewer"
     },
     {
         "id": "ms",
         "label": "Middle Southeast Blueprint",
         "version": "2020",
         "dataURL": "https://www.sciencebase.gov/catalog/item/5daa394ae4b09fd3b0c9cf53",
-        "infoURL": "https://www.sciencebase.gov/catalog/item/5daa394ae4b09fd3b0c9cf53",
-        "viewerURL": ""
+        "infoURL": "https://www.sciencebase.gov/catalog/item/5daa394ae4b09fd3b0c9cf53"
     },
     {
         "id": "nn",
         "label": "North Atlantic Nature's Network Conservation Design",
         "version": "2017",
         "dataURL": "https://nalcc.databasin.org/datasets/3d670fad4c924e7ba2ae02f04a128256",
-        "infoURL": "http://naturesnetwork.org/",
-        "viewerURL": ""
+        "infoURL": "http://naturesnetwork.org/"
     },
     {
         "id": "chat",
         "label": "Critical Habitat Assessment Tool",
         "version": "",
         "dataURL": "http://www.wafwachat.org/",
-        "infoURL": "http://www.wafwachat.org/",
-        "viewerURL": ""
+        "infoURL": "http://www.wafwachat.org/"
     },
     {
         "id": "car",
         "label": "Caribbean Landscape Conservation Design",
         "version": "",
         "dataURL": "https://caribbeanlcc.databasin.org/galleries/ecb079d09f5a430fafc2d48d68bdf1b4",
-        "infoURL": "https://caribbeanlcc.databasin.org/galleries/ecb079d09f5a430fafc2d48d68bdf1b4",
-        "viewerURL": ""
+        "infoURL": "https://caribbeanlcc.databasin.org/galleries/ecb079d09f5a430fafc2d48d68bdf1b4"
     },
     {
         "id": "app",
         "label": "Appalachian NatureScape Design",
         "version": "",
         "dataURL": "https://nalcc.databasin.org/datasets/22cda640930c4692a9dc1413b201ccc1",
-        "infoURL": "http://applcc.org/plan-design/conservation-design",
-        "viewerURL": ""
+        "infoURL": "http://applcc.org/plan-design/conservation-design"
+    },
+    {
+        "id": "gh",
+        "label": "TODO: remove, Gulf Coast Hypoxia",
+        "version": "",
+        "dataURL": "",
+        "infoURL": ""
     }
 ]

@@ -1,5 +1,6 @@
 import { useStaticQuery, graphql } from 'gatsby'
 
+import { indexBy } from 'util/data'
 import { extractNodes } from 'util/graphql'
 
 export const useInputAreas = () => {
@@ -14,6 +15,7 @@ export const useInputAreas = () => {
             dataURL
             infoURL
             viewerURL
+            viewerName
           }
         }
       }
@@ -25,15 +27,11 @@ export const useInputAreas = () => {
         }
       }
     }
-  `).allBlueprintJson
-
-  const inputs = extractNodes(inputAreas)
-
-  // value is position in array
-  const values = extractNodes(inputValues).map(({ id }) => id)
+  `)
 
   return {
-    inputs,
-    values,
+    inputs: indexBy(extractNodes(inputAreas), 'id'),
+    // value is position in array
+    values: extractNodes(inputValues).map(({ id }) => id),
   }
 }

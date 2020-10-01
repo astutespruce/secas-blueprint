@@ -151,6 +151,7 @@ const MapContainer = () => {
       type: unitType,
       acres: unitAcres,
       blueprint,
+      inputs,
       blueprint_total: blueprintAcres,
       shape_mask: analysisAcres,
       hubs_connectors: hubsConnectors,
@@ -174,6 +175,7 @@ const MapContainer = () => {
           <PrioritiesTab
             blueprint={blueprint}
             hubsConnectors={hubsConnectors}
+            inputs={inputs}
             blueprintAcres={blueprintAcres}
           />
         )
