@@ -61,7 +61,6 @@ if not out_dir.exists():
 # print("Reading HUC12 boundaries")
 units = gp.read_feather(huc12_filename, columns=["id", "geometry"]).set_index("id")
 
-
 # # transform to pandas Series instead of GeoSeries to get pygeos geometries for iterators below
 geometries = pd.Series(units.geometry.values.data, index=units.index)
 
@@ -257,7 +256,9 @@ for col in count_df.columns.difference(["shape_mask"]):
     s.columns = [f"{col}_{c}" for c in s.columns]
     results = results.join(s)
 
-results.reset_index().to_feather(out_dir / "blueprint.feather")
+results.reset_index().rename(columns={"index": "id"}).to_feather(
+    out_dir / "blueprint.feather"
+)
 
 if DEBUG:
     results.to_csv(marine_debug_dir / "blueprint.csv", index_label="id")

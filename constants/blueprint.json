@@ -9,14 +9,17 @@
     {
         "value": 1,
         "label": "Medium conservation value",
+        "shortLabel": "Medium",
         "percent": 20,
         "description": "Areas that might require more restoration, but are important for buffering high value areas and maintaining connectivity.",
         "report_description": "This class covers an additional 20% of the Southeast Blueprint geography",
-        "color": "#4FAFEE"
+        "color": "#4FAFEE",
+        "labelColor": "text"
     },
     {
         "value": 2,
         "label": "High conservation value",
+        "shortLabel": "High",
         "percent": 30,
         "description": "The most important for ecosystem health, function, and connectivity.",
         "report_description": "This class covers roughly 30% of the Southeast Blueprint geography.",

@@ -14,6 +14,7 @@ src_dir = Path("source_data/boundaries")
 data_dir = Path("data")
 out_dir = data_dir / "inputs"
 bnd_dir = data_dir / "boundaries"
+json_dir = Path("constants")
 
 blueprint_filename = out_dir / "blueprint_4.tif"
 
@@ -40,6 +41,11 @@ inputs = df.inputs.unique()
 inputs.sort()
 inputs = pd.DataFrame({"inputs": inputs})
 inputs.to_feather(out_dir / "input_area_values.feather")
+
+inputs.reset_index().rename(columns={"index": "value", "inputs": "id"}).to_json(
+    json_dir / "input_area_values.json", orient="records"
+)
+
 
 df = df.join(
     inputs.reset_index().rename(columns={"index": "value"}).set_index("inputs"),

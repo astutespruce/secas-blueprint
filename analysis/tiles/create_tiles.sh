@@ -11,15 +11,15 @@ tippecanoe -f -pg -P -Z 8 -z 14 -ai -o $TMPDIR/units.mbtiles -l "units" $TILEINP
 # Merge in attributes
 tile-join -f -pg -o $TMPDIR/unit_atts.mbtiles $TMPDIR/units.mbtiles -c $TILEINPUTS/unit_atts.csv
 
-# Create tiles from boundary and mask
+# # Create tiles from boundary and mask
 echo "Processing boundary..."
 tippecanoe -f -pg -P -Z 0 -z 8 -ai -o $TMPDIR/se_mask.mbtiles -l "mask" $TILEINPUTS/se_mask.geojson
 tippecanoe -f -pg -P -Z 0 -z 8 -ai -o $TMPDIR/se_boundary.mbtiles -l "boundary" $TILEINPUTS/se_boundary.geojson
 
 
 # Join units and boundaries together
-# echo "Merging tilesets..."
-# tile-join -f -pg -o $TILEDIR/map_units.mbtiles $TMPDIR/sa_mask.mbtiles $TMPDIR/sa_boundary.mbtiles $TMPDIR/unit_atts.mbtiles
+echo "Merging tilesets..."
+tile-join -f -pg -o $TILEDIR/map_units.mbtiles $TMPDIR/se_mask.mbtiles $TMPDIR/se_boundary.mbtiles $TMPDIR/unit_atts.mbtiles
 
 
 # Create tiles from states

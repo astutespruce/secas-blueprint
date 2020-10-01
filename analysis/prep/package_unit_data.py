@@ -59,6 +59,7 @@ blueprint = pd.read_feather(results_dir / "huc12/blueprint.feather").set_index("
 # Unpack blueprint values
 blueprint_cols = [c for c in blueprint.columns if c.startswith("blueprint_")]
 hc_cols = [c for c in blueprint.columns if c.startswith("hubs_connectors_")]
+input_cols = [c for c in blueprint.columns if c.startswith("inputs_")]
 blueprint_total = blueprint[blueprint_cols].sum(axis=1).rename("blueprint_total")
 shape_mask = blueprint.shape_mask
 
@@ -71,6 +72,9 @@ blueprint_percent = encode_values(blueprint[blueprint_cols], shape_mask, 1000).r
 hc_percent = encode_values(blueprint[hc_cols], shape_mask, 1000).rename(
     "hubs_connectors"
 )
+
+# convert input areas to integer percents * 10, and pack into pipe-delimited string
+inputs_percent = encode_values(blueprint[input_cols], shape_mask, 1000).rename("inputs")
 
 
 blueprint_df = (
@@ -200,6 +204,7 @@ blueprint = (
 # Unpack blueprint values
 blueprint_cols = [c for c in blueprint.columns if c.startswith("blueprint_")]
 hc_cols = [c for c in blueprint.columns if c.startswith("hubs_connectors_")]
+input_cols = [c for c in blueprint.columns if c.startswith("inputs_")]
 blueprint_total = blueprint[blueprint_cols].sum(axis=1).rename("blueprint_total")
 shape_mask = blueprint.shape_mask
 
@@ -212,6 +217,10 @@ blueprint_percent = encode_values(blueprint[blueprint_cols], shape_mask, 1000).r
 hc_percent = encode_values(blueprint[hc_cols], shape_mask, 1000).rename(
     "hubs_connectors"
 )
+
+# convert input areas to integer percents * 10, and pack into pipe-delimited string
+inputs_percent = encode_values(blueprint[input_cols], shape_mask, 1000).rename("inputs")
+
 
 blueprint_df = (
     blueprint[["shape_mask"]]
