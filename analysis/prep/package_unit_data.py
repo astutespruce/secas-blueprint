@@ -84,6 +84,7 @@ blueprint_df = (
     .join(blueprint_total.round().astype("uint"))
     .join(blueprint_percent)
     .join(hc_percent)
+    .join(inputs_percent)
 )
 blueprint_df.blueprint_total = blueprint_df.blueprint_total.fillna(0)
 blueprint_df = blueprint_df.fillna("")
@@ -229,6 +230,7 @@ blueprint_df = (
     .join(blueprint_total.round().astype("uint"))
     .join(blueprint_percent)
     .join(hc_percent)
+    .join(inputs_percent)
 )
 
 marine = marine.join(blueprint_df, how="left")
