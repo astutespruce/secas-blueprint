@@ -5,12 +5,12 @@ import { PieChart } from 'react-minimal-pie-chart'
 import { Box, Flex, Divider, Heading, Text } from 'theme-ui'
 
 import { PieChartLegend } from 'components/chart'
-import { useBlueprintPriorities, useHubsConnectors } from 'components/data'
+import { useBlueprintCategories, useHubsConnectors } from 'components/data'
 
 import { sum } from 'util/data'
 
 const PrioritiesTab = ({ blueprint, hubsConnectors }) => {
-  const { all: priorityCategories } = useBlueprintPriorities()
+  const { all: priorityCategories } = useBlueprintCategories()
   const corridorCategories = useHubsConnectors()
 
   const chartWidth = 180

@@ -4,8 +4,8 @@ const { tileHost } = siteMetadata
 
 export const config = {
   bounds: [-106.66188036, 17.92676033, -65.22106481, 40.638801],
-  maxBounds: [-130, 0, -50, 60],
-  minZoom: 1,
+  maxBounds: [-180, -80, 180, 80],
+  minZoom: 0,
   maxZoom: 16,
 }
 
@@ -17,14 +17,14 @@ export const sources = {
     minzoom: 0,
     maxzoom: 14,
     bounds: [-106.66188036, 17.92676033, -65.22106481, 40.638801],
-    tiles: [`${tileHost}/services/blueprint_4/tiles/{z}/{x}/{y}.png`],
+    tiles: [`${tileHost}/services/southeast/blueprint_4/tiles/{z}/{x}/{y}.png`],
   },
   mapUnits: {
     type: 'vector',
     minzoom: 0,
     maxzoom: 14,
     bounds: [-106.66188036, 17.92676033, -65.22106481, 40.6388013],
-    tiles: [`${tileHost}/services/map_units/tiles/{z}/{x}/{y}.pbf`],
+    tiles: [`${tileHost}/services/southeast/map_units/tiles/{z}/{x}/{y}.pbf`],
     // note: can use promoteId: 'id' to promote feature properties ID to feature ID
     promoteId: 'id',
   },

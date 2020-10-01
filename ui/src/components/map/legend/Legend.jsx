@@ -1,7 +1,7 @@
 import React, { memo, useState, useCallback } from 'react'
 import { Box, Text } from 'theme-ui'
 
-import { useBlueprintPriorities } from 'components/data'
+import { useBlueprintCategories } from 'components/data'
 import LegendElement from './LegendElement'
 
 const Legend = () => {
@@ -11,7 +11,7 @@ const Legend = () => {
     setIsOpen((prevIsOpen) => !prevIsOpen)
   }, [])
 
-  const { priorities } = useBlueprintPriorities()
+  const { categories } = useBlueprintCategories()
 
   return (
     <Box
@@ -39,7 +39,7 @@ const Legend = () => {
         >
           <Text sx={{ fontWeight: 'bold' }}>Conservation Value</Text>
           <Box>
-            {priorities.map((element) => (
+            {categories.map((element) => (
               <Box
                 key={element.shortLabel}
                 sx={{

@@ -13,8 +13,7 @@
         "percent": 20,
         "description": "Areas that might require more restoration, but are important for buffering high value areas and maintaining connectivity.",
         "report_description": "This class covers an additional 20% of the Southeast Blueprint geography",
-        "color": "#4FAFEE",
-        "labelColor": "text"
+        "color": "#4FAFEE"
     },
     {
         "value": 2,

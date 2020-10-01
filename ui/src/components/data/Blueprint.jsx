@@ -3,9 +3,9 @@ import { useStaticQuery, graphql } from 'gatsby'
 import { extractNodes } from 'util/graphql'
 
 /**
- * Provides Blueprint priority categories in decreasing priority order
+ * Provides Blueprint categories in decreasing priority order
  */
-export const useBlueprintPriorities = () => {
+export const useBlueprintCategories = () => {
   const query = useStaticQuery(graphql`
     query {
       allBlueprintJson(sort: { fields: value, order: DESC }) {
@@ -14,7 +14,6 @@ export const useBlueprintPriorities = () => {
             color
             label
             shortLabel
-            labelColor
             percent
             description
           }
@@ -27,6 +26,6 @@ export const useBlueprintPriorities = () => {
 
   return {
     all,
-    priorities: all.slice(0, all.length - 1),
+    categories: all.slice(0, all.length - 1),
   }
 }

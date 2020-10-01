@@ -1,10 +1,10 @@
-import { useBlueprintPriorities } from './Blueprint'
+import { useBlueprintCategories } from './Blueprint'
 import { useHubsConnectors } from './HubsConnectors'
 import { useIndicators } from './Indicators'
 import { useOwnership } from './Ownership'
 
 export {
-  useBlueprintPriorities,
+  useBlueprintCategories,
   useHubsConnectors,
   useIndicators,
   useOwnership,

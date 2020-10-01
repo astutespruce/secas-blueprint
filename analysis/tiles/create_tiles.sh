@@ -1,7 +1,7 @@
 #!/bin/bash
 
 TMPDIR="/tmp"
-TILEDIR="tiles"
+TILEDIR="tiles/southeast"
 TILEINPUTS="data/for_tiles"
 
 # Create tiles from summary units
@@ -9,9 +9,10 @@ echo "Processing summary units..."
 tippecanoe -f -pg -P -Z 8 -z 14 -ai -o $TMPDIR/units.mbtiles -l "units" $TILEINPUTS/units.geojson
 
 # Merge in attributes
+echo "Merging attributes with tiles..."
 tile-join -f -pg -o $TMPDIR/unit_atts.mbtiles $TMPDIR/units.mbtiles -c $TILEINPUTS/unit_atts.csv
 
-# # Create tiles from boundary and mask
+# Create tiles from boundary and mask
 echo "Processing boundary..."
 tippecanoe -f -pg -P -Z 0 -z 8 -ai -o $TMPDIR/se_mask.mbtiles -l "mask" $TILEINPUTS/se_mask.geojson
 tippecanoe -f -pg -P -Z 0 -z 8 -ai -o $TMPDIR/se_boundary.mbtiles -l "boundary" $TILEINPUTS/se_boundary.geojson

@@ -10,11 +10,11 @@ const Credits = () => {
         <b>Citation:</b> TODO:
         <br />
         <br />
-        This application was developed by
+        This application was developed by{' '}
         <OutboundLink to="https://astutespruce.com">
           Astute Spruce, LLC
         </OutboundLink>{' '}
-        based on support from the U.S. Fish and Wildlife Service under the{' '}
+        in partnership with the U.S. Fish and Wildlife Service under the{' '}
         <OutboundLink to="http://secassoutheast.org/">
           Southeast Conservation Adaptation Strategy
         </OutboundLink>

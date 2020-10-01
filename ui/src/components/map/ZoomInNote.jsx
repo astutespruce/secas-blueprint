@@ -28,7 +28,7 @@ const ZoomInNote = ({ map, isMobile }) => {
   return (
     <Box
       sx={{
-        fontSize: 0,
+        fontSize: 1,
         position: 'absolute',
         top: 0,
         left: isMobile ? 0 : '54px',
