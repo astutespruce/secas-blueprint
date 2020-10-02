@@ -70,7 +70,7 @@
     "serve": "gatsby serve",
     "clean": "gatsby clean",
     "predeploy": "gatsby clean && gatsby build",
-    "deploy": "rm -rf /var/www/* && cp -r ./public/* /var/www"
+    "deploy": "rm -rf /var/www/se/* && cp -r ./public/* /var/www/se"
   },
   "repository": {
     "type": "git",
