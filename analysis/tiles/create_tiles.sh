@@ -1,8 +1,17 @@
 #!/bin/bash
 
 TMPDIR="/tmp"
-TILEDIR="tiles/se"
+TILEDIR="tiles"
 TILEINPUTS="data/for_tiles"
+
+
+# Create tiles from states
+echo "Processing states..."
+ogr2ogr -t_srs EPSG:4326 -f GeoJSONSeq -select STATEFP $TMPDIR/states.geojson source_data/boundaries/tl_2019_us_state.shp
+tippecanoe -f -pg -Z 0 -z 5 -o $TILEDIR/states.mbtiles -l states /tmp/states.geojson
+
+
+
 
 # Create tiles from summary units
 echo "Processing summary units..."
@@ -20,15 +29,10 @@ tippecanoe -f -pg -P -Z 0 -z 8 -ai -o $TMPDIR/se_boundary.mbtiles -l "boundary" 
 
 # Join units and boundaries together
 echo "Merging tilesets..."
-tile-join -f -pg -o $TILEDIR/map_units.mbtiles $TMPDIR/se_mask.mbtiles $TMPDIR/se_boundary.mbtiles $TMPDIR/unit_atts.mbtiles
+tile-join -f -pg -o $TILEDIR/se_map_units.mbtiles $TMPDIR/se_mask.mbtiles $TMPDIR/se_boundary.mbtiles $TMPDIR/unit_atts.mbtiles
 
-
-# Create tiles from states
-echo "Processing states..."
-ogr2ogr -t_srs EPSG:4326 -f GeoJSONSeq -select STATEFP $TMPDIR/states.geojson source_data/boundaries/tl_2019_us_state.shp
-tippecanoe -f -pg -Z 0 -z 5 -o $TILEDIR/states.mbtiles -l states /tmp/states.geojson
 
 
 # Create tiles from protected areas
 echo "Processing protected areas..."
-tippecanoe -f -pg -P -z 15 -o $TILEDIR/ownership.mbtiles -l "ownership" $TILEINPUTS/ownership.geojson
+tippecanoe -f -pg -P -z 15 -o $TILEDIR/se_ownership.mbtiles -l "ownership" $TILEINPUTS/ownership.geojson
