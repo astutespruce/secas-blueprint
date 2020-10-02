@@ -20,7 +20,7 @@ const PrioritiesTab = ({ blueprint, inputs, hubsConnectors }) => {
   const corridorCategories = useHubsConnectors()
   const { inputs: inputCategories, values: inputValues } = useInputAreas()
 
-  const chartWidth = 180
+  const chartWidth = 150
 
   const blueprintChartData = blueprint
     .slice()

@@ -33,7 +33,7 @@ const Urban = ({ percents }) => {
           xTicks={6}
           xTickFormatter={(x) => x}
           yLabel="Percent of area"
-          yLabelOffset={36}
+          yLabelOffset={48}
           xLabel="Decade"
           xLabelOffset={40}
           areaColor="#D90000"
@@ -41,7 +41,7 @@ const Urban = ({ percents }) => {
           pointColor="#D90000"
           lineColor="#D90000"
           lineWidth={2}
-          margin={{ left: 50, right: 10, top: 10, bottom: 50 }}
+          margin={{ left: 60, right: 10, top: 10, bottom: 50 }}
         />
       </Box>
 

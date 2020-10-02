@@ -31,7 +31,7 @@ const SLR = ({ percents }) => {
           yTicks={5}
           xTicks={percents.length}
           yLabel="Percent of area"
-          yLabelOffset={36}
+          yLabelOffset={48}
           xLabel="Amount of sea level rise (feet)"
           xLabelOffset={40}
           areaColor="#004da8"
@@ -39,7 +39,7 @@ const SLR = ({ percents }) => {
           pointColor="#004da8"
           lineColor="#004da8"
           lineWidth={2}
-          margin={{ left: 50, right: 10, top: 10, bottom: 50 }}
+          margin={{ left: 60, right: 10, top: 10, bottom: 50 }}
         />
       </Box>
 
