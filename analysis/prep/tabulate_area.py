@@ -267,3 +267,43 @@ if DEBUG:
 print(
     "Processed {:,} zones in {:.2f}m".format(len(geometries), (time() - start) / 60.0)
 )
+
+
+### Calculate overlap with ownership and protection
+print("Calculating overlap with land ownership and protection")
+ownership = gp.read_feather(
+    ownership_filename, columns=["geometry", "Own_Type", "GAP_Sts"]
+)
+
+df = intersection(units, ownership)
+df["acres"] = pg.area(df.geometry_right.values.data) * M2_ACRES
+
+# drop areas that touch but have no overlap
+df = df.loc[df.acres > 0].copy()
+
+by_owner = (
+    df[["Own_Type", "acres"]]
+    .groupby(by=[df.index.get_level_values(0), "Own_Type"])
+    .acres.sum()
+    .astype("float32")
+    .round()
+    .reset_index()
+    .rename(columns={"level_0": "id"})
+)
+
+by_protection = (
+    df[["GAP_Sts", "acres"]]
+    .groupby(by=[df.index.get_level_values(0), "GAP_Sts"])
+    .acres.sum()
+    .astype("float32")
+    .round()
+    .reset_index()
+    .rename(columns={"level_0": "id"})
+)
+
+by_owner.to_feather(out_dir / "ownership.feather")
+by_protection.to_feather(out_dir / "protection.feather")
+
+if DEBUG:
+    by_owner.to_csv(marine_debug_dir / "ownership.csv", index=False)
+    by_protection.to_csv(marine_debug_dir / "protection.csv", index=False)

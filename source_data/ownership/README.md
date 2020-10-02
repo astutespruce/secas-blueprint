@@ -3,6 +3,6 @@
 These are used to summarize land ownership types and protection types for
 the user interface and custom reports.
 
-Downloaded by state in region 9/24/2020 from https://www.usgs.gov/core-science-systems/science-analytics-and-synthesis/gap/science/pad-us-data-download?qt-science_center_objects=0#qt-science_center_objects
+PAD-US v2.1 downloaded 10/2/2020 from: https://www.sciencebase.gov/catalog/item/5f186a2082cef313ed843257
 
 Processed using `analysis/prep/prepare_ownership.py.

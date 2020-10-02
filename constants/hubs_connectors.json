@@ -1,4 +1,4 @@
 [
-    { "value": 0, "color": "#9C9C9C", "label": "Hubs" },
-    { "value": 1, "color": "#353535", "label": "Connectors" }
+    { "value": 0, "color": "#464646", "label": "Hubs" },
+    { "value": 1, "color": "#9B9B9B", "label": "Connectors" }
 ]

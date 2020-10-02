@@ -1,7 +1,7 @@
 [
     {
         "value": 0,
-        "label": "Not a priority",
+        "label": "Not identified as high or medium conservation value",
         "percent": 50,
         "description": "",
         "color": "#eceeef"
