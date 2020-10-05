@@ -192,6 +192,7 @@ marine = pd.read_feather(
     columns=["id", "name", "acres"],
 ).set_index("id")
 marine.acres = marine.acres.round().astype("uint")
+marine = marine.loc[marine.acres > 0].dropna()
 marine["type"] = "marine lease block"
 
 
@@ -233,7 +234,55 @@ blueprint_df = (
     .join(inputs_percent)
 )
 
-marine = marine.join(blueprint_df, how="left")
+### Dictionary encode ownership and protection for each HUC12:
+# FED:<fed_acres>,LOC: <loc_acres>, ...
+ownership = (
+    pd.read_feather(working_dir / "ownership.feather")
+    .set_index("id")
+    .join(marine.acres.rename("total_acres"), how="left")
+    .dropna()
+)
+
+ownership["percent"] = (
+    (1000 * ownership.acres / ownership.total_acres).round().astype("uint")
+)
+# drop anything at 0%
+ownership = ownership.loc[ownership.percent > 0].copy()
+
+ownership = pd.Series(
+    (ownership.Own_Type + ":" + ownership.percent.astype("str"))
+    .groupby(level=0)
+    .apply(lambda r: ",".join(v for v in r)),
+    name="ownership",
+)
+
+protection = (
+    pd.read_feather(working_dir / "protection.feather")
+    .set_index("id")
+    .join(marine.acres.rename("total_acres"), how="left")
+    .dropna()
+)
+
+protection["percent"] = (
+    (1000 * protection.acres / protection.total_acres).round().astype("uint")
+)
+# drop anything at 0%
+protection = protection.loc[protection.percent > 0].copy()
+
+
+protection = pd.Series(
+    (protection.GAP_Sts.astype("str") + ":" + protection.percent.astype("str"))
+    .groupby(level=0)
+    .apply(lambda r: ",".join(v for v in r)),
+    name="protection",
+)
+
+
+marine = (
+    marine.join(blueprint_df, how="inner")
+    .join(ownership, how="left")
+    .join(protection, how="left")
+)
 marine.blueprint_total = marine.blueprint_total.fillna(0)
 marine = marine.fillna("")
 

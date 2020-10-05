@@ -28,8 +28,8 @@ if not tile_dir.exists():
 
 ### Extract the boundary
 bnd_df = read_dataframe(
-    src_dir / "boundaries/SE_Blueprint_v4_0_Vectors.gdb",
-    layer="SECAS_Boundary_v4_0_20191031",
+    src_dir / "blueprint/SE_Blueprint_v2020_Vectors.gdb",
+    layer="SECAS_Boundary_v2020_20201004",
 )[["geometry"]]
 # boundary has multiple geometries, union together and cleanup
 bnd_df = gp.GeoDataFrame(

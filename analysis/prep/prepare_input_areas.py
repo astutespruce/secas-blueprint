@@ -16,7 +16,7 @@ out_dir = data_dir / "inputs"
 bnd_dir = data_dir / "boundaries"
 json_dir = Path("constants")
 
-blueprint_filename = out_dir / "blueprint_4.tif"
+blueprint_filename = out_dir / "se_blueprint2020.tif"
 
 
 df = read_dataframe(

@@ -126,6 +126,8 @@ marine["acres"] = (
     (pg.area(marine.geometry.values.data) * M2_ACRES).round().astype("uint")
 )
 
+marine = marine.loc[marine.acres > 0].dropna()
+
 # Save in EPSG:5070 for analysis
 marine.to_feather(analysis_dir / "marine_blocks.feather")
 write_dataframe(marine, bnd_dir / "marine_blocks.gpkg", driver="GPKG")

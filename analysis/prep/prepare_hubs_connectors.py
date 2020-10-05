@@ -11,11 +11,11 @@ src_dir = Path("source_data/boundaries")
 out_dir = Path("data/inputs")
 
 
-blueprint_filename = out_dir / "blueprint_4.tif"
+blueprint_filename = out_dir / "se_blueprint2020.tif"
 
 df = read_dataframe(
-    src_dir / "SE_Blueprint_v4_0_Vectors.gdb",
-    layer="HubsAndConnectors_v4_0_20191031",
+    src_dir / "blueprint/SE_Blueprint_v2020_Vectors.gdb",
+    layer="HubsAndConnectors_v2020_20201005",
     columns=["Type"],
 )
 

@@ -19,7 +19,7 @@ from analysis.constants import URBAN_YEARS
 factors = [2, 4, 8, 16, 32]
 
 src_dir = Path("data/inputs")
-blueprint_filename = src_dir / "blueprint_4.tif"
+blueprint_filename = src_dir / "se_blueprint2020.tif"
 hubs_connectors_filename = src_dir / "hubs_connectors.tif"
 input_areas_filename = src_dir / "input_areas.tif"
 

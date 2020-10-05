@@ -6,6 +6,7 @@
 .env
 
 /source_data/ARCHIVE/*
+/source_data/blueprint/*
 /source_data/boundaries/*
 /source_data/ownership/*
 /source_data/slr/*

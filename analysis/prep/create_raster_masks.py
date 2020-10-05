@@ -63,25 +63,25 @@ def create_mask(filename, outfilename, factor, ignore_zero=False):
 print("Creating Blueprint mask...")
 src_dir = Path("data/inputs")
 create_mask(
-    src_dir / "blueprint_4.tif",
-    src_dir / "blueprint_4_mask.tif",
+    src_dir / "se_blueprint2020.tif",
+    src_dir / "se_blueprint2020_mask.tif",
     factor=16,
     ignore_zero=True,
 )
 
 
-print("Creating hubs / connectors mask...")
-src_dir = Path("data/inputs")
-create_mask(
-    src_dir / "hubs_connectors.tif",
-    src_dir / "hubs_connectors_mask.tif",
-    factor=16,
-    ignore_zero=False,
-)
+# print("Creating hubs / connectors mask...")
+# src_dir = Path("data/inputs")
+# create_mask(
+#     src_dir / "hubs_connectors.tif",
+#     src_dir / "hubs_connectors_mask.tif",
+#     factor=16,
+#     ignore_zero=False,
+# )
 
 
-print("Creating urban mask...")
-src_dir = Path("data/inputs/threats/urban")
-create_mask(
-    src_dir / "urban_2100.tif", src_dir / "urban_mask.tif", factor=8, ignore_zero=True
-)
+# print("Creating urban mask...")
+# src_dir = Path("data/inputs/threats/urban")
+# create_mask(
+#     src_dir / "urban_2100.tif", src_dir / "urban_mask.tif", factor=8, ignore_zero=True
+# )
