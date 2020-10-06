@@ -17,7 +17,7 @@ export const sources = {
     minzoom: 0,
     maxzoom: 14,
     bounds: [-106.66188036, 17.92676033, -65.22106481, 40.638801],
-    tiles: [`${tileHost}/services/se_blueprint_2020/tiles/{z}/{x}/{y}.png`],
+    tiles: [`${tileHost}/services/se_blueprint2020/tiles/{z}/{x}/{y}.png`],
   },
   mapUnits: {
     type: 'vector',

@@ -75,7 +75,7 @@
         {% with remainder=results.urban_acres - results['proj_urban'][-1] %}
         {% if remainder > 0 %}
             <tr class="remainder-row">
-                <td class="label">Not projected to urbanize by 2100</td>
+                <td class="label">Not projected to urbanize by 2060</td>
                 <td class="acres">{{remainder|format_number}}</td>
                 <td class="percent">{{(100 * remainder / results.urban_acres)|format_percent}}%</td>
             </tr>

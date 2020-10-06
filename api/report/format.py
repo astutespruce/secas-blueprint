@@ -44,6 +44,9 @@ def format_percent(number):
     uses whole numbers, clipped to [0, 100] range.
     """
 
+    if number == 0:
+        return "0"
+
     if number < 1:
         return "<1"
 

@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/react'
 
 // Import fonts
-import 'typeface-open-sans'
+import 'typeface-source-sans-pro'
 
 import { siteMetadata } from './gatsby-config'
 

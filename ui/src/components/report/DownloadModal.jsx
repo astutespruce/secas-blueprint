@@ -116,14 +116,7 @@ const DownloadModal = ({ id, type, onClose }) => {
           <br />
           <br />
           You can also click the button below to download your report.
-          {/* <br />
-            <br /> */}
         </Text>
-        {/*
-          <Link href={reportURL} target="_blank">
-            <Download size="1em" style={{ marginRight: '0.5rem' }} />
-            Download report
-          </Link> */}
       </Box>
     )
   } else if (error !== null) {
@@ -171,10 +164,10 @@ const DownloadModal = ({ id, type, onClose }) => {
   } else {
     content = (
       <Text sx={{ p: '1rem' }}>
-        Create and download a summary Blueprint report for this area. This
-        detailed report includes detail maps for the Blueprint priorities and
-        each indicator present in this area, as well as potential threats and
-        information about land ownership and partners.
+        Create and download a Blueprint summary report for this area. This
+        detailed report includes maps and analysis of the Blueprint priorities
+        and each indicator present in this area, as well as potential threats
+        and information about land ownership and partners.
       </Text>
     )
   }
