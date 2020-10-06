@@ -38,11 +38,11 @@ const Protection = ({ protection }) => {
       ))}
 
       <Text sx={{ color: 'grey.7', fontSize: 1 }}>
-        Land protection status is derived from the TNC{' '}
-        <OutboundLink to="https://www.conservationgateway.org/ConservationByGeography/NorthAmerica/UnitedStates/edc/reportsdata/terrestrial/secured/Pages/default.aspx">
-          Secured Lands Database
+        Land and marine protectection status is derived from the{' '}
+        <OutboundLink to="https://www.sciencebase.gov/catalog/item/5f186a2082cef313ed843257">
+          Protected Areas Database of the United States
         </OutboundLink>{' '}
-        (2018 Edition).
+        (PAD-US v2.1).
       </Text>
     </>
   )

@@ -14,21 +14,10 @@ const PartnersTab = ({
   protection,
   counties,
 }) => {
-  if (unitType !== 'subwatershed') {
-    return (
-      <Box sx={{ py: '2rem', pl: '1rem', pr: '2rem' }}>
-        <Text sx={{ color: 'grey.7' }}>
-          No information on ownership or protection status is available for
-          marine units.
-        </Text>
-      </Box>
-    )
-  }
-
   return (
     <Box sx={{ py: '2rem', pl: '1rem', pr: '2rem' }}>
       <Box as="section">
-        <Heading as="h3">Conserved Lands Ownership</Heading>
+        <Heading as="h3">Conserved Lands / Marine Areas Ownership</Heading>
         {ownership === null ? (
           <Text sx={{ color: 'grey.7' }}>No information available.</Text>
         ) : (
@@ -39,7 +28,7 @@ const PartnersTab = ({
       <Divider variant="styles.hr.light" sx={{ my: '3rem' }} />
 
       <Box as="section">
-        <Heading as="h3">Land Protection Status</Heading>
+        <Heading as="h3">Land / Marine Protection Status</Heading>
         {protection === null ? (
           <Text sx={{ color: 'grey.7' }}>No information available.</Text>
         ) : (
@@ -47,16 +36,20 @@ const PartnersTab = ({
         )}
       </Box>
 
-      <Divider variant="styles.hr.light" sx={{ my: '3rem' }} />
+      {unitType === 'subwatershed' ? (
+        <>
+          <Divider variant="styles.hr.light" sx={{ my: '3rem' }} />
 
-      <Box as="section">
-        <Heading as="h3">Land Trusts by County</Heading>
-        {counties === null ? (
-          <Text sx={{ color: 'grey.7' }}>No information available.</Text>
-        ) : (
-          <LTAList counties={counties} />
-        )}
-      </Box>
+          <Box as="section">
+            <Heading as="h3">Land Trusts by County</Heading>
+            {counties === null ? (
+              <Text sx={{ color: 'grey.7' }}>No information available.</Text>
+            ) : (
+              <LTAList counties={counties} />
+            )}
+          </Box>
+        </>
+      ) : null}
     </Box>
   )
 }
