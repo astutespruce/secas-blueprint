@@ -10,7 +10,7 @@ from pyogrio import read_dataframe, write_dataframe
 from analysis.pygeos_util import explode, to_dict
 
 
-src_dir = Path("source_data/boundaries")
+src_dir = Path("source_data/blueprint")
 data_dir = Path("data")
 out_dir = data_dir / "inputs"
 bnd_dir = data_dir / "boundaries"
@@ -20,12 +20,16 @@ blueprint_filename = out_dir / "se_blueprint2020.tif"
 
 
 df = read_dataframe(
-    src_dir / "SE_Blueprint_v4_0_Vectors.gdb", layer="InputAreas_v4_0_SECAS_20191031"
+    src_dir / "SE_Blueprint_v2020_Vectors.gdb", layer="InputAreas_SECAS_v2020_20201005"
 )
+
+# some areas are null inputs, drop them
+df = df.loc[df.InputOverlapAreasSECAS_InputUsedIn2020.notnull()].copy()
+
 
 # making valid takes a really long time, and probably not necessary
 # df["geometry"] = pg.make_valid(df.geometry.values.data)
-df["inputs"] = df.InputOverlapAreasSECAS_InputUsedIn_4_0.str.lower().apply(
+df["inputs"] = df.InputOverlapAreasSECAS_InputUsedIn2020.str.lower().apply(
     lambda x: x.replace("tx chat", "chat")
     .replace("ok chat", "chat")
     .replace(" ", "")
@@ -40,7 +44,6 @@ df = df[["inputs", "geometry"]].copy()
 inputs = df.inputs.unique()
 inputs.sort()
 inputs = pd.DataFrame({"inputs": inputs})
-inputs.to_feather(out_dir / "input_area_values.feather")
 
 inputs.reset_index().rename(columns={"index": "value", "inputs": "id"}).to_json(
     json_dir / "input_area_values.json", orient="records"

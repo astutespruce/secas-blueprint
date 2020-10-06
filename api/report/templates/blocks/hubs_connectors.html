@@ -1,0 +1,95 @@
+<section>
+    <h2 id="Hubs">Hubs and Connectors</h2>
+
+    <p>
+        TODO: description of hubs and connectors
+    </p>
+
+    {% if maps.hubs_connectors %}
+    <div class="map-container">
+        <img src="data:image/png;base64,{{maps.hubs_connectors}}" alt="Hubs and cooridors map" class="map">
+
+        {% include "elements/north_arrow.html" %}
+    </div>
+
+    {% include "elements/map_footer.html" %}
+
+    <div class="flex map-footer">
+        <div class="map-locator-container">
+            {% if maps.locator %}
+                <img src="data:image/png;base64,{{maps.locator}}" alt="Locator map" class="map-locator">
+            {% endif %}
+        </div>
+
+        <div class="legend">
+            {% for item in legends.hubs_connectors[1:] %}
+                <div class="legend-element flex align-center">
+                    <div class="legend-patch" style="background: {{item.color}}"></div>
+                    <div class="legend-label">{{item.label}}</div>
+                </div>
+            {% endfor %}
+            <!-- space is required or last label doesn't render -->
+            &nbsp;
+        </div>
+    </div>
+
+    {% else %}
+    <div class="map-placeholder text-center">
+        map could not be created
+    </div>
+    {% endif %}
+    </section>
+
+    <section>
+
+    {% with number=table.counter,label="Extent of hubs and connectors" %}
+    {% include "elements/table_caption.html" %}
+    {% endwith %}
+    {% set table.counter=table.counter+1 %}
+
+    <table class="centered">
+    <thead>
+    <tr>
+        <th class="label">Type</th>
+        <th class="acres">Acres</th>
+        <th class="percent">Percent of Area</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% with acres=results.hubs_connectors %}
+    {% for item in results.hubs_connectors[1:] %}
+        {% if acres[loop.index] > 0 %}
+        <tr>
+            <td class="label">{{legends.hubs_connectors[loop.index].label}}</td>
+            <td class="acres">{{acres[loop.index]|format_number}}</td>
+            <td class="percent">{{(100 * acres[loop.index] / results.analysis_acres)|format_percent}}%</td>
+        </tr>
+        {% endif %}
+    {% endfor %}
+    {% if results.hubs_connectors[0]>0 %}
+        <tr>
+            <td class="label">{{legends.hubs_connectors[0].label}}</td>
+            <td class="acres">{{acres[0]|format_number}}</td>
+            <td class="percent">{{(100 * acres[0] / results.analysis_acres)|format_percent}}%</td>
+        </tr>
+    {% endif %}
+    {% endwith %}
+
+    {% if results.hubs_connectors_remainder > 0 %}
+        <tr class="remainder-row">
+            <td class="label">Area outside Southeast Blueprint</td>
+            <td class="acres">{{results.hubs_connectors_remainder|format_number}}</td>
+            <td class="percent">{{(100 * results.hubs_connectors_remainder / results.analysis_acres)|format_percent}}%</td>
+        </tr>
+    {% endif %}
+
+    <tr class="total-row">
+        <td class="label align-right">Total area</td>
+        <td class="acres">{{results.blueprint_total|format_number}}</td>
+        <td class="percent">100%</td>
+    </tr>
+    </tbody>
+    </table>
+
+
+</section>

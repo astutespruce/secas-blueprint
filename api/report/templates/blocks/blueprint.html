@@ -1,0 +1,100 @@
+<section>
+    <h2 id="Blueprint">Blueprint Conservation Values</h2>
+
+    {% if maps.blueprint %}
+        <div class="map-container">
+            <img src="data:image/png;base64,{{maps.blueprint}}" alt="Conservation Blueprint map" class="map">
+
+            {% include "elements/north_arrow.html" %}
+        </div>
+
+        {% include "elements/map_footer.html" %}
+
+        <div class="flex map-footer">
+            <div class="map-locator-container">
+                {% if maps.locator %}
+                    <img src="data:image/png;base64,{{maps.locator}}" alt="Locator map" class="map-locator">
+                {% endif %}
+            </div>
+
+            <div class="legend">
+                <!-- omit not a priority -->
+                {% for item in legends.blueprint[:-1] %}
+                    <div class="legend-element flex align-center">
+                        <div class="legend-patch" style="background: {{item.color}}"></div>
+                        <div class="legend-label">{{item.label}}</div>
+                    </div>
+                {% endfor %}
+                <!-- space is required or last label doesn't render -->
+                &nbsp;
+            </div>
+        </div>
+
+    {% else %}
+        <div class="map-placeholder text-center">
+            map could not be created
+        </div>
+    {% endif %}
+</section>
+
+<section>
+    <h2>Priority Categories</h2>
+    <!-- omit not a priority -->
+    {% for item in legends.blueprint[:-1] %}
+        <h4>
+            {{item.label}}
+            {% if 'priority' in item.label %}
+            for conservation action
+            {% endif %}
+        </h4>
+        <p>
+            {{item.description}}
+            {{item.report_description}}
+        </p>
+    {% endfor %}
+
+<div class="spacer"></div>
+
+{% with number=table.counter,label="Extent of each Blueprint priority category" %}
+    {% include "elements/table_caption.html" %}
+{% endwith %}
+{% set table.counter=table.counter+1 %}
+
+<table class="centered">
+    <thead>
+        <tr>
+            <th class="label">Priority Category</th>
+            <th class="acres">Acres</th>
+            <th class="percent">Percent of Area</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- sort blueprint from highest priority to lowest -->
+        {% with acres=results.blueprint[::-1] %}
+        {% for item in legends.blueprint %}
+        <tr>
+            <td class="label">{{item.label}}</td>
+            <td class="acres">{{acres[loop.index-1]|format_number}}</td>
+            <td class="percent">{{(100 * acres[loop.index-1] / results.analysis_acres)|format_percent}}%</td>
+        </tr>
+        {% endfor %}
+        {% endwith %}
+
+        {% if results.analysis_remainder > 0 %}
+            <tr class="remainder-row">
+                <td class="label">Area outside Southeast Blueprint</td>
+                <td class="acres">{{results.analysis_remainder|format_number}}</td>
+                <td class="percent">{{(100 * results.analysis_remainder / results.analysis_acres)|format_percent}}%</td>
+            </tr>
+        {% endif %}
+
+        <tr class="total-row">
+            <td class="label align-right">Total area</td>
+            <td class="acres">{{results.analysis_acres|format_number}}</td>
+            <td class="percent">100%</td>
+        </tr>
+    </tbody>
+</table>
+
+
+</section>

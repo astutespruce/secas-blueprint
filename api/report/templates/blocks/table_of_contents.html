@@ -1,0 +1,44 @@
+<div id="TableOfContents">
+  <h2>Table of Contents</h2>
+
+  <ol>
+    <li>
+      <a href="#About" class="toctext">About the Blueprint</a>
+      <a href="#About" class="tocpagenr"></a>
+    </li>
+
+    <div class="divider"></div>
+    <li>
+      <a href="#Blueprint" class="toctext">Blueprint Conservation Values</a>
+      <a href="#Blueprint" class="tocpagenr"></a>
+    </li>
+
+    <div class="divider"></div>
+    <li>
+      <a href="#Hubs" class="toctext">Hubs and Connectors</a>
+      <a href="#Hubs" class="tocpagenr"></a>
+    </li>
+
+    {% if not results.is_marine %}
+    <div class="divider"></div>
+    <li>
+      <a href="#Threats" class="toctext">Threats</a>
+      <a href="#Threats" class="tocpagenr"></a>
+    </li>
+    {% endif %}
+
+    {% if results.ownership or results.protection or results.counties %}
+    <div class="divider"></div>
+    <li>
+      <a href="#Ownership" class="toctext">Ownership and Partners</a>
+      <a href="#Ownership" class="tocpagenr"></a>
+    </li>
+    {% endif %}
+
+    <div class="divider"></div>
+    <li>
+      <a href="#Credits" class="toctext">Credits</a>
+      <a href="#Credits" class="tocpagenr"></a>
+    </li>
+  </ol>
+</div>

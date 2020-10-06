@@ -1,0 +1,225 @@
+<section>
+<h2 id="Ownership">Ownership and Partners</h2>
+
+{% if results['ownership'] %}
+<div class="ownership-section">
+<div class="no-break">
+    <h4 id="LandOwnership">Conserved lands ownership</h4>
+
+    {% if maps.ownership %}
+        <div class="map-container">
+            <img src="data:image/png;base64,{{maps.ownership}}" alt="Map of land ownership" class="map">
+
+            {% include "elements/map_footer.html" %}
+        </div>
+
+        <div class="flex map-footer">
+            <div class="map-locator-container">
+                {% if maps.locator %}
+                    <img src="data:image/png;base64,{{maps.locator}}" alt="Locator map" class="map-locator">
+                {% endif %}
+            </div>
+
+            <div class="legend">
+                <div class="flex">
+                    <div class="flex-grow">
+                        {% for item in legends.ownership[:5] %}
+                            <div class="legend-element flex align-center">
+                                <div class="legend-patch" style="background: {{item.color}}"></div>
+                                <div class="legend-label">{{item.label}}</div>
+                            </div>
+                        {% endfor %}
+                        <!-- space is required or last label doesn't render -->
+                        &nbsp;
+                    </div>
+
+                    <div class="flex-grow">
+                        {% for item in legends.ownership[5:] %}
+                            <div class="legend-element flex align-center">
+                                <div class="legend-patch" style="background: {{item.color}}"></div>
+                                <div class="legend-label">{{item.label}}</div>
+                            </div>
+                        {% endfor %}
+                        <!-- space is required or last label doesn't render -->
+                        &nbsp;
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+        <div class="map-placeholder text-center">
+            map could not be created
+        </div>
+    {% endif %}
+</div>
+
+<div class="spacer"></div>
+
+<div class="no-break">
+    {% with number=table.counter,label="Extent of ownership class",extra="Note: areas are based on the polygon boundary of this area compared to protected area polygons, rather than pixel-level analyses used elsewhere in this report."%}
+        {% include "elements/table_caption.html" %}
+    {% endwith %}
+
+    {% set table.counter=table.counter+1 %}
+
+    <table class="centered">
+        <thead>
+            <tr>
+                <th class="label">Ownership</th>
+                <th class="acres">Acres</th>
+                <th class="percent">Percent of Area</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in results['ownership'] %}
+                <tr>
+                    <td class="label">{{entry.label}}</td>
+                    <td class="acres">{{entry.acres|format_number}}</td>
+                    <td class="percent">{{(100 * entry.acres / results.acres)|format_percent}}%</td>
+                </tr>
+            {% endfor %}
+
+            {% with gap=results.acres - ownership_acres %}
+                {% if gap %}
+                    <tr class="remainder-row">
+                        <td class="label">Not conserved</td>
+                        <td class="acres">{{gap|format_number}}</td>
+                        <td class="percent">{{(100 * gap / results.acres)|format_percent}}%</td>
+                    </tr>
+                {% endif %}
+            {% endwith %}
+
+            <tr class="total-row">
+                <td class="align-right">Total area</td>
+                <td class="acres">{{results.acres|format_number}}</td>
+                <td class="percent">100%</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</div>
+{% endif %}
+
+
+{% if results['protection'] %}
+<div class="ownership-section">
+<div class="no-break">
+    <h4 id="Protection">Land protection status</h4>
+
+    {% if maps.ownership %}
+        <div class="map-container">
+            <img src="data:image/png;base64,{{maps.protection}}" alt="Map of land protection status" class="map">
+
+            {% include "elements/map_footer.html" %}
+        </div>
+
+        <div class="flex map-footer">
+            <div class="map-locator-container">
+                {% if maps.locator %}
+                    <img src="data:image/png;base64,{{maps.locator}}" alt="Locator map" class="map-locator">
+                {% endif %}
+            </div>
+
+            <div class="legend">
+                {% for item in legends.protection %}
+                    <div class="legend-element flex align-center">
+                        <div class="legend-patch" style="background: {{item.color}}"></div>
+                        <div class="legend-label">{{item.label}}</div>
+                    </div>
+                {% endfor %}
+                <!-- space is required or last label doesn't render -->
+                &nbsp;
+            </div>
+        </div>
+    {% else %}
+        <div class="map-placeholder text-center">
+            map could not be created
+        </div>
+    {% endif %}
+</div>
+
+<div class="spacer"></div>
+
+<div class="no-break">
+    {% with number=table.counter,label="Extent of land protection status",extra="Note: areas are based on the polygon boundary of this area compared to protected area polygons, rather than pixel-level analyses used elsewhere in this report." %}
+        {% include "elements/table_caption.html" %}
+    {% endwith %}
+
+    {% set table.counter=table.counter+1 %}
+
+    <table class="centered">
+        <thead>
+            <tr>
+                <th class="label">Land Protection Status</th>
+                <th class="acres">Acres</th>
+                <th class="percent">Percent of Area</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in results['protection'] %}
+            <tr>
+                <td class="label">{{entry.label}}</td>
+                <td class="acres">{{entry.acres|format_number}}</td>
+                <td class="percent">{{(100 * entry.acres / results.acres)|format_percent}}%</td>
+            </tr>
+            {% endfor %}
+
+            {% with gap=results.acres - protection_acres %}
+            {% if gap %}
+                <tr class="remainder-row">
+                    <td class="label">Not conserved</td>
+                    <td class="acres">{{gap|format_number}}</td>
+                    <td class="percent">{{(100 * gap / results.acres)|format_percent}}%</td>
+                </tr>
+            {% endif %}
+        {% endwith %}
+
+            <tr class="total-row">
+                <td class="align-right">Total area</td>
+                <td class="acres">{{results.acres|format_number}}</td>
+                <td class="percent">100%</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</div>
+{% endif %}
+
+{% if results.num_protected_areas %}
+    <h4 id="ProtectedAreas">Protected Areas</h4>
+
+    <ul>
+        {% for entry in results.protected_areas %}
+            <li>
+                {{entry.name}} ({{entry.owner}}; {{entry.acres|format_number}} acres)
+            </li>
+        {% endfor %}
+
+        {% if results.num_protected_areas > 25 %}
+            <li>
+                ... and {{(results.num_protected_areas - 25)|format_number}} more protected areas ...
+            </li>
+        {% endif %}
+    </ul>
+{% endif %}
+
+
+
+{% if results.counties %}
+<h4 id="LandTrusts">
+    Land Trusts (by county)
+</h4>
+<ul>
+    {% for county in results.counties %}
+        <li>
+            <a href="https://www.findalandtrust.org/counties/{{county.FIPS}}">
+                {{county.county}} County, {{county.state}}
+            </a>
+        </li>
+    {% endfor %}
+</ul>
+
+{% endif %}
+
+</section>

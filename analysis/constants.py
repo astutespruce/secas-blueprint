@@ -47,6 +47,9 @@ PROTECTION = OrderedDict(
     {e["value"]: e for e in json.loads(open(json_dir / "protection.json").read())}
 )
 
+INPUTS = {e["id"]: e for e in json.loads(open(json_dir / "inputs.json").read())}
+INPUT_AREA_VALUES = json.loads(open(json_dir / "input_area_values.json").read())
+
 
 BLUEPRINT_COLORS = {
     i: entry["color"]

@@ -1,24 +1,24 @@
 [
     {
-        "value": 1,
+        "value": "1",
         "color": "#637939",
         "label": "Managed for biodiversity",
         "description": "Disturbance events proceed or are mimicked"
     },
     {
-        "value": 2,
+        "value": "2",
         "color": "#b5cf6b",
         "label": "Managed for biodiversity",
         "description": "Disturbance events suppressed"
     },
     {
-        "value": 3,
+        "value": "3",
         "color": "#98df8a",
         "label": "Managed for multiple uses",
         "description": "Subject to extractive uses such as mining or logging, or OHV use"
     },
     {
-        "value": 4,
+        "value": "4",
         "color": "#7D3E07",
         "label": "No known mandate for biodiversity protection",
         "description": ""

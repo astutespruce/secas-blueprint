@@ -59,9 +59,9 @@
     },
     {
         "id": "gh",
-        "label": "TODO: remove, Gulf Coast Hypoxia",
-        "version": "",
-        "dataURL": "",
-        "infoURL": ""
+        "label": "Gulf Hypoxia Precision Conservation Blueprint",
+        "version": "1.5",
+        "dataURL": "https://databasin.org/groups/d52de40d017e4ce98c3914dba1bc4ee7",
+        "infoURL": "https://lccnetwork.org/resource/mississippi-river-basingulf-hypoxia-initiative-precision-conservation-blueprint"
     }
 ]

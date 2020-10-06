@@ -1,0 +1,16 @@
+<div id="{{indicator.id}}" class="indicator-header" style="background-color: {{ecosystem.color}};border-color: {{ecosystem.borderColor}};">
+    {% if index == 0 %}
+        <span id="{{ecosystem.id}}" />
+    {% endif %}
+
+    <div class="flex align-center">
+        <img src="{{(ecosystem.id + '.svg')|load_asset}}" class="ecosystem-icon" alt="Icon for {{ecosystem.label}}"/>
+        <div>
+            <div class="indicator-header-ecosystem">
+                {{ecosystem.label}}
+            </div>
+
+            <h2>{{indicator.label}}</h2>
+        </div>
+    </div>
+</div>

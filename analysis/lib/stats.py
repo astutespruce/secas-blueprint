@@ -10,6 +10,7 @@ from rasterio.windows import Window
 
 from analysis.constants import (
     BLUEPRINT,
+    INPUT_AREA_VALUES,
     HUBS_CONNECTORS,
     URBAN_YEARS,
     ACRES_PRECISION,
@@ -27,7 +28,6 @@ indicators_dir = src_dir / "indicators"
 continuous_indicator_dir = Path("data/continuous_indicators")
 blueprint_filename = src_dir / "se_blueprint2020.tif"
 bp_inputs_filename = src_dir / "input_areas.tif"
-bp_inputs_table_filename = src_dir / "input_area_values.feather"
 hubs_connectors_filename = src_dir / "hubs_connectors.tif"
 urban_dir = src_dir / "threats/urban"
 slr_dir = src_dir / "threats/slr"
@@ -37,7 +37,7 @@ def extract_blueprint_area(geometries, bounds):
     """Calculate the area of overlap between geometries and Blueprint and hubs /
     connectors.
 
-    NOTE: Blueprint and hubs / corridors are on the same grid
+    NOTE: Blueprint and hubs / connectors are on the same grid
 
     Parameters
     ----------
@@ -89,10 +89,12 @@ def extract_blueprint_area(geometries, bounds):
         (blueprint_counts * cellsize).round(ACRES_PRECISION).astype("float32")
     )
 
-    bp_input_values = pd.read_feather(bp_inputs_table_filename)
-
     bp_input_counts = extract_count_in_geometry(
-        bp_inputs_filename, shape_mask, window, bp_input_values.index, boundless=True
+        bp_inputs_filename,
+        shape_mask,
+        window,
+        bins=range(0, len(INPUT_AREA_VALUES)),
+        boundless=True,
     )
     results["inputs"] = (
         (bp_input_counts * cellsize).round(ACRES_PRECISION).astype("float32")
@@ -103,7 +105,7 @@ def extract_blueprint_area(geometries, bounds):
         str(hubs_connectors_filename).replace(".tif", "_mask.tif")
     ) as src:
         if not detect_data(src, geometries, bounds):
-            results["hubs_connectors"] = [0, 0]
+            results["hubs_connectors"] = np.array([0, 0], dtype="uint")
             return results
 
     hubs_connectors_counts = extract_count_in_geometry(

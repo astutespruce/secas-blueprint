@@ -1,0 +1,7 @@
+<li>
+{% if plan.url %}
+    <a href="{{plan.url}}">{{plan.label}}</a>
+{% else %}
+    {{plan.description}}
+{% endif %}
+</li>

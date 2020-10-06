@@ -22,8 +22,8 @@ tile_dir = Path("tiles")
 tmp_dir = Path("/tmp")
 
 
-blueprint_filename = src_dir / "blueprint_4.tif"
-tileset_filename = tile_dir / "blueprint_4.mbtiles"
+blueprint_filename = src_dir / "se_blueprint2020.tif"
+tileset_filename = tile_dir / "se_blueprint2020.mbtiles"
 
 # rendering times
 # 0 - 12: approx 2 hours
@@ -37,13 +37,12 @@ render_tif_to_mbtiles(
     tileset_filename,
     colormap={i + 1: entry["color"] for i, entry in enumerate(BLUEPRINT[1:])},
     min_zoom=0,
-    # max_zoom=15, # TODO:
-    max_zoom=14,
+    max_zoom=13,
     tile_size=512,
     metadata={
-        "name": "Southeast Blueprint v4.0",
-        "description": "Southeast Blueprint v4.0",
-        "attribution": "Southeast Blueprint v4.0",
+        "name": "Southeast Blueprint 2020",
+        "description": "Southeast Blueprint 2020",
+        "attribution": "Southeast Blueprint 2020",
     },
 )
 print("Tiles done in {:.2f} min".format((time() - start) / 60.0))
