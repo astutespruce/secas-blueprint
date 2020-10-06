@@ -69,7 +69,7 @@ counts = []
 index = []
 
 for huc12, geometry in Bar(
-    "Calculating Blueprint and hubs / connectors counts for HUC12", max=len(geometries)
+    "Calculating Blueprint and input counts for HUC12", max=len(geometries)
 ).iter(geometries.iteritems()):
     zone_results = extract_blueprint_area(
         [to_dict(geometry)], bounds=pg.total_bounds(geometry)
@@ -85,7 +85,7 @@ count_df = pd.DataFrame(counts, index=index)
 results = count_df[["shape_mask"]].copy()
 results.index.name = "id"
 
-### Export the Blueprint and hubs / connectors
+### Export the Blueprint results
 # each column is an array of counts for each
 for col in count_df.columns.difference(["shape_mask"]):
     s = count_df[col].apply(pd.Series).fillna(0)
@@ -233,7 +233,7 @@ geometries = pd.Series(units.geometry.values.data, index=units.index)
 counts = []
 index = []
 for id, geometry in Bar(
-    "Calculating Blueprint and Indicator counts for marine blocks", max=len(geometries)
+    "Calculating Blueprint counts for marine blocks", max=len(geometries)
 ).iter(geometries.iteritems()):
     zone_results = extract_blueprint_area(
         [to_dict(geometry)], bounds=pg.total_bounds(geometry)
@@ -249,7 +249,7 @@ count_df = pd.DataFrame(counts, index=index).fillna(0)
 results = count_df[["shape_mask"]].copy()
 results.index.name = "id"
 
-### Export the Blueprint hubs / connectors
+### Export the Blueprint results
 # each column is an array of counts for each
 for col in count_df.columns.difference(["shape_mask"]):
     s = count_df[col].apply(pd.Series).fillna(0)

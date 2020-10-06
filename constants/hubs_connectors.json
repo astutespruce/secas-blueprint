@@ -1,5 +1,0 @@
-[
-  { "value": 0, "color": null, "label": "Not a hub or connector" },
-  { "value": 1, "color": "#464646", "label": "Hubs" },
-  { "value": 2, "color": "#9B9B9B", "label": "Connectors" }
-]

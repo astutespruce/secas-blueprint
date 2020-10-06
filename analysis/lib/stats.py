@@ -11,7 +11,6 @@ from rasterio.windows import Window
 from analysis.constants import (
     BLUEPRINT,
     INPUT_AREA_VALUES,
-    HUBS_CONNECTORS,
     URBAN_YEARS,
     ACRES_PRECISION,
     M2_ACRES,
@@ -28,16 +27,14 @@ indicators_dir = src_dir / "indicators"
 continuous_indicator_dir = Path("data/continuous_indicators")
 blueprint_filename = src_dir / "se_blueprint2020.tif"
 bp_inputs_filename = src_dir / "input_areas.tif"
-hubs_connectors_filename = src_dir / "hubs_connectors.tif"
 urban_dir = src_dir / "threats/urban"
 slr_dir = src_dir / "threats/slr"
 
 
 def extract_blueprint_area(geometries, bounds):
-    """Calculate the area of overlap between geometries and Blueprint and hubs /
-    connectors.
+    """Calculate the area of overlap between geometries and Blueprint grids.
 
-    NOTE: Blueprint and hubs / connectors are on the same grid
+    NOTE: Blueprint and inputs are on the same grid
 
     Parameters
     ----------
@@ -47,7 +44,7 @@ def extract_blueprint_area(geometries, bounds):
     Returns
     -------
     dict or None (if does not overlap Blueprint data)
-        {"shape_mask": <shape_mask_area>, "blueprint": [...], "hubs_connectors": [...]}
+        {"shape_mask": <shape_mask_area>, "blueprint": [...], ...}
     """
 
     results = {}
@@ -98,25 +95,6 @@ def extract_blueprint_area(geometries, bounds):
     )
     results["inputs"] = (
         (bp_input_counts * cellsize).round(ACRES_PRECISION).astype("float32")
-    )
-
-    # prescreen area to make sure data are present
-    with rasterio.open(
-        str(hubs_connectors_filename).replace(".tif", "_mask.tif")
-    ) as src:
-        if not detect_data(src, geometries, bounds):
-            results["hubs_connectors"] = np.array([0, 0], dtype="uint")
-            return results
-
-    hubs_connectors_counts = extract_count_in_geometry(
-        hubs_connectors_filename,
-        shape_mask,
-        window,
-        np.arange(len(HUBS_CONNECTORS)),
-        boundless=True,
-    )
-    results["hubs_connectors"] = (
-        (hubs_connectors_counts * cellsize).round(ACRES_PRECISION).astype("float32")
     )
 
     return results

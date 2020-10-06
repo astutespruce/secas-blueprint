@@ -7,7 +7,6 @@ import { Box, Flex, Divider, Heading, Text } from 'theme-ui'
 import { PieChartLegend } from 'components/chart'
 import {
   useBlueprintCategories,
-  useHubsConnectors,
   useInputAreas,
 } from 'components/data'
 import { OutboundLink } from 'components/link'
@@ -15,9 +14,8 @@ import { OutboundLink } from 'components/link'
 import { sum, sortByFunc } from 'util/data'
 import { formatPercent } from 'util/format'
 
-const BlueprintTab = ({ blueprint, inputs, hubsConnectors }) => {
+const BlueprintTab = ({ blueprint, inputs }) => {
   const { all: priorityCategories } = useBlueprintCategories()
-  const corridorCategories = useHubsConnectors()
   const { inputs: inputCategories, values: inputValues } = useInputAreas()
 
   const chartWidth = 150
@@ -37,36 +35,6 @@ const BlueprintTab = ({ blueprint, inputs, hubsConnectors }) => {
   if (blueprintTotal <= 99) {
     remainder = 100 - blueprintTotal
     blueprintChartData.push({
-      value: remainder,
-      color: '#fdefe2',
-      label: 'Outside Southeast Blueprint',
-    })
-  }
-
-  const hubsConnectorsChartData = hubsConnectors
-    .map((percent, i) => {
-      const { label, color } = corridorCategories[i]
-      return {
-        value: percent,
-        label,
-        color,
-      }
-    })
-    .filter(({ value }) => value > 0)
-    .reverse()
-
-  const hubsConnectorsTotal = sum(hubsConnectors)
-
-  if (hubsConnectorsTotal < 100 - remainder) {
-    hubsConnectorsChartData.push({
-      value: 100 - remainder - hubsConnectorsTotal,
-      color: '#eceeef',
-      label: 'Not a hub or connector',
-    })
-  }
-
-  if (remainder >= 1) {
-    hubsConnectorsChartData.push({
       value: remainder,
       color: '#fdefe2',
       label: 'Outside Southeast Blueprint',
@@ -122,32 +90,6 @@ const BlueprintTab = ({ blueprint, inputs, hubsConnectors }) => {
         </Flex>
       </Box>
 
-      {hubsConnectorsChartData.length > 0 ? (
-        <>
-          <Divider variant="styles.hr.light" sx={{ my: '3rem' }} />
-          <Box as="section">
-            <Heading as="h3">Hubs &amp; Connectors</Heading>
-
-            <Flex sx={{ alignItems: 'center', mt: '2rem' }}>
-              <PieChart
-                data={hubsConnectorsChartData}
-                lineWidth={60}
-                radius={chartWidth / 4 - 2}
-                style={{
-                  width: chartWidth,
-                  flex: '0 1 auto',
-                }}
-              />
-
-              <PieChartLegend elements={hubsConnectorsChartData} />
-            </Flex>
-          </Box>
-        </>
-      ) : (
-        <Text sx={{ textAlign: 'center', color: 'grey.7' }}>
-          No hubs or connectors in this area.
-        </Text>
-      )}
 
       {binnedInputs.length > 0 ? (
         <>
@@ -238,13 +180,11 @@ const BlueprintTab = ({ blueprint, inputs, hubsConnectors }) => {
 BlueprintTab.propTypes = {
   blueprint: PropTypes.arrayOf(PropTypes.number),
   inputs: PropTypes.arrayOf(PropTypes.number),
-  hubsConnectors: PropTypes.arrayOf(PropTypes.number),
 }
 
 BlueprintTab.defaultProps = {
   blueprint: [],
   inputs: [],
-  hubsConnectors: [],
 }
 
 export default BlueprintTab

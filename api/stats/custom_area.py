@@ -84,8 +84,6 @@ class CustomArea(object):
             "analysis_remainder": remainder,
             "blueprint": counts["blueprint"].tolist(),
             "blueprint_total": blueprint_total,
-            "hubs_connectors": counts["hubs_connectors"].tolist(),
-            "hubs_connectors_total": counts["hubs_connectors"].sum(),
             "inputs": inputs,
         }
 

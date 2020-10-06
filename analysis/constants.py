@@ -39,7 +39,6 @@ SE_STATES = [
 json_dir = Path("constants")
 
 BLUEPRINT = json.loads(open(json_dir / "blueprint.json").read())
-HUBS_CONNECTORS = json.loads(open(json_dir / "hubs_connectors.json").read())
 OWNERSHIP = OrderedDict(
     {e["value"]: e for e in json.loads(open(json_dir / "ownership.json").read())}
 )

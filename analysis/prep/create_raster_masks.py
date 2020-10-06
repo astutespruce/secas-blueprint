@@ -70,18 +70,8 @@ create_mask(
 )
 
 
-print("Creating hubs / connectors mask...")
-src_dir = Path("data/inputs")
+print("Creating urban mask...")
+src_dir = Path("data/inputs/threats/urban")
 create_mask(
-    src_dir / "hubs_connectors.tif",
-    src_dir / "hubs_connectors_mask.tif",
-    factor=16,
-    ignore_zero=True,
+    src_dir / "urban_2100.tif", src_dir / "urban_mask.tif", factor=8, ignore_zero=True
 )
-
-
-# print("Creating urban mask...")
-# src_dir = Path("data/inputs/threats/urban")
-# create_mask(
-#     src_dir / "urban_2100.tif", src_dir / "urban_mask.tif", factor=8, ignore_zero=True
-# )

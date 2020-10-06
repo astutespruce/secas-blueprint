@@ -10,7 +10,6 @@ from jinja2 import Environment, FileSystemLoader
 
 from analysis.constants import (
     BLUEPRINT,
-    HUBS_CONNECTORS,
     URBAN_LEGEND,
     SLR_LEGEND,
     OWNERSHIP,
@@ -71,7 +70,6 @@ def create_report(maps, results):
     legends = {
         # sort Blueprint descending order
         "blueprint": BLUEPRINT[::-1],
-        "hubs_connectors": HUBS_CONNECTORS,
     }
 
     if "urban" in results:

@@ -19,7 +19,6 @@ from analysis.constants import (
     BLUEPRINT_COLORS,
     URBAN_LEGEND,
     SLR_LEGEND,
-    HUBS_CONNECTORS,
 )
 
 
@@ -31,7 +30,6 @@ THREADS = 6
 
 src_dir = Path("data/inputs")
 blueprint_filename = src_dir / "se_blueprint2020.tif"
-hubs_connectors_filename = src_dir / "hubs_connectors.tif"
 urban_filename = src_dir / "threats/urban/urban_2060.tif"
 slr_filename = src_dir / "threats/slr/slr.vrt"
 
@@ -62,11 +60,6 @@ async def render_raster_maps(
 
     task_args = [
         ("blueprint", blueprint_filename, BLUEPRINT_COLORS),
-        (
-            "hubs_connectors",
-            hubs_connectors_filename,
-            {i: e["color"] for i, e in enumerate(HUBS_CONNECTORS) if e['color'] is not None},
-        ),
     ]
 
     if urban:

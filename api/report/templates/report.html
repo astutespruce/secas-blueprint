@@ -16,12 +16,6 @@
 
         {% include "blocks/blueprint.html" %}
 
-        {% if results.hubs_connectors_total %}
-          {% include "blocks/hubs_connectors.html" %}
-        {% else %}
-          {% include "blocks/no_hubs_connectors.html" %}
-        {% endif %}
-
         {% if not results.is_marine %}
           {% include "blocks/threats.html" %}
         {% endif %}

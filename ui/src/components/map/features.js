@@ -56,9 +56,6 @@ export const unpackFeatureData = (properties) => {
   // rescale specific things from percent * 10 back to percent
 
   values.blueprint = values.blueprint ? applyFactor(values.blueprint, 0.1) : []
-  values.hubs_connectors = values.hubs_connectors
-    ? applyFactor(values.hubs_connectors, 0.1)
-    : []
   values.inputs = values.inputs ? applyFactor(values.inputs, 0.1) : []
 
   // merge avg and percents together

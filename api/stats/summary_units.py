@@ -72,7 +72,7 @@ class SummaryUnits(object):
             # no Blueprint results, there won't be other results
             return results
 
-        # unpack blueprint, hubs / connectcors
+        # unpack blueprint values
         blueprint_values = np.array(
             [
                 getattr(blueprint, c)
@@ -88,16 +88,6 @@ class SummaryUnits(object):
         remainder = abs(blueprint.shape_mask - results["blueprint_total"])
         # there are small rounding errors
         results["analysis_remainder"] = remainder if remainder >= 1 else 0
-
-        results["hubs_connectors"] = [
-            getattr(blueprint, c)
-            for c in blueprint.index
-            if c.startswith("hubs_connectors_")
-        ]
-        results["hubs_connectors_total"] = sum(results["hubs_connectors"])
-
-        hubs_connectors_remainder = abs(blueprint.shape_mask - results["hubs_connectors_total"])
-        results["hubs_connectors_remainder"] =hubs_connectors_remainder if hubs_connectors_remainder >= 1 else 0
 
         # only pull in inputs that are present
         inputs = []

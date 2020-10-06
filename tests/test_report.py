@@ -154,7 +154,6 @@ ids = {
     "huc12": [
         "130301020902", # far western edge
         "031501060512",  # partial overlap with SA raster inputs
-        "051402030705", # straddles edge of hubs / connectors / NODATA and region boundary
     ],
     # "marine_blocks": ["NI18-07-6210"],
 }

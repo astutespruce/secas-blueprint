@@ -6,7 +6,7 @@ The following code compacts values in a few ways.  These were tested against
 versions of the vector tiles that retained individual integer columns, and the
 compacted version here ended up being smaller.
 
-Blueprint and hubs / connectors were encoded to a pipe-delimited series of percents * 10
+Blueprint and inputs were encoded to a pipe-delimited series of percents * 10
 (to preserve 1 decimal place in frontend), omitting any 0 values:
 <value0>|<value1>|...
 
@@ -53,12 +53,11 @@ huc12.acres = huc12.acres.round().astype("uint")
 huc12["type"] = "subwatershed"
 
 
-print("Encoding HUC12 Blueprint & hubs / connectors values...")
+print("Encoding HUC12 Blueprint & input values...")
 blueprint = pd.read_feather(results_dir / "huc12/blueprint.feather").set_index("id")
 
 # Unpack blueprint values
 blueprint_cols = [c for c in blueprint.columns if c.startswith("blueprint_")]
-hc_cols = [c for c in blueprint.columns if c.startswith("hubs_connectors_")]
 input_cols = [c for c in blueprint.columns if c.startswith("inputs_")]
 blueprint_total = blueprint[blueprint_cols].sum(axis=1).rename("blueprint_total")
 shape_mask = blueprint.shape_mask
@@ -66,11 +65,6 @@ shape_mask = blueprint.shape_mask
 # convert Blueprint to integer percents * 10, and pack into pipe-delimited string
 blueprint_percent = encode_values(blueprint[blueprint_cols], shape_mask, 1000).rename(
     "blueprint"
-)
-
-# convert hubs / connectors to integer percents * 10, and pack into pipe-delimited string
-hc_percent = encode_values(blueprint[hc_cols], shape_mask, 1000).rename(
-    "hubs_connectors"
 )
 
 # convert input areas to integer percents * 10, and pack into pipe-delimited string
@@ -83,7 +77,6 @@ blueprint_df = (
     .astype("uint")
     .join(blueprint_total.round().astype("uint"))
     .join(blueprint_percent)
-    .join(hc_percent)
     .join(inputs_percent)
 )
 blueprint_df.blueprint_total = blueprint_df.blueprint_total.fillna(0)
@@ -196,7 +189,7 @@ marine = marine.loc[marine.acres > 0].dropna()
 marine["type"] = "marine lease block"
 
 
-print("Encoding marine Blueprint & hubs / connectors values...")
+print("Encoding marine Blueprint & inputs...")
 blueprint = (
     pd.read_feather(working_dir / "blueprint.feather")
     .rename(columns={"index": "id"})
@@ -205,7 +198,6 @@ blueprint = (
 
 # Unpack blueprint values
 blueprint_cols = [c for c in blueprint.columns if c.startswith("blueprint_")]
-hc_cols = [c for c in blueprint.columns if c.startswith("hubs_connectors_")]
 input_cols = [c for c in blueprint.columns if c.startswith("inputs_")]
 blueprint_total = blueprint[blueprint_cols].sum(axis=1).rename("blueprint_total")
 shape_mask = blueprint.shape_mask
@@ -215,10 +207,6 @@ blueprint_percent = encode_values(blueprint[blueprint_cols], shape_mask, 1000).r
     "blueprint"
 )
 
-# convert hubs / connectors to integer percents * 10, and pack into pipe-delimited string
-hc_percent = encode_values(blueprint[hc_cols], shape_mask, 1000).rename(
-    "hubs_connectors"
-)
 
 # convert input areas to integer percents * 10, and pack into pipe-delimited string
 inputs_percent = encode_values(blueprint[input_cols], shape_mask, 1000).rename("inputs")
@@ -230,7 +218,6 @@ blueprint_df = (
     .astype("uint")
     .join(blueprint_total.round().astype("uint"))
     .join(blueprint_percent)
-    .join(hc_percent)
     .join(inputs_percent)
 )
 

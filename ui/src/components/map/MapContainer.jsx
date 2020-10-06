@@ -154,7 +154,6 @@ const MapContainer = () => {
       inputs,
       blueprint_total: blueprintAcres,
       shape_mask: analysisAcres,
-      hubs_connectors: hubsConnectors,
       indicators,
       slr,
       urban,
@@ -174,7 +173,6 @@ const MapContainer = () => {
         content = (
           <BlueprintTab
             blueprint={blueprint}
-            hubsConnectors={hubsConnectors}
             inputs={inputs}
             blueprintAcres={blueprintAcres}
           />
