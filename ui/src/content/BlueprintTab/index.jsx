@@ -15,7 +15,7 @@ import { OutboundLink } from 'components/link'
 import { sum, sortByFunc } from 'util/data'
 import { formatPercent } from 'util/format'
 
-const PrioritiesTab = ({ blueprint, inputs, hubsConnectors }) => {
+const BlueprintTab = ({ blueprint, inputs, hubsConnectors }) => {
   const { all: priorityCategories } = useBlueprintCategories()
   const corridorCategories = useHubsConnectors()
   const { inputs: inputCategories, values: inputValues } = useInputAreas()
@@ -235,16 +235,16 @@ const PrioritiesTab = ({ blueprint, inputs, hubsConnectors }) => {
   )
 }
 
-PrioritiesTab.propTypes = {
+BlueprintTab.propTypes = {
   blueprint: PropTypes.arrayOf(PropTypes.number),
   inputs: PropTypes.arrayOf(PropTypes.number),
   hubsConnectors: PropTypes.arrayOf(PropTypes.number),
 }
 
-PrioritiesTab.defaultProps = {
+BlueprintTab.defaultProps = {
   blueprint: [],
   inputs: [],
   hubsConnectors: [],
 }
 
-export default PrioritiesTab
+export default BlueprintTab

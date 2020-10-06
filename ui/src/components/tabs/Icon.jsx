@@ -32,7 +32,7 @@ const Icon = ({ name, ...props }) => {
     case 'contact': {
       return <Envelope {...props} />
     }
-    case 'unit-priorities': {
+    case 'unit-blueprint': {
       return <ChartPie {...props} />
     }
     case 'unit-indicators': {

@@ -45,8 +45,8 @@ export default {
   },
 
   fonts: {
-    body: '"Open Sans", sans-serif',
-    heading: '"Open Sans", sans-serif',
+    body: '"Source Sans Pro", sans-serif',
+    heading: '"Source Sans Pro", sans-serif',
   },
   fontSizes: [14, 16, 18, 20, 24, 32, 48, 64, 72],
   fontWeights: {

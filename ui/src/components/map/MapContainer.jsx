@@ -13,7 +13,7 @@ import {
   InfoTab,
   ContactTab,
   FindLocationTab,
-  PrioritiesTab,
+  BlueprintTab,
   IndicatorsTab,
   ThreatsTab,
   PartnersTab,
@@ -95,7 +95,7 @@ const MapContainer = () => {
     } else if (tab === 'map') {
       nextTab = 'unit-map'
     } else if (!tab.startsWith('unit-')) {
-      nextTab = 'unit-priorities'
+      nextTab = 'unit-blueprint'
     }
 
     if (nextTab !== tab) {
@@ -112,7 +112,7 @@ const MapContainer = () => {
 
     // was mobile, now is desktop, need to show tabs again
     if (!isMobile && tabRef.current === 'map') {
-      const nextTab = hasSelectedUnitRef.current ? 'unit-priorities' : 'info'
+      const nextTab = hasSelectedUnitRef.current ? 'unit-blueprint' : 'info'
       handleTabChange(nextTab)
     }
   }, [isMobile, handleTabChange])
@@ -170,9 +170,9 @@ const MapContainer = () => {
         content = null
         break
       }
-      case 'unit-priorities': {
+      case 'unit-blueprint': {
         content = (
-          <PrioritiesTab
+          <BlueprintTab
             blueprint={blueprint}
             hubsConnectors={hubsConnectors}
             inputs={inputs}

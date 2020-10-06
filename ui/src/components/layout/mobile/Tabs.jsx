@@ -12,7 +12,7 @@ const tabs = [
 
 const unitTabs = [
   { id: 'unit-map', label: 'Map' },
-  { id: 'unit-priorities', label: 'Priorities' },
+  { id: 'unit-blueprint', label: 'Blueprint' },
   // { id: 'unit-indicators', label: 'Indicators' },
   { id: 'unit-threats', label: 'Threats' },
   { id: 'unit-partners', label: 'Partners' },

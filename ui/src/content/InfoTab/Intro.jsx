@@ -8,14 +8,15 @@ const Intro = () => {
     <>
       <Box as="section">
         <p>
-          The Blueprint is a living, spatial plan that identifies important
-          places for conservation and restoration across the Southeast and
-          Caribbean. It is helping more than 200 people from over 90
-          organizations bring in new funding and inform their conservation
-          decisions.
-          <br />
-          <br />
-          ...content from SECAS here...
+          The Southeast Conservation Blueprint is the primary product of the
+          Southeast Conservation Adaptation Strategy (SECAS). It is a living,
+          spatial plan that identifies important areas for conservation and
+          restoration across the Southeast and Caribbean. The Blueprint stitches
+          together smaller subregional plans into one consistent map,
+          incorporating the best available information about key species,
+          ecosystems, and future threats. More than 1,700 people from 500
+          different organizations have actively participated in its development
+          so far.
           <br />
           <br />
           For more information, visit{' '}
