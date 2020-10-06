@@ -1,7 +1,7 @@
-version: '3.6'
+version: "3.6"
 services:
   redis:
-    image: 'redis:alpine'
+    image: "redis:alpine"
     restart: always
 
   mbtileserver:
@@ -32,23 +32,18 @@ services:
         'uvicorn.workers.UvicornWorker',
         '--name',
         'uvicorn',
-        '--loop',
-        'uvloop',
         '-b',
         ':5000',
-        '--capture-output',
-        '--log-level',
-        'DEBUG',
         'api.api:app',
       ]
     volumes:
-      - user_upload:/tmp/sa-reports
+      - user_upload:/tmp/se-reports
       - ../../data:/home/app/data # TODO: this can originate from location in staging config
       - ../../api:/home/app/api # main API
       - ../../analysis:/home/app/analysis # needed for analysis utils
       - ../../constants:/home/app/constants # needed for JSON files for blueprint, indicators
     ports:
-      - '5000:5000'
+      - "5000:5000"
 
   worker:
     build:
@@ -60,9 +55,9 @@ services:
       - renderer
     env_file:
       - .env
-    command: ['/usr/local/bin/arq', 'api.worker.WorkerSettings']
+    command: ["/usr/local/bin/arq", "api.worker.WorkerSettings"]
     volumes:
-      - user_upload:/tmp/sa-reports
+      - user_upload:/tmp/se-reports
       - ../../data:/home/app/data # TODO: this can originate from location in staging config
       - ../../api:/home/app/api # main API
       - ../../analysis:/home/app/analysis # needed for analysis utils
@@ -78,7 +73,7 @@ services:
       - worker
     restart: always
     ports:
-      - '8080:80'
+      - "8080:80"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_certs:/root/.caddy

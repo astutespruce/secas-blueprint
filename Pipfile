@@ -22,7 +22,6 @@ numpy = "*"
 pandas = "*"
 pillow = "*"
 progress = "*"
-pygeos = "*"
 # pyogrio = {editable = true,path = "./../pyogrio"}
 python-dotenv = "*"
 python-multipart = "*"
@@ -31,6 +30,7 @@ sentry-sdk = "*"
 uvicorn = "*"
 weasyprint = "*"
 pyarrow = "*"
+pygeos = "*"
 
 [requires]
 python_version = "3.8"

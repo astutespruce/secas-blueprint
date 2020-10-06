@@ -4,6 +4,36 @@
 
 Use case: user uploads shapefile (AOI) representing a small area, this generates a custom PDF report including maps and summaries of overlap with Blueprint and indicators.
 
+
+## Starting background jobs and API server
+
+
+### Development environment
+Background jobs use `arq` which relies on `redis` installed on the host.
+
+On MacOS, start `redis`:
+
+```
+redis-server /usr/local/etc/redis.conf
+```
+
+To start `arq` with reload capability:
+
+```
+arq api.worker.WorkerSettings --watch ./api
+```
+
+To start the API in development mode:
+
+```
+uvicorn api.api:app --reload --port 5000
+```
+
+### Staging / production environment or Docker setup
+
+See `deploy/staging/README.md`.
+
+
 ## API requests
 
 To make custom report requests using HTTPie:

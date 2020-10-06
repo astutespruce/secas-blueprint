@@ -1,94 +1,64 @@
-version: "3.6"
+version: '3.6'
 services:
-    redis:
-        image: "redis:alpine"
-        logging:
-            driver: journald
+  se-api:
+    build:
+      context: ../..
+      dockerfile: docker/api/Dockerfile
+    restart: always
+    external_links:
+      - redis
+    env_file:
+      - .env
+    command:
+      [
+        '/usr/local/bin/gunicorn',
+        '-k',
+        'uvicorn.workers.UvicornWorker',
+        '--name',
+        'uvicorn',
+        '-b',
+        ':5000',
+        'api.api:app',
+      ]
+    volumes:
+      - user_upload:/tmp/se-reports
+      - /data/sa:/home/app/data
+      - ../../api:/home/app/api # main API
+      - ../../analysis:/home/app/analysis # needed for analysis utils
+      - ../../constants:/home/app/constants # needed for JSON files for blueprint, indicators
+    ports:
+      - '5000:5000'
+    logging:
+      driver: journald
+    networks:
+      - shared
 
-    mbtileserver:
-        image: consbio/mbtileserver:latest
-        restart: always
-        volumes:
-            - /tiles:/tilesets
-        logging:
-            driver: journald
+  se-worker:
+    build:
+      context: ../..
+      dockerfile: docker/api/Dockerfile
+    restart: always
+    external_links:
+      - redis
+      - renderer
+    env_file:
+      - .env
+    command: ['/usr/local/bin/arq', 'api.worker.WorkerSettings']
+    volumes:
+      - user_upload:/tmp/se-reports
+      - /data/sa:/home/app/data
+      - ../../api:/home/app/api # main API
+      - ../../analysis:/home/app/analysis # needed for analysis utils
+      - ../../constants:/home/app/constants # needed for JSON files for blueprint, indicators
+    logging:
+      driver: journald
+    networks:
+      - shared
 
-    renderer:
-        image: consbio/mbgl-renderer:latest
-        restart: always
-        volumes:
-            - /tiles:/app/tiles
-        logging:
-            driver: journald
-
-    api:
-        build:
-            context: ../..
-            dockerfile: docker/api/Dockerfile
-        restart: always
-        depends_on:
-            - redis
-        env_file:
-            - .env
-        command:
-            [
-                "/usr/local/bin/gunicorn",
-                "-k",
-                "uvicorn.workers.UvicornWorker",
-                "--name",
-                "uvicorn",
-                "-b",
-                ":5000",
-                "api.api:app",
-            ]
-        volumes:
-            - user_upload:/tmp/sa-reports
-            - /data:/home/app/data
-            - ../../api:/home/app/api # main API
-            - ../../analysis:/home/app/analysis # needed for analysis utils
-            - ../../constants:/home/app/constants # needed for JSON files for blueprint, indicators
-        ports:
-            - "5000:5000"
-        logging:
-            driver: journald
-
-    worker:
-        build:
-            context: ../..
-            dockerfile: docker/api/Dockerfile
-        restart: always
-        depends_on:
-            - redis
-            - renderer
-        env_file:
-            - .env
-        command: ["/usr/local/bin/arq", "api.worker.WorkerSettings"]
-        volumes:
-            - user_upload:/tmp/sa-reports
-            - /data:/home/app/data
-            - ../../api:/home/app/api # main API
-            - ../../analysis:/home/app/analysis # needed for analysis utils
-            - ../../constants:/home/app/constants # needed for JSON files for blueprint, indicators
-        logging:
-            driver: journald
-
-    caddy:
-        image: caddy/caddy:2.1.1-alpine
-        depends_on:
-            - mbtileserver
-            - api
-            - worker
-        restart: always
-        ports:
-            - "80:80"
-            - "443:443"
-        volumes:
-            - ./Caddyfile:/etc/caddy/Caddyfile
-            - caddy_certs:/root/.caddy
-            - /var/www:/var/www
-        logging:
-            driver: journald
+networks:
+  shared:
+    driver: bridge
+    name: shared
 
 volumes:
-    caddy_certs:
-    user_upload:
+  user_upload:

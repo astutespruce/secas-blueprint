@@ -99,7 +99,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
     maps, scale = await render_maps(
         bounds,
         geometry=geo_geometry[0],
-        indicators=results["indicators"],
+        # indicators=results["indicators"],
         urban=has_urban,
         slr=has_slr,
         ownership=has_ownership,

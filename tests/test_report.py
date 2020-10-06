@@ -57,29 +57,6 @@ aois = [
     {"name":"Caledonia area, MS", "path": "caledonia"},
     {"name":"Area in El Yunque National Forest, PR", "path": "yunque"},
     {"name":"Area near Magnet, TX", "path": "magnet"},
-    # {"name": "", "path": "OutsideSouthAtlanticTest"},
-    # {"name": "", "path": "InAndOutTest"},
-    # {
-    #     "name": "Congaree Creek Assemblage tracts",
-    #     "path": "CongareeCreekAssemblageTracts",
-    # },
-    # {"name": "Alderman-Shaw tract", "path": "Alderman-ShawTract"},
-    # {"name": "Town of Van Wyck planning area", "path": "Planning_Area"},
-    # {"name": "Gainesville area", "path": "POLYGON"},
-    # {"name": "Rasor Forest Legacy Tract", "path": "Razor"},
-    # {"name": "Groton Plantation", "path": "Groton_all"},
-    # {"name": "Fort Mill Town Limits", "path": "Fort_Mill_townlimits"},
-    # {"name": "FY18 LWCF Tract", "path": "FY18_LWCF_Tract"},
-    # # # TODO: handle correctly
-    # # {"name": "Green River Proposed Boundary", "path": "GreenRiver_ProposedBoundary"},
-    # # # Big areas:
-    # {"name": "ACF", "path": "ACF_area"},  # 140s
-    # {
-    #     "name": "80-mile sourcing radius for Enviva’s Hamlet, NC plant",
-    #     "path": "Enviva_Hamlet_80_mile_sourcing_radius",
-    # },  # 112s
-    # {"name": "North Carolina", "path": "NC"},  # 330s
-    # {"name": "South Atlantic Region", "path": "SA_boundary"},
 ]
 
 
@@ -151,11 +128,16 @@ for aoi in aois:
 
 ### Create reports for summary units
 ids = {
-    "huc12": [
-        "130301020902", # far western edge
-        "031501060512",  # partial overlap with SA raster inputs
+    # "huc12": [
+    #     "130301020902", # far western edge
+    #     "031501060512",  # partial overlap with SA raster inputs
+    # ],
+    "marine_blocks": [
+        # "NI18-07-6210", # Atlantic coast
+        # "NG16-03-299",  # Gulf coast
+        "NG17-10-6583" # Florida keys, overlaps with protected areas
+
     ],
-    # "marine_blocks": ["NI18-07-6210"],
 }
 
 

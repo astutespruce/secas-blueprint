@@ -1,4 +1,5 @@
-FROM osgeo/gdal:ubuntu-small-3.1.3
+# TODO: pin to 3.1.4 once available
+FROM osgeo/gdal:ubuntu-small-latest
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -7,15 +8,22 @@ RUN apt-get update && apt-get install -y \
     libgeos-dev \
     libcairo2 \
     libcairo-gobject2 \
-    libpango1.0 \
-    fonts-lato
+    libpango1.0
+
+# Install fonts
+RUN mkdir /usr/share/fonts/google && \
+    curl https://fonts.google.com/download?family=Raleway --output /tmp/Raleway.zip && \
+    unzip /tmp/Raleway.zip -d /usr/share/fonts/google && \
+    mv /usr/share/fonts/google/static/* /usr/share/fonts/google/ && \
+    curl https://fonts.google.com/download?family=Source+Sans+Pro --output /tmp/SourceSansPro.zip && \
+    unzip -o /tmp/SourceSansPro.zip -d /usr/share/fonts/google && \
+    fc-cache -fv
 
 
 RUN useradd --create-home app
 WORKDIR /home/app
 
 COPY ./requirements.txt /tmp/requirements.txt
-COPY ./setup.py /home/app
 
 RUN pip3 install -r /tmp/requirements.txt
 
@@ -27,5 +35,4 @@ RUN pip3 install -e git+https://github.com/brendan-ward/pyogrio.git@0a78012764c4
     cd /home/app
 
 
-# have to do this last as it doesn't have sufficient privileges for running pip install
-# USER app
+ENV PYTHONPATH="${PYTHONPATH}:/home/app"
