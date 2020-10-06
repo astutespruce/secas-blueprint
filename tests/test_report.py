@@ -152,17 +152,9 @@ for aoi in aois:
 ### Create reports for summary units
 ids = {
     "huc12": [
+        "130301020902", # far western edge
         "031501060512",  # partial overlap with SA raster inputs
-        # # "030300050503",  # multiple PARCA
-        # # "030602040101",
-        # "030802010501",  # THIS ONE  # partial overlap with Blueprint
-        # "030602040601",
-        #     "030601030510",
-        "031501040301",
-        #     "030102020505",
-        #     "030203020403",
-        #     "030203020404",
-        #     "030203020405",
+        "051402030705", # straddles edge of hubs / connectors / NODATA and region boundary
     ],
     # "marine_blocks": ["NI18-07-6210"],
 }

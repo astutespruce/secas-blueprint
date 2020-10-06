@@ -1,0 +1,45 @@
+<div class="no-break">
+    <h3 style="margin-bottom: 0.5rem;">Blueprint Inputs:</h3>
+
+    {% for src in results.inputs %}
+        <div class="input-block">
+            <div>
+                <b>
+                    {{src.label}}
+                    {% if src.version %}
+                        {{src.version}}
+                    {%endif %}
+                </b>
+                ({{(100 * src.acres / results.analysis_acres)|format_percent}}% of area)
+            </div>
+
+            {% if src.infoURL or src.dataURL or src.viewerURL %}
+                {% if src.infoURL or src.dataURL %}
+                    <div>
+                        {% if src.infoURL %}
+                            <a href="{{src.infoURL}}">more information</a>
+                        {% endif %}
+
+                        {% if src.infoURL and src.dataURL %}
+                            <span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+                        {% endif %}
+
+                        {% if src.dataURL %}
+                            <a href="{{src.dataURL}}">access data</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                {% if src.viewerURL %}
+                    <div>
+                        More detailed information for Blueprint indicators
+                        is available in the
+                        <a href="{{src.viewerURL}}">
+                            {{viewerName}}
+                        </a>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>

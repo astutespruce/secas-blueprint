@@ -243,7 +243,8 @@ table tr.above-threshold td {
 .caption {
     font-family: Raleway, sans-serif;
     font-size: 12pt;
-    font-weight: bold;
+    font-style: italic;
+    color: #7e8b96;
 }
 
 .hidden {
@@ -498,6 +499,6 @@ img.logo {
     transform: rotate(-90deg);
 }
 
-.parca {
-    margin-left: 1em;
+.input-block + .input-block {
+    margin-top: 2rem;
 }
