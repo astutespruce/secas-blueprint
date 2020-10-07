@@ -22,12 +22,10 @@ services:
       ]
     volumes:
       - user_upload:/tmp/se-reports
-      - /data/sa:/home/app/data
+      - /data/se:/home/app/data
       - ../../api:/home/app/api # main API
       - ../../analysis:/home/app/analysis # needed for analysis utils
       - ../../constants:/home/app/constants # needed for JSON files for blueprint, indicators
-    ports:
-      - '5000:5000'
     logging:
       driver: journald
     networks:
@@ -46,7 +44,7 @@ services:
     command: ['/usr/local/bin/arq', 'api.worker.WorkerSettings']
     volumes:
       - user_upload:/tmp/se-reports
-      - /data/sa:/home/app/data
+      - /data/se:/home/app/data
       - ../../api:/home/app/api # main API
       - ../../analysis:/home/app/analysis # needed for analysis utils
       - ../../constants:/home/app/constants # needed for JSON files for blueprint, indicators
