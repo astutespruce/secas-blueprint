@@ -41,6 +41,7 @@ from api.summary_unit_report import create_summary_unit_report
 from api.settings import (
     LOGGING_LEVEL,
     REDIS,
+    REDIS_QUEUE,
     API_TOKEN,
     API_SECRET,
     TEMP_DIR,
@@ -185,7 +186,12 @@ async def custom_report_endpoint(
     try:
         redis = await arq.create_pool(REDIS)
         job = await redis.enqueue_job(
-            "create_custom_report", filename, dataset, layer, name=name
+            "create_custom_report",
+            filename,
+            dataset,
+            layer,
+            name=name,
+            _queue_name=REDIS_QUEUE,
         )
         return {"job": job.job_id}
 
@@ -203,7 +209,9 @@ async def huc12_report_endpoint(unit_id: str, token: APIKey = Depends(get_token)
 
     try:
         redis = await arq.create_pool(REDIS)
-        job = await redis.enqueue_job("create_summary_unit_report", "huc12", unit_id)
+        job = await redis.enqueue_job(
+            "create_summary_unit_report", "huc12", unit_id, _queue_name=REDIS_QUEUE
+        )
         return {"job": job.job_id}
 
     except Exception as ex:
@@ -222,7 +230,10 @@ async def marine_blocks_report_endpoint(
     try:
         redis = await arq.create_pool(REDIS)
         job = await redis.enqueue_job(
-            "create_summary_unit_report", "marine_blocks", unit_id
+            "create_summary_unit_report",
+            "marine_blocks",
+            unit_id,
+            _queue_name=REDIS_QUEUE,
         )
         return {"job": job.job_id}
 
@@ -258,7 +269,7 @@ async def job_status_endpoint(job_id: str):
     redis = await arq.create_pool(REDIS)
 
     try:
-        job = Job(job_id, redis=redis)
+        job = Job(job_id, redis=redis, _queue_name=REDIS_QUEUE)
         status = await job.status()
 
         if status == JobStatus.not_found:
@@ -302,7 +313,7 @@ async def report_pdf_endpoint(job_id: str):
     redis = await arq.create_pool(REDIS)
 
     try:
-        job = Job(job_id, redis=redis)
+        job = Job(job_id, redis=redis,_queue_name=REDIS_QUEUE)
         status = await job.status()
 
         if status == JobStatus.not_found:
@@ -348,7 +359,7 @@ async def get_jobs(credentials: HTTPBasicCredentials = Depends(security)):
     try:
         queued = [
             {"job": job.function, "args": job.args, "start": job.enqueue_time}
-            for job in await redis.queued_jobs()
+            for job in await redis.queued_jobs(queue_name=REDIS_QUEUE)
         ]
 
         results = [

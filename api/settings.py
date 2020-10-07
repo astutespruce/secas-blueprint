@@ -18,6 +18,8 @@ SENTRY_DSN = os.getenv("SENTRY_DSN")
 
 REDIS = RedisSettings(host=REDIS_HOST, port=REDIS_PORT)
 
+REDIS_QUEUE = "southeast"
+
 # retain files for 4 hours
 FILE_RETENTION = 14400
 
