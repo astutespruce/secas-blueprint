@@ -20,6 +20,8 @@ REDIS = RedisSettings(host=REDIS_HOST, port=REDIS_PORT)
 
 REDIS_QUEUE = "southeast"
 
+MAP_RENDER_THREADS = os.getenv("MAP_RENDER_THREADS", 2)
+
 # retain files for 4 hours
 FILE_RETENTION = 14400
 

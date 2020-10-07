@@ -20,12 +20,12 @@ from analysis.constants import (
     URBAN_LEGEND,
     SLR_LEGEND,
 )
+from api.settings import MAP_RENDER_THREADS
 
 
 WIDTH = 740
 HEIGHT = 440
 PADDING = 5
-THREADS = 6
 
 
 src_dir = Path("data/inputs")
@@ -53,7 +53,7 @@ def render_raster_map(bounds, scale, basemap_image, aoi_image, id, path, colors)
 async def render_raster_maps(
     bounds, scale, basemap_image, aoi_image, indicators, urban, slr
 ):
-    executor = ThreadPoolExecutor(max_workers=THREADS)
+    executor = ThreadPoolExecutor(max_workers=MAP_RENDER_THREADS)
     loop = asyncio.get_event_loop()
 
     base_args = (bounds, scale, basemap_image, aoi_image)

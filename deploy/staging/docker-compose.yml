@@ -16,6 +16,8 @@ services:
         'uvicorn.workers.UvicornWorker',
         '--name',
         'uvicorn',
+        '--workers',
+        '1', # TODO: make this higher on production
         '-b',
         ':5000',
         'api.api:app',
