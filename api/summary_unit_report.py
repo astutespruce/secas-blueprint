@@ -53,7 +53,7 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
     maps, scale = await render_maps(
         results["bounds"],
         summary_unit_id=unit_id,
-        indicators=results["indicators"],
+        # indicators=results["indicators"],
         urban=has_urban,
         slr=has_slr,
         ownership=has_ownership,

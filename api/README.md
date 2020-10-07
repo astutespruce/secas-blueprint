@@ -2,7 +2,7 @@
 
 ## Overview
 
-Use case: user uploads shapefile (AOI) representing a small area, this generates a custom PDF report including maps and summaries of overlap with Blueprint and indicators.
+Use case: user uploads shapefile (AOI) representing a small area, this generates a custom PDF report including maps and summaries of overlap with Blueprint and other data.
 
 
 ## Starting background jobs and API server

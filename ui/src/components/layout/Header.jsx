@@ -99,7 +99,7 @@ const Header = () => {
               </Flex>
             </Link>
           </Flex>
-          {/* {breakpoint >= 1 && <HeaderButtons />} */}
+          {breakpoint >= 1 && <HeaderButtons />}
         </>
       )}
     </Flex>

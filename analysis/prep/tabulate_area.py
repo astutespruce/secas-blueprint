@@ -1,6 +1,6 @@
 """
 Calculate statistics for each HUC12 and marine lease block using
-the Blueprint, indicators, SLR, Urbanization, and ownership datasets.
+the Blueprint, SLR, Urbanization, and ownership datasets.
 """
 
 import csv
@@ -64,7 +64,7 @@ units = gp.read_feather(huc12_filename, columns=["id", "geometry"]).set_index("i
 # # transform to pandas Series instead of GeoSeries to get pygeos geometries for iterators below
 geometries = pd.Series(units.geometry.values.data, index=units.index)
 
-### Calculate counts of each category in blueprint and indicators and put into a DataFrame
+### Calculate counts of each category in blueprint and inputs and put into a DataFrame
 counts = []
 index = []
 
@@ -229,7 +229,7 @@ units = gp.read_feather(marine_filename, columns=["id", "geometry"]).set_index("
 geometries = pd.Series(units.geometry.values.data, index=units.index)
 
 
-### Calculate counts of each category in blueprint and indicators and put into a DataFrame
+### Calculate counts of each category in blueprint and inputs and put into a DataFrame
 counts = []
 index = []
 for id, geometry in Bar(

@@ -23,8 +23,6 @@ from analysis.lib.raster import (
 
 
 src_dir = Path("data/inputs")
-indicators_dir = src_dir / "indicators"
-continuous_indicator_dir = Path("data/continuous_indicators")
 blueprint_filename = src_dir / "se_blueprint2020.tif"
 bp_inputs_filename = src_dir / "input_areas.tif"
 urban_dir = src_dir / "threats/urban"
