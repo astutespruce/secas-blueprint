@@ -17,7 +17,9 @@ const Protection = ({ protection }) => {
     })
   )
 
-  const remainder = 100 - sum(bars.map(({ percent }) => percent))
+  const total = sum(bars.map(({ percent }) => Math.min(percent, 100)))
+
+  const remainder = 100 - total
   if (remainder > 0) {
     bars.push({
       id: 'not_conserved',
@@ -38,6 +40,16 @@ const Protection = ({ protection }) => {
       ))}
 
       <Text sx={{ color: 'grey.7', fontSize: 1 }}>
+      {total > 100 ? (
+          <>
+          Note: due to overlapping protected areas compiled from multiple sources
+          and designations, the sum of areas in above categories is more than 100% of
+          this area.
+          <br/>
+          <br/>
+          </>
+        ) : null}
+
         Land and marine protectection status is derived from the{' '}
         <OutboundLink to="https://www.sciencebase.gov/catalog/item/5f186a2082cef313ed843257">
           Protected Areas Database of the United States

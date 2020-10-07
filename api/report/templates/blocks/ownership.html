@@ -97,6 +97,14 @@
             </tr>
         </tbody>
     </table>
+
+    {%if protection_acres > results.acres %}
+        <p class="note">
+            Note: due to overlapping protected areas compiled from multiple sources
+            and designations, the sum of areas in above categories is more than 100% of
+            this area.
+        </p>
+    {% endif %}
 </div>
 </div>
 {% endif %}
@@ -166,14 +174,14 @@
             {% endfor %}
 
             {% with gap=results.acres - protection_acres %}
-            {% if gap %}
-                <tr class="remainder-row">
-                    <td class="label">Not conserved</td>
-                    <td class="acres">{{gap|format_number}}</td>
-                    <td class="percent">{{(100 * gap / results.acres)|format_percent}}%</td>
-                </tr>
-            {% endif %}
-        {% endwith %}
+                {% if gap %}
+                    <tr class="remainder-row">
+                        <td class="label">Not conserved</td>
+                        <td class="acres">{{gap|format_number}}</td>
+                        <td class="percent">{{(100 * gap / results.acres)|format_percent}}%</td>
+                    </tr>
+                {% endif %}
+            {% endwith %}
 
             <tr class="total-row">
                 <td class="align-right">Total area</td>
@@ -182,6 +190,14 @@
             </tr>
         </tbody>
     </table>
+
+    {%if protection_acres > results.acres %}
+        <p class="note">
+            Note: due to overlapping protected areas compiled from multiple sources
+            and designations, the sum of areas in above categories is more than 100% of
+            this area.
+        </p>
+    {% endif %}
 </div>
 </div>
 {% endif %}

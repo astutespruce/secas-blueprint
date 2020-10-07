@@ -6,7 +6,7 @@ export const config = {
   bounds: [-106.66188036, 17.92676033, -65.22106481, 40.638801],
   maxBounds: [-180, -80, 180, 80],
   minZoom: 0,
-  maxZoom: 16,
+  maxZoom: 14,
 }
 
 export const sources = {
@@ -15,7 +15,7 @@ export const sources = {
     // tiles are at 512, but using 256 forces higher resolution
     tileSize: 256,
     minzoom: 0,
-    maxzoom: 14,
+    maxzoom: 13,
     bounds: [-106.66188036, 17.92676033, -65.22106481, 40.638801],
     tiles: [`${tileHost}/services/se_blueprint2020/tiles/{z}/{x}/{y}.png`],
   },
