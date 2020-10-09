@@ -19,5 +19,12 @@
         "color": "#f5f5ff",
         "borderColor": "#c2c2ff",
         "indicators": []
+    },
+    {
+        "id": "other",
+        "label": "Other ecosystems or multiple ecosystems",
+        "color": "#EEE",
+        "borderColor": "#DDD",
+        "indicators": []
     }
 ]

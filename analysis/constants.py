@@ -88,3 +88,10 @@ SLR_LEGEND = [
     {"label": "5", "color": "#80C9FF"},
     {"label": "≥ 6 feet", "color": "#BFE9FF"},
 ]
+
+
+# in DATA_CRS
+# everything is on a 0 - 6 range (0 is NODATA)
+CHAT_CATEGORIES = [0, 1, 2, 3, 4, 5, 6]
+OKCHAT_BOUNDS = [-622242.1977, 1171575.80999999, 142996.3598, 1574946.4713]
+TXCHAT_BOUNDS = [-1001835.1092, 310419.3859, 238110.7568, 1519532.92749999]

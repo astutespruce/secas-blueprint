@@ -30,8 +30,8 @@ df = df.loc[df.InputOverlapAreasSECAS_InputUsedIn2020.notnull()].copy()
 # making valid takes a really long time, and probably not necessary
 # df["geometry"] = pg.make_valid(df.geometry.values.data)
 df["inputs"] = df.InputOverlapAreasSECAS_InputUsedIn2020.str.lower().apply(
-    lambda x: x.replace("tx chat", "chat")
-    .replace("ok chat", "chat")
+    lambda x: x.replace("tx chat", "txchat")
+    .replace("ok chat", "okchat")
     .replace(" ", "")
     .replace(";", ",")
 )
@@ -56,7 +56,7 @@ df = df.join(
 )
 
 write_dataframe(df, bnd_dir / "input_areas.gpkg", driver="GPKG")
-
+df.to_feather(bnd_dir / 'input_areas.feather')
 
 # Rasterize to match the blueprint
 
@@ -66,6 +66,7 @@ df.geometry = df.geometry.values.data
 # convert to pairs of GeoJSON , value
 shapes = df.apply(lambda row: (to_dict(row.geometry), row.value), axis=1)
 
+print("Rasterizing inputs...")
 with rasterio.open(blueprint_filename) as src:
     data = rasterize(
         shapes.values, src.shape, transform=src.transform, dtype="uint8", fill=255

@@ -23,11 +23,14 @@ from analysis.constants import (
     DATA_CRS,
     GEO_CRS,
     M2_ACRES,
+    ACRES_PRECISION,
+    INPUTS,
 )
 from analysis.lib.stats import (
     extract_blueprint_area,
     extract_urbanization_area,
     extract_slr_area,
+    summarize_chat,
 )
 
 
@@ -38,6 +41,8 @@ ownership_filename = data_dir / "inputs/boundaries/ownership.feather"
 county_filename = data_dir / "inputs/boundaries/counties.feather"
 parca_filename = data_dir / "inputs/boundaries/parca.feather"
 slr_bounds_filename = data_dir / "inputs/threats/slr/slr_bounds.feather"
+chat_dir = data_dir / "inputs/indicators/chat"
+
 
 if DEBUG:
     debug_dir = Path("/tmp")
@@ -213,6 +218,38 @@ df.to_feather(out_dir / "counties.feather")
 
 if DEBUG:
     df.to_csv(huc12_debug_dir / "counties.csv", index=False)
+
+### OK / TX CHAT
+
+for state in ["ok", "tx"]:
+    print(f"Calculating overlap with {state} CHAT...")
+    chat = gp.read_feather(chat_dir / f"{state}chat.feather")
+    fields = ["chatrank"] + [e["id"] for e in INPUTS[f"{state}chat"]["indicators"]]
+
+    chat_results = summarize_chat(units, chat, fields=fields)
+    area_results = chat_results["acres"]
+    avg_results = chat_results["avg"]
+
+    results = pd.DataFrame(chat_results["total_acres"].rename("total_acres"))
+
+    # bare indicator IDs are averages
+    avg_results.columns = [f"{state}chat_{field}" for field in fields]
+
+    results = results.join(avg_results).fillna(0)
+
+    for field in fields:
+        # convert array to columns
+        s = area_results[field].apply(pd.Series)
+        s.columns = [f"{state}chat_{field}_{c}" for c in s.columns]
+
+        # drop any that are all 0; these are not present
+        s = s.drop(columns=s.columns[s.max() == 0].tolist())
+        results = results.join(s)
+
+    results.reset_index().to_feather(out_dir / f"{state}chat.feather")
+
+    if DEBUG:
+        results.to_csv(huc12_debug_dir / f"{state}chat.csv", index_label="id")
 
 
 #########################################################################
