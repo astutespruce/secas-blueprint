@@ -1,8 +1,17 @@
-import { hasWindow } from 'util/dom'
+import { hasWindow, saveToStorage, encodeParams } from 'util/dom'
 import { captureException } from 'util/log'
 import config from '../../../gatsby-config'
 
-const { apiToken } = config.siteMetadata
+const {
+  apiToken,
+  msFormURL,
+  msFormEmail,
+  msFormName,
+  msFormOrg,
+  msFormUse,
+  msFormAreaName,
+  msFormFileName,
+} = config.siteMetadata
 let { apiHost } = config.siteMetadata
 
 const pollInterval = 1000 // milliseconds; 1 second
@@ -131,5 +140,54 @@ const pollJob = async (jobId, onProgress) => {
   return {
     error:
       'timeout while creating report.  Your area of interest may be too big.',
+  }
+}
+
+export const submitUserInfo = async (userInfo) => {
+  const { userEmail, userName, userOrg, userUse, areaName, fileName } = userInfo
+  console.log(
+    'submit user info',
+    userEmail,
+    userName,
+    userOrg,
+    userUse,
+    areaName,
+    fileName
+  )
+
+  // mapping of form fields to form field IDs in MS form
+  const questionIds = {
+    userEmail: msFormEmail,
+    userName: msFormName,
+    userOrg: msFormOrg,
+    userUse: msFormUse,
+    areaName: msFormAreaName,
+    fileName: msFormFileName,
+  }
+
+  const answers = Object.entries(questionIds).map(([field, questionId]) => ({
+    questionId,
+    answer1: userInfo[field],
+  }))
+
+  try {
+    // in no-cors mode, we can submit but not receive content
+    await fetch(msFormURL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: encodeParams({ answers: JSON.stringify(answers) }),
+    })
+
+    saveToStorage('reportForm', {
+      userEmail,
+      userName,
+      userOrg,
+      userUse,
+    })
+  } catch (ex) {
+    console.error('Could not submit user info to MS Form', userInfo)
   }
 }

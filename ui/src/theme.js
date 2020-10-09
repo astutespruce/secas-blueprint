@@ -92,6 +92,11 @@ export default {
     primary: {
       cursor: 'pointer',
     },
+    disabled: {
+      cursor: 'not-allowed',
+      color: 'grey.7',
+      bg: 'blue.1',
+    },
     secondary: {
       cursor: 'pointer',
       color: 'grey.9',
@@ -131,7 +136,25 @@ export default {
   forms: {
     input: {
       outline: 'none',
+      border: '1px solid',
       borderColor: 'grey.3',
+      borderRadius: '0.25rem',
+      py: '0.25rem',
+      px: '0.5rem',
+      '&:active,&:focus': {
+        borderColor: 'primary',
+      },
+    },
+    textarea: {
+      fontFamily: 'body',
+      fontSize: 1,
+      lineHeight: 1.3,
+      outline: 'none',
+      border: '1px solid',
+      borderColor: 'grey.3',
+      borderRadius: '0.25rem',
+      py: '0.25rem',
+      px: '0.5rem',
       '&:active,&:focus': {
         borderColor: 'primary',
       },

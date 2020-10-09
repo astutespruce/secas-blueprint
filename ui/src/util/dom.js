@@ -19,3 +19,15 @@ export const encodeParams = (obj) => {
     .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(obj[key])}`)
     .join('&')
 }
+
+export const saveToStorage = (key, data) => {
+    if (!hasWindow) return
+
+    window.localStorage.setItem(key, JSON.stringify(data))
+  }
+
+  export const getFromStorage = (key) => {
+    if (!hasWindow) return null
+
+    return JSON.parse(window.localStorage.getItem(key))
+  }

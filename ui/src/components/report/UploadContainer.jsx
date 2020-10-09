@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import {
   Box,
+  Button,
   Container,
   Divider,
   Heading,
@@ -12,7 +13,7 @@ import {
 import { Download, CheckCircle } from '@emotion-icons/fa-solid'
 
 import { captureException } from 'util/log'
-import { uploadFile } from './api'
+import { uploadFile, submitUserInfo } from './api'
 import UploadForm from './UploadForm'
 import UploadError from './UploadError'
 
@@ -84,6 +85,10 @@ const UploadContainer = () => {
     setState((prevState) => ({ ...prevState, error: null }))
   }, [])
 
+  const handleSubmitUserInfo = useCallback((userInfo) => {
+    submitUserInfo(userInfo)
+  }, [])
+
   return (
     <Container sx={{ py: '2rem' }}>
       {reportURL != null && (
@@ -129,13 +134,20 @@ const UploadContainer = () => {
       ) : (
         <>
           {error != null ? (
-            <UploadError error={error} handleClearError={handleClearError} />
-          ) : null}
-
-          <UploadForm
-            onFileChange={handleClearError}
-            onCreateReport={handleCreateReport}
-          />
+            <>
+              <UploadError error={error} handleClearError={handleClearError} />
+              <Divider />
+              <Flex sx={{ justifyContent: 'center' }}>
+                <Button onClick={handleClearError}>Try again?</Button>
+              </Flex>
+            </>
+          ) : (
+            <UploadForm
+              onFileChange={handleClearError}
+              onCreateReport={handleCreateReport}
+              onSubmitUserInfo={handleSubmitUserInfo}
+            />
+          )}
         </>
       )}
     </Container>

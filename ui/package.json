@@ -37,6 +37,7 @@
     "react-dom": "^16.13.1",
     "react-dropzone": "^11.1.0",
     "react-helmet": "^6.1.0",
+    "react-hook-form": "^6.9.2",
     "react-minimal-pie-chart": "^8.0.1",
     "react-query": "^2.15.4",
     "stylelint": "^13.7.2",

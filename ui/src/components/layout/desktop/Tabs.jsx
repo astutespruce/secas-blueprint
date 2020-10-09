@@ -11,7 +11,7 @@ const tabs = [
 ]
 
 const unitTabs = [
-  { id: 'unit-blueprint', label: 'Blueprint' },
+  { id: 'unit-blueprint', label: 'Priorities' },
   // { id: 'unit-indicators', label: 'Indicators' },
   { id: 'unit-threats', label: 'Threats' },
   { id: 'unit-partners', label: 'Partners' },

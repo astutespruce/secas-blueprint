@@ -1,14 +1,28 @@
 /* eslint-disable no-alert */
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { useDropzone } from 'react-dropzone'
+import { useFormContext } from 'react-hook-form'
 import { Flex, Heading, Text } from 'theme-ui'
 import { transparentize } from '@theme-ui/color'
 import { Download } from '@emotion-icons/fa-solid'
 
 const MAXSIZE_MB = 100
 
-const DropZone = ({ onDrop }) => {
+const DropZone = ({ name }) => {
+  const { register, unregister, setValue } = useFormContext()
+
+  /**
+   * Register the file drop input; this must be done in useEffect since
+   * it is dynamically constructed.
+   */
+  useEffect(() => {
+    register(name, { required: true })
+    return () => {
+      unregister(name)
+    }
+  }, [register, unregister, name])
+
   /**
    * Validate the files provided by the user.
    * They must be only one file, must be right MIME type and be less than the
@@ -20,14 +34,14 @@ const DropZone = ({ onDrop }) => {
         if (rejectedFiles.length > 1) {
           alert(
             `Multiple files not allowed: ${rejectedFiles
-              .map(({ file: { name } }) => name)
+              .map(({ file: { name: filename } }) => filename)
               .join(', ')}`
           )
           return
         }
 
         const {
-          file: { name },
+          file: { name: filename },
           size,
         } = rejectedFiles[0]
 
@@ -36,20 +50,22 @@ const DropZone = ({ onDrop }) => {
         const mb = size / 1e6
         if (mb >= MAXSIZE_MB) {
           alert(
-            `File is too large: ${name} (${Math.round(mb).toLocaleString()} MB)`
+            `File is too large: ${filename} (${Math.round(
+              mb
+            ).toLocaleString()} MB)`
           )
           return
         }
 
-        alert(`File type not supported: ${name}`)
+        alert(`File type not supported: ${filename}`)
         return
       }
 
       if (acceptedFiles && acceptedFiles.length > 0) {
-        onDrop(acceptedFiles[0])
+        setValue(name, acceptedFiles[0], { shouldValidate: true })
       }
     },
-    [onDrop]
+    [name, setValue]
   )
 
   const {
@@ -60,7 +76,8 @@ const DropZone = ({ onDrop }) => {
     isDragReject,
   } = useDropzone({
     onDrop: handleDrop,
-    accept: 'application/zip',
+    accept:
+      'application/zip,application/x-zip-compressed,application/x-compressed,multipart/x-zip,.zip',
     maxSize: MAXSIZE_MB * 1e6,
     multiple: false,
   })
@@ -97,7 +114,7 @@ const DropZone = ({ onDrop }) => {
           backgroundColor: transparentize(color, 0.9),
         }}
       >
-        <input {...getInputProps()} />
+        <input name={name} {...getInputProps()} />
         <Download size="2rem" style={{ marginBottom: '1rem' }} />
         <Heading as="h3" sx={{ mb: '1rem' }}>
           Drop your zip file here
@@ -115,7 +132,7 @@ const DropZone = ({ onDrop }) => {
 }
 
 DropZone.propTypes = {
-  onDrop: PropTypes.func.isRequired,
+  name: PropTypes.string.isRequired,
 }
 
 export default DropZone

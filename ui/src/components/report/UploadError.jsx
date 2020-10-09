@@ -1,9 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Alert, Close, Box, Text } from 'theme-ui'
+import { Alert, Close, Box, Text, Link } from 'theme-ui'
 import { ExclamationTriangle } from '@emotion-icons/fa-solid'
 
-import { OutboundLink } from 'components/link'
 import config from '../../../gatsby-config'
 
 const { contactEmail } = config.siteMetadata
@@ -27,12 +26,9 @@ const UploadError = ({ error, handleClearError }) => {
             <Text as="span">
               Please try again. If that does not work, try a different file or
             </Text>{' '}
-            <OutboundLink
-              sx={{ color: '#FFF' }}
-              href={`mailto:${contactEmail}`}
-            >
+            <Link sx={{ color: '#FFF' }} href={`mailto:${contactEmail}`}>
               Contact Us
-            </OutboundLink>
+            </Link>
             .
           </>
         )}
