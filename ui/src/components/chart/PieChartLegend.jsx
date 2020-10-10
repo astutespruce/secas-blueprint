@@ -4,9 +4,11 @@ import { Box, Flex, Text } from 'theme-ui'
 
 import { formatPercent } from 'util/format'
 
-const PieChartLegend = ({ elements }) => {
+const PieChartLegend = ({ title, elements }) => {
   return (
     <Box sx={{ ml: '2rem', minWidth: '140px' }}>
+      {title ? <Text>{title}</Text> : null}
+
       {elements.map(({ color, value, label }) => (
         <Flex
           key={label}
@@ -39,6 +41,7 @@ const PieChartLegend = ({ elements }) => {
 }
 
 PieChartLegend.propTypes = {
+  title: PropTypes.string,
   elements: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string.isRequired,
@@ -46,6 +49,10 @@ PieChartLegend.propTypes = {
       value: PropTypes.number.isRequired,
     })
   ).isRequired,
+}
+
+PieChartLegend.defaultProps = {
+  title: null,
 }
 
 export default PieChartLegend

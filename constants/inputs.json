@@ -42,15 +42,15 @@
     "version": "",
     "dataURL": "http://www.wafwachat.org/",
     "infoURL": "http://www.wafwachat.org/",
-    "valueField": "chatrank",
+    "valueField": "okchatrank",
     "valueLabel": "CHAT Rank",
     "values": [
-      { "value": 1, "label": "most crucial", "color": "#003994" },
-      { "value": 2, "label": "", "color": "#1D49A8" },
-      { "value": 3, "label": "", "color": "#445EC3" },
-      { "value": 4, "label": "", "color": "#6C7ED4" },
-      { "value": 5, "label": "", "color": "#9DA4E8" },
-      { "value": 6, "label": "least crucial", "color": "#D7D6FE" }
+      { "value": 1, "label": "1 (most crucial)", "color": "#003994" },
+      { "value": 2, "label": "2", "color": "#1D49A8" },
+      { "value": 3, "label": "3", "color": "#445EC3" },
+      { "value": 4, "label": "4", "color": "#6C7ED4" },
+      { "value": 5, "label": "5", "color": "#9DA4E8" },
+      { "value": 6, "label": "6 (least crucial)", "color": "#D7D6FE" }
     ],
     "domain": [1, 6],
     "indicators": [
@@ -174,15 +174,15 @@
     "version": "",
     "dataURL": "http://www.wafwachat.org/",
     "infoURL": "http://www.wafwachat.org/",
-    "valueField": "chat_rank",
+    "valueField": "txchatrank",
     "valueLabel": "CHAT Rank",
     "values": [
-      { "value": 1, "label": "most crucial", "color": "#003994" },
-      { "value": 2, "label": "", "color": "#1D49A8" },
-      { "value": 3, "label": "", "color": "#445EC3" },
-      { "value": 4, "label": "", "color": "#6C7ED4" },
-      { "value": 5, "label": "", "color": "#9DA4E8" },
-      { "value": 6, "label": "least crucial", "color": "#D7D6FE" }
+      { "value": 1, "label": "1 (most crucial)", "color": "#003994" },
+      { "value": 2, "label": "2", "color": "#1D49A8" },
+      { "value": 3, "label": "3", "color": "#445EC3" },
+      { "value": 4, "label": "4", "color": "#6C7ED4" },
+      { "value": 5, "label": "5", "color": "#9DA4E8" },
+      { "value": 6, "label": "6 (least crucial)", "color": "#D7D6FE" }
     ],
     "domain": [1, 6],
     "indicators": [

@@ -58,6 +58,13 @@ export const unpackFeatureData = (properties) => {
   values.blueprint = values.blueprint ? applyFactor(values.blueprint, 0.1) : []
   values.inputs = values.inputs ? applyFactor(values.inputs, 0.1) : []
 
+  values.okchatrank = values.okchatrank
+    ? applyFactor(values.okchatrank, 0.1)
+    : []
+  values.txchatrank = values.txchatrank
+    ? applyFactor(values.txchatrank, 0.1)
+    : []
+
   // merge avg and percents together
   if (values.indicators) {
     Object.keys(values.indicators).forEach((k) => {
@@ -92,6 +99,12 @@ export const unpackFeatureData = (properties) => {
       values.protection[k] *= 0.1
     })
   }
+
+  // rename specific fields for easier use later
+  values.blueprintAcres = values.blueprint_total
+  values.analysisAcres = values.shape_mask
+  values.unitType = values.type
+  values.unitAcres = values.acres
 
   console.log('transformed feature data', values)
 

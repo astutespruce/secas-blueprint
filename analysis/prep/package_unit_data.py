@@ -34,7 +34,7 @@ import numpy as np
 import pandas as pd
 
 
-from analysis.constants import URBAN_YEARS, DEBUG
+from analysis.constants import URBAN_YEARS, DEBUG, INPUTS, CHAT_CATEGORIES
 from analysis.lib.attribute_encoding import encode_values, delta_encode_values
 
 
@@ -162,7 +162,6 @@ counties = pd.Series(
     name="counties",
 )
 
-
 huc12 = (
     huc12.join(blueprint_df, how="left")
     .join(slr, how="left")
@@ -173,8 +172,31 @@ huc12 = (
 )
 
 huc12.blueprint_total = huc12.blueprint_total.fillna(0)
-huc12 = huc12.fillna("")
 
+
+### Convert CHAT
+for state in ["ok", "tx"]:
+    chat = (
+        pd.read_feather(working_dir / f"{state}chat.feather")
+        .set_index("id")
+        .join(huc12.acres)
+    )
+    # fields = ["chatrank"] + [e["id"] for e in INPUTS[f"{state}chat"]["indicators"]]
+
+    # extract CHAT overall rank
+    rank_fields = [f"chatrank_{i}" for i in CHAT_CATEGORIES]
+    for field in rank_fields:
+        if not field in chat.columns:
+            chat[field] = 0
+
+    chat_rank_percent = encode_values(chat[rank_fields], chat.acres, 1000).rename(
+        f"{state}chatrank"
+    )
+
+    huc12 = huc12.join(chat_rank_percent, how="left")
+
+
+huc12 = huc12.fillna("")
 
 ### Read in marine data
 working_dir = results_dir / "marine_blocks"

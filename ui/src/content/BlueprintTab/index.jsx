@@ -5,16 +5,13 @@ import { PieChart } from 'react-minimal-pie-chart'
 import { Box, Flex, Divider, Heading, Text } from 'theme-ui'
 
 import { PieChartLegend } from 'components/chart'
-import {
-  useBlueprintCategories,
-  useInputAreas,
-} from 'components/data'
-import { OutboundLink } from 'components/link'
+import { useBlueprintCategories, useInputAreas } from 'components/data'
 
 import { sum, sortByFunc } from 'util/data'
-import { formatPercent } from 'util/format'
 
-const BlueprintTab = ({ blueprint, inputs }) => {
+import InputArea from './InputArea'
+
+const BlueprintTab = ({ blueprint, inputs, ...selectedUnit }) => {
   const { all: priorityCategories } = useBlueprintCategories()
   const { inputs: inputCategories, values: inputValues } = useInputAreas()
 
@@ -57,8 +54,21 @@ const BlueprintTab = ({ blueprint, inputs }) => {
       if (inputBins[id] !== undefined) {
         inputBins[id].percent += percent
       } else {
+        const category = inputCategories[id]
+        const { valueField, values } = category
         inputBins[id] = {
-          ...inputCategories[id],
+          ...category,
+          values:
+            valueField && selectedUnit[valueField]
+              ? values.map(({ value, ...rest }) => {
+                  const percents = selectedUnit[valueField]
+                  return {
+                    value,
+                    ...rest,
+                    percent: percents[value] || 0,
+                  }
+                })
+              : [],
           percent,
         }
       }
@@ -82,14 +92,13 @@ const BlueprintTab = ({ blueprint, inputs }) => {
             radius={chartWidth / 4 - 2}
             style={{
               width: chartWidth,
-              flex: '0 1 auto',
+              flex: '0 0 auto',
             }}
           />
 
           <PieChartLegend elements={blueprintChartData} />
         </Flex>
       </Box>
-
 
       {binnedInputs.length > 0 ? (
         <>
@@ -99,71 +108,9 @@ const BlueprintTab = ({ blueprint, inputs }) => {
               Blueprint Inputs
             </Heading>
 
-            {binnedInputs.map(
-              ({
-                id,
-                label,
-                version,
-                percent,
-                infoURL,
-                dataURL,
-                viewerURL,
-                viewerName,
-              }) => (
-                <Box
-                  key={id}
-                  sx={{
-                    '&:not(:first-of-type)': {
-                      mt: '2rem',
-                    },
-                  }}
-                >
-                  <Flex sx={{ justifyContent: 'space-between', width: '100%' }}>
-                    <Text sx={{ fontWeight: 'bold' }}>
-                      {label} {version && version}
-                    </Text>
-                    <Text
-                      sx={{ fontSize: 0, color: 'grey.7', textAlign: 'right' }}
-                    >
-                      {formatPercent(percent)}% of area
-                    </Text>
-                  </Flex>
-
-                  {infoURL || dataURL || viewerURL ? (
-                    <Box sx={{ ml: '1rem' }}>
-                      {infoURL || dataURL ? (
-                        <Flex>
-                          {infoURL ? (
-                            <OutboundLink to={infoURL}>
-                              more information
-                            </OutboundLink>
-                          ) : null}
-
-                          {infoURL && dataURL ? (
-                            <Text as="span">&nbsp;&nbsp;|&nbsp;&nbsp;</Text>
-                          ) : null}
-                          {dataURL ? (
-                            <OutboundLink to={dataURL}>
-                              access data
-                            </OutboundLink>
-                          ) : null}
-                        </Flex>
-                      ) : null}
-
-                      {viewerURL ? (
-                        <Text sx={{ fontSize: 0, mt: '0.5rem' }}>
-                          More detailed information for Blueprint indicators is
-                          available in the{' '}
-                          <OutboundLink to={viewerURL}>
-                            {viewerName}
-                          </OutboundLink>
-                        </Text>
-                      ) : null}
-                    </Box>
-                  ) : null}
-                </Box>
-              )
-            )}
+            {binnedInputs.map((input) => (
+              <InputArea key={input.id} {...input} />
+            ))}
 
             {hasInputOverlaps ? (
               <Text sx={{ fontSize: 0, color: 'grey.7', mt: '1rem' }}>

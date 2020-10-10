@@ -20,13 +20,12 @@ const ThreatsTab = ({ unitType, slr, urban }) => {
   return (
     <Box sx={{ py: '2rem', pl: '1rem', pr: '2rem' }}>
       <Box as="section">
-        <Heading as="h3">Sea Level Rise</Heading>
-        {slr && slr.length > 0 ? (
-          <SLR percents={slr} />
+        <Heading as="h3">Current and Projected Urbanization</Heading>
+        {urban && urban.length > 0 ? (
+          <Urban percents={urban} />
         ) : (
           <Text sx={{ color: 'grey.7' }}>
-            This watershed is not impacted by up to 6 feet of projected sea
-            level rise.
+            This watershed is not impacted by projected urbanization up to 2100.
           </Text>
         )}
       </Box>
@@ -34,12 +33,13 @@ const ThreatsTab = ({ unitType, slr, urban }) => {
       <Divider variant="styles.hr.light" sx={{ my: '3rem' }} />
 
       <Box as="section">
-        <Heading as="h3">Current and Projected Urbanization</Heading>
-        {urban && urban.length > 0 ? (
-          <Urban percents={urban} />
+        <Heading as="h3">Sea Level Rise</Heading>
+        {slr && slr.length > 0 ? (
+          <SLR percents={slr} />
         ) : (
           <Text sx={{ color: 'grey.7' }}>
-            This watershed is not impacted by projected urbanization up to 2100.
+            This watershed is not impacted by up to 6 feet of projected sea
+            level rise.
           </Text>
         )}
       </Box>

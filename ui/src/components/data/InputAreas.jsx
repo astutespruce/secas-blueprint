@@ -16,6 +16,13 @@ export const useInputAreas = () => {
             infoURL
             viewerURL
             viewerName
+            valueField
+            valueLabel
+            values {
+              value
+              label
+              color
+            }
           }
         }
       }

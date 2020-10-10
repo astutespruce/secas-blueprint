@@ -148,12 +148,10 @@ const MapContainer = () => {
     }
   } else {
     const {
-      type: unitType,
-      acres: unitAcres,
-      blueprint,
-      inputs,
-      blueprint_total: blueprintAcres,
-      shape_mask: analysisAcres,
+      unitType,
+      unitAcres,
+      blueprintAcres,
+      analysisAcres,
       indicators,
       slr,
       urban,
@@ -170,13 +168,7 @@ const MapContainer = () => {
         break
       }
       case 'unit-blueprint': {
-        content = (
-          <BlueprintTab
-            blueprint={blueprint}
-            inputs={inputs}
-            blueprintAcres={blueprintAcres}
-          />
-        )
+        content = <BlueprintTab {...selectedUnit} />
         break
       }
       case 'unit-indicators': {
