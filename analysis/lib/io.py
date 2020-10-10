@@ -22,6 +22,7 @@ def write_raster(filename, data, transform, crs, nodata):
         "count": 1,
         "crs": crs,
         "transform": transform,
+        "compress": "lzw",
     }
     with rasterio.open(filename, "w", **meta) as out:
         out.write(data, 1)

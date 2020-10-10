@@ -28,6 +28,9 @@ const InputArea = ({
       sx={{
         '&:not(:first-of-type)': {
           mt: '2rem',
+          pt: '2rem',
+          borderTop: '1px solid',
+          borderTopColor: 'grey.1',
         },
       }}
     >

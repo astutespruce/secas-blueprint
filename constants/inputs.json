@@ -313,6 +313,8 @@
     "label": "Gulf Hypoxia Precision Conservation Blueprint",
     "version": "1.5",
     "dataURL": "https://databasin.org/groups/d52de40d017e4ce98c3914dba1bc4ee7",
-    "infoURL": "https://lccnetwork.org/resource/mississippi-river-basingulf-hypoxia-initiative-precision-conservation-blueprint"
+    "infoURL": "https://lccnetwork.org/resource/mississippi-river-basingulf-hypoxia-initiative-precision-conservation-blueprint",
+    "valueField": null,
+    "valueLabel": "Conservation and Watershed Interests (sum)"
   }
 ]
