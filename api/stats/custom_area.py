@@ -6,7 +6,13 @@ import numpy as np
 import pygeos as pg
 import geopandas as gp
 
-from analysis.pygeos_util import to_crs, to_dict, sjoin, sjoin_geometry, intersection
+from analysis.lib.pygeos_util import (
+    to_crs,
+    to_dict,
+    sjoin,
+    sjoin_geometry,
+    intersection,
+)
 from analysis.constants import (
     BLUEPRINT,
     INPUTS,
@@ -30,7 +36,6 @@ boundary_filename = data_dir / "boundaries/se_boundary.feather"
 county_filename = data_dir / "boundaries/counties.feather"
 ownership_filename = data_dir / "boundaries/ownership.feather"
 slr_bounds_filename = data_dir / "threats/slr/slr_bounds.feather"
-
 
 
 class CustomArea(object):
@@ -108,6 +113,7 @@ class CustomArea(object):
         idx = sjoin_geometry(self.geometry, slr_bounds.values.data, how="inner")
         if not len(idx):
             return None
+
         idx = idx.index.unique()
 
         slr_results = extract_slr_area(
@@ -123,7 +129,9 @@ class CustomArea(object):
         return {"slr_acres": slr_results["shape_mask"], "slr": slr}
 
     def get_counties(self):
-        counties = gp.read_feather(county_filename)[["geometry", "FIPS", "state", "county"]]
+        counties = gp.read_feather(county_filename)[
+            ["geometry", "FIPS", "state", "county"]
+        ]
 
         df = (
             sjoin(pd.DataFrame({"geometry": self.geometry}), counties)[

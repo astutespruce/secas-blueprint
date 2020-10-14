@@ -7,7 +7,7 @@ import geopandas as gp
 import numpy as np
 from pyogrio import read_dataframe, write_dataframe
 
-from analysis.pygeos_util import intersection
+from analysis.lib.pygeos_util import intersection
 
 from analysis.constants import DATA_CRS, INPUTS, CHAT_CATEGORIES
 
@@ -36,9 +36,9 @@ print("Reading CHAT data...")
 df = (
     read_dataframe(src_dir / "WAFWA_CHAT_Lower48.shp")
     .set_crs(DATA_CRS)
-    .drop(columns=['ls_cond'])
+    .drop(columns=["ls_cond"])
     .rename(columns=field_map)
-    .rename(columns={'chat_rank': 'chatrank'})
+    .rename(columns={"chat_rank": "chatrank"})
 )
 
 for col in chat_fields:
@@ -51,7 +51,7 @@ df = df.drop(columns=["hexagon_id"])
 points = pg.centroid(df.geometry.values.data)
 tree = pg.STRtree(points)
 
-for state in ["ok", "tx"][1:]: # FIXME
+for state in ["ok", "tx"]:
     print(f"Processing {state} CHAT...")
     input_area = pg.union_all(
         inputs_df.loc[inputs_df.inputs == f"{state}chat"].geometry.values.data
@@ -60,8 +60,8 @@ for state in ["ok", "tx"][1:]: # FIXME
     state_df = df.iloc[ix].reset_index(drop=True)
 
     # lcon not present for TX
-    if state=='tx':
-        state_df = state_df.drop(columns=['lcon'])
+    if state == "tx":
+        state_df = state_df.drop(columns=["lcon"])
 
     # for proofing
     write_dataframe(state_df, gis_dir / f"{state}chat.gpkg", driver="GPKG")
@@ -73,7 +73,6 @@ for state in ["ok", "tx"][1:]: # FIXME
     for col in chat_fields:
         if not col in state_df.columns:
             continue
-
 
         state_df[col] = pd.Series(
             pd.Categorical.from_codes(

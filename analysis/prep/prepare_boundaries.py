@@ -11,7 +11,7 @@ import warnings
 warnings.filterwarnings("ignore", message=".*initial implementation of Parquet.*")
 
 from analysis.constants import GEO_CRS, DATA_CRS
-from analysis.pygeos_util import explode
+from analysis.lib.pygeos_util import explode
 
 
 src_dir = Path("source_data")

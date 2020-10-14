@@ -7,7 +7,7 @@ import rasterio
 from rasterio.features import rasterize
 from pyogrio import read_dataframe, write_dataframe
 
-from analysis.pygeos_util import explode, to_dict
+from analysis.lib.pygeos_util import explode, to_dict
 
 
 src_dir = Path("source_data/blueprint")
@@ -56,7 +56,7 @@ df = df.join(
 )
 
 write_dataframe(df, bnd_dir / "input_areas.gpkg", driver="GPKG")
-df.to_feather(bnd_dir / 'input_areas.feather')
+df.to_feather(bnd_dir / "input_areas.feather")
 
 # Rasterize to match the blueprint
 

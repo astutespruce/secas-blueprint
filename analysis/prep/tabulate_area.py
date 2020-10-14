@@ -15,7 +15,7 @@ import numpy as np
 from progress.bar import Bar
 import pygeos as pg
 
-from analysis.pygeos_util import to_crs, to_pygeos, sjoin, to_dict, intersection
+from analysis.lib.pygeos_util import sjoin, to_dict, intersection
 from analysis.constants import (
     DEBUG,
     BLUEPRINT,
@@ -25,19 +25,21 @@ from analysis.constants import (
     M2_ACRES,
     ACRES_PRECISION,
     INPUTS,
+    GULF_HYPOXIA_BOUNDS,
 )
 from analysis.lib.stats import (
     extract_blueprint_area,
     extract_urbanization_area,
     extract_slr_area,
+    summarize_ownership,
     summarize_chat,
+    extract_gulf_hypoxia_area,
 )
 
 
 data_dir = Path("data")
 huc12_filename = data_dir / "inputs/summary_units/huc12.feather"
 marine_filename = data_dir / "inputs/summary_units/marine_blocks.feather"
-ownership_filename = data_dir / "inputs/boundaries/ownership.feather"
 county_filename = data_dir / "inputs/boundaries/counties.feather"
 parca_filename = data_dir / "inputs/boundaries/parca.feather"
 slr_bounds_filename = data_dir / "inputs/threats/slr/slr_bounds.feather"
@@ -69,7 +71,7 @@ units = gp.read_feather(huc12_filename, columns=["id", "geometry"]).set_index("i
 # # transform to pandas Series instead of GeoSeries to get pygeos geometries for iterators below
 geometries = pd.Series(units.geometry.values.data, index=units.index)
 
-### Calculate counts of each category in blueprint and inputs and put into a DataFrame
+### Calculate area of each category in blueprint and inputs and put into a DataFrame
 counts = []
 index = []
 
@@ -103,7 +105,7 @@ if DEBUG:
     results.to_csv(huc12_debug_dir / "blueprint.csv", index_label="id")
 
 
-### Calculate counts for urbanization
+### Calculate area for urbanization
 index = []
 results = []
 for huc12, geometry in Bar(
@@ -129,7 +131,7 @@ if DEBUG:
     df.to_csv(huc12_debug_dir / "urban.csv", index=False)
 
 
-### Calculate counts for SLR
+### Calculate area for SLR
 # find the indexes of the geometries that overlap with SLR bounds; these are the only
 # ones that need to be analyzed for SLR impacts
 slr_bounds = gp.read_feather(slr_bounds_filename).geometry
@@ -168,36 +170,7 @@ if DEBUG:
 
 ### Calculate overlap with ownership and protection
 print("Calculating overlap with land ownership and protection")
-ownership = gp.read_feather(
-    ownership_filename, columns=["geometry", "Own_Type", "GAP_Sts"]
-)
-
-df = intersection(units, ownership)
-df["acres"] = pg.area(df.geometry_right.values.data) * M2_ACRES
-
-# drop areas that touch but have no overlap
-df = df.loc[df.acres > 0].copy()
-
-by_owner = (
-    df[["Own_Type", "acres"]]
-    .groupby(by=[df.index.get_level_values(0), "Own_Type"])
-    .acres.sum()
-    .astype("float32")
-    .round()
-    .reset_index()
-    .rename(columns={"level_0": "id"})
-)
-
-by_protection = (
-    df[["GAP_Sts", "acres"]]
-    .groupby(by=[df.index.get_level_values(0), "GAP_Sts"])
-    .acres.sum()
-    .astype("float32")
-    .round()
-    .reset_index()
-    .rename(columns={"level_0": "id"})
-)
-
+by_owner, by_protection = summarize_ownership(units)
 by_owner.to_feather(out_dir / "ownership.feather")
 by_protection.to_feather(out_dir / "protection.feather")
 
@@ -219,8 +192,7 @@ df.to_feather(out_dir / "counties.feather")
 if DEBUG:
     df.to_csv(huc12_debug_dir / "counties.csv", index=False)
 
-### OK / TX CHAT
-
+### Process OK / TX
 for state in ["ok", "tx"]:
     print(f"Calculating overlap with {state} CHAT...")
     chat = gp.read_feather(chat_dir / f"{state}chat.feather")
@@ -233,14 +205,12 @@ for state in ["ok", "tx"]:
     results = pd.DataFrame(chat_results["total_acres"].rename("total_acres"))
 
     # bare indicator IDs are averages
-    avg_results.columns = [f"{state}chat_{field}" for field in fields]
-
     results = results.join(avg_results).fillna(0)
 
     for field in fields:
         # convert array to columns
         s = area_results[field].apply(pd.Series)
-        s.columns = [f"{state}chat_{field}_{c}" for c in s.columns]
+        s.columns = [f"{field}_{c}" for c in s.columns]
 
         # drop any that are all 0; these are not present
         s = s.drop(columns=s.columns[s.max() == 0].tolist())
@@ -252,7 +222,45 @@ for state in ["ok", "tx"]:
         results.to_csv(huc12_debug_dir / f"{state}chat.csv", index_label="id")
 
 
-#########################################################################
+### Calculate area for Gulf Hypoxia
+# only for those HUC12s that intersect with bounds of Gulf Hypoxia dataset
+tree = pg.STRtree(geometries)
+ix = tree.query(pg.box(*GULF_HYPOXIA_BOUNDS))
+gh_geometries = geometries.iloc[ix]
+
+index = []
+results = []
+for huc12, geometry in Bar(
+    "Calculating Gulf Hypoxia area for HUC12", max=len(gh_geometries)
+).iter(gh_geometries.iteritems()):
+    zone_results = extract_gulf_hypoxia_area(
+        [to_dict(geometry)], bounds=pg.total_bounds(geometry)
+    )
+    if zone_results is None:
+        continue
+
+    index.append(huc12)
+    results.append(zone_results)
+
+count_df = pd.DataFrame(results, index=index)
+
+results = count_df[["shape_mask"]].copy()
+results.index.name = "id"
+
+# each column is an array of counts for each
+for col in count_df.columns.difference(["shape_mask"]):
+    s = count_df[col].apply(pd.Series).fillna(0)
+    s.columns = [f"{col}_{c}" for c in s.columns]
+    results = results.join(s)
+
+results = results.reset_index()
+results.to_feather(out_dir / "gulf_hypoxia.feather")
+
+if DEBUG:
+    results.to_csv(huc12_debug_dir / "gulf_hypoxia.csv", index=False)
+
+
+# #########################################################################
 
 
 ### Marine blocks
@@ -266,7 +274,7 @@ units = gp.read_feather(marine_filename, columns=["id", "geometry"]).set_index("
 geometries = pd.Series(units.geometry.values.data, index=units.index)
 
 
-### Calculate counts of each category in blueprint and inputs and put into a DataFrame
+### Calculate area of each category in blueprint and inputs and put into a DataFrame
 counts = []
 index = []
 for id, geometry in Bar(
@@ -308,36 +316,7 @@ print(
 
 ### Calculate overlap with ownership and protection
 print("Calculating overlap with land ownership and protection")
-ownership = gp.read_feather(
-    ownership_filename, columns=["geometry", "Own_Type", "GAP_Sts"]
-)
-
-df = intersection(units, ownership)
-df["acres"] = pg.area(df.geometry_right.values.data) * M2_ACRES
-
-# drop areas that touch but have no overlap
-df = df.loc[df.acres > 0].copy()
-
-by_owner = (
-    df[["Own_Type", "acres"]]
-    .groupby(by=[df.index.get_level_values(0), "Own_Type"])
-    .acres.sum()
-    .astype("float32")
-    .round()
-    .reset_index()
-    .rename(columns={"level_0": "id"})
-)
-
-by_protection = (
-    df[["GAP_Sts", "acres"]]
-    .groupby(by=[df.index.get_level_values(0), "GAP_Sts"])
-    .acres.sum()
-    .astype("float32")
-    .round()
-    .reset_index()
-    .rename(columns={"level_0": "id"})
-)
-
+by_owner, by_protection = summarize_ownership(units)
 by_owner.to_feather(out_dir / "ownership.feather")
 by_protection.to_feather(out_dir / "protection.feather")
 

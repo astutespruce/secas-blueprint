@@ -26,8 +26,8 @@
     "id": "ms",
     "label": "Middle Southeast Blueprint",
     "version": "2020",
-    "dataURL": "https://www.sciencebase.gov/catalog/item/5daa394ae4b09fd3b0c9cf53",
-    "infoURL": "https://www.sciencebase.gov/catalog/item/5daa394ae4b09fd3b0c9cf53"
+    "dataURL": "https://www.sciencebase.gov/catalog/item/5dc5040ee4b069579758510b",
+    "infoURL": "https://www.sciencebase.gov/catalog/item/5dc5040ee4b069579758510b"
   },
   {
     "id": "nn",
@@ -312,9 +312,20 @@
     "id": "gh",
     "label": "Gulf Hypoxia Precision Conservation Blueprint",
     "version": "1.5",
-    "dataURL": "https://databasin.org/groups/d52de40d017e4ce98c3914dba1bc4ee7",
+    "dataURL": "https://databasin.org/datasets/57035c20ecca461092ac80f174bbd241",
     "infoURL": "https://lccnetwork.org/resource/mississippi-river-basingulf-hypoxia-initiative-precision-conservation-blueprint",
-    "valueField": null,
-    "valueLabel": "Conservation and Watershed Interests (sum)"
+    "valueField": "gulf_hypoxia",
+    "valueLabel": "Conservation and Watershed Interests (sum)",
+    "values": [
+      { "value": 0, "label": "0 (low)", "color": "#3DA0CF" },
+      { "value": 1, "label": "1", "color": "#98C3B2" },
+      { "value": 2, "label": "2", "color": "#C5DD9A" },
+      { "value": 3, "label": "3", "color": "#DEEE89" },
+      { "value": 4, "label": "4", "color": "#F0FA7B" },
+      { "value": 5, "label": "5", "color": "#F4E86D" },
+      { "value": 6, "label": "6", "color": "#F7C358" },
+      { "value": 7, "label": "7", "color": "#F6742D" },
+      { "value": 8, "label": "8 (high)", "color": "#F02A0B" }
+    ]
   }
 ]

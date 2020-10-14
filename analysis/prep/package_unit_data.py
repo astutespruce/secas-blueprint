@@ -174,6 +174,16 @@ huc12 = (
 huc12.blueprint_total = huc12.blueprint_total.fillna(0)
 
 
+### Add in other inputs
+gh_df = pd.read_feather(working_dir / "gulf_hypoxia.feather").set_index("id")
+gh_cols = [c for c in gh_df.columns if c.startswith("gh_")]
+gh_percent = encode_values(gh_df[gh_cols], gh_df.shape_mask, 1000).rename(
+    "gulf_hypoxia"
+)
+
+huc12 = huc12.join(gh_percent, how="left")
+
+
 ### Convert CHAT
 for state in ["ok", "tx"]:
     chat = (

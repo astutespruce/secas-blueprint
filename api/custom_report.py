@@ -18,7 +18,7 @@ from api.settings import LOGGING_LEVEL, TEMP_DIR
 from api.stats import CustomArea
 from api.progress import set_progress
 
-from analysis.pygeos_util import to_crs
+from analysis.lib.pygeos_util import to_crs
 from analysis.constants import DATA_CRS, GEO_CRS
 
 MAX_DIM = 5  # degrees

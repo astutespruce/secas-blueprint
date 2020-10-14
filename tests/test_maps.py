@@ -10,7 +10,7 @@ from pyogrio.geopandas import read_dataframe
 
 from analysis.constants import BLUEPRINT_COLORS, DATA_CRS, MAP_CRS, GEO_CRS, DATA_CRS
 
-from analysis.pygeos_util import to_crs, to_dict
+from analysis.lib.pygeos_util import to_crs, to_dict
 from api.report.map import render_maps
 from api.stats import SummaryUnits, CustomArea
 

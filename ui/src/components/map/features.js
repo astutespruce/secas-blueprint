@@ -58,6 +58,9 @@ export const unpackFeatureData = (properties) => {
   values.blueprint = values.blueprint ? applyFactor(values.blueprint, 0.1) : []
   values.inputs = values.inputs ? applyFactor(values.inputs, 0.1) : []
 
+  values.gulf_hypoxia = values.gulf_hypoxia
+    ? applyFactor(values.gulf_hypoxia, 0.1)
+    : []
   values.okchatrank = values.okchatrank
     ? applyFactor(values.okchatrank, 0.1)
     : []
