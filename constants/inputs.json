@@ -34,7 +34,49 @@
     "label": "North Atlantic Nature's Network Conservation Design",
     "version": "2017",
     "dataURL": "https://nalcc.databasin.org/datasets/3d670fad4c924e7ba2ae02f04a128256",
-    "infoURL": "http://naturesnetwork.org/"
+    "infoURL": "http://naturesnetwork.org/",
+    "valueField": "natures_network",
+    "valueLabel": "CHAT Rank",
+    "values": [
+      { "value": 0, "label": "Not a priority", "color": null },
+      {
+        "value": 1,
+        "label": "Terrestrial, Aquatic, and Imperiled Species Cores Overlap",
+        "color": "#00F2FF"
+      },
+      {
+        "value": 2,
+        "label": "Terrestrial and Imperiled Species Cores Overlap",
+        "color": "#B58383"
+      },
+      {
+        "value": 3,
+        "label": "Terrestrial and Aquatic Cores Overlap",
+        "color": "#7093D3"
+      },
+      {
+        "value": 4,
+        "label": "Aquatic and Imperiled Species Cores Overlap",
+        "color": "#5CB7A5"
+      },
+      {
+        "value": 5,
+        "label": "Terrestrial Cores",
+        "color": "#C09FC9"
+      },
+      { "value": 6, "label": "Aquatic Cores", "color": "#BFE3F7" },
+      {
+        "value": 7,
+        "label": "Core Habitat for Imperiled Species",
+        "color": "#FABE7B"
+      },
+      {
+        "value": 8,
+        "label": "Terrestrial Core to Core Connectors",
+        "color": "#C5DBBA"
+      }
+    ],
+    "domain": [8, 1]
   },
   {
     "id": "okchat",

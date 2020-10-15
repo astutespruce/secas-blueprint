@@ -21,9 +21,12 @@ factors = [2, 4, 8, 16, 32]
 src_dir = Path("data/inputs")
 blueprint_filename = src_dir / "se_blueprint2020.tif"
 input_areas_filename = src_dir / "input_areas.tif"
-gh_filename = src_dir / "indicators/gulf_hypoxia/gulf_hypoxia.tif"
+
 urban_dir = src_dir / "threats/urban"
 
+indicators_dir = src_dir / "indicators"
+gh_filename = indicators_dir / "gulf_hypoxia/gulf_hypoxia.tif"
+natures_network_filename = indicators_dir / "natures_network/natures_network.tif"
 
 for filename in [blueprint_filename, input_areas_filename]:
     print(f"Processing {filename.name}...")
@@ -35,7 +38,7 @@ for year in URBAN_YEARS:
     with rasterio.open(urban_dir / f"urban_{year}.tif", "r+") as src:
         src.build_overviews(factors, Resampling.nearest)
 
-for filename in [gh_filename]:
+for filename in [gh_filename, natures_network_filename]:
     print(f"Processing {filename.name}...")
     with rasterio.open(filename, "r+") as src:
         src.build_overviews(factors, Resampling.nearest)

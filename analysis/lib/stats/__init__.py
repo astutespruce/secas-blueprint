@@ -9,3 +9,4 @@ from analysis.lib.stats.caribbean import (
     summarize_caribbean_huc12,
 )
 from analysis.lib.stats.gulf_hypoxia import extract_gulf_hypoxia_area
+from analysis.lib.stats.natures_network import extract_natures_network_area

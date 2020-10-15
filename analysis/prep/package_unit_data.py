@@ -185,7 +185,20 @@ gh_percent = encode_values(gh_df[gh_cols], gh_df.shape_mask, 1000).rename(
 # Caribbean
 car_df = pd.read_feather(working_dir / "caribbean.feather").set_index("id")
 
-huc12 = huc12.join(gh_percent, how="left").join(car_df, how="left")
+
+# Nature's Network
+nn_df = pd.read_feather(working_dir / "natures_network.feather").set_index("id")
+nn_cols = [c for c in nn_df.columns if c.startswith("nn_")]
+nn_percent = encode_values(nn_df[nn_cols], nn_df.shape_mask, 1000).rename(
+    "natures_network"
+)
+
+
+huc12 = (
+    huc12.join(gh_percent, how="left")
+    .join(car_df, how="left")
+    .join(nn_percent, how="left")
+)
 
 
 ### Convert CHAT

@@ -12,10 +12,15 @@
 /source_data/slr/*
 /source_data/urban/*
 /source_data/summary_units/*
+
+/source_data/caribbean/*
 /source_data/chat/*
 /source_data/fl/*
 /source_data/gulf_hypoxia/*
 /source_data/midSE/*
+/source_data/natures_network/*
+/source_data/naturescape/*
+/source_data/tnc_resilience/*
 
 
 /data/*

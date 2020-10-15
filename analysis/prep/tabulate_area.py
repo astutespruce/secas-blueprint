@@ -27,6 +27,7 @@ from analysis.constants import (
     INPUTS,
     GULF_HYPOXIA_BOUNDS,
     CARIBBEAN_BOUNDS,
+    NATURES_NETWORK_BOUNDS,
 )
 from analysis.lib.stats import (
     extract_blueprint_area,
@@ -36,6 +37,7 @@ from analysis.lib.stats import (
     summarize_chat,
     extract_gulf_hypoxia_area,
     summarize_caribbean_huc12,
+    extract_natures_network_area,
 )
 
 
@@ -268,6 +270,44 @@ df.to_feather(out_dir / "caribbean.feather")
 
 if DEBUG:
     df.to_csv(huc12_debug_dir / "caribbean.csv", index=False)
+
+
+### Calculate area for Nature's Network
+# only for those HUC12s that intersect with bounds of Nature's Network dataset
+tree = pg.STRtree(geometries)
+ix = tree.query(pg.box(*NATURES_NETWORK_BOUNDS))
+nn_geometries = geometries.iloc[ix]
+
+index = []
+results = []
+for huc12, geometry in Bar(
+    "Calculating Nature's Network area for HUC12", max=len(nn_geometries)
+).iter(nn_geometries.iteritems()):
+    zone_results = extract_natures_network_area(
+        [to_dict(geometry)], bounds=pg.total_bounds(geometry)
+    )
+    if zone_results is None:
+        continue
+
+    index.append(huc12)
+    results.append(zone_results)
+
+count_df = pd.DataFrame(results, index=index)
+
+results = count_df[["shape_mask"]].copy()
+results.index.name = "id"
+
+# each column is an array of counts for each
+for col in count_df.columns.difference(["shape_mask"]):
+    s = count_df[col].apply(pd.Series).fillna(0)
+    s.columns = [f"{col}_{c}" for c in s.columns]
+    results = results.join(s)
+
+results = results.reset_index()
+results.to_feather(out_dir / "natures_network.feather")
+
+if DEBUG:
+    results.to_csv(huc12_debug_dir / "natures_network.csv", index=False)
 
 
 #########################################################################
