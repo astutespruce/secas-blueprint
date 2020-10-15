@@ -80,7 +80,6 @@ blueprint_df = (
     .join(inputs_percent)
 )
 blueprint_df.blueprint_total = blueprint_df.blueprint_total.fillna(0)
-blueprint_df = blueprint_df.fillna("")
 
 
 ### Convert SLR and urban to integer acres, and delta encode
@@ -175,13 +174,18 @@ huc12.blueprint_total = huc12.blueprint_total.fillna(0)
 
 
 ### Add in other inputs
+
+# Gulf Hypoxia
 gh_df = pd.read_feather(working_dir / "gulf_hypoxia.feather").set_index("id")
 gh_cols = [c for c in gh_df.columns if c.startswith("gh_")]
 gh_percent = encode_values(gh_df[gh_cols], gh_df.shape_mask, 1000).rename(
     "gulf_hypoxia"
 )
 
-huc12 = huc12.join(gh_percent, how="left")
+# Caribbean
+car_df = pd.read_feather(working_dir / "caribbean.feather").set_index("id")
+
+huc12 = huc12.join(gh_percent, how="left").join(car_df, how="left")
 
 
 ### Convert CHAT
@@ -205,8 +209,6 @@ for state in ["ok", "tx"]:
 
     huc12 = huc12.join(chat_rank_percent, how="left")
 
-
-huc12 = huc12.fillna("")
 
 ### Read in marine data
 working_dir = results_dir / "marine_blocks"
@@ -303,13 +305,15 @@ marine = (
     .join(protection, how="left")
 )
 marine.blueprint_total = marine.blueprint_total.fillna(0)
-marine = marine.fillna("")
 
-out = (
-    huc12.reset_index()
-    .append(marine.reset_index(), ignore_index=True, sort=False)
-    .fillna("")
-)
+out = huc12.reset_index().append(marine.reset_index(), ignore_index=True, sort=False)
+
+
+# fill specifics fields as needed
+out.carrank = out.carrank.fillna(0).astype("uint8")
+
+# everything else is blank strings
+out = out.fillna("")
 
 
 if DEBUG:

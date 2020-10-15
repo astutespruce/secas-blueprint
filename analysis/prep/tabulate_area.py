@@ -26,6 +26,7 @@ from analysis.constants import (
     ACRES_PRECISION,
     INPUTS,
     GULF_HYPOXIA_BOUNDS,
+    CARIBBEAN_BOUNDS,
 )
 from analysis.lib.stats import (
     extract_blueprint_area,
@@ -34,6 +35,7 @@ from analysis.lib.stats import (
     summarize_ownership,
     summarize_chat,
     extract_gulf_hypoxia_area,
+    summarize_caribbean_huc12,
 )
 
 
@@ -41,7 +43,6 @@ data_dir = Path("data")
 huc12_filename = data_dir / "inputs/summary_units/huc12.feather"
 marine_filename = data_dir / "inputs/summary_units/marine_blocks.feather"
 county_filename = data_dir / "inputs/boundaries/counties.feather"
-parca_filename = data_dir / "inputs/boundaries/parca.feather"
 slr_bounds_filename = data_dir / "inputs/threats/slr/slr_bounds.feather"
 chat_dir = data_dir / "inputs/indicators/chat"
 
@@ -259,8 +260,17 @@ results.to_feather(out_dir / "gulf_hypoxia.feather")
 if DEBUG:
     results.to_csv(huc12_debug_dir / "gulf_hypoxia.csv", index=False)
 
+### Calculate overlap with Caribbean priority watersheds
+print("Calculating overlap with Caribbean priority watersheds...")
+df = summarize_caribbean_huc12(units).reset_index()
 
-# #########################################################################
+df.to_feather(out_dir / "caribbean.feather")
+
+if DEBUG:
+    df.to_csv(huc12_debug_dir / "caribbean.csv", index=False)
+
+
+#########################################################################
 
 
 ### Marine blocks

@@ -28,6 +28,8 @@ def summarize_ownership(df):
         ownership_filename, columns=["geometry", "Own_Type", "GAP_Sts"]
     )
 
+    index_name = df.index.name
+
     df = intersection(df, ownership)
     df["acres"] = pg.area(df.geometry_right.values.data) * M2_ACRES
 
@@ -41,8 +43,9 @@ def summarize_ownership(df):
         .astype("float32")
         .round()
         .reset_index()
-        .rename(columns={"level_0": "id"})
+        .set_index("level_0")
     )
+    by_owner.index.name = index_name
 
     by_protection = (
         df[["GAP_Sts", "acres"]]
@@ -51,7 +54,8 @@ def summarize_ownership(df):
         .astype("float32")
         .round()
         .reset_index()
-        .rename(columns={"level_0": "id"})
+        .set_index("level_0")
     )
+    by_protection.index.name = index_name
 
     return by_owner, by_protection
