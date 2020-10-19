@@ -1,8 +1,13 @@
-# SECAS Southeast Conservation Blueprint Inputs - Appalachian NatureScape
+# SECAS Southeast Conservation Blueprint Inputs - Appalachian NatureScape & TNC Resilient and Connected Landscapes
 
 The AppLCC NatureScape dataset was combined with the TNC Resilience dataset
 
-Downloaded 10/14/2020 from USFWS staff MS Teams site.
+AppLCC NatureScape downloaded 10/14/2020 from USFWS staff MS Teams site.
+USFWS staff provided a GeoTIFF version of the TNC resilience dataset on 10/19/2020.
+
+This dataset may be available from:
+TNC Resilience downloaded 10/19/2020 from: https://www.conservationgateway.org/ConservationPractices/ClimateChange/Pages/RCN-Downloads.aspx
+(it is HUGE - >90GB, did not compare).
 
 Processed using `analysis/prep/prepare_naturescape.py`.
 
@@ -25,3 +30,8 @@ Pixels that were not classified as High in the mapping steps above were classifi
 ## TODO:
 
 use individual categories as indicators
+
+### Possible indicator datasets
+
+https://nalcc.databasin.org/datasets/5d4512416b864ee88da9ed591ee7daea
+https://www.conservationgateway.org/ConservationPractices/ClimateChange/Pages/RCN-Downloads.aspx
