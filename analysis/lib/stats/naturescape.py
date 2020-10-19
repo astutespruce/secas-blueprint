@@ -12,14 +12,16 @@ from analysis.constants import URBAN_YEARS, ACRES_PRECISION, M2_ACRES, INPUTS
 from analysis.lib.raster import (
     boundless_raster_geometry_mask,
     extract_count_in_geometry,
+    detect_data,
 )
 
-src_dir = Path("data/inputs/indicators/gulf_hypoxia")
-gulf_hypoxia_filename = src_dir / "gulf_hypoxia.tif"
+src_dir = Path("data/inputs/indicators/naturescape")
+ns_filename = src_dir / "naturescape.tif"
+ns_mask_filename = src_dir / "naturescape_mask.tif"
 
 
-def extract_gulf_hypoxia_area(geometries, bounds):
-    """Calculate the area of overlap between geometries and Gulf Hypoxia dataset.
+def extract_naturescape_area(geometries, bounds):
+    """Calculate the area of overlap between geometries and NatureScape dataset.
 
     Parameters
     ----------
@@ -28,13 +30,18 @@ def extract_gulf_hypoxia_area(geometries, bounds):
 
     Returns
     -------
-    dict or None (if does not overlap Gulf Hypoxia dataset)
+    dict or None (if does not overlap Nature's Network dataset)
     """
+
+    # prescreen to make sure data are present
+    with rasterio.open(ns_mask_filename) as src:
+        if not detect_data(src, geometries, bounds):
+            return None
 
     results = {}
 
     # create mask and window
-    with rasterio.open(gulf_hypoxia_filename) as src:
+    with rasterio.open(ns_filename) as src:
         try:
             shape_mask, transform, window = boundless_raster_geometry_mask(
                 src, geometries, bounds, all_touched=True
@@ -58,20 +65,16 @@ def extract_gulf_hypoxia_area(geometries, bounds):
     if results["shape_mask"] == 0:
         return None
 
-    max_value = INPUTS["gh"]["values"][-1]["value"]
+    max_value = INPUTS["app"]["values"][-1]["value"]
 
     counts = extract_count_in_geometry(
-        gulf_hypoxia_filename,
-        shape_mask,
-        window,
-        np.arange(max_value + 1),
-        boundless=True,
+        ns_filename, shape_mask, window, np.arange(max_value + 1), boundless=True
     )
 
     # there is no overlap
     if counts.max() == 0:
         return None
 
-    results["gh"] = (counts * cellsize).round(ACRES_PRECISION).astype("float32")
+    results["app"] = (counts * cellsize).round(ACRES_PRECISION).astype("float32")
 
     return results

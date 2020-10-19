@@ -61,9 +61,19 @@ export const unpackFeatureData = (properties) => {
   values.gulf_hypoxia = values.gulf_hypoxia
     ? applyFactor(values.gulf_hypoxia, 0.1)
     : []
+
+  values.natures_network = values.natures_network
+    ? applyFactor(values.natures_network, 0.1)
+    : []
+
+  values.naturescape = values.naturescape
+    ? applyFactor(values.naturescape, 0.1)
+    : []
+
   values.okchatrank = values.okchatrank
     ? applyFactor(values.okchatrank, 0.1)
     : []
+
   values.txchatrank = values.txchatrank
     ? applyFactor(values.txchatrank, 0.1)
     : []

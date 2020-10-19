@@ -10,3 +10,4 @@ from analysis.lib.stats.caribbean import (
 )
 from analysis.lib.stats.gulf_hypoxia import extract_gulf_hypoxia_area
 from analysis.lib.stats.natures_network import extract_natures_network_area
+from analysis.lib.stats.naturescape import extract_naturescape_area

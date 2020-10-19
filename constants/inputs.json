@@ -36,47 +36,39 @@
     "dataURL": "https://nalcc.databasin.org/datasets/3d670fad4c924e7ba2ae02f04a128256",
     "infoURL": "http://naturesnetwork.org/",
     "valueField": "natures_network",
-    "valueLabel": "CHAT Rank",
+    "valueLabel": "Priority",
     "values": [
-      { "value": 0, "label": "Not a priority", "color": null },
+      {
+        "value": 0,
+        "label": "Not a priority",
+        "color": "#EEE"
+      },
       {
         "value": 1,
-        "label": "Terrestrial, Aquatic, and Imperiled Species Cores Overlap",
+        "label": "1: overlap between one or more Terrestrial, Aquatic, and Imperiled Species Cores",
         "color": "#00F2FF"
       },
       {
         "value": 2,
-        "label": "Terrestrial and Imperiled Species Cores Overlap",
-        "color": "#B58383"
+        "label": "2: Terrestrial or Aquatic Cores",
+        "color": "#C09FC9"
       },
       {
         "value": 3,
-        "label": "Terrestrial and Aquatic Cores Overlap",
-        "color": "#7093D3"
-      },
-      {
-        "value": 4,
-        "label": "Aquatic and Imperiled Species Cores Overlap",
-        "color": "#5CB7A5"
-      },
-      {
-        "value": 5,
-        "label": "Terrestrial Cores",
-        "color": "#C09FC9"
-      },
-      { "value": 6, "label": "Aquatic Cores", "color": "#BFE3F7" },
-      {
-        "value": 7,
-        "label": "Core Habitat for Imperiled Species",
-        "color": "#FABE7B"
-      },
-      {
-        "value": 8,
-        "label": "Terrestrial Core to Core Connectors",
+        "label": "3: Terrestrial Core to Core Connectors",
         "color": "#C5DBBA"
       }
     ],
-    "domain": [8, 1]
+    "domain": [8, 1],
+    "indicators": [
+      {
+        "id": "",
+        "field": "",
+        "ecosystem": "",
+        "label": "",
+        "description": ""
+      }
+    ]
   },
   {
     "id": "okchat",
@@ -348,10 +340,36 @@
   },
   {
     "id": "app",
-    "label": "Appalachian NatureScape Design",
+    "label": "Appalachian NatureScape Design and TNC Resilient and Connected Landscapes Prioritized Network",
     "version": "",
     "dataURL": "https://nalcc.databasin.org/datasets/22cda640930c4692a9dc1413b201ccc1",
-    "infoURL": "http://applcc.org/plan-design/conservation-design"
+    "infoURL": "http://applcc.org/plan-design/conservation-design",
+    "valueField": "naturescape",
+    "valueLabel": "",
+    "values": [
+      { "value": 0, "label": "Not a priority area", "color": "#EEE" },
+      {
+        "value": 1,
+        "label": "NatureScape: local / regional cores and other important areas",
+        "color": "#464646"
+      },
+      {
+        "value": 2,
+        "label": "TNC Prioritized Network: resilient only with secured lands and resilient area with confirmed diversity",
+        "color": ""
+      },
+      {
+        "value": 3,
+        "label": "NatureScape: local and regional connectors",
+        "color": "#9B9B9B"
+      },
+      {
+        "value": 4,
+        "label": "TNC Prioritized Network: climate corridors and climate flow zones with and without confirmed diversity",
+        "color": ""
+      }
+    ],
+    "domain": [4, 1]
   },
   {
     "id": "gh",

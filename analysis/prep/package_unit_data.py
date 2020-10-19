@@ -193,11 +193,17 @@ nn_percent = encode_values(nn_df[nn_cols], nn_df.shape_mask, 1000).rename(
     "natures_network"
 )
 
+# NatureScape
+ns_df = pd.read_feather(working_dir / "naturescape.feather").set_index("id")
+ns_cols = [c for c in ns_df.columns if c.startswith("app_")]
+ns_percent = encode_values(ns_df[ns_cols], ns_df.shape_mask, 1000).rename("naturescape")
+
 
 huc12 = (
     huc12.join(gh_percent, how="left")
     .join(car_df, how="left")
     .join(nn_percent, how="left")
+    .join(ns_percent, how="left")
 )
 
 

@@ -77,10 +77,10 @@ data[mask == 0] = nodata
 # Remap the raw values to priorities
 table = read_dataframe(
     src_dir / "NaturesNetwork_conservdesign_180625.tif.vat.dbf",
-    columns=["Value", "Descrpt"],
+    columns=["Value", "Priority"],
 )
 table = table.loc[table.Value > 0].copy()
-table["NewValue"] = table.Descrpt.str[:1].astype("uint8")
+table["NewValue"] = table.Priority.astype("uint8")
 
 for row in table.itertuples():
     data[data == row.Value] = row.NewValue

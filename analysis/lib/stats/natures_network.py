@@ -16,7 +16,8 @@ from analysis.lib.raster import (
 )
 
 src_dir = Path("data/inputs/indicators/natures_network")
-natures_network_filename = src_dir / "natures_network.tif"
+nn_filename = src_dir / "natures_network.tif"
+nn_mask_filename = src_dir / "natures_network_mask.tif"
 
 
 def extract_natures_network_area(geometries, bounds):
@@ -32,10 +33,15 @@ def extract_natures_network_area(geometries, bounds):
     dict or None (if does not overlap Nature's Network dataset)
     """
 
+    # prescreen to make sure data are present
+    with rasterio.open(nn_mask_filename) as src:
+        if not detect_data(src, geometries, bounds):
+            return None
+
     results = {}
 
     # create mask and window
-    with rasterio.open(natures_network_filename) as src:
+    with rasterio.open(nn_filename) as src:
         try:
             shape_mask, transform, window = boundless_raster_geometry_mask(
                 src, geometries, bounds, all_touched=True
@@ -62,11 +68,7 @@ def extract_natures_network_area(geometries, bounds):
     max_value = INPUTS["nn"]["values"][-1]["value"]
 
     counts = extract_count_in_geometry(
-        natures_network_filename,
-        shape_mask,
-        window,
-        np.arange(max_value + 1),
-        boundless=True,
+        nn_filename, shape_mask, window, np.arange(max_value + 1), boundless=True
     )
 
     # there is no overlap
