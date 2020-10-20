@@ -2,8 +2,14 @@
 *.pyc
 *.egg-info/*
 *.zip
+/build/*
+/dist/*
 
 .env
+
+/analysis/lib/*.c
+/analysis/lib/*.so
+
 
 /source_data/ARCHIVE/*
 /source_data/blueprint/*

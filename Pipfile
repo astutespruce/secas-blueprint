@@ -9,6 +9,7 @@ pylint = "*"
 watchgod = "*"
 flake8 = "*"
 raster-tilecutter = {editable = true,path = "./../raster-tilecutter"}
+cython = "*"
 
 [packages]
 affine = "*"
