@@ -8,11 +8,13 @@ from analysis.lib.stats.counties import (
 from analysis.lib.stats.slr import summarize_by_huc12 as summarize_slr_by_huc12
 from analysis.lib.stats.urban import summarize_by_huc12 as summarize_urban_by_huc12
 
-from analysis.lib.stats.chat import summarize_by_huc12 as summarize_chat_by_huc12
+
 from analysis.lib.stats.caribbean import (
     summarize_caribbean_aoi,
     summarize_caribbean_by_huc12,
 )
+from analysis.lib.stats.chat import summarize_by_huc12 as summarize_chat_by_huc12
+from analysis.lib.stats.florida import summarize_by_huc12 as summarize_florida_by_huc12
 from analysis.lib.stats.gulf_hypoxia import (
     summarize_by_huc12 as summarize_gulf_hypoxia_by_huc12,
 )

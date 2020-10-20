@@ -4,7 +4,27 @@
     "label": "Florida Conservation Blueprint",
     "version": "1.3",
     "dataURL": "https://flcpa.databasin.org/galleries/20b5bfb654ee426b84165e9228c4009c",
-    "infoURL": "https://flcpa.databasin.org/galleries/20b5bfb654ee426b84165e9228c4009c"
+    "infoURL": "https://flcpa.databasin.org/galleries/20b5bfb654ee426b84165e9228c4009c",
+    "valueField": "fl_blueprint",
+    "valueLabel": "Conservation Priority",
+    "values": [
+      {
+        "value": 0,
+        "label": "Not a priority",
+        "color": "#EEE"
+      },
+      {
+        "value": 1,
+        "label": "P1: High Priority",
+        "color": "#00734B"
+      },
+      {
+        "value": 2,
+        "label": "P2: Medium Priority",
+        "color": "#98E600"
+      }
+    ],
+    "domain": [2, 1]
   },
   {
     "id": "flm",
@@ -17,17 +37,71 @@
     "id": "sa",
     "label": "South Atlantic Conservation Blueprint",
     "version": "2020",
-    "dataURL": "https://salcc.databasin.org/datasets/c04c8229467f49e88f8774346a17052a",
+    "dataURL": "https://salcc.databasin.org/galleries/50e3abe922a74c9e9b6d0167dd1e8f2e",
     "infoURL": "http://www.southatlanticlcc.org/blueprint/",
     "viewerURL": "https://blueprint.southatlanticlcc.org",
-    "viewerName": "South Atlantic Conservation Blueprint Simple Viewer"
+    "viewerName": "South Atlantic Conservation Blueprint Simple Viewer",
+    "valueField": "sa_blueprint",
+    "valueLabel": "Conservation Priority",
+    "values": [
+      {
+        "value": 0,
+        "label": "Not a priority",
+        "color": "#ffebc2"
+      },
+      {
+        "value": 1,
+        "label": "Corridors",
+        "color": "#686868"
+      },
+      {
+        "value": 2,
+        "label": "Medium priority",
+        "color": "#fbb4b9"
+      },
+      {
+        "value": 3,
+        "label": "High priority",
+        "color": "#c51b8a"
+      },
+      {
+        "value": 4,
+        "label": "Highest priority",
+        "color": "#49006a"
+      }
+    ]
   },
   {
     "id": "ms",
     "label": "Middle Southeast Blueprint",
     "version": "2020",
     "dataURL": "https://www.sciencebase.gov/catalog/item/5dc5040ee4b069579758510b",
-    "infoURL": "https://www.sciencebase.gov/catalog/item/5dc5040ee4b069579758510b"
+    "infoURL": "https://www.sciencebase.gov/catalog/item/5dc5040ee4b069579758510b",
+    "valueField": "midse_blueprint",
+    "valueLabel": "Conservation Value Index",
+    "values": [
+      {
+        "value": 0,
+        "label": "Not a priority",
+        "color": "#EEE"
+      },
+      {
+        "value": 1,
+        "label": "High",
+        "color": "#C1DCEE"
+      },
+      {
+        "value": 2,
+        "label": "Medium",
+        "color": "#4FAFEE"
+      },
+      {
+        "value": 3,
+        "label": "Low",
+        "color": "#fbb4b9"
+      }
+    ],
+    "domain": [3, 1]
   },
   {
     "id": "nn",
