@@ -1,6 +1,7 @@
 import math
 from pathlib import Path
 
+from progress.bar import Bar
 import numpy as np
 import pandas as pd
 import pygeos as pg
@@ -14,6 +15,7 @@ from analysis.lib.raster import (
     extract_count_in_geometry,
     detect_data,
 )
+from analysis.lib.pygeos_util import to_dict
 
 
 src_dir = Path("data/inputs/threats/urban")
@@ -114,3 +116,35 @@ def extract_urbanization_area(geometries, bounds):
         )
 
     return results
+
+
+def summarize_by_huc12(geometries, out_dir):
+    """Calculate current and projected urbanization for each decade from 2020 to
+    2100.
+
+    Parameters
+    ----------
+    geometries : Series of pygeos geometries, indexed by HUC12 id
+    out_dir : str
+    """
+
+    index = []
+    results = []
+    for huc12, geometry in Bar(
+        "Calculating Urbanization counts for HUC12", max=len(geometries)
+    ).iter(geometries.iteritems()):
+        zone_results = extract_urbanization_area(
+            [to_dict(geometry)], bounds=pg.total_bounds(geometry)
+        )
+        if zone_results is None:
+            continue
+
+        index.append(huc12)
+        results.append(zone_results)
+
+    cols = ["shape_mask", "urban"] + URBAN_YEARS
+    df = pd.DataFrame(results, index=index)[cols]
+    df = df.reset_index().rename(columns={"index": "id"}).round()
+    df.columns = [str(c) for c in df.columns]
+
+    df.to_feather(out_dir / "urban.feather")

@@ -2,11 +2,14 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import geopandas as gp
 import pygeos as pg
 
-from analysis.constants import ACRES_PRECISION, M2_ACRES
-
+from analysis.constants import ACRES_PRECISION, M2_ACRES, INPUTS
 from analysis.lib.pygeos_util import intersection
+
+
+chat_dir = Path("data/inputs/indicators/chat")
 
 
 def summarize_chat(df, chat_df, fields):
@@ -67,3 +70,33 @@ def summarize_chat(df, chat_df, fields):
 
     return results
 
+
+def summarize_by_huc12(units_df, out_dir):
+    for state in ["ok", "tx"]:
+        print(f"Calculating overlap with {state} CHAT...")
+        chat = gp.read_feather(chat_dir / f"{state}chat.feather")
+        fields = ["chatrank"] + [e["id"] for e in INPUTS[f"{state}chat"]["indicators"]]
+
+        chat_results = summarize_chat(units_df, chat, fields=fields)
+
+        if chat_results is None:
+            continue
+
+        area_results = chat_results["acres"]
+        avg_results = chat_results["avg"]
+
+        results = pd.DataFrame(chat_results["total_acres"].rename("total_acres"))
+
+        # bare indicator IDs are averages
+        results = results.join(avg_results).fillna(0)
+
+        for field in fields:
+            # convert array to columns
+            s = area_results[field].apply(pd.Series)
+            s.columns = [f"{field}_{c}" for c in s.columns]
+
+            # drop any that are all 0; these are not present
+            s = s.drop(columns=s.columns[s.max() == 0].tolist())
+            results = results.join(s)
+
+        results.reset_index().to_feather(out_dir / f"{state}chat.feather")

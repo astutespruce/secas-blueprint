@@ -8,10 +8,17 @@ import rasterio
 from rasterio.mask import raster_geometry_mask
 from rasterio.windows import Window
 
-from analysis.constants import URBAN_YEARS, ACRES_PRECISION, M2_ACRES, INPUTS
+from analysis.constants import (
+    URBAN_YEARS,
+    ACRES_PRECISION,
+    M2_ACRES,
+    INPUTS,
+    NATURESCAPE_BOUNDS,
+)
 from analysis.lib.raster import (
     boundless_raster_geometry_mask,
     extract_count_in_geometry,
+    summarize_raster_by_geometry,
     detect_data,
 )
 
@@ -20,7 +27,7 @@ ns_filename = src_dir / "naturescape.tif"
 ns_mask_filename = src_dir / "naturescape_mask.tif"
 
 
-def extract_naturescape_area(geometries, bounds):
+def extract_by_geometry(geometries, bounds):
     """Calculate the area of overlap between geometries and NatureScape dataset.
 
     Parameters
@@ -78,3 +85,21 @@ def extract_naturescape_area(geometries, bounds):
     results["app"] = (counts * cellsize).round(ACRES_PRECISION).astype("float32")
 
     return results
+
+
+def summarize_by_huc12(geometries, out_dir):
+    """Summarize by HUC12
+
+    Parameters
+    ----------
+    geometries : Series of pygeos geometries, indexed by HUC12 id
+    out_dir : str
+    """
+
+    summarize_raster_by_geometry(
+        geometries,
+        extract_by_geometry,
+        outfilename=out_dir / "naturescape.feather",
+        progress_label="Calculating NatureScape area by HUC12",
+        bounds=NATURESCAPE_BOUNDS,
+    )

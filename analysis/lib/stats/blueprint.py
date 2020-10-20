@@ -16,6 +16,7 @@ from analysis.constants import (
 from analysis.lib.raster import (
     boundless_raster_geometry_mask,
     extract_count_in_geometry,
+    summarize_raster_by_geometry,
 )
 from analysis.lib.pygeos_util import intersection
 
@@ -25,7 +26,7 @@ blueprint_filename = src_dir / "se_blueprint2020.tif"
 bp_inputs_filename = src_dir / "input_areas.tif"
 
 
-def extract_blueprint_area(geometries, bounds):
+def extract_by_geometry(geometries, bounds):
     """Calculate the area of overlap between geometries and Blueprint grids.
 
     NOTE: Blueprint and inputs are on the same grid
@@ -92,3 +93,19 @@ def extract_blueprint_area(geometries, bounds):
 
     return results
 
+
+def summarize_by_unit(geometries, out_dir):
+    """Summarize by HUC12 or marine lease block
+
+    Parameters
+    ----------
+    geometries : Series of pygeos geometries, indexed by HUC12 / marine lease block id
+    out_dir : str
+    """
+
+    summarize_raster_by_geometry(
+        geometries,
+        extract_by_geometry,
+        outfilename=out_dir / "blueprint.feather",
+        progress_label="Summarizing Blueprint and Input Areas",
+    )

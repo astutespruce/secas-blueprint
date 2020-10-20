@@ -10,14 +10,12 @@ import rasterio
 from rasterio.enums import Resampling
 from rasterio.features import rasterize
 from rasterio.vrt import WarpedVRT
-from rasterio.windows import Window, get_data_window
 
 
-from analysis.constants import DATA_CRS, INPUT_AREA_VALUES, DEBUG
+from analysis.constants import DATA_CRS, DEBUG
 from analysis.lib.io import write_raster
+from analysis.lib.input_areas import get_input_area_mask
 from analysis.lib.pygeos_util import to_dict_all
-
-values = [e["value"] for e in INPUT_AREA_VALUES if "app" in e["id"]]
 
 
 src_dir = Path("source_data/naturescape")
@@ -29,31 +27,16 @@ out_dir = data_dir / "indicators/naturescape"
 if not out_dir.exists():
     os.makedirs(out_dir)
 
+### Get input area mask
+print("Extracting NatureScape input area mask...")
+mask, transform, window = get_input_area_mask("app")
+
 inputs_df = gp.read_feather(bnd_dir / "input_areas.feather")
-
 bnd = pg.union_all(inputs_df.loc[inputs_df.value.isin(values)].geometry.values.data)
-bnd_df = gp.GeoDataFrame(geometry=[bnd], crs=inputs_df.crs)
-
-### Get window into raster for bounds of input area
-# NOTE: not using bounds of df above since it extends beyond input area
-with rasterio.open(data_dir / "input_areas.tif") as src:
-    nodata = int(src.nodata)
-    window = src.window(*pg.total_bounds(bnd))
-    window_floored = window.round_offsets(op="floor", pixel_precision=3)
-    w = math.ceil(window.width + window.col_off - window_floored.col_off)
-    h = math.ceil(window.height + window.row_off - window_floored.row_off)
-    window = Window(window_floored.col_off, window_floored.row_off, w, h)
-    window = window.intersection(Window(0, 0, src.width, src.height))
-    transform = src.window_transform(window)
-
-    data = src.read(1, window=window)
-
-mask = np.zeros(shape=data.shape, dtype="uint8")
-for value in values:
-    mask[data == value] = 1
 
 
 ### Warp TNC resilient and connected landscapes to match Blueprint input area
+print("Reading and warping TNC resilient and connected landscapes...")
 with rasterio.open(src_dir / "Resilient_and_Connected20180308.tif") as rc:
     vrt = WarpedVRT(
         rc,
@@ -63,7 +46,6 @@ with rasterio.open(src_dir / "Resilient_and_Connected20180308.tif") as rc:
         transform=transform,
         resampling=Resampling.nearest,
     )
-    print("Reading and warping TNC resilient and connected landscapes...")
 
     data = vrt.read()[0]
 
@@ -171,9 +153,9 @@ if DEBUG:
 # cores and important areas don't overlap; just rasterize them
 
 print("Rasterizing cores and other important areas...")
-cores = np.ones(shape=data.shape, dtype="uint8") * nodata
+cores = np.ones(shape=data.shape, dtype="uint8") * 255
 # set all areas inside the mask as 0
-cores = np.where(mask == 1, 0, nodata)
+cores = np.where(mask == 1, 0, 255)
 
 for value in [1, 2, 3]:
     print(f"Processing value {value}...")
@@ -184,11 +166,9 @@ for value in [1, 2, 3]:
     cores = np.where(data == 1, value, cores)
 
 # Apply the mask
-cores = np.where(mask == 1, cores, nodata).astype("uint8")
+cores = np.where(mask == 1, cores, 255).astype("uint8")
 
-write_raster(
-    out_dir / "naturescape_cores.tif", cores, transform, DATA_CRS, nodata=nodata
-)
+write_raster(out_dir / "naturescape_cores.tif", cores, transform, DATA_CRS, nodata=255)
 
 ### Create connectors raster
 # connectors overlap each other and areas above, code these as
@@ -212,32 +192,28 @@ for i, value in enumerate([4, 5]):
     connectors += data
 
 # Apply the mask
-connectors = np.where(mask == 1, connectors, nodata).astype("uint8")
+connectors = np.where(mask == 1, connectors, 255).astype("uint8")
 
 write_raster(
-    out_dir / "naturescape_connectors.tif",
-    connectors,
-    transform,
-    DATA_CRS,
-    nodata=nodata,
+    out_dir / "naturescape_connectors.tif", connectors, transform, DATA_CRS, nodata=255
 )
 
 
 ### reclassify to create final values per final value list in inputs.json
-out = np.ones(shape=data.shape, dtype="uint8") * nodata
+out = np.ones(shape=data.shape, dtype="uint8") * 255
 # set all areas inside the mask as 0
-out = np.where(mask == 1, 0, nodata)
+out = np.where(mask == 1, 0, 255)
 
 out = np.where(tnc_data == 4, 4, out)
-out = np.where((connectors > 0) & (connectors < nodata), 3, out)
+out = np.where((connectors > 0) & (connectors < 255), 3, out)
 
 # cores + TNC overwrite connectors where they overlap
 out = np.where(tnc_data == 2, 2, out)
-out = np.where((cores > 0) & (cores < nodata), 1, out)
+out = np.where((cores > 0) & (cores < 255), 1, out)
 
 out = out.astype("uint8")
 # Note: values 4 and 5 overlap with other values and each other,
 # merge them so lower values are on top
 
-write_raster(out_dir / "naturescape.tif", out, transform, DATA_CRS, nodata=nodata)
+write_raster(out_dir / "naturescape.tif", out, transform, DATA_CRS, nodata=255)
 

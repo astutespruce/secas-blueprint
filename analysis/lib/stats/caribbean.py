@@ -56,7 +56,7 @@ def summarize_caribbean_aoi(df, bounds):
     return by_rank
 
 
-def summarize_caribbean_huc12(df):
+def summarize_caribbean_by_huc12(df, out_dir):
     """Calculate overlap of HUC12 summary units with HUC10 priority watersheds.
 
     This uses the HUC10 component of the HUC12 index to do a basic join, and
@@ -66,12 +66,9 @@ def summarize_caribbean_huc12(df):
     ----------
     df : GeoDataFrame
         summary units
-
-    Returns
-    -------
-    DataFrame
-        contains index from df and carrank field for joined watersheds
     """
+
+    print("Calculating overlap with Caribbean priority watersheds...")
 
     df = df.copy()
     car_df = pd.read_feather(
@@ -81,7 +78,7 @@ def summarize_caribbean_huc12(df):
     # extract HUC10 codes from HUC12 index
     df["HUC10"] = df.index.str[:10]
 
-    df = df.join(car_df, on="HUC10", how="inner")
+    df = df.join(car_df, on="HUC10", how="inner")[["carrank"]].reset_index()
 
-    return df[["carrank"]]
+    df.to_feather(out_dir / "caribbean.feather")
 

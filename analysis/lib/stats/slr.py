@@ -1,9 +1,11 @@
 import math
 from pathlib import Path
 
+from progress.bar import Bar
 import numpy as np
 import pandas as pd
 import pygeos as pg
+import geopandas as gp
 import rasterio
 from rasterio.mask import raster_geometry_mask
 from rasterio.windows import Window
@@ -14,9 +16,12 @@ from analysis.lib.raster import (
     extract_count_in_geometry,
     detect_data,
 )
+from analysis.lib.pygeos_util import to_dict
 
 
 src_dir = Path("data/inputs/threats/slr")
+slr_bounds_filename = src_dir / "slr_bounds.feather"
+vrt_filename = src_dir / "slr.vrt"
 
 
 def extract_slr_area(geometries, bounds):
@@ -42,12 +47,11 @@ def extract_slr_area(geometries, bounds):
         keys are mask, <decade>, ...
         values are the area of incremental (not total!) sea level rise by foot
     """
-    vrt = slr_dir / "slr.vrt"
 
     results = {}
 
     # create mask and window
-    with rasterio.open(vrt) as src:
+    with rasterio.open(vrt_filename) as src:
         try:
             shape_mask, transform, window = boundless_raster_geometry_mask(
                 src, geometries, bounds, all_touched=True
@@ -84,3 +88,48 @@ def extract_slr_area(geometries, bounds):
     results.update({i: a for i, a in enumerate(acres)})
 
     return results
+
+
+def summarize_by_huc12(geometries, out_dir):
+    """Summarize by HUC12
+
+    Parameters
+    ----------
+    geometries : Series of pygeos geometries, indexed by HUC12 id
+    out_dir : str
+    """
+
+    # find the indexes of the geometries that overlap with SLR bounds; these are the only
+    # ones that need to be analyzed for SLR impacts
+    slr_bounds = gp.read_feather(slr_bounds_filename).geometry
+    tree = pg.STRtree(slr_bounds.geometry.values.data)
+    left, right = tree.query_bulk(geometries)
+    idx = np.unique(left)
+    geometries = geometries.iloc[idx].copy()
+
+    if not len(geometries):
+        return
+
+    results = []
+    index = []
+    for huc12, geometry in Bar(
+        "Calculating SLR counts for HUC12", max=len(geometries)
+    ).iter(geometries.iteritems()):
+        zone_results = extract_slr_area(
+            [to_dict(geometry)], bounds=pg.total_bounds(geometry)
+        )
+        if zone_results is None:
+            continue
+
+        index.append(huc12)
+        results.append(zone_results)
+
+    df = pd.DataFrame(results, index=index)
+
+    # reorder columns
+    df = df[["shape_mask"] + list(df.columns.difference(["shape_mask"]))]
+    # extract only areas that actually had SLR pixels
+    df = df[df[df.columns[1:]].sum(axis=1) > 0]
+    df.columns = [str(c) for c in df.columns]
+    df = df.reset_index().rename(columns={"index": "id"}).round()
+    df.to_feather(out_dir / "slr.feather")
