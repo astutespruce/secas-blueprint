@@ -33,7 +33,9 @@ def get_input_area_mask(input_area):
         mask is 1 INSIDE input area, 0 outside
     """
 
-    values = [e["value"] for e in INPUT_AREA_VALUES if input_area in e["id"]]
+    values = [
+        e["value"] for e in INPUT_AREA_VALUES if input_area in set(e["id"].split(","))
+    ]
 
     inputs_df = gp.read_feather(bnd_dir / "input_areas.feather")
 

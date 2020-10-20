@@ -31,25 +31,21 @@ def summarize_by_unit(units_df, out_dir):
 
     by_owner = (
         df[["Own_Type", "acres"]]
-        .groupby(by=[df.index.get_level_values(0), "Own_Type"])
+        .groupby([index_name, "Own_Type"])
         .acres.sum()
         .astype("float32")
         .round()
         .reset_index()
-        .set_index("level_0")
     )
-    by_owner.index.name = index_name
 
     by_protection = (
         df[["GAP_Sts", "acres"]]
-        .groupby(by=[df.index.get_level_values(0), "GAP_Sts"])
+        .groupby([index_name, "GAP_Sts"])
         .acres.sum()
         .astype("float32")
         .round()
         .reset_index()
-        .set_index("level_0")
     )
-    by_protection.index.name = index_name
 
     by_owner.to_feather(out_dir / "ownership.feather")
     by_protection.to_feather(out_dir / "protection.feather")

@@ -7,64 +7,50 @@ from rasterio.windows import get_data_window
 from rasterio.enums import Resampling
 from rasterio.vrt import WarpedVRT
 
-from analysis.constants import INPUT_AREA_VALUES, DEBUG
+from analysis.constants import DATA_CRS, MASK_FACTOR
 from analysis.lib.io import write_raster
-
-# Steps
-# extract input area data area
-# reproject / align to blueprint / inputs grid
-# clip to input area
-
-
-values = [e["value"] for e in INPUT_AREA_VALUES if "gh" in e["id"]]
+from analysis.lib.input_areas import get_input_area_mask
+from analysis.lib.raster import add_overviews, create_lowres_mask
 
 
 data_dir = Path("data/inputs")
 src_dir = Path("source_data/gulf_hypoxia")
 out_dir = data_dir / "indicators/gulf_hypoxia"
+outfilename = out_dir / "gulf_hypoxia.tif"
 
 if not out_dir.exists():
     os.makedirs(out_dir)
 
 
-with rasterio.open(data_dir / "input_areas.tif") as src:
-    data = src.read(1)
+print("Extracting Gulf Hypoxia input area mask...")
+mask, transform, window = get_input_area_mask("gh")
 
-    out = np.zeros(shape=data.shape, dtype="uint8")
-    for value in values:
-        out[data == value] = 1
+with rasterio.open(src_dir / "Missouri_cfa_huc_sum2.tif") as src:
+    nodata = int(src.nodata)
 
-    window = get_data_window(out, nodata=0)
-
-    transform = src.window_transform(window)
-
-    mask = out[window.toslices()] == 1
-
-    if DEBUG:
-        write_raster(
-            "/tmp/gh_mask.tif", mask.astype("uint8"), transform, crs=src.crs, nodata=0
-        )
-
-# NOTE: data cover all of MS, can just use extent of data; mask above is ignored
-
-with rasterio.open(src_dir / "Missouri_cfa_huc_sum2.tif") as gh:
-    # data must be warped to align with input grid
+    print("Reading and warping gulf hypoxia...")
     vrt = WarpedVRT(
-        gh,
+        src,
         width=window.width,
         height=window.height,
-        nodata=gh.nodata,
+        nodata=nodata,
         transform=transform,
+        crs=DATA_CRS,
         resampling=Resampling.nearest,
     )
-    print("Reading and warping gulf hypoxia...")
 
-    gh_data = vrt.read()[0]
+    data = vrt.read()[0]
 
-    write_raster(
-        out_dir / "gulf_hypoxia.tif",
-        gh_data,
-        transform,
-        crs=src.crs,
-        nodata=int(gh.nodata),
-    )
+# apply mask
+data = np.where(mask == 1, data, nodata).astype("uint8")
+
+write_raster(outfilename, data, transform, crs=DATA_CRS, nodata=nodata)
+
+add_overviews(outfilename)
+
+create_lowres_mask(
+    outfilename,
+    str(outfilename).replace(".tif", "_mask.tif"),
+    factor=MASK_FACTOR,
+    ignore_zero=False,
+)

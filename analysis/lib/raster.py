@@ -14,6 +14,7 @@ from rasterio.mask import raster_geometry_mask, geometry_mask
 from rasterio.vrt import WarpedVRT
 from rasterio.windows import Window
 
+from analysis.constants import OVERVIEW_FACTORS
 from analysis.lib.pygeos_util import to_dict
 
 
@@ -288,3 +289,14 @@ def summarize_raster_by_geometry(
         results = results.join(s)
 
     results.reset_index().to_feather(outfilename)
+
+
+def add_overviews(filename):
+    """Add overviews to file for faster rendering.
+
+    Parameters
+    ----------
+    filename : str
+    """
+    with rasterio.open(filename, "r+") as src:
+        src.build_overviews(OVERVIEW_FACTORS, Resampling.nearest)

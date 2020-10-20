@@ -9,85 +9,78 @@ from rasterio.enums import Resampling
 from rasterio.vrt import WarpedVRT
 from pyogrio import read_dataframe
 
-from analysis.constants import DATA_CRS, INPUT_AREA_VALUES, DEBUG
+from analysis.constants import DATA_CRS, MASK_FACTOR
 from analysis.lib.io import write_raster
-
-values = [e["value"] for e in INPUT_AREA_VALUES if "nn" in e["id"]]
+from analysis.lib.input_areas import get_input_area_mask
+from analysis.lib.raster import add_overviews, create_lowres_mask
 
 
 src_dir = Path("source_data/natures_network")
 data_dir = Path("data/inputs")
 out_dir = data_dir / "indicators/natures_network"
-
+priority_outfilename = out_dir / "nn_priority.tif"
+category_outfilename = out_dir / "nn_category.tif"
 
 if not out_dir.exists():
     os.makedirs(out_dir)
 
-
-# note: already in correct projection but assign to DATA_CRS as standard
-src = rasterio.open(src_dir / "NaturesNetwork_conservdesign_180625.tif")
-inputs = rasterio.open(data_dir / "input_areas.tif")
-
-# extract overlapping window
-window = inputs.window(*src.bounds)
-window_floored = window.round_offsets(op="floor", pixel_precision=3)
-w = math.ceil(window.width + window.col_off - window_floored.col_off)
-h = math.ceil(window.height + window.row_off - window_floored.row_off)
-window = Window(window_floored.col_off, window_floored.row_off, w, h)
-window = window.intersection(Window(0, 0, inputs.width, inputs.height))
-
-data = inputs.read(1, window=window)
-mask = np.zeros(shape=data.shape, dtype="uint8")
-for value in values:
-    mask[data == value] = 1
-
-data_window = get_data_window(mask, nodata=0)
-mask = mask[data_window.toslices()]
-
-# update window to account for data_window
-window = Window(
-    window.col_off + data_window.col_off,
-    window.row_off + data_window.row_off,
-    data_window.width,
-    data_window.height,
-)
-transform = inputs.window_transform(window)
-
-if DEBUG:
-    write_raster("/tmp/nn_mask.tif", mask, transform, DATA_CRS, nodata=0)
-
-
-# data must be warped to align with input grid
-vrt = WarpedVRT(
-    src,
-    width=window.width,
-    height=window.height,
-    nodata=src.nodata,
-    transform=transform,
-    resampling=Resampling.nearest,
-)
-print("Reading and warping Nature's Network...")
-
-data = vrt.read()[0]
-nodata = 255
-
-# clip by input area (treat 0 as nodata)
-data[mask == 0] = nodata
-
-# Remap the raw values to priorities
+# Remap the raw values to priorities and categories
 table = read_dataframe(
     src_dir / "NaturesNetwork_conservdesign_180625.tif.vat.dbf",
-    columns=["Value", "Priority"],
+    columns=["Value", "Priority", "Descrpt"],
+    read_geometry=False,
 )
 table = table.loc[table.Value > 0].copy()
-table["NewValue"] = table.Priority.astype("uint8")
-
-for row in table.itertuples():
-    data[data == row.Value] = row.NewValue
+table.Priority = table.Priority.astype("uint8")
+table["category"] = table.Descrpt.str[0].astype("uint8")
 
 
-write_raster(out_dir / "natures_network.tif", data, transform, DATA_CRS, nodata=nodata)
+### Get input area mask
+print("Extracting Nature's Network input area mask...")
+mask, transform, window = get_input_area_mask("nn")
+
+nodata = 255
 
 
-src.close()
-inputs.close()
+with rasterio.open(src_dir / "NaturesNetwork_conservdesign_180625.tif") as src:
+    # note: raster does not have nodata set; 0 indicates NODATA (outside extent)
+    # and 0 values
+
+    # data must be warped to align with input grid
+    vrt = WarpedVRT(
+        src,
+        width=window.width,
+        height=window.height,
+        nodata=nodata,
+        transform=transform,
+        crs=DATA_CRS,
+        resampling=Resampling.nearest,
+    )
+    print("Reading and warping Nature's Network...")
+
+    data = vrt.read()[0]
+
+# apply mask
+data = np.where(mask == 1, data, nodata).astype("uint8")
+
+priority_data = data.copy()
+category_data = data.copy()
+
+print("Reclassifying data...")
+for i, row in table.iterrows():
+    priority_data[priority_data == row.Value] = row.Priority
+    category_data[category_data == row.Value] = row.category
+
+write_raster(priority_outfilename, priority_data, transform, DATA_CRS, nodata=nodata)
+write_raster(category_outfilename, category_data, transform, DATA_CRS, nodata=nodata)
+
+print("Adding overviews and masks...")
+for outfilename in [priority_outfilename, category_outfilename]:
+    add_overviews(outfilename)
+
+    create_lowres_mask(
+        outfilename,
+        str(outfilename).replace(".tif", "_mask.tif"),
+        factor=MASK_FACTOR,
+        ignore_zero=False,
+    )

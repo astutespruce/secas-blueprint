@@ -23,8 +23,8 @@ from analysis.lib.raster import (
 )
 
 src_dir = Path("data/inputs/indicators/natures_network")
-nn_filename = src_dir / "natures_network.tif"
-nn_mask_filename = src_dir / "natures_network_mask.tif"
+nn_filename = src_dir / "nn_priority.tif"
+nn_mask_filename = src_dir / "nn_priority_mask.tif"
 
 
 def extract_by_geometry(geometries, bounds):

@@ -22,4 +22,4 @@ gdalbuildvrt -overwrite -resolution lowest slr.vrt *.tif
 
 To assist with checking if a given area of interest overlaps SLR data, the
 bounds of all SLR files are extracted to a dataset using
-`util/extract_slr_bounds.py`.
+`util/prepare_slr.py`.

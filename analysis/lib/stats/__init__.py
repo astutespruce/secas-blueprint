@@ -23,5 +23,5 @@ from analysis.lib.stats.naturescape import (
     summarize_by_huc12 as summarize_naturescape_by_huc12,
 )
 from analysis.lib.stats.southatlantic import (
-    summarize_by_huc12 as summarize_southatlantic_by_huc12,
+    summarize_by_unit as summarize_southatlantic_by_unit,
 )

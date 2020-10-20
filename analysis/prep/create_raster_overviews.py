@@ -24,24 +24,13 @@ input_areas_filename = src_dir / "input_areas.tif"
 
 urban_dir = src_dir / "threats/urban"
 
-indicators_dir = src_dir / "indicators"
 
-
-# for filename in [blueprint_filename, input_areas_filename]:
-#     print(f"Processing {filename.name}...")
-#     with rasterio.open(filename, "r+") as src:
-#         src.build_overviews(factors, Resampling.nearest)
-
-# for year in URBAN_YEARS:
-#     print(f"Processing urban {year}...")
-#     with rasterio.open(urban_dir / f"urban_{year}.tif", "r+") as src:
-#         src.build_overviews(factors, Resampling.nearest)
-
-
-for filename in indicators_dir.rglob("*.tif"):
-    if "_mask" in str(filename):
-        continue
-
+for filename in [blueprint_filename, input_areas_filename]:
     print(f"Processing {filename.name}...")
     with rasterio.open(filename, "r+") as src:
+        src.build_overviews(factors, Resampling.nearest)
+
+for year in URBAN_YEARS:
+    print(f"Processing urban {year}...")
+    with rasterio.open(urban_dir / f"urban_{year}.tif", "r+") as src:
         src.build_overviews(factors, Resampling.nearest)

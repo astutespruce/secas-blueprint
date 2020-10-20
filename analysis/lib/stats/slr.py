@@ -77,7 +77,7 @@ def extract_slr_area(geometries, bounds):
 
     bins = np.arange(7)
     counts = extract_count_in_geometry(
-        vrt, shape_mask, window, bins=bins, boundless=True
+        vrt_filename, shape_mask, window, bins=bins, boundless=True
     )
 
     # accumulate values
@@ -102,10 +102,9 @@ def summarize_by_huc12(geometries, out_dir):
     # find the indexes of the geometries that overlap with SLR bounds; these are the only
     # ones that need to be analyzed for SLR impacts
     slr_bounds = gp.read_feather(slr_bounds_filename).geometry
-    tree = pg.STRtree(slr_bounds.geometry.values.data)
-    left, right = tree.query_bulk(geometries)
-    idx = np.unique(left)
-    geometries = geometries.iloc[idx].copy()
+    tree = pg.STRtree(geometries)
+    ix = tree.query(slr_bounds.geometry.values.data[0], predicate="intersects")
+    geometries = geometries.iloc[ix].copy()
 
     if not len(geometries):
         return

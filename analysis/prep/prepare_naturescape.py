@@ -12,16 +12,21 @@ from rasterio.features import rasterize
 from rasterio.vrt import WarpedVRT
 
 
-from analysis.constants import DATA_CRS, DEBUG
+from analysis.constants import DATA_CRS, DEBUG, INPUT_AREA_VALUES, MASK_FACTOR
 from analysis.lib.io import write_raster
 from analysis.lib.input_areas import get_input_area_mask
 from analysis.lib.pygeos_util import to_dict_all
+from analysis.lib.raster import add_overviews, create_lowres_mask
 
 
 src_dir = Path("source_data/naturescape")
 bnd_dir = Path("data/boundaries")
 data_dir = Path("data/inputs")
 out_dir = data_dir / "indicators/naturescape"
+cores_outfilename = out_dir / "ns_cores.tif"
+connectors_outfilename = out_dir / "ns_connectors.tif"
+tnc_outfilename = out_dir / "tnc_resilient_connected.tif"
+ns_outfilename = out_dir / "ns_priority.tif"
 
 
 if not out_dir.exists():
@@ -32,6 +37,7 @@ print("Extracting NatureScape input area mask...")
 mask, transform, window = get_input_area_mask("app")
 
 inputs_df = gp.read_feather(bnd_dir / "input_areas.feather")
+values = [e["value"] for e in INPUT_AREA_VALUES if "app" in set(e["id"].split(","))]
 bnd = pg.union_all(inputs_df.loc[inputs_df.value.isin(values)].geometry.values.data)
 
 
@@ -44,6 +50,7 @@ with rasterio.open(src_dir / "Resilient_and_Connected20180308.tif") as rc:
         height=window.height,
         nodata=int(rc.nodata),
         transform=transform,
+        crs=DATA_CRS,
         resampling=Resampling.nearest,
     )
 
@@ -71,13 +78,7 @@ for i, row in table.iterrows():
 
     data[data == row.Value] = i
 
-write_raster(
-    out_dir / "tnc_resilient_connected.tif",
-    data,
-    transform=transform,
-    crs=DATA_CRS,
-    nodata=255,
-)
+write_raster(tnc_outfilename, data, transform=transform, crs=DATA_CRS, nodata=255)
 
 
 # Reclassify to merge with below
@@ -168,7 +169,7 @@ for value in [1, 2, 3]:
 # Apply the mask
 cores = np.where(mask == 1, cores, 255).astype("uint8")
 
-write_raster(out_dir / "naturescape_cores.tif", cores, transform, DATA_CRS, nodata=255)
+write_raster(cores_outfilename, cores, transform, DATA_CRS, nodata=255)
 
 ### Create connectors raster
 # connectors overlap each other and areas above, code these as
@@ -194,9 +195,7 @@ for i, value in enumerate([4, 5]):
 # Apply the mask
 connectors = np.where(mask == 1, connectors, 255).astype("uint8")
 
-write_raster(
-    out_dir / "naturescape_connectors.tif", connectors, transform, DATA_CRS, nodata=255
-)
+write_raster(connectors_outfilename, connectors, transform, DATA_CRS, nodata=255)
 
 
 ### reclassify to create final values per final value list in inputs.json
@@ -215,5 +214,20 @@ out = out.astype("uint8")
 # Note: values 4 and 5 overlap with other values and each other,
 # merge them so lower values are on top
 
-write_raster(out_dir / "naturescape.tif", out, transform, DATA_CRS, nodata=255)
+write_raster(ns_outfilename, out, transform, DATA_CRS, nodata=255)
 
+
+for outfilename in [
+    cores_outfilename,
+    connectors_outfilename,
+    tnc_outfilename,
+    ns_outfilename,
+]:
+    add_overviews(outfilename)
+
+    create_lowres_mask(
+        outfilename,
+        str(outfilename).replace(".tif", "_mask.tif"),
+        factor=MASK_FACTOR,
+        ignore_zero=False,
+    )

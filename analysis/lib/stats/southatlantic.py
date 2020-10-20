@@ -39,7 +39,7 @@ def extract_by_geometry(geometries, bounds):
 
     Returns
     -------
-    dict or None (if does not overlap Nature's Network dataset)
+    dict or None (if does not overlap)
     """
 
     # prescreen to make sure data are present
@@ -89,12 +89,12 @@ def extract_by_geometry(geometries, bounds):
     return results
 
 
-def summarize_by_huc12(geometries, out_dir):
-    """Summarize by HUC12
+def summarize_by_unit(geometries, out_dir):
+    """Summarize by HUC12 / marine lease block
 
     Parameters
     ----------
-    geometries : Series of pygeos geometries, indexed by HUC12 id
+    geometries : Series of pygeos geometries, indexed by HUC12 / marine lease block id
     out_dir : str
     """
 
@@ -102,6 +102,6 @@ def summarize_by_huc12(geometries, out_dir):
         geometries,
         extract_by_geometry,
         outfilename=out_dir / "southatlantic.feather",
-        progress_label="Calculating South Atlantic area by HUC12",
+        progress_label="Summarizing South Atlantic",
         bounds=SOUTHATLANTIC_BOUNDS,
     )
