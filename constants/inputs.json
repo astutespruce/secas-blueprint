@@ -11,17 +11,20 @@
       {
         "value": 0,
         "label": "Not a priority",
-        "color": "#EEE"
+        "color": "#EEE",
+        "blueprint": 0
       },
       {
         "value": 1,
         "label": "P1: High priority",
-        "color": "#00734B"
+        "color": "#005a32",
+        "blueprint": 2
       },
       {
         "value": 2,
         "label": "P2: Medium priority",
-        "color": "#98E600"
+        "color": "#807dba",
+        "blueprint": 1
       }
     ],
     "domain": [2, 1]
@@ -31,7 +34,10 @@
     "label": "Florida Marine Blueprint",
     "version": "1.0",
     "dataURL": "https://flcpa.databasin.org/galleries/1bf67d31d64448b6a255888f43f3d601",
-    "infoURL": "https://flcpa.databasin.org/galleries/1bf67d31d64448b6a255888f43f3d601"
+    "infoURL": "https://flcpa.databasin.org/galleries/1bf67d31d64448b6a255888f43f3d601",
+    "valueField": null,
+    "valueLabel": null,
+    "values": []
   },
   {
     "id": "sa",
@@ -47,27 +53,32 @@
       {
         "value": 0,
         "label": "Not a priority",
-        "color": "#ffebc2"
+        "color": "#EEE",
+        "blueprint": 0
       },
       {
         "value": 1,
         "label": "Corridors",
-        "color": "#686868"
+        "color": "#bcbddc",
+        "blueprint": 1
       },
       {
         "value": 2,
         "label": "Medium priority",
-        "color": "#fbb4b9"
+        "color": "#807dba",
+        "blueprint": 1
       },
       {
         "value": 3,
         "label": "High priority",
-        "color": "#c51b8a"
+        "color": "#74c476",
+        "blueprint": 2
       },
       {
         "value": 4,
         "label": "Highest priority",
-        "color": "#49006a"
+        "color": "#005a32",
+        "blueprint": 2
       }
     ],
     "domain": [1, 4]
@@ -84,22 +95,26 @@
       {
         "value": 0,
         "label": "Not a priority",
-        "color": "#EEE"
+        "color": "#EEE",
+        "blueprint": 0
       },
       {
         "value": 1,
         "label": "High",
-        "color": "#0B316B"
+        "color": "#005a32",
+        "blueprint": 2
       },
       {
         "value": 2,
         "label": "Medium",
-        "color": "#4FAFEE"
+        "color": "#807dba",
+        "blueprint": 1
       },
       {
         "value": 3,
         "label": "Low",
-        "color": "#b9dff8"
+        "color": "#bdbdbd",
+        "blueprint": 0
       }
     ],
     "domain": [3, 1]
@@ -111,27 +126,31 @@
     "dataURL": "https://nalcc.databasin.org/datasets/3d670fad4c924e7ba2ae02f04a128256",
     "infoURL": "http://naturesnetwork.org/",
     "valueField": "nn_priority",
-    "valueLabel": "Priority",
+    "valueLabel": "Priority group",
     "values": [
       {
         "value": 0,
         "label": "Not a priority",
-        "color": "#EEE"
+        "color": "#EEE",
+        "blueprint": 0
       },
       {
         "value": 1,
         "label": "1: overlap between one or more Terrestrial, Aquatic, and Imperiled Species Cores",
-        "color": "#00F2FF"
+        "color": "#005a32",
+        "blueprint": 2
       },
       {
         "value": 2,
         "label": "2: Terrestrial or Aquatic Cores",
-        "color": "#C09FC9"
+        "color": "#74c476",
+        "blueprint": 2
       },
       {
         "value": 3,
         "label": "3: Terrestrial Core to Core Connectors",
-        "color": "#C5DBBA"
+        "color": "#807dba",
+        "blueprint": 1
       }
     ],
     "domain": [8, 1],
@@ -160,12 +179,22 @@
         "label": "Not a priority",
         "color": "#EEE"
       },
-      { "value": 1, "label": "1: most crucial", "color": "#003994" },
-      { "value": 2, "label": "2", "color": "#1D49A8" },
-      { "value": 3, "label": "3", "color": "#445EC3" },
-      { "value": 4, "label": "4", "color": "#6C7ED4" },
-      { "value": 5, "label": "5", "color": "#9DA4E8" },
-      { "value": 6, "label": "6: least crucial", "color": "#D7D6FE" }
+      {
+        "value": 1,
+        "label": "1: most crucial",
+        "color": "#005a32",
+        "blueprint": 2
+      },
+      { "value": 2, "label": "2", "color": "#74c476", "blueprint": 2 },
+      { "value": 3, "label": "3", "color": "#807dba", "blueprint": 1 },
+      { "value": 4, "label": "4", "color": "#969696", "blueprint": 0 },
+      { "value": 5, "label": "5", "color": "#bdbdbd", "blueprint": 0 },
+      {
+        "value": 6,
+        "label": "6: least crucial",
+        "color": "#d9d9d9",
+        "blueprint": 0
+      }
     ],
     "domain": [6, 1],
     "indicators": [
@@ -298,12 +327,22 @@
         "label": "Not a priority",
         "color": "#EEE"
       },
-      { "value": 1, "label": "1: most crucial", "color": "#003994" },
-      { "value": 2, "label": "2", "color": "#1D49A8" },
-      { "value": 3, "label": "3", "color": "#445EC3" },
-      { "value": 4, "label": "4", "color": "#6C7ED4" },
-      { "value": 5, "label": "5", "color": "#9DA4E8" },
-      { "value": 6, "label": "6: least crucial", "color": "#D7D6FE" }
+      {
+        "value": 1,
+        "label": "1: most crucial",
+        "color": "#005a32",
+        "blueprint": 2
+      },
+      { "value": 2, "label": "2", "color": "#74c476", "blueprint": 2 },
+      { "value": 3, "label": "3", "color": "#807dba", "blueprint": 1 },
+      { "value": 4, "label": "4", "color": "#969696", "blueprint": 0 },
+      { "value": 5, "label": "5", "color": "#bdbdbd", "blueprint": 0 },
+      {
+        "value": 6,
+        "label": "6: least crucial",
+        "color": "#d9d9d9",
+        "blueprint": 0
+      }
     ],
     "domain": [6, 1],
     "indicators": [
@@ -438,27 +477,32 @@
       {
         "value": 0,
         "label": "Not a priority",
-        "color": "#EEE"
+        "color": "#EEE",
+        "blueprint": 0
       },
       {
         "value": 1,
         "label": "NatureScape: local / regional cores and other important areas",
-        "color": "#464646"
+        "color": "#005a32",
+        "blueprint": 2
       },
       {
         "value": 2,
         "label": "TNC Prioritized Network: resilient only with secured lands and resilient area with confirmed diversity",
-        "color": "#2C7207"
+        "color": "#74c476",
+        "blueprint": 2
       },
       {
         "value": 3,
         "label": "NatureScape: local and regional connectors",
-        "color": "#9B9B9B"
+        "color": "#807dba",
+        "blueprint": 1
       },
       {
         "value": 4,
         "label": "TNC Prioritized Network: climate corridors and climate flow zones with and without confirmed diversity",
-        "color": "#DAA31F"
+        "color": "#bcbddc",
+        "blueprint": 1
       }
     ],
     "domain": [4, 1]
@@ -476,16 +520,17 @@
       {
         "value": 0,
         "label": "Not a priority",
-        "color": "#EEE"
+        "color": "#EEE",
+        "blueprint": 0
       },
-      { "value": 1, "label": "1: low", "color": "#98C3B2" },
-      { "value": 2, "label": "2", "color": "#C5DD9A" },
-      { "value": 3, "label": "3", "color": "#DEEE89" },
-      { "value": 4, "label": "4", "color": "#F0FA7B" },
-      { "value": 5, "label": "5", "color": "#F4E86D" },
-      { "value": 6, "label": "6", "color": "#F7C358" },
-      { "value": 7, "label": "7", "color": "#F6742D" },
-      { "value": 8, "label": "8: high", "color": "#F02A0B" }
+      { "value": 1, "label": "1: low", "color": "#98C3B2", "blueprint": 0 },
+      { "value": 2, "label": "2", "color": "#C5DD9A", "blueprint": 0 },
+      { "value": 3, "label": "3", "color": "#DEEE89", "blueprint": 0 },
+      { "value": 4, "label": "4", "color": "#F0FA7B", "blueprint": 1 },
+      { "value": 5, "label": "5", "color": "#F4E86D", "blueprint": 2 },
+      { "value": 6, "label": "6", "color": "#F7C358", "blueprint": 2 },
+      { "value": 7, "label": "7", "color": "#F6742D", "blueprint": 2 },
+      { "value": 8, "label": "8: high", "color": "#F02A0B", "blueprint": 2 }
     ],
     "domain": [0, 8]
   }

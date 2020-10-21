@@ -20,6 +20,35 @@ export const indexBy = (records, field) =>
   )
 
 /**
+ * Resolve a dot notation key into an object into its final value.
+ * Example: resolveKey({foo: {bar: 'baz'}}, 'foo.bar') => 'baz'
+ * @param {Object} item
+ * @param {String} key
+ */
+export const resolveKey = (item, key) => {
+  const [cur, remainder] = key.split('.', 2)
+  if (remainder !== undefined) {
+    return resolveKey(item[cur], remainder)
+  }
+  return item[cur]
+}
+
+/**
+ * Groups array into an object, keyed by value of `field`.
+ * Returns an object
+ *
+ * @param {Array } data
+ * @param {String} groupField - name of group field to group by
+ */
+export const groupBy = (data, groupField) => {
+  return data.reduce((prev, d) => {
+    const key = resolveKey(d, groupField)
+    prev[key] = (prev[key] || []).concat([d])
+    return prev
+  }, {})
+}
+
+/**
  * Calculate the sum of an array of numbers
  * @param {Array} values - array of numbers
  */

@@ -6,8 +6,8 @@ import { Box, Flex, Heading, Text } from 'theme-ui'
 
 import { PieChartLegend } from 'components/chart'
 import { useBlueprintCategories, useInputAreas } from 'components/data'
-
-import { sum, sortByFunc } from 'util/data'
+import { OutboundLink } from 'components/link'
+import { sum, sortByFunc, groupBy } from 'util/data'
 
 import InputArea from './InputArea'
 
@@ -19,9 +19,10 @@ const getInputPriorities = ({
   totalPercent,
   outsideSEPercent,
 }) => {
+  if (!values) {
+    return []
+  }
   // join percents to values, truncating percent at the input area
-
-  // TODO: assign color based on number of values and which blueprint value they aggregate up to
   let priorities = values
     .map(({ value, ...rest }) => ({
       value,
@@ -30,7 +31,12 @@ const getInputPriorities = ({
     }))
     .filter(({ percent }) => percent > 0)
 
-  console.log('raw priorities', priorities, totalPercent, outsideSEPercent)
+  // if any are >99%, keep only the first and round up to 100%
+  const over99 = priorities.filter(({ percent }) => percent > 99)
+  if (over99.length > 0) {
+    priorities = [over99[0]]
+    priorities[0].percent = 100
+  }
 
   const notPriority = {
     value: 0,
@@ -54,21 +60,24 @@ const getInputPriorities = ({
     priorities.push(notPriority)
   }
 
+  const grouped = groupBy(priorities, 'blueprint')
+  console.log('grouped', grouped)
+
   const outsideInputPercent = 100 - outsideSEPercent - totalPercent
   if (outsideInputPercent >= 1) {
     priorities.push({
       value: -1,
       percent: outsideInputPercent,
-      color: '#fdfde2',
+      color: '#fff7bc',
       label: `Outside ${inputLabel} input area`,
     })
   }
 
-  if (outsideSEPercent) {
+  if (outsideSEPercent >= 1) {
     priorities.push({
       value: -2,
       percent: outsideSEPercent,
-      color: '#fdefe2',
+      color: '#fee6ce',
       label: 'Outside Southeast Blueprint',
     })
   }
@@ -80,9 +89,9 @@ const BlueprintTab = ({ blueprint, inputs, ...selectedUnit }) => {
   const { all: priorityCategories } = useBlueprintCategories()
   const { inputs: inputCategories, values: inputValues } = useInputAreas()
 
-  const chartWidth = 150
+  const chartWidth = 110
 
-  const blueprintChartData = blueprint
+  let blueprintChartData = blueprint
     .slice()
     .reverse()
     .map((percent, i) => ({
@@ -91,15 +100,20 @@ const BlueprintTab = ({ blueprint, inputs, ...selectedUnit }) => {
     }))
     .filter(({ value }) => value > 0)
 
+  // if any are >99%, keep only the first and round up to 100%
+  const over99 = blueprintChartData.filter(({ value }) => value > 99)
+  if (over99.length > 0) {
+    blueprintChartData = [over99[0]]
+    blueprintChartData[0].value = 100
+  }
+
   const blueprintTotal = sum(blueprint)
   const outsideSEPercent = 100 - blueprintTotal
-
-  console.log('outsideSE', outsideSEPercent)
 
   if (outsideSEPercent > 1) {
     blueprintChartData.push({
       value: outsideSEPercent,
-      color: '#fdefe2',
+      color: '#fee6ce',
       label: 'Outside Southeast Blueprint',
     })
   }
@@ -148,10 +162,13 @@ const BlueprintTab = ({ blueprint, inputs, ...selectedUnit }) => {
         inputLabel: label,
         outsideSEPercent,
       })
+
       return {
         domain,
         label,
-        percent,
+
+        // round percent from >99 to 100
+        percent: percent > 99 ? 100 : percent,
         ...rest,
         values: priorities,
       }
@@ -165,18 +182,24 @@ const BlueprintTab = ({ blueprint, inputs, ...selectedUnit }) => {
         <Heading as="h3">Blueprint 2020 Priority</Heading>
         <Text sx={{ color: 'grey.7' }}>for shared conservation action</Text>
 
-        <Flex sx={{ alignItems: 'center', mt: '2rem' }}>
+        <Flex
+          sx={{
+            alignItems: 'flex-start',
+            mt: '1rem',
+            justifyContent: 'space-between',
+          }}
+        >
+          <PieChartLegend elements={blueprintChartData} />
+
           <PieChart
             data={blueprintChartData}
             lineWidth={60}
-            radius={chartWidth / 4 - 2}
+            radius={50}
             style={{
               width: chartWidth,
               flex: '0 0 auto',
             }}
           />
-
-          <PieChartLegend elements={blueprintChartData} />
         </Flex>
       </Box>
 
@@ -199,7 +222,12 @@ const BlueprintTab = ({ blueprint, inputs, ...selectedUnit }) => {
 
             {hasInputOverlaps ? (
               <Text sx={{ fontSize: 0, color: 'grey.7', mb: '2rem' }}>
-                Note: multiple Blueprint inputs overlap in some areas.
+                Note: multiple Blueprint inputs overlap in some areas. See{' '}
+                <OutboundLink to="https://www.sciencebase.gov/catalog/file/get/5f85ac8282cebef40f14c545?name=SE_Blueprint_2020_DevelopmentProcess.pdf">
+                  Blueprint integration documentation
+                </OutboundLink>{' '}
+                for more details about how individual Blueprint inputs were
+                integrated to create the final Blueprint value.
               </Text>
             ) : null}
 

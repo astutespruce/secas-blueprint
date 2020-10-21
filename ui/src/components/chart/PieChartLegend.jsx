@@ -6,7 +6,7 @@ import { formatPercent } from 'util/format'
 
 const PieChartLegend = ({ title, subtitle, elements }) => {
   return (
-    <Box sx={{ ml: '2rem', minWidth: '140px' }}>
+    <Box sx={{ mr: '2rem', minWidth: '140px', flex: '1 1 auto' }}>
       {title || subtitle ? (
         <Text sx={{ mb: '0.5rem' }}>
           {title ? <Text>{title}</Text> : null}

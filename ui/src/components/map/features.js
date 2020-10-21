@@ -66,6 +66,10 @@ export const unpackFeatureData = (properties) => {
     ? applyFactor(values.fl_blueprint, 0.1)
     : []
 
+  values.flm_blueprint = values.flm_blueprint
+    ? applyFactor(values.flm_blueprint, 0.1)
+    : []
+
   values.midse_blueprint = values.midse_blueprint
     ? applyFactor(values.midse_blueprint, 0.1)
     : []

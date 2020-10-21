@@ -39,25 +39,34 @@ const InputArea = ({
         sx={{
           justifyContent: 'space-between',
           width: '100%',
+          mb: '1rem',
         }}
       >
-        <Text sx={{ fontWeight: 'bold', fontSize: 3 }}>
+        <Text
+          sx={{ fontWeight: 'bold', fontSize: 3, lineHeight: 1.2, mr: '1rem' }}
+        >
           {label} {version && version}
         </Text>
-        <Text sx={{ fontSize: 0, color: 'grey.7', textAlign: 'right' }}>
+        <Text
+          sx={{
+            fontSize: 0,
+            color: 'grey.7',
+            textAlign: 'right',
+            lineHeight: 1,
+          }}
+        >
           {formatPercent(percent)}% of area
         </Text>
       </Flex>
 
       <InputAreaPriorityChart
-        inputLabel={label}
         values={values}
         valueLabel={valueLabel}
         valueCaption={valueCaption}
       />
 
       {hasLinks ? (
-        <Box sx={{ mt: '1rem', ml: '1rem' }}>
+        <Box sx={{ mt: '1rem' }}>
           {infoURL || dataURL ? (
             <Flex>
               {infoURL ? (
@@ -75,8 +84,8 @@ const InputArea = ({
 
           {viewerURL ? (
             <Text sx={{ fontSize: 0, mt: '0.5rem' }}>
-              More detailed information for Blueprint indicators is available in
-              the <OutboundLink to={viewerURL}>{viewerName}</OutboundLink>
+              More detailed information for {label} indicators is available in
+              the <OutboundLink to={viewerURL}>{viewerName}</OutboundLink>.
             </Text>
           ) : null}
         </Box>

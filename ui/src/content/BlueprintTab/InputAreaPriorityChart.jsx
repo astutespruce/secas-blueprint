@@ -4,15 +4,14 @@ import { Flex } from 'theme-ui'
 import { PieChart } from 'react-minimal-pie-chart'
 
 import { PieChartLegend } from 'components/chart'
-import { sum } from 'util/data'
 
-const InputAreaPriorityChart = ({
-  inputLabel,
-  values,
-  valueLabel,
-  valueCaption,
-}) => {
-  const chartWidth = 150
+/**
+ * Render a pie chart of input area priority values.
+ * Incoming data must already have all categories, including areas outside
+ * the input or Southeast region.
+ */
+const InputAreaPriorityChart = ({ values, valueLabel, valueCaption }) => {
+  const chartWidth = 110
 
   const chartData = values
     ? values
@@ -24,44 +23,28 @@ const InputAreaPriorityChart = ({
     return null
   }
 
-  const total = sum(chartData.map(({ value }) => value))
-
-  console.log('total', total)
-
-  if (total <= 99) {
-    const remainder = 100 - total
-    chartData.push({
-      value: remainder,
-      color: '#fdefe2',
-      label: `Outside ${inputLabel} input area`,
-    })
-  }
-
-  console.log('chartData', chartData)
-
   return (
     <Flex sx={{ alignItems: 'center' }}>
-      <PieChart
-        data={chartData}
-        lineWidth={60}
-        radius={chartWidth / 4 - 2}
-        style={{
-          width: chartWidth,
-          flex: '0 0 auto',
-        }}
-      />
-
       <PieChartLegend
         title={valueLabel}
         subtitle={valueCaption}
         elements={chartData}
+      />
+
+      <PieChart
+        data={chartData}
+        lineWidth={60}
+        radius={50}
+        style={{
+          width: chartWidth,
+          flex: '0 0 auto',
+        }}
       />
     </Flex>
   )
 }
 
 InputAreaPriorityChart.propTypes = {
-  inputLabel: PropTypes.string.isRequired,
   values: PropTypes.arrayOf(
     PropTypes.shape({
       value: PropTypes.number.isRequired,

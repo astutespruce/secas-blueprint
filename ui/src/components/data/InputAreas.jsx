@@ -23,6 +23,7 @@ export const useInputAreas = () => {
               value
               label
               color
+              blueprint
             }
             domain
           }
@@ -48,11 +49,32 @@ export const useInputAreas = () => {
       color: '#EEE',
     },
   ]
+
+  const carColors = {
+    0: '#bdbdbd',
+    1: '#807dba',
+    2: '#005a32',
+  }
+
+  const carBlueprintLabel = {
+    0: 'Not a priority',
+    1: 'Medium priority',
+    2: 'High priority',
+  }
+
+  // TODO: label by where it falls in blueprint
   for (let i = 1; i <= inputs.car.domain[0]; i += 1) {
+    let blueprint = 0
+    if (i <= 8) {
+      blueprint = 2
+    } else if (blueprint <= 12) {
+      blueprint = 1
+    }
     inputs.car.values.push({
       value: i,
-      label: i,
-      color: 'red', // TODO
+      label: `${i}: ${carBlueprintLabel[blueprint]}`,
+      color: carColors[blueprint],
+      blueprint,
     })
   }
 
