@@ -15,12 +15,12 @@
       },
       {
         "value": 1,
-        "label": "P1: High Priority",
+        "label": "P1: High priority",
         "color": "#00734B"
       },
       {
         "value": 2,
-        "label": "P2: Medium Priority",
+        "label": "P2: Medium priority",
         "color": "#98E600"
       }
     ],
@@ -69,7 +69,8 @@
         "label": "Highest priority",
         "color": "#49006a"
       }
-    ]
+    ],
+    "domain": [1, 4]
   },
   {
     "id": "ms",
@@ -88,7 +89,7 @@
       {
         "value": 1,
         "label": "High",
-        "color": "#C1DCEE"
+        "color": "#0B316B"
       },
       {
         "value": 2,
@@ -98,7 +99,7 @@
       {
         "value": 3,
         "label": "Low",
-        "color": "#fbb4b9"
+        "color": "#b9dff8"
       }
     ],
     "domain": [3, 1]
@@ -109,7 +110,7 @@
     "version": "2017",
     "dataURL": "https://nalcc.databasin.org/datasets/3d670fad4c924e7ba2ae02f04a128256",
     "infoURL": "http://naturesnetwork.org/",
-    "valueField": "natures_network",
+    "valueField": "nn_priority",
     "valueLabel": "Priority",
     "values": [
       {
@@ -152,13 +153,19 @@
     "infoURL": "http://www.wafwachat.org/",
     "valueField": "okchatrank",
     "valueLabel": "CHAT Rank",
+    "valueCaption": "(1=most crucial, 6=least crucial)",
     "values": [
-      { "value": 1, "label": "1 (most crucial)", "color": "#003994" },
+      {
+        "value": 0,
+        "label": "Not a priority",
+        "color": "#EEE"
+      },
+      { "value": 1, "label": "1: most crucial", "color": "#003994" },
       { "value": 2, "label": "2", "color": "#1D49A8" },
       { "value": 3, "label": "3", "color": "#445EC3" },
       { "value": 4, "label": "4", "color": "#6C7ED4" },
       { "value": 5, "label": "5", "color": "#9DA4E8" },
-      { "value": 6, "label": "6 (least crucial)", "color": "#D7D6FE" }
+      { "value": 6, "label": "6: least crucial", "color": "#D7D6FE" }
     ],
     "domain": [6, 1],
     "indicators": [
@@ -284,13 +291,19 @@
     "infoURL": "http://www.wafwachat.org/",
     "valueField": "txchatrank",
     "valueLabel": "CHAT Rank",
+    "valueCaption": "(1=most crucial, 6=least crucial)",
     "values": [
-      { "value": 1, "label": "1 (most crucial)", "color": "#003994" },
+      {
+        "value": 0,
+        "label": "Not a priority",
+        "color": "#EEE"
+      },
+      { "value": 1, "label": "1: most crucial", "color": "#003994" },
       { "value": 2, "label": "2", "color": "#1D49A8" },
       { "value": 3, "label": "3", "color": "#445EC3" },
       { "value": 4, "label": "4", "color": "#6C7ED4" },
       { "value": 5, "label": "5", "color": "#9DA4E8" },
-      { "value": 6, "label": "6 (least crucial)", "color": "#D7D6FE" }
+      { "value": 6, "label": "6: least crucial", "color": "#D7D6FE" }
     ],
     "domain": [6, 1],
     "indicators": [
@@ -410,6 +423,7 @@
     "infoURL": "https://caribbeanlcc.databasin.org/galleries/ecb079d09f5a430fafc2d48d68bdf1b4",
     "valueField": "carrank",
     "valueLabel": "Caribbean Priority Watershed Rank",
+    "valueCaption": "(1=highest, 24=lowest)",
     "domain": [24, 1]
   },
   {
@@ -418,10 +432,14 @@
     "version": "",
     "dataURL": "https://nalcc.databasin.org/datasets/22cda640930c4692a9dc1413b201ccc1",
     "infoURL": "http://applcc.org/plan-design/conservation-design",
-    "valueField": "naturescape",
-    "valueLabel": "",
+    "valueField": "ns_priority",
+    "valueLabel": "Priority Area Type",
     "values": [
-      { "value": 0, "label": "Not a priority area", "color": "#EEE" },
+      {
+        "value": 0,
+        "label": "Not a priority",
+        "color": "#EEE"
+      },
       {
         "value": 1,
         "label": "NatureScape: local / regional cores and other important areas",
@@ -430,7 +448,7 @@
       {
         "value": 2,
         "label": "TNC Prioritized Network: resilient only with secured lands and resilient area with confirmed diversity",
-        "color": ""
+        "color": "#2C7207"
       },
       {
         "value": 3,
@@ -440,7 +458,7 @@
       {
         "value": 4,
         "label": "TNC Prioritized Network: climate corridors and climate flow zones with and without confirmed diversity",
-        "color": ""
+        "color": "#DAA31F"
       }
     ],
     "domain": [4, 1]
@@ -452,17 +470,22 @@
     "dataURL": "https://databasin.org/datasets/57035c20ecca461092ac80f174bbd241",
     "infoURL": "https://lccnetwork.org/resource/mississippi-river-basingulf-hypoxia-initiative-precision-conservation-blueprint",
     "valueField": "gulf_hypoxia",
-    "valueLabel": "Conservation and Watershed Interests (sum)",
+    "valueLabel": "Conservation and watershed interests (sum)",
+    "valueCaption": "(8=high, 1=low)",
     "values": [
-      { "value": 0, "label": "0 (low)", "color": "#3DA0CF" },
-      { "value": 1, "label": "1", "color": "#98C3B2" },
+      {
+        "value": 0,
+        "label": "Not a priority",
+        "color": "#EEE"
+      },
+      { "value": 1, "label": "1: low", "color": "#98C3B2" },
       { "value": 2, "label": "2", "color": "#C5DD9A" },
       { "value": 3, "label": "3", "color": "#DEEE89" },
       { "value": 4, "label": "4", "color": "#F0FA7B" },
       { "value": 5, "label": "5", "color": "#F4E86D" },
       { "value": 6, "label": "6", "color": "#F7C358" },
       { "value": 7, "label": "7", "color": "#F6742D" },
-      { "value": 8, "label": "8 (high)", "color": "#F02A0B" }
+      { "value": 8, "label": "8: high", "color": "#F02A0B" }
     ],
     "domain": [0, 8]
   }

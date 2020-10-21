@@ -18,6 +18,7 @@ const InputArea = ({
   viewerName,
   values,
   valueLabel,
+  valueCaption,
 }) => {
   console.log('values ', values)
 
@@ -34,7 +35,12 @@ const InputArea = ({
         },
       }}
     >
-      <Flex sx={{ justifyContent: 'space-between', width: '100%' }}>
+      <Flex
+        sx={{
+          justifyContent: 'space-between',
+          width: '100%',
+        }}
+      >
         <Text sx={{ fontWeight: 'bold', fontSize: 3 }}>
           {label} {version && version}
         </Text>
@@ -43,8 +49,15 @@ const InputArea = ({
         </Text>
       </Flex>
 
+      <InputAreaPriorityChart
+        inputLabel={label}
+        values={values}
+        valueLabel={valueLabel}
+        valueCaption={valueCaption}
+      />
+
       {hasLinks ? (
-        <Box sx={{ ml: '1rem' }}>
+        <Box sx={{ mt: '1rem', ml: '1rem' }}>
           {infoURL || dataURL ? (
             <Flex>
               {infoURL ? (
@@ -68,12 +81,6 @@ const InputArea = ({
           ) : null}
         </Box>
       ) : null}
-
-      <InputAreaPriorityChart
-        inputLabel={label}
-        values={values}
-        valueLabel={valueLabel}
-      />
     </Box>
   )
 }
@@ -95,6 +102,7 @@ InputArea.propTypes = {
     })
   ),
   valueLabel: PropTypes.string,
+  valueCaption: PropTypes.string,
 }
 
 InputArea.defaultProps = {
@@ -105,6 +113,7 @@ InputArea.defaultProps = {
   viewerName: null,
   values: [],
   valueLabel: null,
+  valueCaption: null,
 }
 
 export default InputArea

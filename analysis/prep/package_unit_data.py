@@ -42,7 +42,10 @@ data_dir = Path("data")
 results_dir = data_dir / "results"
 out_dir = data_dir / "for_tiles"
 
+###################################################################
 ### HUC12
+###################################################################
+
 working_dir = results_dir / "huc12"
 
 print("Reading HUC12 units...")
@@ -186,24 +189,48 @@ gh_percent = encode_values(gh_df[gh_cols], gh_df.shape_mask, 1000).rename(
 car_df = pd.read_feather(working_dir / "caribbean.feather").set_index("id")
 
 
+# Florida
+fl_df = pd.read_feather(working_dir / "florida.feather").set_index("id")
+fl_cols = [c for c in fl_df.columns if c.startswith("fl_")]
+fl_percent = encode_values(fl_df[fl_cols], fl_df.shape_mask, 1000).rename(
+    "fl_blueprint"
+)
+
+# Middle Southeast
+ms_df = pd.read_feather(working_dir / "midse.feather").set_index("id")
+ms_cols = [c for c in ms_df.columns if c.startswith("ms_")]
+ms_percent = encode_values(ms_df[ms_cols], ms_df.shape_mask, 1000).rename(
+    "midse_blueprint"
+)
+
+
 # Nature's Network
 nn_df = pd.read_feather(working_dir / "natures_network.feather").set_index("id")
 nn_cols = [c for c in nn_df.columns if c.startswith("nn_")]
-nn_percent = encode_values(nn_df[nn_cols], nn_df.shape_mask, 1000).rename(
-    "natures_network"
-)
+nn_percent = encode_values(nn_df[nn_cols], nn_df.shape_mask, 1000).rename("nn_priority")
 
 # NatureScape
 ns_df = pd.read_feather(working_dir / "naturescape.feather").set_index("id")
 ns_cols = [c for c in ns_df.columns if c.startswith("app_")]
-ns_percent = encode_values(ns_df[ns_cols], ns_df.shape_mask, 1000).rename("naturescape")
+ns_percent = encode_values(ns_df[ns_cols], ns_df.shape_mask, 1000).rename("ns_priority")
+
+
+# South Atlantic
+sa_df = pd.read_feather(working_dir / "southatlantic.feather").set_index("id")
+sa_cols = [c for c in sa_df.columns if c.startswith("sa_")]
+sa_percent = encode_values(sa_df[sa_cols], sa_df.shape_mask, 1000).rename(
+    "sa_blueprint"
+)
 
 
 huc12 = (
     huc12.join(gh_percent, how="left")
     .join(car_df, how="left")
+    .join(fl_percent, how="left")
+    .join(ms_percent, how="left")
     .join(nn_percent, how="left")
     .join(ns_percent, how="left")
+    .join(sa_percent, how="left")
 )
 
 
@@ -229,7 +256,10 @@ for state in ["ok", "tx"]:
     huc12 = huc12.join(chat_rank_percent, how="left")
 
 
-### Read in marine data
+###################################################################
+### Marine
+###################################################################
+
 working_dir = results_dir / "marine_blocks"
 
 print("Reading marine_blocks...")
@@ -324,6 +354,18 @@ marine = (
     .join(protection, how="left")
 )
 marine.blueprint_total = marine.blueprint_total.fillna(0)
+
+### Marine input areas
+# South Atlantic (marine)
+sa_df = pd.read_feather(working_dir / "southatlantic.feather").set_index("id")
+sa_cols = [c for c in sa_df.columns if c.startswith("sa_")]
+sa_percent = encode_values(sa_df[sa_cols], sa_df.shape_mask, 1000).rename(
+    "sa_blueprint"
+)
+
+
+marine = marine.join(sa_percent, how="left")
+
 
 out = huc12.reset_index().append(marine.reset_index(), ignore_index=True, sort=False)
 

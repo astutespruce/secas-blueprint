@@ -18,11 +18,13 @@ export const useInputAreas = () => {
             viewerName
             valueField
             valueLabel
+            valueCaption
             values {
               value
               label
               color
             }
+            domain
           }
         }
       }
@@ -36,8 +38,26 @@ export const useInputAreas = () => {
     }
   `)
 
+  const inputs = indexBy(extractNodes(inputAreas), 'id')
+
+  // programmatically generate values for Caribbean
+  inputs.car.values = [
+    {
+      value: 0,
+      label: 'Not a priority',
+      color: '#EEE',
+    },
+  ]
+  for (let i = 1; i <= inputs.car.domain[0]; i += 1) {
+    inputs.car.values.push({
+      value: i,
+      label: i,
+      color: 'red', // TODO
+    })
+  }
+
   return {
-    inputs: indexBy(extractNodes(inputAreas), 'id'),
+    inputs,
     // value is position in array
     values: extractNodes(inputValues).map(({ id }) => id),
   }

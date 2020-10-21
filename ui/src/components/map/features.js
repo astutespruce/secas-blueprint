@@ -62,12 +62,20 @@ export const unpackFeatureData = (properties) => {
     ? applyFactor(values.gulf_hypoxia, 0.1)
     : []
 
-  values.natures_network = values.natures_network
-    ? applyFactor(values.natures_network, 0.1)
+  values.fl_blueprint = values.fl_blueprint
+    ? applyFactor(values.fl_blueprint, 0.1)
     : []
 
-  values.naturescape = values.naturescape
-    ? applyFactor(values.naturescape, 0.1)
+  values.midse_blueprint = values.midse_blueprint
+    ? applyFactor(values.midse_blueprint, 0.1)
+    : []
+
+  values.nn_priority = values.nn_priority
+    ? applyFactor(values.nn_priority, 0.1)
+    : []
+
+  values.ns_priority = values.ns_priority
+    ? applyFactor(values.ns_priority, 0.1)
     : []
 
   values.okchatrank = values.okchatrank
@@ -77,6 +85,22 @@ export const unpackFeatureData = (properties) => {
   values.txchatrank = values.txchatrank
     ? applyFactor(values.txchatrank, 0.1)
     : []
+
+  values.sa_blueprint = values.sa_blueprint
+    ? applyFactor(values.sa_blueprint, 0.1)
+    : []
+
+  // Transform Caribbean so that it follows same structure
+  // it will be 100% of whichever rank it is assigned; this will be
+  // corrected when used based on the amount of overlap with this input area.
+  // Array has positions 0 ... 24 to match possible priority values.
+  const carPercent = Array.from(Array(25)).map(() => 0)
+  if (values.carrank !== null && values.carrank !== undefined) {
+    carPercent[values.carrank] = 100
+    values.carrank = carPercent
+  } else {
+    values.carrank = []
+  }
 
   // merge avg and percents together
   if (values.indicators) {

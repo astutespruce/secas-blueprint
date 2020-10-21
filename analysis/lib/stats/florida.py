@@ -101,7 +101,7 @@ def summarize_by_huc12(geometries, out_dir):
     summarize_raster_by_geometry(
         geometries,
         extract_by_geometry,
-        outfilename=out_dir / "southatlantic.feather",
-        progress_label="Calculating South Atlantic area by HUC12",
+        outfilename=out_dir / "florida.feather",
+        progress_label="Calculating Florida Blueprint area by HUC12",
         bounds=FLORIDA_BOUNDS,
     )

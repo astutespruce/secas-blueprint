@@ -6,7 +6,12 @@ import { PieChart } from 'react-minimal-pie-chart'
 import { PieChartLegend } from 'components/chart'
 import { sum } from 'util/data'
 
-const InputAreaPriorityChart = ({ inputLabel, values, valueLabel }) => {
+const InputAreaPriorityChart = ({
+  inputLabel,
+  values,
+  valueLabel,
+  valueCaption,
+}) => {
   const chartWidth = 150
 
   const chartData = values
@@ -35,7 +40,7 @@ const InputAreaPriorityChart = ({ inputLabel, values, valueLabel }) => {
   console.log('chartData', chartData)
 
   return (
-    <Flex sx={{ alignItems: 'center', mt: '2rem' }}>
+    <Flex sx={{ alignItems: 'center' }}>
       <PieChart
         data={chartData}
         lineWidth={60}
@@ -46,7 +51,11 @@ const InputAreaPriorityChart = ({ inputLabel, values, valueLabel }) => {
         }}
       />
 
-      <PieChartLegend title={valueLabel} elements={chartData} />
+      <PieChartLegend
+        title={valueLabel}
+        subtitle={valueCaption}
+        elements={chartData}
+      />
     </Flex>
   )
 }
@@ -62,11 +71,13 @@ InputAreaPriorityChart.propTypes = {
     })
   ),
   valueLabel: PropTypes.string,
+  valueCaption: PropTypes.string,
 }
 
 InputAreaPriorityChart.defaultProps = {
   values: null,
   valueLabel: null,
+  valueCaption: null,
 }
 
 export default InputAreaPriorityChart
