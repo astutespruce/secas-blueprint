@@ -18,6 +18,9 @@ from analysis.lib.stats.florida import summarize_by_huc12 as summarize_florida_b
 from analysis.lib.stats.gulf_hypoxia import (
     summarize_by_huc12 as summarize_gulf_hypoxia_by_huc12,
 )
+from analysis.lib.stats.midse import summarize_by_huc12 as summarize_midse_by_huc12
+
+
 from analysis.lib.stats.natures_network import (
     summarize_by_huc12 as summarize_natures_network_by_huc12,
 )

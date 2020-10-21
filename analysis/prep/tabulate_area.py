@@ -16,9 +16,11 @@ from analysis.lib.stats import (
     summarize_slr_by_huc12,
     summarize_ownership_by_unit,
     summarize_counties_by_huc12,
-    summarize_chat_by_huc12,
-    summarize_gulf_hypoxia_by_huc12,
     summarize_caribbean_by_huc12,
+    summarize_chat_by_huc12,
+    summarize_florida_by_huc12,
+    summarize_gulf_hypoxia_by_huc12,
+    summarize_midse_by_huc12,
     summarize_natures_network_by_huc12,
     summarize_naturescape_by_huc12,
     summarize_southatlantic_by_unit,
@@ -79,14 +81,20 @@ summarize_naturescape_by_huc12(geometries, out_dir)
 # Summarize South Atlantic
 summarize_southatlantic_by_unit(geometries, out_dir)
 
+# Summarize Florida
+summarize_florida_by_huc12(geometries, out_dir)
+
+# Summarize Middle Southeast
+summarize_midse_by_huc12(geometries, out_dir)
+
 print(
     "Processed {:,} zones in {:.2f}m".format(len(geometries), (time() - start) / 60.0)
 )
 
 
-# #########################################################################
-# ########### Marine Lease Blocks #########################################
-# #########################################################################
+#########################################################################
+########### Marine Lease Blocks #########################################
+#########################################################################
 
 
 out_dir = data_dir / "results/marine_blocks"
@@ -103,7 +111,6 @@ summarize_bluprint_by_unit(geometries, out_dir)
 
 # Calculate overlap with ownership and protection
 summarize_ownership_by_unit(units_df, out_dir)
-
 
 # Summarize South Atlantic (marine)
 summarize_southatlantic_by_unit(geometries, out_dir)

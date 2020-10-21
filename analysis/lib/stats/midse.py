@@ -14,7 +14,7 @@ from analysis.constants import (
     ACRES_PRECISION,
     M2_ACRES,
     INPUTS,
-    SOUTHATLANTIC_BOUNDS,
+    MIDSE_BOUNDS,
 )
 from analysis.lib.raster import (
     boundless_raster_geometry_mask,
@@ -23,13 +23,13 @@ from analysis.lib.raster import (
     summarize_raster_by_geometry,
 )
 
-src_dir = Path("data/inputs/indicators/southatlantic")
-sa_filename = src_dir / "sa_blueprint.tif"
-sa_mask_filename = src_dir / "sa_blueprint_mask.tif"
+src_dir = Path("data/inputs/indicators/midse")
+sa_filename = src_dir / "midse_blueprint.tif"
+sa_mask_filename = src_dir / "midse_blueprint_mask.tif"
 
 
 def extract_by_geometry(geometries, bounds):
-    """Calculate the area of overlap between geometries and South Atlantic
+    """Calculate the area of overlap between geometries and Middle Southeast
     Conservation Blueprint dataset.
 
     Parameters
@@ -74,7 +74,7 @@ def extract_by_geometry(geometries, bounds):
     if results["shape_mask"] == 0:
         return None
 
-    max_value = INPUTS["sa"]["values"][-1]["value"]
+    max_value = INPUTS["ms"]["values"][-1]["value"]
 
     counts = extract_count_in_geometry(
         sa_filename, shape_mask, window, np.arange(max_value + 1), boundless=True
@@ -84,24 +84,24 @@ def extract_by_geometry(geometries, bounds):
     if counts.max() == 0:
         return None
 
-    results["sa"] = (counts * cellsize).round(ACRES_PRECISION).astype("float32")
+    results["ms"] = (counts * cellsize).round(ACRES_PRECISION).astype("float32")
 
     return results
 
 
-def summarize_by_unit(geometries, out_dir):
-    """Summarize by HUC12 / marine lease block
+def summarize_by_huc12(geometries, out_dir):
+    """Summarize by HUC12
 
     Parameters
     ----------
-    geometries : Series of pygeos geometries, indexed by HUC12 / marine lease block id
+    geometries : Series of pygeos geometries, indexed by HUC12 id
     out_dir : str
     """
 
     summarize_raster_by_geometry(
         geometries,
         extract_by_geometry,
-        outfilename=out_dir / "southatlantic.feather",
-        progress_label="Summarizing South Atlantic",
-        bounds=SOUTHATLANTIC_BOUNDS,
+        outfilename=out_dir / "midse.feather",
+        progress_label="Summarizing Middle Southeast Blueprint",
+        bounds=MIDSE_BOUNDS,
     )
