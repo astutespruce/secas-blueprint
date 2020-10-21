@@ -7,7 +7,9 @@ import rasterio
 from rasterio.features import rasterize
 from pyogrio import read_dataframe, write_dataframe
 
+from analysis.constants import MASK_FACTOR
 from analysis.lib.pygeos_util import explode, to_dict
+from analysis.lib.raster import add_overviews, create_lowres_mask
 
 
 src_dir = Path("source_data/blueprint")
@@ -71,7 +73,19 @@ with rasterio.open(blueprint_filename) as src:
     data = rasterize(
         shapes.values, src.shape, transform=src.transform, dtype="uint8", fill=255
     )
+    profile = src.profile
 
-    with rasterio.open(out_dir / "input_areas.tif", "w", **src.profile) as out:
-        out.write(data, 1)
 
+outfilename = out_dir / "input_areas.tif"
+
+with rasterio.open(outfilename, "w", **profile) as out:
+    out.write(data, 1)
+
+add_overviews(outfilename)
+
+create_lowres_mask(
+    outfilename,
+    str(outfilename).replace(".tif", "_mask.tif"),
+    factor=MASK_FACTOR,
+    ignore_zero=False,
+)

@@ -1,17 +1,26 @@
+"""
+Prepare HUC12 and Marine Lease Block input areas.
+
+NOTE: this must be run after prepare_input_areas.py
+"""
 import os
 from pathlib import Path
+
 import geopandas as gp
 import pandas as pd
 from pyogrio import read_dataframe, write_dataframe
 import pygeos as pg
 import numpy as np
+from progress.bar import Bar
 
 # suppress warnings abuot writing to feather
 import warnings
 
 warnings.filterwarnings("ignore", message=".*initial implementation of Parquet.*")
 
-from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES
+from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES, SE_STATES
+from analysis.lib.pygeos_util import to_dict
+from analysis.lib.raster import calculate_percent_overlap
 
 
 src_dir = Path("source_data")
@@ -19,6 +28,7 @@ data_dir = Path("data")
 analysis_dir = data_dir / "inputs/summary_units"
 bnd_dir = data_dir / "boundaries"  # GPKGs output for reference
 tile_dir = data_dir / "for_tiles"
+input_area_mask = data_dir / "inputs/input_areas_mask.tif"
 
 if not analysis_dir.exists():
     os.makedirs(analysis_dir)
@@ -46,7 +56,7 @@ print("Projecting to match SE region data...")
 huc12 = merged.to_crs(DATA_CRS)
 
 
-# select out those within the SE boundary
+# select out those within the SE states
 print("Selecting HUC12s in region...")
 tree = pg.STRtree(huc12.geometry.values.data)
 ix = tree.query(bnd, predicate="intersects")
@@ -58,7 +68,26 @@ huc12["geometry"] = pg.make_valid(huc12.geometry.values.data)
 # calculate area
 huc12["acres"] = (pg.area(huc12.geometry.values.data) * M2_ACRES).round().astype("uint")
 
-# NOTE: we don't limit to those that are mostly in the region because it takes too long.
+# for those that touch the edge of the region, drop any that are not >= 50% in
+# raster input area.  We are not able to use polygon intersection because it
+# takes too long.
+tree = pg.STRtree(huc12.geometry.values.data)
+ix = tree.query(bnd, predicate="contains")
+
+edge_df = huc12.loc[~huc12.id.isin(huc12.iloc[ix].id)].copy()
+geometries = pd.Series(edge_df.geometry.values.data, index=edge_df.id)
+drop_ids = []
+for id, geometry in Bar(
+    "Calculating HUC12 overlap with input area", max=len(geometries)
+).iter(geometries.iteritems()):
+    percent_overlap = calculate_percent_overlap(
+        input_area_mask, [to_dict(geometry)], bounds=pg.total_bounds(geometry)
+    )
+    if percent_overlap < 50:
+        drop_ids.append(id)
+
+print(f"Dropping {len(drop_ids)} HUC12s that do not sufficiently overlap input areas")
+huc12 = huc12.loc[~huc12.id.isin(drop_ids)].copy()
 
 # Save in EPSG:5070 for analysis
 huc12.to_feather(analysis_dir / "huc12.feather")

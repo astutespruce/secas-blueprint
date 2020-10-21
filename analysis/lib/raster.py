@@ -97,7 +97,7 @@ def extract_count_in_geometry(filename, geometry_mask, window, bins, boundless=F
     values = data[~mask]
 
     # count number of pixels in each bin
-    return np.bincount(values, minlength=len(bins)).astype("uint32")
+    return np.bincount(values, minlength=len(bins) if bins else None).astype("uint32")
 
 
 def extract_zonal_mean(filename, geometry_mask, window, boundless=False):
@@ -300,3 +300,29 @@ def add_overviews(filename):
     """
     with rasterio.open(filename, "r+") as src:
         src.build_overviews(OVERVIEW_FACTORS, Resampling.nearest)
+
+
+def calculate_percent_overlap(filename, shapes, bounds):
+    """Calculate percent of any pixels touched by shapes that is not NODATA.
+
+    Parameters
+    ----------
+    filename : str
+    shapes : list-like of GeoJSON features
+    bounds : list-like of [xmin, ymin, xmax, ymax]
+
+    Returns
+    -------
+    float
+        percent overlap of non-nodata values in mask
+    """
+    with rasterio.open(filename) as src:
+        shape_mask, transform, window = boundless_raster_geometry_mask(
+            src, shapes, bounds, all_touched=True
+        )
+
+    counts = extract_count_in_geometry(
+        filename, shape_mask, window, bins=None, boundless=True
+    )
+
+    return 100 * counts.sum() / (~shape_mask).sum()
