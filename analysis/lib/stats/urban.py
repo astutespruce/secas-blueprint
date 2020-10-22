@@ -21,7 +21,7 @@ from analysis.lib.pygeos_util import to_dict
 src_dir = Path("data/inputs/threats/urban")
 
 
-def extract_urbanization_area(geometries, bounds):
+def extract_by_geometry(geometries, bounds):
     """Calculate the area of overlap between geometries and urbanization
     for each decade from 2020 to 2100.
 
@@ -133,7 +133,7 @@ def summarize_by_huc12(geometries, out_dir):
     for huc12, geometry in Bar(
         "Calculating Urbanization counts for HUC12", max=len(geometries)
     ).iter(geometries.iteritems()):
-        zone_results = extract_urbanization_area(
+        zone_results = extract_by_geometry(
             [to_dict(geometry)], bounds=pg.total_bounds(geometry)
         )
         if zone_results is None:

@@ -2,9 +2,11 @@
 <h2 id="Threats">Threats</h2>
 
 {% if results.slr_acres %}
-    {% include "blocks/slr.html" %}
-{% else %}
-    {% include "blocks/no_slr.html" %}
+    {% if results.slr|sum %}
+        {% include "blocks/slr.html" %}
+    {% else %}
+        {% include "blocks/no_slr.html" %}
+    {% endif %}
 {% endif %}
 
 

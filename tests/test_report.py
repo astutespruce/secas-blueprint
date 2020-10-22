@@ -54,8 +54,9 @@ def read_cache(path):
 
 ### Create reports for an AOI
 aois = [
-    # {"name":"Caledonia area, MS", "path": "caledonia"},
-    # {"name":"Area in El Yunque National Forest, PR", "path": "yunque"},
+    {"name": "Caledonia area, MS", "path": "caledonia"},
+    {"name": "Napoleonville area, LA", "path": "Napoleonville"}
+    # {"name": "Area in El Yunque National Forest, PR", "path": "yunque"},
     # {"name":"Area near Magnet, TX", "path": "magnet"},
 ]
 
@@ -129,15 +130,15 @@ for aoi in aois:
 ### Create reports for summary units
 ids = {
     # "huc12": [
-    #     "130301020902", # far western edge
-    #     "031501060512",  # partial overlap with SA raster inputs
-    # "031700080402"
+    #     #     "130301020902", # far western edge
+    #     #     "031501060512",  # partial overlap with SA raster inputs
+    #     "031700080402"
     # ],
-    "marine_blocks": [
-        # "NI18-07-6210", # Atlantic coast
-        # "NG16-03-299",  # Gulf coast
-        "NG17-10-6583"  # Florida keys, overlaps with protected areas
-    ]
+    # "marine_blocks": [
+    #     # "NI18-07-6210", # Atlantic coast
+    #     # "NG16-03-299",  # Gulf coast
+    #     "NG17-10-6583"  # Florida keys, overlaps with protected areas
+    # ]
 }
 
 

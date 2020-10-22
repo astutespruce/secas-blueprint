@@ -14,16 +14,17 @@ from analysis.constants import (
     M2_ACRES,
 )
 from analysis.lib.raster import (
+    detect_data,
     boundless_raster_geometry_mask,
     extract_count_in_geometry,
     summarize_raster_by_geometry,
 )
-from analysis.lib.pygeos_util import intersection
 
 
 src_dir = Path("data/inputs")
 blueprint_filename = src_dir / "se_blueprint2020.tif"
 bp_inputs_filename = src_dir / "input_areas.tif"
+bp_inputs_mask_filename = src_dir / "input_areas_mask.tif"
 
 
 def extract_by_geometry(geometries, bounds):
@@ -42,28 +43,31 @@ def extract_by_geometry(geometries, bounds):
         {"shape_mask": <shape_mask_area>, "blueprint": [...], ...}
     """
 
+    # prescreen to make sure data are present
+    with rasterio.open(bp_inputs_mask_filename) as src:
+        if not detect_data(src, geometries, bounds):
+            return None
+
     results = {}
 
     # create mask and window
     with rasterio.open(blueprint_filename) as src:
-        try:
-            shape_mask, transform, window = boundless_raster_geometry_mask(
-                src, geometries, bounds, all_touched=True
-            )
-
-        except ValueError:
-            return None
+        shape_mask, transform, window = boundless_raster_geometry_mask(
+            src, geometries, bounds, all_touched=True
+        )
 
         # square meters to acres
         cellsize = src.res[0] * src.res[1] * M2_ACRES
 
-    results["shape_mask"] = (
-        ((~shape_mask).sum() * cellsize)
-        .round(ACRES_PRECISION)
-        .astype("float32")
-        .round(ACRES_PRECISION)
-        .astype("float32")
-    )
+    results = {
+        "shape_mask": (
+            ((~shape_mask).sum() * cellsize)
+            .round(ACRES_PRECISION)
+            .astype("float32")
+            .round(ACRES_PRECISION)
+            .astype("float32")
+        )
+    }
 
     # Nothing in shape mask, return None
     if results["shape_mask"] == 0:

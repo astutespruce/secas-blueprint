@@ -25,9 +25,9 @@ from analysis.constants import (
     M2_ACRES,
 )
 from analysis.lib.stats import (
-    extract_blueprint_area,
-    extract_urbanization_area,
-    extract_slr_area,
+    extract_blueprint_by_geometry,
+    extract_urban_by_geometry,
+    extract_slr_by_geometry,
 )
 
 
@@ -56,22 +56,22 @@ class CustomArea(object):
         self.name = name
 
     def get_blueprint(self):
-        counts = extract_blueprint_area(
+        blueprint = extract_blueprint_by_geometry(
             self.shapes, bounds=pg.total_bounds(self.geometry)
         )
 
-        if counts is None:
+        if blueprint is None or blueprint["shape_mask"] == 0:
             return None
 
-        blueprint_total = counts["blueprint"].sum()
+        blueprint_total = blueprint["blueprint"].sum()
 
-        remainder = abs(counts["shape_mask"] - blueprint_total)
+        remainder = abs(blueprint["shape_mask"] - blueprint_total)
         # there are small rounding errors
         remainder = remainder if remainder >= 1 else 0
 
-        # only pull in inputs that are present
+        # only pull in Blueprint inputs that are present
         inputs = []
-        for i, acres in enumerate(counts["inputs"]):
+        for i, acres in enumerate(blueprint["inputs"]):
             input_ids = INPUT_AREA_VALUES[i]["id"].split(",")
             if acres > 0:
                 for input_id in input_ids:
@@ -80,9 +80,9 @@ class CustomArea(object):
                     inputs.append(input)
 
         results = {
-            "analysis_acres": counts["shape_mask"],
+            "analysis_acres": blueprint["shape_mask"],
             "analysis_remainder": remainder,
-            "blueprint": counts["blueprint"].tolist(),
+            "blueprint": blueprint["blueprint"].tolist(),
             "blueprint_total": blueprint_total,
             "inputs": inputs,
         }
@@ -90,45 +90,74 @@ class CustomArea(object):
         return results
 
     def get_urban(self):
-        urban_results = extract_urbanization_area(
+        """Extract current and projected urbanization.
+
+        Returns
+        -------
+        dict
+            {
+                "urban_acres": <urban analysis acres>,
+                "urban": <current urban>,
+                "proj_urban": [<urbanization 2020>, ..., <urbanization 2060>]
+            }
+        """
+        urban = extract_urban_by_geometry(
             self.shapes, bounds=pg.total_bounds(self.geometry)
         )
 
-        if urban_results is None or urban_results["shape_mask"] == 0:
+        if urban is None or urban["shape_mask"] == 0:
             return None
 
-        # only keep through 2060
-        proj_urban = [urban_results[year] for year in URBAN_YEARS[:5]]
+        # only keep through 2060 for reports, and only if there is projected
+        # urbanization
+        proj_urban = [urban[year] for year in URBAN_YEARS[:5]]
         if not sum(proj_urban):
             return None
 
         return {
-            "urban_acres": urban_results["shape_mask"],
-            "urban": urban_results["urban"],
+            "urban_acres": urban["shape_mask"],
+            "urban": urban["urban"],
             "proj_urban": proj_urban,
         }
 
     def get_slr(self):
-        slr_bounds = gp.read_feather(slr_bounds_filename).geometry
-        idx = sjoin_geometry(self.geometry, slr_bounds.values.data, how="inner")
-        if not len(idx):
+        """Extract SLR for any geometries that overlap bounds where SLR is available
+
+        Returns
+        -------
+        dict
+            {"slr_acres": <acres>, "slr": [<slr_0ft>, <slr_1ft>, ..., <slr_6ft>]}
+        """
+        slr_bounds = gp.read_feather(slr_bounds_filename).geometry.values.data[0]
+        ix = pg.intersects(self.geometry, slr_bounds)
+
+        if not ix.sum():
+            # No overlap
             return None
 
-        idx = idx.index.unique()
-
-        slr_results = extract_slr_area(
-            self.shapes.take(idx), bounds=pg.total_bounds(self.geometry.take(idx))
+        # only extract SLR where there are overlaps
+        slr_results = extract_slr_by_geometry(
+            self.shapes[ix], bounds=pg.total_bounds(self.geometry[ix])
         )
-        if slr_results is None or slr_results["shape_mask"] == 0:
+        # None only if no shape mask
+        if slr_results is None:
             return None
 
         slr = [slr_results[i] for i in range(7)]
-        if not sum(slr):
-            return None
 
         return {"slr_acres": slr_results["shape_mask"], "slr": slr}
 
     def get_counties(self):
+        """Get county and state names that overlap this area.
+
+        Returns
+        -------
+        dict
+            {"counties": [
+                {"FIPS": <FIPS>, "state": <state name>, "county": <county_name>},
+                ...
+            ]
+        """
         counties = gp.read_feather(county_filename)[
             ["geometry", "FIPS", "state", "county"]
         ]
@@ -147,6 +176,28 @@ class CustomArea(object):
         return {"counties": df.to_dict(orient="records")}
 
     def get_ownership(self):
+        """Get ownership and protection levels and other statistics for this area
+
+        Returns
+        -------
+        dict
+            {
+                "ownership": [
+                    {
+                        "label": <ownership type label>,
+                        "acres": <acres of overlap>
+                    }
+                ],
+                "protection": [
+                    {
+                        "label": <protection type label>,
+                        "acres": <acres of overlap>
+                    }
+                ],
+                "protected_areas" [<top 25 protected area names and areas>],
+                "num_protected_areas": <total number protected areas>
+            }
+        """
         ownership = gp.read_feather(ownership_filename)
         df = intersection(pd.DataFrame({"geometry": self.geometry}), ownership)
 

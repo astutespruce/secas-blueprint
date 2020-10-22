@@ -97,7 +97,9 @@ def extract_count_in_geometry(filename, geometry_mask, window, bins, boundless=F
     values = data[~mask]
 
     # count number of pixels in each bin
-    return np.bincount(values, minlength=len(bins) if bins else None).astype("uint32")
+    return np.bincount(
+        values, minlength=len(bins) if bins is not None else None
+    ).astype("uint32")
 
 
 def extract_zonal_mean(filename, geometry_mask, window, boundless=False):
@@ -277,14 +279,14 @@ def summarize_raster_by_geometry(
     if not len(results):
         return
 
-    count_df = pd.DataFrame(results, index=index)
+    df = pd.DataFrame(results, index=index)
 
-    results = count_df[["shape_mask"]].copy()
+    results = df[["shape_mask"]].copy()
     results.index.name = "id"
 
     # each column is an array of counts for each
-    for col in count_df.columns.difference(["shape_mask"]):
-        s = count_df[col].apply(pd.Series).fillna(0)
+    for col in df.columns.difference(["shape_mask"]):
+        s = df[col].apply(pd.Series).fillna(0)
         s.columns = [f"{col}_{c}" for c in s.columns]
         results = results.join(s)
 

@@ -220,16 +220,20 @@ const BlueprintTab = ({ blueprint, inputs, ...selectedUnit }) => {
               <Heading as="h3">Blueprint Inputs</Heading>
             </Text>
 
-            {hasInputOverlaps ? (
-              <Text sx={{ fontSize: 0, color: 'grey.7', mb: '2rem' }}>
-                Note: multiple Blueprint inputs overlap in some areas. See{' '}
-                <OutboundLink to="https://www.sciencebase.gov/catalog/file/get/5f85ac8282cebef40f14c545?name=SE_Blueprint_2020_DevelopmentProcess.pdf">
-                  Blueprint integration documentation
-                </OutboundLink>{' '}
-                for more details about how individual Blueprint inputs were
-                integrated to create the final Blueprint value.
-              </Text>
-            ) : null}
+            <Text sx={{ fontSize: 0, color: 'grey.7', mb: '2rem' }}>
+              See{' '}
+              <OutboundLink to="https://www.sciencebase.gov/catalog/file/get/5f85ac8282cebef40f14c545?name=SE_Blueprint_2020_DevelopmentProcess.pdf">
+                Blueprint integration documentation
+              </OutboundLink>{' '}
+              for more details about how individual Blueprint inputs were
+              integrated to create the final Blueprint value.{' '}
+              {hasInputOverlaps ? (
+                <>
+                  Note: multiple Blueprint inputs overlap in some areas; this
+                  may affect the final Blueprint conservation value.
+                </>
+              ) : null}
+            </Text>
 
             <Box sx={{ mt: '1rem' }}>
               {binnedInputs.map((input) => (

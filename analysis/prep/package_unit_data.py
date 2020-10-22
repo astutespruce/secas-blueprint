@@ -113,7 +113,7 @@ urban = delta_encode_values(
 ownership = (
     pd.read_feather(working_dir / "ownership.feather")
     .set_index("id")
-    .join(huc12.acres.rename("total_acres"))
+    .join(huc12.acres.rename("total_acres"), how="inner")
 )
 
 ownership["percent"] = (
@@ -132,7 +132,7 @@ ownership = pd.Series(
 protection = (
     pd.read_feather(working_dir / "protection.feather")
     .set_index("id")
-    .join(huc12.acres.rename("total_acres"))
+    .join(huc12.acres.rename("total_acres"), how="inner")
 )
 
 protection["percent"] = (
@@ -261,6 +261,7 @@ for state in ["ok", "tx"]:
 
 working_dir = results_dir / "marine_blocks"
 
+print("--------------------------------")
 print("Reading marine_blocks...")
 marine = pd.read_feather(
     data_dir / "inputs/summary_units/marine_blocks.feather",

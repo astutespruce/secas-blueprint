@@ -24,7 +24,7 @@ slr_bounds_filename = src_dir / "slr_bounds.feather"
 vrt_filename = src_dir / "slr.vrt"
 
 
-def extract_slr_area(geometries, bounds):
+def extract_by_geometry(geometries, bounds):
     """Calculate the area of overlap between geometries and each level of SLR
     between 0 (currently inundated) and 6 meters.
 
@@ -114,7 +114,7 @@ def summarize_by_huc12(geometries, out_dir):
     for huc12, geometry in Bar(
         "Calculating SLR counts for HUC12", max=len(geometries)
     ).iter(geometries.iteritems()):
-        zone_results = extract_slr_area(
+        zone_results = extract_by_geometry(
             [to_dict(geometry)], bounds=pg.total_bounds(geometry)
         )
         if zone_results is None:
