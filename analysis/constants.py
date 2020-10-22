@@ -4,7 +4,7 @@ import json
 
 # Set to True to output intermediate rasters for validation (uncomment in map.raster module)
 # Set to True to output /tmp/test.html for reports
-DEBUG = False
+DEBUG = True
 
 DATA_CRS = "EPSG:5070"
 GEO_CRS = "EPSG:4326"

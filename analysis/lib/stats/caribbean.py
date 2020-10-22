@@ -4,7 +4,7 @@ import geopandas as gp
 import pandas as pd
 import pygeos as pg
 
-from analysis.constants import CARIBBEAN_BOUNDS, M2_ACRES
+from analysis.constants import CARIBBEAN_BOUNDS, M2_ACRES, ACRES_PRECISION
 
 from analysis.lib.bounds import bounds_overlap
 from analysis.lib.pygeos_util import intersection
@@ -13,50 +13,110 @@ from analysis.lib.pygeos_util import intersection
 src_dir = Path("data/inputs/indicators/caribbean")
 caribbean_filename = src_dir / "caribbean.feather"
 
+huc12_out_dir = Path("data/results/huc12")
+huc12_results_filename = huc12_out_dir / "caribbean.feather"
 
-def summarize_caribbean_aoi(df, bounds):
-    """Calculate area of overlap with Caribbean dataset
+
+COLORS = {0: "#EEE", 1: "#807dba", 2: "#005a32"}
+
+LABELS = {0: "Not a priority", 1: "Medium priority", 2: "High priority"}
+
+LEGEND = [
+    {"label": "Rank 1-8: high priority", "color": "#005a32"},
+    {"label": "Rank 9-12: medium priority", "color": "#807dba"},
+]
+
+
+def get_analysis_notes():
+    return """Values range from 1 (highest priority) to 24 (lower priority).
+    Note: areas are based on the polygon boundary of this area
+    compared to watershed boundaries rather than pixel-level analyses used
+    elsewhere in this report."""
+
+
+def get_rank_value(rank):
+    """Construct value entry (value, label, color, blueprint) for a Caribbean
+    priority watershed rank.
+
+    Parameters
+    ----------
+    rank : int [0...24]
+
+    Returns
+    -------
+    dict
+        {"value": <value>, "label": <label>, "color": <color>, "blueprint": <>}
+    """
+    blueprint = 0
+    if rank <= 8:
+        blueprint = 2
+    elif rank <= 12:
+        blueprint = 1
+
+    return {
+        "value": rank,
+        "label": f"{rank}: {LABELS[blueprint]}",
+        "color": COLORS[blueprint],
+        "blueprint": blueprint,
+    }
+
+
+def generate_values():
+    """Programmatically generate list of values, colors, labels for Caribbean
+    due to large number of values
+    """
+
+    return [get_rank_value(i) for i in range(0, 25)]
+
+
+def summarize_by_aoi(df, analysis_acres):
+    """Calculate ranks and areas of overlap within Caribbean Priority Watersheds.
 
     Parameters
     ----------
     df : GeoDataframe
         area of interest
-    bounds : list-like of [xmin, ymin, xmax, ymax]
-        bounds of area of interest
+    analysis_acres : float
+        area in acres of area of interest
 
-    Returns
-    -------
-    DataFrame
-        aggregated
+        dict
+        {
+            "priorities": [...],
+            "legend": [...],
+            "analysis_notes": <analysis_notes>
+        }
     """
 
-    if not bounds_overlap(bounds, CARIBBEAN_BOUNDS):
-        return None
-
-    index_name = df.index.name
-
     car_df = gp.read_feather(caribbean_filename, columns=["geometry", "carrank"])
-
     df = intersection(df, car_df)
     df["acres"] = pg.area(df.geometry_right.values.data) * M2_ACRES
 
     # aggregate totals by rank
     by_rank = (
         df[["carrank", "acres"]]
-        .groupby(by=[df.index.get_level_values(0), "carrank"])
+        .groupby(by="carrank")
         .acres.sum()
         .astype("float32")
-        .round()
         .reset_index()
-        .set_index("level_0")
+        .sort_values(by="carrank")
     )
 
-    by_rank.index.name = index_name
+    priorities = []
+    for ix, row in by_rank.iterrows():
+        value = get_rank_value(row.carrank)
+        value["acres"] = row.acres
+        value["percent"] = 100 * row.acres / analysis_acres
 
-    return by_rank
+        priorities.append(value)
+
+    return {
+        "priorities": priorities,
+        "legend": LEGEND,
+        "analysis_notes": get_analysis_notes(),
+    }
 
 
-def summarize_caribbean_by_huc12(df, out_dir):
+def summarize_by_huc12(df, out_dir):
     """Calculate overlap of HUC12 summary units with HUC10 priority watersheds.
 
     This uses the HUC10 component of the HUC12 index to do a basic join, and
@@ -80,5 +140,40 @@ def summarize_caribbean_by_huc12(df, out_dir):
 
     df = df.join(car_df, on="HUC10", how="inner")[["carrank"]].reset_index()
 
-    df.to_feather(out_dir / "caribbean.feather")
+    df.to_feather(huc12_results_filename)
+
+
+def get_huc12_results(id, analysis_acres, total_acres):
+    """Get results for Priority Watershed Rank for a given HUC12.
+
+    Parameters
+    ----------
+    id : str
+        HUC12 ID
+    analysis_acres : float
+        area of HUC12 summary unit less any area outside SE Blueprint
+    total_acres : float
+        area of HUC12 summary unit
+
+    Returns
+    -------
+    dict
+        {
+            "priorities": [...],
+            "legend": [...],
+            "analysis_notes": <analysis_notes>
+        }
+    """
+    df = pd.read_feather(huc12_results_filename).set_index("id")
+
+    rank = df.loc[id].carrank if id in df.index else 0
+    value = get_rank_value(rank)
+    value["acres"] = analysis_acres
+    value["percent"] = 100 * analysis_acres / total_acres
+
+    return {
+        "priorities": [value],
+        "legend": LEGEND,
+        "analysis_notes": get_analysis_notes(),
+    }
 

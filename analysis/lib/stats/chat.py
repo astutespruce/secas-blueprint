@@ -12,16 +12,18 @@ from analysis.lib.pygeos_util import intersection
 chat_dir = Path("data/inputs/indicators/chat")
 
 
-def summarize_chat(df, chat_df, fields):
+def summarize_by_areas(df, state, rank_only=False, means=False):
     """Calculate acres by value and area-weighted value for each CHAT field in fields.
 
     Parameters
     ----------
     df : GeoDataFrame
         area(s) of interest
-    chat_df : GeoDataFrame
-    fields : list-like of CHAT field names
-
+    state : str, one of ['ok', 'tx']
+    rank_only : bool (default False)
+        if True, will only calculate areas for CHAT Rank
+    means : bool
+        if True, will calculate area-weighted mean ranks
     Returns
     -------
     dict of DataFrames, all indexed by incoming index
@@ -31,6 +33,12 @@ def summarize_chat(df, chat_df, fields):
             "avg": ...
         }
     """
+    chat_df = gp.read_feather(chat_dir / f"{state}chat.feather")
+    fields = ["chatrank"]
+
+    if not rank_only:
+        fields += [e["id"] for e in INPUTS[f"{state}chat"]["indicators"]]
+
     df = intersection(df, chat_df)
     df["acres"] = pg.area(df.geometry_right.values.data) * M2_ACRES
     df = df.loc[df.acres > 0].copy()
@@ -56,17 +64,20 @@ def summarize_chat(df, chat_df, fields):
         # create an array of [<acres for value 0>, <acres for value 1>,... ]
         area_results[field] = grouped.groupby("id").acres.apply(np.array)
 
-        # exclude nodata to calculate area-weighted average
-        values = grouped.loc[grouped[field] > 0].set_index(index_name)
-        total_acres = values.groupby(level=0).acres.sum().rename("total")
-        values = values.join(total_acres)
-        values["wtd_value"] = (values.acres / values.total) * values[field].astype(
-            "uint8"
-        )
-        avg_results[field] = values.groupby(level=0).wtd_value.sum().round(1)
+        if means:
+            # exclude nodata to calculate area-weighted average
+            values = grouped.loc[grouped[field] > 0].set_index(index_name)
+            total_acres = values.groupby(level=0).acres.sum().rename("total")
+            values = values.join(total_acres)
+            values["wtd_value"] = (values.acres / values.total) * values[field].astype(
+                "uint8"
+            )
+            avg_results[field] = values.groupby(level=0).wtd_value.sum().round(1)
 
     results["acres"] = pd.DataFrame(area_results)
-    results["avg"] = pd.DataFrame(avg_results)
+
+    if means:
+        results["avg"] = pd.DataFrame(avg_results)
 
     return results
 
@@ -74,10 +85,8 @@ def summarize_chat(df, chat_df, fields):
 def summarize_by_huc12(units_df, out_dir):
     for state in ["ok", "tx"]:
         print(f"Calculating overlap with {state} CHAT...")
-        chat = gp.read_feather(chat_dir / f"{state}chat.feather")
-        fields = ["chatrank"] + [e["id"] for e in INPUTS[f"{state}chat"]["indicators"]]
 
-        chat_results = summarize_chat(units_df, chat, fields=fields)
+        chat_results = summarize_by_areas(units_df, state, rank_only=False, means=True)
 
         if chat_results is None:
             continue
@@ -90,7 +99,7 @@ def summarize_by_huc12(units_df, out_dir):
         # bare indicator IDs are averages
         results = results.join(avg_results).fillna(0)
 
-        for field in fields:
+        for field in area_results.keys():
             # convert array to columns
             s = area_results[field].apply(pd.Series)
             s.columns = [f"{field}_{c}" for c in s.columns]

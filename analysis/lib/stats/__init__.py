@@ -2,9 +2,11 @@ from analysis.lib.stats.blueprint import (
     extract_by_geometry as extract_blueprint_by_geometry,
     summarize_by_unit as summarize_bluprint_by_unit,
 )
+
 from analysis.lib.stats.ownership import (
     summarize_by_unit as summarize_ownership_by_unit,
 )
+
 from analysis.lib.stats.counties import (
     summarize_by_huc12 as summarize_counties_by_huc12,
 )
@@ -19,25 +21,33 @@ from analysis.lib.stats.slr import (
     summarize_by_huc12 as summarize_slr_by_huc12,
 )
 
-
 from analysis.lib.stats.caribbean import (
-    summarize_caribbean_aoi,
-    summarize_caribbean_by_huc12,
+    get_huc12_results as get_caribbean_huc12_results,
+    summarize_by_aoi as summarize_caribbean_by_aoi,
+    summarize_by_huc12 as summarize_caribbean_by_huc12,
 )
-from analysis.lib.stats.chat import summarize_by_huc12 as summarize_chat_by_huc12
+
+from analysis.lib.stats.chat import (
+    summarize_by_areas as summarize_chat_by_areas,
+    summarize_by_huc12 as summarize_chat_by_huc12,
+)
+
 from analysis.lib.stats.florida import summarize_by_huc12 as summarize_florida_by_huc12
+
 from analysis.lib.stats.gulf_hypoxia import (
     summarize_by_huc12 as summarize_gulf_hypoxia_by_huc12,
 )
-from analysis.lib.stats.midse import summarize_by_huc12 as summarize_midse_by_huc12
 
+from analysis.lib.stats.midse import summarize_by_huc12 as summarize_midse_by_huc12
 
 from analysis.lib.stats.natures_network import (
     summarize_by_huc12 as summarize_natures_network_by_huc12,
 )
+
 from analysis.lib.stats.naturescape import (
     summarize_by_huc12 as summarize_naturescape_by_huc12,
 )
+
 from analysis.lib.stats.southatlantic import (
     summarize_by_unit as summarize_southatlantic_by_unit,
 )

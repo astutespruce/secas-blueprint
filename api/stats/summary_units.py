@@ -17,6 +17,9 @@ from analysis.constants import (
     ACRES_PRECISION,
 )
 
+from analysis.lib.stats import get_caribbean_huc12_results
+
+
 input_dir = Path("data/inputs")
 results_dir = Path("data/results")
 
@@ -26,31 +29,33 @@ class SummaryUnits(object):
         print(f"Loading {unit_type} summary data...")
         self.unit_type = unit_type
 
-        working_dir = results_dir / unit_type
+        self.working_dir = results_dir / unit_type
 
         self.units = gp.read_feather(
             input_dir / "summary_units" / f"{unit_type}_wgs84.feather"
         ).set_index("id")
 
-        self.blueprint = pd.read_feather(working_dir / "blueprint.feather").set_index(
-            "id"
-        )
+        self.blueprint = pd.read_feather(
+            self.working_dir / "blueprint.feather"
+        ).set_index("id")
 
-        self.ownership = pd.read_feather(working_dir / "ownership.feather").set_index(
-            "id"
-        )
+        self.ownership = pd.read_feather(
+            self.working_dir / "ownership.feather"
+        ).set_index("id")
 
-        self.protection = pd.read_feather(working_dir / "protection.feather").set_index(
-            "id"
-        )
+        self.protection = pd.read_feather(
+            self.working_dir / "protection.feather"
+        ).set_index("id")
 
         if unit_type == "huc12":
-            self.slr = pd.read_feather(working_dir / "slr.feather").set_index("id")
-            self.urban = pd.read_feather(working_dir / "urban.feather").set_index("id")
-
-            self.counties = pd.read_feather(working_dir / "counties.feather").set_index(
+            self.slr = pd.read_feather(self.working_dir / "slr.feather").set_index("id")
+            self.urban = pd.read_feather(self.working_dir / "urban.feather").set_index(
                 "id"
             )
+
+            self.counties = pd.read_feather(
+                self.working_dir / "counties.feather"
+            ).set_index("id")
 
     def get_results(self, id):
         if not id in self.units.index:
@@ -86,23 +91,52 @@ class SummaryUnits(object):
         results["analysis_acres"] = blueprint.shape_mask
 
         remainder = abs(blueprint.shape_mask - results["blueprint_total"])
-        # there are small rounding errors
+        # there are small rounding errors, only keep if > 1
         results["analysis_remainder"] = remainder if remainder >= 1 else 0
 
-        # only pull in inputs that are present
+        # only pull in Blueprint inputs that are present, and flatten
+        # overlapping inputs
         inputs = []
+        has_overlapping_inputs = False
         input_cols = [c for c in blueprint.index if c.startswith("inputs_")]
         for i, col in enumerate(input_cols):
             input_ids = INPUT_AREA_VALUES[i]["id"].split(",")
             acres = blueprint[col]
             if acres > 0:
+                if len(input_ids) > 1:
+                    has_overlapping_inputs = True
+
                 for input_id in input_ids:
                     input = deepcopy(INPUTS[input_id])
                     input["acres"] = acres
                     inputs.append(input)
 
         inputs = sorted(inputs, key=lambda x: x["acres"], reverse=True)
+
+        # read in input_priorities
+        for entry in inputs:
+            input_id = entry["id"]
+            values = entry.get("values", [])
+            domain = entry["domain"]
+
+            if input_id in ["okchat", "txchat"]:
+                print(f"TODO: {input_id}")
+
+            elif input_id == "car":
+                caribbean_results = get_caribbean_huc12_results(
+                    id,
+                    results["acres"] - results["analysis_remainder"],
+                    results["acres"],
+                )
+                entry.update(caribbean_results)
+
+                continue
+
+            else:
+                print(f"TODO: {input_id}")
+
         results["inputs"] = inputs
+        results["has_overlapping_inputs"] = has_overlapping_inputs
 
         try:
             ownership = self.ownership.loc[self.ownership.index.isin([id])]

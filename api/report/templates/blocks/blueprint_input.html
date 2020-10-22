@@ -1,0 +1,136 @@
+<section>
+    <h3>
+        {{src.label}}
+        {% if src.version %}
+            {{src.version}}
+        {%endif %}
+    </h3>
+
+    <!-- TODO: Blueprint input description -->
+
+    {% if src.infoURL or src.dataURL or src.viewerURL %}
+        {% if src.infoURL or src.dataURL %}
+            <p>
+                {% if src.infoURL %}
+                    <a href="{{src.infoURL}}">Learn more</a> about this Blueprint input.
+                {% endif %}
+
+                {% if src.infoURL and src.dataURL %}
+                    <br/>
+                {% endif %}
+
+                {% if src.dataURL %}
+                    <a href="{{src.dataURL}}">Access and download data</a>.
+                {% endif %}
+            </p>
+        {% endif %}
+
+        {% if src.viewerURL %}
+            <p>
+                More detailed information for {{src.label}} indicators
+                is available in the
+                <a href="{{src.viewerURL}}">
+                    {{viewerName}}
+                </a>
+            </p>
+        {% endif %}
+    {% endif %}
+
+    {% if maps[src.id] %}
+        <div class="map-container">
+            <img src="data:image/png;base64,{{maps[src.id]}}" alt="Blueprint input map for {{src.label}}" class="map">
+
+            {% include "elements/north_arrow.html" %}
+        </div>
+
+        {% include "elements/map_footer.html" %}
+
+        <div class="flex map-footer">
+            <div class="map-locator-container">
+                {% if maps.locator %}
+                    <img src="data:image/png;base64,{{maps.locator}}" alt="Locator map" class="map-locator">
+                {% endif %}
+            </div>
+
+            {% if src.legend %}
+            <div class="legend">
+                <div class="legend-header">
+
+                </div>
+
+                {% if src.fieldCaption %}
+                    <div class="legend-field-caption">
+                        {{src.fieldCaption}}
+                    </div>
+                {% endif %}
+
+                {% for item in src.legend %}
+                    <div class="legend-element flex align-center">
+                        <div class="legend-patch" style="background: {{item.color}}"></div>
+                        <div class="legend-label">{{item.label}}</div>
+                    </div>
+                {% endfor %}
+                <!-- space is required or last label doesn't render -->
+                &nbsp;
+            </div>
+            {% endif %}
+        </div>
+
+    {% else %}
+        <div class="map-placeholder text-center">
+            map could not be created
+        </div>
+    {% endif %}
+
+
+    {% if src.priorities %}
+    <div class="no-break">
+        {% with number=table.counter,label="extent of each Blueprint input priority category",extra=src.analysis_notes %}
+            {% include "elements/table_caption.html" %}
+        {% endwith %}
+        {% set table.counter=table.counter+1 %}
+
+
+        <table class="centered">
+            <thead>
+                <tr>
+                    <th class="label">Blueprint Input Priority Category</th>
+                    <th class="acres">Acres</th>
+                    <th class="percent">Percent of Area</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in src.priorities %}
+                    <tr>
+                        <td class="label">{{item.label}}</td>
+                        <td class="acres">{{item.acres|format_number}}</td>
+                        <td class="percent">{{item.percent|format_percent}}%</td>
+                    </tr>
+                {% endfor %}
+
+                {% if src.remainder %}
+                    <tr class="remainder-row">
+                        <td class="label">Outside {{src.label}} input area</td>
+                        <td class="acres">{{src.remainder|format_number}}</td>
+                        <td class="percent">{{src.remainder_percent|format_percent}}%</td>
+                    </tr>
+                {% endif %}
+
+                {% if results.analysis_remainder > 0 %}
+                    <tr class="remainder-row">
+                        <td class="label">Outside Southeast Blueprint</td>
+                        <td class="acres">{{results.analysis_remainder|format_number}}</td>
+                        <td class="percent">{{(100 * results.analysis_remainder / results.analysis_acres)|format_percent}}%</td>
+                    </tr>
+                {% endif %}
+
+                <tr class="total-row">
+                    <td class="label align-right">Total area</td>
+                    <td class="acres">{{src.acres|format_number}}</td>
+                    <td class="percent">100%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</section>

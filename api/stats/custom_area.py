@@ -28,6 +28,8 @@ from analysis.lib.stats import (
     extract_blueprint_by_geometry,
     extract_urban_by_geometry,
     extract_slr_by_geometry,
+    summarize_caribbean_by_aoi,
+    summarize_chat_by_areas,
 )
 
 
@@ -51,14 +53,13 @@ class CustomArea(object):
         """
 
         self.geometry = to_crs(geometry, crs, DATA_CRS)
+        self.bounds = pg.total_bounds(self.geometry)
         # wrap geometry as a dict for rasterio
         self.shapes = np.asarray([to_dict(self.geometry[0])])
         self.name = name
 
     def get_blueprint(self):
-        blueprint = extract_blueprint_by_geometry(
-            self.shapes, bounds=pg.total_bounds(self.geometry)
-        )
+        blueprint = extract_blueprint_by_geometry(self.shapes, bounds=self.bounds)
 
         if blueprint is None or blueprint["shape_mask"] == 0:
             return None
@@ -69,15 +70,92 @@ class CustomArea(object):
         # there are small rounding errors
         remainder = remainder if remainder >= 1 else 0
 
-        # only pull in Blueprint inputs that are present
+        # only pull in Blueprint inputs that are present, and flatten
+        # overlapping inputs
         inputs = []
+        has_overlapping_inputs = False
         for i, acres in enumerate(blueprint["inputs"]):
             input_ids = INPUT_AREA_VALUES[i]["id"].split(",")
             if acres > 0:
+                if len(input_ids) > 1:
+                    has_overlapping_inputs = True
+
                 for input_id in input_ids:
                     input = deepcopy(INPUTS[input_id])
                     input["acres"] = acres
                     inputs.append(input)
+
+        inputs = sorted(inputs, key=lambda x: x["acres"], reverse=True)
+
+        # extract input priorities from each input present
+        df = gp.GeoDataFrame(geometry=self.geometry, crs=DATA_CRS)
+        aoi_acres = pg.area(self.geometry).sum() * M2_ACRES
+
+        for entry in inputs:
+            input_id = entry["id"]
+            values = entry.get("values", [])
+            domain = entry["domain"]
+
+            if input_id in ["okchat", "txchat"]:
+                print(f"TODO: {input_id}")
+
+            elif input_id == "car":
+                caribbean_results = summarize_caribbean_by_aoi(df, aoi_acres)
+                entry.update(caribbean_results)
+
+                # Note: input area remainder deliberately omitted, since all
+                # areas outside but close to this input are outside SE Blueprint
+                continue
+
+            else:
+                print(f"TODO: {input_id}")
+
+            if input_results is not None:
+                input_remainder = None  # TODO: all input areas
+
+                # merge input_results with values
+                priorities = [
+                    {
+                        "label": e["label"],
+                        "color": e["color"],
+                        "value": e["value"],
+                        "blueprint": e["blueprint"],
+                        "acres": input_results[e["value"]],
+                        "percent": input_percents[e["value"]],
+                    }
+                    for e in values
+                ]
+
+                notPriority = None
+                if len(priorities) and priorities[0]["value"] == 0:
+                    notPriority = priorities.pop(0)
+
+                # sort values correctly
+                if domain and domain[0] < domain[1]:
+                    priorities.reverse()
+
+                else:
+                    legend = [
+                        {"label": e["label"], "color": e["color"]} for e in priorities
+                    ]
+
+                # add not a priority at end (not present in legend)
+                if notPriority is not None and notPriority["acres"] > 0:
+                    priorities.append(notPriority)
+
+                if input_remainder:
+                    entry["remainder"] = input_remainder
+                    entry["remainder_percent"] = (
+                        100 * input_remainder / input_total_acres
+                    )
+
+                print("priorities", priorities)
+                print("legend", legend)
+
+                entry["priorities"] = priorities
+                entry["legend"] = legend
+
+        # print("input results", inputs)
 
         results = {
             "analysis_acres": blueprint["shape_mask"],
@@ -85,6 +163,7 @@ class CustomArea(object):
             "blueprint": blueprint["blueprint"].tolist(),
             "blueprint_total": blueprint_total,
             "inputs": inputs,
+            "has_overlapping_inputs": has_overlapping_inputs,
         }
 
         return results
@@ -101,9 +180,7 @@ class CustomArea(object):
                 "proj_urban": [<urbanization 2020>, ..., <urbanization 2060>]
             }
         """
-        urban = extract_urban_by_geometry(
-            self.shapes, bounds=pg.total_bounds(self.geometry)
-        )
+        urban = extract_urban_by_geometry(self.shapes, bounds=self.bounds)
 
         if urban is None or urban["shape_mask"] == 0:
             return None
@@ -272,17 +349,17 @@ class CustomArea(object):
             "name": self.name,
         }
 
-        try:
-            blueprint_results = self.get_blueprint()
-            if blueprint_results is None:
-                return None
-
-            results.update(blueprint_results)
-
-        except ValueError:
-            # geometry does not overlap Blueprint.  There are no valid results here,
-            # move along.
+        # try:
+        blueprint_results = self.get_blueprint()
+        if blueprint_results is None:
             return None
+
+        results.update(blueprint_results)
+
+        # except ValueError:
+        #     # geometry does not overlap Blueprint.  There are no valid results here,
+        #     # move along.
+        #     return None
 
         urban_results = self.get_urban()
         if urban_results is not None:
