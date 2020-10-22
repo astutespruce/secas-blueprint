@@ -333,18 +333,29 @@
         "color": "#005a32",
         "blueprint": 2
       },
-      { "value": 2, "label": "2", "color": "#74c476", "blueprint": 2 },
-      { "value": 3, "label": "3", "color": "#807dba", "blueprint": 1 },
-      { "value": 4, "label": "4", "color": "#969696", "blueprint": 0 },
-      { "value": 5, "label": "5", "color": "#bdbdbd", "blueprint": 0 },
       {
-        "value": 6,
+        "value": 2,
+        "label": "2 (high terrestrial and aquatic)",
+        "color": "#74c476",
+        "blueprint": 2
+      },
+      {
+        "value": 3,
+        "label": "2 (lower terrestrial and aquatic)",
+        "color": "#807dba",
+        "blueprint": 1
+      },
+      { "value": 4, "label": "3", "color": "#737373", "blueprint": 0 },
+      { "value": 5, "label": "4", "color": "#969696", "blueprint": 0 },
+      { "value": 6, "label": "5", "color": "#bdbdbd", "blueprint": 0 },
+      {
+        "value": 7,
         "label": "6: least crucial",
         "color": "#d9d9d9",
         "blueprint": 0
       }
     ],
-    "domain": [6, 1],
+    "domain": [7, 1],
     "indicators": [
       {
         "id": "trank",

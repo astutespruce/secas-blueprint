@@ -241,7 +241,6 @@ for state in ["ok", "tx"]:
         .set_index("id")
         .join(huc12.acres)
     )
-    # fields = ["chatrank"] + [e["id"] for e in INPUTS[f"{state}chat"]["indicators"]]
 
     # extract CHAT overall rank
     rank_fields = [f"chatrank_{i}" for i in CHAT_CATEGORIES]

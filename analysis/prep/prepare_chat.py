@@ -62,6 +62,16 @@ for state in ["ok", "tx"]:
     # lcon not present for TX
     if state == "tx":
         state_df = state_df.drop(columns=["lcon"])
+        # Reclassify chatrank to match blueprint integration rules.
+        # First shift other values up one
+        ix = state_df.chatrank >= 2
+        state_df.loc[ix, 'chatrank'] = state_df.chatrank + 1
+
+        # for any that were previously a chatrank of 2 but with higher values of aquatic or
+        # terrestrial, map them back to 2
+        ix = ((state_df.chatrank == 3) & state_df.arank.isin([2,3]) & state_df.trank.isin([2,3]))
+        state_df.loc[ix, 'chatrank']  = 2
+
 
     # for proofing
     write_dataframe(state_df, gis_dir / f"{state}chat.gpkg", driver="GPKG")
@@ -74,9 +84,16 @@ for state in ["ok", "tx"]:
         if not col in state_df.columns:
             continue
 
+        if state == "tx" and col == 'chatrank':
+            # IMPORTANT: value 2 is split into values 2/3 and others are shifted up by 1
+            categories = [0, 1, 2, 3, 4, 5, 6, 7]
+        else:
+            categories = CHAT_CATEGORIES
+
+
         state_df[col] = pd.Series(
             pd.Categorical.from_codes(
-                state_df[col], categories=CHAT_CATEGORIES, ordered=True
+                state_df[col], categories=categories, ordered=True
             )
         )
 
