@@ -33,6 +33,9 @@ from analysis.lib.stats import (
     summarize_florida_by_aoi,
     summarize_gulf_hypoxia_by_aoi,
     summarize_midse_by_aoi,
+    summarize_naturescape_by_aoi,
+    summarize_natures_network_by_aoi,
+    summarize_southatlantic_by_aoi,
 )
 
 
@@ -46,6 +49,9 @@ raster_result_funcs = {
     "fl": summarize_florida_by_aoi,
     "gh": summarize_gulf_hypoxia_by_aoi,
     "ms": summarize_midse_by_aoi,
+    "app": summarize_naturescape_by_aoi,
+    "nn": summarize_natures_network_by_aoi,
+    "sa": summarize_southatlantic_by_aoi,
 }
 
 
@@ -134,6 +140,8 @@ class CustomArea(object):
             )
             if raster_results is not None:
                 entry.update(raster_results)
+            else:
+                print("Raster results are none for", input_id)
 
         results = {
             "analysis_acres": blueprint["shape_mask"],

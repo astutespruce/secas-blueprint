@@ -23,6 +23,8 @@ from analysis.lib.stats import (
     get_florida_huc12_results,
     get_gulf_hypoxia_huc12_results,
     get_midse_huc12_results,
+    get_naturescape_huc12_results,
+    get_natures_network_huc12_results,
     get_southatlantic_huc12_results,
 )
 
@@ -34,6 +36,8 @@ raster_huc12_result_funcs = {
     "fl": get_florida_huc12_results,
     "gh": get_gulf_hypoxia_huc12_results,
     "ms": get_midse_huc12_results,
+    "app": get_naturescape_huc12_results,
+    "nn": get_natures_network_huc12_results,
     "sa": get_southatlantic_huc12_results,
 }
 
@@ -167,13 +171,10 @@ class SummaryUnits(object):
 
             raster_results = results_func(id, analysis_acres, total_acres)
             if raster_results is not None:
-                print("adding results", input_id, raster_results)
                 entry.update(raster_results)
 
         results["inputs"] = inputs
         results["has_overlapping_inputs"] = has_overlapping_inputs
-
-        print("results", inputs[0]["acres"])
 
         try:
             ownership = self.ownership.loc[self.ownership.index.isin([id])]

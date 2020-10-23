@@ -52,15 +52,20 @@ from analysis.lib.stats.midse import (
 )
 
 from analysis.lib.stats.natures_network import (
+    get_huc12_results as get_natures_network_huc12_results,
+    summarize_by_aoi as summarize_natures_network_by_aoi,
     summarize_by_huc12 as summarize_natures_network_by_huc12,
 )
 
 from analysis.lib.stats.naturescape import (
+    get_huc12_results as get_naturescape_huc12_results,
+    summarize_by_aoi as summarize_naturescape_by_aoi,
     summarize_by_huc12 as summarize_naturescape_by_huc12,
 )
 
 from analysis.lib.stats.southatlantic import (
     get_huc12_results as get_southatlantic_huc12_results,
     get_marine_results as get_southatlantic_marine_results,
+    summarize_by_aoi as summarize_southatlantic_by_aoi,
     summarize_by_unit as summarize_southatlantic_by_unit,
 )

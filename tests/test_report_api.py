@@ -96,5 +96,5 @@ if __name__ == "__main__":
 
     # test_huc12_report("0")
 
-    # test_huc12_report("030602040601")
-
+    # test_huc12_report("031501060512")
+    # test_huc12_report("031700080402")
