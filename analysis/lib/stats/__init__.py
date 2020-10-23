@@ -28,7 +28,8 @@ from analysis.lib.stats.caribbean import (
 )
 
 from analysis.lib.stats.chat import (
-    summarize_by_areas as summarize_chat_by_areas,
+    get_huc12_results as get_chat_huc12_results,
+    summarize_by_aoi as summarize_chat_by_aoi,
     summarize_by_huc12 as summarize_chat_by_huc12,
 )
 

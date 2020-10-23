@@ -13,8 +13,8 @@ from analysis.lib.pygeos_util import intersection
 src_dir = Path("data/inputs/indicators/caribbean")
 caribbean_filename = src_dir / "caribbean.feather"
 
-huc12_out_dir = Path("data/results/huc12")
-huc12_results_filename = huc12_out_dir / "caribbean.feather"
+out_dir = Path("data/results/huc12")
+results_filename = out_dir / "caribbean.feather"
 
 
 COLORS = {0: "#EEE", 1: "#807dba", 2: "#005a32"}
@@ -28,8 +28,7 @@ LEGEND = [
 
 
 def get_analysis_notes():
-    return """Values range from 1 (highest priority) to 24 (lower priority).
-    Note: areas are based on the polygon boundary of this area
+    return """Note: areas are based on the polygon boundary of this area
     compared to watershed boundaries rather than pixel-level analyses used
     elsewhere in this report."""
 
@@ -109,6 +108,8 @@ def summarize_by_aoi(df, analysis_acres):
 
         priorities.append(value)
 
+    # Note: input area remainder deliberately omitted, since all
+    # areas outside but close to this input are outside SE Blueprint
     return {
         "priorities": priorities,
         "legend": LEGEND,
@@ -140,7 +141,7 @@ def summarize_by_huc12(df, out_dir):
 
     df = df.join(car_df, on="HUC10", how="inner")[["carrank"]].reset_index()
 
-    df.to_feather(huc12_results_filename)
+    df.to_feather(results_filename)
 
 
 def get_huc12_results(id, analysis_acres, total_acres):
@@ -164,13 +165,15 @@ def get_huc12_results(id, analysis_acres, total_acres):
             "analysis_notes": <analysis_notes>
         }
     """
-    df = pd.read_feather(huc12_results_filename).set_index("id")
+    df = pd.read_feather(results_filename).set_index("id")
 
     rank = df.loc[id].carrank if id in df.index else 0
     value = get_rank_value(rank)
     value["acres"] = analysis_acres
     value["percent"] = 100 * analysis_acres / total_acres
 
+    # Note: input area remainder deliberately omitted, since all
+    # areas outside but close to this input are outside SE Blueprint
     return {
         "priorities": [value],
         "legend": LEGEND,

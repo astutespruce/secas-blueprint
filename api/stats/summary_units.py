@@ -17,7 +17,7 @@ from analysis.constants import (
     ACRES_PRECISION,
 )
 
-from analysis.lib.stats import get_caribbean_huc12_results
+from analysis.lib.stats import get_caribbean_huc12_results, get_chat_huc12_results
 
 
 input_dir = Path("data/inputs")
@@ -120,7 +120,16 @@ class SummaryUnits(object):
             domain = entry["domain"]
 
             if input_id in ["okchat", "txchat"]:
-                print(f"TODO: {input_id}")
+                state = input_id[:2]
+                chat_results = get_chat_huc12_results(
+                    id,
+                    state,
+                    results["acres"] - results["analysis_remainder"],
+                    results["acres"],
+                )
+                entry.update(chat_results)
+
+                continue
 
             elif input_id == "car":
                 caribbean_results = get_caribbean_huc12_results(
