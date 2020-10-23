@@ -30,6 +30,7 @@ from analysis.lib.stats import (
     extract_slr_by_geometry,
     summarize_caribbean_by_aoi,
     summarize_chat_by_aoi,
+    summarize_florida_by_aoi,
     summarize_gulf_hypoxia_by_aoi,
     summarize_midse_by_aoi,
 )
@@ -40,6 +41,12 @@ boundary_filename = data_dir / "boundaries/se_boundary.feather"
 county_filename = data_dir / "boundaries/counties.feather"
 ownership_filename = data_dir / "boundaries/ownership.feather"
 slr_bounds_filename = data_dir / "threats/slr/slr_bounds.feather"
+
+raster_result_funcs = {
+    "fl": summarize_florida_by_aoi,
+    "gh": summarize_gulf_hypoxia_by_aoi,
+    "ms": summarize_midse_by_aoi,
+}
 
 
 class CustomArea(object):
@@ -74,7 +81,7 @@ class CustomArea(object):
 
         # only pull in Blueprint inputs that are present, and flatten
         # overlapping inputs
-        inputs = []
+        inputs = dict()
         has_overlapping_inputs = False
         for i, acres in enumerate(blueprint["inputs"]):
             input_ids = INPUT_AREA_VALUES[i]["id"].split(",")
@@ -83,11 +90,14 @@ class CustomArea(object):
                     has_overlapping_inputs = True
 
                 for input_id in input_ids:
-                    input = deepcopy(INPUTS[input_id])
-                    input["acres"] = acres
-                    inputs.append(input)
+                    if not input_id in inputs:
+                        input = deepcopy(INPUTS[input_id])
+                        input["acres"] = acres
+                        inputs[input_id] = input
+                    else:
+                        inputs[input_id]["acres"] += acres
 
-        inputs = sorted(inputs, key=lambda x: x["acres"], reverse=True)
+        inputs = sorted(inputs.values(), key=lambda x: x["acres"], reverse=True)
 
         # extract input priorities from each input present
         df = gp.GeoDataFrame(geometry=self.geometry, crs=DATA_CRS)
@@ -95,8 +105,6 @@ class CustomArea(object):
 
         for entry in inputs:
             input_id = entry["id"]
-            values = entry.get("values", [])
-            domain = entry["domain"]
 
             if input_id in ["okchat", "txchat"]:
                 state = input_id[:2]
@@ -115,75 +123,17 @@ class CustomArea(object):
 
                 continue
 
-            if input_id == "gh":
-                gh_results = summarize_gulf_hypoxia_by_aoi(
-                    self.shapes, self.bounds, outside_se_acres=remainder
-                )
-
-                if gh_results is not None:
-                    entry.update(gh_results)
-
-                continue
-
-            if input_id == "ms":
-                midse_results = summarize_midse_by_aoi(
-                    self.shapes, self.bounds, outside_se_acres=remainder
-                )
-
-                if midse_results is not None:
-                    entry.update(midse_results)
-
-                continue
-
-            else:
+            # Remaining inputs are raster-based
+            results_func = raster_result_funcs.get(input_id, None)
+            if not results_func:
                 print(f"TODO: {input_id}")
+                continue
 
-            # if input_results is not None:
-            #     input_remainder = None  # TODO: all input areas
-
-            #     # merge input_results with values
-            #     priorities = [
-            #         {
-            #             "label": e["label"],
-            #             "color": e["color"],
-            #             "value": e["value"],
-            #             "blueprint": e["blueprint"],
-            #             "acres": input_results[e["value"]],
-            #             "percent": input_percents[e["value"]],
-            #         }
-            #         for e in values
-            #     ]
-
-            #     notPriority = None
-            #     if len(priorities) and priorities[0]["value"] == 0:
-            #         notPriority = priorities.pop(0)
-
-            #     # sort values correctly
-            #     if domain and domain[0] < domain[1]:
-            #         priorities.reverse()
-
-            #     else:
-            #         legend = [
-            #             {"label": e["label"], "color": e["color"]} for e in priorities
-            #         ]
-
-            #     # add not a priority at end (not present in legend)
-            #     if notPriority is not None and notPriority["acres"] > 0:
-            #         priorities.append(notPriority)
-
-            #     if input_remainder:
-            #         entry["remainder"] = input_remainder
-            #         entry["remainder_percent"] = (
-            #             100 * input_remainder / input_total_acres
-            #         )
-
-            #     print("priorities", priorities)
-            #     print("legend", legend)
-
-            #     entry["priorities"] = priorities
-            #     entry["legend"] = legend
-
-        # print("input results", inputs)
+            raster_results = results_func(
+                self.shapes, self.bounds, outside_se_acres=remainder
+            )
+            if raster_results is not None:
+                entry.update(raster_results)
 
         results = {
             "analysis_acres": blueprint["shape_mask"],

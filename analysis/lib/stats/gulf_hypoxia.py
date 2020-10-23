@@ -30,23 +30,27 @@ out_dir = Path("data/results/huc12")
 results_filename = out_dir / "gulf_hypoxia.feather"
 
 
-def extract_by_geometry(geometries, bounds):
+def extract_by_geometry(geometries, bounds, prescreen=False):
     """Calculate the area of overlap between geometries and Gulf Hypoxia dataset.
 
     Parameters
     ----------
     geometries : list-like of geometry objects that provide __geo_interface__
     bounds : list-like of [xmin, ymin, xmax, ymax]
+    prescreen : bool (default False)
+        if True, prescreen using lower resolution mask to determine if there
+        is overlap with this dataset
 
     Returns
     -------
     dict or None (if does not overlap Gulf Hypoxia dataset)
     """
 
-    # prescreen to make sure data are present
-    with rasterio.open(gh_mask_filename) as src:
-        if not detect_data(src, geometries, bounds):
-            return None
+    if prescreen:
+        # prescreen to make sure data are present
+        with rasterio.open(gh_mask_filename) as src:
+            if not detect_data(src, geometries, bounds):
+                return None
 
     results = {}
 

@@ -20,13 +20,22 @@ from analysis.constants import (
 from analysis.lib.stats import (
     get_caribbean_huc12_results,
     get_chat_huc12_results,
-    get_midse_huc12_results,
+    get_florida_huc12_results,
     get_gulf_hypoxia_huc12_results,
+    get_midse_huc12_results,
+    get_southatlantic_huc12_results,
 )
 
 
 input_dir = Path("data/inputs")
 results_dir = Path("data/results")
+
+raster_huc12_result_funcs = {
+    "fl": get_florida_huc12_results,
+    "gh": get_gulf_hypoxia_huc12_results,
+    "ms": get_midse_huc12_results,
+    "sa": get_southatlantic_huc12_results,
+}
 
 
 class SummaryUnits(object):
@@ -101,7 +110,7 @@ class SummaryUnits(object):
 
         # only pull in Blueprint inputs that are present, and flatten
         # overlapping inputs
-        inputs = []
+        inputs = dict()
         has_overlapping_inputs = False
         input_cols = [c for c in blueprint.index if c.startswith("inputs_")]
         for i, col in enumerate(input_cols):
@@ -112,17 +121,18 @@ class SummaryUnits(object):
                     has_overlapping_inputs = True
 
                 for input_id in input_ids:
-                    input = deepcopy(INPUTS[input_id])
-                    input["acres"] = acres
-                    inputs.append(input)
+                    if not input_id in inputs:
+                        input = deepcopy(INPUTS[input_id])
+                        input["acres"] = acres
+                        inputs[input_id] = input
+                    else:
+                        inputs[input_id]["acres"] += acres
 
-        inputs = sorted(inputs, key=lambda x: x["acres"], reverse=True)
+        inputs = sorted(inputs.values(), key=lambda x: x["acres"], reverse=True)
 
         # read in input_priorities
         for entry in inputs:
             input_id = entry["id"]
-            values = entry.get("values", [])
-            domain = entry["domain"]
 
             if input_id in ["okchat", "txchat"]:
                 state = input_id[:2]
@@ -146,31 +156,24 @@ class SummaryUnits(object):
 
                 continue
 
+            # Remaining inputs are raster-based
+            results_func = raster_huc12_result_funcs.get(input_id, None)
+            if not results_func:
+                print(f"TODO: {input_id}")
+                continue
+
             analysis_acres = results["analysis_acres"] - results["analysis_remainder"]
             total_acres = results["analysis_acres"]
-            if input_id == "ms":
-                midse_results = get_midse_huc12_results(id, analysis_acres, total_acres)
 
-                if midse_results is not None:
-                    entry.update(midse_results)
-
-                continue
-
-            if input_id == "gh":
-                gh_results = get_gulf_hypoxia_huc12_results(
-                    id, analysis_acres, total_acres
-                )
-
-                if gh_results is not None:
-                    entry.update(gh_results)
-
-                continue
-
-            else:
-                print(f"TODO: {input_id}")
+            raster_results = results_func(id, analysis_acres, total_acres)
+            if raster_results is not None:
+                print("adding results", input_id, raster_results)
+                entry.update(raster_results)
 
         results["inputs"] = inputs
         results["has_overlapping_inputs"] = has_overlapping_inputs
+
+        print("results", inputs[0]["acres"])
 
         try:
             ownership = self.ownership.loc[self.ownership.index.isin([id])]

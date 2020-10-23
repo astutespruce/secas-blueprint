@@ -33,7 +33,11 @@ from analysis.lib.stats.chat import (
     summarize_by_huc12 as summarize_chat_by_huc12,
 )
 
-from analysis.lib.stats.florida import summarize_by_huc12 as summarize_florida_by_huc12
+from analysis.lib.stats.florida import (
+    get_huc12_results as get_florida_huc12_results,
+    summarize_by_aoi as summarize_florida_by_aoi,
+    summarize_by_huc12 as summarize_florida_by_huc12,
+)
 
 from analysis.lib.stats.gulf_hypoxia import (
     get_huc12_results as get_gulf_hypoxia_huc12_results,
@@ -56,5 +60,7 @@ from analysis.lib.stats.naturescape import (
 )
 
 from analysis.lib.stats.southatlantic import (
+    get_huc12_results as get_southatlantic_huc12_results,
+    get_marine_results as get_southatlantic_marine_results,
     summarize_by_unit as summarize_southatlantic_by_unit,
 )
