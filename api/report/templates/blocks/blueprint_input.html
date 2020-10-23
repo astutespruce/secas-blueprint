@@ -12,36 +12,32 @@
         </div>
     </h3>
 
-    <!-- TODO: Blueprint input description -->
+    <p>
+        {{src.description}}
 
-    {% if src.infoURL or src.dataURL or src.viewerURL %}
         {% if src.infoURL or src.dataURL %}
-            <p>
-                {% if src.infoURL %}
-                    <a href="{{src.infoURL}}">Learn more</a> about the {{src.label}}.
-                {% endif %}
 
-                {% if src.infoURL and src.dataURL %}
-                    <br/>
-                {% endif %}
+            {% if src.infoURL %}
+                <a href="{{src.infoURL}}">Learn more</a> about the {{src.label}}.
+            {% endif %}
 
-                {% if src.dataURL %}
-                    <a href="{{src.dataURL}}">Access and download data</a>.
-                {% endif %}
-            </p>
+            {% if src.dataURL %}
+                <a href="{{src.dataURL}}">Access and download data</a>.
+            {% endif %}
         {% endif %}
 
         {% if src.viewerURL %}
-            <p>
-                More detailed information for {{src.label}} indicators
-                is available in the
-                <a href="{{src.viewerURL}}">
-                    {{viewerName}}
-                </a>
-            </p>
+            <br /><br />
+            More detailed information for {{src.label}} indicators
+            is available in the
+            <a href="{{src.viewerURL}}">
+                {{viewerName}}
+            </a>
         {% endif %}
-    {% endif %}
+    </p>
 
+
+    <div class="no-break">
     {% if maps[src.id] %}
         <div class="map-container">
             <img src="data:image/png;base64,{{maps[src.id]}}" alt="Blueprint input map for {{src.label}}" class="map">
@@ -150,4 +146,5 @@
         </table>
     </div>
     {% endif %}
+    </div>
 </section>
