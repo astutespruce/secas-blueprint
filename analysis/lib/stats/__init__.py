@@ -64,8 +64,7 @@ from analysis.lib.stats.naturescape import (
 )
 
 from analysis.lib.stats.southatlantic import (
-    get_huc12_results as get_southatlantic_huc12_results,
-    get_marine_results as get_southatlantic_marine_results,
+    get_unit_results as get_southatlantic_unit_results,
     summarize_by_aoi as summarize_southatlantic_by_aoi,
     summarize_by_unit as summarize_southatlantic_by_unit,
 )

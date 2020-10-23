@@ -168,62 +168,6 @@ def summarize_by_unit(geometries, out_dir):
     )
 
 
-def get_huc12_results(id, analysis_acres, total_acres):
-    """Get results for South Atlantic Conservation Blueprint dataset for a
-    given HUC12.
-
-    Parameters
-    ----------
-    id : str
-        HUC12 ID
-    analysis_acres : float
-        area of HUC12 summary unit less any area outside SE Blueprint
-    total_acres : float
-        area of HUC12 summary unit
-
-    Returns
-    -------
-    dict
-        {
-            "priorities": [...],
-            "legend": [...],
-            "analysis_notes": <analysis_notes>,
-            "remainder": <acres outside of input>,
-            "remainder_percent" <percent of total acres outside input>
-        }
-    """
-
-    return get_unit_results("huc12", id, analysis_acres, total_acres)
-
-
-def get_marine_results(id, analysis_acres, total_acres):
-    """Get results for South Atlantic Conservation Blueprint dataset for a
-    given marine lease block.
-
-    Parameters
-    ----------
-    id : str
-        HUC1marine lease block ID
-    analysis_acres : float
-        area of marine lease block summary unit less any area outside SE Blueprint
-    total_acres : float
-        area of marine lease block summary unit
-
-    Returns
-    -------
-    dict
-        {
-            "priorities": [...],
-            "legend": [...],
-            "analysis_notes": <analysis_notes>,
-            "remainder": <acres outside of input>,
-            "remainder_percent" <percent of total acres outside input>
-        }
-    """
-
-    return get_unit_results("marine_blocks", id, analysis_acres, total_acres)
-
-
 def get_unit_results(unit_type, id, analysis_acres, total_acres):
     """Get results for South Atlantic Conservation Blueprint dataset for a
     given HUC12 or marine lease block.

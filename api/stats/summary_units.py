@@ -25,7 +25,7 @@ from analysis.lib.stats import (
     get_midse_huc12_results,
     get_naturescape_huc12_results,
     get_natures_network_huc12_results,
-    get_southatlantic_huc12_results,
+    get_southatlantic_unit_results,
 )
 
 
@@ -38,7 +38,6 @@ raster_huc12_result_funcs = {
     "ms": get_midse_huc12_results,
     "app": get_naturescape_huc12_results,
     "nn": get_natures_network_huc12_results,
-    "sa": get_southatlantic_huc12_results,
 }
 
 
@@ -161,13 +160,23 @@ class SummaryUnits(object):
                 continue
 
             # Remaining inputs are raster-based
+            analysis_acres = results["analysis_acres"] - results["analysis_remainder"]
+            total_acres = results["analysis_acres"]
+
+            # South Atlantic is a special case because it also has marine and HUC12 results
+            if input_id == "sa":
+                southatlantic_results = get_southatlantic_unit_results(
+                    self.unit_type, id, analysis_acres, total_acres
+                )
+                if southatlantic_results is not None:
+                    entry.update(southatlantic_results)
+
+                continue
+
             results_func = raster_huc12_result_funcs.get(input_id, None)
             if not results_func:
                 print(f"TODO: {input_id}")
                 continue
-
-            analysis_acres = results["analysis_acres"] - results["analysis_remainder"]
-            total_acres = results["analysis_acres"]
 
             raster_results = results_func(id, analysis_acres, total_acres)
             if raster_results is not None:
