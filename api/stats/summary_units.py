@@ -17,7 +17,12 @@ from analysis.constants import (
     ACRES_PRECISION,
 )
 
-from analysis.lib.stats import get_caribbean_huc12_results, get_chat_huc12_results
+from analysis.lib.stats import (
+    get_caribbean_huc12_results,
+    get_chat_huc12_results,
+    get_midse_huc12_results,
+    get_gulf_hypoxia_huc12_results,
+)
 
 
 input_dir = Path("data/inputs")
@@ -131,13 +136,33 @@ class SummaryUnits(object):
 
                 continue
 
-            elif input_id == "car":
+            if input_id == "car":
                 caribbean_results = get_caribbean_huc12_results(
                     id,
                     results["acres"] - results["analysis_remainder"],
                     results["acres"],
                 )
                 entry.update(caribbean_results)
+
+                continue
+
+            analysis_acres = results["analysis_acres"] - results["analysis_remainder"]
+            total_acres = results["analysis_acres"]
+            if input_id == "ms":
+                midse_results = get_midse_huc12_results(id, analysis_acres, total_acres)
+
+                if midse_results is not None:
+                    entry.update(midse_results)
+
+                continue
+
+            if input_id == "gh":
+                gh_results = get_gulf_hypoxia_huc12_results(
+                    id, analysis_acres, total_acres
+                )
+
+                if gh_results is not None:
+                    entry.update(gh_results)
 
                 continue
 

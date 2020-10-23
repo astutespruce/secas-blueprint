@@ -1,9 +1,15 @@
 <section>
-    <h3>
-        {{src.label}}
-        {% if src.version %}
-            {{src.version}}
-        {%endif %}
+    <h3 class="flex space-between">
+        <div span="flex: 1 1 auto;">
+            {{src.label}}
+            {% if src.version %}
+                {{src.version}}
+            {%endif %}
+        </div>
+
+        <div style="flex: 0 0 auto; margin-left: 1rem; font-size: smaller; font-weight: normal;">
+            ({{(100 * src.acres / results.analysis_acres)|format_percent}}% of area)
+        </div>
     </h3>
 
     <!-- TODO: Blueprint input description -->
@@ -12,7 +18,7 @@
         {% if src.infoURL or src.dataURL %}
             <p>
                 {% if src.infoURL %}
-                    <a href="{{src.infoURL}}">Learn more</a> about this Blueprint input.
+                    <a href="{{src.infoURL}}">Learn more</a> about the {{src.label}}.
                 {% endif %}
 
                 {% if src.infoURL and src.dataURL %}
@@ -55,12 +61,12 @@
             {% if src.legend %}
             <div class="legend">
                 <div class="legend-header">
-
+                    {{src.valueLabel}}
                 </div>
 
-                {% if src.fieldCaption %}
+                {% if src.valueCaption %}
                     <div class="legend-field-caption">
-                        {{src.fieldCaption}}
+                        {{src.valueCaption}}
                     </div>
                 {% endif %}
 
@@ -94,12 +100,23 @@
         <table class="centered">
             <thead>
                 <tr>
-                    <th class="label">Blueprint Input Priority Category</th>
+                    <th class="label">
+                        <div>
+                            {{src.valueLabel}}
+                        </div>
+                        {% if src.valueCaption %}
+                            <div class="small">
+                                {{src.valueCaption}}
+                            </div>
+                        {% endif %}
+                    </th>
                     <th class="acres">Acres</th>
                     <th class="percent">Percent of Area</th>
                 </tr>
             </thead>
             <tbody>
+                {% if src.fieldCaption %}<br/>{{src.fieldCaption}}{% endif %}
+
                 {% for item in src.priorities %}
                     <tr>
                         <td class="label">{{item.label}}</td>

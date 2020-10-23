@@ -36,10 +36,16 @@ from analysis.lib.stats.chat import (
 from analysis.lib.stats.florida import summarize_by_huc12 as summarize_florida_by_huc12
 
 from analysis.lib.stats.gulf_hypoxia import (
+    get_huc12_results as get_gulf_hypoxia_huc12_results,
+    summarize_by_aoi as summarize_gulf_hypoxia_by_aoi,
     summarize_by_huc12 as summarize_gulf_hypoxia_by_huc12,
 )
 
-from analysis.lib.stats.midse import summarize_by_huc12 as summarize_midse_by_huc12
+from analysis.lib.stats.midse import (
+    get_huc12_results as get_midse_huc12_results,
+    summarize_by_aoi as summarize_midse_by_aoi,
+    summarize_by_huc12 as summarize_midse_by_huc12,
+)
 
 from analysis.lib.stats.natures_network import (
     summarize_by_huc12 as summarize_natures_network_by_huc12,

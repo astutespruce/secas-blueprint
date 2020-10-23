@@ -29,7 +29,9 @@ from analysis.lib.stats import (
     extract_urban_by_geometry,
     extract_slr_by_geometry,
     summarize_caribbean_by_aoi,
-    summarize_chat_by_areas,
+    summarize_chat_by_aoi,
+    summarize_gulf_hypoxia_by_aoi,
+    summarize_midse_by_aoi,
 )
 
 
@@ -97,63 +99,89 @@ class CustomArea(object):
             domain = entry["domain"]
 
             if input_id in ["okchat", "txchat"]:
-                print(f"TODO: {input_id}")
+                state = input_id[:2]
+                chat_results = summarize_chat_by_aoi(
+                    df, state, aoi_acres - remainder, aoi_acres
+                )
 
-            elif input_id == "car":
+                if chat_results is not None:
+                    entry.update(chat_results)
+
+                continue
+
+            if input_id == "car":
                 caribbean_results = summarize_caribbean_by_aoi(df, aoi_acres)
                 entry.update(caribbean_results)
 
-                # Note: input area remainder deliberately omitted, since all
-                # areas outside but close to this input are outside SE Blueprint
+                continue
+
+            if input_id == "gh":
+                gh_results = summarize_gulf_hypoxia_by_aoi(
+                    self.shapes, self.bounds, outside_se_acres=remainder
+                )
+
+                if gh_results is not None:
+                    entry.update(gh_results)
+
+                continue
+
+            if input_id == "ms":
+                midse_results = summarize_midse_by_aoi(
+                    self.shapes, self.bounds, outside_se_acres=remainder
+                )
+
+                if midse_results is not None:
+                    entry.update(midse_results)
+
                 continue
 
             else:
                 print(f"TODO: {input_id}")
 
-            if input_results is not None:
-                input_remainder = None  # TODO: all input areas
+            # if input_results is not None:
+            #     input_remainder = None  # TODO: all input areas
 
-                # merge input_results with values
-                priorities = [
-                    {
-                        "label": e["label"],
-                        "color": e["color"],
-                        "value": e["value"],
-                        "blueprint": e["blueprint"],
-                        "acres": input_results[e["value"]],
-                        "percent": input_percents[e["value"]],
-                    }
-                    for e in values
-                ]
+            #     # merge input_results with values
+            #     priorities = [
+            #         {
+            #             "label": e["label"],
+            #             "color": e["color"],
+            #             "value": e["value"],
+            #             "blueprint": e["blueprint"],
+            #             "acres": input_results[e["value"]],
+            #             "percent": input_percents[e["value"]],
+            #         }
+            #         for e in values
+            #     ]
 
-                notPriority = None
-                if len(priorities) and priorities[0]["value"] == 0:
-                    notPriority = priorities.pop(0)
+            #     notPriority = None
+            #     if len(priorities) and priorities[0]["value"] == 0:
+            #         notPriority = priorities.pop(0)
 
-                # sort values correctly
-                if domain and domain[0] < domain[1]:
-                    priorities.reverse()
+            #     # sort values correctly
+            #     if domain and domain[0] < domain[1]:
+            #         priorities.reverse()
 
-                else:
-                    legend = [
-                        {"label": e["label"], "color": e["color"]} for e in priorities
-                    ]
+            #     else:
+            #         legend = [
+            #             {"label": e["label"], "color": e["color"]} for e in priorities
+            #         ]
 
-                # add not a priority at end (not present in legend)
-                if notPriority is not None and notPriority["acres"] > 0:
-                    priorities.append(notPriority)
+            #     # add not a priority at end (not present in legend)
+            #     if notPriority is not None and notPriority["acres"] > 0:
+            #         priorities.append(notPriority)
 
-                if input_remainder:
-                    entry["remainder"] = input_remainder
-                    entry["remainder_percent"] = (
-                        100 * input_remainder / input_total_acres
-                    )
+            #     if input_remainder:
+            #         entry["remainder"] = input_remainder
+            #         entry["remainder_percent"] = (
+            #             100 * input_remainder / input_total_acres
+            #         )
 
-                print("priorities", priorities)
-                print("legend", legend)
+            #     print("priorities", priorities)
+            #     print("legend", legend)
 
-                entry["priorities"] = priorities
-                entry["legend"] = legend
+            #     entry["priorities"] = priorities
+            #     entry["legend"] = legend
 
         # print("input results", inputs)
 

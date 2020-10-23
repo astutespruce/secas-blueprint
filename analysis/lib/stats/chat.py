@@ -115,7 +115,9 @@ def summarize_by_aoi(df, state, analysis_acres, total_acres):
         {
             "priorities": [...],
             "legend": [...],
-            "analysis_notes": <analysis_notes>
+            "analysis_notes": <analysis_notes>,
+            "remainder": <acres outside of input>
+            "remainder_percent" <percent of total acres outside input>
         }
     """
 
@@ -204,7 +206,9 @@ def get_huc12_results(id, state, analyisis_acres, total_acres):
         {
             "priorities": [...],
             "legend": [...],
-            "analysis_notes": <analysis_notes>
+            "analysis_notes": <analysis_notes>,
+            "remainder": <acres outside of input>,
+            "remainder_percent" <percent of total acres outside input>
         }
     """
 

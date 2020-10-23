@@ -26,6 +26,9 @@ src_dir = Path("data/inputs/indicators/gulf_hypoxia")
 gh_filename = src_dir / "gulf_hypoxia.tif"
 gh_mask_filename = src_dir / "gulf_hypoxia_mask.tif"
 
+out_dir = Path("data/results/huc12")
+results_filename = out_dir / "gulf_hypoxia.feather"
+
 
 def extract_by_geometry(geometries, bounds):
     """Calculate the area of overlap between geometries and Gulf Hypoxia dataset.
@@ -87,6 +90,61 @@ def extract_by_geometry(geometries, bounds):
     return results
 
 
+def summarize_by_aoi(shapes, bounds, outside_se_acres):
+    """Get results for Gulf Hypoxia dataset for a given area of interest.
+
+    Parameters
+    ----------
+    shapes : list-like of geometry objects that provide __geo_interface__
+    bounds : list-like of [xmin, ymin, xmax, ymax]
+    outside_se_acres : float
+        acres of the analysis area that are outside the SE Blueprint region
+
+    Returns
+    -------
+    dict
+        {
+            "priorities": [...],
+            "legend": [...],
+            "analysis_notes": <analysis_notes>,
+            "remainder": <acres outside of input>,
+            "remainder_percent" <percent of total acres outside input>
+        }
+    """
+    results = extract_by_geometry(shapes, bounds, prescreen=False)
+
+    if results is None:
+        return None
+
+    total_acres = results["shape_mask"]
+    analysis_acres = total_acres - outside_se_acres
+
+    values = pd.DataFrame(INPUTS["gh"]["values"])
+
+    df = values.join(pd.Series(results["gh"], name="acres"))
+    df["percent"] = 100 * np.divide(df.acres, total_acres)
+
+    # sort into correct order
+    df.sort_values(by=["blueprint", "value"], ascending=False, inplace=True)
+
+    priorities = df[["value", "blueprint", "label", "acres", "percent"]].to_dict(
+        orient="records"
+    )
+
+    # don't include Not a priority in legend
+    legend = df[["label", "color"]].iloc[:-1].to_dict(orient="records")
+
+    remainder = max(analysis_acres - df.acres.sum(), 0)
+    remainder = remainder if remainder >= 1 else 0
+
+    return {
+        "priorities": priorities,
+        "legend": legend,
+        "remainder": remainder,
+        "remainder_percent": 100 * remainder / total_acres,
+    }
+
+
 def summarize_by_huc12(geometries, out_dir):
     """Summarize by HUC12
 
@@ -103,3 +161,61 @@ def summarize_by_huc12(geometries, out_dir):
         progress_label="Calculating Gulf Hypoxia area by HUC12",
         bounds=GULF_HYPOXIA_BOUNDS,
     )
+
+
+def get_huc12_results(id, analysis_acres, total_acres):
+    """Get results for Gulf Hypoxia dataset for a given HUC12.
+
+    Parameters
+    ----------
+    id : str
+        HUC12 ID
+    analysis_acres : float
+        area of HUC12 summary unit less any area outside SE Blueprint
+    total_acres : float
+        area of HUC12 summary unit
+
+    Returns
+    -------
+    dict
+        {
+            "priorities": [...],
+            "legend": [...],
+            "analysis_notes": <analysis_notes>,
+            "remainder": <acres outside of input>,
+            "remainder_percent" <percent of total acres outside input>
+        }
+    """
+    df = pd.read_feather(results_filename).set_index("id")
+
+    if not id in df.index:
+        return None
+
+    values = pd.DataFrame(INPUTS["gh"]["values"])
+
+    row = df.loc[id]
+    cols = [c for c in row.index if c.startswith("gh_")]
+
+    df = values.join(pd.Series(row[cols].values, name="acres"))
+    df["percent"] = 100 * np.divide(df.acres, row.shape_mask)
+
+    # sort into correct order
+    df.sort_values(by=["blueprint", "value"], ascending=False, inplace=True)
+
+    priorities = df[["value", "blueprint", "label", "acres", "percent"]].to_dict(
+        orient="records"
+    )
+
+    # don't include Not a priority in legend
+    legend = df[["label", "color"]].iloc[:-1].to_dict(orient="records")
+
+    remainder = max(analysis_acres - df.acres.sum(), 0)
+    remainder = remainder if remainder >= 1 else 0
+
+    return {
+        "priorities": priorities,
+        "legend": legend,
+        "remainder": remainder,
+        "remainder_percent": 100 * remainder / total_acres,
+    }
+
