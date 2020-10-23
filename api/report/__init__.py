@@ -69,7 +69,7 @@ def create_report(maps, results):
 
     legends = {
         # sort Blueprint descending order
-        "blueprint": BLUEPRINT[::-1],
+        "blueprint": BLUEPRINT[::-1]
     }
 
     if "urban" in results:
@@ -108,9 +108,8 @@ def create_report(maps, results):
 
     print("Creating report...")
 
-    # FIXME:
-    if DEBUG:
-        with open("/tmp/test.html", "w") as out:
-            out.write(template.render(**context))
+    # if DEBUG:
+    #     with open("/tmp/test.html", "w") as out:
+    #         out.write(template.render(**context))
 
     return HTML(BytesIO((template.render(**context)).encode())).write_pdf()

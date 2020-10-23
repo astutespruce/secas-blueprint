@@ -132,7 +132,7 @@ class CustomArea(object):
             # Remaining inputs are raster-based
             results_func = raster_result_funcs.get(input_id, None)
             if not results_func:
-                print(f"TODO: {input_id}")
+                print(f"TODO: calculate results for {input_id}")
                 continue
 
             raster_results = results_func(

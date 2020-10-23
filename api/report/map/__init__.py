@@ -17,8 +17,9 @@ from .util import pad_bounds, get_center, to_base64, merge_maps
 
 # input area specific map handlers
 from .caribbean import get_caribbean_map_image
+from .chat import get_chat_map_image
 
-from analysis.constants import BLUEPRINT_COLORS, URBAN_LEGEND, SLR_LEGEND
+from analysis.constants import BLUEPRINT_COLORS, URBAN_LEGEND, SLR_LEGEND, INPUTS
 from api.settings import MAP_RENDER_THREADS
 
 
@@ -31,6 +32,7 @@ src_dir = Path("data/inputs")
 blueprint_filename = src_dir / "se_blueprint2020.tif"
 urban_filename = src_dir / "threats/urban/urban_2060.tif"
 slr_filename = src_dir / "threats/slr/slr.vrt"
+inputs_dir = src_dir / "indicators"
 
 
 async def render_mbgl_maps(**kwargs):
@@ -50,7 +52,7 @@ def render_raster_map(bounds, scale, basemap_image, aoi_image, id, path, colors)
 
 
 async def render_raster_maps(
-    bounds, scale, basemap_image, aoi_image, indicators, urban, slr
+    bounds, scale, basemap_image, aoi_image, raster_input_ids, indicators, urban, slr
 ):
     executor = ThreadPoolExecutor(max_workers=MAP_RENDER_THREADS)
     loop = asyncio.get_event_loop()
@@ -58,6 +60,19 @@ async def render_raster_maps(
     base_args = (bounds, scale, basemap_image, aoi_image)
 
     task_args = [("blueprint", blueprint_filename, BLUEPRINT_COLORS)]
+
+    for input_id in raster_input_ids:
+        input_info = INPUTS[input_id]
+        # FIXME: temporary just while waiting on FL Marine blueprint
+        if not input_info["filename"]:
+            print(f"TODO: render {input_id}")
+            continue
+
+        # exclude 0 values
+        colors = {
+            e["value"]: e["color"] for e in input_info["values"] if e["value"] != 0
+        }
+        task_args.append((input_id, inputs_dir / input_info["filename"], colors))
 
     if urban:
         colors = {i: e["color"] for i, e in enumerate(URBAN_LEGEND) if e is not None}
@@ -150,16 +165,15 @@ async def render_maps(
     if protection:
         tasks["protection"] = get_protection_map_image(center, zoom, WIDTH, HEIGHT)
 
-    # TODO: add CHAT / Caribbean to MBGL rendering tasks
-    print("input ids", input_ids)
-
     if input_ids:
         if "car" in input_ids:
             tasks["car"] = get_caribbean_map_image(center, zoom, WIDTH, HEIGHT)
+
         if "okchat" in input_ids:
-            print("TODO: okchat")
+            tasks["okchat"] = get_chat_map_image("ok", center, zoom, WIDTH, HEIGHT)
+
         if "txchat" in input_ids:
-            print("TODO: txchat")
+            tasks["txchat"] = get_chat_map_image("tx", center, zoom, WIDTH, HEIGHT)
 
     mbgl_maps = await render_mbgl_maps(**tasks)
 
@@ -167,13 +181,9 @@ async def render_maps(
     basemap_image = mbgl_maps.get("basemap", None)
     aoi_image = mbgl_maps.get("aoi", None)
 
-    if basemap_image is None:
-        # TODO: revisit this; basemap provides marginal value for small parcels
-        # no point in generating other maps, since people won't be able to see where they are
-        return dict(), None
-
     # make sure that images are fully loaded before sending to other threads
-    basemap_image.load()
+    if basemap_image is not None:
+        basemap_image.load()
 
     if aoi_image is not None:
         aoi_image.load()
@@ -197,9 +207,22 @@ async def render_maps(
                     merge_maps([basemap_image, mbgl_maps[input_id], aoi_image])
                 )
 
+    raster_input_ids = (
+        [i for i in input_ids if not i in {"car", "okchat", "txchat"}]
+        if input_ids
+        else []
+    )
+
     # Use background threads for rendering rasters
     raster_maps = await render_raster_maps(
-        bounds, scale, basemap_image, aoi_image, indicators or [], urban, slr
+        bounds,
+        scale,
+        basemap_image,
+        aoi_image,
+        raster_input_ids,
+        indicators or [],
+        urban,
+        slr,
     )
 
     maps.update(raster_maps)

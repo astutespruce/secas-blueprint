@@ -6,17 +6,9 @@ import httpx
 from PIL import Image
 
 from api.settings import MBGL_SERVER_URL
-from analysis.constants import OWNERSHIP
 
 log = logging.getLogger(__name__)
 
-
-# interleave keys and colors for mapbox
-color_expr = (
-    ["match", ["get", "Own_Type"]]
-    + [v for k, e in OWNERSHIP.items() for v in (k, e["color"])]
-    + ["#FFF"]
-)
 
 # Note: only shows watersheds that are high or medium priority
 STYLE = {
@@ -89,6 +81,6 @@ async def get_caribbean_map_image(center, zoom, width, height):
         return Image.open(BytesIO(r.content))
 
     except Exception as ex:
-        log.error("Unhandled exception Caribbean ownership image")
+        log.error("Unhandled exception generating Caribbean image")
         log.error(ex)
         return None

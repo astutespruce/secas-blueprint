@@ -56,15 +56,15 @@ def read_cache(path):
 aois = [
     # {"name": "Caledonia area, MS", "path": "caledonia"},
     # {"name": "Napoleonville area, LA", "path": "Napoleonville"},
-    {"name": "Area in El Yunque National Forest, PR", "path": "yunque"},
-    {"name": "San Juan area, PR", "path": "SanJuan"},
-    # {"name": "Area near Magnet, TX", "path": "magnet"},
+    # # {"name": "Area in El Yunque National Forest, PR", "path": "yunque"},
+    # # {"name": "San Juan area, PR", "path": "SanJuan"},
+    {"name": "Area near Magnet, TX", "path": "magnet"},
     # {"name": "TriState area at junction of MO, OK, KS", "path": "TriState"},
     # {"name": "Quincy, FL area", "path": "Quincy"},
     # {"name": "Doyle Springs, TN area", "path": "DoyleSprings"},
     # {"name": "Cave Spring, VA area", "path": "CaveSpring"},
     # {"name": "South Atlantic Offshore", "path": "SAOffshore"},
-    # {"name": "Florida Offshore", "path": "FLOffshore"},
+    # {"name": "Florida Offshore", "path": "FLOffshore"}
 ]
 
 
@@ -139,10 +139,10 @@ for aoi in aois:
 ids = {
     "huc12": [
         # "210100050503"  # PR
-        # "110702071001"  # at junction of gulf_hypoxia, okchat, midse
-        # "031200030902"  # at overlap area between FL, MidSE, and SA
-        # "060200020506"  # in AppLCC area
-        # "030101010301"  # in Nature's Network  / South Atlantic overlap area
+        # "110702071001",  # at junction of gulf_hypoxia, okchat, midse
+        # "031200030902",  # at overlap area between FL, MidSE, and SA
+        # "060200020506",  # in AppLCC area
+        # "030101010301",  # in Nature's Network  / South Atlantic overlap area
         ##################
         #     #     "130301020902", # far western edge
         #     #     "031501060512",  # partial overlap with SA raster inputs

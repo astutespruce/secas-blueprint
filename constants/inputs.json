@@ -5,6 +5,7 @@
     "version": "1.3",
     "dataURL": "https://flcpa.databasin.org/galleries/20b5bfb654ee426b84165e9228c4009c",
     "infoURL": "https://flcpa.databasin.org/galleries/20b5bfb654ee426b84165e9228c4009c",
+    "filename": "florida/fl_blueprint.tif",
     "valueField": "fl_blueprint",
     "valueLabel": "Conservation Priority",
     "values": [
@@ -35,6 +36,7 @@
     "version": "1.0",
     "dataURL": "https://flcpa.databasin.org/galleries/1bf67d31d64448b6a255888f43f3d601",
     "infoURL": "https://flcpa.databasin.org/galleries/1bf67d31d64448b6a255888f43f3d601",
+    "filename": "",
     "valueField": null,
     "valueLabel": null,
     "values": []
@@ -47,6 +49,7 @@
     "infoURL": "http://www.southatlanticlcc.org/blueprint/",
     "viewerURL": "https://blueprint.southatlanticlcc.org",
     "viewerName": "South Atlantic Conservation Blueprint Simple Viewer",
+    "filename": "southatlantic/sa_blueprint.tif",
     "valueField": "sa_blueprint",
     "valueLabel": "Conservation Priority",
     "values": [
@@ -89,6 +92,7 @@
     "version": "2020",
     "dataURL": "https://www.sciencebase.gov/catalog/item/5dc5040ee4b069579758510b",
     "infoURL": "https://www.sciencebase.gov/catalog/item/5dc5040ee4b069579758510b",
+    "filename": "midse/midse_blueprint.tif",
     "valueField": "midse_blueprint",
     "valueLabel": "Conservation Value Index",
     "values": [
@@ -125,6 +129,7 @@
     "version": "2017",
     "dataURL": "https://nalcc.databasin.org/datasets/3d670fad4c924e7ba2ae02f04a128256",
     "infoURL": "http://naturesnetwork.org/",
+    "filename": "natures_network/nn_priority.tif",
     "valueField": "nn_priority",
     "valueLabel": "Priority group",
     "values": [
@@ -170,6 +175,7 @@
     "version": "",
     "dataURL": "http://www.wafwachat.org/",
     "infoURL": "http://www.wafwachat.org/",
+    "filename": "chat/okchat.feather",
     "valueField": "okchatrank",
     "valueLabel": "CHAT Rank",
     "valueCaption": "(1=most crucial, 6=least crucial)",
@@ -319,6 +325,7 @@
     "version": "",
     "dataURL": "http://www.wafwachat.org/",
     "infoURL": "http://www.wafwachat.org/",
+    "filename": "chat/txchat.feather",
     "valueField": "txchatrank",
     "valueLabel": "CHAT Rank",
     "valueCaption": "(1=most crucial, 6=least crucial)",
@@ -473,6 +480,7 @@
     "version": "",
     "dataURL": "https://caribbeanlcc.databasin.org/galleries/ecb079d09f5a430fafc2d48d68bdf1b4",
     "infoURL": "https://caribbeanlcc.databasin.org/galleries/ecb079d09f5a430fafc2d48d68bdf1b4",
+    "filename": "caribbean/caribbean.feather",
     "valueField": "carrank",
     "valueLabel": "Caribbean Priority Watershed Rank",
     "valueCaption": "(1=highest, 24=lowest)",
@@ -484,6 +492,7 @@
     "version": "",
     "dataURL": "https://nalcc.databasin.org/datasets/22cda640930c4692a9dc1413b201ccc1",
     "infoURL": "http://applcc.org/plan-design/conservation-design",
+    "filename": "naturescape/ns_priority.tif",
     "valueField": "ns_priority",
     "valueLabel": "Priority Area Type",
     "values": [
@@ -526,6 +535,7 @@
     "version": "1.5",
     "dataURL": "https://databasin.org/datasets/57035c20ecca461092ac80f174bbd241",
     "infoURL": "https://lccnetwork.org/resource/mississippi-river-basingulf-hypoxia-initiative-precision-conservation-blueprint",
+    "filename": "gulf_hypoxia/gulf_hypoxia.tif",
     "valueField": "gulf_hypoxia",
     "valueLabel": "Conservation and watershed interests (sum)",
     "valueCaption": "(8=high, 1=low)",

@@ -14,7 +14,7 @@ from analysis.lib.pygeos_util import to_crs, to_dict
 from api.report.map import render_maps
 from api.stats import SummaryUnits, CustomArea
 
-aoi_names = []
+aoi_names = ["magnet"]
 # aoi_names = ["caledonia"]
 # aoi_names = ["Fort_Mill_townlimits"]
 # aoi_names = ["Enviva_Hamlet_80_mile_sourcing_radius"]
@@ -80,7 +80,7 @@ for aoi_name in aoi_names:
 
 ids = {
     "huc12": [
-        "210100050503"  # PR
+        # "210100050503"  # PR
         # "110702071001"  # at junction of gulf_hypoxia, okchat, midse
         # "031200030902"  # at overlap area between FL, MidSE, and SA
         # "060200020506"  # in AppLCC area
