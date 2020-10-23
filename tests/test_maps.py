@@ -14,7 +14,8 @@ from analysis.lib.pygeos_util import to_crs, to_dict
 from api.report.map import render_maps
 from api.stats import SummaryUnits, CustomArea
 
-aoi_names = ["caledonia"]
+aoi_names = []
+# aoi_names = ["caledonia"]
 # aoi_names = ["Fort_Mill_townlimits"]
 # aoi_names = ["Enviva_Hamlet_80_mile_sourcing_radius"]
 # aoi_names = ["Razor", "Groton_all"]
@@ -57,6 +58,7 @@ for aoi_name in aoi_names:
         bounds,
         geometry=geometry[0],
         # indicators=results["indicators"],
+        input_ids=results["input_ids"],
         urban=has_urban,
         slr=has_slr,
         ownership=has_ownership,
@@ -77,13 +79,13 @@ for aoi_name in aoi_names:
 ### Write maps for a summary unit
 
 ids = {
-    # "huc12": [
-    #     "030602040601",
-    #     "030601030510",
-    #     "031501040301",
-    #     "030102020505",
-    #     "031101010504",
-    # ],
+    "huc12": [
+        "210100050503"  # PR
+        # "110702071001"  # at junction of gulf_hypoxia, okchat, midse
+        # "031200030902"  # at overlap area between FL, MidSE, and SA
+        # "060200020506"  # in AppLCC area
+        # "030101010301"  # in Nature's Network  / South Atlantic overlap area
+    ],
     # "marine_blocks": ["NI18-07-6210"],
 }
 
@@ -109,6 +111,7 @@ for summary_type in ids:
             results["bounds"],
             summary_unit_id=id,
             # indicators=results["indicators"],
+            input_ids=results["input_ids"],
             urban=has_urban,
             slr=has_slr,
             ownership=has_ownership,
@@ -116,6 +119,8 @@ for summary_type in ids:
         )
 
         maps, scale = asyncio.run(task)
+
+        print("Rendered maps:", maps.keys())
 
         for name, data in maps.items():
             if data is not None:

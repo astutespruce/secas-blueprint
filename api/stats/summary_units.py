@@ -183,6 +183,7 @@ class SummaryUnits(object):
                 entry.update(raster_results)
 
         results["inputs"] = inputs
+        results["input_ids"] = [i["id"] for i in inputs]
         results["has_overlapping_inputs"] = has_overlapping_inputs
 
         try:

@@ -55,11 +55,16 @@ def read_cache(path):
 ### Create reports for an AOI
 aois = [
     # {"name": "Caledonia area, MS", "path": "caledonia"},
-    # {"name": "Napoleonville area, LA", "path": "Napoleonville"}
-    # {"name": "Area in El Yunque National Forest, PR", "path": "yunque"},
-    # {"name": "San Juan area, PR", "path": "SanJuan"}
-    # {"name": "Area near Magnet, TX", "path": "magnet"}
-    {"name": "TriState area at junction of MO, OK, KS", "path": "TriState"}
+    # {"name": "Napoleonville area, LA", "path": "Napoleonville"},
+    {"name": "Area in El Yunque National Forest, PR", "path": "yunque"},
+    {"name": "San Juan area, PR", "path": "SanJuan"},
+    # {"name": "Area near Magnet, TX", "path": "magnet"},
+    # {"name": "TriState area at junction of MO, OK, KS", "path": "TriState"},
+    # {"name": "Quincy, FL area", "path": "Quincy"},
+    # {"name": "Doyle Springs, TN area", "path": "DoyleSprings"},
+    # {"name": "Cave Spring, VA area", "path": "CaveSpring"},
+    # {"name": "South Atlantic Offshore", "path": "SAOffshore"},
+    # {"name": "Florida Offshore", "path": "FLOffshore"},
 ]
 
 
@@ -108,6 +113,7 @@ for aoi in aois:
             bounds,
             geometry=geometry[0],
             # indicators=results["indicators"],
+            input_ids=results["input_ids"],
             urban=has_urban,
             slr=has_slr,
             ownership=has_ownership,
@@ -133,16 +139,20 @@ for aoi in aois:
 ids = {
     "huc12": [
         # "210100050503"  # PR
-        "110702071001"  # at junction of gulf_hypoxia, okchat, midse
+        # "110702071001"  # at junction of gulf_hypoxia, okchat, midse
+        # "031200030902"  # at overlap area between FL, MidSE, and SA
+        # "060200020506"  # in AppLCC area
+        # "030101010301"  # in Nature's Network  / South Atlantic overlap area
+        ##################
         #     #     "130301020902", # far western edge
         #     #     "031501060512",  # partial overlap with SA raster inputs
         #     "031700080402"
     ],
     # "marine_blocks": [
-    #     # "NI18-07-6210", # Atlantic coast
-    #     # "NG16-03-299",  # Gulf coast
-    #     "NG17-10-6583"  # Florida keys, overlaps with protected areas
-    # ]
+    #     "NI18-07-6210",  # Atlantic coast
+    #     "NG16-03-299",  # Gulf coast
+    #     "NG17-10-6583",  # Florida keys, overlaps with protected areas
+    # ],
 }
 
 
@@ -176,6 +186,7 @@ for summary_type in ids:
                 results["bounds"],
                 summary_unit_id=id,
                 # indicators=results["indicators"],
+                input_ids=results["input_ids"],
                 urban=has_urban,
                 slr=has_slr,
                 ownership=has_ownership,

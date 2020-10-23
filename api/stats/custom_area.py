@@ -149,6 +149,7 @@ class CustomArea(object):
             "blueprint": blueprint["blueprint"].tolist(),
             "blueprint_total": blueprint_total,
             "inputs": inputs,
+            "input_ids": [i["id"] for i in inputs],
             "has_overlapping_inputs": has_overlapping_inputs,
         }
 

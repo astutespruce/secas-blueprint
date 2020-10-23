@@ -15,11 +15,10 @@ from .summary_unit import get_summary_unit_map_image
 from .mercator import get_zoom, get_map_bounds, get_map_scale
 from .util import pad_bounds, get_center, to_base64, merge_maps
 
-from analysis.constants import (
-    BLUEPRINT_COLORS,
-    URBAN_LEGEND,
-    SLR_LEGEND,
-)
+# input area specific map handlers
+from .caribbean import get_caribbean_map_image
+
+from analysis.constants import BLUEPRINT_COLORS, URBAN_LEGEND, SLR_LEGEND
 from api.settings import MAP_RENDER_THREADS
 
 
@@ -58,9 +57,7 @@ async def render_raster_maps(
 
     base_args = (bounds, scale, basemap_image, aoi_image)
 
-    task_args = [
-        ("blueprint", blueprint_filename, BLUEPRINT_COLORS),
-    ]
+    task_args = [("blueprint", blueprint_filename, BLUEPRINT_COLORS)]
 
     if urban:
         colors = {i: e["color"] for i, e in enumerate(URBAN_LEGEND) if e is not None}
@@ -88,6 +85,7 @@ async def render_maps(
     bounds,
     geometry=None,
     summary_unit_id=None,
+    input_ids=None,
     indicators=None,
     urban=False,
     slr=False,
@@ -105,6 +103,8 @@ async def render_maps(
         If present, will be used to render the area of interest
     summary_unit_id : [type], optional (default: None)
         If present, will be used to identify the selected summary unit
+    input_ids : list-like, optional (default: None)
+        If present, is a list of input area ids
     indicators : list-like, optional (default: None)
         If present, is a list of all indicator IDs to render.
     urban : bool, optional (default: False)
@@ -150,11 +150,33 @@ async def render_maps(
     if protection:
         tasks["protection"] = get_protection_map_image(center, zoom, WIDTH, HEIGHT)
 
+    # TODO: add CHAT / Caribbean to MBGL rendering tasks
+    print("input ids", input_ids)
+
+    if input_ids:
+        if "car" in input_ids:
+            tasks["car"] = get_caribbean_map_image(center, zoom, WIDTH, HEIGHT)
+        if "okchat" in input_ids:
+            print("TODO: okchat")
+        if "txchat" in input_ids:
+            print("TODO: txchat")
+
     mbgl_maps = await render_mbgl_maps(**tasks)
 
     maps["locator"] = to_base64(mbgl_maps["locator"])
     basemap_image = mbgl_maps.get("basemap", None)
     aoi_image = mbgl_maps.get("aoi", None)
+
+    if basemap_image is None:
+        # TODO: revisit this; basemap provides marginal value for small parcels
+        # no point in generating other maps, since people won't be able to see where they are
+        return dict(), None
+
+    # make sure that images are fully loaded before sending to other threads
+    basemap_image.load()
+
+    if aoi_image is not None:
+        aoi_image.load()
 
     ownership_image = mbgl_maps.get("ownership", None)
     if ownership_image is not None:
@@ -168,15 +190,12 @@ async def render_maps(
             merge_maps([basemap_image, mbgl_maps["protection"], aoi_image])
         )
 
-    if basemap_image is None:
-        # no point in generating other maps, since people won't be able to see where they are
-        return dict(), None
-
-    # make sure that images are fully loaded before sending to other threads
-    basemap_image.load()
-
-    if aoi_image is not None:
-        aoi_image.load()
+    if input_ids:
+        for input_id in input_ids:
+            if input_id in mbgl_maps:
+                maps[input_id] = to_base64(
+                    merge_maps([basemap_image, mbgl_maps[input_id], aoi_image])
+                )
 
     # Use background threads for rendering rasters
     raster_maps = await render_raster_maps(

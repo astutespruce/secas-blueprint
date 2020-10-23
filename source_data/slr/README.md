@@ -12,7 +12,7 @@ here, we constructed a VRT using GDAL, and used the average resolution.
 
 Values are coded 0-6 for the amount of sea level rise that would impact a given
 area. Values are cumulative, so a value of 6 means that the area is also
-inundated by 1-5 meters.
+inundated by 1-5 feet.
 
 From within `data/threats/slr` directory:
 
