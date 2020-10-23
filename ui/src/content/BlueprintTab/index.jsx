@@ -7,7 +7,7 @@ import { Box, Flex, Heading, Text } from 'theme-ui'
 import { PieChartLegend } from 'components/chart'
 import { useBlueprintCategories, useInputAreas } from 'components/data'
 import { OutboundLink } from 'components/link'
-import { sum, sortByFunc, groupBy } from 'util/data'
+import { sum, sortByFunc } from 'util/data'
 
 import InputArea from './InputArea'
 
@@ -59,9 +59,6 @@ const getInputPriorities = ({
   if (notPriority.percent) {
     priorities.push(notPriority)
   }
-
-  const grouped = groupBy(priorities, 'blueprint')
-  console.log('grouped', grouped)
 
   const outsideInputPercent = 100 - outsideSEPercent - totalPercent
   if (outsideInputPercent >= 1) {

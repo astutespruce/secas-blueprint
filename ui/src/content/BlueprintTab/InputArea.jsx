@@ -10,6 +10,7 @@ import InputAreaPriorityChart from './InputAreaPriorityChart'
 
 const InputArea = ({
   label,
+  description,
   version,
   percent,
   infoURL,
@@ -65,41 +66,27 @@ const InputArea = ({
         valueCaption={valueCaption}
       />
 
-      {hasLinks ? (
-        <Box sx={{ mt: '1rem' }}>
-          {infoURL || dataURL ? (
-            <Flex>
-              {infoURL ? (
-                <OutboundLink to={infoURL}>more information</OutboundLink>
-              ) : null}
-
-              {infoURL && dataURL ? (
-                <Text as="span">&nbsp;&nbsp;|&nbsp;&nbsp;</Text>
-              ) : null}
-              {dataURL ? (
-                <OutboundLink to={dataURL}>access data</OutboundLink>
-              ) : null}
-            </Flex>
-          ) : null}
-
-          {viewerURL ? (
-            <Text sx={{ fontSize: 0, mt: '0.5rem' }}>
-              More detailed information for {label} indicators is available in
-              the <OutboundLink to={viewerURL}>{viewerName}</OutboundLink>.
-            </Text>
-          ) : null}
-        </Box>
-      ) : null}
+      <Text as="p" sx={{ mt: '1rem', fontSize: 1 }}>
+        {description} <OutboundLink to={infoURL}>Learn more</OutboundLink> or{' '}
+        <OutboundLink to={dataURL}>access data</OutboundLink>.{' '}
+        {viewerURL ? (
+          <>
+            More detailed information for {label} indicators is available in the{' '}
+            <OutboundLink to={viewerURL}>{viewerName}</OutboundLink>.
+          </>
+        ) : null}
+      </Text>
     </Box>
   )
 }
 
 InputArea.propTypes = {
   label: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
   version: PropTypes.string,
   percent: PropTypes.number.isRequired,
-  infoURL: PropTypes.string,
-  dataURL: PropTypes.string,
+  infoURL: PropTypes.string.isRequired,
+  dataURL: PropTypes.string.isRequired,
   viewerURL: PropTypes.string,
   viewerName: PropTypes.string,
   values: PropTypes.arrayOf(
@@ -116,8 +103,6 @@ InputArea.propTypes = {
 
 InputArea.defaultProps = {
   version: null,
-  infoURL: null,
-  dataURL: null,
   viewerURL: null,
   viewerName: null,
   values: [],

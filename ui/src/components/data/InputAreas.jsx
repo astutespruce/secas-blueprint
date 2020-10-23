@@ -26,6 +26,7 @@ export const useInputAreas = () => {
               blueprint
             }
             domain
+            description
           }
         }
       }
