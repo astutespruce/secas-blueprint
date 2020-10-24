@@ -48,8 +48,6 @@ class SummaryUnits(object):
 
         self.working_dir = results_dir / unit_type
 
-        print("unit type", unit_type)
-
         self.units = pd.read_feather(
             input_dir / "summary_units" / f"{unit_type}.feather",
             columns=["id", "name", "acres", "minx", "miny", "maxx", "maxy"],
