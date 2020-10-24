@@ -15,29 +15,24 @@
     <p>
         {{src.description}}
 
-        {% if src.infoURL or src.dataURL %}
+        {% if src.infoURL %}
+            <a href="{{src.infoURL}}">Learn more</a> about the {{src.label}}.
+        {% endif %}
 
-            {% if src.infoURL %}
-                <a href="{{src.infoURL}}">Learn more</a> about the {{src.label}}.
-            {% endif %}
-
-            {% if src.dataURL %}
-                <a href="{{src.dataURL}}">Access and download data</a>.
-            {% endif %}
+        {% if src.dataURL %}
+            <a href="{{src.dataURL}}">Access and download data</a>.
         {% endif %}
 
         {% if src.viewerURL %}
             <br /><br />
-            More detailed information for {{src.label}} indicators
-            is available in the
+            Also check out the
             <a href="{{src.viewerURL}}">
-                {{viewerName}}
-            </a>
+                {{src.viewerName}}
+            </a> for additional details.
         {% endif %}
     </p>
 
 
-    <div class="no-break">
     {% if maps[src.id] %}
         <div class="map-container">
             <img src="data:image/png;base64,{{maps[src.id]}}" alt="Blueprint input map for {{src.label}}" class="map">
@@ -92,7 +87,6 @@
         {% endwith %}
         {% set table.counter=table.counter+1 %}
 
-
         <table class="centered">
             <thead>
                 <tr>
@@ -146,5 +140,4 @@
         </table>
     </div>
     {% endif %}
-    </div>
 </section>

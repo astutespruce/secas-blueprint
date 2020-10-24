@@ -313,7 +313,7 @@ async def report_pdf_endpoint(job_id: str):
     redis = await arq.create_pool(REDIS)
 
     try:
-        job = Job(job_id, redis=redis,_queue_name=REDIS_QUEUE)
+        job = Job(job_id, redis=redis, _queue_name=REDIS_QUEUE)
         status = await job.status()
 
         if status == JobStatus.not_found:
@@ -329,7 +329,7 @@ async def report_pdf_endpoint(job_id: str):
             )
 
         path = info.result
-        name = info.kwargs.get("name", None) or "Blueprint Summary Report"
+        name = info.kwargs.get("name", None) or "Southeast Blueprint Summary Report"
 
         return FileResponse(path, filename=f"{name}.pdf", media_type="application/pdf")
 
