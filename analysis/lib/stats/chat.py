@@ -152,6 +152,8 @@ def summarize_by_aoi(df, state, analysis_acres, total_acres):
         "priorities": priorities,
         "legend": legend,
         "analysis_notes": get_analysis_notes(),
+        "analysis_acres": analysis_acres,
+        "total_acres": total_acres,
         "remainder": remainder,
         "remainder_percent": 100 * remainder / total_acres,
     }
@@ -186,7 +188,7 @@ def summarize_by_huc12(units_df, out_dir):
         results.reset_index().to_feather(out_dir / f"{state}chat.feather")
 
 
-def get_huc12_results(id, state, analyisis_acres, total_acres):
+def get_huc12_results(id, state, analysis_acres, total_acres):
     """Get results for CHAT Rank for a given HUC12.
 
     Parameters
@@ -224,7 +226,7 @@ def get_huc12_results(id, state, analyisis_acres, total_acres):
 
     row = df.loc[id]
 
-    remainder = max(analyisis_acres - row.sum(), 0)
+    remainder = max(analysis_acres - row.sum(), 0)
     remainder = remainder if remainder >= 1 else 0
 
     priorities = []
@@ -247,6 +249,8 @@ def get_huc12_results(id, state, analyisis_acres, total_acres):
         "priorities": priorities,
         "legend": legend,
         "analysis_notes": get_analysis_notes(),
+        "analysis_acres": analysis_acres,
+        "total_acres": total_acres,
         "remainder": remainder,
         "remainder_percent": 100 * remainder / total_acres,
     }

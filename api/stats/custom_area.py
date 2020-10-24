@@ -124,7 +124,7 @@ class CustomArea(object):
                 continue
 
             if input_id == "car":
-                caribbean_results = summarize_caribbean_by_aoi(df, aoi_acres)
+                caribbean_results = summarize_caribbean_by_aoi(df, aoi_acres, aoi_acres)
                 entry.update(caribbean_results)
 
                 continue

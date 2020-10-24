@@ -145,6 +145,8 @@ def summarize_by_aoi(shapes, bounds, outside_se_acres):
     return {
         "priorities": priorities,
         "legend": legend,
+        "analysis_acres": analysis_acres,
+        "total_acres": total_acres,
         "remainder": remainder,
         "remainder_percent": 100 * remainder / total_acres,
     }
@@ -228,6 +230,8 @@ def get_unit_results(unit_type, id, analysis_acres, total_acres):
     return {
         "priorities": priorities,
         "legend": legend,
+        "analysis_acres": analysis_acres,
+        "total_acres": total_acres,
         "remainder": remainder,
         "remainder_percent": 100 * remainder / total_acres,
     }

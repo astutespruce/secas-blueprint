@@ -68,7 +68,7 @@ def generate_values():
     return [get_rank_value(i) for i in range(0, 25)]
 
 
-def summarize_by_aoi(df, analysis_acres):
+def summarize_by_aoi(df, analysis_acres, total_acres):
     """Calculate ranks and areas of overlap within Caribbean Priority Watersheds.
 
     Parameters
@@ -76,6 +76,8 @@ def summarize_by_aoi(df, analysis_acres):
     df : GeoDataframe
         area of interest
     analysis_acres : float
+        area in acres of area of interest less any area outside SE Blueprint
+    total_acres : float
         area in acres of area of interest
 
         dict
@@ -114,6 +116,8 @@ def summarize_by_aoi(df, analysis_acres):
         "priorities": priorities,
         "legend": LEGEND,
         "analysis_notes": get_analysis_notes(),
+        "analysis_acres": analysis_acres,
+        "total_acres": total_acres,
     }
 
 
@@ -178,5 +182,7 @@ def get_huc12_results(id, analysis_acres, total_acres):
         "priorities": [value],
         "legend": LEGEND,
         "analysis_notes": get_analysis_notes(),
+        "analysis_acres": analysis_acres,
+        "total_acres": total_acres,
     }
 
