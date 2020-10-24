@@ -21,10 +21,6 @@ const InputArea = ({
   valueLabel,
   valueCaption,
 }) => {
-  console.log('values ', values)
-
-  const hasLinks = infoURL || dataURL || viewerURL
-
   return (
     <Box
       sx={{

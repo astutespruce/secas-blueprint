@@ -89,14 +89,13 @@ for id, geometry in Bar(
 print(f"Dropping {len(drop_ids)} HUC12s that do not sufficiently overlap input areas")
 huc12 = huc12.loc[~huc12.id.isin(drop_ids)].copy()
 
+# extract geographic bounds
+huc12_wgs84 = huc12.to_crs(GEO_CRS)
+huc12 = huc12.join(huc12_wgs84.bounds)
+
 # Save in EPSG:5070 for analysis
 huc12.to_feather(analysis_dir / "huc12.feather")
 write_dataframe(huc12, bnd_dir / "huc12.gpkg", driver="GPKG")
-
-
-# project to WGS84 for report maps
-huc12_wgs84 = huc12.to_crs(GEO_CRS)
-huc12_wgs84.to_feather(analysis_dir / "huc12_wgs84.feather")
 
 
 ### Marine units
@@ -157,14 +156,12 @@ marine["acres"] = (
 
 marine = marine.loc[marine.acres > 0].dropna()
 
+marine_wgs84 = marine.to_crs(GEO_CRS)
+marine = marine.join(marine_wgs84.bounds)
+
 # Save in EPSG:5070 for analysis
 marine.to_feather(analysis_dir / "marine_blocks.feather")
 write_dataframe(marine, bnd_dir / "marine_blocks.gpkg", driver="GPKG")
-
-# project to WGS84 for report maps
-marine_wgs84 = marine.to_crs(GEO_CRS)
-marine_wgs84.to_feather(analysis_dir / "marine_blocks_wgs84.feather")
-
 
 # ### Merge HUC12 and marine into single units file and export for creating tiles
 df = huc12_wgs84.append(marine_wgs84, ignore_index=True, sort=False)

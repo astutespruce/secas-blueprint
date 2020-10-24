@@ -59,6 +59,12 @@ def extract_by_geometry(geometries, bounds):
         # square meters to acres
         cellsize = src.res[0] * src.res[1] * M2_ACRES
 
+    # DEBUG:
+    # print(
+    #     f"Memory of shape mask: {shape_mask.size * shape_mask.itemsize / (1024 * 1024):0.2f} MB",
+    #     shape_mask.dtype,
+    # )
+
     results = {
         "shape_mask": (
             ((~shape_mask).sum() * cellsize)

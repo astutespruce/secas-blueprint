@@ -96,6 +96,12 @@ def extract_count_in_geometry(filename, geometry_mask, window, bins, boundless=F
     # slice out flattened array of values that are not masked
     values = data[~mask]
 
+    # DEBUG
+    # print(
+    #     f"Memory of data ({filename}): {data.size * data.itemsize / (1024 * 1024):0.2f} MB",
+    #     data.dtype,
+    # )
+
     # count number of pixels in each bin
     return np.bincount(
         values, minlength=len(bins) if bins is not None else None

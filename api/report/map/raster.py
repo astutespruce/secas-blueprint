@@ -247,6 +247,13 @@ def render_raster(path, bounds, scale, width, height, colors):
         data = extract_data_for_map(src, bounds, scale, width, height)
 
         if data is not None:
+
+            # DEBUG
+            # print(
+            #     f"Memory of map data ({path}): {data.size * data.itemsize / (1024 * 1024):0.2f} MB",
+            #     data.dtype,
+            # )
+
             # does not overlap with bounds
             return render_array(data, colors)
 
