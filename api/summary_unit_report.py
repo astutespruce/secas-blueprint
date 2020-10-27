@@ -29,11 +29,13 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
     unit_id : str
     """
 
-    await set_progress(ctx["job_id"], 0)
+    errors = []
+
+    await set_progress(ctx["job_id"], 0, "loading data")
 
     # TODO: move this to loading in memory at startup?
     units = SummaryUnits(unit_type)
-    await set_progress(ctx["job_id"], 5)
+    await set_progress(ctx["job_id"], 5, "calculating results")
 
     # validate that unit exists
     if not unit_id in units.units.index:
@@ -42,7 +44,7 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
         )
 
     results = units.get_results(unit_id)
-    await set_progress(ctx["job_id"], 50)
+    await set_progress(ctx["job_id"], 50, "creating maps")
 
     # only include urban up to 2060
     has_urban = "proj_urban" in results and results["proj_urban"][4] > 0
@@ -50,7 +52,7 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
     has_ownership = "ownership" in results
     has_protection = "protection" in results
 
-    maps, scale = await render_maps(
+    maps, scale, map_errors = await render_maps(
         results["bounds"],
         summary_unit_id=unit_id,
         input_ids=results["input_ids"],
@@ -61,20 +63,24 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
         protection=has_protection,
     )
 
-    await set_progress(ctx["job_id"], 75)
+    if map_errors:
+        log.error(f"Map rendering errors: {map_errors}")
+        errors.append("error creating maps")
+
+    await set_progress(ctx["job_id"], 75, "creating PDF", errors=errors)
 
     results["scale"] = scale
 
     pdf = create_report(maps=maps, results=results)
 
-    await set_progress(ctx["job_id"], 95)
+    await set_progress(ctx["job_id"], 95, "preparing PDF for download", errors=errors)
 
     fp, name = tempfile.mkstemp(suffix=".pdf", dir=TEMP_DIR)
     with open(fp, "wb") as out:
         out.write(pdf)
 
-    await set_progress(ctx["job_id"], 100)
+    await set_progress(ctx["job_id"], 100, "all done!", errors=errors)
 
     log.debug(f"Created PDF at: {name}")
 
-    return name
+    return name, errors

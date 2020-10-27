@@ -23,9 +23,12 @@ def poll_until_done(job_id, current=0, max=100):
     json = r.json()
     status = json.get("status")
     progress = json.get("progress")
+    message = json.get("message")
+    errors = json.get("errors")
 
     if status == "success":
         print(f"Results at: {json['result']}")
+        print(f"Job errors: {json['errors']}")
         download_file(json["result"])
         return
 
@@ -33,7 +36,7 @@ def poll_until_done(job_id, current=0, max=100):
         print(f"Failed: {json['detail']}")
         return
 
-    print(f"Progress: {progress}")
+    print(f"Progress: {progress}, message: {message}, errors: {errors}")
 
     current += 1
     if current == max:
@@ -92,9 +95,9 @@ def test_huc12_report(huc12_id):
 
 if __name__ == "__main__":
     # test_upload_file("examples/api/Razor.zip")
-    test_upload_file("examples/api/caledonia.zip")
+    # test_upload_file("examples/api/caledonia.zip")
 
     # test_huc12_report("0")
 
-    # test_huc12_report("031501060512")
+    test_huc12_report("031501060512")
     # test_huc12_report("031700080402")

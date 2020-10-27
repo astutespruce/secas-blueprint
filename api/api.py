@@ -276,32 +276,37 @@ async def job_status_endpoint(job_id: str):
             raise HTTPException(status_code=404, detail="Job not found")
 
         if status != JobStatus.complete:
-            progress = await get_progress(job_id)
+            progress, message, errors = await get_progress(job_id)
 
-            return {"status": status, "progress": progress}
+            return {
+                "status": status,
+                "progress": progress,
+                "message": message,
+                "errors": errors,
+            }
 
         info = await job.result_info()
 
-        if info.success:
-            return {"status": "success", "result": f"/api/reports/results/{job_id}"}
-
-        status = "failed"
-
         try:
             # this re-raises the underlying exception raised in the worker
-            await job.result()
+            filename, errors = await job.result()
+
+            if info.success:
+                return {
+                    "status": "success",
+                    "result": f"/api/reports/results/{job_id}",
+                    "errors": errors,
+                }
 
         except DataError as ex:
             message = str(ex)
-
-        # TODO: other specific exceptions
 
         except Exception as ex:
             log.error(ex)
             message = "Internal server error"
             raise HTTPException(status_code=500, detail="Internal server error")
 
-        return {"status": status, "detail": message}
+        return {"status": "failed", "detail": message}
 
     finally:
         redis.close()
@@ -328,7 +333,7 @@ async def report_pdf_endpoint(job_id: str):
                 status_code=400, detail="Job failed, cannot return results"
             )
 
-        path = info.result
+        path, errors = info.result
         name = info.kwargs.get("name", None) or "Southeast Blueprint Summary Report"
 
         return FileResponse(path, filename=f"{name}.pdf", media_type="application/pdf")

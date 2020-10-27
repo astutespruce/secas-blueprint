@@ -9,6 +9,8 @@ import pygeos as pg
 from api.settings import MBGL_SERVER_URL
 from analysis.lib.pygeos_util import to_dict
 
+from .util import render_mbgl_map
+
 
 log = logging.getLogger(__name__)
 
@@ -137,15 +139,9 @@ async def get_locator_map_image(longitude, latitude, bounds, geometry=None):
     }
 
     try:
-        async with httpx.AsyncClient() as client:
-            r = await client.post(MBGL_SERVER_URL, json=params)
-
-            if r.status_code != 200:
-                log.error(f"Error generating locator image: {r.text[:255]}")
-                return None
-
-            return Image.open(BytesIO(r.content))
+        map = await render_mbgl_map(params)
 
     except Exception as ex:
-        log.error(f"Unhandled exception generating locator image: {ex}")
-        return None
+        return None, f"Error generating locator image ({type(ex)}): {ex}"
+
+    return map, None

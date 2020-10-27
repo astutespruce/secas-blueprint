@@ -14,7 +14,7 @@ from analysis.lib.pygeos_util import to_crs, to_dict
 from api.report.map import render_maps
 from api.stats import SummaryUnits, CustomArea
 
-aoi_names = ["magnet"]
+aoi_names = ["caledonia"]
 # aoi_names = ["caledonia"]
 # aoi_names = ["Fort_Mill_townlimits"]
 # aoi_names = ["Enviva_Hamlet_80_mile_sourcing_radius"]
@@ -65,7 +65,10 @@ for aoi_name in aoi_names:
         protection=has_protection,
     )
 
-    maps, scale = asyncio.run(task)
+    maps, scale, errors = asyncio.run(task)
+
+    if errors:
+        print("Errors", errors)
 
     for name, data in maps.items():
         if data is not None:
@@ -118,9 +121,11 @@ for summary_type in ids:
             protection=has_protection,
         )
 
-        maps, scale = asyncio.run(task)
+        maps, scale, errors = asyncio.run(task)
 
         print("Rendered maps:", maps.keys())
+        if errors:
+            print("Errors", errors)
 
         for name, data in maps.items():
             if data is not None:

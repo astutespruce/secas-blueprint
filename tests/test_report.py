@@ -12,7 +12,7 @@ from pyogrio.geopandas import read_dataframe
 
 from api.report import create_report
 from api.report.map import render_maps
-from analysis.constants import BLUEPRINT, GEO_CRS, DATA_CRS
+from analysis.constants import BLUEPRINT, GEO_CRS, DATA_CRS, M2_ACRES
 from api.report.format import format_number
 from api.stats import SummaryUnits, CustomArea
 from analysis.lib.pygeos_util import to_crs
@@ -54,11 +54,15 @@ def read_cache(path):
 
 ### Create reports for an AOI
 aois = [
+    # {"name": "Enviva Hamlet", "path": "Enviva_Hamlet_80_mile_sourcing_radius"},
+    {"name": "LCP: Black River", "path": "LCP_BlackRiver"},
+    {"name": "Green River proposed boundary", "path": "GreenRiver_ProposedBoundary"},
+    # {"name": "LCP: Broad", "path": "LCP_Broad"},
     # {"name": "Caledonia area, MS", "path": "caledonia"},
     # {"name": "Napoleonville area, LA", "path": "Napoleonville"},
-    # # {"name": "Area in El Yunque National Forest, PR", "path": "yunque"},
-    # # {"name": "San Juan area, PR", "path": "SanJuan"},
-    {"name": "Area near Magnet, TX", "path": "magnet"},
+    # {"name": "Area in El Yunque National Forest, PR", "path": "yunque"},
+    # {"name": "San Juan area, PR", "path": "SanJuan"},
+    # {"name": "Area near Magnet, TX", "path": "magnet"},
     # {"name": "TriState area at junction of MO, OK, KS", "path": "TriState"},
     # {"name": "Quincy, FL area", "path": "Quincy"},
     # {"name": "Doyle Springs, TN area", "path": "DoyleSprings"},
@@ -79,6 +83,11 @@ for aoi in aois:
 
     # dissolve
     geometry = np.asarray([pg.union_all(geometry)])
+
+    extent_area = (
+        pg.area(pg.box(*pg.total_bounds(to_crs(geometry, df.crs, DATA_CRS)))) * M2_ACRES
+    )
+    print("Area of extent", extent_area.round())
 
     ### calculate results, data must be in DATA_CRS
     print("Calculating results...")
@@ -120,7 +129,10 @@ for aoi in aois:
             protection=has_protection,
         )
 
-        maps, scale = asyncio.run(task)
+        maps, scale, errors = asyncio.run(task)
+
+        if errors:
+            print("Errors", errors)
 
         if CACHE_MAPS:
             write_cache(maps, scale, cache_dir)
@@ -138,21 +150,21 @@ for aoi in aois:
 ### Create reports for summary units
 ids = {
     "huc12": [
-        # "210100050503"  # PR
-        # "110702071001",  # at junction of gulf_hypoxia, okchat, midse
-        # "031200030902",  # at overlap area between FL, MidSE, and SA
-        # "060200020506",  # in AppLCC area
-        # "030101010301",  # in Nature's Network  / South Atlantic overlap area
+        "210100050503",  # PR
+        "110702071001",  # at junction of gulf_hypoxia, okchat, midse
+        "031200030902",  # at overlap area between FL, MidSE, and SA
+        "060200020506",  # in AppLCC area
+        "030101010301",  # in Nature's Network  / South Atlantic overlap area
         ##################
         #     #     "130301020902", # far western edge
         #     #     "031501060512",  # partial overlap with SA raster inputs
         #     "031700080402"
     ],
-    # "marine_blocks": [
-    #     "NI18-07-6210",  # Atlantic coast
-    #     "NG16-03-299",  # Gulf coast
-    #     "NG17-10-6583",  # Florida keys, overlaps with protected areas
-    # ],
+    "marine_blocks": [
+        "NI18-07-6210",  # Atlantic coast
+        #     #     "NG16-03-299",  # Gulf coast
+        #     #     "NG17-10-6583",  # Florida keys, overlaps with protected areas
+    ],
 }
 
 
@@ -192,7 +204,10 @@ for summary_type in ids:
                 ownership=has_ownership,
                 protection=has_protection,
             )
-            maps, scale = asyncio.run(task)
+            maps, scale, errors = asyncio.run(task)
+
+            if errors:
+                print("Errors", errors)
 
             if CACHE_MAPS:
                 write_cache(maps, scale, cache_dir)

@@ -1,9 +1,19 @@
 from base64 import b64encode
 from io import BytesIO
 import math
+import time
 
+import httpx
 from PIL import Image
 from analysis.constants import M_MILES
+from api.settings import MBGL_SERVER_URL
+
+from .errors import MapRenderError
+
+
+CONNECTION_TIMEOUT = 120  # seconds
+MAX_RETRIES = 3
+RETRY_DELAY = 0.5  # seconds
 
 
 def get_center(bounds):
@@ -104,3 +114,79 @@ def to_base64(img):
     # we can likely handle larger files
     img.save(buffer, format="PNG", compress_level=1)
     return b64encode(buffer.getvalue()).decode("utf-8")
+
+
+class Retry(object):
+    def __init__(self, max_retries=3):
+        self.max_retries = 0
+
+    async def __aenter__(self, func, *args, **kwargs):
+        result = None
+
+        for i in range(self.max_retries):
+            try:
+                result = func(*args, **kwargs)
+                return result
+
+            except httpx.RequestError as ex:
+                pass
+
+            except Exception as ex:
+                raise ex
+
+        if result is None:
+            raise MapRenderError("Max retries exceeded without success")
+
+    async def __aexit__(self, *args, **kwargs):
+        pass
+
+
+async def render_mbgl_map(params):
+    """Render map using mbgl-renderer service.
+
+    Parameters
+    ----------
+    params : dict
+        map rendering parameters
+
+    Returns
+    -------
+    Image object
+        rendered map image
+    """
+
+    async with httpx.AsyncClient() as client:
+
+        async def _render_mbgl_map():
+            r = await client.post(
+                MBGL_SERVER_URL, json=params, timeout=CONNECTION_TIMEOUT
+            )
+
+            if r.status_code != 200:
+                raise MapRenderError(
+                    f"Error rendering map image (HTTP: {r.status_code}): {r.text[:500]}"
+                )
+
+            img_bytes = BytesIO(r.content)
+            img = Image.open(img_bytes)
+            img.load()  # force image to be read into memory
+            img_bytes.close()
+            return img
+
+        # Wrap above function in a loop so that we retry on connection timeouts
+        result = None
+        for i in range(MAX_RETRIES):
+            try:
+                result = await _render_mbgl_map()
+                return result
+
+            except httpx.RequestError as ex:
+                # wait a little bit then try again
+                time.sleep(RETRY_DELAY)
+
+            except Exception as ex:
+                raise ex
+
+        if result is None:
+            raise MapRenderError("Max connection retries exceeded without success")
+

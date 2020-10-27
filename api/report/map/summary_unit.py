@@ -1,13 +1,9 @@
 from io import BytesIO
 from copy import deepcopy
-import logging
-
-import httpx
-from PIL import Image
 
 from api.settings import MBGL_SERVER_URL
 
-log = logging.getLogger(__name__)
+from .util import render_mbgl_map
 
 
 STYLE = {
@@ -64,16 +60,9 @@ async def get_summary_unit_map_image(id, center, zoom, width, height):
     }
 
     try:
-        async with httpx.AsyncClient() as client:
-            r = await client.post(MBGL_SERVER_URL, json=params)
-
-            if r.status_code != 200:
-                log.error(f"Error generating summary unit image: {r.text[:255]}")
-                return None
-
-            return Image.open(BytesIO(r.content))
+        map = await render_mbgl_map(params)
 
     except Exception as ex:
-        log.error("Unhandled exception generating summary unit image")
-        log.error(ex)
-        return None
+        return None, f"Error generating summary_unit image ({type(ex)}): {ex}"
+
+    return map, None

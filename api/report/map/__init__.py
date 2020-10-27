@@ -36,11 +36,50 @@ inputs_dir = src_dir / "indicators"
 
 
 async def render_mbgl_maps(**kwargs):
+    """Asynchronously render MBGL maps based on number of MAP_RENDER_THREADS
+
+    Returns
+    -------
+    dict, dict
+        tuple of (maps, errors) keyed by map ID
+    """
     results = await asyncio.gather(*kwargs.values())
-    return {key: result for key, result in zip(kwargs.keys(), results)}
+    results = zip(kwargs.keys(), results)
+
+    maps = {}
+    errors = {}
+    for key, (map, error) in results:
+        maps[key] = map
+        if error is not None:
+            errors[key] = error
+
+    return maps, errors
 
 
 def render_raster_map(bounds, scale, basemap_image, aoi_image, id, path, colors):
+    """Render raster dataset map based on bounds.  Merge this over basemap image
+    and under aoi_image.
+
+    Parameters
+    ----------
+    bounds : list-like of [xmin, ymin, xmax, ymax]
+        bounds of map
+    scale : dict
+        map scale info
+    basemap_image : Image object
+    aoi_image : Image object
+    id : str
+        map ID
+    path : str
+        path to raster dataset
+    colors : list-like of colors
+        colors to render map image based on values in raster
+
+    Returns
+    -------
+    id, Image object
+        Image object is None if it could not be rendered or does not overlap bounds
+    """
     raster_img = render_raster(path, bounds, scale, WIDTH, HEIGHT, colors)
 
     map_image = None
@@ -52,8 +91,37 @@ def render_raster_map(bounds, scale, basemap_image, aoi_image, id, path, colors)
 
 
 async def render_raster_maps(
-    bounds, scale, basemap_image, aoi_image, raster_input_ids, indicators, urban, slr
+    bounds,
+    scale,
+    basemap_image,
+    aoi_image,
+    raster_input_ids,
+    indicators,
+    urban=False,
+    slr=False,
 ):
+    """Asynchronously render Raster maps.
+
+    Parameters
+    ----------
+    bounds : list-like of [xmin, ymin, xmax, ymax]
+        bounds of map
+    scale : dict
+        map scale info
+    basemap_image : Image object
+    aoi_image : Image object
+    raster_input_ids : list-like of IDs of Blueprint input rasters
+    indicators : list-like of indicator IDs (not used yet)
+    urban : bool (default False)
+        if True, will render urban map
+    slr : bool (default False)
+        if True, will render SLR map
+
+    Returns
+    -------
+    dict, dict
+        tuple of (maps, errors) keyed by map ID
+    """
     executor = ThreadPoolExecutor(max_workers=MAP_RENDER_THREADS)
     loop = asyncio.get_event_loop()
 
@@ -92,8 +160,9 @@ async def render_raster_maps(
 
     results = [t.result() for t in completed]
     maps = {k: v for k, v in results if v is not None}
+    errors = {}  # TODO
 
-    return maps
+    return maps, errors
 
 
 async def render_maps(
@@ -133,11 +202,15 @@ async def render_maps(
 
     Returns
     -------
-    dict
+    (dict, dict, dict)
+        Tuple of (maps, scale, errors)
         Dictionary of map IDs to base64 data
+        Dictionary of map scale information
+        Dictionary of map IDs to rendering errors
     """
 
     maps = {}
+    errors = {}
 
     bounds = pad_bounds(bounds, PADDING)
     center = get_center(bounds)
@@ -175,30 +248,26 @@ async def render_maps(
         if "txchat" in input_ids:
             tasks["txchat"] = get_chat_map_image("tx", center, zoom, WIDTH, HEIGHT)
 
-    mbgl_maps = await render_mbgl_maps(**tasks)
+    mbgl_maps, mbgl_map_errors = await render_mbgl_maps(**tasks)
+    errors.update(mbgl_map_errors)
 
     maps["locator"] = to_base64(mbgl_maps["locator"])
     basemap_image = mbgl_maps.get("basemap", None)
     aoi_image = mbgl_maps.get("aoi", None)
-
-    # make sure that images are fully loaded before sending to other threads
-    if basemap_image is not None:
-        basemap_image.load()
-
-    if aoi_image is not None:
-        aoi_image.load()
 
     ownership_image = mbgl_maps.get("ownership", None)
     if ownership_image is not None:
         maps["ownership"] = to_base64(
             merge_maps([basemap_image, mbgl_maps["ownership"], aoi_image])
         )
+        ownership_image.close()
 
     protection_image = mbgl_maps.get("protection", None)
     if protection_image is not None:
         maps["protection"] = to_base64(
             merge_maps([basemap_image, mbgl_maps["protection"], aoi_image])
         )
+        protection_image.close()
 
     if input_ids:
         for input_id in input_ids:
@@ -214,7 +283,7 @@ async def render_maps(
     )
 
     # Use background threads for rendering rasters
-    raster_maps = await render_raster_maps(
+    raster_maps, raster_map_errors = await render_raster_maps(
         bounds,
         scale,
         basemap_image,
@@ -226,5 +295,6 @@ async def render_maps(
     )
 
     maps.update(raster_maps)
+    errors.update(raster_map_errors)
 
-    return maps, scale
+    return maps, scale, errors

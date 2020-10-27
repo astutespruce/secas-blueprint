@@ -1,15 +1,8 @@
-from io import BytesIO
 from copy import deepcopy
-import logging
 
-import httpx
-from PIL import Image
-
-from api.settings import MBGL_SERVER_URL
 from analysis.constants import INPUTS
 
-
-log = logging.getLogger(__name__)
+from .util import render_mbgl_map
 
 
 # Note: only shows watersheds that are high or medium priority
@@ -69,18 +62,9 @@ async def get_chat_map_image(state, center, zoom, width, height):
     }
 
     try:
-        async with httpx.AsyncClient() as client:
-            r = await client.post(MBGL_SERVER_URL, json=params)
-
-            if r.status_code != 200:
-                log.error(
-                    f"Error generating CHAT Rank image for state {state} (HTTP {r.status_code}): {r.text[:255]}"
-                )
-                return None
-
-        return Image.open(BytesIO(r.content))
+        map = await render_mbgl_map(params)
 
     except Exception as ex:
-        log.error(f"Unhandled exception generating CHAT Rank image for state {state}")
-        log.error(ex)
-        return None
+        return None, f"Error generating {state} CHAT image ({type(ex)}): {ex}"
+
+    return map, None

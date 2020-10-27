@@ -1,14 +1,6 @@
-from io import BytesIO
-from copy import deepcopy
-import logging
-
-import httpx
-from PIL import Image
-
-from api.settings import MBGL_SERVER_URL
 from analysis.constants import PROTECTION
 
-log = logging.getLogger(__name__)
+from .util import render_mbgl_map
 
 
 # interleave keys and colors for mapbox
@@ -73,16 +65,9 @@ async def get_protection_map_image(center, zoom, width, height):
     }
 
     try:
-        async with httpx.AsyncClient() as client:
-            r = await client.post(MBGL_SERVER_URL, json=params)
-
-        if r.status_code != 200:
-            log.error(f"Error generating protection image: {r.text[:255]}")
-            return None
-
-        return Image.open(BytesIO(r.content))
+        map = await render_mbgl_map(params)
 
     except Exception as ex:
-        log.error("Error generating protection image")
-        log.error(ex)
-        return None
+        return None, f"Error generating protection image ({type(ex)}): {ex}"
+
+    return map, None
