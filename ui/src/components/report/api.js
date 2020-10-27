@@ -108,6 +108,8 @@ const pollJob = async (jobId, onProgress) => {
     const {
       status = null,
       progress = null,
+      message = null,
+      errors = null,
       detail: error = null, // error message
       result = null,
     } = json
@@ -122,11 +124,11 @@ const pollJob = async (jobId, onProgress) => {
     }
 
     if (status === 'success') {
-      return { result: `${apiHost}${result}` }
+      return { result: `${apiHost}${result}`, errors }
     }
 
     if (progress != null) {
-      onProgress(progress)
+      onProgress({ progress, message, errors })
     }
 
     // sleep
@@ -144,16 +146,7 @@ const pollJob = async (jobId, onProgress) => {
 }
 
 export const submitUserInfo = async (userInfo) => {
-  const { userEmail, userName, userOrg, userUse, areaName, fileName } = userInfo
-  console.log(
-    'submit user info',
-    userEmail,
-    userName,
-    userOrg,
-    userUse,
-    areaName,
-    fileName
-  )
+  const { userEmail, userName, userOrg, userUse } = userInfo
 
   // mapping of form fields to form field IDs in MS form
   const questionIds = {

@@ -25,9 +25,14 @@ import config from '../../../gatsby-config'
 const { contactEmail } = config.siteMetadata
 
 const DownloadModal = ({ id, type, onClose }) => {
-  const [{ reportURL, progress, error, inProgress }, setState] = useState({
+  const [
+    { reportURL, progress, message, errors, error, inProgress },
+    setState,
+  ] = useState({
     reportURL: null,
     progress: 0,
+    message: null,
+    errors: null, // non-fatal errors
     inProgress: false,
     error: null, // if error is non-null, it indicates there was an error
   })
@@ -37,6 +42,8 @@ const DownloadModal = ({ id, type, onClose }) => {
       reportURL: null,
       error: null,
       progress: 0,
+      message: null,
+      errors: null,
       inProgress: false,
     }))
     onClose()
@@ -48,16 +55,33 @@ const DownloadModal = ({ id, type, onClose }) => {
       ...prevState,
       inProgress: true,
       progress: 0,
+      message: null,
+      errors: null,
       error: null,
       reportURL: null,
     }))
 
     try {
-      const { error: uploadError, result } = await createSummaryUnitReport(
+      const {
+        error: uploadError,
+        result,
+        errors: finalErrors,
+      } = await createSummaryUnitReport(
         id,
         type,
-        (nextProgress) => {
-          setState((prevState) => ({ ...prevState, progress: nextProgress }))
+        ({
+          progress: nextProgress,
+          message: nextMessage = null,
+          errors: nextErrors = null,
+        }) => {
+          setState(
+            ({ message: prevMessage, errors: prevErrors, ...prevState }) => ({
+              ...prevState,
+              progress: nextProgress,
+              message: nextMessage || prevMessage,
+              errors: nextErrors || prevErrors,
+            })
+          )
         }
       )
 
@@ -69,6 +93,8 @@ const DownloadModal = ({ id, type, onClose }) => {
           ...prevState,
           inProgress: false,
           progress: 0,
+          message: null,
+          errors: null,
           error: uploadError,
         }))
         return
@@ -78,6 +104,8 @@ const DownloadModal = ({ id, type, onClose }) => {
       setState((prevState) => ({
         ...prevState,
         progress: 100,
+        message: null,
+        errors: finalErrors, // there may be non-fatal errors (e.g., errors rendering maps)
         inProgress: false,
         reportURL: result,
       }))
@@ -102,7 +130,7 @@ const DownloadModal = ({ id, type, onClose }) => {
   if (reportURL !== null) {
     content = (
       <Box sx={{ py: '1rem' }}>
-        <Text sx={{ fontWeight: 'bold', mb: '0.5rem' }}>
+        <Text as="h3" sx={{ fontWeight: 'bold', mb: '0.5rem' }}>
           <CheckCircle
             size="1em"
             style={{
@@ -112,10 +140,47 @@ const DownloadModal = ({ id, type, onClose }) => {
           All done!
         </Text>
         <Text>
-          Your report is now complete. It should download automatically.
+          {errors && errors.length > 0 ? (
+            <Text
+              sx={{
+                mt: '1rem',
+                color: 'error',
+                ul: {
+                  mt: '0.5em',
+                  ml: '1em',
+                },
+                'ul li': {
+                  color: 'error',
+                },
+              }}
+            >
+              <ExclamationTriangle
+                size="1rem"
+                style={{
+                  margin: '0 0.5rem 0 0',
+                }}
+              />
+              Unfortunately, the server had an unexpected error creating your
+              report. It was able to create most of your report, but some
+              sections may be missing. The server says:
+              <br />
+              <ul>
+                {errors.map((e) => (
+                  <li key={e}>{e}</li>
+                ))}
+              </ul>
+              <br />
+              Please try again. If that does not work, please{' '}
+              <OutboundLink href={`mailto:${contactEmail}`}>
+                Contact Us
+              </OutboundLink>
+              .
+            </Text>
+          ) : null}
           <br />
           <br />
-          You can also click the button below to download your report.
+          Your report should download automatically. You can also click the
+          button below to download your report.
         </Text>
       </Box>
     )
@@ -153,7 +218,7 @@ const DownloadModal = ({ id, type, onClose }) => {
   } else if (inProgress) {
     content = (
       <Box sx={{ py: '2rem' }}>
-        <Text>Creating report...</Text>
+        <Text>{message ? `${message}...` : 'Creating report...'}</Text>
 
         <Flex sx={{ alignItems: 'center' }}>
           <Progress variant="styles.progress" max={100} value={progress} />
@@ -193,7 +258,7 @@ const DownloadModal = ({ id, type, onClose }) => {
           </Link>
         ) : (
           <>
-            {!inProgress ? (
+            {!(inProgress || error) ? (
               <Button onClick={handleCreateReport}>Create report</Button>
             ) : null}
           </>
