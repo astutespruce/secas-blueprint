@@ -21,6 +21,7 @@ from analysis.lib.stats import (
     get_caribbean_huc12_results,
     get_chat_huc12_results,
     get_florida_huc12_results,
+    get_florida_marine_block_results,
     get_gulf_hypoxia_huc12_results,
     get_midse_huc12_results,
     get_naturescape_huc12_results,
@@ -32,8 +33,9 @@ from analysis.lib.stats import (
 input_dir = Path("data/inputs")
 results_dir = Path("data/results")
 
-raster_huc12_result_funcs = {
+raster_result_funcs = {
     "fl": get_florida_huc12_results,
+    "flm": get_florida_marine_block_results,
     "gh": get_gulf_hypoxia_huc12_results,
     "ms": get_midse_huc12_results,
     "app": get_naturescape_huc12_results,
@@ -174,9 +176,11 @@ class SummaryUnits(object):
 
                 continue
 
-            results_func = raster_huc12_result_funcs.get(input_id, None)
+            results_func = raster_result_funcs.get(input_id, None)
             if not results_func:
-                print(f"TODO: {input_id}")
+                print(
+                    f"WARNING: missing summary unit raster results func for {input_id}"
+                )
                 continue
 
             raster_results = results_func(id, analysis_acres, total_acres)

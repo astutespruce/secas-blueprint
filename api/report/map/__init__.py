@@ -131,10 +131,6 @@ async def render_raster_maps(
 
     for input_id in raster_input_ids:
         input_info = INPUTS[input_id]
-        # FIXME: temporary just while waiting on FL Marine blueprint
-        if not input_info["filename"]:
-            print(f"TODO: render {input_id}")
-            continue
 
         # exclude 0 values
         colors = {

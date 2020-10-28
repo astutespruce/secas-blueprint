@@ -19,6 +19,7 @@ from analysis.lib.stats import (
     summarize_caribbean_by_huc12,
     summarize_chat_by_huc12,
     summarize_florida_by_huc12,
+    summarize_florida_by_marine_block,
     summarize_gulf_hypoxia_by_huc12,
     summarize_midse_by_huc12,
     summarize_natures_network_by_huc12,
@@ -49,43 +50,43 @@ units_df = gp.read_feather(huc12_filename, columns=["id", "geometry"]).set_index
 geometries = pd.Series(units_df.geometry.values.data, index=units_df.index)
 
 # Summarize Blueprint and input areas
-summarize_bluprint_by_unit(geometries, out_dir)
+summarize_bluprint_by_unit(geometries)
 
 # Summarize current and projected urbanization
-summarize_urban_by_huc12(geometries, out_dir)
+summarize_urban_by_huc12(geometries)
 
 # Summarize projected sea level rise
-summarize_slr_by_huc12(geometries, out_dir)
+summarize_slr_by_huc12(geometries)
 
 # Calculate overlap with ownership and protection
-summarize_ownership_by_unit(units_df, out_dir)
+summarize_ownership_by_unit(units_df)
 
 # Calculate overlap with counties
-summarize_counties_by_huc12(units_df, out_dir)
+summarize_counties_by_huc12(units_df)
 
 # Summarize CHAT for OK / TX
 summarize_chat_by_huc12(units_df, out_dir)
 
 # Calculate overlap with Caribbean priority watersheds
-summarize_caribbean_by_huc12(units_df, out_dir)
+summarize_caribbean_by_huc12(units_df)
 
 # Calculate area for Gulf Hypoxia
-summarize_gulf_hypoxia_by_huc12(geometries, out_dir)
+summarize_gulf_hypoxia_by_huc12(geometries)
 
 # Calculate area for Nature's Network
-summarize_natures_network_by_huc12(geometries, out_dir)
+summarize_natures_network_by_huc12(geometries)
 
 # Calculate area for NatureScape
-summarize_naturescape_by_huc12(geometries, out_dir)
+summarize_naturescape_by_huc12(geometries)
 
 # Summarize South Atlantic
-summarize_southatlantic_by_unit(geometries, out_dir)
+summarize_southatlantic_by_unit(geometries)
 
 # Summarize Florida
-summarize_florida_by_huc12(geometries, out_dir)
+summarize_florida_by_huc12(geometries)
 
 # Summarize Middle Southeast
-summarize_midse_by_huc12(geometries, out_dir)
+summarize_midse_by_huc12(geometries)
 
 print(
     "Processed {:,} zones in {:.2f}m".format(len(geometries), (time() - start) / 60.0)
@@ -107,13 +108,17 @@ units_df = gp.read_feather(marine_filename, columns=["id", "geometry"]).set_inde
 geometries = pd.Series(units_df.geometry.values.data, index=units_df.index)
 
 # Summarize Blueprint and input areas
-summarize_bluprint_by_unit(geometries, out_dir)
+summarize_bluprint_by_unit(geometries)
 
 # Calculate overlap with ownership and protection
-summarize_ownership_by_unit(units_df, out_dir)
+summarize_ownership_by_unit(units_df)
 
 # Summarize South Atlantic (marine)
-summarize_southatlantic_by_unit(geometries, out_dir)
+summarize_southatlantic_by_unit(geometries)
+
+# Summarize Florida Marine Blueprint
+summarize_florida_by_marine_block(geometries)
+
 
 print(
     "Processed {:,} zones in {:.2f}m".format(len(geometries), (time() - start) / 60.0)

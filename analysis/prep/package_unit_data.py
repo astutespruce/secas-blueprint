@@ -356,6 +356,14 @@ marine = (
 marine.blueprint_total = marine.blueprint_total.fillna(0)
 
 ### Marine input areas
+
+# Florida (marine)
+fl_df = pd.read_feather(working_dir / "florida.feather").set_index("id")
+fl_cols = [c for c in fl_df.columns if c.startswith("flm_")]
+fl_percent = encode_values(fl_df[fl_cols], fl_df.shape_mask, 1000).rename(
+    "flm_blueprint"
+)
+
 # South Atlantic (marine)
 sa_df = pd.read_feather(working_dir / "southatlantic.feather").set_index("id")
 sa_cols = [c for c in sa_df.columns if c.startswith("sa_")]
@@ -363,8 +371,7 @@ sa_percent = encode_values(sa_df[sa_cols], sa_df.shape_mask, 1000).rename(
     "sa_blueprint"
 )
 
-
-marine = marine.join(sa_percent, how="left")
+marine = marine.join(sa_percent, how="left").join(fl_percent, how="left")
 
 
 out = huc12.reset_index().append(marine.reset_index(), ignore_index=True, sort=False)

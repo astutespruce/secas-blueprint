@@ -6,7 +6,7 @@ from analysis.lib.pygeos_util import sjoin
 county_filename = "data/inputs/boundaries/counties.feather"
 
 
-def summarize_by_huc12(units_df, out_dir):
+def summarize_by_huc12(units_df):
     """Calculate spatial join with counties
 
     Parameters

@@ -14,14 +14,12 @@ import pygeos as pg
 from api.errors import DataError
 from api.report.map import render_maps
 from api.report import create_report
-from api.settings import LOGGING_LEVEL, TEMP_DIR
+from api.settings import LOGGING_LEVEL, TEMP_DIR, CUSTOM_REPORT_MAX_ACRES
 from api.stats import CustomArea
 from api.progress import set_progress
 
 from analysis.lib.pygeos_util import to_crs
 from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES
-
-MAX_DIM = 5  # degrees
 
 
 log = logging.getLogger(__name__)
@@ -77,8 +75,10 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
     extent_area = (
         pg.area(pg.box(*pg.total_bounds(to_crs(geometry, df.crs, DATA_CRS)))) * M2_ACRES
     )
-    if extent_area >= 2e6:
-        raise DataError("Area of interest is too large, it must be < 2 million acres.")
+    if extent_area >= CUSTOM_REPORT_MAX_ACRES:
+        raise DataError(
+            f"Area of interest is too large ({extent_area:,.0f} acres), it must be < {CUSTOM_REPORT_MAX_ACRES:,.0f} acres."
+        )
 
     await set_progress(
         ctx["job_id"], 10, "Calculating results (this might take a while)"

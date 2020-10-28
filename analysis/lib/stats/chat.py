@@ -159,7 +159,7 @@ def summarize_by_aoi(df, state, analysis_acres, total_acres):
     }
 
 
-def summarize_by_huc12(units_df, out_dir):
+def summarize_by_huc12(units_df):
     for state in ["ok", "tx"]:
         print(f"Calculating overlap with {state} CHAT...")
 

@@ -27,8 +27,7 @@ src_dir = Path("data/inputs/indicators/florida")
 filename = src_dir / "fl_blueprint.tif"
 mask_filename = src_dir / "fl_blueprint_mask.tif"
 
-out_dir = Path("data/results/huc12")
-results_filename = out_dir / "florida.feather"
+results_filename = "data/results/huc12/florida.feather"
 
 
 def extract_by_geometry(geometries, bounds, prescreen=False):
@@ -155,19 +154,18 @@ def summarize_by_aoi(shapes, bounds, outside_se_acres):
     }
 
 
-def summarize_by_huc12(geometries, out_dir):
+def summarize_by_huc12(geometries):
     """Summarize by HUC12
 
     Parameters
     ----------
     geometries : Series of pygeos geometries, indexed by HUC12 id
-    out_dir : str
     """
 
     summarize_raster_by_geometry(
         geometries,
         extract_by_geometry,
-        outfilename=out_dir / "florida.feather",
+        outfilename=results_filename,
         progress_label="Calculating Florida Blueprint area by HUC12",
         bounds=FLORIDA_BOUNDS,
     )
@@ -230,3 +228,4 @@ def get_huc12_results(id, analysis_acres, total_acres):
         "remainder": remainder,
         "remainder_percent": 100 * remainder / total_acres,
     }
+

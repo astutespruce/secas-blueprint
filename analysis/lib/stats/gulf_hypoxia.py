@@ -151,13 +151,12 @@ def summarize_by_aoi(shapes, bounds, outside_se_acres):
     }
 
 
-def summarize_by_huc12(geometries, out_dir):
+def summarize_by_huc12(geometries):
     """Summarize by HUC12
 
     Parameters
     ----------
     geometries : Series of pygeos geometries, indexed by HUC12 id
-    out_dir : str
     """
 
     summarize_raster_by_geometry(

@@ -16,27 +16,26 @@ from analysis.lib.io import write_raster
 from analysis.lib.input_areas import get_input_area_mask
 from analysis.lib.pygeos_util import to_dict_all
 from analysis.lib.raster import add_overviews, create_lowres_mask
-
+from analysis.lib.speedups import remap
 
 src_dir = Path("source_data/florida")
-inland_dir = src_dir / "Inland/HubsData&Blueprint"
 marine_dir = src_dir / "Marine"
 bnd_dir = Path("data/boundaries")
 data_dir = Path("data/inputs")
-out_dir = data_dir / "indicators/florida"
-outfilename = out_dir / "fl_blueprint.tif"
+out_dir = data_dir / "indicators/florida_marine"
+outfilename = out_dir / "flm_blueprint.tif"
 
 if not out_dir.exists():
     os.makedirs(out_dir)
 
-### Inland
-print("Extracting Florida inland input area mask...")
-mask, transform, window = get_input_area_mask("fl")
 
+### Marine
+print("Extracting Florida marine input area mask...")
+mask, transform, window = get_input_area_mask("flm")
 
 print("Reading and warping Florida Blueprint...")
-with rasterio.open(inland_dir / "Blueprint_V_1_3.tif") as src:
-    nodata = int(src.nodata)
+with rasterio.open(marine_dir / "FLBlueprintVer1.tif") as src:
+    nodata = 255
     vrt = WarpedVRT(
         src,
         width=window.width,
@@ -47,11 +46,13 @@ with rasterio.open(inland_dir / "Blueprint_V_1_3.tif") as src:
         resampling=Resampling.nearest,
     )
 
-    data = vrt.read()[0]
+    data = vrt.read()[0].astype("uint8")
 
 
-# fill with 0 where not 1 or 2
-data[data == nodata] = 0
+# remap data
+remap_table = np.array([[1, 1], [2, 2], [3, 3]], dtype="uint8")
+data = remap(data, remap_table, nodata=255)
+
 
 # apply mask
 data = np.where(mask == 1, data, nodata).astype("uint8")
@@ -67,3 +68,4 @@ create_lowres_mask(
     factor=MASK_FACTOR,
     ignore_zero=False,
 )
+

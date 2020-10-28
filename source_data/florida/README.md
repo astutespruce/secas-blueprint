@@ -1,10 +1,5 @@
-# Florida Conservation Blueprint 1.3
+# Florida Conservation Blueprint 1.3 and Marine Blueprint 1.0
 
-Downloaded 6/12/2020 from ScienceBase:
+Blueprint 1.3 was downloaded from the MS Teams site.
 
--   https://www.sciencebase.gov/catalog/item/5c9e459ae4b0b8a7f62f5be6
--   https://www.sciencebase.gov/catalog/item/5cf80172e4b07f02a704653f
-
-These are ArcGrid versions.
-
-Eva Salinas sent GeoTIFF versions on 6/12/2020.
+The Marine Blueprint was obtained directly from Tony Gillis @ FWC on 10/27/2020 as a GeoTIFF (files above are unreadable FGDB rasters): FLBlueprintVer1.tif

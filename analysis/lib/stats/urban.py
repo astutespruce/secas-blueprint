@@ -118,7 +118,7 @@ def extract_by_geometry(geometries, bounds):
     return results
 
 
-def summarize_by_huc12(geometries, out_dir):
+def summarize_by_huc12(geometries):
     """Calculate current and projected urbanization for each decade from 2020 to
     2100.
 

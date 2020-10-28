@@ -31,6 +31,7 @@ from analysis.lib.stats import (
     summarize_caribbean_by_aoi,
     summarize_chat_by_aoi,
     summarize_florida_by_aoi,
+    summarize_florida_marine_by_aoi,
     summarize_gulf_hypoxia_by_aoi,
     summarize_midse_by_aoi,
     summarize_naturescape_by_aoi,
@@ -47,6 +48,7 @@ slr_bounds_filename = data_dir / "threats/slr/slr_bounds.feather"
 
 raster_result_funcs = {
     "fl": summarize_florida_by_aoi,
+    "flm": summarize_florida_marine_by_aoi,
     "gh": summarize_gulf_hypoxia_by_aoi,
     "ms": summarize_midse_by_aoi,
     "app": summarize_naturescape_by_aoi,
@@ -132,7 +134,7 @@ class CustomArea(object):
             # Remaining inputs are raster-based
             results_func = raster_result_funcs.get(input_id, None)
             if not results_func:
-                print(f"TODO: calculate results for {input_id}")
+                print(f"WARNING: missing AOI summary func for {input_id}")
                 continue
 
             raster_results = results_func(

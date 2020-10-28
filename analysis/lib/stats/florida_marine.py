@@ -14,9 +14,8 @@ from analysis.constants import (
     ACRES_PRECISION,
     M2_ACRES,
     INPUTS,
-    MIDSE_BOUNDS,
+    FLORIDA_MARINE_BOUNDS,
 )
-from analysis.lib.pygeos_util import to_dict
 from analysis.lib.raster import (
     boundless_raster_geometry_mask,
     extract_count_in_geometry,
@@ -24,17 +23,16 @@ from analysis.lib.raster import (
     summarize_raster_by_geometry,
 )
 
-src_dir = Path("data/inputs/indicators/midse")
-filename = src_dir / "midse_blueprint.tif"
-mask_filename = src_dir / "midse_blueprint_mask.tif"
+src_dir = Path("data/inputs/indicators/florida_marine")
+filename = src_dir / "flm_blueprint.tif"
+mask_filename = src_dir / "flm_blueprint_mask.tif"
 
-out_dir = Path("data/results/huc12")
-results_filename = out_dir / "midse.feather"
+results_filename = "data/results/marine_blocks/florida.feather"
 
 
 def extract_by_geometry(geometries, bounds, prescreen=False):
-    """Calculate the area of overlap between geometries and Middle Southeast
-    Conservation Blueprint dataset.
+    """Calculate the area of overlap between geometries and Florida
+    Marine Blueprint dataset.
 
     Parameters
     ----------
@@ -82,7 +80,7 @@ def extract_by_geometry(geometries, bounds, prescreen=False):
     if results["shape_mask"] == 0:
         return None
 
-    max_value = INPUTS["ms"]["values"][-1]["value"]
+    max_value = INPUTS["flm"]["values"][-1]["value"]
 
     counts = extract_count_in_geometry(
         filename, shape_mask, window, np.arange(max_value + 1), boundless=True
@@ -92,14 +90,14 @@ def extract_by_geometry(geometries, bounds, prescreen=False):
     if counts.max() == 0:
         return None
 
-    results["ms"] = (counts * cellsize).round(ACRES_PRECISION).astype("float32")
+    results["flm"] = (counts * cellsize).round(ACRES_PRECISION).astype("float32")
 
     return results
 
 
 def summarize_by_aoi(shapes, bounds, outside_se_acres):
-    """Get results for Middle Southeast Conservation Blueprint
-    Conservation Value Index for a given area of interest.
+    """Get results for Florida Marine Blueprint dataset
+    for a given area of interest.
 
     Parameters
     ----------
@@ -119,6 +117,7 @@ def summarize_by_aoi(shapes, bounds, outside_se_acres):
             "remainder_percent" <percent of total acres outside input>
         }
     """
+
     results = extract_by_geometry(shapes, bounds, prescreen=False)
 
     if results is None:
@@ -127,9 +126,9 @@ def summarize_by_aoi(shapes, bounds, outside_se_acres):
     total_acres = results["shape_mask"]
     analysis_acres = total_acres - outside_se_acres
 
-    values = pd.DataFrame(INPUTS["ms"]["values"])
+    values = pd.DataFrame(INPUTS["flm"]["values"])
 
-    df = values.join(pd.Series(results["ms"], name="acres"))
+    df = values.join(pd.Series(results["flm"], name="acres"))
     df["percent"] = 100 * np.divide(df.acres, total_acres)
 
     # sort into correct order
@@ -155,35 +154,35 @@ def summarize_by_aoi(shapes, bounds, outside_se_acres):
     }
 
 
-def summarize_by_huc12(geometries):
-    """Summarize by HUC12
+def summarize_by_marine_block(geometries):
+    """Summarize by marine_block
 
     Parameters
     ----------
-    geometries : Series of pygeos geometries, indexed by HUC12 id
+    geometries : Series of pygeos geometries, indexed by marine block ID
     """
 
     summarize_raster_by_geometry(
         geometries,
         extract_by_geometry,
         outfilename=results_filename,
-        progress_label="Summarizing Middle Southeast Blueprint",
-        bounds=MIDSE_BOUNDS,
+        progress_label="Calculating Florida Marine Blueprint area by Marine Block",
+        bounds=FLORIDA_MARINE_BOUNDS,
     )
 
 
-def get_huc12_results(id, analysis_acres, total_acres):
-    """Get results for Middle Southeast Conservation Blueprint
-    Conservation Value Index for a given HUC12.
+def get_marine_block_results(id, analysis_acres, total_acres):
+    """Get results for Florida Conservation Blueprint dataset for a given
+    marine block.
 
     Parameters
     ----------
     id : str
-        HUC12 ID
+        marine block ID
     analysis_acres : float
-        area of HUC12 summary unit less any area outside SE Blueprint
+        area of marine block summary unit less any area outside SE Blueprint
     total_acres : float
-        area of HUC12 summary unit
+        area of marine block summary unit
 
     Returns
     -------
@@ -201,16 +200,16 @@ def get_huc12_results(id, analysis_acres, total_acres):
     if not id in df.index:
         return None
 
-    values = pd.DataFrame(INPUTS["ms"]["values"])
+    values = pd.DataFrame(INPUTS["flm"]["values"])
 
     row = df.loc[id]
-    cols = [c for c in row.index if c.startswith("ms_")]
+    cols = [c for c in row.index if c.startswith("flm_")]
 
     df = values.join(pd.Series(row[cols].values, name="acres"))
     df["percent"] = 100 * np.divide(df.acres, row.shape_mask)
 
     # sort into correct order
-    df.sort_values(by=["blueprint", "value"], ascending=False, inplace=True)
+    df.sort_values(by=["blueprint", "value"], ascending=[False, True], inplace=True)
 
     priorities = df[["value", "blueprint", "label", "acres", "percent"]].to_dict(
         orient="records"
@@ -230,4 +229,3 @@ def get_huc12_results(id, analysis_acres, total_acres):
         "remainder": remainder,
         "remainder_percent": 100 * remainder / total_acres,
     }
-

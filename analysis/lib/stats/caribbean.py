@@ -121,7 +121,7 @@ def summarize_by_aoi(df, analysis_acres, total_acres):
     }
 
 
-def summarize_by_huc12(df, out_dir):
+def summarize_by_huc12(df):
     """Calculate overlap of HUC12 summary units with HUC10 priority watersheds.
 
     This uses the HUC10 component of the HUC12 index to do a basic join, and

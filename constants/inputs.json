@@ -37,10 +37,36 @@
     "version": "1.0",
     "dataURL": "https://flcpa.databasin.org/galleries/1bf67d31d64448b6a255888f43f3d601",
     "infoURL": "https://flcpa.databasin.org/galleries/1bf67d31d64448b6a255888f43f3d601",
-    "filename": "",
-    "valueField": null,
-    "valueLabel": null,
-    "values": [],
+    "filename": "florida_marine/flm_blueprint.tif",
+    "valueField": "flm_blueprint",
+    "valueLabel": "Conservation Priority",
+    "values": [
+      {
+        "value": 0,
+        "label": "Not a priority",
+        "color": "#EEE",
+        "blueprint": 0
+      },
+      {
+        "value": 1,
+        "label": "P1: High priority",
+        "color": "#005a32",
+        "blueprint": 2
+      },
+      {
+        "value": 2,
+        "label": "P2: Medium priority",
+        "color": "#807dba",
+        "blueprint": 2
+      },
+      {
+        "value": 3,
+        "label": "P3",
+        "color": "#bcbddc",
+        "blueprint": 1
+      }
+    ],
+    "domain": [3, 1],
     "description": "The Florida Marine Blueprint (v1.0) incorporates species locations, richness, and important habitats identified by multiple organizations across Florida."
   },
   {
