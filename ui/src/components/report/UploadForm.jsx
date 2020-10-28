@@ -68,8 +68,8 @@ const UploadForm = ({ onFileChange, onCreateReport, onSubmitUserInfo }) => {
           You can upload a shapefile or ESRI File Geodatabase Feature Class
           containing your area of interest, inside a zip file. Note: your zip
           file must contain only one shapefile or Feature Class, and must
-          represent a relatively small area (less than a few million acres). For
-          help analyzing larger areas, please{' '}
+          represent a relatively small area (full extent must be less than 3
+          million acres). For help analyzing larger areas, please{' '}
           <a href={`mailto:${contactEmail}`}>contact us</a>.
         </Text>
 

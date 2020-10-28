@@ -121,7 +121,7 @@ const DropZone = ({ name }) => {
         </Heading>
         <Text as="p" sx={{ color: 'grey.7', textAlign: 'center', fontSize: 1 }}>
           Zip file must contain all associated files for a shapefile (at least
-          .shp, .prj) or file geodatabase (.gdb).
+          .shp, .prj, .shx) or file geodatabase (.gdb).
           <br />
           <br />
           Max size: {MAXSIZE_MB} MB.

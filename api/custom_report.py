@@ -77,7 +77,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
     )
     if extent_area >= CUSTOM_REPORT_MAX_ACRES:
         raise DataError(
-            f"Area of interest is too large ({extent_area:,.0f} acres), it must be < {CUSTOM_REPORT_MAX_ACRES:,.0f} acres."
+            f"The extent of your area of interest is too large ({extent_area:,.0f} acres), it must be < {CUSTOM_REPORT_MAX_ACRES:,.0f} acres."
         )
 
     await set_progress(

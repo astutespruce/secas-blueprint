@@ -73,11 +73,15 @@ def get_dataset(zip):
     filename = geo_files[0]
 
     if filename.endswith(".shp"):
-        if not (filename.replace(".shp", ".prj") in files):
-            log.error(f"Upload zip file contains .shp but not .prj")
+        missing = []
+        for ext in (".prj", ".shx"):
+            if not (filename.replace(".shp", ext) in files):
+                missing.append(ext)
 
-            raise ValueError("zip file must include .shp and .prj files")
+        if missing:
+            log.error(f"Upload zip file contains .shp but not {','.join(missing)}")
 
+        raise ValueError("zip file must include .shp, .prj, and .shx files")
     # Validate that dataset is a polygon and has only a single layer
     layers = pio.list_layers(f"/vsizip/{zip.fp.name}/{filename}")
 
