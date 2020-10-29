@@ -80,8 +80,8 @@ def get_dataset(zip):
 
         if missing:
             log.error(f"Upload zip file contains .shp but not {','.join(missing)}")
+            raise ValueError("zip file must include .shp, .prj, and .shx files")
 
-        raise ValueError("zip file must include .shp, .prj, and .shx files")
     # Validate that dataset is a polygon and has only a single layer
     layers = pio.list_layers(f"/vsizip/{zip.fp.name}/{filename}")
 
