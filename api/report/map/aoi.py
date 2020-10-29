@@ -1,10 +1,5 @@
-from io import BytesIO
 from copy import deepcopy
 
-import pygeos as pg
-from PIL import Image
-
-from api.settings import MBGL_SERVER_URL
 from analysis.lib.pygeos_util import to_dict
 
 from .util import render_mbgl_map

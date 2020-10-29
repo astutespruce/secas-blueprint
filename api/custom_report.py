@@ -1,7 +1,4 @@
 """Create a custom report for a user-uploaded area of interest.
-
-TODO:
-* wrap in try / except
 """
 import logging
 from pathlib import Path

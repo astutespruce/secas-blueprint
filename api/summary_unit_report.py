@@ -33,7 +33,6 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
 
     await set_progress(ctx["job_id"], 0, "Loading data")
 
-    # TODO: move this to loading in memory at startup?
     units = SummaryUnits(unit_type)
     await set_progress(ctx["job_id"], 5, "Calculating results")
 

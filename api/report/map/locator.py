@@ -1,18 +1,10 @@
 from copy import deepcopy
-from io import BytesIO
-import logging
 
-import httpx
-from PIL import Image
 import pygeos as pg
 
-from api.settings import MBGL_SERVER_URL
 from analysis.lib.pygeos_util import to_dict
-
 from .util import render_mbgl_map
 
-
-log = logging.getLogger(__name__)
 
 ZOOM = 1.75
 CENTER = [-85.941, 29.283]

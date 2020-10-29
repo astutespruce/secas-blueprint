@@ -206,7 +206,6 @@ const UploadContainer = () => {
 
           <Divider />
 
-          {/* <Text>You can also create another report below.</Text> */}
           <Flex sx={{ justifyContent: 'center' }}>
             <Button onClick={handleReset}>Create another report?</Button>
           </Flex>

@@ -1,4 +1,3 @@
-from io import BytesIO
 from copy import deepcopy
 
 from api.settings import MBGL_SERVER_URL

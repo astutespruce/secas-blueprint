@@ -1,15 +1,4 @@
-from io import BytesIO
-import logging
-
-import httpx
-from PIL import Image
-
-from api.settings import MBGL_SERVER_URL
-
 from .util import render_mbgl_map
-
-
-log = logging.getLogger(__name__)
 
 
 STYLE = {

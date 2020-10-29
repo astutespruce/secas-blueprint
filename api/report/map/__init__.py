@@ -156,7 +156,9 @@ async def render_raster_maps(
 
     results = [t.result() for t in completed]
     maps = {k: v for k, v in results if v is not None}
-    errors = {}  # TODO
+
+    # TODO: capture and return errors
+    errors = {}
 
     return maps, errors
 
