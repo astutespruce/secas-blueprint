@@ -4,7 +4,7 @@ import { Box, Flex } from 'theme-ui'
 import { useErrorBoundary } from 'use-error-boundary'
 
 import { Provider as SearchProvider } from 'components/search'
-import { isUnsupported } from 'util/dom'
+import { hasWindow, isUnsupported } from 'util/dom'
 import ErrorMessage from './ErrorMessage'
 import UnsupportedBrowser from './UnsupportedBrowser'
 import SEO from './SEO'
@@ -14,7 +14,20 @@ import { BreakpointProvider } from './Breakpoints'
 import { siteMetadata } from '../../../gatsby-config'
 
 const Layout = ({ children, title, overflowY }) => {
-  const { ErrorBoundary, didCatch } = useErrorBoundary()
+  const { ErrorBoundary, didCatch } = useErrorBoundary({
+    onDidCatch: (err, errInfo) => {
+      // eslint-disable-next-line no-console
+      console.error('Error boundary caught', err, errInfo)
+
+      if (hasWindow && window.Sentry) {
+        const { Sentry } = window
+        Sentry.withScope((scope) => {
+          scope.setExtras(errInfo)
+          Sentry.captureException(err)
+        })
+      }
+    },
+  })
 
   return (
     <BreakpointProvider>

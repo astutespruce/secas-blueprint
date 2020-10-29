@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import { hasWindow, saveToStorage, encodeParams } from 'util/dom'
 import { captureException } from 'util/log'
 import config from '../../../gatsby-config'
@@ -16,6 +17,7 @@ let { apiHost } = config.siteMetadata
 
 const pollInterval = 1000 // milliseconds; 1 second
 const jobTimeout = 600000 // milliseconds; 10 minutes
+const failedFetchLimit = 5
 
 if (hasWindow && !apiHost) {
   apiHost = `//${window.location.host}`
@@ -98,11 +100,24 @@ export const createSummaryUnitReport = async (id, type, onProgress) => {
 
 const pollJob = async (jobId, onProgress) => {
   let time = 0
+  let failedRequests = 0
 
-  while (time < jobTimeout) {
-    const response = await fetch(`${API}/status/${jobId}`, {
-      cache: 'no-cache',
-    })
+  let response = null
+
+  while (time < jobTimeout && failedRequests < failedFetchLimit) {
+    try {
+      response = await fetch(`${API}/status/${jobId}`, {
+        cache: 'no-cache',
+      })
+    } catch (ex) {
+      failedRequests += 1
+
+      // sleep and try again
+      await new Promise((r) => setTimeout(r, pollInterval))
+      time += pollInterval
+      /* eslint-disable-next-line no-continue */
+      continue
+    }
 
     const json = await response.json()
     const {
@@ -114,7 +129,7 @@ const pollJob = async (jobId, onProgress) => {
       result = null,
     } = json
 
-    if (response.status != 200 || status === 'failed') {
+    if (response.status !== 200 || status === 'failed') {
       captureException('Report job failed', json)
       if (error) {
         return { error }
@@ -136,12 +151,28 @@ const pollJob = async (jobId, onProgress) => {
     time += pollInterval
   }
 
-  // if we got here, it meant that we hit a timeout error
-  captureException('Report job timed out')
+  // if we got here, it meant that we hit a timeout error or a fetch error
+  if (failedRequests) {
+    captureException(`Report job encountered ${failedRequests} fetch errors`)
 
+    return {
+      error:
+        'network errors were encountered while creating report.  The server may be too busy or your network connection may be having problems.  Please try again in a few minutes.',
+    }
+  }
+
+  if (time >= jobTimeout) {
+    captureException('Report job timed out')
+    return {
+      error:
+        'timeout while creating report.  Your area of interest may be too big.',
+    }
+  }
+
+  captureException('Report job had an unexpected error')
   return {
     error:
-      'timeout while creating report.  Your area of interest may be too big.',
+      'unexpected errors prevented your report from completing successfully.  Please try again.',
   }
 }
 

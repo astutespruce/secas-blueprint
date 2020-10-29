@@ -16,7 +16,7 @@ const UploadError = ({ error, handleClearError }) => {
           margin: '0 1rem 0 0',
         }}
       />
-      <Box>
+      <Box sx={{ mr: '2rem' }}>
         Uh oh! There was an error!
         <br />
         {error ? (
@@ -33,9 +33,11 @@ const UploadError = ({ error, handleClearError }) => {
           </>
         )}
       </Box>
+
       <Close
         variant="buttons.alertClose"
         ml="auto"
+        sx={{ flex: '0 0 auto' }}
         onClick={handleClearError}
       />
     </Alert>
