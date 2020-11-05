@@ -42,7 +42,8 @@
 
     <div class="caption">
         Table {{table.counter}}: Extent of projected urbanization by decade{% if results.name %} within {{results.name}}{% if results.type %} {{results.type}}{% endif %}{% else %} in this area{% endif %}.
-        Values from the <a href="http://www.basic.ncsu.edu/dsl/urb.html">SLEUTH urban growth model</a>.
+        Values from the <a href="http://www.basic.ncsu.edu/dsl/urb.html">SLEUTH urban growth model</a>.  Note: areas are based on 60 meter pixels, unlike the 30 meter pixels used for the Blueprint and
+        indicators; this will cause the total acreage to be different.
     </div>
 
     {% set table.counter=table.counter+1 %}

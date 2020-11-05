@@ -6,13 +6,7 @@ import pandas as pd
 import pygeos as pg
 import rasterio
 
-from analysis.constants import (
-    BLUEPRINT,
-    INPUT_AREA_VALUES,
-    URBAN_YEARS,
-    ACRES_PRECISION,
-    M2_ACRES,
-)
+from analysis.constants import BLUEPRINT, INPUT_AREA_VALUES, ACRES_PRECISION, M2_ACRES
 from analysis.lib.raster import (
     detect_data,
     boundless_raster_geometry_mask,

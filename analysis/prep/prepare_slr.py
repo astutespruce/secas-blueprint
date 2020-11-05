@@ -30,4 +30,5 @@ df.to_feather(src_dir / "slr_bounds.feather")
 # Note: these have varying resolution, but this creates lower resolutions for each
 print("Adding overviews to SLR files...")
 for filename in src_dir.glob("*.tif"):
+    print(f"Processing {filename}...")
     add_overviews(filename)

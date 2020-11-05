@@ -7,13 +7,16 @@ Note: rasters are pixel-aligned, no need to resample to match.
 
 import os
 from pathlib import Path
+import math
 
 import numpy as np
 import rasterio
 from affine import Affine
 from rasterio.enums import Resampling
 
-from analysis.constants import URBAN_YEARS, DATA_CRS
+from analysis.constants import URBAN_YEARS, DATA_CRS, OVERVIEW_FACTORS
+from analysis.lib.speedups import remap
+from analysis.lib.raster import create_lowres_mask
 
 
 groups = ["app", "gcp", "gcpo", "serap"]
@@ -21,21 +24,11 @@ values = np.array(
     [0, 1, 25, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950, 975, 1000]
 )
 
-factors = [2, 4, 8, 16, 32]
-
-
 src_dir = Path("source_data/urban")
 out_dir = Path("data/inputs/threats/urban")
 
 if not out_dir.exists():
     os.makedirs(out_dir)
-
-
-# read
-# collapse probabilities into indexes
-# merge (make sure transforms line up properly, see rasterio.merge)
-# add overviews
-# current urban
 
 
 # Calculate outer bounds
@@ -70,14 +63,21 @@ for year in URBAN_YEARS:
     for src in rasters:
         data = src.read(1)
 
+        # fill nodata value and convert to uint16
+        data[data == nodata] = 65535
+        data = data.astype("uint16")
+
         # convert to indexed
-        for index, value in enumerate(values[1:]):
-            data[data == value] = index + 1
+        remap_table = np.array(
+            [[value, index] for index, value in enumerate(values)] + [[65535, 255]],
+            dtype="uint16",
+        )
+        data = remap(data, remap_table, nodata=255, fill=0)
 
         # figure out position in out
         # rows start at max y, offset is from top bound
-        row_off = int((bounds[3] - src.bounds[3]) / cellsize)
-        col_off = int((src.bounds[0] - bounds[0]) / cellsize)
+        row_off = math.ceil((bounds[3] - src.bounds[3]) / cellsize)
+        col_off = math.ceil((src.bounds[0] - bounds[0]) / cellsize)
 
         data_height, data_width = data.shape
 
@@ -86,7 +86,7 @@ for year in URBAN_YEARS:
             slice(col_off, col_off + data_width, None),
         )
 
-        out[ix] = np.where(data >= 0, data.astype("uint8"), out[ix])
+        out[ix] = np.where((data >= 0) & (data < 255), data.astype("uint8"), out[ix])
 
     meta = {
         "driver": "GTiff",
@@ -103,4 +103,8 @@ for year in URBAN_YEARS:
     with rasterio.open(out_dir / f"urban_{year}.tif", "w", **meta) as outfile:
         outfile.write(out, 1)
 
-        outfile.build_overviews(factors, Resampling.nearest)
+        outfile.build_overviews(OVERVIEW_FACTORS, Resampling.nearest)
+
+create_lowres_mask(
+    out_dir / "urban_2100.tif", out_dir / "urban_mask.tif", factor=8, ignore_zero=True
+)

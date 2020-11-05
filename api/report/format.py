@@ -7,13 +7,11 @@ def format_number(number):
 
     Parameters
     ----------
-    number : [type]
-        [description]
+    number : float
 
     Returns
     -------
-    [type]
-        [description]
+    string
     """
     if number == 0:
         return "0"
@@ -50,4 +48,4 @@ def format_percent(number):
     if number < 1:
         return "<1"
 
-    return min(round(number), 100)
+    return f"{min(round(number), 100):.0f}"

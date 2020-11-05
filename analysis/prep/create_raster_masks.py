@@ -15,12 +15,3 @@ create_lowres_mask(
     factor=FACTOR,
     ignore_zero=True,
 )
-
-
-print("Creating urban mask...")
-# Note: this uses a different factor due to different underlying cell size
-src_dir = Path("data/inputs/threats/urban")
-create_lowres_mask(
-    src_dir / "urban_2100.tif", src_dir / "urban_mask.tif", factor=8, ignore_zero=True
-)
-

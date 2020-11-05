@@ -9,13 +9,7 @@ import rasterio
 from rasterio.mask import raster_geometry_mask
 from rasterio.windows import Window
 
-from analysis.constants import (
-    URBAN_YEARS,
-    ACRES_PRECISION,
-    M2_ACRES,
-    INPUTS,
-    SOUTHATLANTIC_BOUNDS,
-)
+from analysis.constants import ACRES_PRECISION, M2_ACRES, INPUTS, SOUTHATLANTIC_BOUNDS
 from analysis.lib.raster import (
     boundless_raster_geometry_mask,
     extract_count_in_geometry,
