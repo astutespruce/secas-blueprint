@@ -58,7 +58,7 @@ df = df.join(
 )
 
 write_dataframe(df, bnd_dir / "input_areas.gpkg", driver="GPKG")
-df.to_feather(bnd_dir / "input_areas.feather")
+df.to_feather(out_dir / "boundaries/input_areas.feather")
 
 # Rasterize to match the blueprint
 

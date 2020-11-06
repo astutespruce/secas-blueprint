@@ -142,12 +142,7 @@ class SummaryUnits(object):
 
             if input_id in ["okchat", "txchat"]:
                 state = input_id[:2]
-                chat_results = get_chat_huc12_results(
-                    id,
-                    state,
-                    results["acres"] - results["analysis_remainder"],
-                    results["acres"],
-                )
+                chat_results = get_chat_huc12_results(id, state)
                 entry.update(chat_results)
 
                 continue

@@ -23,6 +23,8 @@ src_dir = Path("data/inputs/threats/slr")
 slr_bounds_filename = src_dir / "slr_bounds.feather"
 vrt_filename = src_dir / "slr.vrt"
 
+results_filename = "data/results/huc12/slr.feather"
+
 
 def extract_by_geometry(geometries, bounds):
     """Calculate the area of overlap between geometries and each level of SLR
@@ -96,7 +98,6 @@ def summarize_by_huc12(geometries):
     Parameters
     ----------
     geometries : Series of pygeos geometries, indexed by HUC12 id
-    out_dir : str
     """
 
     # find the indexes of the geometries that overlap with SLR bounds; these are the only
@@ -131,4 +132,4 @@ def summarize_by_huc12(geometries):
     df = df[df[df.columns[1:]].sum(axis=1) > 0]
     df.columns = [str(c) for c in df.columns]
     df = df.reset_index().rename(columns={"index": "id"}).round()
-    df.to_feather(out_dir / "slr.feather")
+    df.to_feather(results_filename)

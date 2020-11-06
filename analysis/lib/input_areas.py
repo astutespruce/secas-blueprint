@@ -16,7 +16,7 @@ from analysis.constants import INPUT_AREA_VALUES
 
 
 data_dir = Path("data/inputs")
-bnd_dir = Path("data/boundaries")
+bnd_dir = data_dir / "boundaries"
 
 
 def get_input_area_mask(input_area):

@@ -30,7 +30,7 @@ if not out_dir.exists():
 if not gis_dir.exists():
     os.makedirs(gis_dir)
 
-inputs_df = gp.read_feather(data_dir / "boundaries/input_areas.feather")
+inputs_df = gp.read_feather(data_dir / "inputs/boundaries/input_areas.feather")
 
 # Is in EPSG:5070 but not recognized as such
 print("Reading CHAT data...")

@@ -52,7 +52,7 @@ geometries = pd.Series(units_df.geometry.values.data, index=units_df.index)
 # Summarize Blueprint and input areas
 summarize_bluprint_by_unit(geometries)
 
-# Summarize current and projected urbanization
+Summarize current and projected urbanization
 summarize_urban_by_huc12(geometries)
 
 # Summarize projected sea level rise
@@ -65,7 +65,7 @@ summarize_ownership_by_unit(units_df)
 summarize_counties_by_huc12(units_df)
 
 # Summarize CHAT for OK / TX
-summarize_chat_by_huc12(units_df, out_dir)
+summarize_chat_by_huc12(units_df)
 
 # Calculate overlap with Caribbean priority watersheds
 summarize_caribbean_by_huc12(units_df)

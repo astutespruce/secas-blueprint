@@ -32,6 +32,9 @@ def format_number(number):
             return f"{number:.0f}"
 
         number = int(number * 10) / 10
+        if int(number) == number:
+            return f"{number:.0f}"
+
         return f"{number:.1f}"
 
     return f"{number:,.0f}"

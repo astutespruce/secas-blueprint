@@ -116,9 +116,7 @@ class CustomArea(object):
 
             if input_id in ["okchat", "txchat"]:
                 state = input_id[:2]
-                chat_results = summarize_chat_by_aoi(
-                    df, state, aoi_acres - remainder, aoi_acres
-                )
+                chat_results = summarize_chat_by_aoi(df, state, aoi_acres)
 
                 if chat_results is not None:
                     entry.update(chat_results)

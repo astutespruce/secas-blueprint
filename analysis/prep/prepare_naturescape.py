@@ -36,7 +36,7 @@ if not out_dir.exists():
 print("Extracting NatureScape input area mask...")
 mask, transform, window = get_input_area_mask("app")
 
-inputs_df = gp.read_feather(bnd_dir / "input_areas.feather")
+inputs_df = gp.read_feather(data_dir / "boundaries/input_areas.feather")
 values = [e["value"] for e in INPUT_AREA_VALUES if "app" in set(e["id"].split(","))]
 bnd = pg.union_all(inputs_df.loc[inputs_df.value.isin(values)].geometry.values.data)
 

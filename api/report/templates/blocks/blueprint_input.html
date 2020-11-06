@@ -115,6 +115,8 @@
                     </tr>
                 {% endfor %}
 
+
+
                 {% if src.remainder %}
                     <tr class="remainder-row">
                         <td class="label">Outside {{src.label}} input area</td>
@@ -123,7 +125,15 @@
                     </tr>
                 {% endif %}
 
-                {% if results.analysis_remainder > 0 %}
+                {% if 'se_remainder' in src %}
+                    {% if src.se_remainder > 0 %}
+                        <tr class="remainder-row">
+                            <td class="label">Outside Southeast Blueprint</td>
+                            <td class="acres">{{src.se_remainder|format_number}}</td>
+                            <td class="percent">{{src.se_remainder_percent|format_percent}}%</td>
+                        </tr>
+                    {% endif %}
+                {% elif results.analysis_remainder > 0 %}
                     <tr class="remainder-row">
                         <td class="label">Outside Southeast Blueprint</td>
                         <td class="acres">{{results.analysis_remainder|format_number}}</td>

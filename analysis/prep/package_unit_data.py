@@ -248,10 +248,11 @@ for state in ["ok", "tx"]:
         if not field in chat.columns:
             chat[field] = 0
 
-    chat_rank_percent = encode_values(chat[rank_fields], chat.acres, 1000).rename(
+    chat_rank_percent = encode_values(chat[rank_fields], chat.total_acres, 1000).rename(
         f"{state}chatrank"
     )
 
+    # calculate areas outside SE and outside CHAT
     huc12 = huc12.join(chat_rank_percent, how="left")
 
 
