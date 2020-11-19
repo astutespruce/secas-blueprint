@@ -8,7 +8,7 @@ const { contactEmail, contactPhone, title } = siteMetadata
 const Feedback = () => {
   return (
     <p>
-      The Blueprint and indicators are regularly revised based on input from
+      The Blueprint and its inputs are regularly revised based on input from
       people like you. Have a suggestion on how to improve the priorities? Let
       us know! We also welcome feedback on how to improve the Southeast
       Blueprint Explorer interface. Southeast Blueprint staff will read and
