@@ -581,14 +581,14 @@
         "color": "#EEE",
         "blueprint": 0
       },
-      { "value": 1, "label": "1: low", "color": "#98C3B2", "blueprint": 0 },
-      { "value": 2, "label": "2", "color": "#C5DD9A", "blueprint": 0 },
-      { "value": 3, "label": "3", "color": "#DEEE89", "blueprint": 0 },
-      { "value": 4, "label": "4", "color": "#F0FA7B", "blueprint": 1 },
-      { "value": 5, "label": "5", "color": "#F4E86D", "blueprint": 2 },
-      { "value": 6, "label": "6", "color": "#F7C358", "blueprint": 2 },
-      { "value": 7, "label": "7", "color": "#F6742D", "blueprint": 2 },
-      { "value": 8, "label": "8: high", "color": "#F02A0B", "blueprint": 2 }
+      { "value": 1, "label": "1: low", "color": "#d9d9d9", "blueprint": 0 },
+      { "value": 2, "label": "2", "color": "#bdbdbd", "blueprint": 0 },
+      { "value": 3, "label": "3", "color": "#969696", "blueprint": 0 },
+      { "value": 4, "label": "4", "color": "#807dba", "blueprint": 1 },
+      { "value": 5, "label": "5", "color": "#c7e9c0", "blueprint": 2 },
+      { "value": 6, "label": "6", "color": "#74c476", "blueprint": 2 },
+      { "value": 7, "label": "7", "color": "#238b45", "blueprint": 2 },
+      { "value": 8, "label": "8: high", "color": "#005a32", "blueprint": 2 }
     ],
     "domain": [0, 8],
     "description": "The Gulf Hypoxia Precision Conservation Blueprint summarizes overlapping implementation interests and priorities compiled from national, regional, and state-level sources."
