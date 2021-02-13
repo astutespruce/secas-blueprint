@@ -1,5 +1,3 @@
-from api.settings import MBGL_SERVER_URL
-
 from .util import render_mbgl_map
 
 

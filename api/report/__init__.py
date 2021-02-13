@@ -8,6 +8,7 @@ from pathlib import Path
 from weasyprint import HTML
 from jinja2 import Environment, FileSystemLoader
 
+from api.settings import SITE_URL
 from analysis.constants import (
     BLUEPRINT,
     URBAN_LEGEND,
@@ -94,7 +95,7 @@ def create_report(maps, results):
         "date": date.today().strftime("%m/%d/%Y"),
         "title": title,
         "subtitle": subtitle,
-        "url": "URL TBD",
+        "url": SITE_URL,
         "maps": maps,
         "legends": legends,
         "ownership_acres": ownership_acres,

@@ -81,11 +81,8 @@ def render_raster_map(bounds, scale, basemap_image, aoi_image, id, path, colors)
         Image object is None if it could not be rendered or does not overlap bounds
     """
     raster_img = render_raster(path, bounds, scale, WIDTH, HEIGHT, colors)
-
-    map_image = None
-    if raster_img is not None:
-        map_image = merge_maps([basemap_image, raster_img, aoi_image])
-        map_image = to_base64(map_image)
+    map_image = merge_maps([basemap_image, raster_img, aoi_image])
+    map_image = to_base64(map_image)
 
     return id, map_image
 

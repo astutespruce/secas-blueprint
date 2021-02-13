@@ -124,6 +124,10 @@ section {
   break-before: always;
 }
 
+ul {
+  font-size: 12pt;
+}
+
 ul li + li {
   margin-top: 6pt;
 }

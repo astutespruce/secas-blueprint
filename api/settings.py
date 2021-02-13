@@ -7,7 +7,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 TEMP_DIR = Path(os.getenv("TEMP_DIR", "/tmp/se-report"))
-MBGL_SERVER_URL = os.getenv("MBGL_SERVER_URL", "http://localhost:8002/render")
+SITE_URL = os.getenv("SE_SITE_URL", "http://localhost")
+MBGLRENDER_HOST = os.getenv("MBGLRENDER_HOST", "localhost:8002")
 API_TOKEN = os.getenv("API_TOKEN")
 API_SECRET = os.getenv("API_SECRET")
 LOGGING_LEVEL = os.getenv("LOGGING_LEVEL", "DEBUG")

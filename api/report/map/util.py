@@ -1,16 +1,14 @@
 from base64 import b64encode
 from io import BytesIO
-import math
 import time
 
 import httpx
 from PIL import Image
-from analysis.constants import M_MILES
-from api.settings import MBGL_SERVER_URL
+from api.settings import MBGLRENDER_HOST
 
 from .errors import MapRenderError
 
-
+MBGL_SERVER_URL = f"http://{MBGLRENDER_HOST}/render"
 CONNECTION_TIMEOUT = 120  # seconds
 MAX_RETRIES = 3
 RETRY_DELAY = 0.5  # seconds

@@ -4,7 +4,7 @@ require('dotenv').config({
 
 module.exports = {
   siteMetadata: {
-    siteUrl: process.env.SITE_URL,
+    siteUrl: process.env.SITE_URL || `https://localhost`,
     title: `Southeast Conservation Blueprint`,
     description: `Provides user interface to explore the Southeast Conservation Blueprint and custom reports for user-defined areas of interest`,
     author: `Southeast Conservation Adaptation Strategy`,
@@ -24,6 +24,11 @@ module.exports = {
     msFormAreaName: process.env.GATSBY_MS_FORM_AREANAME,
     msFormFileName: process.env.GATSBY_MS_FORM_FILENAME,
   },
+  flags: {
+    // FAST_DEV: true,
+    FAST_REFRESH: true,
+  },
+  pathPrefix: process.env.SITE_ROOT_PATH || `/`,
   plugins: [
     {
       resolve: `gatsby-plugin-google-gtag`,
