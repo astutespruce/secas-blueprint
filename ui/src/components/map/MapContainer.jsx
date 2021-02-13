@@ -8,7 +8,7 @@ import React, {
 import { Box, Flex, Text, useThemeUI } from 'theme-ui'
 import { Download } from '@emotion-icons/fa-solid'
 
-import { useBreakpoints, useSelectedUnit } from 'components/layout'
+import { ClientOnly, useBreakpoints, useSelectedUnit } from 'components/layout'
 import {
   InfoTab,
   ContactTab,
@@ -296,7 +296,9 @@ const MapContainer = () => {
           </Box>
         </Flex>
 
-        <Map />
+        <ClientOnly>
+          <Map />
+        </ClientOnly>
       </Flex>
 
       {/* Mobile footer tabs */}

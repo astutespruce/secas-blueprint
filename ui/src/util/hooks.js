@@ -1,5 +1,4 @@
-// ideas adapted from: https://github.com/kentcdodds/use-deep-compare-effect/blob/master/src/index.js
-import { useRef, useEffect, useMemo, useCallback } from 'react'
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { dequal as deepEqual } from 'dequal'
 
 const isSetEqual = (setA, setB) => {
@@ -19,6 +18,7 @@ const isSetEqual = (setA, setB) => {
   return Array.from(setA).filter((d) => !setB.has(d)).length === 0
 }
 
+// ideas adapted from: https://github.com/kentcdodds/use-deep-compare-effect/blob/master/src/index.js
 /**
  * Return the previous instance of the value if the incoming value is equal to it.
  *
@@ -67,4 +67,17 @@ export const useIsEqualCallback = (callback, dependencies) => {
     callback,
     dependencies.map((d) => memoizedIsEqual(d))
   )
+}
+
+/**
+ * Function that is triggered on mount of component in UI.  Useful for handling
+ * client-only components.
+ * From: https://www.joshwcomeau.com/react/the-perils-of-rehydration/
+ */
+export const useHasMounted = () => {
+  const [hasMounted, setHasMounted] = useState(false)
+  useEffect(() => {
+    setHasMounted(true)
+  }, [])
+  return hasMounted
 }

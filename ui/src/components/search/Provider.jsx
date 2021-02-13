@@ -44,10 +44,9 @@ export const useSearch = () => {
       return searchPlaces(query)
     },
     {
-      enabled: query && query.length >= 3,
-      // FIXME:
-      //   staleTime: 60 * 60 * 1000, // 60 minutes
-      staleTime: 1, // use then reload to force refresh of underlying data during dev
+      enabled: !!query && query.length >= 3,
+      staleTime: 60 * 60 * 1000, // 60 minutes
+      // staleTime: 1, // use then reload to force refresh of underlying data during dev
       refetchOnWindowFocus: false,
       refetchOnMount: false,
     }

@@ -65,6 +65,9 @@ export default {
     },
   },
   text: {
+    default: {
+      display: 'block', // fix for theme-ui v6 (div => span)
+    },
     heading: {
       fontFamily: 'heading',
       fontWeight: 'heading',
