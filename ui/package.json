@@ -1,6 +1,5 @@
 {
   "name": "secas-blueprint",
-  "private": true,
   "description": "SECAS Southeast Conservation Blueprint Explorer",
   "version": "0.2.0",
   "author": "Brendan Ward <bcward@astutespruce.com>",
@@ -72,8 +71,7 @@
     "serve": "gatsby serve",
     "clean": "gatsby clean",
     "preload-fonts": "gatsby-preload-fonts",
-    "predeploy": "gatsby clean && gatsby build",
-    "deploy": "rm -rf /var/www/se/* && cp -r ./public/* /var/www/se"
+    "deploy": "npm ci && gatsby clean && gatsby build --prefix-paths"
   },
   "repository": {
     "type": "git",
