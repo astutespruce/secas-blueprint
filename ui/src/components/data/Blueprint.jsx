@@ -5,7 +5,7 @@ import { extractNodes } from 'util/graphql'
 /**
  * Provides Blueprint categories in decreasing priority order
  */
-export const useBlueprintCategories = () => {
+export const useBlueprintPriorities = () => {
   const query = useStaticQuery(graphql`
     query {
       allBlueprintJson(sort: { fields: value, order: DESC }) {

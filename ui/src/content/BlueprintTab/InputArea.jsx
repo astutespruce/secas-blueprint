@@ -20,61 +20,67 @@ const InputArea = ({
   values,
   valueLabel,
   valueCaption,
-}) => {
-  return (
-    <Box
+}) => (
+  <Box
+    sx={{
+      '&:not(:first-of-type)': {
+        mt: '2rem',
+        pt: '2rem',
+        borderTop: '1px solid',
+        borderTopColor: 'grey.1',
+      },
+    }}
+  >
+    <Flex
       sx={{
-        '&:not(:first-of-type)': {
-          mt: '2rem',
-          pt: '2rem',
-          borderTop: '1px solid',
-          borderTopColor: 'grey.1',
-        },
+        justifyContent: 'space-between',
+        alignItems: 'baseline',
+        width: '100%',
+        mb: '1rem',
       }}
     >
-      <Flex
+      <Text
         sx={{
-          justifyContent: 'space-between',
-          width: '100%',
-          mb: '1rem',
+          flex: '1 1 auto',
+          fontWeight: 'bold',
+          fontSize: 3,
+          lineHeight: 1.2,
+          mr: '1rem',
         }}
       >
-        <Text
-          sx={{ fontWeight: 'bold', fontSize: 3, lineHeight: 1.2, mr: '1rem' }}
-        >
-          {label} {version && version}
-        </Text>
-        <Text
-          sx={{
-            fontSize: 0,
-            color: 'grey.7',
-            textAlign: 'right',
-            lineHeight: 1,
-          }}
-        >
-          {formatPercent(percent)}% of area
-        </Text>
-      </Flex>
-
-      <InputAreaPriorityChart
-        values={values}
-        valueLabel={valueLabel}
-        valueCaption={valueCaption}
-      />
-
-      <Text as="p" sx={{ mt: '1rem', fontSize: 1 }}>
-        {description} <OutboundLink to={infoURL}>Learn more</OutboundLink> or{' '}
-        <OutboundLink to={dataURL}>access data</OutboundLink>.{' '}
-        {viewerURL ? (
-          <>
-            More detailed information for {label} indicators is available in the{' '}
-            <OutboundLink to={viewerURL}>{viewerName}</OutboundLink>.
-          </>
-        ) : null}
+        {label} {version && version}
       </Text>
-    </Box>
-  )
-}
+      <Text
+        sx={{
+          flex: '0 0 auto',
+          fontSize: 0,
+          color: 'grey.7',
+          textAlign: 'right',
+          lineHeight: 1,
+        }}
+      >
+        {formatPercent(percent)}% of area
+      </Text>
+    </Flex>
+
+    <InputAreaPriorityChart
+      values={values}
+      valueLabel={valueLabel}
+      valueCaption={valueCaption}
+    />
+
+    <Text as="p" sx={{ mt: '1rem', fontSize: 1 }}>
+      {description} <OutboundLink to={infoURL}>Learn more</OutboundLink> or{' '}
+      <OutboundLink to={dataURL}>access data</OutboundLink>.{' '}
+      {viewerURL ? (
+        <>
+          More detailed information for {label} indicators is available in the{' '}
+          <OutboundLink to={viewerURL}>{viewerName}</OutboundLink>.
+        </>
+      ) : null}
+    </Text>
+  </Box>
+)
 
 InputArea.propTypes = {
   label: PropTypes.string.isRequired,

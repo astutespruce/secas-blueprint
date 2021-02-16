@@ -18,26 +18,24 @@ const unitTabs = [
   { id: 'unit-partners', label: 'Partners' },
 ]
 
-const Tabs = ({ tab, hasSelectedUnit, onChange }) => {
-  return (
-    <BaseTabs
-      tabs={hasSelectedUnit ? unitTabs : tabs}
-      activeTab={tab}
-      activeVariant="tabs.mobileActive"
-      variant="tabs.mobile"
-      onChange={onChange}
-    />
-  )
-}
+const Tabs = ({ tab, hasMapData, onChange }) => (
+  <BaseTabs
+    tabs={hasMapData ? unitTabs : tabs}
+    activeTab={tab}
+    activeVariant="tabs.mobileActive"
+    variant="tabs.mobile"
+    onChange={onChange}
+  />
+)
 
 Tabs.propTypes = {
   tab: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
-  hasSelectedUnit: PropTypes.bool,
+  hasMapData: PropTypes.bool,
 }
 
 Tabs.defaultProps = {
-  hasSelectedUnit: false,
+  hasMapData: false,
 }
 
 export default Tabs

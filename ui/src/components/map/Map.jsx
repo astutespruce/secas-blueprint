@@ -3,8 +3,9 @@ import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { Box } from 'theme-ui'
 
+import { useMapData } from 'components/data'
 import { useSearch } from 'components/search'
-import { useBreakpoints, useSelectedUnit } from 'components/layout'
+import { useBreakpoints } from 'components/layout'
 
 import { hasWindow } from 'util/dom'
 import { useIsEqualEffect } from 'util/hooks'
@@ -44,7 +45,7 @@ const Map = () => {
 
   const breakpoint = useBreakpoints()
   const isMobile = breakpoint === 0
-  const { selectedUnit, selectUnit } = useSelectedUnit()
+  const { data: mapData, setData: setMapData } = useMapData()
   const { location } = useSearch()
 
   useEffect(() => {
@@ -90,15 +91,22 @@ const Map = () => {
       setIsLoaded(() => true)
     })
 
-    map.on('click', 'unit-fill', ({ features }) => {
-      if (!(features && features.length > 0)) return
+    map.on('click', ({ lngLat: point }) => {
+      const features = map.queryRenderedFeatures(map.project(point), {
+        layers: ['unit-fill'],
+      })
+
+      if (!(features && features.length > 0)) {
+        setMapData(null)
+        return
+      }
 
       const { properties } = features[0]
 
       // highlight selected
       map.setFilter('unit-outline-highlight', ['==', 'id', properties.id])
 
-      selectUnit(unpackFeatureData(features[0].properties))
+      setMapData(unpackFeatureData(features[0].properties))
     })
 
     // Highlight units on mouseover
@@ -140,7 +148,7 @@ const Map = () => {
     return () => {
       map.remove()
     }
-  }, [isMobile, selectUnit])
+  }, [isMobile, setMapData])
 
   useIsEqualEffect(() => {
     if (!isLoaded) return
@@ -149,10 +157,10 @@ const Map = () => {
     // sometimes map is not fully loaded on hot reload
     if (!map.loaded()) return
 
-    if (selectedUnit === null) {
+    if (mapData === null) {
       map.setFilter('unit-outline-highlight', ['==', 'id', Infinity])
     }
-  }, [selectedUnit, isLoaded])
+  }, [mapData, isLoaded])
 
   useIsEqualEffect(() => {
     if (!isLoaded) return

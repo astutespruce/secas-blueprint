@@ -2,10 +2,10 @@ import React from 'react'
 
 import { Box, Flex, Heading, Text } from 'theme-ui'
 
-import { useBlueprintCategories } from 'components/data'
+import { useBlueprintPriorities } from 'components/data'
 
 const Blueprint = () => {
-  const { categories } = useBlueprintCategories()
+  const { categories } = useBlueprintPriorities()
 
   return (
     <Box as="section" sx={{ mt: '2rem' }}>

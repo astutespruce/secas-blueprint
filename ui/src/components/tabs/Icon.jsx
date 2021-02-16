@@ -32,16 +32,16 @@ const Icon = ({ name, ...props }) => {
     case 'contact': {
       return <Envelope {...props} />
     }
-    case 'unit-blueprint': {
+    case 'selected-priorities': {
       return <ChartPie {...props} />
     }
-    case 'unit-indicators': {
+    case 'selected-indicators': {
       return <SlidersH {...props} />
     }
-    case 'unit-threats': {
+    case 'selected-threats': {
       return <ExclamationCircle {...props} />
     }
-    case 'unit-partners': {
+    case 'selected-partners': {
       return <UserFriends {...props} />
     }
     default: {

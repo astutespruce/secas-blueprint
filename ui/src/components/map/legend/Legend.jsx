@@ -1,7 +1,7 @@
 import React, { memo, useState, useCallback } from 'react'
 import { Box, Text } from 'theme-ui'
 
-import { useBlueprintCategories } from 'components/data'
+import { useBlueprintPriorities } from 'components/data'
 import LegendElement from './LegendElement'
 
 const Legend = () => {
@@ -11,7 +11,7 @@ const Legend = () => {
     setIsOpen((prevIsOpen) => !prevIsOpen)
   }, [])
 
-  const { categories } = useBlueprintCategories()
+  const { categories } = useBlueprintPriorities()
 
   return (
     <Box

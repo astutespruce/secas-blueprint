@@ -1,4 +1,4 @@
-import SelectedUnitHeader from './SelectedUnitHeader'
+import SidebarHeader from './SidebarHeader'
 import Tabs from './Tabs'
 
-export { SelectedUnitHeader, Tabs }
+export { SidebarHeader, Tabs }

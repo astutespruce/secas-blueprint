@@ -11,34 +11,32 @@ const tabs = [
 ]
 
 const unitTabs = [
-  { id: 'unit-blueprint', label: 'Priorities' },
-  // { id: 'unit-indicators', label: 'Indicators' },
-  { id: 'unit-threats', label: 'Threats' },
-  { id: 'unit-partners', label: 'Partners' },
+  { id: 'selected-priorities', label: 'Priorities' },
+  // { id: 'selected-indicators', label: 'Indicators' },
+  { id: 'selected-threats', label: 'Threats' },
+  { id: 'selected-partners', label: 'Partners' },
 ]
 
-const Tabs = ({ tab, hasSelectedUnit, onChange }) => {
-  return (
-    <Box>
-      <BaseTabs
-        tabs={hasSelectedUnit ? unitTabs : tabs}
-        activeTab={tab}
-        activeVariant="tabs.active"
-        variant="tabs.default"
-        onChange={onChange}
-      />
-    </Box>
-  )
-}
+const Tabs = ({ tab, hasMapData, onChange }) => (
+  <Box>
+    <BaseTabs
+      tabs={hasMapData ? unitTabs : tabs}
+      activeTab={tab}
+      activeVariant="tabs.active"
+      variant="tabs.default"
+      onChange={onChange}
+    />
+  </Box>
+)
 
 Tabs.propTypes = {
   tab: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
-  hasSelectedUnit: PropTypes.bool,
+  hasMapData: PropTypes.bool,
 }
 
 Tabs.defaultProps = {
-  hasSelectedUnit: false,
+  hasMapData: false,
 }
 
 export default Tabs

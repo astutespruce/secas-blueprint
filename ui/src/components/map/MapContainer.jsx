@@ -5,30 +5,27 @@ import React, {
   useEffect,
   useLayoutEffect,
 } from 'react'
-import { Box, Flex, Text, useThemeUI } from 'theme-ui'
-import { Download } from '@emotion-icons/fa-solid'
+import { Box, Flex, useThemeUI } from 'theme-ui'
 
-import { ClientOnly, useBreakpoints, useSelectedUnit } from 'components/layout'
-import {
-  InfoTab,
-  ContactTab,
-  FindLocationTab,
-  BlueprintTab,
-  IndicatorsTab,
-  ThreatsTab,
-  PartnersTab,
-} from 'content'
+import { ClientOnly, useBreakpoints } from 'components/layout'
+import { useMapData } from 'components/data'
 import { Tabs as MobileTabs } from 'components/layout/mobile'
-import {
-  SelectedUnitHeader as DesktopSelectedUnitHeader,
-  Tabs as DesktopTabs,
-} from 'components/layout/desktop'
+import { SidebarHeader, Tabs as DesktopTabs } from 'components/layout/desktop'
 
-import { DownloadModal } from 'components/report'
 import { useSearch } from 'components/search'
 import { hasWindow } from 'util/dom'
 
 import Map from './Map'
+import TabContent from './TabContent'
+
+const mobileSidebarCSS = {
+  position: 'absolute',
+  zIndex: 10000,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  top: 0,
+}
 
 const MapContainer = () => {
   const {
@@ -38,7 +35,7 @@ const MapContainer = () => {
   const breakpoint = useBreakpoints()
   const isMobile = breakpoint === 0
 
-  const { selectedUnit, deselectUnit } = useSelectedUnit()
+  const { data: mapData, unsetData: unsetMapData, mapMode } = useMapData()
 
   const { location } = useSearch()
 
@@ -48,7 +45,7 @@ const MapContainer = () => {
   // NOTE: we use a tab ref that parallels state so we can use in effects below
   // without those changing as tab is changed
   const tabRef = useRef(isMobile ? 'map' : 'info')
-  const hasSelectedUnitRef = useRef(false)
+  const hasMapDataRef = useRef(false)
 
   const [{ tab }, setState] = useState({
     tab: isMobile ? 'map' : 'info',
@@ -64,38 +61,28 @@ const MapContainer = () => {
     contentNode.current.scrollTop = 0
   }, [])
 
-  const [isReportModalOpen, setIsReportModalOpen] = useState(false)
-
-  const handleReportModalClose = useCallback(() => {
-    setIsReportModalOpen(() => false)
-  }, [])
-
-  const handleReportModalOpen = useCallback(() => {
-    setIsReportModalOpen(() => true)
-  }, [])
-
   useEffect(() => {
-    hasSelectedUnitRef.current = selectedUnit !== null
+    hasMapDataRef.current = mapData !== null
 
-    console.log('selectedUnit', selectedUnit)
-  }, [selectedUnit])
+    console.log('selected map data', mapData)
+  }, [mapData])
 
   useLayoutEffect(() => {
     // If selected unit changed from null to unit, or unit to null,
     // we need to update the tabs.
 
     // if no change in selected unit status, return
-    if (hasSelectedUnitRef.current === (selectedUnit !== null)) {
+    if (hasMapDataRef.current === (mapData !== null)) {
       return
     }
 
     let nextTab = tab
-    if (selectedUnit === null) {
-      nextTab = tab === 'unit-map' || isMobile ? 'map' : 'info'
+    if (mapData === null) {
+      nextTab = tab === 'mobile-selected-map' || isMobile ? 'map' : 'info'
     } else if (tab === 'map') {
-      nextTab = 'unit-map'
-    } else if (!tab.startsWith('unit-')) {
-      nextTab = 'unit-blueprint'
+      nextTab = 'mobile-selected-map'
+    } else if (!tab.startsWith('selected-')) {
+      nextTab = 'selected-priorities'
     }
 
     if (nextTab !== tab) {
@@ -104,7 +91,7 @@ const MapContainer = () => {
       // scroll content to top
       contentNode.current.scrollTop = 0
     }
-  }, [selectedUnit, tab, isMobile, handleTabChange])
+  }, [mapData, tab, isMobile, handleTabChange])
 
   useEffect(() => {
     // handle window resize from mobile to desktop, so that we show content again
@@ -112,7 +99,7 @@ const MapContainer = () => {
 
     // was mobile, now is desktop, need to show tabs again
     if (!isMobile && tabRef.current === 'map') {
-      const nextTab = hasSelectedUnitRef.current ? 'unit-blueprint' : 'info'
+      const nextTab = hasMapDataRef.current ? 'selected-priorities' : 'info'
       handleTabChange(nextTab)
     }
   }, [isMobile, handleTabChange])
@@ -124,93 +111,7 @@ const MapContainer = () => {
     }
   }, [isMobile, location, handleTabChange])
 
-  let content = null
-  if (selectedUnit === null) {
-    // eslint-disable-next-line default-case
-    switch (tab) {
-      case 'info': {
-        content = <InfoTab />
-        break
-      }
-      case 'map': {
-        // don't show anything
-        content = null
-        break
-      }
-      case 'find': {
-        content = <FindLocationTab />
-        break
-      }
-      case 'contact': {
-        content = <ContactTab />
-        break
-      }
-    }
-  } else {
-    const {
-      unitType,
-      unitAcres,
-      blueprintAcres,
-      analysisAcres,
-      indicators,
-      slr,
-      urban,
-      ownership,
-      protection,
-      counties,
-    } = selectedUnit
-
-    // eslint-disable-next-line default-case
-    switch (tab) {
-      case 'unit-map': {
-        // don't show anything
-        content = null
-        break
-      }
-      case 'unit-blueprint': {
-        content = <BlueprintTab {...selectedUnit} />
-        break
-      }
-      case 'unit-indicators': {
-        content = (
-          <IndicatorsTab
-            unitType={unitType}
-            blueprintAcres={blueprintAcres}
-            analysisAcres={analysisAcres}
-            indicators={indicators}
-          />
-        )
-        break
-      }
-      case 'unit-threats': {
-        content = <ThreatsTab unitType={unitType} slr={slr} urban={urban} />
-        break
-      }
-      case 'unit-partners': {
-        content = (
-          <PartnersTab
-            unitType={unitType}
-            analysisAcres={unitAcres}
-            ownership={ownership}
-            protection={protection}
-            counties={counties}
-          />
-        )
-        break
-      }
-    }
-  }
-
-  const sidebarCSS = isMobile
-    ? {
-        position: isMobile ? 'absolute' : 'relative',
-        zIndex: 10000,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        top: 0,
-      }
-    : {}
+  const sidebarCSS = isMobile ? mobileSidebarCSS : {}
 
   // Force exit here when building gatsby, otherwise
   // the wrong layout gets built
@@ -234,13 +135,17 @@ const MapContainer = () => {
       >
         <Flex
           sx={{
-            display: content === null ? 'none !important' : 'flex',
+            display:
+              tab === 'map' || tab === 'mobile-selected-map'
+                ? 'none !important'
+                : 'flex',
 
             height: '100%',
             bg: '#FFF',
             flexGrow: 1,
             flexShrink: 0,
             flexBasis: layout.sidebar.width,
+            maxWidth: layout.sidebar.width,
             flexDirection: 'column',
             overflowX: 'hidden',
             overflowY: 'hidden',
@@ -252,34 +157,14 @@ const MapContainer = () => {
         >
           {!isMobile && (
             <Box sx={{ flex: '0 0 auto' }}>
-              {selectedUnit !== null && (
-                <>
-                  <DesktopSelectedUnitHeader
-                    name={selectedUnit.name}
-                    acres={selectedUnit.acres}
-                    onClose={deselectUnit}
-                  />
-                  <Flex
-                    sx={{
-                      px: '1rem',
-                      pb: '0.5rem',
-                      alignItems: 'center',
-                      color: 'primary',
-                      cursor: 'pointer',
-                      '&:hover': {
-                        textDecoration: 'underline',
-                      },
-                    }}
-                    onClick={handleReportModalOpen}
-                  >
-                    <Download size="1rem" style={{ marginRight: '0.5rem' }} />
-                    <Text>Create summary report</Text>
-                  </Flex>
-                </>
+              {mapData !== null && (
+                <SidebarHeader {...mapData} onClose={unsetMapData} />
               )}
+
               <DesktopTabs
                 tab={tab}
-                hasSelectedUnit={selectedUnit !== null}
+                hasMapData={mapData !== null}
+                mode={mapMode}
                 onChange={handleTabChange}
               />
             </Box>
@@ -292,7 +177,7 @@ const MapContainer = () => {
               overflowY: 'auto',
             }}
           >
-            {content}
+            <TabContent tab={tab} mapData={mapData} />
           </Box>
         </Flex>
 
@@ -312,19 +197,12 @@ const MapContainer = () => {
         >
           <MobileTabs
             tab={tab}
-            hasSelectedUnit={selectedUnit !== null}
+            mode={mapMode}
+            hasMapData={mapData !== null}
             onChange={handleTabChange}
           />
         </Box>
       )}
-
-      {isReportModalOpen && selectedUnit !== null ? (
-        <DownloadModal
-          id={selectedUnit.id}
-          type={selectedUnit.type}
-          onClose={handleReportModalClose}
-        />
-      ) : null}
     </Flex>
   )
 }

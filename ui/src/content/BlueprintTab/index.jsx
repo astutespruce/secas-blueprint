@@ -1,14 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import { PieChart } from 'react-minimal-pie-chart'
-import { Box, Flex, Heading, Text } from 'theme-ui'
+import { Box, Heading, Text } from 'theme-ui'
 
-import { PieChartLegend } from 'components/chart'
-import { useBlueprintCategories, useInputAreas } from 'components/data'
+import { useBlueprintPriorities, useInputAreas } from 'components/data'
 import { OutboundLink } from 'components/link'
 import { sum, sortByFunc } from 'util/data'
 
+import BlueprintChart from './BlueprintChart'
 import InputArea from './InputArea'
 
 const getInputPriorities = ({
@@ -42,7 +41,7 @@ const getInputPriorities = ({
     value: 0,
     percent: 0,
     label: 'Not a priority',
-    color: '#EEE',
+    color: '#ffebc2',
   }
 
   // NOTE: all 0 values are treated as not a priority, strip them here and add
@@ -65,7 +64,7 @@ const getInputPriorities = ({
     priorities.push({
       value: -1,
       percent: outsideInputPercent,
-      color: '#fff7bc',
+      color: '#BBB',
       label: `Outside ${inputLabel} input area`,
     })
   }
@@ -74,7 +73,7 @@ const getInputPriorities = ({
     priorities.push({
       value: -2,
       percent: outsideSEPercent,
-      color: '#fee6ce',
+      color: '#EEE',
       label: 'Outside Southeast Blueprint',
     })
   }
@@ -82,38 +81,21 @@ const getInputPriorities = ({
   return priorities
 }
 
-const BlueprintTab = ({ blueprint, inputs, ...selectedUnit }) => {
-  const { all: priorityCategories } = useBlueprintCategories()
+const BlueprintTab = ({ blueprint, inputs, ...mapData }) => {
+  const { all: allPriorities } = useBlueprintPriorities()
   const { inputs: inputCategories, values: inputValues } = useInputAreas()
 
-  const chartWidth = 110
+  // Note: incoming priorities are in descending order but percents
+  // are stored in ascending order
+  const priorityCategories = allPriorities.slice().reverse()
 
-  let blueprintChartData = blueprint
-    .slice()
-    .reverse()
-    .map((percent, i) => ({
-      value: percent,
-      ...priorityCategories[i],
-    }))
-    .filter(({ value }) => value > 0)
-
-  // if any are >99%, keep only the first and round up to 100%
-  const over99 = blueprintChartData.filter(({ value }) => value > 99)
-  if (over99.length > 0) {
-    blueprintChartData = [over99[0]]
-    blueprintChartData[0].value = 100
+  let remainder = 0
+  remainder = 100 - sum(blueprint)
+  if (remainder < 1) {
+    remainder = 0
   }
 
-  const blueprintTotal = sum(blueprint)
-  const outsideSEPercent = 100 - blueprintTotal
-
-  if (outsideSEPercent > 1) {
-    blueprintChartData.push({
-      value: outsideSEPercent,
-      color: '#fee6ce',
-      label: 'Outside Southeast Blueprint',
-    })
-  }
+  const outsideSEPercent = 100 - sum(blueprint)
 
   const inputBins = {}
   let hasInputOverlaps = false
@@ -134,13 +116,12 @@ const BlueprintTab = ({ blueprint, inputs, ...selectedUnit }) => {
         inputBins[inputId].percent += percent
       } else {
         const { valueField } = inputCategories[inputId]
+
         inputBins[inputId] = {
           ...inputCategories[inputId],
           percent,
           percents:
-            valueField && selectedUnit[valueField]
-              ? selectedUnit[valueField]
-              : [],
+            valueField && mapData[valueField] ? mapData[valueField] : [],
         }
       }
     })
@@ -178,26 +159,11 @@ const BlueprintTab = ({ blueprint, inputs, ...selectedUnit }) => {
       <Box as="section">
         <Heading as="h3">Blueprint 2020 Priority</Heading>
         <Text sx={{ color: 'grey.7' }}>for shared conservation action</Text>
-
-        <Flex
-          sx={{
-            alignItems: 'flex-start',
-            mt: '1rem',
-            justifyContent: 'space-between',
-          }}
-        >
-          <PieChartLegend elements={blueprintChartData} />
-
-          <PieChart
-            data={blueprintChartData}
-            lineWidth={60}
-            radius={50}
-            style={{
-              width: chartWidth,
-              flex: '0 0 auto',
-            }}
-          />
-        </Flex>
+        <BlueprintChart
+          categories={priorityCategories}
+          blueprint={blueprint}
+          remainder={remainder}
+        />
       </Box>
 
       {binnedInputs.length > 0 ? (

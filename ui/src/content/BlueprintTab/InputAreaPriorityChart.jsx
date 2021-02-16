@@ -11,6 +11,8 @@ import { PieChartLegend } from 'components/chart'
  * the input or Southeast region.
  */
 const InputAreaPriorityChart = ({ values, valueLabel, valueCaption }) => {
+  console.log('incoming values', values, valueLabel)
+
   const chartWidth = 110
 
   const chartData = values
@@ -25,20 +27,20 @@ const InputAreaPriorityChart = ({ values, valueLabel, valueCaption }) => {
 
   return (
     <Flex sx={{ alignItems: 'center' }}>
-      <PieChartLegend
-        title={valueLabel}
-        subtitle={valueCaption}
-        elements={chartData}
-      />
-
       <PieChart
         data={chartData}
         lineWidth={60}
         radius={50}
         style={{
           width: chartWidth,
-          flex: '0 0 auto',
+          flex: '0 1 auto',
         }}
+      />
+
+      <PieChartLegend
+        title={valueLabel}
+        subtitle={valueCaption}
+        elements={chartData}
       />
     </Flex>
   )
