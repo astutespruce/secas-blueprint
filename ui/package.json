@@ -71,7 +71,7 @@
     "serve": "gatsby serve",
     "clean": "gatsby clean",
     "preload-fonts": "gatsby-preload-fonts",
-    "deploy": "npm ci && gatsby clean && gatsby build --prefix-paths"
+    "deploy": "gatsby clean && gatsby build --prefix-paths"
   },
   "repository": {
     "type": "git",
