@@ -120,6 +120,10 @@ const Map = () => {
 
     // Highlight units on mouseover
     map.on('mousemove', 'unit-fill', ({ features }) => {
+      if (!map.isStyleLoaded()) {
+        return
+      }
+
       map.getCanvas().style.cursor = 'pointer'
 
       if (!(features && features.length > 0)) {
@@ -144,6 +148,10 @@ const Map = () => {
 
     // Unhighlight all hover features on mouseout
     map.on('mouseout', () => {
+      if (!map.isStyleLoaded()) {
+        return
+      }
+
       const { current: prevId } = highlightIDRef
       if (prevId !== null) {
         map.setFeatureState(
