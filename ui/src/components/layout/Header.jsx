@@ -57,9 +57,9 @@ const Header = () => {
                   as="h1"
                   sx={{
                     fontWeight: 600,
-                    fontSize: [0, 1, 4],
+                    fontSize: ['10px', 1, 4],
                     lineHeight: 1,
-                    margin: '0 0.5rem 0 1rem',
+                    m: 0,
                     breakInside: 'avoid',
                     flex: '0 1 auto',
                   }}
@@ -69,7 +69,9 @@ const Header = () => {
                 <Heading
                   as="h1"
                   sx={{
-                    margin: '0 0.5rem 0 0',
+                    m: 0,
+                    my: 0,
+                    mx: [0, 0, '0.5rem'],
                     lineHeight: 1,
                     fontWeight: 600,
                     fontSize: [2, 3, 4],
@@ -84,7 +86,7 @@ const Header = () => {
                 <Heading
                   as="h1"
                   sx={{
-                    margin: 0,
+                    m: 0,
                     lineHeight: 1,
                     fontWeight: 600,
                     fontSize: [0, 0, 2],

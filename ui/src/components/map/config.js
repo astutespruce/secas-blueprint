@@ -72,7 +72,7 @@ export const layers = [
     id: 'unit-fill',
     source: 'mapUnits',
     'source-layer': 'units',
-    minzoom: 8,
+    minzoom: 7,
     type: 'fill',
     paint: {
       'fill-color': '#0892D0',
@@ -89,6 +89,7 @@ export const layers = [
     id: 'unit-outline',
     source: 'mapUnits',
     'source-layer': 'units',
+    minzoom: 7,
     type: 'line',
     paint: {
       'line-opacity': 1,

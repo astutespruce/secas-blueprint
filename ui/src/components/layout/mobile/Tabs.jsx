@@ -11,11 +11,11 @@ const tabs = [
 ]
 
 const unitTabs = [
-  { id: 'unit-map', label: 'Map' },
-  { id: 'unit-blueprint', label: 'Priorities' },
-  // { id: 'unit-indicators', label: 'Indicators' },
-  { id: 'unit-threats', label: 'Threats' },
-  { id: 'unit-partners', label: 'Partners' },
+  { id: 'mobile-selected-map', label: 'Map' },
+  { id: 'selected-priorities', label: 'Priorities' },
+  // { id: 'selected-indicators', label: 'Indicators' },
+  { id: 'selected-threats', label: 'Threats' },
+  { id: 'selected-partners', label: 'Partners' },
 ]
 
 const Tabs = ({ tab, hasMapData, onChange }) => (

@@ -7,13 +7,9 @@ import Ownership from './Ownership'
 import Protection from './Protection'
 import LTAList from './LTAList'
 
-const PartnersTab = ({
-  unitType,
-  analysisAcres,
-  ownership,
-  protection,
-  counties,
-}) => {
+const PartnersTab = ({ ownership, protection, counties }) => {
+  const hasCounties = counties && Object.keys(counties).length > 0
+
   return (
     <Box sx={{ py: '2rem', pl: '1rem', pr: '2rem' }}>
       <Box as="section">
@@ -21,7 +17,7 @@ const PartnersTab = ({
         {ownership === null ? (
           <Text sx={{ color: 'grey.7' }}>No information available.</Text>
         ) : (
-          <Ownership analysisAcres={analysisAcres} ownership={ownership} />
+          <Ownership ownership={ownership} />
         )}
       </Box>
 
@@ -32,11 +28,11 @@ const PartnersTab = ({
         {protection === null ? (
           <Text sx={{ color: 'grey.7' }}>No information available.</Text>
         ) : (
-          <Protection analysisAcres={analysisAcres} protection={protection} />
+          <Protection protection={protection} />
         )}
       </Box>
 
-      {unitType === 'subwatershed' ? (
+      {hasCounties ? (
         <>
           <Divider variant="styles.hr.light" sx={{ my: '3rem' }} />
 
@@ -55,8 +51,6 @@ const PartnersTab = ({
 }
 
 PartnersTab.propTypes = {
-  unitType: PropTypes.string.isRequired,
-  analysisAcres: PropTypes.number.isRequired,
   ownership: PropTypes.objectOf(PropTypes.number),
   protection: PropTypes.objectOf(PropTypes.number),
   counties: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)),

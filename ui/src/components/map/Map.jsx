@@ -13,7 +13,7 @@ import { getCenterAndZoom } from './util'
 import { config, sources, layers } from './config'
 import { unpackFeatureData } from './features'
 import { Legend } from './legend'
-import ZoomInNote from './ZoomInNote'
+import MapModeToggle from './MapModeToggle'
 import StyleToggle from './StyleToggle'
 import { siteMetadata } from '../../../gatsby-config'
 
@@ -33,6 +33,9 @@ const mapWidgetCSS = {
   },
   '.mapboxgl-canvas': {
     outline: 'none',
+  },
+  '.mapboxgl-ctrl-attrib.mapboxgl-compact': {
+    minHeight: '24px',
   },
 }
 
@@ -98,6 +101,9 @@ const Map = () => {
 
       if (!(features && features.length > 0)) {
         setMapData(null)
+        if (isMobile) {
+          map.resize()
+        }
         return
       }
 
@@ -107,6 +113,9 @@ const Map = () => {
       map.setFilter('unit-outline-highlight', ['==', 'id', properties.id])
 
       setMapData(unpackFeatureData(features[0].properties))
+      if (isMobile) {
+        map.resize()
+      }
     })
 
     // Highlight units on mouseover
@@ -202,7 +211,9 @@ const Map = () => {
       <div ref={mapNode} style={{ width: '100%', height: '100%' }} />
 
       {!isMobile ? <Legend /> : null}
-      <ZoomInNote map={mapRef.current} isMobile={isMobile} />
+
+      <MapModeToggle map={mapRef.current} isMobile={isMobile} />
+
       <StyleToggle
         map={mapRef.current}
         sources={sources}
