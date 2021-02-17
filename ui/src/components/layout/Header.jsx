@@ -10,7 +10,7 @@ import MobileHeader from './mobile/MobileHeader'
 const Header = () => {
   const breakpoint = useBreakpoints()
   const isMobile = breakpoint === 0
-  const { data, unsetData } = useMapData()
+  const { data, unsetData } = useMapData() || {} // will be null for non-map pages
 
   return (
     <Flex

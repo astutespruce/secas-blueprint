@@ -5,8 +5,6 @@ import React from 'react'
 import { Link as BaseLink } from 'gatsby'
 import { jsx } from 'theme-ui'
 
-const Link = (props) => {
-  return <BaseLink {...props} />
-}
+const Link = (props) => <BaseLink {...props} />
 
 export default Link

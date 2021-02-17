@@ -21,8 +21,6 @@ const animationCSS = css`
   animation: ${animation} 1s ease-in-out infinite;
 `
 
-const LoadingIcon = ({ ...props }) => {
-  return <Icon {...props} css={animationCSS} />
-}
+const LoadingIcon = ({ ...props }) => <Icon {...props} css={animationCSS} />
 
 export default LoadingIcon

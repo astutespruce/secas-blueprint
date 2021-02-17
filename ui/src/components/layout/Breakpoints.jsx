@@ -47,6 +47,4 @@ BreakpointProvider.propTypes = {
   children: PropTypes.node.isRequired,
 }
 
-export const useBreakpoints = () => {
-  return useContext(context)
-}
+export const useBreakpoints = () => useContext(context)

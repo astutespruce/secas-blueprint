@@ -6,13 +6,11 @@ import { OutboundLink as Link } from 'gatsby-plugin-google-gtag'
 import PropTypes from 'prop-types'
 import { jsx } from 'theme-ui'
 
-const OutboundLink = ({ to, target, rel, children, ...props }) => {
-  return (
-    <Link href={to} target={target} rel={rel} {...props}>
-      {children}
-    </Link>
-  )
-}
+const OutboundLink = ({ to, target, rel, children, ...props }) => (
+  <Link href={to} target={target} rel={rel} {...props}>
+    {children}
+  </Link>
+)
 
 OutboundLink.propTypes = {
   to: PropTypes.string.isRequired,
