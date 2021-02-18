@@ -34,8 +34,12 @@ import numpy as np
 import pandas as pd
 
 
-from analysis.constants import URBAN_YEARS, DEBUG, INPUTS, CHAT_CATEGORIES
-from analysis.lib.attribute_encoding import encode_values, delta_encode_values
+from analysis.constants import URBAN_YEARS, DEBUG, INPUTS, CHAT_CATEGORIES, INDICATORS
+from analysis.lib.attribute_encoding import (
+    encode_values,
+    delta_encode_values,
+    encode_indicators,
+)
 
 
 data_dir = Path("data")
@@ -217,10 +221,15 @@ ns_percent = encode_values(ns_df[ns_cols], ns_df.shape_mask, 1000).rename("ns_pr
 
 # South Atlantic
 sa_df = pd.read_feather(working_dir / "southatlantic.feather").set_index("id")
-sa_cols = [c for c in sa_df.columns if c.startswith("sa_")]
-sa_percent = encode_values(sa_df[sa_cols], sa_df.shape_mask, 1000).rename(
+sa_blueprint_cols = [c for c in sa_df.columns if c.startswith("sa_")]
+sa_percent = encode_values(sa_df[sa_blueprint_cols], sa_df.shape_mask, 1000).rename(
     "sa_blueprint"
 )
+sa_indicators = encode_indicators(
+    sa_df, sa_df.shape_mask, "sa", INDICATORS["southatlantic"]
+)
+
+sa_df = pd.DataFrame(sa_percent).join(sa_indicators)
 
 
 huc12 = (
@@ -230,7 +239,7 @@ huc12 = (
     .join(ms_percent, how="left")
     .join(nn_percent, how="left")
     .join(ns_percent, how="left")
-    .join(sa_percent, how="left")
+    .join(sa_df, how="left")
 )
 
 
@@ -367,12 +376,17 @@ fl_percent = encode_values(fl_df[fl_cols], fl_df.shape_mask, 1000).rename(
 
 # South Atlantic (marine)
 sa_df = pd.read_feather(working_dir / "southatlantic.feather").set_index("id")
-sa_cols = [c for c in sa_df.columns if c.startswith("sa_")]
-sa_percent = encode_values(sa_df[sa_cols], sa_df.shape_mask, 1000).rename(
+sa_blueprint_cols = [c for c in sa_df.columns if c.startswith("sa_")]
+sa_percent = encode_values(sa_df[sa_blueprint_cols], sa_df.shape_mask, 1000).rename(
     "sa_blueprint"
 )
+sa_indicators = encode_indicators(
+    sa_df, sa_df.shape_mask, "sa", INDICATORS["southatlantic"]
+)
+sa_df = pd.DataFrame(sa_percent).join(sa_indicators)
 
-marine = marine.join(sa_percent, how="left").join(fl_percent, how="left")
+
+marine = marine.join(sa_df, how="left").join(fl_percent, how="left")
 
 
 out = huc12.reset_index().append(marine.reset_index(), ignore_index=True, sort=False)

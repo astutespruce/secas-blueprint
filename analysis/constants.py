@@ -2,6 +2,7 @@ from pathlib import Path
 from collections import OrderedDict
 import json
 
+
 # Set to True to output intermediate rasters for validation (uncomment in map.raster module)
 # Set to True to output /tmp/test.html for reports
 DEBUG = False
@@ -45,21 +46,31 @@ SE_STATES = [
 json_dir = Path("constants")
 
 BLUEPRINT = json.loads(open(json_dir / "blueprint.json").read())
+BLUEPRINT_COLORS = {
+    i: entry["color"]
+    for i, entry in enumerate(BLUEPRINT)
+    if "color" in entry and entry["value"] > 0
+}
+
+INPUTS = {e["id"]: e for e in json.loads(open(json_dir / "inputs.json").read())}
+INPUT_AREA_VALUES = json.loads(open(json_dir / "input_area_values.json").read())
+
+# Combine all constants/indicators/*.json files into a single data structure
+raw_indicators = [
+    json.loads(open(filename).read())
+    for filename in (json_dir / "indicators").glob("*.json")
+]
+
+# convert to dict keyed by input ID
+INDICATORS = {e["input"]: e["indicators"] for e in raw_indicators}
+
+
 OWNERSHIP = OrderedDict(
     {e["value"]: e for e in json.loads(open(json_dir / "ownership.json").read())}
 )
 PROTECTION = OrderedDict(
     {e["value"]: e for e in json.loads(open(json_dir / "protection.json").read())}
 )
-
-INPUTS = {e["id"]: e for e in json.loads(open(json_dir / "inputs.json").read())}
-INPUT_AREA_VALUES = json.loads(open(json_dir / "input_area_values.json").read())
-
-BLUEPRINT_COLORS = {
-    i: entry["color"]
-    for i, entry in enumerate(BLUEPRINT)
-    if "color" in entry and entry["value"] > 0
-}
 
 
 URBAN_YEARS = [2020, 2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100]

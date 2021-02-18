@@ -1,30 +1,58 @@
 [
-    {
-        "id": "land",
-        "label": "Terrestrial",
-        "color": "#f2f8ec",
-        "borderColor": "#d8eac7",
-        "indicators": []
-    },
-    {
-        "id": "freshwater",
-        "label": "Freshwater",
-        "color": "#eef7fc",
-        "borderColor": "#c3e3f4",
-        "indicators": []
-    },
-    {
-        "id": "marine",
-        "label": "Marine",
-        "color": "#f5f5ff",
-        "borderColor": "#c2c2ff",
-        "indicators": []
-    },
-    {
-        "id": "other",
-        "label": "Other ecosystems or multiple ecosystems",
-        "color": "#EEE",
-        "borderColor": "#DDD",
-        "indicators": []
-    }
+  {
+    "id": "land",
+    "label": "Terrestrial",
+    "color": "#f2f8ec",
+    "borderColor": "#d8eac7",
+    "indicators": [
+      "sa:land_amphibianreptiles",
+      "sa:land_beachbirds",
+      "sa:land_forestbirds",
+      "sa:land_forestedwetlandextent",
+      "sa:land_greenways",
+      "sa:land_intactcores",
+      "sa:land_lowurbanhistoric",
+      "sa:land_maritimeforestextent",
+      "sa:land_marshextent",
+      "sa:land_marshpatchsize",
+      "sa:land_pinebirds",
+      "sa:land_previouslyburnedhabitat",
+      "sa:land_resilientcoastalsites",
+      "sa:land_resilientterrestrialsites",
+      "sa:land_unalteredbeach",
+      "sa:land_urbanopenspace"
+    ]
+  },
+  {
+    "id": "freshwater",
+    "label": "Freshwater",
+    "color": "#eef7fc",
+    "borderColor": "#c3e3f4",
+    "indicators": [
+      "sa:freshwater_imperiledaquaticspecies",
+      "sa:freshwater_migratoryfishconnectivity",
+      "sa:freshwater_networkcomplexity",
+      "sa:freshwater_permeablesurface",
+      "sa:freshwater_riparianbuffers"
+    ]
+  },
+  {
+    "id": "marine",
+    "label": "Marine",
+    "color": "#f5f5ff",
+    "borderColor": "#c2c2ff",
+    "indicators": [
+      "sa:marine_estuarinecondition",
+      "sa:marine_birds",
+      "sa:marine_mammals",
+      "sa:marine_potentialhardbottomcondition"
+    ]
+  },
+  {
+    "id": "other",
+    "label": "Other ecosystems or multiple ecosystems",
+    "color": "#EEE",
+    "borderColor": "#DDD",
+    "indicators": []
+  }
 ]

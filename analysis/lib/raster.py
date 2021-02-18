@@ -246,7 +246,7 @@ def create_lowres_mask(filename, outfilename, factor, ignore_zero=False):
 
 
 def summarize_raster_by_geometry(
-    geometries, extract_func, outfilename, progress_label="", bounds=None
+    geometries, extract_func, outfilename, progress_label="", bounds=None, **kwargs
 ):
     """Summarize values of input dataset by geometry and writes results to
     a feather file, with one column for shape_mask and one for each raster value.
@@ -274,7 +274,7 @@ def summarize_raster_by_geometry(
         geometries.iteritems()
     ):
         zone_results = extract_func(
-            [to_dict(geometry)], bounds=pg.total_bounds(geometry)
+            [to_dict(geometry)], bounds=pg.total_bounds(geometry), **kwargs
         )
         if zone_results is None:
             continue
@@ -290,11 +290,16 @@ def summarize_raster_by_geometry(
     results = df[["shape_mask"]].copy()
     results.index.name = "id"
 
+    avg_cols = [c for c in df.columns if c.endswith("_avg")]
+
     # each column is an array of counts for each
-    for col in df.columns.difference(["shape_mask"]):
+    for col in df.columns.difference(["shape_mask"] + avg_cols):
         s = df[col].apply(pd.Series).fillna(0)
         s.columns = [f"{col}_{c}" for c in s.columns]
         results = results.join(s)
+
+    if len(avg_cols) > 0:
+        results = results.join(df[avg_cols]).round()
 
     results.reset_index().to_feather(outfilename)
 

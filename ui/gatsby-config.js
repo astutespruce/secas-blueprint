@@ -64,7 +64,14 @@ module.exports = {
       resolve: `gatsby-transformer-json`,
       options: {
         // name the top-level type after the filename
-        typeName: ({ node }) => `${node.name}Json`,
+        typeName: ({ node: { name, relativeDirectory } }) => {
+          // combine all indicators into a single JSON endpoint
+          if (relativeDirectory === 'indicators') {
+            return 'indicatorsJson'
+          }
+
+          return `${name}Json`
+        },
       },
     },
     `gatsby-plugin-theme-ui`,
