@@ -51,7 +51,7 @@ def extract_by_geometry(geometries, bounds):
     with rasterio.open(src_dir / "urban_2020.tif") as src:
         try:
             shape_mask, transform, window = boundless_raster_geometry_mask(
-                src, geometries, bounds, all_touched=True
+                src, geometries, bounds, all_touched=False
             )
 
         except ValueError:

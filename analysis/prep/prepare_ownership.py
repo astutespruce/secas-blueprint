@@ -88,7 +88,7 @@ df = df.iloc[ix].copy()
 print("making valid...")
 df["geometry"] = pg.make_valid(df.geometry.values.data)
 
-df = explode(df)
+df = explode(df).reset_index()
 # there are some geometry errors after cleaning up above, keep only polys
 df = df.loc[pg.get_type_id(df.geometry.values.data) == 3].copy()
 

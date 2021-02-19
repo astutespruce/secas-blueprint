@@ -58,7 +58,7 @@ def extract_by_geometry(geometries, bounds, prescreen=False):
     with rasterio.open(ns_filename) as src:
         try:
             shape_mask, transform, window = boundless_raster_geometry_mask(
-                src, geometries, bounds, all_touched=True
+                src, geometries, bounds, all_touched=False
             )
 
         except ValueError:

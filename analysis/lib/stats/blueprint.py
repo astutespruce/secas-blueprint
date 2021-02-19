@@ -47,7 +47,7 @@ def extract_by_geometry(geometries, bounds):
     # create mask and window
     with rasterio.open(blueprint_filename) as src:
         shape_mask, transform, window = boundless_raster_geometry_mask(
-            src, geometries, bounds, all_touched=True
+            src, geometries, bounds, all_touched=False
         )
 
         # square meters to acres

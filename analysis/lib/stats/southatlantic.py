@@ -55,7 +55,7 @@ def detect_indicators(geometries, indicators):
 
     with rasterio.open(indicators_mask_dir / indicators[0]["filename"]) as src:
         geometry_mask, transform, window = raster_geometry_mask(
-            src, geometries, crop=True, all_touched=True
+            src, geometries, crop=True, all_touched=False
         )
 
     indicators_with_data = []
@@ -108,7 +108,7 @@ def extract_by_geometry(
     with rasterio.open(sa_filename) as src:
         try:
             shape_mask, transform, window = boundless_raster_geometry_mask(
-                src, geometries, bounds, all_touched=True
+                src, geometries, bounds, all_touched=False
             )
 
         except ValueError:

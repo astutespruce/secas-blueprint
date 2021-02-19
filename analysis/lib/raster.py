@@ -39,7 +39,7 @@ def get_window(dataset, bounds):
     return window
 
 
-def boundless_raster_geometry_mask(dataset, shapes, bounds, all_touched=True):
+def boundless_raster_geometry_mask(dataset, shapes, bounds, all_touched=False):
     """Alternative to rasterio.mask::raster_geometry_mask that allows boundless
     reads from raster data sources.
 
@@ -48,7 +48,7 @@ def boundless_raster_geometry_mask(dataset, shapes, bounds, all_touched=True):
     dataset : open rasterio dataset
     shapes : list-like of geometry objects that provide __geo_interface__
     bounds : list-like of [xmin, ymin, xmax, ymax]
-    all_touched : bool, optional (default: True)
+    all_touched : bool, optional (default: False)
     """
 
     window = get_window(dataset, bounds)
@@ -180,6 +180,7 @@ def detect_data(dataset, shapes, bounds):
         return False
 
     # create mask
+    # note: this intentionally uses all_touched=True
     mask = geometry_mask(
         shapes,
         transform=dataset.window_transform(window),
@@ -331,7 +332,7 @@ def calculate_percent_overlap(filename, shapes, bounds):
     """
     with rasterio.open(filename) as src:
         shape_mask, transform, window = boundless_raster_geometry_mask(
-            src, shapes, bounds, all_touched=True
+            src, shapes, bounds, all_touched=False
         )
 
     counts = extract_count_in_geometry(

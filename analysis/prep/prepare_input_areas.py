@@ -39,7 +39,7 @@ df["inputs"] = df.InputOverlapAreasSECAS_InputUsedIn2020.str.lower().apply(
 )
 
 # split parts for easier indexing
-df = explode(df)
+df = explode(df).reset_index()
 
 df = df[["inputs", "geometry"]].copy()
 
