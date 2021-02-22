@@ -30,14 +30,12 @@ const isEmpty = (text) => {
  * @param {Object} means
  * @param {Object} ecosystemInfo - array of ecosystem info
  * @param {Object} indicatorInfo - lookup of indicator info by index
- * @param {Object} inputInfo - lookup of input area info by input area id
  */
 const extractIndicators = (
   packedPercents,
   means,
   ecosystemInfo,
-  indicatorInfo,
-  inputInfo
+  indicatorInfo
 ) => {
   const ecosystemIndex = indexBy(ecosystemInfo, 'id')
 
@@ -65,7 +63,6 @@ const extractIndicators = (
       ...indicator,
       values,
       ecosystem: ecosystemIndex[indicator.id.split(':')[1].split('_')[0]],
-      input: inputInfo[indicator.id.split(':')[0]],
     }
   })
 
@@ -234,7 +231,13 @@ export const unpackFeatureData = (
     })
   })
 
-  values.inputs = Object.values(flatInputs).sort(sortByFunc('percent', false))
+  values.inputs = Object.values(flatInputs)
+    .map(({ id, percent }) => ({
+      id,
+      percent,
+      ...inputInfo[id],
+    }))
+    .sort(sortByFunc('percent', false))
   values.hasInputOverlaps = hasInputOverlaps
 
   // extract indicators where available
@@ -244,8 +247,7 @@ export const unpackFeatureData = (
       values.sa_indicators || {},
       values.sa_indicator_avg || {},
       ecosystemInfo,
-      indicatorInfo.sa.indicators,
-      inputInfo
+      indicatorInfo.sa.indicators
     )
   }
 

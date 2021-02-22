@@ -9,27 +9,18 @@ import IndicatorDetails from './IndicatorDetails'
 
 const IndicatorsTab = ({
   type,
-  inputs,
+  inputs: rawInputs,
   indicators: rawIndicators,
   outsideSEPercent,
   analysisAcres,
   blueprintAcres,
 }) => {
-  console.log('incoming inputs', inputs)
+  console.log('incoming inputs', rawInputs)
   console.log('incoming indicators', rawIndicators)
 
-  // const [selectedIndicator, setSelectedIndicator] = useState(null)
+  const [selectedIndicator, setSelectedIndicator] = useState(null)
 
-  // FIXME:
-  const [selectedIndicator, setSelectedIndicator] = useState(
-    Object.values(rawIndicators.sa.indicators)[0]
-  )
-
-  console.log(
-    'indicators for each input',
-    Object.values(rawIndicators).map(({ indicators }) => indicators)
-  )
-
+  // index indicators by ID for lookup on selection
   const indicatorIndex = indexBy(
     flatten(
       Object.values(rawIndicators).map(({ indicators }) =>
@@ -39,7 +30,13 @@ const IndicatorsTab = ({
     'id'
   )
 
-  console.log('indicatorIndex', indicatorIndex)
+  // merge ecosystems into input areas
+  const inputs = rawInputs.map(({ id, ...rest }) => ({
+    id,
+    ...rest,
+    ecosystems: rawIndicators[id] ? rawIndicators[id].ecosystems : [],
+  }))
+  const inputIndex = indexBy(inputs, 'id')
 
   useIsEqualEffect(() => {
     if (selectedIndicator === null) {
@@ -61,9 +58,16 @@ const IndicatorsTab = ({
   const handleCloseIndicator = useCallback(() => setSelectedIndicator(null), [])
 
   if (selectedIndicator) {
+    console.log(
+      'selected indicator input',
+      selectedIndicator.id.split(':')[0],
+      inputIndex[selectedIndicator.id.split(':')[0]]
+    )
+
     return (
       <IndicatorDetails
         type={type}
+        input={inputIndex[selectedIndicator.id.split(':')[0]]}
         outsideSEPercent={outsideSEPercent}
         analysisAcres={analysisAcres}
         blueprintAcres={blueprintAcres}
@@ -73,7 +77,13 @@ const IndicatorsTab = ({
     )
   }
 
-  return <InputAreas inputs={inputs} indicators={rawIndicators} />
+  return (
+    <InputAreas
+      type={type}
+      inputs={inputs}
+      onSelectIndicator={handleSelectIndicator}
+    />
+  )
 }
 
 IndicatorsTab.propTypes = {
@@ -82,6 +92,7 @@ IndicatorsTab.propTypes = {
   inputs: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
       percent: PropTypes.number.isRequired,
     })
   ),

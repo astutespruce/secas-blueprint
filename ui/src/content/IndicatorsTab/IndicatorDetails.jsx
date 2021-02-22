@@ -5,6 +5,7 @@ import { Reply } from '@emotion-icons/fa-solid'
 
 import { OutboundLink } from 'components/link'
 import { formatPercent } from 'util/format'
+import { sum } from 'util/data'
 import theme from 'theme'
 
 import IndicatorPercentTable from './IndicatorPercentTable'
@@ -12,21 +13,36 @@ import { IndicatorPropType } from './proptypes'
 
 const IndicatorDetails = ({
   type,
-  id,
   label,
-  input: { label: inputLabel },
+  input: { label: inputLabel, percent: inputPercent },
   ecosystem: { id: ecosystemId, label: ecosystemLabel, color, borderColor },
   description,
   datasetID,
   goodThreshold,
-  total,
   values,
   analysisAcres,
   blueprintAcres,
+  outsideSEPercent,
   onClose,
 }) => {
+  console.log(
+    'incoming values',
+    inputLabel,
+    inputPercent,
+    values,
+    analysisAcres,
+    blueprintAcres
+  )
+
   // eslint-disable-next-line global-require,import/no-dynamic-require
   const icon = require(`images/${ecosystemId}.svg`)
+
+  const inputFactor = inputPercent / 100
+
+  // adjust the values based on the total % occupied by this input area
+  const total = sum(values.map(({ percent }) => percent))
+
+  console.log('total', total)
 
   const remainder =
     (100 * Math.abs(analysisAcres - blueprintAcres)) / analysisAcres
@@ -48,11 +64,21 @@ const IndicatorDetails = ({
     })
   }
 
-  if (remainder >= 1) {
+  // TODO:
+  // const outsideInputPercent = 100 - outsideSEPercent - totalPercent
+  // if (outsideInputPercent >= 1) {
+  //   priorities.push({
+  //     value: -1,
+  //     percent: outsideInputPercent,
+  //     color: '#BBB',
+  //     label: `Outside ${inputLabel} input area`,
+  //   })
+
+  if (outsideSEPercent >= 1) {
     percentTableValues.push({
       value: null,
-      label: 'Outside South Atlantic Blueprint',
-      percent: remainder,
+      label: 'Outside Southeast Blueprint',
+      percent: outsideSEPercent,
     })
   }
 
@@ -148,7 +174,7 @@ const IndicatorDetails = ({
 
         <Box sx={{ mt: '2rem' }}>
           <OutboundLink
-            to={`https://salcc.databasin.org/datasets/${datasetID}`}
+            to={`https://seregion.databasin.org/datasets/${datasetID}`}
           >
             View this indicator in the Conservation Planning Atlas
           </OutboundLink>
@@ -164,11 +190,13 @@ IndicatorDetails.propTypes = {
   analysisAcres: PropTypes.number.isRequired,
   blueprintAcres: PropTypes.number.isRequired,
   total: PropTypes.number,
+  outsideSEPercent: PropTypes.number,
   onClose: PropTypes.func.isRequired,
 }
 
 IndicatorDetails.defaultProps = {
   total: 0,
+  outsideSEPercent: 0,
 }
 
 export default IndicatorDetails

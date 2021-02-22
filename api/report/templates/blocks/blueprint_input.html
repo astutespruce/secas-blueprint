@@ -32,7 +32,6 @@
         {% endif %}
     </p>
 
-
     {% if maps[src.id] %}
         <div class="map-container">
             <img src="data:image/png;base64,{{maps[src.id]}}" alt="Blueprint input map for {{src.label}}" class="map">
@@ -115,8 +114,6 @@
                     </tr>
                 {% endfor %}
 
-
-
                 {% if src.remainder %}
                     <tr class="remainder-row">
                         <td class="label">Outside {{src.label}} input area</td>
@@ -143,11 +140,18 @@
 
                 <tr class="total-row">
                     <td class="label align-right">Total area</td>
-                    <td class="acres">{{src.total_acres|format_number}}</td>
+                    <td class="acres">{{results.analysis_acres|format_number}}</td>
                     <td class="percent">100%</td>
                 </tr>
             </tbody>
         </table>
     </div>
+
+    {% if src.ecosystems %}
+        {% with ecosystems=src.ecosystems %}
+            {% include "blocks/ecosystems.html" %}
+        {% endwith %}
+    {% endif %}
+
     {% endif %}
 </section>

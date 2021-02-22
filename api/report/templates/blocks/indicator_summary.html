@@ -1,0 +1,35 @@
+<section>
+    <h2 id="{{src.id}}IndicatorSummary">{{src.label}} Indicator Summary</h2>
+
+    {% for ecosystem in ecosystems %}
+        <div class="no-break">
+            <div class="caption">
+                Table {{table.counter}}: {{ecosystem.label}} indicators.
+            </div>
+            {% set table.counter=table.counter+1 %}
+
+            <table class="centered">
+                <thead>
+                    <tr>
+                        <th class="label">Indicator</th>
+                        <th class="">Present</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for indicator in ecosystem.indicator_summary %}
+                        <tr>
+                        {% if indicator.present %}
+                            <td class="label"><a href="#{{indicator.id}}">{{indicator.label}}</a></td>
+                            <td>&check;</td>
+                        {% else %}
+                            <td class="label indicator-absent">{{indicator.label}}</td>
+                            <td />
+                        {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endfor %}
+
+</section>

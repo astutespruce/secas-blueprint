@@ -76,7 +76,7 @@ const IndicatorPercentTable = ({ type, values, goodThreshold }) => {
             <Divider variant="styles.hr.dashed" sx={{ mb: '1.5rem' }} />
             <Box>
               {remainder.map(({ value, label, percent }) => (
-                <Flex sx={{ mt: '1rem' }}>
+                <Flex key={value} sx={{ mt: '1rem' }}>
                   <Text sx={labelCSS} />
                   <IndicatorPercentChart
                     value={value}
@@ -172,7 +172,7 @@ const IndicatorPercentTable = ({ type, values, goodThreshold }) => {
           <Divider variant="styles.hr.dashed" sx={{ mb: '1.5rem' }} />
           <Box>
             {remainder.map(({ value, label, percent }) => (
-              <Flex sx={{ mt: '1rem' }}>
+              <Flex key={value} sx={{ mt: '1rem' }}>
                 <Text sx={labelCSS} />
                 <IndicatorPercentChart
                   value={value}

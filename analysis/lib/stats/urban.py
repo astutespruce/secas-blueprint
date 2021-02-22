@@ -19,6 +19,7 @@ from analysis.lib.pygeos_util import to_dict
 
 
 src_dir = Path("data/inputs/threats/urban")
+results_filename = "data/results/huc12/urban.feather"
 
 
 def extract_by_geometry(geometries, bounds):
@@ -125,7 +126,6 @@ def summarize_by_huc12(geometries):
     Parameters
     ----------
     geometries : Series of pygeos geometries, indexed by HUC12 id
-    out_dir : str
     """
 
     index = []
@@ -147,4 +147,4 @@ def summarize_by_huc12(geometries):
     df = df.reset_index().rename(columns={"index": "id"}).round()
     df.columns = [str(c) for c in df.columns]
 
-    df.to_feather(out_dir / "urban.feather")
+    df.to_feather(results_filename)

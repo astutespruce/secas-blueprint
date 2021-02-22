@@ -225,9 +225,7 @@ sa_blueprint_cols = [c for c in sa_df.columns if c.startswith("sa_")]
 sa_percent = encode_values(sa_df[sa_blueprint_cols], sa_df.shape_mask, 1000).rename(
     "sa_blueprint"
 )
-sa_indicators = encode_indicators(
-    sa_df, sa_df.shape_mask, "sa", INDICATORS["southatlantic"]
-)
+sa_indicators = encode_indicators(sa_df, sa_df.shape_mask, "sa", INDICATORS["sa"])
 
 sa_df = pd.DataFrame(sa_percent).join(sa_indicators)
 
@@ -380,9 +378,7 @@ sa_blueprint_cols = [c for c in sa_df.columns if c.startswith("sa_")]
 sa_percent = encode_values(sa_df[sa_blueprint_cols], sa_df.shape_mask, 1000).rename(
     "sa_blueprint"
 )
-sa_indicators = encode_indicators(
-    sa_df, sa_df.shape_mask, "sa", INDICATORS["southatlantic"]
-)
+sa_indicators = encode_indicators(sa_df, sa_df.shape_mask, "sa", INDICATORS["sa"])
 sa_df = pd.DataFrame(sa_percent).join(sa_indicators)
 
 

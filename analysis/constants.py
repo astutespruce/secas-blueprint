@@ -55,12 +55,14 @@ BLUEPRINT_COLORS = {
 INPUTS = {e["id"]: e for e in json.loads(open(json_dir / "inputs.json").read())}
 INPUT_AREA_VALUES = json.loads(open(json_dir / "input_area_values.json").read())
 
+
+ECOSYSTEMS = json.loads(open(json_dir / "ecosystems.json").read())
+
 # Combine all constants/indicators/*.json files into a single data structure
 raw_indicators = [
     json.loads(open(filename).read())
     for filename in (json_dir / "indicators").glob("*.json")
 ]
-
 # convert to dict keyed by input ID
 INDICATORS = {e["input"]: e["indicators"] for e in raw_indicators}
 

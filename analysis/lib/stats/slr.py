@@ -92,7 +92,7 @@ def extract_by_geometry(geometries, bounds):
     return results
 
 
-def summarize_by_huc12(geometries):
+def summarize_by_huc12(geometries, out_dir):
     """Summarize by HUC12
 
     Parameters

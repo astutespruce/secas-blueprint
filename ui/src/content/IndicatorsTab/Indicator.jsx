@@ -6,11 +6,10 @@ import { lighten } from '@theme-ui/color'
 import { useBreakpoints } from 'components/layout'
 
 import IndicatorAverageChart from './IndicatorAverageChart'
-import IndicatorPixelValueChart from './IndicatorPixelValueChart'
 import { IndicatorPropType } from './proptypes'
 
-const Indicator = ({ type, indicator, onSelect }) => {
-  const { label, pixelValue, values, avg, domain, goodThreshold } = indicator
+const Indicator = ({ indicator, onSelect }) => {
+  const { label, avg, domain } = indicator
 
   const breakpoint = useBreakpoints()
   const isMobile = breakpoint === 0
@@ -50,15 +49,7 @@ const Indicator = ({ type, indicator, onSelect }) => {
         {label}
       </Text>
 
-      {type === 'pixel' ? (
-        <IndicatorPixelValueChart
-          pixelValue={pixelValue}
-          values={values}
-          goodThreshold={goodThreshold}
-        />
-      ) : (
-        <IndicatorAverageChart value={avg} domain={domain} />
-      )}
+      <IndicatorAverageChart value={avg} domain={domain} />
 
       <Text
         as="label"

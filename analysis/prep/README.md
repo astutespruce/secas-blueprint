@@ -12,11 +12,11 @@ Source data are stored in `source_data`; see associated README files for data so
 
 ### South Atlantic
 
-These are prepared in the `sa-blueprint-sv` project.
+These are prepared in the `sa-blueprint-sv` project, and then further processed using `prepare_southatlantic.py`.
 
-These are copied from `sa-blueprint-sv/data/inputs/indicators` to `data/inputs/indicators/southatlantic` (including masks).
+These are warped and masked from `sa-blueprint-sv/data/inputs/indicators` to `data/inputs/indicators/southatlantic`
 
-Continuous indicators are copied from `sa-blueprint-sv/data/continuous_indicators`
+Continuous indicators are warped and masked from `sa-blueprint-sv/data/continuous_indicators`
 to `data/continuous/indicators/southatlantic`.
 
 Indicator config is copied from `sa-blueprint-sv/constants/indicators.json`, and wrapped in:
