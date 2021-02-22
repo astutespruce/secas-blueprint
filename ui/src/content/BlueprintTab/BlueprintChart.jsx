@@ -7,7 +7,7 @@ import { PieChartLegend } from 'components/chart'
 
 const chartWidth = 150
 
-const BlueprintChart = ({ categories, blueprint, remainder }) => {
+const BlueprintChart = ({ categories, blueprint, outsideSEPercent }) => {
   const blueprintChartData = blueprint
     .map((percent, i) => ({
       ...categories[i],
@@ -16,9 +16,9 @@ const BlueprintChart = ({ categories, blueprint, remainder }) => {
     .filter(({ value }) => value > 0)
     .reverse()
 
-  if (remainder) {
+  if (outsideSEPercent) {
     blueprintChartData.push({
-      value: remainder,
+      value: outsideSEPercent,
       color: '#EEE',
       label: 'Outside Southeast Blueprint',
       description: null,
@@ -41,7 +41,7 @@ const BlueprintChart = ({ categories, blueprint, remainder }) => {
         <PieChartLegend elements={blueprintChartData} />
       </Flex>
 
-      {remainder < 100 ? (
+      {outsideSEPercent < 100 ? (
         <Text sx={{ mt: '1rem', fontSize: 1, color: 'grey.7' }}>
           {blueprintChartData
             .filter(({ description }) => description)
@@ -70,12 +70,12 @@ BlueprintChart.propTypes = {
     })
   ).isRequired,
   blueprint: PropTypes.arrayOf(PropTypes.number),
-  remainder: PropTypes.number,
+  outsideSEPercent: PropTypes.number,
 }
 
 BlueprintChart.defaultProps = {
   blueprint: [],
-  remainder: 0,
+  outsideSEPercent: 0,
 }
 
 export default BlueprintChart

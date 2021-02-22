@@ -40,13 +40,12 @@ export const resolveKey = (item, key) => {
  * @param {Array } data
  * @param {String} groupField - name of group field to group by
  */
-export const groupBy = (data, groupField) => {
-  return data.reduce((prev, d) => {
+export const groupBy = (data, groupField) =>
+  data.reduce((prev, d) => {
     const key = resolveKey(d, groupField)
     prev[key] = (prev[key] || []).concat([d])
     return prev
   }, {})
-}
 
 /**
  * Calculate the sum of an array of numbers
@@ -58,9 +57,7 @@ export const sum = (values) => values.reduce((prev, value) => prev + value, 0)
  * Calculate the min and max values for an array of numbers
  * @param {Array} values
  */
-export const extent = (values) => {
-  return [Math.min(...values), Math.max(...values)]
-}
+export const extent = (values) => [Math.min(...values), Math.max(...values)]
 
 export const sortByFunc = (field, ascending = true) => (a, b) => {
   if (a[field] < b[field]) {

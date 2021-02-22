@@ -13,7 +13,7 @@ const tabs = [
 const unitTabs = [
   { id: 'mobile-selected-map', label: 'Map' },
   { id: 'selected-priorities', label: 'Priorities' },
-  // { id: 'selected-indicators', label: 'Indicators' },
+  { id: 'selected-indicators', label: 'Indicators' },
   { id: 'selected-threats', label: 'Threats' },
   { id: 'selected-partners', label: 'Partners' },
 ]

@@ -11,7 +11,6 @@ import { hasWindow } from 'util/dom'
 import { useIsEqualEffect } from 'util/hooks'
 import { getCenterAndZoom } from './util'
 import { config, sources, layers } from './config'
-import { unpackFeatureData } from './features'
 import { Legend } from './legend'
 import MapModeToggle from './MapModeToggle'
 import StyleToggle from './StyleToggle'
@@ -112,7 +111,7 @@ const Map = () => {
       // highlight selected
       map.setFilter('unit-outline-highlight', ['==', 'id', properties.id])
 
-      setMapData(unpackFeatureData(features[0].properties))
+      setMapData(features[0].properties)
       if (isMobile) {
         map.resize()
       }

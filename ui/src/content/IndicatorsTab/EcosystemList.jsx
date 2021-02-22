@@ -9,7 +9,7 @@ import Ecosystem from './Ecosystem'
 import IndicatorDetails from './IndicatorDetails'
 import { EcosystemPropType } from './proptypes'
 
-const EcosystemList = ({ ecosystems, analysisAcres, blueprintAcres }) => {
+const EcosystemList = ({ type, ecosystems, analysisAcres, blueprintAcres }) => {
   const indicators = flatten(
     Object.values(ecosystems).map(({ indicators: i }) => i)
   )
@@ -40,6 +40,7 @@ const EcosystemList = ({ ecosystems, analysisAcres, blueprintAcres }) => {
     <>
       {selectedIndicator ? (
         <IndicatorDetails
+          type={type}
           analysisAcres={analysisAcres}
           blueprintAcres={blueprintAcres}
           onClose={handleCloseIndicator}
@@ -49,6 +50,7 @@ const EcosystemList = ({ ecosystems, analysisAcres, blueprintAcres }) => {
         ecosystems.map((ecosystem) => (
           <Ecosystem
             key={ecosystem.id}
+            type={type}
             onSelectIndicator={handleSelectIndicator}
             {...ecosystem}
           />
@@ -59,6 +61,7 @@ const EcosystemList = ({ ecosystems, analysisAcres, blueprintAcres }) => {
 }
 
 EcosystemList.propTypes = {
+  type: PropTypes.string.isRequired,
   analysisAcres: PropTypes.number.isRequired,
   blueprintAcres: PropTypes.number.isRequired,
   ecosystems: PropTypes.arrayOf(PropTypes.shape(EcosystemPropType)).isRequired,

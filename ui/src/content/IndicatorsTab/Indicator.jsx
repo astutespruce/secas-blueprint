@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { Box, Text } from 'theme-ui'
 import { lighten } from '@theme-ui/color'
@@ -6,33 +6,22 @@ import { lighten } from '@theme-ui/color'
 import { useBreakpoints } from 'components/layout'
 
 import IndicatorAverageChart from './IndicatorAverageChart'
+import IndicatorPixelValueChart from './IndicatorPixelValueChart'
 import { IndicatorPropType } from './proptypes'
 
-const Indicator = ({ indicator, onSelect }) => {
-  const { label, avg, domain } = indicator
+const Indicator = ({ type, indicator, onSelect }) => {
+  const { label, pixelValue, values, avg, domain, goodThreshold } = indicator
 
   const breakpoint = useBreakpoints()
   const isMobile = breakpoint === 0
-
-  const [isHover, setIsHover] = useState(false)
 
   const handleClick = useCallback(() => {
     onSelect(indicator)
   }, [indicator, onSelect])
 
-  const handleMouseEnter = useCallback(() => {
-    setIsHover(() => true)
-  }, [])
-
-  const handleMouseLeave = useCallback(() => {
-    setIsHover(() => false)
-  }, [])
-
   return (
     <Box
       onClick={handleClick}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
       sx={{
         cursor: 'pointer',
         px: '1rem',
@@ -41,6 +30,9 @@ const Indicator = ({ indicator, onSelect }) => {
         position: 'relative',
         '&:hover': {
           bg: lighten('grey.0', 0.01),
+          '& label': {
+            display: 'block',
+          },
         },
         '&:not(:first-of-type)': {
           borderTop: '2px solid',
@@ -58,19 +50,18 @@ const Indicator = ({ indicator, onSelect }) => {
         {label}
       </Text>
 
-      <Text
-        sx={{
-          fontSize: 0,
-          color: 'grey.7',
-          visibility: isHover ? 'visible' : 'hidden',
-        }}
-      >
-        Average value in this area:
-      </Text>
-
-      <IndicatorAverageChart value={avg} domain={domain} highlight={isHover} />
+      {type === 'pixel' ? (
+        <IndicatorPixelValueChart
+          pixelValue={pixelValue}
+          values={values}
+          goodThreshold={goodThreshold}
+        />
+      ) : (
+        <IndicatorAverageChart value={avg} domain={domain} />
+      )}
 
       <Text
+        as="label"
         sx={{
           color: 'primary',
           fontSize: 'small',
@@ -79,7 +70,7 @@ const Indicator = ({ indicator, onSelect }) => {
           bottom: 0,
           left: 0,
           right: 0,
-          display: isHover ? 'block' : 'none',
+          display: 'none',
         }}
       >
         {isMobile ? 'tap' : 'click'} for more details
@@ -89,6 +80,7 @@ const Indicator = ({ indicator, onSelect }) => {
 }
 
 Indicator.propTypes = {
+  type: PropTypes.string.isRequired,
   indicator: PropTypes.shape(IndicatorPropType).isRequired,
   onSelect: PropTypes.func.isRequired,
 }

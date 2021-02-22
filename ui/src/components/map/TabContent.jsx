@@ -33,6 +33,7 @@ const TabContent = ({ tab, mapData }) => {
     type,
     blueprint,
     inputs,
+    outsideSEPercent,
     blueprint_total: blueprintAcres,
     shape_mask: analysisAcres,
     indicators,
@@ -52,6 +53,7 @@ const TabContent = ({ tab, mapData }) => {
           type={type}
           blueprint={blueprint}
           inputs={inputs}
+          outsideSEPercent={outsideSEPercent}
           ecosystems={ecosystems}
           {...mapData}
         />
@@ -61,9 +63,11 @@ const TabContent = ({ tab, mapData }) => {
       return (
         <IndicatorsTab
           type={type}
+          inputs={inputs}
+          indicators={indicators}
+          outsideSEPercent={outsideSEPercent}
           blueprintAcres={blueprintAcres}
           analysisAcres={analysisAcres}
-          indicators={indicators}
         />
       )
     }

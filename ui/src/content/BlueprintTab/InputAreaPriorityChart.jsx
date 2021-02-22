@@ -11,8 +11,6 @@ import { PieChartLegend } from 'components/chart'
  * the input or Southeast region.
  */
 const InputAreaPriorityChart = ({ values, valueLabel, valueCaption }) => {
-  console.log('incoming values', values, valueLabel)
-
   const chartWidth = 110
 
   const chartData = values

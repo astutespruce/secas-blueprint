@@ -23,8 +23,8 @@ Indicator config is copied from `sa-blueprint-sv/constants/indicators.json`, and
 
 ```json
 {
-    "input": "southatlantic",
-    "indicators": <indicators.json contents from sa-blueprint-sv>
+    "input": "sa",
+    "indicators": <indicators.json contents from sa-blueprint-sv, prefix ids>
 }
 ```
 

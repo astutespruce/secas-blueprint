@@ -32,7 +32,7 @@ sa_filename = src_dir / "sa_blueprint.tif"
 sa_mask_filename = src_dir / "sa_blueprint_mask.tif"
 
 
-INDICATORS = ALL_INDICATORS["southatlantic"]
+INDICATORS = ALL_INDICATORS["sa"]
 INDICATOR_INDEX = OrderedDict({indicator["id"]: indicator for indicator in INDICATORS})
 
 

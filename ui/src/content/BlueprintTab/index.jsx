@@ -5,7 +5,7 @@ import { Box, Heading, Text } from 'theme-ui'
 
 import { useBlueprintPriorities, useInputAreas } from 'components/data'
 import { OutboundLink } from 'components/link'
-import { sum, sortByFunc } from 'util/data'
+import { sum } from 'util/data'
 
 import BlueprintChart from './BlueprintChart'
 import InputArea from './InputArea'
@@ -81,78 +81,41 @@ const getInputPriorities = ({
   return priorities
 }
 
-const BlueprintTab = ({ blueprint, inputs, ...mapData }) => {
+const BlueprintTab = ({
+  blueprint,
+  inputs,
+  outsideSEPercent,
+  hasInputOverlaps,
+  ...mapData
+}) => {
   const { all: allPriorities } = useBlueprintPriorities()
-  const { inputs: inputCategories, values: inputValues } = useInputAreas()
+  const { inputs: inputCategories } = useInputAreas()
 
   // Note: incoming priorities are in descending order but percents
   // are stored in ascending order
   const priorityCategories = allPriorities.slice().reverse()
 
-  let remainder = 0
-  remainder = 100 - sum(blueprint)
-  if (remainder < 1) {
-    remainder = 0
-  }
-
-  const outsideSEPercent = 100 - sum(blueprint)
-
-  const inputBins = {}
-  let hasInputOverlaps = false
-
-  // flatten overlapping inputs
-  inputs.forEach((percent, i) => {
-    if (percent === 0) {
-      // we need i to map to the correct inputId, so we can't filter 0 percents
-      // out in advance
-      return
-    }
-    const inputIds = inputValues[i].split(',')
-    if (inputIds.length > 1) {
-      hasInputOverlaps = true
-    }
-    inputIds.forEach((inputId) => {
-      if (inputBins[inputId] !== undefined) {
-        inputBins[inputId].percent += percent
-      } else {
-        const { valueField } = inputCategories[inputId]
-
-        inputBins[inputId] = {
-          ...inputCategories[inputId],
-          percent,
-          percents:
-            valueField && mapData[valueField] ? mapData[valueField] : [],
-        }
-      }
+  // merge inputs with priority data
+  const inputPriorities = inputs.map(({ id, percent }) => {
+    const { valueField, values, domain, label, ...rest } = inputCategories[id]
+    const priorities = getInputPriorities({
+      values,
+      domain,
+      percents: valueField && mapData[valueField] ? mapData[valueField] : [],
+      totalPercent: percent,
+      inputLabel: label,
+      outsideSEPercent,
     })
+
+    return {
+      domain,
+      label,
+      // round percent from >99 to 100
+      percent: percent > 99 ? 100 : percent,
+      values: priorities,
+      ...rest,
+    }
   })
-
-  // sort input areas by descending percent overlap with this area
-  // and extract priority values
-  const binnedInputs = Object.values(inputBins)
-    .sort(sortByFunc('percent', false))
-    .map(({ values, domain, label, percents, percent, ...rest }) => {
-      const priorities = getInputPriorities({
-        values,
-        domain,
-        percents,
-        totalPercent: percent,
-        inputLabel: label,
-        outsideSEPercent,
-      })
-
-      return {
-        domain,
-        label,
-
-        // round percent from >99 to 100
-        percent: percent > 99 ? 100 : percent,
-        ...rest,
-        values: priorities,
-      }
-    })
-
-  console.log('binnedInputs', binnedInputs)
 
   return (
     <Box sx={{ py: '2rem', pl: '1rem', pr: '2rem' }}>
@@ -162,11 +125,11 @@ const BlueprintTab = ({ blueprint, inputs, ...mapData }) => {
         <BlueprintChart
           categories={priorityCategories}
           blueprint={blueprint}
-          remainder={remainder}
+          outsideSEPercent={outsideSEPercent}
         />
       </Box>
 
-      {binnedInputs.length > 0 ? (
+      {inputs.length > 0 ? (
         <>
           <Box as="section">
             <Text
@@ -199,7 +162,7 @@ const BlueprintTab = ({ blueprint, inputs, ...mapData }) => {
             </Text>
 
             <Box sx={{ mt: '1rem' }}>
-              {binnedInputs.map((input) => (
+              {inputPriorities.map((input) => (
                 <InputArea key={input.id} {...input} />
               ))}
             </Box>
@@ -212,12 +175,21 @@ const BlueprintTab = ({ blueprint, inputs, ...mapData }) => {
 
 BlueprintTab.propTypes = {
   blueprint: PropTypes.arrayOf(PropTypes.number),
-  inputs: PropTypes.arrayOf(PropTypes.number),
+  inputs: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      percent: PropTypes.number.isRequired,
+    })
+  ),
+  outsideSEPercent: PropTypes.number,
+  hasInputOverlaps: PropTypes.bool,
 }
 
 BlueprintTab.defaultProps = {
   blueprint: [],
   inputs: [],
+  outsideSEPercent: 0,
+  hasInputOverlaps: false,
 }
 
 export default BlueprintTab

@@ -3,7 +3,15 @@ import { siteMetadata } from '../../../gatsby-config'
 const { tileHost } = siteMetadata
 
 export const config = {
-  bounds: [-106.66188036, 17.92676033, -65.22106481, 40.638801],
+  // FIXME:
+  // bounds: [-106.66188036, 17.92676033, -65.22106481, 40.638801],
+  // DEBUG:
+  bounds: [
+    -81.2115555555452,
+    32.300146276896,
+    -80.7413514739119,
+    32.480288947781204,
+  ],
   maxBounds: [-180, -80, 180, 80],
   minZoom: 0,
   maxZoom: 14,
@@ -72,7 +80,7 @@ export const layers = [
     id: 'unit-fill',
     source: 'mapUnits',
     'source-layer': 'units',
-    minzoom: 7,
+    minzoom: 8,
     type: 'fill',
     paint: {
       'fill-color': '#0892D0',
@@ -89,7 +97,7 @@ export const layers = [
     id: 'unit-outline',
     source: 'mapUnits',
     'source-layer': 'units',
-    minzoom: 7,
+    minzoom: 8,
     type: 'line',
     paint: {
       'line-opacity': 1,

@@ -65,7 +65,7 @@ const MapModeToggle = ({ map, isMobile }) => {
     return null
   }
 
-  const showZoomNote = zoom < 8 // FIXME: 7
+  const showZoomNote = zoom < 8
 
   if (!showZoomNote) {
     return null

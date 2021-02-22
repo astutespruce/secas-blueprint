@@ -1,9 +1,9 @@
 {
-  "input": "southatlantic",
+  "input": "sa",
 
   "indicators": [
     {
-      "id": "freshwater_imperiledaquaticspecies",
+      "id": "sa:freshwater_imperiledaquaticspecies",
       "filename": "ImperiledAquaticSpecies.tif",
       "label": "Imperiled aquatic species",
       "values": [
@@ -38,7 +38,7 @@
       "description": "Imperiled aquatic species measures the number of aquatic species within each watershed that are listed as G1 (globally critically imperiled), G2 (globally imperiled), or threatened/endangered under the U.S. Endangered Species Act. This indicator captures patterns of rare and endemic species diversity not well-represented by other freshwater aquatic indicators. It applies only to the estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood, also known as the 1% annual chance flood."
     },
     {
-      "id": "freshwater_migratoryfishconnectivity",
+      "id": "sa:freshwater_migratoryfishconnectivity",
       "filename": "MigratoryFishConnectivity.tif",
       "label": "Migratory fish connectivity",
       "values": [
@@ -69,7 +69,7 @@
       "description": "Migratory fish connectivity is an index capturing how far upstream migratory fish have been observed. It also includes adjacent areas where habitat access could be restored through fish passage and hydrological barrier removal efforts. Migratory fish presence reflects uninterrupted connections between freshwater, estuarine, and marine ecosystems. This indicator applies only to the estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood, also known as the 1% annual chance flood."
     },
     {
-      "id": "freshwater_networkcomplexity",
+      "id": "sa:freshwater_networkcomplexity",
       "filename": "NetworkComplexity.tif",
       "label": "Network complexity",
       "values": [
@@ -115,7 +115,7 @@
       "description": "Network complexity depicts the number of different stream size classes in a river network not separated by large dams. River networks with a variety of connected stream classes help retain aquatic biodiversity in a changing climate by allowing species to access climate refugia and move between habitats. This indicator applies only to the estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood, also known as the 1% annual chance flood."
     },
     {
-      "id": "freshwater_permeablesurface",
+      "id": "sa:freshwater_permeablesurface",
       "filename": "PermeableSurface_Binned.tif",
       "label": "Permeable surface",
       "continuous": true,
@@ -147,7 +147,7 @@
       "description": "Permeable surface is a continuous indicator that measures the percent of non-impervious cover by catchment. High levels of impervious surface degrade water quality and alter freshwater flow."
     },
     {
-      "id": "freshwater_riparianbuffers",
+      "id": "sa:freshwater_riparianbuffers",
       "filename": "RiparianBuffers_Binned.tif",
       "label": "Riparian buffers",
       "continuous": true,
@@ -172,7 +172,7 @@
       "description": "Riparian buffers is a continuous indicator that measures the amount of natural landcover in the estimated floodplain, by catchment. The estimated floodplain spatially defines areas estimated to be inundated by a 100-year flood, also known as the 1% annual chance flood. Riparian buffers are strongly linked to water quality as well as water availability (i.e., instream flow). "
     },
     {
-      "id": "land_amphibianreptiles",
+      "id": "sa:land_amphibianreptiles",
       "filename": "AmphibianAndReptileAreas.tif",
       "label": "Amphibian & reptile areas",
       "values": [
@@ -192,7 +192,7 @@
       "description": "The amphibian and reptile areas indicator draws from Priority Amphibian and Reptile Conservation Areas (PARCAs). PARCA is an expert-driven, nonregulatory designation that captures places capable of supporting viable amphibian and reptile populations. PARCAs include areas where rare or at-risk species have been observed or are likely to occur (like embedded, isolated wetlands)."
     },
     {
-      "id": "land_beachbirds",
+      "id": "sa:land_beachbirds",
       "filename": "BeachBirds_Binned.tif",
       "label": "Beach birds",
       "continuous": true,
@@ -228,7 +228,7 @@
       "description": "Beach birds is a continuous index of habitat suitability for four shorebird species (Wilson's plover, American oystercatcher, least tern, piping plover), based on observed abundance. The relative use of beach habitat by these species for nesting, foraging, and breeding is an indicator of beach quality."
     },
     {
-      "id": "land_forestbirds",
+      "id": "sa:land_forestbirds",
       "filename": "ForestBirds.tif",
       "label": "Forest birds",
       "values": [
@@ -269,7 +269,7 @@
       "description": "Forest birds is an index of habitat suitability for twelve upland hardwood and forested wetland bird species (wood thrush, whip-poor-will, American woodcock, red-headed woodpecker, Chuck-will's widow, hooded warbler, Kentucky warbler, Acadian flycatcher, Northern parula, black-throated green warbler, prothonotary warbler, Swainson's warbler) based on patch size and other ecosystem characteristics such as proximity to water and proximity to forest and ecotone edge. The needs of these species are increasingly restrictive at higher index values, reflecting better quality habitat."
     },
     {
-      "id": "land_forestedwetlandextent",
+      "id": "sa:land_forestedwetlandextent",
       "filename": "ForestedWetlandExtent.tif",
       "label": "Forested wetland extent",
       "values": [
@@ -284,7 +284,7 @@
       "description": "Forested wetland extent represents the amount of overall acres of forested wetlands currently present in the South Atlantic geography. Overall acreage of existing forested wetlands provides an indicator of whether forested wetlands being inundated by sea-level rise are being replaced or restored somewhere else."
     },
     {
-      "id": "land_greenways",
+      "id": "sa:land_greenways",
       "filename": "GreenwaysAndTrails.tif",
       "label": "Greenways & trails",
       "values": [
@@ -335,7 +335,7 @@
       "description": "This cultural resource indicator measures both the natural condition and connected length of greenways and trails to characterize the quality of the recreational experience. Natural condition is based on the amount of impervious surface surrounding the path. Connected length captures how far a person can go without leaving a dedicated path, based on common distances for walking, running, and biking."
     },
     {
-      "id": "land_intactcores",
+      "id": "sa:land_intactcores",
       "filename": "IntactHabitatCores_Binned.tif",
       "label": "Intact habitat cores",
       "continuous": true,
@@ -367,7 +367,7 @@
       "description": "This indicator represents the size of large, unfragmented patches of natural habitat. It identifies minimally disturbed natural areas at least 100 acres in size and greater than 200 meters wide. Large areas of intact natural habitat benefit numerous species, including reptiles and amphibians, birds, and large mammals."
     },
     {
-      "id": "land_lowurbanhistoric",
+      "id": "sa:land_lowurbanhistoric",
       "filename": "LowUrbanHistoric.tif",
       "label": "Low-urban historic landscapes",
       "values": [
@@ -388,7 +388,7 @@
       "description": "Low-urban historic landscapes is an index of sites on the National Register of Historic Places surrounded by limited urban development. This cultural resource indicator identifies significant historic places that remain connected to their context in the natural world."
     },
     {
-      "id": "land_maritimeforestextent",
+      "id": "sa:land_maritimeforestextent",
       "filename": "MaritimeForestExtent.tif",
       "label": "Maritime forest extent",
       "values": [
@@ -403,7 +403,7 @@
       "description": "Maritime forest extent represents the overall acres of maritime forest currently present in the South Atlantic geography. Since maritime forest has been substantially reduced from its historic extent, protecting the remaining acreage of existing maritime forest is important. "
     },
     {
-      "id": "land_marshextent",
+      "id": "sa:land_marshextent",
       "filename": "MarshExtent.tif",
       "label": "Marsh extent",
       "values": [
@@ -418,7 +418,7 @@
       "description": "Marsh extent captures the overall acres of freshwater and saltwater marsh currently present in the South Atlantic geography. Overall acreage provides an indicator of whether marsh being inundated by sea level rise is being replaced or restored somewhere else."
     },
     {
-      "id": "land_marshpatchsize",
+      "id": "sa:land_marshpatchsize",
       "filename": "MarshPatchSize_Binned.tif",
       "label": "Marsh patch size",
       "continuous": true,
@@ -446,7 +446,7 @@
       "description": "Marsh patch size is a continuous index of based on the size of freshwater and saltwater marsh patches. Larger, better connected wetland patches protect inland areas from waves during storm events. They also benefit fish, shrimp, and marsh birds, including saltmarsh sparrow and marsh wren, as well as least bittern, Northern pintail, Northern shoveler, and king rail."
     },
     {
-      "id": "land_pinebirds",
+      "id": "sa:land_pinebirds",
       "filename": "PineBirds.tif",
       "label": "Pine birds",
       "values": [
@@ -477,7 +477,7 @@
       "description": "Pine and prairie birds is an index of habitat suitability for three bird species (Northern bobwhite, red-cockaded woodpecker, Bachman's sparrow) based on observational data and predictive models. The presence of all three species indicates high pine ecosystem quality."
     },
     {
-      "id": "land_previouslyburnedhabitat",
+      "id": "sa:land_previouslyburnedhabitat",
       "filename": "PreviouslyBurnedPineHabitat.tif",
       "label": "Previously burned pine habitat",
       "values": [
@@ -498,7 +498,7 @@
       "description": "Previously burned pine habitat is an index of fire-maintained, open canopy habitat. It attempts to capture previous fire in the pine ecosystem by using LANDFIRE data (1999-2010) as a proxy for regularly burned habitat."
     },
     {
-      "id": "land_resilientcoastalsites",
+      "id": "sa:land_resilientcoastalsites",
       "filename": "ResilientCoastalSites.tif",
       "label": "Resilient coastal sites",
       "values": [
@@ -538,7 +538,7 @@
       "description": "Resilient coastal sites depicts the ability of coastal habitats to migrate to adjacent lowlands in order to sustain biodiversity and natural services under increasing inundation from sea-level rise. It is based on the physical and condition characteristics of current tidal complexes, their predicted migration space, and surrounding buffer areas. These characteristics include marsh complex size, shared edge with migration space, sediment balance, water quality, natural landcover, landform diversity, and many others."
     },
     {
-      "id": "land_resilientterrestrialsites",
+      "id": "sa:land_resilientterrestrialsites",
       "filename": "ResilientTerrestrialSites.tif",
       "label": "Resilient terrestrial sites",
       "values": [
@@ -585,7 +585,7 @@
     },
 
     {
-      "id": "land_unalteredbeach",
+      "id": "sa:land_unalteredbeach",
       "filename": "UnalteredBeach.tif",
       "label": "Unaltered beach",
       "values": [
@@ -611,7 +611,7 @@
       "description": "Unaltered beach is an index of impacts from hardened structures like jetties, groins, and human infrastructure. Shoreline infrastructure degrades beach habitat, impedes beach migration and barrier island rollover processes, and can cause erosion."
     },
     {
-      "id": "land_urbanopenspace",
+      "id": "sa:land_urbanopenspace",
       "filename": "UrbanOpenSpace.tif",
       "label": "Urban open space",
       "values": [
@@ -643,7 +643,7 @@
       "description": "Urban open space is an index specific to urban areas that identifies both current and potential future open space based on the distance of undeveloped areas to existing protected lands. This cultural resource indicator is intended to capture equitable access to open space for urban residents. Protected natural areas in urban environments offer refugia for some species while providing people a nearby place to connect with nature."
     },
     {
-      "id": "marine_estuarinecondition",
+      "id": "sa:marine_estuarinecondition",
       "filename": "EstuarineCoastalCondition_30m_Binned.tif",
       "label": "Coastal condition",
       "continuous": true,
@@ -664,7 +664,7 @@
       "description": "Coastal condition is a continuous index of water quality, sediment quality, and benthic community condition that reflects the overall abiotic status of open water estuaries. Developed by the Environmental Protection Agency (EPA), these measures capture human impacts on the environment like nonpoint source pollution."
     },
     {
-      "id": "marine_birds",
+      "id": "sa:marine_birds",
       "filename": "MarineBirds_30m_Binned.tif",
       "label": "Marine birds",
       "continuous": true,
@@ -700,7 +700,7 @@
       "description": "Marine birds is a continuous index of highly productive areas for birds that feed exclusively or mainly at sea. It uses seasonal predictions of relative abundance for sixteen species of marine birds. Marine birds help identify key areas of ocean productivity and complement the marine mammal index by providing finer spatial resolution and stronger connections to forage fish productivity."
     },
     {
-      "id": "marine_mammals",
+      "id": "sa:marine_mammals",
       "filename": "MarineMammals_30m_Binned.tif",
       "label": "Marine mammals",
       "continuous": true,
@@ -736,7 +736,7 @@
       "description": "Marine mammals is a continuous index of dolphin and whale density based on monthly density predictions for ten species of cetaceans and yearly density predictions for three rarer cetacean species. Marine mammals help identify key areas of ocean productivity and overall ocean health because they have long life spans, feed at high trophic levels, and can accumulate anthropogenic chemicals and toxins in their large blubber stores."
     },
     {
-      "id": "marine_potentialhardbottomcondition",
+      "id": "sa:marine_potentialhardbottomcondition",
       "filename": "PotentialHardbottomCondition_30m.img",
       "label": "Potential hardbottom condition",
       "values": [
