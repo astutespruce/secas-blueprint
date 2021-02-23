@@ -96,6 +96,12 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
     has_ownership = "ownership" in results
     has_protection = "protection" in results
 
+    # compile indicator IDs across all inputs
+    indicators = []
+    for input_area in results["inputs"]:
+        for ecosystem in input_area.get("ecosystems", []):
+            indicators.extend([i["id"] for i in ecosystem["indicators"]])
+
     await set_progress(ctx["job_id"], 25, "Creating maps (this might take a while)")
 
     print("Rendering maps...")
@@ -103,7 +109,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
         bounds,
         geometry=geo_geometry[0],
         input_ids=results["input_ids"],
-        # indicators=results["indicators"],
+        indicators=indicators,
         urban=has_urban,
         slr=has_slr,
         ownership=has_ownership,

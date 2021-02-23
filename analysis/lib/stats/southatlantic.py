@@ -222,7 +222,7 @@ def extract_by_geometry(
 
     if marine:
         # marine areas only have marine indicators
-        indicators = [i for i in INDICATORS if i["id"].startswith("marine_")]
+        indicators = [i for i in INDICATORS if i["id"].startswith("sa:marine_")]
         indicators = detect_indicators(geometries, indicators)
 
     else:
@@ -244,9 +244,7 @@ def extract_by_geometry(
         if min_value > 0:
             counts[range(0, min_value)] = 0
 
-        results[f"sa:{id}"] = (
-            (counts * cellsize).round(ACRES_PRECISION).astype("float32")
-        )
+        results[id] = (counts * cellsize).round(ACRES_PRECISION).astype("float32")
 
         if zonal_means and indicator.get("continuous"):
             continuous_filename = continuous_indicator_dir / indicator[
@@ -256,7 +254,7 @@ def extract_by_geometry(
                 continuous_filename, shape_mask, window, boundless=True
             )
             if mean is not None:
-                results[f"sa:{id}_avg"] = mean
+                results[f"{id}_avg"] = mean
 
     return results
 
@@ -425,5 +423,3 @@ def get_unit_results(unit_type, id, analysis_acres, total_acres):
         "remainder": remainder,
         "remainder_percent": 100 * remainder / total_acres,
     }
-
-    return results

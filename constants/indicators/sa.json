@@ -737,7 +737,7 @@
     },
     {
       "id": "sa:marine_potentialhardbottomcondition",
-      "filename": "PotentialHardbottomCondition_30m.img",
+      "filename": "PotentialHardbottomCondition_30m.tif",
       "label": "Potential hardbottom condition",
       "values": [
         { "value": 0, "label": "Hardbottom not predicted", "color": null },

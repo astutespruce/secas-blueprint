@@ -51,11 +51,17 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
     has_ownership = "ownership" in results
     has_protection = "protection" in results
 
+    # compile indicator IDs across all inputs
+    indicators = []
+    for input_area in results["inputs"]:
+        for ecosystem in input_area.get("ecosystems", []):
+            indicators.extend([i["id"] for i in ecosystem["indicators"]])
+
     maps, scale, map_errors = await render_maps(
         results["bounds"],
         summary_unit_id=unit_id,
         input_ids=results["input_ids"],
-        # indicators=results["indicators"],
+        indicators=indicators,
         urban=has_urban,
         slr=has_slr,
         ownership=has_ownership,

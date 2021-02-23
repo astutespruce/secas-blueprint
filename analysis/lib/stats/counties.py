@@ -4,6 +4,7 @@ import geopandas as gp
 from analysis.lib.pygeos_util import sjoin
 
 county_filename = "data/inputs/boundaries/counties.feather"
+results_filename = "data/results/huc12/counties.feather"
 
 
 def summarize_by_huc12(units_df):
@@ -22,4 +23,4 @@ def summarize_by_huc12(units_df):
         .reset_index()
         .round()
     )
-    df.to_feather(out_dir / "counties.feather")
+    df.to_feather(results_filename)

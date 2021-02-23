@@ -65,7 +65,10 @@ raw_indicators = [
 ]
 # convert to dict keyed by input ID
 INDICATORS = {e["input"]: e["indicators"] for e in raw_indicators}
-
+INDICATOR_INDEX = {}
+for indicators in INDICATORS.values():
+    for indicator in indicators:
+        INDICATOR_INDEX[indicator["id"]] = indicator
 
 OWNERSHIP = OrderedDict(
     {e["value"]: e for e in json.loads(open(json_dir / "ownership.json").read())}

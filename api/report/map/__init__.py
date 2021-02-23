@@ -19,7 +19,13 @@ from .util import pad_bounds, get_center, to_base64, merge_maps
 from .caribbean import get_caribbean_map_image
 from .chat import get_chat_map_image
 
-from analysis.constants import BLUEPRINT_COLORS, URBAN_LEGEND, SLR_LEGEND, INPUTS
+from analysis.constants import (
+    BLUEPRINT_COLORS,
+    URBAN_LEGEND,
+    SLR_LEGEND,
+    INPUTS,
+    INDICATOR_INDEX,
+)
 from api.settings import MAP_RENDER_THREADS
 
 
@@ -33,6 +39,8 @@ blueprint_filename = src_dir / "se_blueprint2020.tif"
 urban_filename = src_dir / "threats/urban/urban_2060.tif"
 slr_filename = src_dir / "threats/slr/slr.vrt"
 inputs_dir = src_dir / "indicators"
+
+indicator_dirs = {"sa": inputs_dir / "southatlantic"}
 
 
 async def render_mbgl_maps(**kwargs):
@@ -134,6 +142,21 @@ async def render_raster_maps(
             e["value"]: e["color"] for e in input_info["values"] if e["value"] != 0
         }
         task_args.append((input_id, inputs_dir / input_info["filename"], colors))
+
+    for id in indicators:
+        indicator = INDICATOR_INDEX[id]
+        colors = {
+            e["value"]: e["color"]
+            for e in indicator["values"]
+            if e["color"] is not None
+        }
+        task_args.append(
+            (
+                id,
+                indicator_dirs[indicator["id"].split(":")[0]] / indicator["filename"],
+                colors,
+            )
+        )
 
     if urban:
         colors = {i: e["color"] for i, e in enumerate(URBAN_LEGEND) if e is not None}

@@ -138,6 +138,7 @@ class CustomArea(object):
             raster_results = results_func(
                 self.shapes, self.bounds, outside_se_acres=remainder
             )
+
             if raster_results is not None:
                 entry.update(raster_results)
             else:
@@ -336,17 +337,11 @@ class CustomArea(object):
             "name": self.name,
         }
 
-        # try:
         blueprint_results = self.get_blueprint()
         if blueprint_results is None:
             return None
 
         results.update(blueprint_results)
-
-        # except ValueError:
-        #     # geometry does not overlap Blueprint.  There are no valid results here,
-        #     # move along.
-        #     return None
 
         urban_results = self.get_urban()
         if urban_results is not None:
