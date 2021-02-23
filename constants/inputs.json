@@ -2,6 +2,7 @@
   {
     "id": "fl",
     "label": "Florida Conservation Blueprint",
+    "shortLabel": "Florida",
     "version": "1.3",
     "dataURL": "https://flcpa.databasin.org/galleries/20b5bfb654ee426b84165e9228c4009c",
     "infoURL": "https://flcpa.databasin.org/galleries/20b5bfb654ee426b84165e9228c4009c",
@@ -34,6 +35,7 @@
   {
     "id": "flm",
     "label": "Florida Marine Blueprint",
+    "shortLabel": "Florida (marine)",
     "version": "1.0",
     "dataURL": "https://flcpa.databasin.org/galleries/1bf67d31d64448b6a255888f43f3d601",
     "infoURL": "https://flcpa.databasin.org/galleries/1bf67d31d64448b6a255888f43f3d601",
@@ -72,6 +74,7 @@
   {
     "id": "sa",
     "label": "South Atlantic Conservation Blueprint",
+    "shortLabel": "South Atlantic",
     "version": "2020",
     "dataURL": "https://salcc.databasin.org/galleries/50e3abe922a74c9e9b6d0167dd1e8f2e",
     "infoURL": "http://www.southatlanticlcc.org/blueprint/",
@@ -118,6 +121,7 @@
   {
     "id": "ms",
     "label": "Middle Southeast Blueprint",
+    "shortLabel": "Middle Southeast",
     "version": "2020",
     "dataURL": "https://www.sciencebase.gov/catalog/item/5dc5040ee4b069579758510b",
     "infoURL": "https://www.sciencebase.gov/catalog/item/5dc5040ee4b069579758510b",
@@ -156,6 +160,7 @@
   {
     "id": "nn",
     "label": "North Atlantic Nature's Network Conservation Design",
+    "shortLabel": "Nature's Network",
     "version": "2017",
     "dataURL": "https://nalcc.databasin.org/datasets/3d670fad4c924e7ba2ae02f04a128256",
     "infoURL": "http://naturesnetwork.org/",
@@ -203,6 +208,7 @@
   {
     "id": "okchat",
     "label": "Crucial Habitat Assessment Tool (Oklahoma)",
+    "shortLabel": "OK CHAT",
     "version": "",
     "dataURL": "http://www.wafwachat.org/",
     "infoURL": "http://www.wafwachat.org/",
@@ -354,6 +360,7 @@
   {
     "id": "txchat",
     "label": "Crucial Habitat Assessment Tool (Texas)",
+    "shortLabel": "TX CHAT",
     "version": "",
     "dataURL": "http://www.wafwachat.org/",
     "infoURL": "http://www.wafwachat.org/",
@@ -510,6 +517,7 @@
   {
     "id": "car",
     "label": "Caribbean Landscape Conservation Design",
+    "shortLabel": "Caribbean",
     "version": "",
     "dataURL": "https://caribbeanlcc.databasin.org/galleries/ecb079d09f5a430fafc2d48d68bdf1b4",
     "infoURL": "https://caribbeanlcc.databasin.org/galleries/ecb079d09f5a430fafc2d48d68bdf1b4",
@@ -523,6 +531,7 @@
   {
     "id": "app",
     "label": "Appalachian NatureScape Design and TNC Resilient and Connected Landscapes Prioritized Network",
+    "shortLabel": "NatureScape",
     "version": "",
     "dataURL": "https://nalcc.databasin.org/datasets/22cda640930c4692a9dc1413b201ccc1",
     "infoURL": "http://applcc.org/plan-design/conservation-design",
@@ -567,6 +576,7 @@
   {
     "id": "gh",
     "label": "Gulf Hypoxia Precision Conservation Blueprint",
+    "shortLabel": "Gulf Hypoxia",
     "version": "1.5",
     "dataURL": "https://databasin.org/datasets/57035c20ecca461092ac80f174bbd241",
     "infoURL": "https://lccnetwork.org/resource/mississippi-river-basingulf-hypoxia-initiative-precision-conservation-blueprint",

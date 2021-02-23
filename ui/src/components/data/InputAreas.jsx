@@ -11,6 +11,7 @@ export const useInputAreas = () => {
           node {
             id
             label
+            shortLabel
             version
             dataURL
             infoURL

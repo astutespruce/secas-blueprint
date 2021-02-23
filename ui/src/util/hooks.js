@@ -1,4 +1,11 @@
-import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
+import {
+  useState,
+  useRef,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useCallback,
+} from 'react'
 import { dequal as deepEqual } from 'dequal'
 
 const isSetEqual = (setA, setB) => {
@@ -45,6 +52,18 @@ export const memoizedIsEqual = (value) => {
  */
 export const useIsEqualEffect = (callback, dependencies) => {
   useEffect(
+    callback,
+    dependencies.map((d) => memoizedIsEqual(d))
+  )
+}
+
+/**
+ * Same as native useLayoutEffect, but compare dependencies on deep rather than shallow equality.
+ * @param {function} callback
+ * @param {Array} dependencies
+ */
+export const useIsEqualLayoutEffect = (callback, dependencies) => {
+  useLayoutEffect(
     callback,
     dependencies.map((d) => memoizedIsEqual(d))
   )

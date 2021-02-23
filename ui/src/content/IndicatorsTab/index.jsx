@@ -1,10 +1,12 @@
 import React, { useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
+import { Box, Text } from 'theme-ui'
 
 import { indexBy, flatten } from 'util/data'
-import { useIsEqualEffect } from 'util/hooks'
+import { useIsEqualLayoutEffect } from 'util/hooks'
 
-import InputAreas from './InputAreas'
+import InputTabs from './InputTabs'
+import Ecosystem from './Ecosystem'
 import IndicatorDetails from './IndicatorDetails'
 
 const IndicatorsTab = ({
@@ -17,8 +19,6 @@ const IndicatorsTab = ({
 }) => {
   console.log('incoming inputs', rawInputs)
   console.log('incoming indicators', rawIndicators)
-
-  const [selectedIndicator, setSelectedIndicator] = useState(null)
 
   // index indicators by ID for lookup on selection
   const indicatorIndex = indexBy(
@@ -38,11 +38,23 @@ const IndicatorsTab = ({
   }))
   const inputIndex = indexBy(inputs, 'id')
 
-  useIsEqualEffect(() => {
+  const [selectedInput, setSelectedInput] = useState(
+    rawInputs.length > 0 ? rawInputs[0].id : null
+  )
+  const [selectedIndicator, setSelectedIndicator] = useState(null)
+  // update selected input for a new area
+  useIsEqualLayoutEffect(() => {
+    console.log('updating input for new area', selectedInput, inputIndex)
+    if (!inputIndex[selectedInput]) {
+      setSelectedInput(rawInputs.length > 0 ? rawInputs[0].id : null)
+    }
+  }, [inputIndex, rawInputs])
+
+  // Update selected indicator for a new area
+  useIsEqualLayoutEffect(() => {
     if (selectedIndicator === null) {
       return
     }
-    console.log('Updating selected indidcator', selectedIndicator.id)
 
     if (indicatorIndex[selectedIndicator.id]) {
       // Update the selected indicator if still available in the new area
@@ -70,6 +82,14 @@ const IndicatorsTab = ({
 
   const handleCloseIndicator = useCallback(() => setSelectedIndicator(null), [])
 
+  if (selectedInput === null) {
+    return (
+      <Text sx={{ color: 'grey.8', textAlign: 'center' }}>
+        No Blueprint inputs present in this area.
+      </Text>
+    )
+  }
+
   if (selectedIndicator) {
     return (
       <IndicatorDetails
@@ -83,13 +103,42 @@ const IndicatorsTab = ({
     )
   }
 
-  return (
-    <InputAreas
-      type={type}
-      inputs={inputs}
-      onSelectIndicator={handleSelectIndicator}
-    />
-  )
+  if (selectedInput && inputIndex[selectedInput]) {
+    const { ecosystems, label: inputLabel } = inputIndex[selectedInput]
+
+    return (
+      <>
+        {inputs.length > 1 ? (
+          <InputTabs
+            inputs={inputs}
+            selectedInput={selectedInput}
+            onSelectInput={setSelectedInput}
+          />
+        ) : null}
+        <Box>
+          {ecosystems && ecosystems.length > 0 ? (
+            <>
+              {ecosystems.map((ecosystem) => (
+                <Ecosystem
+                  key={ecosystem.id}
+                  type={type}
+                  onSelectIndicator={handleSelectIndicator}
+                  {...ecosystem}
+                />
+              ))}
+            </>
+          ) : (
+            <Box sx={{ p: '1rem 2rem', color: 'grey.8', textAlign: 'center' }}>
+              No indicators available for the {inputLabel} in this area.
+            </Box>
+          )}
+        </Box>
+      </>
+    )
+  }
+
+  // this is just to hold the space until rerender for a new selectedInput
+  return null
 }
 
 IndicatorsTab.propTypes = {

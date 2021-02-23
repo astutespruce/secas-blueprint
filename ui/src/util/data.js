@@ -59,6 +59,11 @@ export const sum = (values) => values.reduce((prev, value) => prev + value, 0)
  */
 export const extent = (values) => [Math.min(...values), Math.max(...values)]
 
+/**
+ * Create a sort function that can be used as input to .sort()
+ * @param {String} field - field to sort on
+ * @param {bool} ascending
+ */
 export const sortByFunc = (field, ascending = true) => (a, b) => {
   if (a[field] < b[field]) {
     return ascending ? -1 : 1
@@ -68,6 +73,39 @@ export const sortByFunc = (field, ascending = true) => (a, b) => {
   }
   return 0
 }
+
+/**
+ * Recursively compare a to b using fields
+ * @param {*} a
+ * @param {*} b
+ * @param {Array} fields - array of objects: {field, ascending}
+ */
+const recursiveCompare = (a, b, [{ field, ascending }, ...fields]) => {
+  if (a[field] < b[field]) {
+    return ascending ? -1 : 1
+  }
+  if (a[field] > b[field]) {
+    return ascending ? 1 : -1
+  }
+
+  // this field is equal, recurse
+  if (fields.length > 0) {
+    console.log('recurse')
+    return recursiveCompare(a, b, fields)
+  }
+  console.log('no recurse')
+  // no more fields, they are equal
+
+  return 0
+}
+
+/**
+ * Sort by multiple fields
+ * For each field that is equal, will recurse into testing the next field
+ * @param {Array} fields - array of objects: {field, ascending}
+ */
+export const sortByFuncMultiple = (fields) => (a, b) =>
+  recursiveCompare(a, b, fields)
 
 export const applyFactor = (values, factor) => {
   if (!values) return values

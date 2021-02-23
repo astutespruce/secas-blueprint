@@ -5,7 +5,7 @@ import {
   parseDictEncodedValues,
   percentsToAvg,
   indexBy,
-  sortByFunc,
+  sortByFuncMultiple,
   sum,
 } from 'util/data'
 
@@ -237,7 +237,12 @@ export const unpackFeatureData = (
       percent,
       ...inputInfo[id],
     }))
-    .sort(sortByFunc('percent', false))
+    .sort(
+      sortByFuncMultiple([
+        { field: 'percent', ascending: false },
+        { field: 'label', ascending: true },
+      ])
+    )
   values.hasInputOverlaps = hasInputOverlaps
 
   // extract indicators where available
