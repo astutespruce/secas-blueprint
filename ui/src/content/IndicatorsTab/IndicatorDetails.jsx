@@ -37,15 +37,7 @@ const IndicatorDetails = ({
   // eslint-disable-next-line global-require,import/no-dynamic-require
   const icon = require(`images/${ecosystemId}.svg`)
 
-  const inputFactor = inputPercent / 100
-
-  // adjust the values based on the total % occupied by this input area
-  const total = sum(values.map(({ percent }) => percent))
-
-  console.log('total', total)
-
-  const remainder =
-    (100 * Math.abs(analysisAcres - blueprintAcres)) / analysisAcres
+  const totalIndicatorPercent = sum(values.map(({ percent }) => percent))
 
   const percentTableValues = values
     .map((value, i) => ({
@@ -55,28 +47,27 @@ const IndicatorDetails = ({
     }))
     .reverse()
 
-  // remainder value for areas not analyzed for this indicator
-  if (total + remainder < 100) {
+  const notEvaluatedPercent = inputPercent - totalIndicatorPercent
+  if (notEvaluatedPercent >= 1) {
     percentTableValues.push({
-      value: null,
+      value: -1,
       label: 'Not evaluated for this indicator',
-      percent: 100 - total - remainder,
+      percent: notEvaluatedPercent,
     })
   }
 
-  // TODO:
-  // const outsideInputPercent = 100 - outsideSEPercent - totalPercent
-  // if (outsideInputPercent >= 1) {
-  //   priorities.push({
-  //     value: -1,
-  //     percent: outsideInputPercent,
-  //     color: '#BBB',
-  //     label: `Outside ${inputLabel} input area`,
-  //   })
+  const outsideInputPercent = 100 - outsideSEPercent - inputPercent
+  if (outsideInputPercent >= 1) {
+    percentTableValues.push({
+      value: -2,
+      percent: outsideInputPercent,
+      label: `Outside ${inputLabel} input area`,
+    })
+  }
 
   if (outsideSEPercent >= 1) {
     percentTableValues.push({
-      value: null,
+      value: -3,
       label: 'Outside Southeast Blueprint',
       percent: outsideSEPercent,
     })
@@ -141,7 +132,7 @@ const IndicatorDetails = ({
 
           {type !== 'pixel' ? (
             <Box sx={{ color: 'grey.8', fontSize: 0, textAlign: 'right' }}>
-              <b>{formatPercent(total)}%</b>
+              <b>{formatPercent(totalIndicatorPercent)}%</b>
               <br />
               of area
             </Box>
@@ -189,13 +180,11 @@ IndicatorDetails.propTypes = {
   ...IndicatorPropType,
   analysisAcres: PropTypes.number.isRequired,
   blueprintAcres: PropTypes.number.isRequired,
-  total: PropTypes.number,
   outsideSEPercent: PropTypes.number,
   onClose: PropTypes.func.isRequired,
 }
 
 IndicatorDetails.defaultProps = {
-  total: 0,
   outsideSEPercent: 0,
 }
 

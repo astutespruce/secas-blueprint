@@ -42,32 +42,38 @@ const IndicatorsTab = ({
     if (selectedIndicator === null) {
       return
     }
+    console.log('Updating selected indidcator', selectedIndicator.id)
 
     if (indicatorIndex[selectedIndicator.id]) {
-      setSelectedIndicator(() => indicatorIndex[selectedIndicator.id])
+      // Update the selected indicator if still available in the new area
+      setSelectedIndicator({
+        ...indicatorIndex[selectedIndicator.id],
+        input: inputIndex[selectedIndicator.id.split(':')[0]],
+      })
     } else {
       // reset selected indicator, it isn't present in this set
       setSelectedIndicator(() => null)
     }
   }, [rawIndicators])
 
-  const handleSelectIndicator = useCallback((indicator) => {
-    setSelectedIndicator(indicator)
-  }, [])
+  const handleSelectIndicator = useCallback(
+    (indicator) => {
+      // splice in input info
+      setSelectedIndicator(
+        indicator !== null
+          ? { ...indicator, input: inputIndex[indicator.id.split(':')[0]] }
+          : null
+      )
+    },
+    [inputIndex]
+  )
 
   const handleCloseIndicator = useCallback(() => setSelectedIndicator(null), [])
 
   if (selectedIndicator) {
-    console.log(
-      'selected indicator input',
-      selectedIndicator.id.split(':')[0],
-      inputIndex[selectedIndicator.id.split(':')[0]]
-    )
-
     return (
       <IndicatorDetails
         type={type}
-        input={inputIndex[selectedIndicator.id.split(':')[0]]}
         outsideSEPercent={outsideSEPercent}
         analysisAcres={analysisAcres}
         blueprintAcres={blueprintAcres}

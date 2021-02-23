@@ -12,8 +12,8 @@ const IndicatorPercentChart = ({
   isGood,
 }) => {
   let color = null
-  if (value === null) {
-    color = 'grey.7'
+  if (value < 0) {
+    color = 'grey.5'
   } else if (isGood) {
     color = 'rgb(95, 183, 133)'
   } else if (isGood === false) {

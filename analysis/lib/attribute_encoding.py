@@ -102,7 +102,7 @@ def encode_indicators(df, shape_mask, prefix, indicators):
 
     indicator_cols = [c for c in df.columns if c.startswith(f"{prefix}:")]
     avg_cols = [c for c in indicator_cols if c.endswith("_avg")]
-    ids = [f"{prefix}:{i['id']}" for i in indicators]
+    ids = [i["id"] for i in indicators]
 
     counts = dict()
     # serialized id is based on position

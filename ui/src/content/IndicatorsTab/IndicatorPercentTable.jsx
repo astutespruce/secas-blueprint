@@ -34,13 +34,14 @@ const ArrowDown = styled(ArrowDownIcon)({
 })
 
 const IndicatorPercentTable = ({ type, values, goodThreshold }) => {
-  const remainder = values.filter(({ value }) => value === null)
+  // remainder values, like area outside SE, are assigned values < 0
+  const remainders = values.filter(({ value }) => value < 0)
 
   if (goodThreshold === null) {
     return (
       <Box sx={{ my: '2rem' }}>
         {values
-          .filter(({ value }) => value !== null)
+          .filter(({ value }) => value >= 0)
           .map(({ value, label, percent, isHighValue, isLowValue }) => (
             <Flex
               key={value || label}
@@ -71,11 +72,11 @@ const IndicatorPercentTable = ({ type, values, goodThreshold }) => {
             </Flex>
           ))}
 
-        {remainder.length > 0 ? (
+        {remainders.length > 0 ? (
           <>
             <Divider variant="styles.hr.dashed" sx={{ mb: '1.5rem' }} />
             <Box>
-              {remainder.map(({ value, label, percent }) => (
+              {remainders.map(({ value, label, percent }) => (
                 <Flex key={value} sx={{ mt: '1rem' }}>
                   <Text sx={labelCSS} />
                   <IndicatorPercentChart
@@ -92,11 +93,9 @@ const IndicatorPercentTable = ({ type, values, goodThreshold }) => {
     )
   }
 
-  const goodPercents = values.filter(
-    ({ value }) => value !== null && value >= goodThreshold
-  )
+  const goodPercents = values.filter(({ value }) => value >= goodThreshold)
   const notGoodPercents = values.filter(
-    ({ value }) => value !== null && value < goodThreshold
+    ({ value }) => value >= 0 && value < goodThreshold
   )
 
   const totalGoodPercent = sum(goodPercents.map(({ percent }) => percent))
@@ -167,11 +166,11 @@ const IndicatorPercentTable = ({ type, values, goodThreshold }) => {
         </Flex>
       ))}
 
-      {remainder.length > 0 ? (
+      {remainders.length > 0 ? (
         <>
           <Divider variant="styles.hr.dashed" sx={{ mb: '1.5rem' }} />
           <Box>
-            {remainder.map(({ value, label, percent }) => (
+            {remainders.map(({ value, label, percent }) => (
               <Flex key={value} sx={{ mt: '1rem' }}>
                 <Text sx={labelCSS} />
                 <IndicatorPercentChart
@@ -193,7 +192,7 @@ IndicatorPercentTable.propTypes = {
   type: PropTypes.string.isRequired,
   values: PropTypes.arrayOf(
     PropTypes.shape({
-      value: PropTypes.number, // if null, is remainder "not evaluated" value
+      value: PropTypes.number, // if <0, it is a remainder value
       label: PropTypes.string.isRequired,
       percent: PropTypes.number.isRequired,
       isHighValue: PropTypes.bool,
