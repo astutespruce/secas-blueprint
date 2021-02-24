@@ -1,19 +1,23 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Flex, Box, Text } from 'theme-ui'
+import { Grid, Box, Text } from 'theme-ui'
 
 import { formatPercent } from 'util/format'
 
 const subTabCSS = {
   cursor: 'pointer',
-  fontWeight: 'bold',
+  p: '0.5rem',
+}
+
+const inactiveSubTabCSS = {
+  ...subTabCSS,
   '&:hover': {
-    textDecoration: 'underline',
+    bg: 'grey.0',
   },
 }
 
 const activeSubTabCSS = {
-  fontWeight: 'bold',
+  ...subTabCSS,
   color: 'accent',
 }
 
@@ -25,24 +29,26 @@ const InputTabs = ({ inputs, selectedInput, onSelectInput }) => {
   }
 
   return (
-    <Flex
+    <Grid
+      columns={inputs.length}
+      gap={0}
       sx={{
         justifyContent: 'space-around',
-        py: '0.5rem',
-        px: '1rem',
+        // py: '0.5rem',
+        // px: '1rem',
         mb: '1rem',
+        lineHeight: 1.2,
+        textAlign: 'center',
       }}
     >
       {inputs.map(({ id, shortLabel, percent }, i) => (
         <React.Fragment key={id}>
-          {i > 0 ? <Text sx={{ color: 'grey.3' }}>&nbsp;|&nbsp;</Text> : null}
-          <Box sx={{ lineHeight: 1.2, textAlign: 'center' }}>
-            <Text
-              sx={id === selectedInput ? activeSubTabCSS : subTabCSS}
-              onClick={handleSelectInput(id)}
-            >
-              {shortLabel}
-            </Text>
+          {/* {i > 0 ? <Text sx={{ color: 'grey.3' }}>&nbsp;|&nbsp;</Text> : null} */}
+          <Box
+            sx={id === selectedInput ? activeSubTabCSS : inactiveSubTabCSS}
+            onClick={handleSelectInput(id)}
+          >
+            <Text sx={{ fontWeight: 'bold' }}>{shortLabel}</Text>
             <Text
               sx={{
                 fontSize: '0.8rem',
@@ -54,7 +60,7 @@ const InputTabs = ({ inputs, selectedInput, onSelectInput }) => {
           </Box>
         </React.Fragment>
       ))}
-    </Flex>
+    </Grid>
   )
 }
 

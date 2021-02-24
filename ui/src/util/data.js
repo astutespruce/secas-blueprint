@@ -90,12 +90,10 @@ const recursiveCompare = (a, b, [{ field, ascending }, ...fields]) => {
 
   // this field is equal, recurse
   if (fields.length > 0) {
-    console.log('recurse')
     return recursiveCompare(a, b, fields)
   }
-  console.log('no recurse')
-  // no more fields, they are equal
 
+  // no more fields, they are equal
   return 0
 }
 

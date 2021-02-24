@@ -38,12 +38,15 @@
     <li>
       <a href="#{{src.id}}" class="toctext">Blueprint Input: {{src.label}}</a>
       <a href="#{{src.id}}" class="tocpagenr"></a>
+
+      {% if src.ecosystems %}
       <ul>
         <li>
           <a href="#{{src.id}}IndicatorSummary" class="toctext">Indicator Summary</a>
           <a href="#{{src.id}}IndicatorSummary" class="tocpagenr"></a>
         </li>
       </ul>
+      {% endif %}
     </li>
     {% endfor %}
 

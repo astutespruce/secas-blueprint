@@ -120,6 +120,10 @@ export const unpackFeatureData = (
   ecosystemInfo,
   indicatorInfo
 ) => {
+  console.log(
+    'unpackFeatureData',
+    properties ? properties.id : 'properties are empty'
+  )
   const values = Object.entries(properties)
     .map(([key, value]) => {
       if (!value || typeof value !== 'string') {

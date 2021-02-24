@@ -17,9 +17,6 @@ const IndicatorsTab = ({
   analysisAcres,
   blueprintAcres,
 }) => {
-  console.log('incoming inputs', rawInputs)
-  console.log('incoming indicators', rawIndicators)
-
   // index indicators by ID for lookup on selection
   const indicatorIndex = indexBy(
     flatten(
@@ -44,7 +41,6 @@ const IndicatorsTab = ({
   const [selectedIndicator, setSelectedIndicator] = useState(null)
   // update selected input for a new area
   useIsEqualLayoutEffect(() => {
-    console.log('updating input for new area', selectedInput, inputIndex)
     if (!inputIndex[selectedInput]) {
       setSelectedInput(rawInputs.length > 0 ? rawInputs[0].id : null)
     }
@@ -108,13 +104,12 @@ const IndicatorsTab = ({
 
     return (
       <>
-        {inputs.length > 1 ? (
-          <InputTabs
-            inputs={inputs}
-            selectedInput={selectedInput}
-            onSelectInput={setSelectedInput}
-          />
-        ) : null}
+        <InputTabs
+          inputs={inputs}
+          selectedInput={selectedInput}
+          onSelectInput={setSelectedInput}
+        />
+
         <Box>
           {ecosystems && ecosystems.length > 0 ? (
             <>

@@ -142,7 +142,6 @@ const IndicatorDetails = ({
 
       <Box
         sx={{
-          pt: '0.5rem',
           px: '1rem',
           pb: '1rem',
           height: '100%',
@@ -150,12 +149,13 @@ const IndicatorDetails = ({
           overflowY: 'auto',
         }}
       >
-        <Text as="p">
+        <Box sx={{ fontSize: 0, color: 'grey.8' }}>
           Part of {inputLabel}.
           <br />
           <br />
-          {description}
-        </Text>
+        </Box>
+
+        <Text as="p">{description}</Text>
 
         <IndicatorPercentTable
           type={type}
