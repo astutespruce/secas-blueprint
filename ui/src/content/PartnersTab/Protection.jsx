@@ -10,7 +10,8 @@ import { sum } from 'util/data'
 const Protection = ({ protection }) => {
   const { protection: PROTECTION } = useOwnership()
 
-  const bars = PROTECTION.filter(({ id }) => protection[id]).map(
+  // handle empty protection information
+  const bars = PROTECTION.filter(({ id }) => (protection || {})[id]).map(
     (category) => ({
       ...category,
       percent: protection[category.id],
@@ -40,16 +41,15 @@ const Protection = ({ protection }) => {
       ))}
 
       <Text sx={{ color: 'grey.7', fontSize: 1 }}>
-      {total > 100 ? (
+        {total > 100 ? (
           <>
-          Note: due to overlapping protected areas compiled from multiple sources
-          and designations, the sum of areas in above categories is more than 100% of
-          this area.
-          <br/>
-          <br/>
+            Note: due to overlapping protected areas compiled from multiple
+            sources and designations, the sum of areas in above categories is
+            more than 100% of this area.
+            <br />
+            <br />
           </>
         ) : null}
-
         Land and marine protectection status is derived from the{' '}
         <OutboundLink to="https://www.sciencebase.gov/catalog/item/5f186a2082cef313ed843257">
           Protected Areas Database of the United States
@@ -61,7 +61,11 @@ const Protection = ({ protection }) => {
 }
 
 Protection.propTypes = {
-  protection: PropTypes.objectOf(PropTypes.number).isRequired,
+  protection: PropTypes.objectOf(PropTypes.number),
+}
+
+Protection.defaultProps = {
+  protection: {},
 }
 
 export default Protection

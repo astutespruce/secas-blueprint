@@ -21,8 +21,15 @@ export const Provider = ({ children }) => {
 
   const setData = useCallback(
     (rawData) => {
-      // transform map data
+      if (rawData === null) {
+        setState((prevState) => ({
+          ...prevState,
+          data: null,
+        }))
+        return
+      }
 
+      // transform map data
       const newData = unpackFeatureData(
         rawData,
         inputValues,

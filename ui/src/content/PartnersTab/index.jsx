@@ -14,22 +14,14 @@ const PartnersTab = ({ ownership, protection, counties }) => {
     <Box sx={{ py: '2rem', pl: '1rem', pr: '2rem' }}>
       <Box as="section">
         <Heading as="h3">Conserved Lands / Marine Areas Ownership</Heading>
-        {ownership === null ? (
-          <Text sx={{ color: 'grey.7' }}>No information available.</Text>
-        ) : (
-          <Ownership ownership={ownership} />
-        )}
+        <Ownership ownership={ownership} />
       </Box>
 
       <Divider variant="styles.hr.light" sx={{ my: '3rem' }} />
 
       <Box as="section">
         <Heading as="h3">Land / Marine Protection Status</Heading>
-        {protection === null ? (
-          <Text sx={{ color: 'grey.7' }}>No information available.</Text>
-        ) : (
-          <Protection protection={protection} />
-        )}
+        <Protection protection={protection} />
       </Box>
 
       {hasCounties ? (

@@ -11,10 +11,13 @@ import { sum } from 'util/data'
 const Ownership = ({ ownership }) => {
   const { ownership: OWNERSHIP } = useOwnership()
 
-  const bars = OWNERSHIP.filter(({ id }) => ownership[id]).map((category) => ({
-    ...category,
-    percent: ownership[category.id],
-  }))
+  // handle empty ownership information
+  const bars = OWNERSHIP.filter(({ id }) => (ownership || {})[id]).map(
+    (category) => ({
+      ...category,
+      percent: ownership[category.id],
+    })
+  )
 
   const total = sum(bars.map(({ percent }) => Math.min(percent, 100)))
 
@@ -41,17 +44,16 @@ const Ownership = ({ ownership }) => {
       <Text sx={{ color: 'grey.7', fontSize: 1 }}>
         {total > 100 ? (
           <>
-          Note: due to overlapping protected areas compiled from multiple sources
-          and designations, the sum of areas in above categories is more than 100% of
-          this area.
-          <br/>
-          <br/>
+            Note: due to overlapping protected areas compiled from multiple
+            sources and designations, the sum of areas in above categories is
+            more than 100% of this area.
+            <br />
+            <br />
           </>
         ) : null}
-
         Land and marine areas ownership is derived from the{' '}
         <OutboundLink to="https://www.sciencebase.gov/catalog/item/5f186a2082cef313ed843257">
-            Protected Areas Database of the United States
+          Protected Areas Database of the United States
         </OutboundLink>{' '}
         (PAD-US v2.1).
       </Text>
@@ -60,7 +62,11 @@ const Ownership = ({ ownership }) => {
 }
 
 Ownership.propTypes = {
-  ownership: PropTypes.objectOf(PropTypes.number).isRequired,
+  ownership: PropTypes.objectOf(PropTypes.number),
+}
+
+Ownership.defaultProps = {
+  ownership: {},
 }
 
 export default Ownership
