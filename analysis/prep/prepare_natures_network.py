@@ -1,10 +1,8 @@
 from pathlib import Path
 import os
-import math
 
 import numpy as np
 import rasterio
-from rasterio.windows import Window, get_data_window
 from rasterio.enums import Resampling
 from rasterio.vrt import WarpedVRT
 from pyogrio import read_dataframe
@@ -66,6 +64,7 @@ data = np.where(mask == 1, data, nodata).astype("uint8")
 priority_data = data.copy()
 category_data = data.copy()
 
+# TODO: rework this to use remap
 print("Reclassifying data...")
 for i, row in table.iterrows():
     priority_data[priority_data == row.Value] = row.Priority

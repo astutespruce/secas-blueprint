@@ -33,7 +33,10 @@
       "sa:freshwater_migratoryfishconnectivity",
       "sa:freshwater_networkcomplexity",
       "sa:freshwater_permeablesurface",
-      "sa:freshwater_riparianbuffers"
+      "sa:freshwater_riparianbuffers",
+      "fl:freshwater_clip4_floodplains",
+      "fl:freshwater_clip4_surface_water",
+      "fl:freshwater_clip4_wetlands"
     ]
   },
   {
@@ -45,7 +48,13 @@
       "sa:marine_estuarinecondition",
       "sa:marine_birds",
       "sa:marine_mammals",
-      "sa:marine_potentialhardbottomcondition"
+      "sa:marine_potentialhardbottomcondition",
+      "fl_marine:marine_anthropogenic_habitat",
+      "fl_marine:marine_nongame_biodiversity",
+      "fl_marine:marine_blueways",
+      "fl_marine:marine_managed_spp",
+      "fl_marine:marine_protected_spp",
+      "fl_marine:marine_valued_habitat"
     ]
   },
   {
@@ -53,6 +62,10 @@
     "label": "Other ecosystems or multiple ecosystems",
     "color": "#EEE",
     "borderColor": "#DDD",
-    "indicators": []
+    "indicators": [
+      "fl:other_clip4_aggregate",
+      "fl:other_clip4_fnai_habitat",
+      "fl:other_clip4_natural_communities"
+    ]
   }
 ]

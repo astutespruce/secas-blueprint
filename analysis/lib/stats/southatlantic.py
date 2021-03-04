@@ -1,15 +1,11 @@
 from pathlib import Path
 from collections import OrderedDict
-from sys import prefix
 from copy import deepcopy
 
-from progress.bar import Bar
 import numpy as np
 import pandas as pd
-import pygeos as pg
 import rasterio
 from rasterio.mask import raster_geometry_mask
-from rasterio.windows import Window
 
 from analysis.constants import (
     ACRES_PRECISION,
@@ -27,14 +23,14 @@ from analysis.lib.raster import (
     summarize_raster_by_geometry,
 )
 
+
+INDICATORS = ALL_INDICATORS["sa"]
+INDICATOR_INDEX = OrderedDict({indicator["id"]: indicator for indicator in INDICATORS})
+
 src_dir = Path("data/inputs/indicators/southatlantic")
 continuous_indicator_dir = Path("data/continuous_indicators/southatlantic")
 sa_filename = src_dir / "sa_blueprint.tif"
 sa_mask_filename = src_dir / "sa_blueprint_mask.tif"
-
-
-INDICATORS = ALL_INDICATORS["sa"]
-INDICATOR_INDEX = OrderedDict({indicator["id"]: indicator for indicator in INDICATORS})
 
 
 def extract_indicators(counts):

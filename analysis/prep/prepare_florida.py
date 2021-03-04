@@ -1,26 +1,21 @@
 from pathlib import Path
 import os
-import math
+from xml.etree import ElementTree
 
+import pandas as pd
 import numpy as np
-import geopandas as gp
-import pygeos as pg
-from pyogrio import read_dataframe, write_dataframe
 import rasterio
 from rasterio.enums import Resampling
 from rasterio.vrt import WarpedVRT
 
-
 from analysis.constants import DATA_CRS, MASK_FACTOR
 from analysis.lib.io import write_raster
 from analysis.lib.input_areas import get_input_area_mask
-from analysis.lib.pygeos_util import to_dict_all
 from analysis.lib.raster import add_overviews, create_lowres_mask
+from analysis.lib.speedups import remap
 
 
-src_dir = Path("source_data/florida")
-inland_dir = src_dir / "Inland/HubsData&Blueprint"
-marine_dir = src_dir / "Marine"
+src_dir = Path("source_data/florida/inland")
 bnd_dir = Path("data/boundaries")
 data_dir = Path("data/inputs")
 out_dir = data_dir / "indicators/florida"
@@ -29,13 +24,13 @@ outfilename = out_dir / "fl_blueprint.tif"
 if not out_dir.exists():
     os.makedirs(out_dir)
 
-### Inland
+
 print("Extracting Florida inland input area mask...")
 mask, transform, window = get_input_area_mask("fl")
 
-
+### Extract FL Blueprint
 print("Reading and warping Florida Blueprint...")
-with rasterio.open(inland_dir / "Blueprint_V_1_3.tif") as src:
+with rasterio.open(src_dir / "HubsData&Blueprint/Blueprint_V_1_3.tif") as src:
     nodata = int(src.nodata)
     vrt = WarpedVRT(
         src,
@@ -49,7 +44,6 @@ with rasterio.open(inland_dir / "Blueprint_V_1_3.tif") as src:
 
     data = vrt.read()[0]
 
-
 # fill with 0 where not 1 or 2
 data[data == nodata] = 0
 
@@ -57,8 +51,6 @@ data[data == nodata] = 0
 data = np.where(mask == 1, data, nodata).astype("uint8")
 
 write_raster(outfilename, data, transform=transform, crs=DATA_CRS, nodata=nodata)
-
-
 add_overviews(outfilename)
 
 create_lowres_mask(
@@ -67,3 +59,107 @@ create_lowres_mask(
     factor=MASK_FACTOR,
     ignore_zero=False,
 )
+
+
+### Extract FL indicators from CLIP v4
+indicators = {
+    "clip4_aggregate": "Priority_CLIP4.tif",
+    "clip4_fnai_habitat": "fhab_clip41.tif",
+    "clip4_landscape_integrity": "lsi_CLIP4.tif",
+    "clip4_natural_communities": "natcom_CLIP4.tif",
+    "clip4_floodplains": "fldpln_CLIP4.tif",
+    "clip4_surface_water": "srfwtr_CLIP4.tif",
+    "clip4_wetlands": "wetlds_CLIP4.tif",
+}
+
+
+for id, indicator_filename in indicators.items():
+    print(f"Reading and warping Florida Blueprint Indicator {id}..")
+    with rasterio.open(src_dir / "indicators" / indicator_filename) as src:
+        nodata = 255
+        vrt = WarpedVRT(
+            src,
+            width=window.width,
+            height=window.height,
+            nodata=nodata,
+            crs=DATA_CRS,
+            transform=transform,
+            resampling=Resampling.nearest,
+        )
+
+        data = vrt.read()[0]
+
+    # apply input area mask
+    data = np.where(mask == 1, data, nodata).astype("uint8")
+
+    outfilename = out_dir / f"{id}.tif"
+    write_raster(outfilename, data, transform=transform, crs=DATA_CRS, nodata=nodata)
+    add_overviews(outfilename)
+    create_lowres_mask(
+        outfilename,
+        str(outfilename).replace(".tif", "_mask.tif"),
+        factor=MASK_FACTOR,
+        ignore_zero=False,
+    )
+
+
+### Extract FL Conservation assets (not used?)
+
+# # process attribute table
+# xml = ElementTree.parse(src_dir / "indicators/BlueprintConAsset/bpv1_3ca2_atts.xml")
+# root = xml.getroot()
+# columns = [n.find("Name").text.lower() for n in root.findall("FieldDefn")]
+# rows = [[n.text for n in row.findall("F")] for row in root.findall("Row")]
+# atts = (
+#     pd.DataFrame(rows, columns=columns)
+#     .drop(columns=["count", "site", "legend", "area_acres"])
+#     .rename(columns={"name_site": "site", "conser_asset": "asset"})
+# )
+
+# # group up to assets, such that 0 = NODATA, 1..n is asset ID
+# asset_map = {asset: i + 1 for i, asset in enumerate(sorted(atts.asset.unique()))}
+# atts["new_value"] = atts.asset.map(asset_map)
+
+# atts[["new_value", "asset"]].rename(columns={"new_value": "value"}).to_feather(
+#     out_dir / "ca_atts.feather"
+# )
+
+# # create remap table
+# remap_table = atts[["value", "new_value"]].values.astype("uint16")
+
+
+# print("Reading and warping Florida Conservation Assets")
+# with rasterio.open(src_dir / "indicators/BlueprintConAsset/bpv1_3ca2") as src:
+#     nodata = int(src.nodata)
+#     vrt = WarpedVRT(
+#         src,
+#         width=window.width,
+#         height=window.height,
+#         nodata=nodata,
+#         crs=DATA_CRS,
+#         transform=transform,
+#         resampling=Resampling.nearest,
+#     )
+
+#     raw_data = vrt.read()[0]
+
+# # reassign nodata to 0
+# raw_data[raw_data == nodata] = 0
+# nodata = 0
+
+# raw_data = raw_data.astype("uint16")
+# data = remap(raw_data, remap_table, nodata=nodata)
+
+# # apply input area mask
+# data = np.where(mask == 1, data, nodata).astype("uint8")
+
+# outfilename = out_dir / "fl_conservation_assets.tif"
+# write_raster(outfilename, data, transform=transform, crs=DATA_CRS, nodata=nodata)
+# add_overviews(outfilename)
+
+# create_lowres_mask(
+#     outfilename,
+#     str(outfilename).replace(".tif", "_mask.tif"),
+#     factor=MASK_FACTOR,
+#     ignore_zero=True,
+# )

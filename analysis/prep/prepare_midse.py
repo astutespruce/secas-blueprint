@@ -1,21 +1,15 @@
 from pathlib import Path
 import os
-import math
 
 import numpy as np
-import geopandas as gp
-import pygeos as pg
-from pyogrio import read_dataframe, write_dataframe
+from pyogrio import read_dataframe
 import rasterio
 from rasterio.enums import Resampling
 from rasterio.vrt import WarpedVRT
-from rasterio.windows import Window
-
 
 from analysis.constants import DATA_CRS, MASK_FACTOR
 from analysis.lib.io import write_raster
 from analysis.lib.input_areas import get_input_area_mask
-from analysis.lib.pygeos_util import to_dict_all
 from analysis.lib.raster import add_overviews, create_lowres_mask
 from analysis.lib.speedups import remap
 

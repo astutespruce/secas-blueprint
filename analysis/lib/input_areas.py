@@ -1,16 +1,11 @@
 from pathlib import Path
-import os
 import math
 
-
 import numpy as np
-import pandas as pd
 import geopandas as gp
 import pygeos as pg
 import rasterio
-from rasterio.vrt import WarpedVRT
 from rasterio.windows import Window
-
 
 from analysis.constants import INPUT_AREA_VALUES
 
@@ -33,13 +28,16 @@ def get_input_area_mask(input_area):
         mask is 1 INSIDE input area, 0 outside
     """
 
+    # have to make valid or we get errors during union for FL
     values = [
         e["value"] for e in INPUT_AREA_VALUES if input_area in set(e["id"].split(","))
     ]
 
     inputs_df = gp.read_feather(bnd_dir / "input_areas.feather")
 
-    bnd = pg.union_all(inputs_df.loc[inputs_df.value.isin(values)].geometry.values.data)
+    bnd = pg.union_all(
+        pg.make_valid(inputs_df.loc[inputs_df.value.isin(values)].geometry.values.data)
+    )
 
     ### Get window into raster for bounds of input area
     with rasterio.open(data_dir / "input_areas.tif") as src:
