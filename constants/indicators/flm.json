@@ -2,7 +2,7 @@
   "input": "flm",
   "indicators": [
     {
-      "id": "fl_marine:marine_anthropogenic_habitat",
+      "id": "flm:marine_anthropogenic_habitat",
       "filename": "anthropogenic_habitat.tif",
       "label": "Anthropogenic Habitat",
       "values": [
@@ -22,7 +22,7 @@
       "description": "This dataset was created to serve as one sub-layer of the Florida Marine Blueprint. The Florida Marine Blueprint was created to aid in prioritizing ecosystems and habitats derived from species biodiversity, highly valued habitat and potential marine migratory corridors. Highest priority areas are those where there is high species biodiversity/richness and overlaps in valued habitats. The Blueprint will then be used to inform where potential management and conservation practices should be focused and potentially carried out."
     },
     {
-      "id": "fl_marine:marine_nongame_biodiversity",
+      "id": "flm:marine_nongame_biodiversity",
       "filename": "nongame_biodiversity.tif",
       "label": "Biodiversity (non-game) Species",
       "values": [
@@ -57,7 +57,7 @@
       "description": "This dataset incorporates species locations and depicts species richness across the state of Florida by several governmental and non-governmental organizations.  It focuses on the species that contribute to the general biodiversity of Florida's ecosystems and are not protected nor do they have restrictions on their harvest."
     },
     {
-      "id": "fl_marine:marine_blueways",
+      "id": "flm:marine_blueways",
       "filename": "blueways.tif",
       "label": "Blueways Migratory Corridors",
       "values": [
@@ -107,7 +107,7 @@
       "description": "This dataset was created by The Nature conservancy in order to determine important migration areas for a variety of species throughout the Gulf of Mexico."
     },
     {
-      "id": "fl_marine:marine_managed_spp",
+      "id": "flm:marine_managed_spp",
       "filename": "managed_spp.tif",
       "label": "Managed Species",
       "values": [
@@ -139,10 +139,10 @@
       ],
       "domain": [0, 4],
       "datasetID": "99fbc5ec9fc44e6ba30d92f48c7aac42",
-      "description": "This dataset was created to serves as one sub-layer of the Florida Marine Blueprint. The Florida Marine Blueprint was created to aid in prioritizing ecosystems and habitats derived from species biodiversity, highly valued habitat and potential marine migratory corridors. Highest priority areas are those where there is high species biodiversity/richness and overlaps in valued habitats. The Blueprint will then be used to inform where potential management and conservation practices should be focused and potentially carried out."
+      "description": "This dataset was created to serve as one sub-layer of the Florida Marine Blueprint. The Florida Marine Blueprint was created to aid in prioritizing ecosystems and habitats derived from species biodiversity, highly valued habitat and potential marine migratory corridors. Highest priority areas are those where there is high species biodiversity/richness and overlaps in valued habitats. The Blueprint will then be used to inform where potential management and conservation practices should be focused and potentially carried out."
     },
     {
-      "id": "fl_marine:marine_protected_spp",
+      "id": "flm:marine_protected_spp",
       "filename": "protected_spp.tif",
       "label": "Protected Species",
       "values": [
@@ -164,10 +164,10 @@
       ],
       "domain": [1, 2],
       "datasetID": "ea07f21a0163464c82e8a4a3a09954f8",
-      "description": "This dataset was created to serves as one sub-layer of the Florida Marine Blueprint. The Florida Marine Blueprint was created to aid in prioritizing ecosystems and habitats derived from species biodiversity, highly valued habitat and potential marine migratory corridors. Highest priority areas are those where there is high species biodiversity/richness and overlaps in valued habitats. The Blueprint will then be used to inform where potential management and conservation practices should be focused and potentially carried out."
+      "description": "This dataset was created to serve as one sub-layer of the Florida Marine Blueprint. The Florida Marine Blueprint was created to aid in prioritizing ecosystems and habitats derived from species biodiversity, highly valued habitat and potential marine migratory corridors. Highest priority areas are those where there is high species biodiversity/richness and overlaps in valued habitats. The Blueprint will then be used to inform where potential management and conservation practices should be focused and potentially carried out."
     },
     {
-      "id": "fl_marine:marine_valued_habitat",
+      "id": "flm:marine_valued_habitat",
       "filename": "valued_habitat.tif",
       "label": "Valued Habitat Priority",
       "values": [
@@ -204,7 +204,7 @@
       ],
       "domain": [1, 5],
       "datasetID": "828402e90ac049198fd6fb318b28373f",
-      "description": "This dataset was created to serves as one sub-layer of the Florida Marine Blueprint. The Florida Marine Blueprint was created to aid in prioritizing ecosystems and habitats derived from species biodiversity, highly valued habitat and potential marine migratory corridors. Highest priority areas are those where there is high species biodiversity/richness and overlaps in valued habitats. The Blueprint will then be used to inform where potential management and conservation practices should be focused and potentially carried out."
+      "description": "This dataset was created to serve as one sub-layer of the Florida Marine Blueprint. The Florida Marine Blueprint was created to aid in prioritizing ecosystems and habitats derived from species biodiversity, highly valued habitat and potential marine migratory corridors. Highest priority areas are those where there is high species biodiversity/richness and overlaps in valued habitats. The Blueprint will then be used to inform where potential management and conservation practices should be focused and potentially carried out."
     }
   ]
 }

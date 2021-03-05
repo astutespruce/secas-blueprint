@@ -40,7 +40,11 @@ urban_filename = src_dir / "threats/urban/urban_2060.tif"
 slr_filename = src_dir / "threats/slr/slr.vrt"
 inputs_dir = src_dir / "indicators"
 
-indicator_dirs = {"sa": inputs_dir / "southatlantic"}
+indicator_dirs = {
+    "sa": inputs_dir / "southatlantic",
+    "fl": inputs_dir / "florida",
+    "flm": inputs_dir / "florida_marine",
+}
 
 
 async def render_mbgl_maps(**kwargs):

@@ -78,6 +78,7 @@ def extract_indicators(counts):
     ecosystem["indicator_summary"] = [
         {"id": id, "label": INDICATOR_INDEX[id]["label"], "present": id in indicators}
         for id in ecosystem["indicators"]
+        if id.startswith("flm:")
     ]
 
     # update ecosystem with only indicators that are present

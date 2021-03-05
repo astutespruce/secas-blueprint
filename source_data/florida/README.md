@@ -15,7 +15,10 @@ Entries for indicators were added to `constants/indicators/fl.json` and `constan
 The Conservation Assets dataset includes an attribute table of grid codes to string labels.
 These were manually copied from the output of `gdalinfo` and saved to `BlueprintConAsset/bpv1_3ca2_atts.xml'.
 
-This was then used to generate a remap table in the above script.
+These were binned to conservation assets, then binned again to ecosystem.
+
+These were then extracted to separate indicator datasets for all areas within
+conservation assets assigned to each ecosystem.
 
 CLIP v4 datasets were requested directly from FWC as GeoTIFF files (public versions are unreadable FGDB rasters).
 These were provided by FWC on 3/3/2021.

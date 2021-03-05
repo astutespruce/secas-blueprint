@@ -20,10 +20,10 @@
                         <tr>
                         {% if indicator.present %}
                             <td class="label"><a href="#{{indicator.id}}">{{indicator.label}}</a></td>
-                            <td>&check;</td>
+                            <td>yes</td>
                         {% else %}
                             <td class="label indicator-absent">{{indicator.label}}</td>
-                            <td />
+                            <td>no</td>
                         {% endif %}
                         </tr>
                     {% endfor %}

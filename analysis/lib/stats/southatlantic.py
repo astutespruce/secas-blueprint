@@ -96,6 +96,7 @@ def extract_indicators(counts):
                 "present": id in indicators,
             }
             for id in ecosystem["indicators"]
+            if id.startswith("sa:")
         ]
 
         # update ecosystem with only indicators that are present
