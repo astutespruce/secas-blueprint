@@ -14,7 +14,7 @@ from rasterio.mask import raster_geometry_mask, geometry_mask
 from rasterio.vrt import WarpedVRT
 from rasterio.windows import Window
 
-from analysis.constants import OVERVIEW_FACTORS
+from analysis.constants import OVERVIEW_FACTORS, DATA_CRS
 from analysis.lib.pygeos_util import to_dict
 
 
@@ -340,3 +340,30 @@ def calculate_percent_overlap(filename, shapes, bounds):
     )
 
     return 100 * counts.sum() / (~shape_mask).sum()
+
+
+def extract_window(src, window, transform, nodata):
+    """Extract raster data from src within window, and warp to DATA_CRS
+
+    Parameters
+    ----------
+    src : open rasterio Dataset
+    window : rasterio Window boject
+    transform : rasterio Transform object
+    nodata : int or float
+
+    Returns
+    -------
+    2d array
+    """
+    vrt = WarpedVRT(
+        src,
+        width=window.width,
+        height=window.height,
+        nodata=nodata,
+        transform=transform,
+        crs=DATA_CRS,
+        resampling=Resampling.nearest,
+    )
+
+    return vrt.read()[0]

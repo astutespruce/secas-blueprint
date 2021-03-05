@@ -7,6 +7,8 @@ import pygeos as pg
 from pyproj.transformer import Transformer
 from shapely.wkb import loads
 
+from analysis.lib.graph import find_adjacent_groups
+
 
 def to_crs(geometries, src_crs, target_crs):
     """Convert coordinates from one CRS to another CRS
@@ -306,11 +308,9 @@ to_json_all = np.vectorize(to_json)
 
 
 def explode(df):
-    """Explodes multipart geometries to single parts.  Attributes are copied
-    to each individual geometry.
+    """Explode a GeoDataFrame containing multi* geometries into single parts.
 
-    NOTE: Faster method not yet supported in pygeos, in https://github.com/pygeos/pygeos/pull/130
-    This branch must be checked out and built for this functionality.
+    Note: GeometryCollections of Multi* may need to be exploded a second time.
 
     Parameters
     ----------
@@ -320,22 +320,112 @@ def explode(df):
     -------
     GeoDataFrame
     """
+    join_cols = [c for c in df.columns if not c == "geometry"]
+    geom, index = pg.get_parts(df.geometry.values.wreidata, return_index=True)
+    return gp.GeoDataFrame(df[join_cols].take(index), geometry=geom, crs=df.crs)
 
-    # Fast method:
-    # ix, parts = pg.get_parts(df.geometry.values.data)
-    # series = pd.Series(parts, index=df.index[ix], name="geometry")
-    # return df.drop(columns=["geometry"]).join(series)
 
-    # Slower method
-    geometries = df.geometry.values.data
-    ix = []
-    parts = []
-    for i in range(len(df)):
-        num_parts = pg.get_num_geometries(geometries[i])
-        ix.extend(np.repeat(df.index[i], num_parts))
-        parts.extend(pg.get_geometry(geometries[i], range(num_parts)))
+def dissolve(df, by, grid_size=None, agg=None, allow_multi=True, op="union"):
+    """Dissolve a DataFrame by grouping records using "by".
 
-    return gp.GeoDataFrame({"geometry": parts}, index=ix, crs=df.crs).join(
-        df.drop(columns=["geometry"])
+    Contiguous or overlapping geometries will be unioned together.
+
+    Parameters
+    ----------
+    df : GeoDataFrame
+        geometries must be single-part geometries
+    by : str or list-like
+        field(s) to dissolve by
+    grid_size : float
+        precision grid size, will be used in union operation
+    agg : dict, optional (default: None)
+        If present, is a dictionary of field names in df to agg operations.  Any
+        field not aggregated will be set to null in the appended dissolved records.
+    allow_multi : bool, optional (default: True)
+        If False, geometries will
+    op : str, one of {'union', 'coverage_union'}
+    """
+
+    if agg is not None:
+        if "geometry" in agg:
+            raise ValueError("Cannot use user-specified aggregator for geometry")
+    else:
+        agg = dict()
+
+    agg["geometry"] = lambda g: union_or_combine(
+        g.values.data, grid_size=grid_size, op=op
     )
+
+    # Note: this method is 5x faster than geopandas.dissolve (until it is migrated to use pygeos)
+    dissolved = gp.GeoDataFrame(
+        df.groupby(by).agg(agg).reset_index(), geometry="geometry", crs=df.crs
+    )
+
+    if not allow_multi:
+        # flatten any multipolygons
+        dissolved = explode(dissolved).reset_index(drop=True)
+
+    return dissolved
+
+
+def union_or_combine(geometries, grid_size=None, op="union"):
+    """First does a check for overlap of geometries according to STRtree
+    intersects.  If any overlap, then will use union_all on all of them;
+    otherwise will return as a multipolygon.
+
+    If only one polygon is present, it will be returned in a MultiPolygon.
+
+    If coverage_union op is provided, geometries must be polygons and
+    topologically related or this will produce bad output or fail outright.
+    See docs for coverage_union in GEOS.
+
+    Parameters
+    ----------
+    geometries : ndarray of single part polygons
+    grid_size : [type], optional (default: None)
+        provided to union_all; otherwise no effect
+    op : str, one of {'union', 'coverage_union'}
+
+    Returns
+    -------
+    MultiPolygon
+    """
+
+    if not (pg.get_type_id(geometries) == 3).all():
+        print("Inputs to union or combine must be single-part geometries")
+
+    if len(geometries) == 1:
+        return pg.multipolygons(geometries)
+
+    tree = pg.STRtree(geometries)
+    left, right = tree.query_bulk(geometries, predicate="intersects")
+    # drop self intersections
+    ix = left != right
+    left = left[ix]
+    right = right[ix]
+
+    # no intersections, just combine parts
+    if len(left) == 0:
+        return pg.multipolygons(geometries)
+
+    # find groups of contiguous geometries and union them together individually
+    contiguous = np.sort(np.unique(np.concatenate([left, right])))
+    discontiguous = np.setdiff1d(np.arange(len(geometries), dtype="uint"), contiguous)
+    groups = find_adjacent_groups(left, right)
+
+    parts = []
+
+    if op == "coverage_union":
+        for group in groups:
+            parts.extend(pg.get_parts(pg.coverage_union_all(geometries[list(group)])))
+
+    else:
+        for group in groups:
+            parts.extend(
+                pg.get_parts(pg.union_all(geometries[list(group)], grid_size=grid_size))
+            )
+
+    parts.extend(pg.get_parts(geometries[discontiguous]))
+
+    return pg.multipolygons(parts)
 

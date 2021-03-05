@@ -14,6 +14,33 @@ data_dir = Path("data/inputs")
 bnd_dir = data_dir / "boundaries"
 
 
+def get_input_area_boundary(input_area):
+    """Extract and union polygons associated with input area into a single
+    boundary (Multi)Polygon.
+
+    Parameters
+    ----------
+    input_area : str
+        id of input area
+
+    Returns
+    -------
+    (Multi)Polygon
+    """
+    # have to make valid or we get errors during union for FL
+    values = [
+        e["value"] for e in INPUT_AREA_VALUES if input_area in set(e["id"].split(","))
+    ]
+
+    inputs_df = gp.read_feather(bnd_dir / "input_areas.feather")
+
+    bnd = pg.union_all(
+        pg.make_valid(inputs_df.loc[inputs_df.value.isin(values)].geometry.values.data)
+    )
+
+    return bnd
+
+
 def get_input_area_mask(input_area):
     """Get input area mask, window, and transform for a given input area.
 
@@ -28,16 +55,11 @@ def get_input_area_mask(input_area):
         mask is 1 INSIDE input area, 0 outside
     """
 
-    # have to make valid or we get errors during union for FL
     values = [
         e["value"] for e in INPUT_AREA_VALUES if input_area in set(e["id"].split(","))
     ]
 
-    inputs_df = gp.read_feather(bnd_dir / "input_areas.feather")
-
-    bnd = pg.union_all(
-        pg.make_valid(inputs_df.loc[inputs_df.value.isin(values)].geometry.values.data)
-    )
+    bnd = get_input_area_boundary(input_area)
 
     ### Get window into raster for bounds of input area
     with rasterio.open(data_dir / "input_areas.tif") as src:

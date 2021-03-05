@@ -229,12 +229,12 @@
       "values": [
         {
           "value": 0,
-          "label": "Not a Marine and Estuarine Conservation Asset",
+          "label": "Not a Marine or Estuarine Conservation Asset",
           "color": null
         },
         {
           "value": 1,
-          "label": "Marine and Estuarine Conservation Asset",
+          "label": "Marine or Estuarine Conservation Asset",
           "color": "#003F20"
         }
       ],

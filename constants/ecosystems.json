@@ -22,7 +22,8 @@
       "sa:land_unalteredbeach",
       "sa:land_urbanopenspace",
       "fl:land_conservation_assets",
-      "fl:land_clip4_landscape_Resource"
+      "fl:land_clip4_landscape_Resource",
+      "nn:land_cores"
     ]
   },
   {
@@ -39,7 +40,10 @@
       "fl:freshwater_conservation_assets",
       "fl:freshwater_clip4_floodplains",
       "fl:freshwater_clip4_surface_water",
-      "fl:freshwater_clip4_wetlands"
+      "fl:freshwater_clip4_wetlands",
+      "nn:freshwater_cores",
+      "nn:freshwater_integrity",
+      "nn:freshwater_resilience"
     ]
   },
   {
@@ -69,7 +73,11 @@
     "indicators": [
       "fl:other_clip4_aggregate",
       "fl:other_clip4_fnai_habitat",
-      "fl:other_clip4_natural_communities"
+      "fl:other_clip4_natural_communities",
+      "nn:other_imperiled_cores",
+      "nn:other_habitat_condition",
+      "nn:other_habitat_importance",
+      "nn:other_integrity"
     ]
   }
 ]

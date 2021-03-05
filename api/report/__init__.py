@@ -110,7 +110,7 @@ def create_report(maps, results):
     print("Creating report...")
 
     # if DEBUG:
-    with open("/tmp/test.html", "w") as out:
-        out.write(template.render(**context))
+    # with open("/tmp/test.html", "w") as out:
+    #     out.write(template.render(**context))
 
     return HTML(BytesIO((template.render(**context)).encode())).write_pdf()

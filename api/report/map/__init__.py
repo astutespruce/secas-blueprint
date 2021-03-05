@@ -44,6 +44,7 @@ indicator_dirs = {
     "sa": inputs_dir / "southatlantic",
     "fl": inputs_dir / "florida",
     "flm": inputs_dir / "florida_marine",
+    "nn": inputs_dir / "natures_network",
 }
 
 

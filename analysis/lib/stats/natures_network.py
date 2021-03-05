@@ -1,18 +1,18 @@
-import math
 from pathlib import Path
+from collections import OrderedDict
+from copy import deepcopy
 
 import numpy as np
 import pandas as pd
-import pygeos as pg
 import rasterio
 from rasterio.mask import raster_geometry_mask
-from rasterio.windows import Window
 
 from analysis.constants import (
-    URBAN_YEARS,
     ACRES_PRECISION,
     M2_ACRES,
     INPUTS,
+    ECOSYSTEMS,
+    INDICATORS as ALL_INDICATORS,
     NATURES_NETWORK_BOUNDS,
 )
 from analysis.lib.raster import (
@@ -22,12 +22,127 @@ from analysis.lib.raster import (
     detect_data,
 )
 
+INDICATORS = ALL_INDICATORS["nn"]
+INDICATOR_INDEX = OrderedDict({indicator["id"]: indicator for indicator in INDICATORS})
+
+
 src_dir = Path("data/inputs/indicators/natures_network")
 nn_filename = src_dir / "nn_priority.tif"
 nn_mask_filename = src_dir / "nn_priority_mask.tif"
 
 out_dir = Path("data/results/huc12")
 results_filename = out_dir / "natures_network.feather"
+
+
+def extract_indicators(counts):
+    """Extract indicator info from globals and merge with counts to get full results.
+
+    Parameters
+    ----------
+    counts : dict
+        lookup of indicator ID to array of counts [counts[0]...counts[max_value]]
+
+    Returns
+    -------
+    list of ecosystem objects
+    """
+
+    ### Merge indicator info with counts and tabulate areas
+    indicators = {}
+    for indicator in INDICATORS:
+        id = indicator["id"]
+        domain = indicator["domain"]
+        if not id in counts:
+            continue
+
+        values = counts[id]
+
+        # drop indicators that are not present in this area
+        # if only 0 values are present, ignore this indicator
+        if values[1:].max() > 0:
+            indicators[id] = deepcopy(indicator)
+
+            # ignore values below min_value, they were added as padding
+            min_value = indicator["values"][0]["value"]
+            indicators[id]["min_value"] = min_value
+            indicators[id]["total_acres"] = values[min_value:].sum()
+
+            # merge in area and percent
+            for value in indicators[id]["values"]:
+                value["acres"] = int(values[value["value"]])
+
+            # reverse so that highest value is on top
+            indicators[id]["values"].reverse()
+
+    ### aggregate indicators up to marine ecosystem
+    # determine ecosystems present from indicators
+    ecosystem_ids = {id.split(":")[1].split("_")[0] for id in indicators}
+    ecosystems = []
+    for ecosystem in ECOSYSTEMS:
+        id = ecosystem["id"]
+        if not id in ecosystem_ids:
+            continue
+
+        ecosystem = deepcopy(ecosystem)
+
+        ecosystem["indicator_summary"] = [
+            {
+                "id": id,
+                "label": INDICATOR_INDEX[id]["label"],
+                "present": id in indicators,
+            }
+            for id in ecosystem["indicators"]
+            if id.startswith("nn:")
+        ]
+
+        # update ecosystem with only indicators that are present
+        ecosystem["indicators"] = [
+            indicators[id] for id in ecosystem["indicators"] if id in indicators
+        ]
+        ecosystems.append(ecosystem)
+
+    return ecosystems
+
+
+def detect_indicators(geometries, indicators):
+    """Check area of interest against coarse resolution indicator mask for
+    each indicator to see if indicator is present in this area.
+
+    Parameters
+    ----------
+    geometries : list-like of geometry objects that provide __geo_interface__
+    indicators : list-like of indicator IDs
+
+    Returns
+    -------
+    list of indicator IDs present in area
+    """
+
+    if not indicators:
+        return []
+
+    with rasterio.open(
+        src_dir / indicators[0]["filename"].replace(".tif", "_mask.tif")
+    ) as src:
+        geometry_mask, transform, window = raster_geometry_mask(
+            src, geometries, crop=True, all_touched=False
+        )
+
+    indicators_with_data = []
+    for indicator in indicators:
+        with rasterio.open(
+            src_dir / indicator["filename"].replace(".tif", "_mask.tif")
+        ) as src:
+            data = src.read(1, window=window)
+            nodata = src.nodatavals[0]
+
+            mask = (data == nodata) | geometry_mask
+
+        # if there are unmasked areas, keep this indicator
+        if mask.min() == False:
+            indicators_with_data.append(indicator)
+
+    return indicators_with_data
 
 
 def extract_by_geometry(geometries, bounds, prescreen=False):
@@ -91,6 +206,25 @@ def extract_by_geometry(geometries, bounds, prescreen=False):
 
     results["nn"] = (counts * cellsize).round(ACRES_PRECISION).astype("float32")
 
+    indicators = detect_indicators(geometries, INDICATORS)
+
+    for indicator in indicators:
+        id = indicator["id"]
+        filename = src_dir / indicator["filename"]
+
+        values = [e["value"] for e in indicator["values"]]
+        bins = np.arange(0, max(values) + 1)
+        counts = extract_count_in_geometry(
+            filename, shape_mask, window, bins, boundless=True
+        )
+
+        # Some indicators exclude 0 values, their counts need to be zeroed out here
+        min_value = min(values)
+        if min_value > 0:
+            counts[range(0, min_value)] = 0
+
+        results[id] = (counts * cellsize).round(ACRES_PRECISION).astype("float32")
+
     return results
 
 
@@ -146,6 +280,7 @@ def summarize_by_aoi(shapes, bounds, outside_se_acres):
 
     return {
         "priorities": priorities,
+        "ecosystems": extract_indicators(counts),
         "legend": legend,
         "analysis_acres": analysis_acres,
         "total_acres": total_acres,
@@ -222,8 +357,24 @@ def get_huc12_results(id, analysis_acres, total_acres):
     remainder = max(analysis_acres - df.acres.sum(), 0)
     remainder = remainder if remainder >= 1 else 0
 
+    # Bring in indicators
+    indicator_cols = [c for c in row.index if c.startswith("nn:")]
+    indicators_present = {c.rsplit("_", 1)[0] for c in indicator_cols}
+
+    counts = {
+        id: np.array(
+            [
+                getattr(row, c)
+                for c in indicator_cols
+                if c.startswith(id) and not c.endswith("avg")
+            ]
+        )
+        for id in indicators_present
+    }
+
     return {
         "priorities": priorities,
+        "ecosystems": extract_indicators(counts),
         "legend": legend,
         "analysis_acres": analysis_acres,
         "total_acres": total_acres,

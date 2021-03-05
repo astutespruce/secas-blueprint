@@ -5,13 +5,11 @@ from xml.etree import ElementTree
 import pandas as pd
 import numpy as np
 import rasterio
-from rasterio.enums import Resampling
-from rasterio.vrt import WarpedVRT
 
 from analysis.constants import DATA_CRS, MASK_FACTOR
 from analysis.lib.io import write_raster
 from analysis.lib.input_areas import get_input_area_mask
-from analysis.lib.raster import add_overviews, create_lowres_mask
+from analysis.lib.raster import add_overviews, create_lowres_mask, extract_window
 from analysis.lib.speedups import remap
 
 
@@ -28,79 +26,59 @@ if not out_dir.exists():
 print("Extracting Florida inland input area mask...")
 mask, transform, window = get_input_area_mask("fl")
 
-### Extract FL Blueprint
-print("Reading and warping Florida Blueprint...")
-with rasterio.open(src_dir / "HubsData&Blueprint/Blueprint_V_1_3.tif") as src:
-    nodata = int(src.nodata)
-    vrt = WarpedVRT(
-        src,
-        width=window.width,
-        height=window.height,
-        nodata=nodata,
-        crs=DATA_CRS,
-        transform=transform,
-        resampling=Resampling.nearest,
-    )
+# ### Extract FL Blueprint
+# print("Reading and warping Florida Blueprint...")
+# with rasterio.open(src_dir / "HubsData&Blueprint/Blueprint_V_1_3.tif") as src:
+#     nodata = int(src.nodata)
+#     data = extract_window(src, window, transform, nodata=nodata)
 
-    data = vrt.read()[0]
+# # fill with 0 where not 1 or 2
+# data[data == nodata] = 0
 
-# fill with 0 where not 1 or 2
-data[data == nodata] = 0
+# # apply mask
+# data = np.where(mask == 1, data, nodata).astype("uint8")
 
-# apply mask
-data = np.where(mask == 1, data, nodata).astype("uint8")
+# write_raster(outfilename, data, transform=transform, crs=DATA_CRS, nodata=nodata)
+# add_overviews(outfilename)
 
-write_raster(outfilename, data, transform=transform, crs=DATA_CRS, nodata=nodata)
-add_overviews(outfilename)
-
-create_lowres_mask(
-    outfilename,
-    str(outfilename).replace(".tif", "_mask.tif"),
-    factor=MASK_FACTOR,
-    ignore_zero=False,
-)
+# create_lowres_mask(
+#     outfilename,
+#     str(outfilename).replace(".tif", "_mask.tif"),
+#     factor=MASK_FACTOR,
+#     ignore_zero=False,
+# )
 
 
-### Extract FL indicators from CLIP v4
-indicators = {
-    # "clip4_aggregate": "Priority_CLIP4.tif",
-    # "clip4_fnai_habitat": "fhab_clip41.tif",
-    "clip4_landscape_resource": "landscape_rp_CLIP4.tif",
-    # "clip4_natural_communities": "natcom_CLIP4.tif",
-    # "clip4_floodplains": "fldpln_CLIP4.tif",
-    # "clip4_surface_water": "srfwtr_CLIP4.tif",
-    # "clip4_wetlands": "wetlds_CLIP4.tif",
-}
+# ### Extract FL indicators from CLIP v4
+# indicators = {
+#     "clip4_aggregate": "Priority_CLIP4.tif",
+#     "clip4_fnai_habitat": "fhab_clip41.tif",
+#     "clip4_landscape_resource": "landscape_rp_CLIP4.tif",
+#     "clip4_natural_communities": "natcom_CLIP4.tif",
+#     "clip4_floodplains": "fldpln_CLIP4.tif",
+#     "clip4_surface_water": "srfwtr_CLIP4.tif",
+#     "clip4_wetlands": "wetlds_CLIP4.tif",
+# }
 
 
-for id, indicator_filename in indicators.items():
-    print(f"Reading and warping Florida Blueprint Indicator {id}..")
-    with rasterio.open(src_dir / "indicators" / indicator_filename) as src:
-        nodata = 255
-        vrt = WarpedVRT(
-            src,
-            width=window.width,
-            height=window.height,
-            nodata=nodata,
-            crs=DATA_CRS,
-            transform=transform,
-            resampling=Resampling.nearest,
-        )
+# for id, indicator_filename in indicators.items():
+#     print(f"Reading and warping Florida Blueprint Indicator {id}..")
+#     with rasterio.open(src_dir / "indicators" / indicator_filename) as src:
+#         nodata = 255
+#         data = extract_window(src, window, transform, nodata=nodata)
 
-        data = vrt.read()[0]
+#     # apply input area mask
+#     data = np.where(mask == 1, data, nodata).astype("uint8")
 
-    # apply input area mask
-    data = np.where(mask == 1, data, nodata).astype("uint8")
-
-    outfilename = out_dir / f"{id}.tif"
-    write_raster(outfilename, data, transform=transform, crs=DATA_CRS, nodata=nodata)
-    add_overviews(outfilename)
-    create_lowres_mask(
-        outfilename,
-        str(outfilename).replace(".tif", "_mask.tif"),
-        factor=MASK_FACTOR,
-        ignore_zero=False,
-    )
+#     outfilename = out_dir / f"{id}.tif"
+#     write_raster(outfilename, data, transform=transform, crs=DATA_CRS, nodata=nodata)
+#     add_overviews(outfilename)
+#     create_lowres_mask(
+#         outfilename,
+#         str(outfilename).replace(".tif", "_mask.tif"),
+#         factor=MASK_FACTOR,
+#         ignore_zero=False,
+#     )
 
 
 ### Extract FL Conservation assets and summarize
@@ -135,7 +113,7 @@ asset_ecosystems = {
 
 atts["ecosystem"] = atts.asset.map(asset_ecosystems)
 
-# group up to ecosystem, such that 0 = NODATA, 1..n is ecosystem ID
+# group up to ecosystem, such 1..n is ecosystem ID
 ecosystem_ids = {
     ecosystem: i + 1 for i, ecosystem in enumerate(sorted(atts.ecosystem.unique()))
 }
@@ -152,27 +130,14 @@ remap_table = atts[["value", "new_value"]].values.astype("uint16")
 print("Reading and warping Florida Conservation Assets")
 with rasterio.open(src_dir / "indicators/BlueprintConAsset/bpv1_3ca2") as src:
     nodata = int(src.nodata)
-    vrt = WarpedVRT(
-        src,
-        width=window.width,
-        height=window.height,
-        nodata=nodata,
-        crs=DATA_CRS,
-        transform=transform,
-        resampling=Resampling.nearest,
-    )
+    raw_data = extract_window(src, window, transform, nodata=nodata)
 
-    raw_data = vrt.read()[0]
-
-# reassign nodata to 0
-raw_data[raw_data == nodata] = 0
-nodata = 0
+# reassign nodata to 255
+raw_data[raw_data == nodata] = 255
+nodata = 255
 
 raw_data = raw_data.astype("uint16")
 data = remap(raw_data, remap_table, nodata=nodata)
-
-# apply input area mask
-data = np.where(mask == 1, data, nodata).astype("uint8")
 
 # Split each ecosystem into a separate indicator
 ecosystems = (
@@ -185,6 +150,9 @@ for index, row in ecosystems.iterrows():
     print(f"Writing {row.ecosystem} conservation assets")
     indicator_data = np.where(data == row.new_value, 1, 0).astype("uint8")
 
+    # apply input area mask
+    indicator_data = np.where(mask == 1, indicator_data, nodata).astype("uint8")
+
     outfilename = out_dir / f"{row.ecosystem}_conservation_assets.tif"
 
     write_raster(
@@ -196,5 +164,5 @@ for index, row in ecosystems.iterrows():
         outfilename,
         str(outfilename).replace(".tif", "_mask.tif"),
         factor=MASK_FACTOR,
-        ignore_zero=True,
+        ignore_zero=False,
     )

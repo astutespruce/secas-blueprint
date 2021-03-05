@@ -11,8 +11,8 @@
             <table class="centered">
                 <thead>
                     <tr>
-                        <th class="label">Indicator</th>
-                        <th class="">Present</th>
+                        <th class="label" style="width: 100%;">Indicator</th>
+                        <th class="" style="max-width: 100px;">Present</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -20,10 +20,10 @@
                         <tr>
                         {% if indicator.present %}
                             <td class="label"><a href="#{{indicator.id}}">{{indicator.label}}</a></td>
-                            <td>yes</td>
+                            <td>&check;</td>
                         {% else %}
                             <td class="label indicator-absent">{{indicator.label}}</td>
-                            <td>no</td>
+                            <td class="indicator-absent">-</td>
                         {% endif %}
                         </tr>
                     {% endfor %}

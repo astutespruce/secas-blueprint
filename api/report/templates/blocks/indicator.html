@@ -92,7 +92,7 @@
                 {% endfor %}
 
                 {% with remainder=src.analysis_acres-indicator.total_acres %}
-                {% if remainder > 0 %}
+                {% if remainder > 0.1 %}
                     <tr class="remainder-row">
                         <td class="level no-border"></td>
                         <td class="label">Area not evaluated for this indicator</td>
@@ -156,7 +156,7 @@
                 {% endfor %}
 
                 {% with remainder=src.analysis_acres-indicator.total_acres %}
-                {% if remainder > 0 %}
+                {% if remainder > 0.1 %}
                     <tr class="remainder-row">
                         <td class="no-border no-background"></td>
                         <td class="label">Area not evaluated for this indicator</td>
