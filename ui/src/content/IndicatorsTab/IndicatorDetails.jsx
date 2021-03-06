@@ -14,26 +14,15 @@ import { IndicatorPropType } from './proptypes'
 const IndicatorDetails = ({
   type,
   label,
-  input: { label: inputLabel, percent: inputPercent },
+  input: { label: inputLabel, percent: inputPercent, cpaURL },
   ecosystem: { id: ecosystemId, label: ecosystemLabel, color, borderColor },
   description,
   datasetID,
   goodThreshold,
   values,
-  analysisAcres,
-  blueprintAcres,
   outsideSEPercent,
   onClose,
 }) => {
-  console.log(
-    'incoming values',
-    inputLabel,
-    inputPercent,
-    values,
-    analysisAcres,
-    blueprintAcres
-  )
-
   // eslint-disable-next-line global-require,import/no-dynamic-require
   const icon = require(`images/${ecosystemId}.svg`)
 
@@ -110,10 +99,11 @@ const IndicatorDetails = ({
               />
             </Text>
 
-            <Flex sx={{ alignItems: 'center' }}>
+            <Flex sx={{ flex: '1 1 auto', alignItems: 'center' }}>
               <Image
                 src={icon}
                 sx={{
+                  flex: '0 0 auto',
                   width: '2.5em',
                   height: '2.5em',
                   mr: '0.5em',
@@ -121,7 +111,7 @@ const IndicatorDetails = ({
                   borderRadius: '2.5em',
                 }}
               />
-              <Box>
+              <Box sx={{ pr: '0.25rem' }}>
                 <Text sx={{ fontSize: 0, color: 'grey.8' }}>
                   {ecosystemLabel}
                 </Text>
@@ -131,7 +121,14 @@ const IndicatorDetails = ({
           </Flex>
 
           {type !== 'pixel' ? (
-            <Box sx={{ color: 'grey.8', fontSize: 0, textAlign: 'right' }}>
+            <Box
+              sx={{
+                flex: '0 0 auto',
+                color: 'grey.8',
+                fontSize: 0,
+                textAlign: 'right',
+              }}
+            >
               <b>{formatPercent(totalIndicatorPercent)}%</b>
               <br />
               of area
@@ -164,9 +161,7 @@ const IndicatorDetails = ({
         />
 
         <Box sx={{ mt: '2rem' }}>
-          <OutboundLink
-            to={`https://seregion.databasin.org/datasets/${datasetID}`}
-          >
+          <OutboundLink to={`${cpaURL}/datasets/${datasetID}`}>
             View this indicator in the Conservation Planning Atlas
           </OutboundLink>
         </Box>
@@ -178,8 +173,6 @@ const IndicatorDetails = ({
 IndicatorDetails.propTypes = {
   type: PropTypes.string.isRequired,
   ...IndicatorPropType,
-  analysisAcres: PropTypes.number.isRequired,
-  blueprintAcres: PropTypes.number.isRequired,
   outsideSEPercent: PropTypes.number,
   onClose: PropTypes.func.isRequired,
 }

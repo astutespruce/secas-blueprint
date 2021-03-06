@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { Box, Text } from 'theme-ui'
 
+import { OutboundLink } from 'components/link'
 import { indexBy, flatten } from 'util/data'
 import { useIsEqualLayoutEffect } from 'util/hooks'
 
@@ -123,8 +124,14 @@ const IndicatorsTab = ({
               ))}
             </>
           ) : (
-            <Box sx={{ p: '1rem 2rem', color: 'grey.8', textAlign: 'center' }}>
-              No indicators available for the {inputLabel} in this area.
+            <Box sx={{ p: '1rem 2rem', color: 'grey.8' }}>
+              Indicator data are not available in this tool for {inputLabel}.
+              Additional underlying data for this Blueprint input may be
+              available{' '}
+              <OutboundLink to={inputIndex[selectedInput].dataURL}>
+                here
+              </OutboundLink>
+              .
             </Box>
           )}
         </Box>

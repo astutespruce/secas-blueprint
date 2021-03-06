@@ -15,6 +15,7 @@ export const useInputAreas = () => {
             version
             dataURL
             infoURL
+            cpaURL
             viewerURL
             viewerName
             valueField

@@ -44,67 +44,53 @@ if not out_dir.exists():
     os.makedirs(out_dir)
 
 print("Reading HUC12 boundaries")
-# units_df = gp.read_feather(huc12_filename, columns=["id", "geometry"]).set_index("id")
+units_df = gp.read_feather(huc12_filename, columns=["id", "geometry"]).set_index("id")
 
-# # transform to pandas Series instead of GeoSeries to get pygeos geometries for iterators below
-# geometries = pd.Series(units_df.geometry.values.data, index=units_df.index)
+# transform to pandas Series instead of GeoSeries to get pygeos geometries for iterators below
+geometries = pd.Series(units_df.geometry.values.data, index=units_df.index)
 
-# FIXME:
+# Summarize Blueprint and input areas
+summarize_bluprint_by_unit(geometries, out_dir=out_dir)
 
-# import pygeos as pg
-# from analysis.constants import SOUTHATLANTIC_BOUNDS
+# Summarize current and projected urbanization
+summarize_urban_by_huc12(geometries)
 
-# bounds = SOUTHATLANTIC_BOUNDS
+# Summarize projected sea level rise
+summarize_slr_by_huc12(geometries)
 
-# tree = pg.STRtree(geometries)
-# ix = tree.query(pg.box(*bounds))
-# geometries = geometries.iloc[ix].copy().head(20)
+# Calculate overlap with ownership and protection
+summarize_ownership_by_unit(units_df, out_dir=out_dir)
 
-# end FIXME:
+# Calculate overlap with counties
+summarize_counties_by_huc12(units_df)
 
+# Summarize CHAT for OK / TX
+summarize_chat_by_huc12(units_df)
 
-# # Summarize Blueprint and input areas
-# summarize_bluprint_by_unit(geometries)
+# Calculate overlap with Caribbean priority watersheds
+summarize_caribbean_by_huc12(units_df)
 
-# # Summarize current and projected urbanization
-# summarize_urban_by_huc12(geometries)
+# Calculate area for Gulf Hypoxia
+summarize_gulf_hypoxia_by_huc12(geometries)
 
-# # Summarize projected sea level rise
-# summarize_slr_by_huc12(geometries)
+# Calculate area for Nature's Network
+summarize_natures_network_by_huc12(geometries)
 
-# # Calculate overlap with ownership and protection
-# summarize_ownership_by_unit(units_df)
-
-# # Calculate overlap with counties
-# summarize_counties_by_huc12(units_df)
-
-# # Summarize CHAT for OK / TX
-# summarize_chat_by_huc12(units_df)
-
-# # Calculate overlap with Caribbean priority watersheds
-# summarize_caribbean_by_huc12(units_df)
-
-# # Calculate area for Gulf Hypoxia
-# summarize_gulf_hypoxia_by_huc12(geometries)
-
-# # Calculate area for Nature's Network
-# summarize_natures_network_by_huc12(geometries)
-
-# # Calculate area for NatureScape
-# summarize_naturescape_by_huc12(geometries)
+# Calculate area for NatureScape
+summarize_naturescape_by_huc12(geometries)
 
 # Summarize South Atlantic
-# summarize_southatlantic_by_unit(geometries, out_dir=out_dir, marine=False)
+summarize_southatlantic_by_unit(geometries, out_dir=out_dir, marine=False)
 
-# # Summarize Florida
-# summarize_florida_by_huc12(geometries)
+# Summarize Florida
+summarize_florida_by_huc12(geometries)
 
-# # Summarize Middle Southeast
-# summarize_midse_by_huc12(geometries)
+# Summarize Middle Southeast
+summarize_midse_by_huc12(geometries)
 
-# print(
-#     "Processed {:,} zones in {:.2f}m".format(len(geometries), (time() - start) / 60.0)
-# )
+print(
+    "Processed {:,} zones in {:.2f}m".format(len(geometries), (time() - start) / 60.0)
+)
 
 
 #########################################################################
@@ -121,17 +107,17 @@ units_df = gp.read_feather(marine_filename, columns=["id", "geometry"]).set_inde
 
 geometries = pd.Series(units_df.geometry.values.data, index=units_df.index)
 
-# # Summarize Blueprint and input areas
-# summarize_bluprint_by_unit(geometries)
+# Summarize Blueprint and input areas
+summarize_bluprint_by_unit(geometries, out_dir=out_dir)
 
-# # Calculate overlap with ownership and protection
-# summarize_ownership_by_unit(units_df)
+# Calculate overlap with ownership and protection
+summarize_ownership_by_unit(units_df, out_dir=out_dir)
 
-# Summarize South Atlantic (marine)
+Summarize South Atlantic (marine)
 summarize_southatlantic_by_unit(geometries, out_dir=out_dir, marine=True)
 
-# # Summarize Florida Marine Blueprint
-# summarize_florida_by_marine_block(geometries)
+# Summarize Florida Marine Blueprint
+summarize_florida_by_marine_block(geometries)
 
 
 print(

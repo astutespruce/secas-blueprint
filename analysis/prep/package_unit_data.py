@@ -198,6 +198,9 @@ fl_cols = [c for c in fl_df.columns if c.startswith("fl_")]
 fl_percent = encode_values(fl_df[fl_cols], fl_df.shape_mask, 1000).rename(
     "fl_blueprint"
 )
+fl_indicators = encode_indicators(fl_df, fl_df.shape_mask, "fl", INDICATORS["fl"])
+fl_df = pd.DataFrame(fl_percent).join(fl_indicators)
+
 
 # Middle Southeast
 ms_df = pd.read_feather(working_dir / "midse.feather").set_index("id")
@@ -211,6 +214,10 @@ ms_percent = encode_values(ms_df[ms_cols], ms_df.shape_mask, 1000).rename(
 nn_df = pd.read_feather(working_dir / "natures_network.feather").set_index("id")
 nn_cols = [c for c in nn_df.columns if c.startswith("nn_")]
 nn_percent = encode_values(nn_df[nn_cols], nn_df.shape_mask, 1000).rename("nn_priority")
+
+nn_indicators = encode_indicators(nn_df, nn_df.shape_mask, "nn", INDICATORS["nn"])
+nn_df = pd.DataFrame(nn_percent).join(nn_indicators)
+
 
 # NatureScape
 ns_df = pd.read_feather(working_dir / "naturescape.feather").set_index("id")
@@ -232,9 +239,9 @@ sa_df = pd.DataFrame(sa_percent).join(sa_indicators)
 huc12 = (
     huc12.join(gh_percent, how="left")
     .join(car_df, how="left")
-    .join(fl_percent, how="left")
+    .join(fl_df, how="left")
     .join(ms_percent, how="left")
-    .join(nn_percent, how="left")
+    .join(nn_df, how="left")
     .join(ns_percent, how="left")
     .join(sa_df, how="left")
 )
@@ -370,6 +377,9 @@ fl_cols = [c for c in fl_df.columns if c.startswith("flm_")]
 fl_percent = encode_values(fl_df[fl_cols], fl_df.shape_mask, 1000).rename(
     "flm_blueprint"
 )
+fl_indicators = encode_indicators(fl_df, fl_df.shape_mask, "flm", INDICATORS["flm"])
+fl_df = pd.DataFrame(fl_percent).join(fl_indicators)
+
 
 # South Atlantic (marine)
 sa_df = pd.read_feather(working_dir / "southatlantic.feather").set_index("id")
@@ -381,7 +391,7 @@ sa_indicators = encode_indicators(sa_df, sa_df.shape_mask, "sa", INDICATORS["sa"
 sa_df = pd.DataFrame(sa_percent).join(sa_indicators)
 
 
-marine = marine.join(sa_df, how="left").join(fl_percent, how="left")
+marine = marine.join(sa_df, how="left").join(fl_df, how="left")
 
 
 out = huc12.reset_index().append(marine.reset_index(), ignore_index=True, sort=False)

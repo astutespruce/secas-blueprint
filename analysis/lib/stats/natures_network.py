@@ -251,17 +251,17 @@ def summarize_by_aoi(shapes, bounds, outside_se_acres):
         }
     """
 
-    results = extract_by_geometry(shapes, bounds, prescreen=False)
+    counts = extract_by_geometry(shapes, bounds, prescreen=False)
 
-    if results is None:
+    if counts is None:
         return None
 
-    total_acres = results["shape_mask"]
+    total_acres = counts["shape_mask"]
     analysis_acres = total_acres - outside_se_acres
 
     values = pd.DataFrame(INPUTS["nn"]["values"])
 
-    df = values.join(pd.Series(results["nn"], name="acres"))
+    df = values.join(pd.Series(counts["nn"], name="acres"))
     df["percent"] = 100 * np.divide(df.acres, total_acres)
     df["sort"] = [3, 0, 1, 2]  # manually specified sort order
 

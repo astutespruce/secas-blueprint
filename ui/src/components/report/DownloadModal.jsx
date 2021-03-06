@@ -171,7 +171,7 @@ const DownloadModal = ({ id, type, onClose }) => {
               </ul>
               <br />
               Please try again. If that does not work, please{' '}
-              <OutboundLink href={`mailto:${contactEmail}`}>
+              <OutboundLink to={`mailto:${contactEmail}`}>
                 Contact Us
               </OutboundLink>
               .

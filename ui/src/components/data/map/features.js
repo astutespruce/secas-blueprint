@@ -251,6 +251,33 @@ export const unpackFeatureData = (
 
   // extract indicators where available
   values.indicators = {}
+  if (values.fl_indicators) {
+    values.indicators.fl = extractIndicators(
+      values.fl_indicators || {},
+      {},
+      ecosystemInfo,
+      indicatorInfo.fl.indicators
+    )
+  }
+
+  if (values.flm_indicators) {
+    values.indicators.flm = extractIndicators(
+      values.flm_indicators || {},
+      {},
+      ecosystemInfo,
+      indicatorInfo.flm.indicators
+    )
+  }
+
+  if (values.nn_indicators) {
+    values.indicators.nn = extractIndicators(
+      values.nn_indicators || {},
+      {},
+      ecosystemInfo,
+      indicatorInfo.nn.indicators
+    )
+  }
+
   if (values.sa_indicators) {
     values.indicators.sa = extractIndicators(
       values.sa_indicators || {},
