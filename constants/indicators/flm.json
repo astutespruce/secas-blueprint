@@ -102,7 +102,7 @@
           "color": "#D62E26"
         }
       ],
-      "domain": [1, 7],
+      "domain": [0, 7],
       "datasetID": "efbc8e4879a24994843951b7927e9fd0",
       "description": "This dataset was created by The Nature conservancy in order to determine important migration areas for a variety of species throughout the Gulf of Mexico."
     },
@@ -162,7 +162,7 @@
           "color": "#C54538"
         }
       ],
-      "domain": [1, 2],
+      "domain": [0, 2],
       "datasetID": "ea07f21a0163464c82e8a4a3a09954f8",
       "description": "This dataset was created to serve as one sub-layer of the Florida Marine Blueprint. The Florida Marine Blueprint was created to aid in prioritizing ecosystems and habitats derived from species biodiversity, highly valued habitat and potential marine migratory corridors. Highest priority areas are those where there is high species biodiversity/richness and overlaps in valued habitats. The Blueprint will then be used to inform where potential management and conservation practices should be focused and potentially carried out."
     },
@@ -202,7 +202,7 @@
           "color": "#D62E26"
         }
       ],
-      "domain": [1, 5],
+      "domain": [0, 5],
       "datasetID": "828402e90ac049198fd6fb318b28373f",
       "description": "This dataset was created to serve as one sub-layer of the Florida Marine Blueprint. The Florida Marine Blueprint was created to aid in prioritizing ecosystems and habitats derived from species biodiversity, highly valued habitat and potential marine migratory corridors. Highest priority areas are those where there is high species biodiversity/richness and overlaps in valued habitats. The Blueprint will then be used to inform where potential management and conservation practices should be focused and potentially carried out."
     }

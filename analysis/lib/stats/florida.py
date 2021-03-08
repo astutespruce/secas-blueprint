@@ -70,14 +70,8 @@ def extract_indicators(counts):
             for value in indicators[id]["values"]:
                 value["acres"] = int(values[value["value"]])
 
-            if domain[1] > domain[0]:
-                # reverse so that highest value is on top
-                indicators[id]["values"].reverse()
-
-            else:
-                # always put 0 values at the end, but otherwise already in correct sort order
-                values = indicators[id]["values"]
-                indicators[id]["values"] = values[1:] + values[:1]
+            # reverse so that highest value is on top
+            indicators[id]["values"].reverse()
 
     ### aggregate indicators up to marine ecosystem
     # determine ecosystems present from indicators

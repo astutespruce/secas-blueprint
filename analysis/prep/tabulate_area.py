@@ -113,7 +113,7 @@ summarize_bluprint_by_unit(geometries, out_dir=out_dir)
 # Calculate overlap with ownership and protection
 summarize_ownership_by_unit(units_df, out_dir=out_dir)
 
-Summarize South Atlantic (marine)
+# Summarize South Atlantic (marine)
 summarize_southatlantic_by_unit(geometries, out_dir=out_dir, marine=True)
 
 # Summarize Florida Marine Blueprint

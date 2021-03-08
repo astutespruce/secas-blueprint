@@ -33,36 +33,36 @@
         },
         {
           "value": 1,
-          "label": "Priority 1",
-          "color": "#001E5D"
+          "label": "Priority 6",
+          "color": "#CEE1E8"
         },
         {
           "value": 2,
-          "label": "Priority 2",
-          "color": "#15488A"
-        },
-        {
-          "value": 3,
-          "label": "Priority 3",
-          "color": "#3481CF"
-        },
-        {
-          "value": 4,
-          "label": "Priority 4",
-          "color": "#5EB6F2"
-        },
-        {
-          "value": 5,
           "label": "Priority 5",
           "color": "#AADAF1"
         },
         {
+          "value": 3,
+          "label": "Priority 4",
+          "color": "#5EB6F2"
+        },
+        {
+          "value": 4,
+          "label": "Priority 3",
+          "color": "#3481CF"
+        },
+        {
+          "value": 5,
+          "label": "Priority 2",
+          "color": "#15488A"
+        },
+        {
           "value": 6,
-          "label": "Priority 6",
-          "color": "#CEE1E8"
+          "label": "Priority 1",
+          "color": "#001E5D"
         }
       ],
-      "domain": [6, 1],
+      "domain": [0, 6],
       "datasetID": "5ffe9f3bcebd41f2a43a6215b9e0df56",
       "description": "This dataset the conservation priority of areas within the 100-year floodplain based on land use intensity and protected areas."
     },
@@ -78,18 +78,18 @@
         },
         {
           "value": 1,
-          "label": "Priority 1",
-          "color": "#130A65"
+          "label": "Priority 7",
+          "color": "#FDFF89"
         },
         {
           "value": 2,
-          "label": "Priority 2",
-          "color": "#0D397E"
+          "label": "Priority 6",
+          "color": "#B1F05A"
         },
         {
           "value": 3,
-          "label": "Priority 3",
-          "color": "#118199"
+          "label": "Priority 5",
+          "color": "#67E847"
         },
         {
           "value": 4,
@@ -98,21 +98,21 @@
         },
         {
           "value": 5,
-          "label": "Priority 5",
-          "color": "#67E847"
+          "label": "Priority 3",
+          "color": "#118199"
         },
         {
           "value": 6,
-          "label": "Priority 6",
-          "color": "#B1F05A"
+          "label": "Priority 2",
+          "color": "#0D397E"
         },
         {
           "value": 7,
-          "label": "Priority 7",
-          "color": "#FDFF89"
+          "label": "Priority 1",
+          "color": "#130A65"
         }
       ],
-      "domain": [7, 1],
+      "domain": [0, 7],
       "datasetID": "5ffe9f3bcebd41f2a43a6215b9e0df56",
       "description": "This dataset depicts the priority of significant surface waters, based on proximity and drainage into important surface waters such as aquatic preserves, shellfish harvesting areas, seagrass beds, springs, public water supply sources, watersheds important for rare fish species, and other factors."
     },
@@ -128,36 +128,36 @@
         },
         {
           "value": 1,
-          "label": "Priority 1",
-          "color": "#02283F"
+          "label": "Priority 6",
+          "color": "#784A00"
         },
         {
           "value": 2,
-          "label": "Priority 2",
-          "color": "#116275"
-        },
-        {
-          "value": 3,
-          "label": "Priority 3",
-          "color": "#2EA7A8"
-        },
-        {
-          "value": 4,
-          "label": "Priority 4",
-          "color": "#63D8C5"
-        },
-        {
-          "value": 5,
           "label": "Priority 5",
           "color": "#A7A802"
         },
         {
+          "value": 3,
+          "label": "Priority 4",
+          "color": "#63D8C5"
+        },
+        {
+          "value": 4,
+          "label": "Priority 3",
+          "color": "#2EA7A8"
+        },
+        {
+          "value": 5,
+          "label": "Priority 2",
+          "color": "#116275"
+        },
+        {
           "value": 6,
-          "label": "Priority 6",
-          "color": "#784A00"
+          "label": "Priority 1",
+          "color": "#02283F"
         }
       ],
-      "domain": [6, 1],
+      "domain": [0, 6],
       "datasetID": "5ffe9f3bcebd41f2a43a6215b9e0df56",
       "description": "This dataset depicts conservation priorities of wetlands based on the location of wetlands within large intact natural landscapes."
     },
@@ -193,13 +193,13 @@
         },
         {
           "value": 1,
-          "label": "Priority 1",
-          "color": "#0A6619"
+          "label": "Priority 5",
+          "color": "#EAFF80"
         },
         {
           "value": 2,
-          "label": "Priority 2",
-          "color": "#0A6619"
+          "label": "Priority 4",
+          "color": "#92D94B"
         },
         {
           "value": 3,
@@ -208,20 +208,19 @@
         },
         {
           "value": 4,
-          "label": "Priority 4",
-          "color": "#92D94B"
+          "label": "Priority 2",
+          "color": "#0A6619"
         },
         {
           "value": 5,
-          "label": "Priority 5",
-          "color": "#EAFF80"
+          "label": "Priority 1",
+          "color": "#0A6619"
         }
       ],
-      "domain": [5, 1],
+      "domain": [0, 5],
       "datasetID": "5ffe9f3bcebd41f2a43a6215b9e0df56",
       "description": "This dataset depicts overall landscape resource priority based on a combination of Landscape Integrity Index and Florida Ecological Greenways Network datasets."
     },
-
     {
       "id": "fl:marine_conservation_assets",
       "filename": "marine_conservation_assets.tif",
@@ -255,13 +254,13 @@
         },
         {
           "value": 1,
-          "label": "Priority 1 - highest",
-          "color": "#24403C"
+          "label": "Priority 5",
+          "color": "#FEE668"
         },
         {
           "value": 2,
-          "label": "Priority 2",
-          "color": "#0B6629"
+          "label": "Priority 4",
+          "color": "#B3D936"
         },
         {
           "value": 3,
@@ -270,16 +269,16 @@
         },
         {
           "value": 4,
-          "label": "Priority 4",
-          "color": "#B3D936"
+          "label": "Priority 2",
+          "color": "#0B6629"
         },
         {
           "value": 5,
-          "label": "Priority 5",
-          "color": "#FEE668"
+          "label": "Priority 1 - highest",
+          "color": "#24403C"
         }
       ],
-      "domain": [5, 1],
+      "domain": [0, 5],
       "datasetID": "5ffe9f3bcebd41f2a43a6215b9e0df56",
       "description": "The Critical Lands and Waters Identification Project (CLIP) is a collection of spatial data that identify statewide priorities for a broad range of natural resources in Florida.  The CLIP Overall Priority is based on an aggregation of priorities for biodiversity, landscapes, and surface waters."
     },
@@ -295,36 +294,36 @@
         },
         {
           "value": 1,
-          "label": "Priority 1 - highest",
-          "color": "#4D001A"
+          "label": "Priority 6",
+          "color": "#FFC5BF"
         },
         {
           "value": 2,
-          "label": "Priority 2",
-          "color": "#8C0024"
-        },
-        {
-          "value": 3,
-          "label": "Priority 3",
-          "color": "#CA1E3B"
-        },
-        {
-          "value": 4,
-          "label": "Priority 4",
-          "color": "#EA5C68"
-        },
-        {
-          "value": 5,
           "label": "Priority 5",
           "color": "#FE9898"
         },
         {
+          "value": 3,
+          "label": "Priority 4",
+          "color": "#EA5C68"
+        },
+        {
+          "value": 4,
+          "label": "Priority 3",
+          "color": "#CA1E3B"
+        },
+        {
+          "value": 5,
+          "label": "Priority 2",
+          "color": "#8C0024"
+        },
+        {
           "value": 6,
-          "label": "Priority 6",
-          "color": "#FFC5BF"
+          "label": "Priority 1 - highest",
+          "color": "#4D001A"
         }
       ],
-      "domain": [6, 1],
+      "domain": [0, 6],
       "datasetID": "5ffe9f3bcebd41f2a43a6215b9e0df56",
       "description": "This dataset depicts the conservation priority of suitable habitat for one or more species of conservation need based on modeled species habitat."
     },
@@ -340,26 +339,26 @@
         },
         {
           "value": 1,
-          "label": "Priority 1 - highest",
-          "color": "#B31411"
+          "label": "Priority 4",
+          "color": "#012475"
         },
         {
           "value": 2,
-          "label": "Priority 2",
-          "color": "#73A410"
-        },
-        {
-          "value": 3,
           "label": "Priority 3",
           "color": "#F2D63A"
         },
         {
+          "value": 3,
+          "label": "Priority 2",
+          "color": "#73A410"
+        },
+        {
           "value": 4,
-          "label": "Priority 4",
-          "color": "#012475"
+          "label": "Priority 1 - highest",
+          "color": "#B31411"
         }
       ],
-      "domain": [4, 1],
+      "domain": [0, 4],
       "datasetID": "5ffe9f3bcebd41f2a43a6215b9e0df56",
       "description": "This dataset depicts natural communities derived from the Florida Fish and Wildlife Conservation Commission's Cooperative Land Cover dataset, prioritized based on global status rank and landscape context."
     }
