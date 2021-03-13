@@ -43,7 +43,6 @@ const InputTabs = ({ inputs, selectedInput, onSelectInput }) => {
     >
       {inputs.map(({ id, shortLabel, percent }, i) => (
         <React.Fragment key={id}>
-          {/* {i > 0 ? <Text sx={{ color: 'grey.3' }}>&nbsp;|&nbsp;</Text> : null} */}
           <Box
             sx={id === selectedInput ? activeSubTabCSS : inactiveSubTabCSS}
             onClick={handleSelectInput(id)}

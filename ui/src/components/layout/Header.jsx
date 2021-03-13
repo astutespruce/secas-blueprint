@@ -1,5 +1,5 @@
 import React from 'react'
-import { Flex, Heading } from 'theme-ui'
+import { Flex, Heading, Text } from 'theme-ui'
 
 import { Link } from 'components/link'
 import { useMapData } from 'components/data'
@@ -64,6 +64,12 @@ const Header = () => {
                     flex: '0 1 auto',
                   }}
                 >
+                  <Text
+                    as="span"
+                    sx={{ display: 'inline-block', fontSize: ['10px', 1, 2] }}
+                  >
+                    prototype
+                  </Text>{' '}
                   Southeast
                 </Heading>
                 <Heading
@@ -81,22 +87,7 @@ const Header = () => {
                     flexBasis: ['100%', 'unset'],
                   }}
                 >
-                  Conservation Blueprint
-                </Heading>
-                <Heading
-                  as="h1"
-                  sx={{
-                    m: 0,
-                    lineHeight: 1,
-                    fontWeight: 600,
-                    fontSize: [0, 0, 2],
-                    breakInside: 'avoid',
-                    flexGrow: 0,
-                    flexShrink: 0,
-                    flexBasis: ['100%', 'unset'],
-                  }}
-                >
-                  Explorer
+                  Conservation Blueprint Viewer
                 </Heading>
               </Flex>
             </Link>

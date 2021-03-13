@@ -18,6 +18,7 @@ export const useInputAreas = () => {
             cpaURL
             viewerURL
             viewerName
+            indicatorDescription
             valueField
             valueLabel
             valueCaption

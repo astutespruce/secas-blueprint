@@ -31,7 +31,8 @@
       }
     ],
     "domain": [2, 1],
-    "description": "The Florida Conservation Blueprint v1.3 is based on 9 terrestrial and 2 estuarine Conservation Assets were extracted from the Florida Cooperative Landcover (v3.3) dataset and prioritized into P1 (high) or P2 (medium) according to the Critical Lands and Waters Identification Project (v4.0) dataset."
+    "description": "The Florida Conservation Blueprint v1.3 is based on 5 terrestrial, 4 freshwater, and 2 marine / estuarine Conservation Assets that were extracted from the Florida Cooperative Landcover (v3.3) dataset and prioritized into P1 (high) or P2 (medium) based on input layers from the Critical Lands and Waters Identification Project (v4.0) dataset.",
+    "indicatorDescription": "Indicators shown below are Conservation Assets and Critical Lands and Waters Identification Project (v4.0) datasets that were used to create the Florida Conservation Blueprint. Additional indicators for each Conservation Asset are now available as part of the <a href='https://flcpa.databasin.org/galleries/b3351ad55d9a4978bacf7345a8bc4cf3/'>Florida Ecological Report Card</a> but are not included here."
   },
   {
     "id": "flm",

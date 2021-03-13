@@ -19,7 +19,7 @@ const BlueprintChart = ({ categories, blueprint, outsideSEPercent }) => {
   if (outsideSEPercent) {
     blueprintChartData.push({
       value: outsideSEPercent,
-      color: '#EEE',
+      color: '#fde0dd',
       label: 'Outside Southeast Blueprint',
       description: null,
     })

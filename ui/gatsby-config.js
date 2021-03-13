@@ -5,7 +5,7 @@ require('dotenv').config({
 module.exports = {
   siteMetadata: {
     siteUrl: process.env.SITE_URL || `https://localhost`,
-    title: `Southeast Conservation Blueprint`,
+    title: `prototype Southeast Conservation Blueprint`,
     description: `Provides user interface to explore the Southeast Conservation Blueprint and custom reports for user-defined areas of interest`,
     author: `Southeast Conservation Adaptation Strategy`,
     contactEmail: `hilary_morris@fws.gov`,

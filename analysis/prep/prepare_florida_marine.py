@@ -64,12 +64,12 @@ create_lowres_mask(
 
 ### Process indicators
 indicators = {
-    # "anthropogenic_habitat": "anthropohab/anthropohab",
+    "anthropogenic_habitat": "anthropohab/anthropohab",
     "nongame_biodiversity": "BioDivSpec/biodivspecies",
-    # "blueways": "Blueways/blueways",
+    "blueways": "Blueways/blueways",
     "managed_spp": "ManagedSppZip/managedspp",
-    # "protected_spp": "protecspp/protectedspp",
-    # "valued_habitat": "ValuedHabitat/valhab",
+    "protected_spp": "protecspp/protectedspp",
+    "valued_habitat": "ValuedHabitat/valhab",
 }
 
 

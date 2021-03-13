@@ -1,6 +1,12 @@
 <section>
     <h2 id="{{src.id}}IndicatorSummary">{{src.label}} Indicator Summary</h2>
 
+    {% if src.indicatorDescription %}
+        <p>
+            {{src.indicatorDescription}}
+        </p>
+    {% endif %}
+
     {% for ecosystem in ecosystems %}
         <div class="no-break">
             <div class="caption">

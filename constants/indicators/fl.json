@@ -4,11 +4,11 @@
     {
       "id": "fl:freshwater_conservation_assets",
       "filename": "freshwater_conservation_assets.tif",
-      "label": "Freshwater Conservation Asset Extent",
+      "label": "Freshwater Conservation Asset extent",
       "values": [
         {
           "value": 0,
-          "label": "Not a Freshwater Conservation Asset",
+          "label": "Not a freshwater Conservation Asset",
           "color": null
         },
         {
@@ -19,12 +19,12 @@
       ],
       "domain": [0, 1],
       "datasetID": "d6091c69d76243979b91456e28cb035a",
-      "description": "Freshwater Conservation Asset extent includes all freshwater conservation assets from the Blueprint v1.3 Conservation Assets dataset.  These include Freshwater Forested Wetlands, Freshwater Non-forested Wetlands, Ponds and Lakes, Rivers and Streams, and Springs."
+      "description": "Freshwater Conservation Asset extent includes all freshwater Conservation Assets from the Blueprint v1.3 Conservation Assets dataset.  These include Freshwater Forested Wetlands, Freshwater Non-forested Wetlands, Ponds and Lakes, Rivers and Streams, and Springs."
     },
     {
       "id": "fl:freshwater_clip4_floodplains",
       "filename": "clip4_floodplains.tif",
-      "label": "CLIP v4 Natural Floodplain Priority",
+      "label": "CLIP v4 natural floodplain priority",
       "values": [
         {
           "value": 0,
@@ -64,12 +64,12 @@
       ],
       "domain": [0, 6],
       "datasetID": "5ffe9f3bcebd41f2a43a6215b9e0df56",
-      "description": "This dataset the conservation priority of areas within the 100-year floodplain based on land use intensity and protected areas."
+      "description": "This dataset the conservation priority of areas within the 100-year floodplain based on land use intensity and protected areas.  Areas of Conservation Assets within Priority 1-2 were used as input for the Florida Blueprint."
     },
     {
       "id": "fl:freshwater_clip4_surface_water",
       "filename": "clip4_surface_water.tif",
-      "label": "CLIP v4 Significant Surface Waters",
+      "label": "CLIP v4 significant surface waters",
       "values": [
         {
           "value": 0,
@@ -114,12 +114,12 @@
       ],
       "domain": [0, 7],
       "datasetID": "5ffe9f3bcebd41f2a43a6215b9e0df56",
-      "description": "This dataset depicts the priority of significant surface waters, based on proximity and drainage into important surface waters such as aquatic preserves, shellfish harvesting areas, seagrass beds, springs, public water supply sources, watersheds important for rare fish species, and other factors."
+      "description": "This dataset depicts the priority of significant surface waters, based on proximity and drainage into important surface waters such as aquatic preserves, shellfish harvesting areas, seagrass beds, springs, public water supply sources, watersheds important for rare fish species, and other factors.  Areas of Conservation Assets within Priority 1-2 were used as input for the Florida Blueprint; contiguous patches less than 1 acre were removed."
     },
     {
       "id": "fl:freshwater_clip4_wetlands",
       "filename": "clip4_wetlands.tif",
-      "label": "CLIP v4 Wetlands",
+      "label": "CLIP v4 wetlands",
       "values": [
         {
           "value": 0,
@@ -159,16 +159,16 @@
       ],
       "domain": [0, 6],
       "datasetID": "5ffe9f3bcebd41f2a43a6215b9e0df56",
-      "description": "This dataset depicts conservation priorities of wetlands based on the location of wetlands within large intact natural landscapes."
+      "description": "This dataset depicts conservation priorities of wetlands based on the location of wetlands within large intact natural landscapes.  Areas of Conservation Assets within Priority 1-2 were used as input for the Florida Blueprint."
     },
     {
       "id": "fl:land_conservation_assets",
       "filename": "land_conservation_assets.tif",
-      "label": "Terrestrial Conservation Asset Extent",
+      "label": "Terrestrial Conservation Asset extent",
       "values": [
         {
           "value": 0,
-          "label": "Not a Terrestrial Conservation Asset",
+          "label": "Not a terrestrial Conservation Asset",
           "color": null
         },
         {
@@ -179,12 +179,12 @@
       ],
       "domain": [0, 1],
       "datasetID": "d6091c69d76243979b91456e28cb035a",
-      "description": "Terrestrial Conservation Asset extent includes all terrestrial conservation assets from the Blueprint v1.3 Conservation Assets dataset.  These include Coastal Uplands, Hardwod Forested Upland, High Pine and Scrub, Pine Flatwoods and Dry Prairie, and Working Lands 1 and 2."
+      "description": "Terrestrial Conservation Asset extent includes all terrestrial Conservation Assets from the Blueprint v1.3 Conservation Assets dataset.  These include Coastal Uplands, Hardwod Forested Upland, High Pine and Scrub, Pine Flatwoods and Dry Prairie, and Working Lands 1 and 2."
     },
     {
       "id": "fl:land_clip4_landscape_Resource",
       "filename": "clip4_landscape_resource.tif",
-      "label": "CLIP v4 Landscape Resource Priority",
+      "label": "CLIP v4 landscape resource priority",
       "values": [
         {
           "value": 0,
@@ -219,33 +219,33 @@
       ],
       "domain": [0, 5],
       "datasetID": "5ffe9f3bcebd41f2a43a6215b9e0df56",
-      "description": "This dataset depicts overall landscape resource priority based on a combination of Landscape Integrity Index and Florida Ecological Greenways Network datasets."
+      "description": "This dataset depicts overall landscape resource priority based on a combination of Landscape Integrity Index and Florida Ecological Greenways Network datasets.  Areas of Conservation Assets within Priority 1-3 were used as input for the Florida Blueprint."
     },
     {
       "id": "fl:marine_conservation_assets",
       "filename": "marine_conservation_assets.tif",
-      "label": "Marine and Estuarine Conservation Asset Extent",
+      "label": "Marine and estuarine Conservation Asset extent",
       "values": [
         {
           "value": 0,
-          "label": "Not a Marine or Estuarine Conservation Asset",
+          "label": "Not a marine or estuarine Conservation Asset",
           "color": null
         },
         {
           "value": 1,
-          "label": "Marine or Estuarine Conservation Asset",
+          "label": "Marine or estuarine Conservation Asset",
           "color": "#003F20"
         }
       ],
       "domain": [0, 1],
       "datasetID": "d6091c69d76243979b91456e28cb035a",
-      "description": "Marine and Estuarine Conservation Asset extent includes all marine and estuarine conservation assets from the Blueprint v1.3 Conservation Assets dataset.  These include Mangrove Swamp and Saltwater Marsh."
+      "description": "Marine and Estuarine Conservation Asset extent includes all marine and estuarine Conservation Assets from the Blueprint v1.3 Conservation Assets dataset.  These include Mangrove Swamp and Saltwater Marsh."
     },
 
     {
       "id": "fl:other_clip4_aggregate",
       "filename": "clip4_aggregate.tif",
-      "label": "CLIP v4 Overall Priority",
+      "label": "CLIP v4 overall priority",
       "values": [
         {
           "value": 0,
@@ -285,7 +285,7 @@
     {
       "id": "fl:other_clip4_fnai_habitat",
       "filename": "clip4_fnai_habitat.tif",
-      "label": "CLIP v4 Rare Species Habitat Conservation Priority",
+      "label": "CLIP v4 rare species habitat conservation priority",
       "values": [
         {
           "value": 0,
@@ -325,12 +325,12 @@
       ],
       "domain": [0, 6],
       "datasetID": "5ffe9f3bcebd41f2a43a6215b9e0df56",
-      "description": "This dataset depicts the conservation priority of suitable habitat for one or more species of conservation need based on modeled species habitat."
+      "description": "This dataset depicts the conservation priority of suitable habitat for one or more species of conservation need based on modeled species habitat.  Areas of Conservation Assets within Priority 1 were used as input for the Florida Blueprint."
     },
     {
       "id": "fl:other_clip4_natural_communities",
       "filename": "clip4_natural_communities.tif",
-      "label": "CLIP v4 Priority Natural Communities",
+      "label": "CLIP v4 priority natural communities",
       "values": [
         {
           "value": 0,
@@ -360,7 +360,7 @@
       ],
       "domain": [0, 4],
       "datasetID": "5ffe9f3bcebd41f2a43a6215b9e0df56",
-      "description": "This dataset depicts natural communities derived from the Florida Fish and Wildlife Conservation Commission's Cooperative Land Cover dataset, prioritized based on global status rank and landscape context."
+      "description": "This dataset depicts natural communities derived from the Florida Fish and Wildlife Conservation Commission's Cooperative Land Cover dataset, prioritized based on global status rank and landscape context.  Areas of Conservation Assets within Priority 1 that were not ponds/ lakes or freshwater non-forested wetlands were used as input for the Florida Blueprint."
     }
   ]
 }

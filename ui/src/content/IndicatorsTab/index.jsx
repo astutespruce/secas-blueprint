@@ -101,7 +101,9 @@ const IndicatorsTab = ({
   }
 
   if (selectedInput && inputIndex[selectedInput]) {
-    const { ecosystems, label: inputLabel } = inputIndex[selectedInput]
+    const { ecosystems, label: inputLabel, indicatorDescription } = inputIndex[
+      selectedInput
+    ]
 
     return (
       <>
@@ -114,6 +116,12 @@ const IndicatorsTab = ({
         <Box>
           {ecosystems && ecosystems.length > 0 ? (
             <>
+              {indicatorDescription ? (
+                <Box
+                  sx={{ pb: '1rem', px: '1rem', fontSize: 0, color: 'grey.8' }}
+                  dangerouslySetInnerHTML={{ __html: indicatorDescription }}
+                />
+              ) : null}
               {ecosystems.map((ecosystem) => (
                 <Ecosystem
                   key={ecosystem.id}

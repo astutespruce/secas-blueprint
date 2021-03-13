@@ -63,7 +63,7 @@ const getInputPriorities = ({
     priorities.push({
       value: -1,
       percent: outsideInputPercent,
-      color: '#BBB',
+      color: '#fff7f3',
       label: `Outside ${inputLabel} input area`,
     })
   }
@@ -72,7 +72,7 @@ const getInputPriorities = ({
     priorities.push({
       value: -2,
       percent: outsideSEPercent,
-      color: '#EEE',
+      color: '#fde0dd',
       label: 'Outside Southeast Blueprint',
     })
   }
