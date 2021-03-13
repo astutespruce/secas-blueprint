@@ -4,16 +4,16 @@
     {
       "id": "nn:freshwater_cores",
       "filename": "aquatic_cores.tif",
-      "label": "Aquatic Core Areas",
+      "label": "Aquatic core areas",
       "values": [
         {
           "value": 0,
-          "label": "Not an Aquatic Core Area",
+          "label": "Not an aquatic core area",
           "color": null
         },
         {
           "value": 1,
-          "label": "Aquatic Core Area",
+          "label": "Aquatic core area",
           "color": "#869FB7"
         }
       ],
@@ -24,7 +24,7 @@
     {
       "id": "nn:freshwater_integrity",
       "filename": "aquatic_integrity.tif",
-      "label": "Aquatic Index of Ecological Integrity",
+      "label": "Aquatic index of ecological integrity",
       "values": [
         {
           "value": 0,
@@ -84,7 +84,7 @@
     {
       "id": "nn:freshwater_resilience",
       "filename": "freshwater_resilience.tif",
-      "label": "Freshwater Resilience",
+      "label": "Freshwater resilience",
       "values": [
         {
           "value": 0,
@@ -93,22 +93,22 @@
         },
         {
           "value": 1,
-          "label": "Non-Complex: High Relative Score",
+          "label": "Non-complex: high relative score",
           "color": "#AAFF00"
         },
         {
           "value": 2,
-          "label": "Non-Complex: Highest Relative Score",
+          "label": "Non-complex: highest relative score",
           "color": "#98E600"
         },
         {
           "value": 3,
-          "label": "Complex: High Relative Resilience",
+          "label": "Complex: high relative resilience",
           "color": "#38A800"
         },
         {
           "value": 4,
-          "label": "Complex: Highest Relative Resilience",
+          "label": "Complex: highest relative resilience",
           "color": "#267300"
         }
       ],
@@ -119,16 +119,16 @@
     {
       "id": "nn:land_cores",
       "filename": "terrestrial_cores.tif",
-      "label": "Terrestrial Core Areas",
+      "label": "Terrestrial core areas",
       "values": [
         {
           "value": 0,
-          "label": "Not a Terrestrial Core Area",
+          "label": "Not a terrestrial core area",
           "color": null
         },
         {
           "value": 1,
-          "label": "Terrestrial Core Area",
+          "label": "Terrestrial core area",
           "color": "#AA8EC2"
         }
       ],
@@ -139,27 +139,27 @@
     {
       "id": "nn:other_imperiled_cores",
       "filename": "imperiled_cores.tif",
-      "label": "Core Habitat for Imperiled Species",
+      "label": "Core habitat for imperiled species",
       "values": [
         {
           "value": 0,
-          "label": "Not a Core Habitat for Imperiled Species",
+          "label": "Not a core habitat for imperiled species",
           "color": null
         },
         {
           "value": 1,
-          "label": "Core Habitat for Imperiled Species",
+          "label": "Core habitat for imperiled species",
           "color": "#E37900"
         }
       ],
       "domain": [0, 1],
       "datasetID": "3d670fad4c924e7ba2ae02f04a128256",
-      "description": "Core habitats can be viewed as the most intact areas that contain habitats likely to support high levels of biological diversity, rare species, and/or imperiled species in any given landscape. This map can help to focus attention on opportunities to conserve the most intact habitats for imperiled species, often including localities where such habitats persist in otherwise degraded surrounding landscapes. The data may also be considered as the basis for multi-species habitat conservation to secure a broad suite of imperiled species--before regulatory action is needed.  These cores were extracted from the Nature's Network Landscape Conservation Design aggregate dataset."
+      "description": "Core habitats represent the most intact areas that contain habitats likely to support high levels of biological diversity, rare species, and/or imperiled species in any given landscape. This map can help to focus attention on opportunities to conserve the most intact habitats for imperiled species, often including localities where such habitats persist in otherwise degraded surrounding landscapes. The data may also be considered as the basis for multi-species habitat conservation to secure a broad suite of imperiled species--before regulatory action is needed.  These cores were extracted from the Nature's Network Landscape Conservation Design aggregate dataset."
     },
     {
       "id": "nn:other_habitat_condition",
       "filename": "habitat_condition.tif",
-      "label": "Habitat Condition for Imperiled Species",
+      "label": "Habitat condition for imperiled species",
       "values": [
         {
           "value": 0,
@@ -179,21 +179,21 @@
       ],
       "domain": [0, 2],
       "datasetID": "fe56881af5d44d79934f4503dd438c80",
-      "description": "Areas scoring highly on Habitat Condition can be viewed as areas that are relatively intact which contain habitats likely to support high levels of biological diversity, rare species, and/or imperiled species in any given landscape. This map can help to focus attention on opportunities to conserve the most intact habitats for imperiled species, often including localities where such habitats persist in otherwise degraded surrounding landscapes. It can also be used as a tool for planning the recovery of populations and restoration of their habitats where habitat importance for imperiled species is high but ecological integrity is poor. The data may also be considered as the basis for multi-species habitat conservation to secure a broad suite of imperiled species–before regulatory action is needed."
+      "description": "Areas scoring highly on Habitat Condition represent areas that are relatively intact which contain habitats likely to support high levels of biological diversity, rare species, and/or imperiled species in any given landscape. This map can help to focus attention on opportunities to conserve the most intact habitats for imperiled species, often including localities where such habitats persist in otherwise degraded surrounding landscapes. It can also be used as a tool for planning the recovery of populations and restoration of their habitats where habitat importance for imperiled species is high but ecological integrity is poor. The data may also be considered as the basis for multi-species habitat conservation to secure a broad suite of imperiled species–before regulatory action is needed."
     },
     {
       "id": "nn:other_habitat_importance",
       "filename": "habitat_importance.tif",
-      "label": "Habitat Importance for Imperiled Species",
+      "label": "Habitat importance for imperiled species",
       "values": [
         {
           "value": 0,
-          "label": "Less Important",
+          "label": "Less important",
           "color": "#C5F7AA"
         },
         {
           "value": 1,
-          "label": "Moderately Important",
+          "label": "Moderately important",
           "color": "#6CC540"
         },
         {
@@ -204,12 +204,12 @@
       ],
       "domain": [0, 2],
       "datasetID": "4190a4ae52104109ba220e03e7000965",
-      "description": "Areas scoring highly on Habitat Importance can be viewed as habitats that are likely to support high levels of one or more imperiled terrestrial, wetland, or aquatic species, and may be particularly critical for species dependent on rare habitat classes. This map can help to focus attention on opportunities to conserve the most important habitats for imperiled species, often including localities where such habitats persist in otherwise degraded surrounding landscapes. It can also be used in combination with other tools for planning the recovery of populations and restoration of their habitats where habitat importance for imperiled species is high but ecological integrity is poor. The data may also be considered as the basis for multi-species habitat conservation to secure a broad suite of imperiled species--before regulatory action is needed."
+      "description": "Areas scoring highly on Habitat Importance represent habitats that are likely to support high levels of one or more imperiled terrestrial, wetland, or aquatic species, and may be particularly critical for species dependent on rare habitat classes. This map can help to focus attention on opportunities to conserve the most important habitats for imperiled species, often including localities where such habitats persist in otherwise degraded surrounding landscapes. It can also be used in combination with other tools for planning the recovery of populations and restoration of their habitats where habitat importance for imperiled species is high but ecological integrity is poor. The data may also be considered as the basis for multi-species habitat conservation to secure a broad suite of imperiled species--before regulatory action is needed."
     },
     {
       "id": "nn:other_integrity",
       "filename": "integrity.tif",
-      "label": "Index of Ecological Integrity, Stratified by Ecosystem",
+      "label": "Index of ecological integrity, stratified by ecosystem",
       "values": [
         {
           "value": 0,
