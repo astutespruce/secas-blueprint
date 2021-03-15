@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Button, Flex, Text } from 'theme-ui'
+import { Box, Button, Flex, Text } from 'theme-ui'
 import { TimesCircle } from '@emotion-icons/fa-regular'
 
 const MobileHeader = ({ type, name, location, onClose }) => (
@@ -24,7 +24,13 @@ const MobileHeader = ({ type, name, location, onClose }) => (
         {location.longitude.toPrecision(5)}°
       </Text>
     ) : (
-      <Text sx={{ pr: '0.5rem', flex: '1 1 auto', fontSize: 2 }}>{name}</Text>
+      <Text sx={{ pr: '0.5rem', flex: '1 1 auto', fontSize: 2 }}>
+        {name}
+
+        {type === 'subwatershed' ? (
+          <Box sx={{ fontSize: 0 }}>(HUC12)</Box>
+        ) : null}
+      </Text>
     )}
     <Button
       variant="mobileHeaderClose"

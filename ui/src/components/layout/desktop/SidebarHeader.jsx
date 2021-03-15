@@ -35,7 +35,23 @@ const SidebarHeader = ({ type, id, name, location, acres, onClose }) => {
               {location.longitude.toPrecision(5)}°
             </Text>
           ) : (
-            <Heading as="h3">{name}</Heading>
+            <Heading as="h3">
+              {name}
+
+              {type === 'subwatershed' ? (
+                <Text
+                  as="span"
+                  sx={{
+                    fontSize: 0,
+                    fontWeight: 'normal',
+                    ml: '0.5em',
+                    display: 'inline-block',
+                  }}
+                >
+                  (HUC12)
+                </Text>
+              ) : null}
+            </Heading>
           )}
           {acres !== null ? (
             <Text sx={{ color: 'grey.6', fontSize: [0, 1] }}>
