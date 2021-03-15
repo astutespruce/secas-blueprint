@@ -13,6 +13,7 @@ export default {
     text: '#333',
     background: '#fff',
     primary: '#4279A6', // gray-blue with more saturation
+    link: '#006fbe',
     accent: '#f5933b',
     error: '#D04608',
     ok: '#569031',
@@ -212,9 +213,9 @@ export default {
       fontWeight: 'body',
       lineHeight: 'body',
       a: {
-        color: 'primary',
+        color: 'link',
         textDecoration: 'none',
-        '&:visited': 'primary',
+        '&:visited': 'link',
         '&:hover': {
           textDecoration: 'underline',
         },

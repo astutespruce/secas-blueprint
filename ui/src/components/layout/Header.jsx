@@ -68,7 +68,7 @@ const Header = () => {
                     as="span"
                     sx={{ display: 'inline-block', fontSize: ['10px', 1, 2] }}
                   >
-                    prototype
+                    beta viewer
                   </Text>{' '}
                   Southeast
                 </Heading>
@@ -87,7 +87,7 @@ const Header = () => {
                     flexBasis: ['100%', 'unset'],
                   }}
                 >
-                  Conservation Blueprint Viewer
+                  Conservation Blueprint
                 </Heading>
               </Flex>
             </Link>
