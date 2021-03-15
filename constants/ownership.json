@@ -1,13 +1,21 @@
 [
-    { "value": "FED", "color": "#359935", "label": "Federal" },
-    { "value": "STAT", "color": "#9EB514", "label": "State/province" },
-    { "value": "TERR", "color": "#BEB49C", "label": "Territorial" },
-    { "value": "DIST", "color": "#8F7377", "label": "Regional" },
-    { "value": "LOC", "color": "#2E5597", "label": "Local" },
-    { "value": "JNT", "color": "#E3B0AF", "label": "Joint" },
-    { "value": "NGO", "color": "#E66914", "label": "Private non-profit" },
-    { "value": "PVT", "color": "#843D0B", "label": "Private" },
-    { "value": "TRIB", "color": "#9467bd", "label": "Tribal" },
-    { "value": "DESG", "color": "#009999", "label": "Designation" },
-    { "value": "UNK", "color": "#c49c94", "label": "Ownership unknown" }
+  { "value": "FED", "color": "#359935", "label": "Federal" },
+  { "value": "STAT", "color": "#9EB514", "label": "State/province" },
+  { "value": "TERR", "color": "#BEB49C", "label": "Territorial" },
+  { "value": "DIST", "color": "#8F7377", "label": "Regional" },
+  { "value": "LOC", "color": "#2E5597", "label": "Local" },
+  { "value": "JNT", "color": "#E3B0AF", "label": "Joint" },
+  {
+    "value": "NGO",
+    "color": "#E66914",
+    "label": "Privately-owned conservation land (non-profit)"
+  },
+  {
+    "value": "PVT",
+    "color": "#843D0B",
+    "label": "Privately-owned conservation land"
+  },
+  { "value": "TRIB", "color": "#9467bd", "label": "Tribal" },
+  { "value": "DESG", "color": "#009999", "label": "Designation" },
+  { "value": "UNK", "color": "#c49c94", "label": "Ownership unknown" }
 ]
