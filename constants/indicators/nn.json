@@ -19,7 +19,7 @@
       ],
       "domain": [0, 1],
       "datasetID": "3d670fad4c924e7ba2ae02f04a128256",
-      "description": "Aquatic Cores represent intact, well-connected rivers and stream reaches and lakes and ponds in the Northeast and Mid-Atlantic region that, if protected will continue to support a broad diversity of aquatic species and the ecosystems on which they depend.  They include lotic and lentic cores.  These cores were extracted from the Nature's Network Landscape Conservation Design aggregate dataset."
+      "description": "Aquatic Cores represent intact, well-connected rivers and stream reaches and lakes and ponds in the Northeast and Mid-Atlantic region that, if protected will continue to support a broad diversity of aquatic species and the ecosystems on which they depend.  They include lotic (moving water) and lentic (still water) cores.  These cores were extracted from the Nature's Network Landscape Conservation Design aggregate dataset."
     },
     {
       "id": "nn:freshwater_integrity",
