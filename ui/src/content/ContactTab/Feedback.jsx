@@ -16,6 +16,7 @@ const Feedback = () => (
       {' '}
       for your state
     </OutboundLink>
+    .
   </p>
 )
 
