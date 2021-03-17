@@ -112,13 +112,10 @@ create_lowres_mask(
 )
 
 ### Process Habitat Importance
-print("Extracting habitat condition...")
+print("Extracting habitat importance...")
 with rasterio.open(src_dir / "indicators/habitat_importance.tif") as src:
     dtype = src.dtypes[0]
-    data = extract_window(src, window, transform, nodata=src.nodata)
-
-    # apply input area mask
-    data = np.where(mask == 1, data, src.nodata).astype(dtype)
+    data = extract_window(src, window, transform, nodata=src.nodata).astype(dtype)
 
 
 table = read_dataframe(
@@ -127,14 +124,16 @@ table = read_dataframe(
 
 # Classes on Impt_sum used for symbology are 0-22 (highest), 23-77, 78-200 (lowest)
 # see the *.sd file for this dataset
-
 table["new_value"] = 0
 table.loc[table.Impt_sum <= 77, "new_value"] = 1
 table.loc[table.Impt_sum <= 22, "new_value"] = 2
 
-data = remap(
-    data, table[["Value", "new_value"]].values.astype(dtype), nodata=nodata
-).astype("uint8")
+data = remap(data, table[["Value", "new_value"]].values.astype(dtype), nodata=nodata)
+
+
+# apply input area mask
+data = np.where(mask == 1, data, nodata).astype("uint8")
+
 
 outfilename = out_dir / "habitat_importance.tif"
 write_raster(outfilename, data, transform, DATA_CRS, nodata=nodata)

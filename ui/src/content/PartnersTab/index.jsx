@@ -13,14 +13,14 @@ const PartnersTab = ({ ownership, protection, counties }) => {
   return (
     <Box sx={{ py: '2rem', pl: '1rem', pr: '2rem' }}>
       <Box as="section">
-        <Heading as="h3">Conserved Lands / Marine Areas Ownership</Heading>
+        <Heading as="h3">Conserved Areas Ownership</Heading>
         <Ownership ownership={ownership} />
       </Box>
 
       <Divider variant="styles.hr.light" sx={{ my: '3rem' }} />
 
       <Box as="section">
-        <Heading as="h3">Land / Marine Protection Status</Heading>
+        <Heading as="h3">Protection Status</Heading>
         <Protection protection={protection} />
       </Box>
 
