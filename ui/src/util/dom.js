@@ -7,7 +7,7 @@ export const isUnsupported =
     /MSIE 10/i.test(navigator.userAgent) ||
     /Trident/i.test(navigator.userAgent))
 
-export const isDebug = hasWindow && process.env.NODE_ENV === 'development'
+export const isLocalDev = hasWindow && process.env.NODE_ENV === 'development'
 
 /**
  * URI encode object key:value pairs
@@ -21,13 +21,13 @@ export const encodeParams = (obj) => {
 }
 
 export const saveToStorage = (key, data) => {
-    if (!hasWindow) return
+  if (!hasWindow) return
 
-    window.localStorage.setItem(key, JSON.stringify(data))
-  }
+  window.localStorage.setItem(key, JSON.stringify(data))
+}
 
-  export const getFromStorage = (key) => {
-    if (!hasWindow) return null
+export const getFromStorage = (key) => {
+  if (!hasWindow) return null
 
-    return JSON.parse(window.localStorage.getItem(key))
-  }
+  return JSON.parse(window.localStorage.getItem(key))
+}

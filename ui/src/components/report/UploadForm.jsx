@@ -1,18 +1,31 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
-import { Box, Button, Flex, Heading, Input, Text, Divider } from 'theme-ui'
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Input,
+  Text,
+  Divider,
+  Grid,
+  Image,
+} from 'theme-ui'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { getFromStorage } from 'util/dom'
+import Thumbnail1 from 'images/report/report_sm_1.png'
+import Thumbnail2 from 'images/report/report_sm_2.png'
+import Thumbnail3 from 'images/report/report_sm_3.png'
+import Thumbnail4 from 'images/report/report_sm_4.png'
+import Thumbnail5 from 'images/report/report_sm_5.png'
 
 import DropZone from './DropZone'
-import UserInfoForm from './UserInfoForm'
 
 import { siteMetadata } from '../../../gatsby-config'
 
 const { contactEmail } = siteMetadata
 
-const UploadForm = ({ onFileChange, onCreateReport, onSubmitUserInfo }) => {
+const UploadForm = ({ onFileChange, onCreateReport }) => {
   const methods = useForm({
     mode: 'onBlur',
   })
@@ -26,27 +39,13 @@ const UploadForm = ({ onFileChange, onCreateReport, onSubmitUserInfo }) => {
 
   const file = watch('file', null)
 
-  useEffect(() => {
-    const savedUserInfo = getFromStorage('reportForm')
-    if (savedUserInfo) {
-      Object.entries(savedUserInfo).forEach(([field, value]) => {
-        setValue(field, value)
-      })
-    }
-  }, [setValue])
-
   const handleSubmit = useCallback(
     (values) => {
-      const { areaName, file: fileProp, ...userInfo } = values
+      const { areaName, file: fileProp } = values
 
       onCreateReport(fileProp, areaName)
-
-      // only submit user info if it is non-empty
-      if (Object.values(userInfo).filter((v) => v).length > 0) {
-        onSubmitUserInfo({ ...userInfo, areaName, fileName: fileProp.name })
-      }
     },
-    [onCreateReport, onSubmitUserInfo]
+    [onCreateReport]
   )
 
   const handleResetFile = () => {
@@ -55,92 +54,141 @@ const UploadForm = ({ onFileChange, onCreateReport, onSubmitUserInfo }) => {
   }
 
   return (
-    <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(handleSubmit)}>
-        <Text as="p">
-          Upload a custom polygon to generate a PDF report of the Blueprint,
-          underlying indicators, and landscape-level threats for your area of
-          interest. If you don’t get what you expect or need help interpreting
-          the results, please <a href={`mailto:${contactEmail}`}>contact us</a>{' '}
-          - we&apos;re here to help!
-          <br />
-          <br />
-          You can upload a shapefile or ESRI File Geodatabase Feature Class
-          containing your area of interest, inside a zip file. Note: your zip
-          file must contain only one shapefile or Feature Class, and must
-          represent a relatively small area (full extent must be less than 3
-          million acres). For help analyzing larger areas, please{' '}
-          <a href={`mailto:${contactEmail}`}>contact us</a>.
+    <>
+      <FormProvider {...methods}>
+        <form onSubmit={methods.handleSubmit(handleSubmit)}>
+          <Grid columns={[0, 2]} gap={5} sx={{ mt: '2rem' }}>
+            <Box>
+              <Heading as="h3" sx={{ mb: '0.5rem' }}>
+                Area Name (optional):
+              </Heading>
+              <Input
+                type="text"
+                name="areaName"
+                {...register('areaName', { required: false })}
+              />
+
+              <Flex
+                sx={{
+                  mt: '2rem',
+                  mb: '0.5em',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <div>
+                  <Heading
+                    as="h3"
+                    sx={{
+                      mb: 0,
+                    }}
+                  >
+                    Choose Area of Interest:
+                  </Heading>
+                  <div>{file && <Text>{file.name}</Text>}</div>
+                </div>
+              </Flex>
+
+              <Box sx={{ display: file ? 'none' : 'block' }}>
+                <DropZone name="file" />
+              </Box>
+
+              <Divider />
+              <Flex
+                sx={{
+                  justifyContent: 'space-between',
+                }}
+              >
+                <Button
+                  variant="secondary"
+                  onClick={handleResetFile}
+                  sx={{ visibility: file ? 'visible' : 'hidden' }}
+                >
+                  Choose a different file
+                </Button>
+
+                <Button
+                  as="button"
+                  type="submit"
+                  variant={isValid ? 'primary' : 'disabled'}
+                  disabled={!isValid}
+                >
+                  Create Report
+                </Button>
+              </Flex>
+            </Box>
+
+            <Text as="p">
+              Upload a shapefile or ESRI File Geodatabase Feature Class
+              containing your area of interest to generate a detailed PDF report
+              of the Blueprint, underlying indicators, and landscape-level
+              threats for your area of interest. It includes a map and summary
+              table for every indicator present in the area, as well as
+              additional information about urbanization and sea-level rise.
+              <br />
+              <br />
+              <a href={`mailto:${contactEmail}`}>
+                <b>We are here</b>
+              </a>{' '}
+              to help you interpret and apply this information to your
+              particular application!
+              <br />
+              <br />
+              You can help us improve the Blueprint and this report by helping
+              us understand your use case: we use this information to provide
+              statistics about how the Blueprint is being used and to prioritize
+              improvements.
+              <br />
+              <br />
+              Note: your files must be in a zip file, and can include only one
+              shapefile or Feature Class, and must represent a relatively small
+              area (full extent must be less than 5 million acres). For help
+              analyzing larger areas, please{' '}
+              <a href={`mailto:${contactEmail}`}>contact us</a>.
+            </Text>
+          </Grid>
+        </form>
+      </FormProvider>
+
+      <Box
+        sx={{
+          mt: '2rem',
+          borderTop: '1px solid',
+          borderTopColor: 'grey.3',
+          pt: '2rem',
+          mb: '4rem',
+        }}
+      >
+        <Heading as="h3">Examples of what is inside</Heading>
+        <Grid
+          columns={5}
+          sx={{
+            mt: '1rem',
+            img: {
+              width: '250px',
+              border: '1px solid',
+              borderColor: 'grey.4',
+              boxShadow: `1px 1px 3px #000`,
+            },
+          }}
+        >
+          <Image src={Thumbnail1} />
+          <Image src={Thumbnail2} />
+          <Image src={Thumbnail3} />
+          <Image src={Thumbnail4} />
+          <Image src={Thumbnail5} />
+        </Grid>
+        <Text as="p" sx={{ mt: '1rem' }}>
+          ...and much more!
         </Text>
-
-        <Heading as="h3" sx={{ mt: '3rem', mb: '0.5rem' }}>
-          Area Name (optional):
-        </Heading>
-        <Input
-          type="text"
-          name="areaName"
-          {...register('areaName', { required: false })}
-        />
-
-        <Flex
-          sx={{
-            mt: '2rem',
-            mb: '0.5em',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <div>
-            <Heading
-              as="h3"
-              sx={{
-                mb: 0,
-              }}
-            >
-              Choose Area of Interest:
-            </Heading>
-            <div>{file && <Text>{file.name}</Text>}</div>
-          </div>
-        </Flex>
-
-        <Box sx={{ display: file ? 'none' : 'block' }}>
-          <DropZone name="file" />
-        </Box>
-
-        <UserInfoForm />
-
-        <Divider />
-        <Flex
-          sx={{
-            justifyContent: 'space-between',
-          }}
-        >
-          <Button
-            variant="secondary"
-            onClick={handleResetFile}
-            sx={{ visibility: file ? 'visible' : 'hidden' }}
-          >
-            Choose a different file
-          </Button>
-
-          <Button
-            as="button"
-            type="submit"
-            variant={isValid ? 'primary' : 'disabled'}
-            disabled={!isValid}
-          >
-            Create Report
-          </Button>
-        </Flex>
-      </form>
-    </FormProvider>
+      </Box>
+    </>
   )
 }
 
 UploadForm.propTypes = {
   onFileChange: PropTypes.func.isRequired,
   onCreateReport: PropTypes.func.isRequired,
-  onSubmitUserInfo: PropTypes.func.isRequired,
 }
 
 export default UploadForm

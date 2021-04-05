@@ -18,7 +18,7 @@ import {
 
 import { OutboundLink } from 'components/link'
 import { captureException } from 'util/log'
-import { uploadFile, submitUserInfo } from './api'
+import { uploadFile } from './api'
 import UploadForm from './UploadForm'
 import UploadError from './UploadError'
 import config from '../../../gatsby-config'
@@ -124,10 +124,6 @@ const UploadContainer = () => {
       reportURL: null,
       error: null,
     }))
-  }, [])
-
-  const handleSubmitUserInfo = useCallback((userInfo) => {
-    submitUserInfo(userInfo)
   }, [])
 
   return (
@@ -241,7 +237,6 @@ const UploadContainer = () => {
                 <UploadForm
                   onFileChange={handleReset}
                   onCreateReport={handleCreateReport}
-                  onSubmitUserInfo={handleSubmitUserInfo}
                 />
               )}
             </>

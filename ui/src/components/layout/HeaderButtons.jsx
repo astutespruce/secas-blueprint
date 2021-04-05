@@ -17,7 +17,7 @@ const HeaderButtons = () => (
       >
         <FileAlt size="1em" />
         <Box sx={{ marginLeft: '0.5rem', display: ['none', 'none', 'block'] }}>
-          Custom Report
+          Upload Shapefile
         </Box>
       </Button>
     </Link>

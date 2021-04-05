@@ -7,7 +7,7 @@ import { useMapData } from 'components/data'
 import { useSearch } from 'components/search'
 import { useBreakpoints } from 'components/layout'
 
-import { hasWindow } from 'util/dom'
+import { hasWindow, isLocalDev } from 'util/dom'
 import { useIsEqualEffect } from 'util/hooks'
 import { getCenterAndZoom } from './util'
 import { config, sources, layers } from './config'
@@ -79,6 +79,14 @@ const Map = () => {
     }
 
     map.on('load', () => {
+      // due to styling components loading at different types, the containing
+      // nodes don't always have height set; force larger view
+      if (isLocalDev) {
+        map.resize()
+        const { center, zoom } = getCenterAndZoom(mapNode.current, bounds, 0.1)
+        map.setZoom(zoom)
+      }
+
       // add sources
       Object.entries(sources).forEach(([id, source]) => {
         map.addSource(id, source)

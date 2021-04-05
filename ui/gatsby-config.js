@@ -17,13 +17,6 @@ module.exports = {
     sentryENV: process.env.GATSBY_SENTRY_ENV || 'development',
     googleAnalyticsId: process.env.GATSBY_GOOGLE_ANALYTICS_ID,
     mapboxToken: process.env.GATSBY_MAPBOX_API_TOKEN,
-    msFormURL: process.env.GATSBY_MS_FORM_URL,
-    msFormEmail: process.env.GATSBY_MS_FORM_EMAIL,
-    msFormName: process.env.GATSBY_MS_FORM_NAME,
-    msFormOrg: process.env.GATSBY_MS_FORM_ORG,
-    msFormUse: process.env.GATSBY_MS_FORM_USE,
-    msFormAreaName: process.env.GATSBY_MS_FORM_AREANAME,
-    msFormFileName: process.env.GATSBY_MS_FORM_FILENAME,
   },
   flags: {
     // FAST_DEV: true,
