@@ -79,7 +79,7 @@ const UploadForm = ({ onFileChange, onCreateReport, onSubmitUserInfo }) => {
         <Input
           type="text"
           name="areaName"
-          ref={register({ required: false })}
+          {...register('areaName', { required: false })}
         />
 
         <Flex

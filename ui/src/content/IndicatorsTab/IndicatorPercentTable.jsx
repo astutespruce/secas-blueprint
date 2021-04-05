@@ -77,7 +77,7 @@ const IndicatorPercentTable = ({ type, values, goodThreshold }) => {
             <Divider variant="styles.hr.dashed" sx={{ mb: '1.5rem' }} />
             <Box>
               {remainders.map(({ value, label, percent }) => (
-                <Flex key={value} sx={{ mt: '1rem' }}>
+                <Flex key={value || label} sx={{ mt: '1rem' }}>
                   <Text sx={labelCSS} />
                   <IndicatorPercentChart
                     value={value}
@@ -104,7 +104,10 @@ const IndicatorPercentTable = ({ type, values, goodThreshold }) => {
   return (
     <Box sx={{ my: '2rem' }}>
       {goodPercents.map(({ value, label, percent, isHighValue }) => (
-        <Flex key={value} sx={{ '&:not(:first-of-type)': { mt: '1rem' } }}>
+        <Flex
+          key={value || label}
+          sx={{ '&:not(:first-of-type)': { mt: '1rem' } }}
+        >
           <Text sx={labelCSS}>
             {isHighValue && (
               <Flex sx={{ alignItems: 'center' }}>
@@ -148,7 +151,7 @@ const IndicatorPercentTable = ({ type, values, goodThreshold }) => {
       </Box>
 
       {notGoodPercents.map(({ value, label, percent, isLowValue }) => (
-        <Flex key={value} sx={{ mt: '1rem', alignItems: 'flex-end' }}>
+        <Flex key={value || label} sx={{ mt: '1rem', alignItems: 'flex-end' }}>
           <Text sx={labelCSS}>
             {isLowValue && (
               <Flex sx={{ alignItems: 'center' }}>
@@ -171,7 +174,7 @@ const IndicatorPercentTable = ({ type, values, goodThreshold }) => {
           <Divider variant="styles.hr.dashed" sx={{ mb: '1.5rem' }} />
           <Box>
             {remainders.map(({ value, label, percent }) => (
-              <Flex key={value} sx={{ mt: '1rem' }}>
+              <Flex key={value || label} sx={{ mt: '1rem' }}>
                 <Text sx={labelCSS} />
                 <IndicatorPercentChart
                   value={value}
