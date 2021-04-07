@@ -127,6 +127,14 @@ const UploadForm = ({ onFileChange, onCreateReport }) => {
               additional information about urbanization and sea-level rise.
               <br />
               <br />
+              Don&apos;t have a shapefile? You can create one using{' '}
+              <OutboundLink to="https://geojson.io/#map=6/32.861/-81.519">
+                geojson.io
+              </OutboundLink>{' '}
+              to draw your area of interest, save as a shapefile, then upload
+              here.
+              <br />
+              <br />
               <a href={`mailto:${contactEmail}`}>
                 <b>We are here</b>
               </a>{' '}
