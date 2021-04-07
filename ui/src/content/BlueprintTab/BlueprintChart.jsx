@@ -45,7 +45,7 @@ const BlueprintChart = ({ categories, blueprint, outsideSEPercent }) => {
         <Text sx={{ mt: '1rem', fontSize: 1, color: 'grey.7' }}>
           {blueprintChartData
             .filter(({ description }) => description)
-            .map(({ label, description }, i) => (
+            .map(({ label, description, description2 = '' }, i) => (
               <React.Fragment key={label}>
                 {i > 0 ? (
                   <>
@@ -53,7 +53,7 @@ const BlueprintChart = ({ categories, blueprint, outsideSEPercent }) => {
                     <br />
                   </>
                 ) : null}
-                {label}: {description}
+                {label}: {description} {description2}
               </React.Fragment>
             ))}
         </Text>
