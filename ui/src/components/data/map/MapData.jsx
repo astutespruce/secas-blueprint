@@ -64,7 +64,6 @@ export const Provider = ({ children }) => {
   }, [])
 
   const setSelectedIndicator = useCallback((newSelectedIndicator) => {
-    console.log('set indicator', newSelectedIndicator)
     setState((prevState) => ({
       ...prevState,
       selectedIndicator: newSelectedIndicator,

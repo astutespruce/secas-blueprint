@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, memo } from 'react'
+import React, { useEffect, useRef, useState, useCallback, memo } from 'react'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { Box } from 'theme-ui'
@@ -42,6 +42,7 @@ const Map = () => {
   const mapNode = useRef(null)
   const mapRef = useRef(null)
   const [isLoaded, setIsLoaded] = useState(false)
+  const [isBlueprintVisible, setIsBlueprintVisible] = useState(true)
   const highlightIDRef = useRef(null)
   const locationMarkerRef = useRef(null)
 
@@ -207,6 +208,21 @@ const Map = () => {
     }
   }, [location, isLoaded])
 
+  const handleToggleBlueprintVisibile = useCallback(() => {
+    const { current: map } = mapRef
+    if (!map) return
+
+    setIsBlueprintVisible((prevVisible) => {
+      const newIsVisible = !prevVisible
+      if (newIsVisible) {
+        map.setPaintProperty('blueprint', 'raster-opacity', 0.6)
+      } else {
+        map.setPaintProperty('blueprint', 'raster-opacity', 0)
+      }
+      return newIsVisible
+    })
+  }, [])
+
   // if there is no window, we cannot render this component
   if (!hasWindow) {
     return null
@@ -225,7 +241,12 @@ const Map = () => {
     >
       <div ref={mapNode} style={{ width: '100%', height: '100%' }} />
 
-      {!isMobile ? <Legend /> : null}
+      {!isMobile ? (
+        <Legend
+          isVisible={isBlueprintVisible}
+          onToggleVisibility={handleToggleBlueprintVisibile}
+        />
+      ) : null}
 
       <MapModeToggle map={mapRef.current} isMobile={isMobile} />
 

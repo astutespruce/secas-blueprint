@@ -90,7 +90,6 @@ const IndicatorsTab = ({
     }
 
     if (!indicatorsIndex[selectedIndicator]) {
-      console.log('indicator not present, reset', selectedIndicator)
       // reset selected indicator, it isn't present in this set (outside valid ecosystems or input area)
       setSelectedIndicator(null)
     }
@@ -114,12 +113,6 @@ const IndicatorsTab = ({
       </Text>
     )
   }
-
-  console.log(
-    'selectedIndicaotr',
-    selectedIndicator,
-    indicatorsIndex[selectedIndicator]
-  )
 
   if (selectedIndicator && indicatorsIndex[selectedIndicator]) {
     return (

@@ -39,7 +39,7 @@ const InputTabs = ({ inputs, selectedInput, onSelectInput }) => {
         textAlign: 'center',
       }}
     >
-      {inputs.map(({ id, shortLabel, percent }, i) => (
+      {inputs.map(({ id, shortLabel, percent }) => (
         <React.Fragment key={id}>
           <Box
             sx={id === selectedInput ? activeSubTabCSS : inactiveSubTabCSS}

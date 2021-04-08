@@ -13,6 +13,9 @@ import {
 } from 'theme-ui'
 import { FormProvider, useForm } from 'react-hook-form'
 
+import { ContactModal } from 'components/modal'
+import { OutboundLink } from 'components/link'
+
 import Thumbnail1 from 'images/report/report_sm_1.png'
 import Thumbnail2 from 'images/report/report_sm_2.png'
 import Thumbnail3 from 'images/report/report_sm_3.png'
@@ -21,9 +24,12 @@ import Thumbnail5 from 'images/report/report_sm_5.png'
 
 import DropZone from './DropZone'
 
-import { siteMetadata } from '../../../gatsby-config'
-
-const { contactEmail } = siteMetadata
+const linkCSS = {
+  display: 'inline-block',
+  color: 'link',
+  cursor: 'pointer',
+  '&:hover': { textDecoration: 'underline' },
+}
 
 const UploadForm = ({ onFileChange, onCreateReport }) => {
   const methods = useForm({
@@ -135,9 +141,11 @@ const UploadForm = ({ onFileChange, onCreateReport }) => {
               here.
               <br />
               <br />
-              <a href={`mailto:${contactEmail}`}>
-                <b>We are here</b>
-              </a>{' '}
+              <ContactModal>
+                <Text sx={linkCSS}>
+                  <b>We are here</b>
+                </Text>
+              </ContactModal>{' '}
               to help you interpret and apply this information to your
               particular application!
               <br />
@@ -152,7 +160,10 @@ const UploadForm = ({ onFileChange, onCreateReport }) => {
               shapefile or Feature Class, and must represent a relatively small
               area (full extent must be less than 5 million acres). For help
               analyzing larger areas, please{' '}
-              <a href={`mailto:${contactEmail}`}>contact us</a>.
+              <ContactModal>
+                <Text sx={linkCSS}>contact us</Text>
+              </ContactModal>
+              .
             </Text>
           </Grid>
         </form>

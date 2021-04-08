@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
-import { Box } from 'theme-ui'
 
 import Modal from './Modal'
 
@@ -17,7 +16,7 @@ const BoundModal = ({ anchorNode, children, title }) => {
 
   return (
     <>
-      <Box onClick={handleOpen}>{anchorNode}</Box>
+      <span onClick={handleOpen}>{anchorNode}</span>
 
       {isOpen ? (
         <Modal title={title} onClose={handleClose}>
