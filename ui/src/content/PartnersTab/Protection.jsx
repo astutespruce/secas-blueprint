@@ -11,12 +11,11 @@ const Protection = ({ protection }) => {
   const { protection: PROTECTION } = useOwnership()
 
   // handle empty protection information
-  const bars = PROTECTION.filter(({ id }) => (protection || {})[id]).map(
-    (category) => ({
-      ...category,
-      percent: protection[category.id],
-    })
-  )
+  const bars = PROTECTION.map((category) => ({
+    ...category,
+    percent: protection ? protection[category.id] || 0 : 0,
+    color: '#2ca02c',
+  }))
 
   const total = sum(bars.map(({ percent }) => Math.min(percent, 100)))
 

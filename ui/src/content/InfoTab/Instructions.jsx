@@ -137,10 +137,10 @@ const DesktopInstructions = () => (
       To create a custom report for a specific area of interest:
     </Heading>
     <Text as="p" sx={{ mt: '0.25rem' }}>
-      Click on the &quot;Custom Report&quot; button in the upper right. You will
-      be able to upload your area of interest and create a detailed PDF report
-      of the Blueprint, underlying indicators, and landscape-level threats for
-      this summary area.
+      Click on the &quot;Upload Shapefile&quot; button in the upper right. You
+      will be able to upload your area of interest and create a detailed PDF
+      report of the Blueprint, underlying indicators, and landscape-level
+      threats for this summary area.
     </Text>
 
     <Heading as="h4" sx={{ mt: '2rem' }}>

@@ -12,12 +12,11 @@ const Ownership = ({ ownership }) => {
   const { ownership: OWNERSHIP } = useOwnership()
 
   // handle empty ownership information
-  const bars = OWNERSHIP.filter(({ id }) => (ownership || {})[id]).map(
-    (category) => ({
-      ...category,
-      percent: ownership[category.id],
-    })
-  )
+  const bars = OWNERSHIP.map((category) => ({
+    ...category,
+    percent: ownership ? ownership[category.id] || 0 : 0,
+    color: '#2ca02c',
+  }))
 
   const total = sum(bars.map(({ percent }) => Math.min(percent, 100)))
 

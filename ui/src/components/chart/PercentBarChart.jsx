@@ -18,9 +18,18 @@ const PercentBarChart = ({ label, percent, color, ...props }) => (
         fontSize: 1,
         flexWrap: 'nowrap',
         alignItems: 'flex-end',
+        opacity: percent > 0 ? 1 : 0.5,
       }}
     >
-      <Text sx={{ flex: '1 1 auto', mr: '1em' }}>{label}</Text>
+      <Text
+        sx={{
+          flex: '1 1 auto',
+          mr: '1em',
+          color: percent > 0 ? 'inherit' : 'grey.6',
+        }}
+      >
+        {label}
+      </Text>
       <Text sx={{ color: 'grey.7', flex: '0 0 auto', fontSize: 0 }}>
         {formatPercent(percent)}% of area
       </Text>
@@ -30,18 +39,20 @@ const PercentBarChart = ({ label, percent, color, ...props }) => (
       value={percent}
       max={100}
       color={color}
+      sx={{ opacity: percent > 0 ? 1 : 0.5 }}
     />
   </Box>
 )
 
 PercentBarChart.propTypes = {
   label: PropTypes.string.isRequired,
-  percent: PropTypes.number.isRequired,
+  percent: PropTypes.number,
   color: PropTypes.string,
 }
 
 PercentBarChart.defaultProps = {
   color: theme.colors.primary,
+  percent: 0,
 }
 
 export default PercentBarChart
