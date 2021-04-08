@@ -3,8 +3,9 @@ import PropTypes from 'prop-types'
 import { Box, Text } from 'theme-ui'
 
 import { OutboundLink } from 'components/link'
+import { useMapData } from 'components/data'
 import { indexBy, flatten } from 'util/data'
-import { useIsEqualLayoutEffect } from 'util/hooks'
+import { useIsEqualLayoutEffect, useIsEqualEffect } from 'util/hooks'
 
 import InputTabs from './InputTabs'
 import Ecosystem from './Ecosystem'
@@ -18,8 +19,10 @@ const IndicatorsTab = ({
   analysisAcres,
   blueprintAcres,
 }) => {
+  const { selectedIndicator, setSelectedIndicator } = useMapData()
+
   // index indicators by ID for lookup on selection
-  const indicatorIndex = indexBy(
+  const indicatorsIndex = indexBy(
     flatten(
       Object.values(rawIndicators).map(({ indicators }) =>
         Object.values(indicators)
@@ -39,7 +42,9 @@ const IndicatorsTab = ({
   const [selectedInput, setSelectedInput] = useState(
     rawInputs.length > 0 ? rawInputs[0].id : null
   )
-  const [selectedIndicator, setSelectedIndicator] = useState(null)
+
+  // const [selectedIndicator, setSelectedIndicator] = useState(null)
+
   // update selected input for a new area
   useIsEqualLayoutEffect(() => {
     if (!inputIndex[selectedInput]) {
@@ -47,37 +52,60 @@ const IndicatorsTab = ({
     }
   }, [inputIndex, rawInputs])
 
-  // Update selected indicator for a new area
-  useIsEqualLayoutEffect(() => {
-    if (selectedIndicator === null) {
+  // // Update selected indicator for a new area
+  // useIsEqualLayoutEffect(() => {
+  //   if (selectedIndicator === null) {
+  //     return
+  //   }
+
+  //   if (indicatorsIndex[selectedIndicator.id]) {
+  //     // Update the selected indicator if still available in the new area
+  //     setSelectedIndicator({
+  //       ...indicatorsIndex[selectedIndicator.id],
+  //       input: inputIndex[selectedIndicator.id.split(':')[0]],
+  //     })
+  //   } else {
+  //     // reset selected indicator, it isn't present in this set
+  //     setSelectedIndicator(() => null)
+  //   }
+  // }, [rawIndicators])
+
+  // const handleSelectIndicator = useCallback(
+  //   (indicator) => {
+  //     // splice in input info
+  //     setSelectedIndicator(
+  //       indicator !== null
+  //         ? { ...indicator, input: inputIndex[indicator.id.split(':')[0]] }
+  //         : null
+  //     )
+  //   },
+  //   [inputIndex]
+  // )
+
+  // const handleCloseIndicator = useCallback(() => setSelectedIndicator(null), [])
+
+  useIsEqualEffect(() => {
+    if (!selectedIndicator) {
       return
     }
 
-    if (indicatorIndex[selectedIndicator.id]) {
-      // Update the selected indicator if still available in the new area
-      setSelectedIndicator({
-        ...indicatorIndex[selectedIndicator.id],
-        input: inputIndex[selectedIndicator.id.split(':')[0]],
-      })
-    } else {
-      // reset selected indicator, it isn't present in this set
-      setSelectedIndicator(() => null)
+    if (!indicatorsIndex[selectedIndicator]) {
+      console.log('indicator not present, reset', selectedIndicator)
+      // reset selected indicator, it isn't present in this set (outside valid ecosystems or input area)
+      setSelectedIndicator(null)
     }
-  }, [rawIndicators])
+  }, [indicatorsIndex, selectedIndicator])
 
   const handleSelectIndicator = useCallback(
     (indicator) => {
-      // splice in input info
-      setSelectedIndicator(
-        indicator !== null
-          ? { ...indicator, input: inputIndex[indicator.id.split(':')[0]] }
-          : null
-      )
+      setSelectedIndicator(indicator.id)
     },
-    [inputIndex]
+    [setSelectedIndicator]
   )
 
-  const handleCloseIndicator = useCallback(() => setSelectedIndicator(null), [])
+  const handleCloseIndicator = useCallback(() => setSelectedIndicator(null), [
+    setSelectedIndicator,
+  ])
 
   if (selectedInput === null) {
     return (
@@ -87,7 +115,13 @@ const IndicatorsTab = ({
     )
   }
 
-  if (selectedIndicator) {
+  console.log(
+    'selectedIndicaotr',
+    selectedIndicator,
+    indicatorsIndex[selectedIndicator]
+  )
+
+  if (selectedIndicator && indicatorsIndex[selectedIndicator]) {
     return (
       <IndicatorDetails
         type={type}
@@ -95,7 +129,8 @@ const IndicatorsTab = ({
         analysisAcres={analysisAcres}
         blueprintAcres={blueprintAcres}
         onClose={handleCloseIndicator}
-        {...selectedIndicator}
+        input={inputIndex[selectedIndicator.split(':')[0]]}
+        {...indicatorsIndex[selectedIndicator]}
       />
     )
   }

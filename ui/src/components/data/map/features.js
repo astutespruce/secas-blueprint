@@ -3,7 +3,6 @@ import {
   parsePipeEncodedValues,
   parseDeltaEncodedValues,
   parseDictEncodedValues,
-  percentsToAvg,
   indexBy,
   sortByFuncMultiple,
   sum,
@@ -27,46 +26,56 @@ const isEmpty = (text) => {
 /**
  * Extract dictionary-encoded counts and means
  * @param {Object} packedPercents
- * @param {Object} means
  * @param {Object} ecosystemInfo - array of ecosystem info
  * @param {Object} indicatorInfo - lookup of indicator info by index
  */
 const extractIndicators = (
   packedPercents,
-  means,
   ecosystemInfo,
-  indicatorInfo
+  indicatorInfo,
+  type
 ) => {
   const ecosystemIndex = indexBy(ecosystemInfo, 'id')
 
-  // merge incoming packed percents and means with indicator info
-  const merged = Object.entries(packedPercents).map(([k, v]) => {
-    const { values: valuesInfo, ...indicator } = indicatorInfo[k]
-    const percents = applyFactor(v, 0.1)
+  // merge incoming packed percents with indicator info
+  let indicators = indicatorInfo.map(
+    ({ values: valuesInfo, ...indicator }, i) => {
+      const present = !!packedPercents[i]
 
-    const mean = means[k] || null
-    const minValue = valuesInfo[0].value // minimum possible value for this indicator
+      const percents = present ? applyFactor(packedPercents[i], 0.1) : []
 
-    // merge percent into values
-    const values = valuesInfo.map(({ value, ...valueInfo }) => ({
-      value,
-      ...valueInfo,
-      percent: percents[value],
-    }))
+      // merge percent into values
+      const values = valuesInfo.map(({ value, ...valueInfo }) => ({
+        value,
+        ...valueInfo,
+        percent: present ? percents[value] : 0,
+      }))
 
-    return {
-      percent: percents,
-      avg:
-        mean !== null
-          ? mean
-          : percentsToAvg(values.map(({ percent: p }) => p)) + minValue,
-      ...indicator,
-      values,
-      ecosystem: ecosystemIndex[indicator.id.split(':')[1].split('_')[0]],
+      return {
+        percent: percents,
+        ...indicator,
+        values,
+        total: sum(values.map(({ percent: p }) => p)),
+        ecosystem: ecosystemIndex[indicator.id.split(':')[1].split('_')[0]],
+      }
     }
-  })
+  )
 
-  const indicators = indexBy(merged, 'id')
+  // includes indicators that may be present in coastal areas
+  const hasMarine =
+    indicators.filter(
+      ({ id, total }) => id.search('marine_') !== -1 && total > 0
+    ).length > 0
+
+  if (!hasMarine) {
+    // has no marine, likely inland, don't show any marine indicators
+    indicators = indicators.filter(({ id }) => id.search('marine_') === -1)
+  } else if (type === 'marine lease block') {
+    // has no inland
+    indicators = indicators.filter(({ id }) => id.search('marine_') !== -1)
+  }
+
+  indicators = indexBy(indicators, 'id')
 
   // aggregate these up by ecosystems for ecosystems that are present
   const ecosystemsPresent = new Set(
@@ -254,36 +263,36 @@ export const unpackFeatureData = (
   if (values.fl_indicators) {
     values.indicators.fl = extractIndicators(
       values.fl_indicators || {},
-      {},
       ecosystemInfo,
-      indicatorInfo.fl.indicators
+      indicatorInfo.fl.indicators,
+      values.type
     )
   }
 
   if (values.flm_indicators) {
     values.indicators.flm = extractIndicators(
       values.flm_indicators || {},
-      {},
       ecosystemInfo,
-      indicatorInfo.flm.indicators
+      indicatorInfo.flm.indicators,
+      values.type
     )
   }
 
   if (values.nn_indicators) {
     values.indicators.nn = extractIndicators(
       values.nn_indicators || {},
-      {},
       ecosystemInfo,
-      indicatorInfo.nn.indicators
+      indicatorInfo.nn.indicators,
+      values.type
     )
   }
 
   if (values.sa_indicators) {
     values.indicators.sa = extractIndicators(
       values.sa_indicators || {},
-      values.sa_indicator_avg || {},
       ecosystemInfo,
-      indicatorInfo.sa.indicators
+      indicatorInfo.sa.indicators,
+      values.type
     )
   }
 

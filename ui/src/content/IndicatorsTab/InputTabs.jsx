@@ -34,8 +34,6 @@ const InputTabs = ({ inputs, selectedInput, onSelectInput }) => {
       gap={0}
       sx={{
         justifyContent: 'space-around',
-        // py: '0.5rem',
-        // px: '1rem',
         mb: '1rem',
         lineHeight: 1.2,
         textAlign: 'center',

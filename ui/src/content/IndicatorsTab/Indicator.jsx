@@ -1,32 +1,58 @@
 import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
-import { Box, Text } from 'theme-ui'
+import { Check } from '@emotion-icons/fa-solid'
+import { Box, Flex, Text } from 'theme-ui'
 import { lighten } from '@theme-ui/color'
 
-import { useBreakpoints } from 'components/layout'
-
-import IndicatorAverageChart from './IndicatorAverageChart'
 import { IndicatorPropType } from './proptypes'
 
-const Indicator = ({ indicator, onSelect }) => {
-  const { label, avg, domain } = indicator
-
-  const breakpoint = useBreakpoints()
-  const isMobile = breakpoint === 0
+const IndicatorListItem = ({ indicator, onSelect }) => {
+  const { label } = indicator
 
   const handleClick = useCallback(() => {
     onSelect(indicator)
   }, [indicator, onSelect])
 
+  const present = indicator.total > 0
+
+  if (!present) {
+    return (
+      <Flex
+        sx={{
+          alignItems: 'baseline',
+          justifyContent: 'space-between',
+          px: '1rem',
+          py: '0.25rem',
+          color: 'grey.7',
+          cursor: 'default',
+          '&:not(:first-of-type)': {
+            borderTop: '2px solid',
+            borderTopColor: 'grey.1',
+          },
+        }}
+      >
+        <Text
+          sx={{
+            flex: '1 1 auto',
+            fontSize: 2,
+          }}
+        >
+          {label}
+        </Text>
+      </Flex>
+    )
+  }
+
   return (
-    <Box
+    <Flex
       onClick={handleClick}
       sx={{
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
         cursor: 'pointer',
+        color: 'primary',
         px: '1rem',
-        pt: '1rem',
-        pb: '2.5rem',
-        position: 'relative',
+        py: '0.25rem',
         '&:hover': {
           bg: lighten('grey.0', 0.01),
           '& label': {
@@ -41,39 +67,22 @@ const Indicator = ({ indicator, onSelect }) => {
     >
       <Text
         sx={{
-          color: 'primary',
           fontSize: 2,
-          fontWeight: 'bold',
+          mr: '0.5rem',
         }}
       >
         {label}
       </Text>
-
-      <IndicatorAverageChart value={avg} domain={domain} />
-
-      <Text
-        as="label"
-        sx={{
-          color: 'primary',
-          fontSize: 'small',
-          textAlign: 'center',
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          display: 'none',
-        }}
-      >
-        {isMobile ? 'tap' : 'click'} for more details
-      </Text>
-    </Box>
+      <Box>
+        <Check size="1rem" />
+      </Box>
+    </Flex>
   )
 }
 
-Indicator.propTypes = {
-  type: PropTypes.string.isRequired,
+IndicatorListItem.propTypes = {
   indicator: PropTypes.shape(IndicatorPropType).isRequired,
   onSelect: PropTypes.func.isRequired,
 }
 
-export default Indicator
+export default IndicatorListItem

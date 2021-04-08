@@ -14,9 +14,10 @@ export const Provider = ({ children }) => {
     indicators: indicatorInfo,
   } = useIndicators()
 
-  const [{ mapMode, data }, setState] = useState({
+  const [{ mapMode, data, selectedIndicator }, setState] = useState({
     mapMode: 'unit', // TODO: pixel, once supported
     data: null,
+    selectedIndicator: null,
   })
 
   const setData = useCallback(
@@ -25,6 +26,7 @@ export const Provider = ({ children }) => {
         setState((prevState) => ({
           ...prevState,
           data: null,
+          selectedIndicator: null,
         }))
         return
       }
@@ -38,6 +40,8 @@ export const Provider = ({ children }) => {
         indicatorInfo
       )
       console.log('transformed feature data', newData)
+
+      // TODO: if a different input area than indicator, set it to null
 
       setState((prevState) => ({
         ...prevState,
@@ -59,8 +63,26 @@ export const Provider = ({ children }) => {
     }))
   }, [])
 
+  const setSelectedIndicator = useCallback((newSelectedIndicator) => {
+    console.log('set indicator', newSelectedIndicator)
+    setState((prevState) => ({
+      ...prevState,
+      selectedIndicator: newSelectedIndicator,
+    }))
+  }, [])
+
   return (
-    <Context.Provider value={{ data, setData, unsetData, mapMode, setMapMode }}>
+    <Context.Provider
+      value={{
+        data,
+        setData,
+        unsetData,
+        mapMode,
+        setMapMode,
+        selectedIndicator,
+        setSelectedIndicator,
+      }}
+    >
       {children}
     </Context.Provider>
   )
