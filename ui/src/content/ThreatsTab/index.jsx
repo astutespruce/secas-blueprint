@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 
 import { Box, Text, Divider, Heading } from 'theme-ui'
 
+import NeedHelp from 'content/NeedHelp'
+
 import SLR from './SLR'
 import Urban from './Urban'
 
@@ -43,6 +45,8 @@ const ThreatsTab = ({ unitType, slr, urban }) => {
           </Text>
         )}
       </Box>
+
+      <NeedHelp />
     </Box>
   )
 }

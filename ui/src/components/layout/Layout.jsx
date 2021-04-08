@@ -9,6 +9,7 @@ import ErrorMessage from './ErrorMessage'
 import UnsupportedBrowser from './UnsupportedBrowser'
 import SEO from './SEO'
 import Header from './Header'
+import Footer from './Footer'
 import { BreakpointProvider } from './Breakpoints'
 import { siteMetadata } from '../../../gatsby-config'
 
@@ -50,6 +51,7 @@ const Layout = ({ children, title, overflowY }) => {
               )}
             </Box>
           )}
+          <Footer />
         </Flex>
       </SearchProvider>
     </BreakpointProvider>

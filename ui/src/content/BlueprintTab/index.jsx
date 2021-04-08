@@ -5,6 +5,7 @@ import { Box, Heading, Text } from 'theme-ui'
 
 import { useBlueprintPriorities, useInputAreas } from 'components/data'
 import { OutboundLink } from 'components/link'
+import NeedHelp from 'content/NeedHelp'
 
 import BlueprintChart from './BlueprintChart'
 import InputArea from './InputArea'
@@ -168,6 +169,8 @@ const BlueprintTab = ({
           </Box>
         </>
       ) : null}
+
+      <NeedHelp />
     </Box>
   )
 }

@@ -83,8 +83,8 @@ const Map = () => {
       // nodes don't always have height set; force larger view
       if (isLocalDev) {
         map.resize()
-        const { center, zoom } = getCenterAndZoom(mapNode.current, bounds, 0.1)
-        map.setZoom(zoom)
+        // const { center, zoom } = getCenterAndZoom(mapNode.current, bounds, 0.1)
+        // map.setZoom(zoom)
       }
 
       // add sources

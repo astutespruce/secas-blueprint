@@ -7,7 +7,6 @@ import { Tabs as BaseTabs } from 'components/tabs'
 const tabs = [
   { id: 'info', label: 'Info' },
   { id: 'find', label: 'Find Location' },
-  { id: 'contact', label: 'Contact' },
 ]
 
 const unitTabs = [

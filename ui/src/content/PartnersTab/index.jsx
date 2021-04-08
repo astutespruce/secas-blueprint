@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 
 import { Box, Divider, Heading, Text } from 'theme-ui'
 
+import NeedHelp from 'content/NeedHelp'
+
 import Ownership from './Ownership'
 import Protection from './Protection'
 import LTAList from './LTAList'
@@ -38,6 +40,8 @@ const PartnersTab = ({ ownership, protection, counties }) => {
           </Box>
         </>
       ) : null}
+
+      <NeedHelp />
     </Box>
   )
 }

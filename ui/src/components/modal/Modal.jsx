@@ -72,7 +72,7 @@ const Modal = ({ children, title, width, onClose }) => {
           </Flex>
         </Heading>
 
-        <Box sx={{ px: '0.5rem' }}>{children}</Box>
+        <Box sx={{ px: '0.5rem', py: '1rem' }}>{children}</Box>
       </Box>
     </Flex>,
     document.body

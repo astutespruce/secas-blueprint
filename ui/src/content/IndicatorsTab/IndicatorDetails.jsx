@@ -5,6 +5,7 @@ import { Reply } from '@emotion-icons/fa-solid'
 
 import { OutboundLink } from 'components/link'
 import { formatPercent } from 'util/format'
+import NeedHelp from 'content/NeedHelp'
 import { sum } from 'util/data'
 import theme from 'theme'
 
@@ -165,6 +166,7 @@ const IndicatorDetails = ({
             View this indicator in the Conservation Planning Atlas
           </OutboundLink>
         </Box>
+        <NeedHelp />
       </Box>
     </Flex>
   )
