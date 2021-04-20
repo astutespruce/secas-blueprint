@@ -15,7 +15,7 @@ const Ownership = ({ ownership }) => {
   const bars = OWNERSHIP.map((category) => ({
     ...category,
     percent: ownership ? ownership[category.id] || 0 : 0,
-    color: '#2ca02c',
+    color: 'grey.9',
   }))
 
   const total = sum(bars.map(({ percent }) => Math.min(percent, 100)))

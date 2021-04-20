@@ -8,6 +8,7 @@ import { OutboundLink } from 'components/link'
 import NeedHelp from 'content/NeedHelp'
 
 import BlueprintChart from './BlueprintChart'
+import PriorityCategories from './PriorityCategories'
 import InputArea from './InputArea'
 
 const getInputPriorities = ({
@@ -127,6 +128,14 @@ const BlueprintTab = ({
           blueprint={blueprint}
           outsideSEPercent={outsideSEPercent}
         />
+        {outsideSEPercent < 100 ? (
+          <PriorityCategories
+            categories={priorityCategories
+              .slice()
+              .reverse()
+              .filter(({ value }) => value > 0)}
+          />
+        ) : null}
       </Box>
 
       {inputs.length > 0 ? (

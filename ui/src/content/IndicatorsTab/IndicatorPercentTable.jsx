@@ -83,6 +83,7 @@ const IndicatorPercentTable = ({ type, values, goodThreshold }) => {
                     value={value}
                     label={label}
                     percent={percent}
+                    color="grey.4"
                   />
                 </Flex>
               ))}
@@ -120,7 +121,6 @@ const IndicatorPercentTable = ({ type, values, goodThreshold }) => {
             value={value}
             label={label}
             percent={percent}
-            isGood
           />
         </Flex>
       ))}
@@ -164,7 +164,6 @@ const IndicatorPercentTable = ({ type, values, goodThreshold }) => {
             value={value}
             label={label}
             percent={percent}
-            isGood={false}
           />
         </Flex>
       ))}
@@ -181,6 +180,7 @@ const IndicatorPercentTable = ({ type, values, goodThreshold }) => {
                   label={label}
                   percent={percent}
                   percentSuffix={type === 'pixel' ? '' : 'of area'}
+                  color="grey.4"
                 />
               </Flex>
             ))}

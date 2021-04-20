@@ -11,6 +11,7 @@ export const useBlueprintPriorities = () => {
       allBlueprintJson(sort: { fields: value, order: DESC }) {
         edges {
           node {
+            value
             color
             label
             shortLabel

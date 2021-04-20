@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { PieChart } from 'react-minimal-pie-chart'
-import { Flex, Text } from 'theme-ui'
+import { Flex } from 'theme-ui'
 
 import { PieChartLegend } from 'components/chart'
 
@@ -41,7 +41,7 @@ const BlueprintChart = ({ categories, blueprint, outsideSEPercent }) => {
         <PieChartLegend elements={blueprintChartData} />
       </Flex>
 
-      {outsideSEPercent < 100 ? (
+      {/* {outsideSEPercent < 100 ? (
         <Text sx={{ mt: '1rem', fontSize: 1, color: 'grey.7' }}>
           {blueprintChartData
             .filter(({ description }) => description)
@@ -57,7 +57,7 @@ const BlueprintChart = ({ categories, blueprint, outsideSEPercent }) => {
               </React.Fragment>
             ))}
         </Text>
-      ) : null}
+      ) : null} */}
     </>
   )
 }
