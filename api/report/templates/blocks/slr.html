@@ -1,6 +1,19 @@
 <div class="no-break">
     <h3 id="SLR">Sea-level rise</h3>
 
+    <p>
+        NOAA's sea-level rise (SLR) inundation models represent areas likely to
+        experience flooding at high tide under various SLR projections. These
+        models are not linked to a future timeframe. NOAA calculates the inundation footprint
+        at "mean higher high water", or the average highest daily tide. Darker
+        blue areas will experience flooding first, and at greater depth,
+        compared to lighter blue areas. Each projection also includes the areas
+        predicted to be inundated at lower levels of SLR. For example, at 4 ft
+        of SLR, the area predicted to experience inundation includes not only
+        areas covered by 4 ft projection, but also the 3 ft, 2 ft, 1 ft, and
+        current projections.
+    </p>
+
     {% if maps.slr %}
         <div class="map-container">
             <img src="data:image/png;base64,{{maps.slr}}" alt="Map for projected sea-level rise" class="map">
@@ -18,7 +31,7 @@
             </div>
 
             <div class="legend flex-grow">
-                <b>Depth of inundation by projected average highest daily tide due to sea level rise</b>
+                <b>Depth of flooding by projected average highest daily tide due to sea level rise</b>
                 <br/><br/>
                 {% for item in legends.slr %}
                     <div class="legend-element flex align-center no-margin">
@@ -42,7 +55,7 @@
     <!-- TODO: SLR figure - construct SVG? -->
 
     <div class="caption">
-        Table {{table.counter}}: Extent of inundation by projected average highest daily tide due to sea level rise{% if results.name %} within {{results.name}}{% if results.type %} {{results.type}}{% endif %}{% else %} in this area{% endif %}.
+        Table {{table.counter}}: Extent of flooding by projected average highest daily tide due to sea level rise{% if results.name %} within {{results.name}}{% if results.type %} {{results.type}}{% endif %}{% else %} in this area{% endif %}.
         Values from the <a href="https://coast.noaa.gov/slrdata/">NOAA sea-level rise inundation data</a>.  Note: areas
         are based on 15 meter pixels, unlike the 30 meter pixels used for the Blueprint and its inputs; this will cause
         the total acreage to be different.
@@ -52,7 +65,7 @@
     <table class="centered">
         <thead>
             <tr>
-                <th class="label">Depth of inundation (ft)</th>
+                <th class="label">Depth of flooding (ft)</th>
                 <th class="acres">Acres</th>
                 <th class="percent">Percent of Area</th>
             </tr>
@@ -65,8 +78,6 @@
                         &lt; {{loop.index}} foot
                     {% elif loop.index == 2 %}
                         {{loop.index - 1}} foot
-                    {% elif loop.last %}
-                        &ge; {{loop.index - 1}} feet
                     {% else %}
                         {{loop.index - 1}} feet
                     {% endif %}
