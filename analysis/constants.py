@@ -101,13 +101,13 @@ URBAN_LEGEND = [
 
 
 SLR_LEGEND = [
-    {"label": "< 1 foot", "color": "#002673"},
-    {"label": "1", "color": "#003BA1"},
-    {"label": "2", "color": "#0053D0"},
-    {"label": "3", "color": "#006EFF"},
-    {"label": "4", "color": "#40A0FF"},
-    {"label": "5", "color": "#80C9FF"},
-    {"label": "≥ 6 feet", "color": "#BFE9FF"},
+    {"label": "Current (already flooded at high tide)", "color": "#002673"},
+    {"label": "1 foot", "color": "#003BA1"},
+    {"label": "2 feet", "color": "#0053D0"},
+    {"label": "3 feet", "color": "#006EFF"},
+    {"label": "4 feet", "color": "#40A0FF"},
+    {"label": "5 feet", "color": "#80C9FF"},
+    {"label": "6 feet", "color": "#BFE9FF"},
 ]
 
 

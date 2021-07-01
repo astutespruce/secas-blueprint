@@ -11,7 +11,7 @@ import { LineChart } from 'components/chart'
 const SLR = ({ percents }) => (
   <>
     <Text sx={{ color: 'grey.7' }}>
-      Extent of inundation by projected sea level rise within this subwatershed:
+      Extent of flooding by projected sea level rise within this subwatershed:
     </Text>
 
     <Box
