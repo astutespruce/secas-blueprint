@@ -251,7 +251,7 @@ def summarize_by_aoi(shapes, bounds, outside_se_acres):
     df["percent"] = 100 * np.divide(df.acres, total_acres)
 
     # sort into correct order
-    df.sort_values(by=["blueprint", "value"], ascending=False, inplace=True)
+    df.sort_values(by=["blueprint", "value"], ascending=[False, True], inplace=True)
 
     priorities = df[["value", "blueprint", "label", "acres", "percent"]].to_dict(
         orient="records"
