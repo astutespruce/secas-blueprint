@@ -12,7 +12,7 @@ const Feedback = () => (
     <br />
     <br />
     Please reach out to the user support contact{' '}
-    <OutboundLink to="http://secassoutheast.org/contact">
+    <OutboundLink to="http://secassoutheast.org/staff">
       {' '}
       for your state
     </OutboundLink>

@@ -45,15 +45,13 @@ const Urban = ({ percents }) => (
     </Box>
 
     <Text sx={{ mt: '2rem', color: 'grey.7', fontSize: 1 }}>
-      Current (2009) urban extent estimated using the{' '}
-      <OutboundLink to="https://www.mrlc.gov/data">
-        National Land Cover Database
-      </OutboundLink>
-      . Projected urban extent from 2020 onward were derived from the{' '}
+      Urban growth estimates derived from the{' '}
       <OutboundLink to="http://www.basic.ncsu.edu/dsl/urb.html">
-        SLEUTH urban growth model
+        SLEUTH urbanization model
       </OutboundLink>
-      .
+      . Current (2009) urban based on developed landcover from the 2001 National
+      Landcover Database and areas of high road density from U.S. Census TIGER
+      Line data for 2000, 2006, 2008, and 2009.
     </Text>
   </>
 )

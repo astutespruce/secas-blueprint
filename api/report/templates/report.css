@@ -438,6 +438,10 @@ table tr.above-threshold td {
   margin-top: 4pt;
 }
 
+.legend .narrow-margin {
+  margin-top: 2pt !important;
+}
+
 .indicator {
   break-before: always;
 }
