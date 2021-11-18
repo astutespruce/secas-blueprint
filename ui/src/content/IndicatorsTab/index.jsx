@@ -206,7 +206,6 @@ IndicatorsTab.propTypes = {
           datasetID: PropTypes.string,
           continuous: PropTypes.bool,
           domain: PropTypes.arrayOf(PropTypes.number),
-          units: PropTypes.string,
           percent: PropTypes.arrayOf(PropTypes.number),
           goodThreshold: PropTypes.number,
           values: PropTypes.arrayOf(

@@ -12,7 +12,6 @@ export const IndicatorPropType = {
   description: PropTypes.string.isRequired,
   datasetID: PropTypes.string.isRequired,
   goodThreshold: PropTypes.number,
-  units: PropTypes.string,
   pixelValue: PropTypes.number,
   avg: PropTypes.number,
   total: PropTypes.number,
