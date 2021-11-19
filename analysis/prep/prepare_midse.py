@@ -30,7 +30,7 @@ mask, transform, window = get_input_area_mask("ms")
 
 print("Reading and warping MidSE Blueprint...")
 nodata = 65535  # force new nodata value outside known input range of values
-with rasterio.open(src_dir / "MS_SEB2020_Submit.img") as src:
+with rasterio.open(src_dir / "MidSE_2020_CVI.img") as src:
     vrt = WarpedVRT(
         src,
         width=window.width,
@@ -55,7 +55,7 @@ write_raster(
 
 
 print("Reclassifying data...")
-table = read_dataframe(src_dir / "MS_SEB2020_Submit.img.vat.dbf")
+table = read_dataframe(src_dir / "MidSE_2020_CVI.img.vat.dbf")
 table["priority"] = table.M_SEBcode.astype("uint8")
 remap_table = table[["Value", "priority"]].values.astype("uint16")
 

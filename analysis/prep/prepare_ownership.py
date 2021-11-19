@@ -1,12 +1,17 @@
-import os
+"""
+The original PADUS data contains invalid records.  In order to get around this, first run:
+ogr2ogr source_data/ownership/pad_us2_1.gpkg source_data/ownership/PAD_US2_1.gdb PADUS2_1Combined_Marine_Fee_Designation_Easement -progress
+# create index on state name to make query faster
+sqlite3 source_data/ownership/pad_us2_1.gpkg 'create index state_idx on PADUS2_1Combined_Marine_Fee_Designation_Easement(State_Nm);'
+"""
+
+
 from pathlib import Path
 import warnings
 
-import pandas as pd
 import geopandas as gp
-from geopandas.array import from_wkb
 import pygeos as pg
-from pyogrio import read_dataframe, write_dataframe, read_info
+from pyogrio import read_dataframe, write_dataframe
 from pyogrio.raw import read
 
 # suppress warnings about writing to feather
@@ -21,8 +26,8 @@ data_dir = Path("data")
 out_dir = data_dir / "inputs/boundaries"  # used as inputs for other steps
 tile_dir = data_dir / "for_tiles"
 
-gdb = src_dir / "PAD_US2_1.gdb"
-layer = "PADUS2_1Combined_Marine_Fee_Designation_Easement"
+# gdb = src_dir / "PAD_US2_1.gdb"
+# layer = "PADUS2_1Combined_Marine_Fee_Designation_Easement"
 
 bnd_df = gp.read_feather(out_dir / "se_boundary.feather", columns=["geometry"])
 
@@ -31,54 +36,76 @@ bnd_df = gp.read_feather(out_dir / "se_boundary.feather", columns=["geometry"])
 print("Processing PAD-US lands...")
 
 # this is a very large dataset with some invalid geometries so we have to read it in chunks
-count = read_info(gdb, layer=layer)["features"]
-chunk_size = 10000
+# count = read_info(gdb, layer=layer)["features"]
+# chunk_size = 10000
 
-merged = None
-for chunk in range(0, count, chunk_size):
-    print(f"Reading chunk {chunk} - {chunk+chunk_size -1}..")
-    # have to read it raw because of geometry errors
-    meta, geometry, field_data = read(
-        gdb,
-        layer=layer,
-        columns=[
-            "Category",
-            "State_Nm",
-            "Own_Type",
-            "GAP_Sts",
-            "Loc_Nm",
-            "Loc_Own",
-            "Agg_Src",
-        ],
-        force_2d=True,
-        skip_features=chunk,
-        max_features=chunk_size - 1,
-    )
+# merged = None
+# for chunk in range(0, count, chunk_size):
+#     print(f"Reading chunk {chunk} - {chunk+chunk_size -1}..")
+#     # have to read it raw because of geometry errors
+#     meta, geometry, field_data = read(
+#         gdb,
+#         layer=layer,
+#         columns=[
+#             "Category",
+#             "State_Nm",
+#             "Own_Type",
+#             "GAP_Sts",
+#             "Loc_Nm",
+#             "Loc_Own",
+#             "Agg_Src",
+#         ],
+#         force_2d=True,
+#         skip_features=chunk,
+#         max_features=chunk_size - 1,
+#     )
 
-    columns = meta["fields"].tolist()
-    data = {columns[i]: field_data[i] for i in range(len(columns))}
-    df = pd.DataFrame(data, columns=columns)
-    df["geometry"] = geometry
+#     columns = meta["fields"].tolist()
+#     data = {columns[i]: field_data[i] for i in range(len(columns))}
+#     df = pd.DataFrame(data, columns=columns)
+#     df["geometry"] = geometry
 
-    df = df.loc[df.State_Nm.isin(SE_STATES + ["UNKF"])].copy()
-    # drop BOEM lease block groups
-    df = df.loc[df.Agg_Src != "USGS_PADUS2_0Marine_BOEM_Block_Dissolve"].drop(
-        columns=["Agg_Src"]
-    )
+#     df = df.loc[df.State_Nm.isin(SE_STATES + ["UNKF"])].copy()
+#     # drop BOEM lease block groups
+#     df = df.loc[df.Agg_Src != "USGS_PADUS2_0Marine_BOEM_Block_Dissolve"].drop(
+#         columns=["Agg_Src"]
+#     )
 
-    if not len(df):
-        continue
+#     if not len(df):
+#         continue
 
-    if merged is None:
-        merged = df
+#     if merged is None:
+#         merged = df
 
-    else:
-        merged = merged.append(df, ignore_index=True)
+#     else:
+#         merged = merged.append(df, ignore_index=True)
 
-df = merged
-df["geometry"] = from_wkb(df.geometry)
+# df = merged
+# df["geometry"] = from_wkb(df.geometry)
+
+# read specific states
+states = ",".join(f"'{s}'" for s in SE_STATES + ["UNKF"])
+df = read_dataframe(
+    src_dir / "pad_us2_1.gpkg",
+    columns=[
+        "Category",
+        "State_Nm",
+        "Own_Type",
+        "GAP_Sts",
+        "Loc_Nm",
+        "Loc_Own",
+        "Agg_Src",
+    ],
+    where=f"State_Nm in ({states})",
+)
+
 # set the CRS, it is same as 5070 but not recognized properly
-df = gp.GeoDataFrame(df, geometry="geometry", crs=DATA_CRS)
+df = df.set_crs(DATA_CRS)
+
+# drop BOEM lease block groups
+df = df.loc[df.Agg_Src != "USGS_PADUS2_0Marine_BOEM_Block_Dissolve"].drop(
+    columns=["Agg_Src"]
+)
 
 tree = pg.STRtree(df.geometry.values.data)
 ix = tree.query(bnd_df.geometry.values.data[0], predicate="intersects")
@@ -92,11 +119,12 @@ df = explode(df).reset_index()
 # there are some geometry errors after cleaning up above, keep only polys
 df = df.loc[pg.get_type_id(df.geometry.values.data) == 3].copy()
 
-
+print("Writing files")
 df.to_feather(out_dir / "ownership.feather")
 write_dataframe(df, data_dir / "boundaries/ownership.gpkg", driver="GPKG")
 
 # Write for tiles
+print("Writing GeoJSON for tiles")
 write_dataframe(
     df[["geometry", "Own_Type", "GAP_Sts"]].to_crs(GEO_CRS),
     tile_dir / "ownership.geojson",
