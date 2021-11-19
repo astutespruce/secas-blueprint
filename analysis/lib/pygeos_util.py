@@ -321,7 +321,7 @@ def explode(df):
     GeoDataFrame
     """
     join_cols = [c for c in df.columns if not c == "geometry"]
-    geom, index = pg.get_parts(df.geometry.values.wreidata, return_index=True)
+    geom, index = pg.get_parts(df.geometry.values.data, return_index=True)
     return gp.GeoDataFrame(df[join_cols].take(index), geometry=geom, crs=df.crs)
 
 

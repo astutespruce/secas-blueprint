@@ -1,11 +1,14 @@
 from pathlib import Path
 
-import geopandas as gp
 import pandas as pd
-import pygeos as pg
 import rasterio
 from rasterio.features import rasterize
 from pyogrio import read_dataframe, write_dataframe
+
+# suppress warnings abuot writing to feather
+import warnings
+
+warnings.filterwarnings("ignore", message=".*initial implementation of Parquet.*")
 
 from analysis.constants import MASK_FACTOR
 from analysis.lib.pygeos_util import explode, to_dict
@@ -18,20 +21,19 @@ out_dir = data_dir / "inputs"
 bnd_dir = data_dir / "boundaries"
 json_dir = Path("constants")
 
-blueprint_filename = out_dir / "se_blueprint2020.tif"
+blueprint_filename = out_dir / "se_blueprint2021.tif"
 
 
 df = read_dataframe(
-    src_dir / "SE_Blueprint_v2020_Vectors.gdb", layer="InputAreas_SECAS_v2020_20201005"
+    src_dir / "SE_Blueprint_2021_Vectors.gdb", layer="InputAreas_SECAS_2021_20211117"
 )
 
 # some areas are null inputs, drop them
-df = df.loc[df.InputOverlapAreasSECAS_InputUsedIn2020.notnull()].copy()
+df = df.loc[df.InputOverlapAreasSECAS_InputUsedIn2021.notnull()].copy()
 
 
 # making valid takes a really long time, and probably not necessary
-# df["geometry"] = pg.make_valid(df.geometry.values.data)
-df["inputs"] = df.InputOverlapAreasSECAS_InputUsedIn2020.str.lower().apply(
+df["inputs"] = df.InputOverlapAreasSECAS_InputUsedIn2021.str.lower().apply(
     lambda x: x.replace("tx chat", "txchat")
     .replace("ok chat", "okchat")
     .replace(" ", "")
@@ -57,7 +59,7 @@ df = df.join(
     on="inputs",
 )
 
-write_dataframe(df, bnd_dir / "input_areas.gpkg", driver="GPKG")
+write_dataframe(df, bnd_dir / "input_areas.fgb")
 df.to_feather(out_dir / "boundaries/input_areas.feather")
 
 # Rasterize to match the blueprint

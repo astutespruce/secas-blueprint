@@ -10,7 +10,6 @@ import geopandas as gp
 import pandas as pd
 from pyogrio import read_dataframe, write_dataframe
 import pygeos as pg
-import numpy as np
 from progress.bar import Bar
 
 # suppress warnings abuot writing to feather
@@ -18,7 +17,7 @@ import warnings
 
 warnings.filterwarnings("ignore", message=".*initial implementation of Parquet.*")
 
-from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES, SE_STATES
+from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES
 from analysis.lib.pygeos_util import to_dict
 from analysis.lib.raster import calculate_percent_overlap
 
@@ -26,7 +25,7 @@ from analysis.lib.raster import calculate_percent_overlap
 src_dir = Path("source_data")
 data_dir = Path("data")
 analysis_dir = data_dir / "inputs/summary_units"
-bnd_dir = data_dir / "boundaries"  # GPKGs output for reference
+bnd_dir = data_dir / "boundaries"  # GIS files output for reference
 tile_dir = data_dir / "for_tiles"
 input_area_mask = data_dir / "inputs/input_areas_mask.tif"
 
@@ -95,7 +94,7 @@ huc12 = huc12.join(huc12_wgs84.bounds)
 
 # Save in EPSG:5070 for analysis
 huc12.to_feather(analysis_dir / "huc12.feather")
-write_dataframe(huc12, bnd_dir / "huc12.gpkg", driver="GPKG")
+write_dataframe(huc12, bnd_dir / "huc12.gpkg")
 
 
 ### Marine units
@@ -161,7 +160,7 @@ marine = marine.join(marine_wgs84.bounds)
 
 # Save in EPSG:5070 for analysis
 marine.to_feather(analysis_dir / "marine_blocks.feather")
-write_dataframe(marine, bnd_dir / "marine_blocks.gpkg", driver="GPKG")
+write_dataframe(marine, bnd_dir / "marine_blocks.gpkg")
 
 # ### Merge HUC12 and marine into single units file and export for creating tiles
 df = huc12_wgs84.append(marine_wgs84, ignore_index=True, sort=False)

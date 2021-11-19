@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-import pandas as pd
 import geopandas as gp
 import pygeos as pg
 from pyogrio.geopandas import read_dataframe, write_dataframe
@@ -28,8 +27,8 @@ if not tile_dir.exists():
 
 ### Extract the boundary
 bnd_df = read_dataframe(
-    src_dir / "blueprint/SE_Blueprint_v2020_Vectors.gdb",
-    layer="SECAS_Boundary_v2020_20201004",
+    src_dir / "blueprint/SE_Blueprint_2021_Vectors.gdb",
+    layer="SECAS_Boundary_2021_20211117",
 )[["geometry"]]
 # boundary has multiple geometries, union together and cleanup
 bnd_df = gp.GeoDataFrame(
@@ -38,8 +37,9 @@ bnd_df = gp.GeoDataFrame(
     crs=bnd_df.crs,
 )
 bnd_df.to_feather(out_dir / "se_boundary.feather")
-write_dataframe(bnd_df, data_dir / "boundaries/se_boundary.gpkg", driver="GPKG")
+write_dataframe(bnd_df, data_dir / "boundaries/se_boundary.fgb")
 
+# create GeoJSON for tiling
 bnd_geo = bnd_df.to_crs(GEO_CRS)
 write_dataframe(bnd_geo, tile_dir / "se_boundary.geojson", driver="GeoJSONSeq")
 
@@ -77,9 +77,9 @@ counties = (
 
 # select counties within the SA boundary
 tree = pg.STRtree(counties.geometry.values.data)
-ix = tree.query(bnd_df.geometry.values.data, predicate="intersects")
+ix = tree.query(bnd_df.geometry.values.data[0], predicate="intersects")
 counties = counties.iloc[ix].join(states, on="STATEFP").drop(columns=["STATEFP"])
 
 
-# write_dataframe(counties, out_dir / "counties.gpkg", driver="GPKG")
+# write_dataframe(counties, out_dir / "counties.gpkg")
 counties.to_feather(out_dir / "counties.feather")
