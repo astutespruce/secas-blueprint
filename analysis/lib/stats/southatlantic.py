@@ -18,7 +18,6 @@ from analysis.constants import (
 from analysis.lib.raster import (
     boundless_raster_geometry_mask,
     extract_count_in_geometry,
-    extract_zonal_mean,
     detect_data,
     summarize_raster_by_geometry,
 )
@@ -28,7 +27,6 @@ INDICATORS = ALL_INDICATORS["sa"]
 INDICATOR_INDEX = OrderedDict({indicator["id"]: indicator for indicator in INDICATORS})
 
 src_dir = Path("data/inputs/indicators/southatlantic")
-continuous_indicator_dir = Path("data/continuous_indicators/southatlantic")
 sa_filename = src_dir / "sa_blueprint.tif"
 sa_mask_filename = src_dir / "sa_blueprint_mask.tif"
 
@@ -149,9 +147,7 @@ def detect_indicators(geometries, indicators):
     return indicators_with_data
 
 
-def extract_by_geometry(
-    geometries, bounds, prescreen=False, marine=False, zonal_means=False
-):
+def extract_by_geometry(geometries, bounds, prescreen=False, marine=False):
     """Calculate the area of overlap between geometries and South Atlantic
     Conservation Blueprint dataset.
 
@@ -164,8 +160,6 @@ def extract_by_geometry(
         is overlap with this dataset
     marine : bool (default False)
         True for marine lease blocks, False otherwise.
-    zonal_means : bool (default False)
-        if True, will calculate zonal means for continuous indicators
 
     Returns
     -------
@@ -242,16 +236,6 @@ def extract_by_geometry(
             counts[range(0, min_value)] = 0
 
         results[id] = (counts * cellsize).round(ACRES_PRECISION).astype("float32")
-
-        if zonal_means and indicator.get("continuous"):
-            continuous_filename = continuous_indicator_dir / indicator[
-                "filename"
-            ].replace("_Binned", "")
-            mean = extract_zonal_mean(
-                continuous_filename, shape_mask, window, boundless=True
-            )
-            if mean is not None:
-                results[f"{id}_avg"] = mean
 
     return results
 
@@ -334,7 +318,6 @@ def summarize_by_unit(geometries, out_dir, marine=False):
         progress_label="Summarizing South Atlantic",
         bounds=SOUTHATLANTIC_BOUNDS,
         marine=marine,
-        zonal_means=True,
     )
 
 

@@ -1,18 +1,9 @@
-"""
-The original PADUS data contains invalid records.  In order to get around this, first run:
-ogr2ogr source_data/ownership/pad_us2_1.gpkg source_data/ownership/PAD_US2_1.gdb PADUS2_1Combined_Marine_Fee_Designation_Easement -progress
-# create index on state name to make query faster
-sqlite3 source_data/ownership/pad_us2_1.gpkg 'create index state_idx on PADUS2_1Combined_Marine_Fee_Designation_Easement(State_Nm);'
-"""
-
-
 from pathlib import Path
 import warnings
 
 import geopandas as gp
 import pygeos as pg
 from pyogrio import read_dataframe, write_dataframe
-from pyogrio.raw import read
 
 # suppress warnings about writing to feather
 warnings.filterwarnings("ignore", message=".*initial implementation of Parquet.*")

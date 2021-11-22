@@ -50,34 +50,34 @@ units_df = gp.read_feather(huc12_filename, columns=["id", "geometry"]).set_index
 geometries = pd.Series(units_df.geometry.values.data, index=units_df.index)
 
 # Summarize Blueprint and input areas
-summarize_bluprint_by_unit(geometries, out_dir=out_dir)
+# summarize_bluprint_by_unit(geometries, out_dir=out_dir)
 
-# Summarize current and projected urbanization
-summarize_urban_by_huc12(geometries)
+# # Summarize current and projected urbanization
+# summarize_urban_by_huc12(geometries)
 
-# Summarize projected sea level rise
-summarize_slr_by_huc12(geometries)
+# # Summarize projected sea level rise
+# summarize_slr_by_huc12(geometries)
 
 # Calculate overlap with ownership and protection
-summarize_ownership_by_unit(units_df, out_dir=out_dir)
+# summarize_ownership_by_unit(units_df, out_dir=out_dir)
 
-# Calculate overlap with counties
-summarize_counties_by_huc12(units_df)
+# # Calculate overlap with counties
+# summarize_counties_by_huc12(units_df)
 
-# Summarize CHAT for OK / TX
-summarize_chat_by_huc12(units_df)
+# # Summarize CHAT for OK / TX
+# summarize_chat_by_huc12(units_df)
 
-# Calculate overlap with Caribbean priority watersheds
-summarize_caribbean_by_huc12(units_df)
+# # Calculate overlap with Caribbean priority watersheds
+# summarize_caribbean_by_huc12(units_df)
 
-# Calculate area for Gulf Hypoxia
-summarize_gulf_hypoxia_by_huc12(geometries)
+# # Calculate area for Gulf Hypoxia
+# summarize_gulf_hypoxia_by_huc12(geometries)
 
-# Calculate area for Nature's Network
-summarize_natures_network_by_huc12(geometries)
+# # Calculate area for Nature's Network
+# summarize_natures_network_by_huc12(geometries)
 
-# Calculate area for NatureScape
-summarize_naturescape_by_huc12(geometries)
+# # Calculate area for NatureScape
+# summarize_naturescape_by_huc12(geometries)
 
 # Summarize South Atlantic
 summarize_southatlantic_by_unit(geometries, out_dir=out_dir, marine=False)

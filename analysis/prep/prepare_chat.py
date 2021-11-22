@@ -4,10 +4,7 @@ from pathlib import Path
 import pandas as pd
 import pygeos as pg
 import geopandas as gp
-import numpy as np
 from pyogrio import read_dataframe, write_dataframe
-
-from analysis.lib.pygeos_util import intersection
 
 from analysis.constants import DATA_CRS, INPUTS, CHAT_CATEGORIES
 
