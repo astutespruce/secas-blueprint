@@ -2,8 +2,10 @@ from pathlib import Path
 import os
 
 from pyogrio import read_dataframe, write_dataframe
-import pygeos as pg
-import geopandas as gp
+
+import warnings
+
+warnings.filterwarnings("ignore", message=".*initial implementation of Parquet.*")
 
 from analysis.constants import DATA_CRS
 

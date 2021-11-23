@@ -185,6 +185,9 @@ def summarize_by_aoi(df, state, total_acres):
         }
     """
 
+    # FIXME:
+    return None
+
     # 0 values not present for top-level rank
     values = pd.DataFrame(INPUTS[f"{state}chat"]["values"][1:])
 

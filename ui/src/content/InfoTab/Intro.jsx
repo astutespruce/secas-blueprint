@@ -1,24 +1,11 @@
 import React from 'react'
-import { Alert, Box, Paragraph } from 'theme-ui'
+import { Box } from 'theme-ui'
 
 import { OutboundLink } from 'components/link'
 
 const Intro = () => (
   <>
     <Box as="section">
-      <Alert sx={{ bg: 'blue.1', fontWeight: 'normal', py: '0.5em' }}>
-        <Paragraph sx={{ fontSize: 1 }}>
-          <b>Head&apos;s up!</b>
-          <br />
-          The Southeast Conservation Blueprint 2021 is now available, but not
-          yet integerated into this viewer (we&apos;re working on it!). In the
-          meantime, please visit the{' '}
-          <OutboundLink to="https://seregion.databasin.org/galleries/38e203673ba84292a56a4a5810c26174/">
-            2021 Data Gallery on the Conservation Planning Atlas
-          </OutboundLink>
-          <br /> for the latest version.
-        </Paragraph>
-      </Alert>
       <p>
         The Southeast Conservation Blueprint is the primary product of the
         Southeast Conservation Adaptation Strategy (SECAS). It is a living,

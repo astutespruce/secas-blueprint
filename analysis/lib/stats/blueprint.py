@@ -16,7 +16,7 @@ from analysis.lib.raster import (
 
 
 src_dir = Path("data/inputs")
-blueprint_filename = src_dir / "se_blueprint2020.tif"
+blueprint_filename = src_dir / "se_blueprint2021.tif"
 bp_inputs_filename = src_dir / "input_areas.tif"
 bp_inputs_mask_filename = src_dir / "input_areas_mask.tif"
 

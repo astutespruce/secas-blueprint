@@ -33,7 +33,7 @@ import csv
 import pandas as pd
 
 
-from analysis.constants import URBAN_YEARS, DEBUG, INPUTS, CHAT_CATEGORIES, INDICATORS
+from analysis.constants import DEBUG, CHAT_CATEGORIES, INDICATORS
 from analysis.lib.attribute_encoding import (
     encode_values,
     delta_encode_values,

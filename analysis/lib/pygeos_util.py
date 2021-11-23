@@ -158,7 +158,7 @@ def sjoin_geometry(left, right, predicate="intersects", how="inner"):
     return pd.Series(values, index=index, name="index_right")
 
 
-def intersection(left, right):
+def intersection(left, right, grid_size=0):
     """Intersect the geometries from the left with the right.
 
     New, intersected geometries are stored in "geometry_right".
@@ -171,6 +171,9 @@ def intersection(left, right):
     ----------
     left : GeoDataFrame
     right : GeoDataFrame
+    grid_size : int, optional (default: None)
+        if present, geometries and results from intersection will be
+        snapped to this precision grid
 
     Returns
     -------
@@ -206,7 +209,11 @@ def intersection(left, right):
     rest = left.join(rest, how="inner").join(right, on="index_right", rsuffix="_right")
     # have to add .values to prevent conversion to None
     rest["geometry_right"] = gp.GeoSeries(
-        pg.intersection(rest.geometry.values.data, rest.geometry_right.values.data)
+        pg.intersection(
+            rest.geometry.values.data,
+            rest.geometry_right.values.data,
+            grid_size=grid_size,
+        )
     ).values
 
     return out.append(rest, ignore_index=False)
@@ -321,7 +328,7 @@ def explode(df):
     GeoDataFrame
     """
     join_cols = [c for c in df.columns if not c == "geometry"]
-    geom, index = pg.get_parts(df.geometry.values.wreidata, return_index=True)
+    geom, index = pg.get_parts(df.geometry.values.data, return_index=True)
     return gp.GeoDataFrame(df[join_cols].take(index), geometry=geom, crs=df.crs)
 
 

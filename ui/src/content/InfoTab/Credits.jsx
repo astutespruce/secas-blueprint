@@ -6,7 +6,7 @@ import { OutboundLink } from 'components/link'
 const Credits = () => (
   <Box as="section" sx={{ pb: '2rem' }}>
     <Text as="p" sx={{ fontSize: 1 }}>
-      <b>Citation:</b> The Southeast Conservation Blueprint 2020.
+      <b>Citation:</b> The Southeast Conservation Blueprint 2021.
       <br />
       <br />
       This application was developed by{' '}
