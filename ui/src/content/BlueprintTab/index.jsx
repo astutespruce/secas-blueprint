@@ -121,7 +121,7 @@ const BlueprintTab = ({
   return (
     <Box sx={{ py: '2rem', pl: '1rem', pr: '2rem' }}>
       <Box as="section">
-        <Heading as="h3">Blueprint 2020 Priority</Heading>
+        <Heading as="h3">Blueprint 2021 Priority</Heading>
         <Text sx={{ color: 'grey.7' }}>for shared conservation action</Text>
         <BlueprintChart
           categories={priorityCategories}
@@ -157,7 +157,7 @@ const BlueprintTab = ({
 
             <Text sx={{ fontSize: 0, color: 'grey.7', mb: '2rem' }}>
               See{' '}
-              <OutboundLink to="https://www.sciencebase.gov/catalog/file/get/5f85ac8282cebef40f14c545?name=SE_Blueprint_2020_DevelopmentProcess.pdf">
+              <OutboundLink to="https://www.sciencebase.gov/catalog/file/get/619524f2d34eb622f690539a?name=SE_Blueprint_2021_DevelopmentProcess.pdf">
                 Blueprint integration documentation
               </OutboundLink>{' '}
               for more details about how individual Blueprint inputs were

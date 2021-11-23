@@ -162,7 +162,7 @@ const IndicatorDetails = ({
         />
 
         <Box sx={{ mt: '2rem' }}>
-          <OutboundLink to={`${cpaURL}/datasets/${datasetID}`}>
+          <OutboundLink to={`${cpaURL}datasets/${datasetID}`}>
             View this indicator in the Conservation Planning Atlas
           </OutboundLink>
         </Box>
