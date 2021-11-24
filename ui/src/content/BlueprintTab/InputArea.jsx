@@ -70,8 +70,16 @@ const InputArea = ({
     />
 
     <Text as="p" sx={{ mt: '1rem', fontSize: 1 }}>
-      {description} <OutboundLink to={infoURL}>Learn more</OutboundLink> or{' '}
-      <OutboundLink to={dataURL}>access data</OutboundLink>.{' '}
+      {description}{' '}
+      {infoURL === dataURL ? (
+        <OutboundLink to={infoURL}>Learn more and access data</OutboundLink>
+      ) : (
+        <>
+          <OutboundLink to={infoURL}>Learn more</OutboundLink> or{' '}
+          <OutboundLink to={dataURL}>access data</OutboundLink>
+        </>
+      )}
+      .{' '}
       {viewerURL ? (
         <>
           More detailed information for {label} indicators is available in the{' '}
