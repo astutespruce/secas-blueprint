@@ -43,7 +43,6 @@
     "react-minimal-pie-chart": "^8.1.0",
     "react-query": "^3.33.7",
     "theme-ui": "^0.12.1",
-    "typeface-source-sans-pro": "^1.1.5",
     "use-error-boundary": "^2.0.4"
   },
   "devDependencies": {
