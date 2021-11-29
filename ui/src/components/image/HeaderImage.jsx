@@ -4,7 +4,7 @@ import { Box, Flex, Container, Heading } from 'theme-ui'
 import { convertToBgImage } from 'gbimage-bridge'
 import BackgroundImage from 'gatsby-background-image'
 
-import ImageCredits from './Credits'
+import Credits from './Credits'
 
 const HeaderImage = ({
   image,
@@ -16,76 +16,78 @@ const HeaderImage = ({
   credits,
   caption,
 }) => (
-  <BackgroundImage
-    {...convertToBgImage(image)}
-    style={{
-      height,
-      minHeight,
-      maxHeight: maxHeight || height,
-    }}
-    alt=""
-    preserveStackingContext
-  >
-    <Flex
-      sx={{
-        mt: 0,
-        overflow: 'hidden',
-        width: '100%',
-        position: 'absolute',
-        zIndex: 2,
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        flexDirection: 'column',
-        justifyContent: 'flex-end',
-        alignItems: 'center',
+  <>
+    <BackgroundImage
+      {...convertToBgImage(image)}
+      style={{
+        height,
+        minHeight,
+        maxHeight: maxHeight || height,
       }}
+      alt=""
+      preserveStackingContext
     >
-      {title && (
-        <Box
-          sx={{
-            width: '100%',
-            background: 'linear-gradient(transparent 0%, #0000009c 30%)',
-            py: ['2rem', '3rem'],
-          }}
-        >
-          <Container
+      <Flex
+        sx={{
+          mt: 0,
+          overflow: 'hidden',
+          width: '100%',
+          position: 'absolute',
+          zIndex: 2,
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0,
+          flexDirection: 'column',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+        }}
+      >
+        {title && (
+          <Box
             sx={{
-              p: '1rem',
-              textShadow: '1px 1px 3px #000',
-              color: '#FFF',
-              lineHeight: 1.1,
+              width: '100%',
+              background: 'linear-gradient(transparent 0%, #0000009c 30%)',
+              py: ['2rem', '3rem'],
             }}
           >
-            <Heading
-              as="h1"
+            <Container
               sx={{
-                m: 0,
-                fontSize: '3rem',
+                p: '1rem',
+                textShadow: '1px 1px 3px #000',
+                color: '#FFF',
+                lineHeight: 1.1,
               }}
             >
-              {title}
-            </Heading>
-
-            {subtitle && (
               <Heading
-                as="h2"
+                as="h1"
                 sx={{
-                  margin: '0.5rem 0 0 0',
-                  fontWeight: 'normal',
-                  fontSize: '1.5rem',
+                  m: 0,
+                  fontSize: '3rem',
                 }}
               >
-                {subtitle}
+                {title}
               </Heading>
-            )}
-          </Container>
-        </Box>
-      )}
-    </Flex>
-    {credits ? <ImageCredits caption={caption} {...credits} /> : null}
-  </BackgroundImage>
+
+              {subtitle && (
+                <Heading
+                  as="h2"
+                  sx={{
+                    margin: '0.5rem 0 0 0',
+                    fontWeight: 'normal',
+                    fontSize: '1.5rem',
+                  }}
+                >
+                  {subtitle}
+                </Heading>
+              )}
+            </Container>
+          </Box>
+        )}
+      </Flex>
+    </BackgroundImage>
+    {credits ? <Credits caption={caption} {...credits} /> : null}
+  </>
 )
 
 HeaderImage.propTypes = {

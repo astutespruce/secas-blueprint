@@ -17,8 +17,10 @@ const CustomReportPage = ({
     <HeaderImage
       title="Create a Custom Blueprint Report"
       image={headerImage}
-      url="https://www.flickr.com/photos/usfwssoutheast/26871026541/"
-      credit="U.S. Fish and Wildlife Service Southeast Region"
+      credits={{
+        author: 'U.S. Fish and Wildlife Service Southeast Region',
+        url: 'https://www.flickr.com/photos/usfwssoutheast/26871026541/',
+      }}
       caption="Black Skimmers"
       height="10rem"
       maxHeight="10rem"

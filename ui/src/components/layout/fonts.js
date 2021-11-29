@@ -1,12 +1,12 @@
 import { css } from '@emotion/react'
 import { withPrefix } from 'gatsby'
 
-export // font declaration extracted from typography-source-sans-pro index.css
+// font declaration extracted from typography-source-sans-pro index.css
 // NOTE: no italic typefaces are currently used in this app
 
 const prefix = withPrefix('/fonts')
 
-const fonts = css`
+export const fonts = css`
   @font-face {
     font-family: 'Source Sans Pro';
     font-style: normal;
