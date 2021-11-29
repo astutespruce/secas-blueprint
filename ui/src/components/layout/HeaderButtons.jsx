@@ -10,7 +10,7 @@ const HeaderButtons = () => (
       <Button
         variant="header"
         sx={{
-          fontWeight: 600,
+          fontWeight: 700,
           display: 'flex',
           alignItems: 'center',
         }}

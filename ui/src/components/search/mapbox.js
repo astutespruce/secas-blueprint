@@ -1,5 +1,5 @@
-import { config } from 'components/map/config'
-import { siteMetadata } from '../../gatsby-config'
+import { mapConfig as config } from 'components/map/mapConfig'
+import { siteMetadata } from '../../../gatsby-config'
 
 const { mapboxToken } = siteMetadata
 

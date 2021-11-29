@@ -1,17 +1,33 @@
-const path = require('path')
+const path = require('path-browserify')
 /**
  * Enable absolute imports with `/src` as root.
  * See: https://github.com/alampros/gatsby-plugin-resolve-src/issues/4
  */
-exports.onCreateWebpackConfig = ({ actions, stage, loaders }) => {
+exports.onCreateWebpackConfig = ({ actions, stage, loaders, plugins }) => {
   const config = {
     resolve: {
+      alias: {
+        assert: require.resolve('assert'),
+        os: require.resolve('os-browserify/browser'),
+        path: require.resolve('path-browserify'),
+        stream: require.resolve('stream-browserify'),
+        util: require.resolve('util'),
+        zlib: require.resolve('browserify-zlib'),
+      },
+      fallback: {
+        fs: false,
+        crypto: false,
+      },
+
+      // Enable absolute imports with `/src` as root.
       modules: [path.resolve(__dirname, 'src'), 'node_modules'],
     },
-    // per https://github.com/gatsbyjs/gatsby/issues/564
-    node: {
-      fs: 'empty',
-    },
+    plugins: [
+      plugins.provide({
+        process: 'process/browser',
+        Buffer: ['buffer', 'Buffer'],
+      }),
+    ],
   }
 
   // when building HTML, window is not defined, so mapbox-gl causes the build to blow up

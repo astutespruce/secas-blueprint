@@ -2,7 +2,7 @@ import { siteMetadata } from '../../../gatsby-config'
 
 const { tileHost } = siteMetadata
 
-export const config = {
+export const mapConfig = {
   bounds: [-106.66188036, 17.92676033, -65.22106481, 40.638801],
   // DEBUG:
   // bounds: [

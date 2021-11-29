@@ -2,6 +2,8 @@ require('dotenv').config({
   path: `.env.${process.env.NODE_ENV}`,
 })
 
+const theme = require('./src/theme')
+
 module.exports = {
   siteMetadata: {
     siteUrl: process.env.SITE_URL || `https://localhost`,
@@ -19,8 +21,9 @@ module.exports = {
     mapboxToken: process.env.GATSBY_MAPBOX_API_TOKEN,
   },
   flags: {
-    // FAST_DEV: true,
-    FAST_REFRESH: true,
+    FAST_DEV: true,
+    DEV_SSR: false, // appears to throw '"filePath" is not allowed to be empty' when true
+    PARALLEL_SOURCING: process.env.NODE_ENV !== `production`, // uses a lot of memory on server
   },
   pathPrefix: process.env.SITE_ROOT_PATH || `/`,
   plugins: [
@@ -37,7 +40,7 @@ module.exports = {
         },
       },
     },
-    `gatsby-plugin-preload-fonts`,
+    // `gatsby-plugin-preload-fonts`,
     `gatsby-plugin-react-helmet`,
     {
       resolve: `gatsby-source-filesystem`,
@@ -67,7 +70,13 @@ module.exports = {
         },
       },
     },
-    `gatsby-plugin-theme-ui`,
+    {
+      resolve: `gatsby-plugin-theme-ui`,
+      options: {
+        injectColorFlashScript: false,
+        preset: theme,
+      },
+    },
     `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,
     // {

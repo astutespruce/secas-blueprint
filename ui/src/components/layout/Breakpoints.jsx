@@ -1,6 +1,7 @@
 import React, { useContext, createContext } from 'react'
 import PropTypes from 'prop-types'
-import theme from 'gatsby-plugin-theme-ui'
+
+import theme from 'theme'
 import { hasWindow } from 'util/dom'
 
 const breakpoints = theme.breakpoints.map((b) =>

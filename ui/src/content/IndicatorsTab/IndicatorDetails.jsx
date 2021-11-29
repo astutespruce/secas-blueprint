@@ -25,7 +25,7 @@ const IndicatorDetails = ({
   onClose,
 }) => {
   // eslint-disable-next-line global-require,import/no-dynamic-require
-  const icon = require(`images/${ecosystemId}.svg`)
+  const icon = require(`images/${ecosystemId}.svg`).default
 
   const totalIndicatorPercent = sum(values.map(({ percent }) => percent))
 

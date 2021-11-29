@@ -9,7 +9,7 @@ export const useIndicators = () => {
       ecosystems: allEcosystemsJson {
         edges {
           node {
-            id
+            id: jsonId
             label
             color
             borderColor
@@ -22,7 +22,7 @@ export const useIndicators = () => {
           node {
             input
             indicators {
-              id
+              id # note: not jsonId here due to embedded structure
               label
               datasetID
               description

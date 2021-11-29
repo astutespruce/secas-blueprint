@@ -1,4 +1,4 @@
-import { darken } from '@theme-ui/color'
+const { darken } = require('@theme-ui/color')
 
 // SECAS Palette:
 // Dark blue from Blueprint (high): 08306b
@@ -7,7 +7,7 @@ import { darken } from '@theme-ui/color'
 // Accent/call to action orange: f5933b
 // Accent green: 569031
 
-export default {
+module.exports = {
   breakpoints: ['600px', '800px', '1600px'],
   colors: {
     text: '#333',
@@ -200,9 +200,15 @@ export default {
   },
   styles: {
     root: {
-      height: '100%',
-      width: '100%',
+      height: '100vh',
+      overflowX: 'hidden',
       overflowY: 'hidden',
+      margin: 0,
+      body: {
+        margin: 0,
+        height: '100%',
+        width: '100%',
+      },
       '#___gatsby': {
         height: '100%',
       },

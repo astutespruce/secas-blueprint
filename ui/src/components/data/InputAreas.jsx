@@ -9,7 +9,7 @@ export const useInputAreas = () => {
       inputAreas: allInputsJson {
         edges {
           node {
-            id
+            id: jsonId
             label
             shortLabel
             version
@@ -36,7 +36,7 @@ export const useInputAreas = () => {
       inputValues: allInputAreaValuesJson(sort: { fields: value, order: ASC }) {
         edges {
           node {
-            id
+            id: jsonId
           }
         }
       }
