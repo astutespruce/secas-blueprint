@@ -4,12 +4,12 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-black = "==19.3b0"
-pylint = "*"
-watchgod = "*"
-flake8 = "*"
-raster-tilecutter = {editable = true,path = "./../raster-tilecutter"}
+black = "*"
 cython = "*"
+flake8 = "*"
+pylint = "*"
+raster-tilecutter = {editable = true,path = "./../raster-tilecutter"}
+watchgod = "*"
 
 [packages]
 affine = "*"
@@ -23,18 +23,18 @@ numpy = "*"
 pandas = "*"
 pillow = "*"
 progress = "*"
-# pyogrio = {editable = true,path = "./../pyogrio"}
+pyogrio = {editable = true,path = "./../pyogrio"}
 python-dotenv = "*"
 python-multipart = "*"
-rasterio = "==1.1.7"
+rasterio = "==1.2.10"
 sentry-sdk = "*"
 uvicorn = "*"
 weasyprint = "*"
-pyarrow = "*"
 pygeos = "*"
+pyarrow = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.9"
 
 [pipenv]
 allow_prereleases = true

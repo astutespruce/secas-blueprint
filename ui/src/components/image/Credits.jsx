@@ -9,15 +9,9 @@ const Credits = ({ author, url, caption }) => (
     sx={{
       fontSize: 'smaller',
       textAlign: 'right',
-      // position: 'absolute',
-      // bottom: 0,
-      // right: 0,
-      // zIndex: 3,
       color: 'grey.6',
       pb: '0.25rem',
       px: '0.5rem',
-      // textShadow: '1px 1px 3px #000',
-      // bg: 'rgba(0,0,0,0.7)',
       a: {
         color: 'grey.6',
         textDecoration: 'none',

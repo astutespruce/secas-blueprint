@@ -52,17 +52,16 @@ def remap(INTEGER[:,:] arr, remap_table, int nodata, int fill=0):
     cdef INTEGER fill_value = fill
     cdef INTEGER nodata_value = nodata
 
-    with nogil:
-        for i in range(rows):
-            for j in range(cols):
-                value = arr[i,j]
-                if value == nodata:
-                    out_value = nodata
-                elif value > max_value:
-                    out_value = fill
-                else:
-                    out_value = table_view[value]
+    for i in range(rows):
+        for j in range(cols):
+            value = arr[i,j]
+            if value == nodata:
+                out_value = nodata
+            elif value > max_value:
+                out_value = fill
+            else:
+                out_value = table_view[value]
 
-                out_view[i,j] = out_value
+            out_view[i,j] = out_value
 
     return out
