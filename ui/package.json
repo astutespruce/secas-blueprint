@@ -24,7 +24,6 @@
     "gatsby-plugin-image": "^2.2.0",
     "gatsby-plugin-manifest": "^4.2.0",
     "gatsby-plugin-offline": "^5.2.0",
-    "gatsby-plugin-preload-fonts": "^3.2.0",
     "gatsby-plugin-react-helmet": "^5.2.0",
     "gatsby-plugin-robots-txt": "^1.5.5",
     "gatsby-plugin-sharp": "^4.2.0",
@@ -78,7 +77,6 @@
     "start": "npm run develop",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
-    "preload-fonts": "gatsby-preload-fonts",
     "deploy": "gatsby clean && gatsby build --prefix-paths"
   },
   "repository": {
