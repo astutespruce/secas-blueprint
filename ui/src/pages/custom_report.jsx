@@ -3,16 +3,24 @@ import PropTypes from 'prop-types'
 import { graphql } from 'gatsby'
 
 import { Layout } from 'components/layout'
-import { BannerImage } from 'components/image'
+import { HeaderImage } from 'components/image'
 import { UploadContainer } from 'components/report'
 
-const CustomReportPage = ({ data: { headerImage } }) => (
+const CustomReportPage = ({
+  data: {
+    headerImage: {
+      childImageSharp: { gatsbyImageData: headerImage },
+    },
+  },
+}) => (
   <Layout title="Create a Custom Blueprint Report">
-    <BannerImage
+    <HeaderImage
       title="Create a Custom Blueprint Report"
-      src={headerImage}
-      url="https://www.flickr.com/photos/usfwssoutheast/26871026541/"
-      credit="U.S. Fish and Wildlife Service Southeast Region"
+      image={headerImage}
+      credits={{
+        author: 'U.S. Fish and Wildlife Service Southeast Region',
+        url: 'https://www.flickr.com/photos/usfwssoutheast/26871026541/',
+      }}
       caption="Black Skimmers"
       height="10rem"
       maxHeight="10rem"
@@ -26,9 +34,11 @@ export const pageQuery = graphql`
   query CustomReportPageQuery {
     headerImage: file(relativePath: { eq: "26871026541_48a8096dd9_o.jpg" }) {
       childImageSharp {
-        fluid(maxWidth: 3200) {
-          ...GatsbyImageSharpFluid_withWebp
-        }
+        gatsbyImageData(
+          layout: FULL_WIDTH
+          formats: [AUTO, WEBP]
+          placeholder: BLURRED
+        )
       }
     }
   }

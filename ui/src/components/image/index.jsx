@@ -1,4 +1,3 @@
-import FluidImage from './Fluid'
-import BannerImage from './Banner'
+import HeaderImage from './HeaderImage'
 
-export { FluidImage, BannerImage }
+export { HeaderImage }

@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { useQuery } from 'react-query'
 
-import { searchPlaces } from 'api/mapbox'
+import { searchPlaces } from './mapbox'
 
 const Context = createContext()
 
@@ -34,7 +34,11 @@ Provider.propTypes = {
 export const useSearch = () => {
   const { query, setQuery, location, setLocation } = useContext(Context)
 
-  const { isLoading, error, data: results = [] } = useQuery(
+  const {
+    isLoading,
+    error,
+    data: results = [],
+  } = useQuery(
     ['search', query],
     () => {
       if (!query) {

@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { Global } from '@emotion/react'
 import { Box, Flex } from 'theme-ui'
 import { useErrorBoundary } from 'use-error-boundary'
 
@@ -11,6 +12,7 @@ import SEO from './SEO'
 import Header from './Header'
 import Footer from './Footer'
 import { BreakpointProvider } from './Breakpoints'
+import { fonts } from './fonts'
 import { siteMetadata } from '../../../gatsby-config'
 
 const Layout = ({ children, title, overflowY }) => {
@@ -32,6 +34,7 @@ const Layout = ({ children, title, overflowY }) => {
   return (
     <BreakpointProvider>
       <SearchProvider>
+        <Global styles={fonts} />
         <Flex
           sx={{
             height: '100%',

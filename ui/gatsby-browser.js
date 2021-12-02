@@ -2,9 +2,6 @@ import React from 'react'
 import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 
-// Import fonts
-import 'typeface-source-sans-pro'
-
 import { siteMetadata } from './gatsby-config'
 
 const queryClient = new QueryClient()
