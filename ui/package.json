@@ -41,14 +41,18 @@
     "react-minimal-pie-chart": "^8.1.0",
     "react-query": "^3.33.7",
     "theme-ui": "^0.12.1",
-    "use-error-boundary": "^2.0.4"
-  },
-  "devDependencies": {
+    "use-error-boundary": "^2.0.4",
     "@emotion/babel-plugin": "^11.2.0",
-    "@emotion/eslint-plugin": "^11.2.0",
-    "babel-eslint": "^10.1.0",
     "babel-preset-gatsby": "^2.2.0",
     "browserify-zlib": "^0.2.0",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
+    "stream-browserify": "^3.0.0",
+    "util": "^0.12.4"
+  },
+  "devDependencies": {
+    "@emotion/eslint-plugin": "^11.2.0",
+    "babel-eslint": "^10.1.0",
     "eslint": "^7.23.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "8.3",
@@ -57,14 +61,10 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.23.1",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "os-browserify": "^0.3.0",
-    "path-browserify": "^1.0.1",
     "prettier": "^2.2.1",
-    "stream-browserify": "^3.0.0",
     "stylelint": "^14.1.0",
     "stylelint-config-recommended": "^6.0.0",
-    "stylelint-config-standard": "^24.0.0",
-    "util": "^0.12.4"
+    "stylelint-config-standard": "^24.0.0"
   },
   "keywords": [
     "gatsby"
@@ -76,7 +76,7 @@
     "start": "npm run develop",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
-    "deploy": "gatsby clean && gatsby build --prefix-paths"
+    "deploy": "npm ci --no-audit && npm install gatsby-cli@3.4 --no-audit && gatsby telemetry --disable && gatsby clean && gatsby build --prefix-paths"
   },
   "repository": {
     "type": "git",
