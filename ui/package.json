@@ -76,7 +76,7 @@
     "start": "npm run develop",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
-    "deploy": "npm ci --no-audit && npm install gatsby-cli@3.4 --no-audit && gatsby telemetry --disable && gatsby clean && gatsby build --prefix-paths"
+    "deploy": "npm ci --production --no-audit && npm install gatsby-cli@3.4 --no-audit && gatsby telemetry --disable && gatsby clean && gatsby build --prefix-paths"
   },
   "repository": {
     "type": "git",
