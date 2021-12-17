@@ -48,7 +48,7 @@ const InputArea = ({
           mr: '1rem',
         }}
       >
-        {label} {version && version}
+        {label} {version}
       </Text>
       <Text
         sx={{

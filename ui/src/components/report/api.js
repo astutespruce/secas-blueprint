@@ -1,18 +1,9 @@
 /* eslint-disable no-await-in-loop */
-import { hasWindow, saveToStorage, encodeParams } from 'util/dom'
+import { hasWindow } from 'util/dom'
 import { captureException } from 'util/log'
 import config from '../../../gatsby-config'
 
-const {
-  apiToken,
-  msFormURL,
-  msFormEmail,
-  msFormName,
-  msFormOrg,
-  msFormUse,
-  msFormAreaName,
-  msFormFileName,
-} = config.siteMetadata
+const { apiToken } = config.siteMetadata
 let { apiHost } = config.siteMetadata
 
 const pollInterval = 1000 // milliseconds; 1 second
