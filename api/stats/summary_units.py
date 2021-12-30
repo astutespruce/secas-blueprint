@@ -1,20 +1,15 @@
-from collections import defaultdict
 from copy import deepcopy
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import geopandas as gp
-import pygeos as pg
 
 
 from analysis.constants import (
-    BLUEPRINT,
     INPUTS,
     INPUT_AREA_VALUES,
     OWNERSHIP,
     PROTECTION,
-    ACRES_PRECISION,
 )
 
 from analysis.lib.stats import (
@@ -78,7 +73,7 @@ class SummaryUnits(object):
             ).set_index("id")
 
     def get_results(self, id):
-        if not id in self.units.index:
+        if id not in self.units.index:
             raise ValueError("ID not in units index")
 
         unit = self.units.loc[id]
@@ -127,7 +122,7 @@ class SummaryUnits(object):
                     has_overlapping_inputs = True
 
                 for input_id in input_ids:
-                    if not input_id in inputs:
+                    if input_id not in inputs:
                         input = deepcopy(INPUTS[input_id])
                         input["acres"] = acres
                         inputs[input_id] = input

@@ -18,7 +18,7 @@ def list_files(zip):
     list
         list of file names in the zipfile
     """
-    return [f for f in zip.namelist() if not "__MACOSX" in f or ".DS_Store" in f]
+    return [f for f in zip.namelist() if "__MACOSX" not in f or ".DS_Store" in f]
 
 
 def get_geo_files(zip):
@@ -59,7 +59,7 @@ def get_dataset(zip):
     num_files = len(geo_files)
 
     if num_files == 0:
-        log.error(f"Upload zip file does not contain shp or FGDB files")
+        log.error("Upload zip file does not contain shp or FGDB files")
 
         raise ValueError("zip file must include a shapefile or FGDB")
 

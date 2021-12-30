@@ -116,7 +116,7 @@ def to_base64(img):
 
 class Retry(object):
     def __init__(self, max_retries=3):
-        self.max_retries = 0
+        self.max_retries = max_retries
 
     async def __aenter__(self, func, *args, **kwargs):
         result = None
@@ -126,14 +126,13 @@ class Retry(object):
                 result = func(*args, **kwargs)
                 return result
 
-            except httpx.RequestError as ex:
-                pass
+            except httpx.RequestError:
+                continue
 
             except Exception as ex:
                 raise ex
 
-        if result is None:
-            raise MapRenderError("Max retries exceeded without success")
+        raise MapRenderError("Max retries exceeded without success")
 
     async def __aexit__(self, *args, **kwargs):
         pass
@@ -178,7 +177,7 @@ async def render_mbgl_map(params):
                 result = await _render_mbgl_map()
                 return result
 
-            except httpx.RequestError as ex:
+            except httpx.RequestError:
                 # wait a little bit then try again
                 time.sleep(RETRY_DELAY)
 
@@ -187,4 +186,3 @@ async def render_mbgl_map(params):
 
         if result is None:
             raise MapRenderError("Max connection retries exceeded without success")
-

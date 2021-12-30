@@ -1,10 +1,5 @@
 import logging
-from pathlib import Path
 import tempfile
-
-import numpy as np
-from pyogrio import read_dataframe
-import pygeos as pg
 
 from api.errors import DataError
 from api.report.map import render_maps
@@ -37,7 +32,7 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
     await set_progress(ctx["job_id"], 5, "Calculating results")
 
     # validate that unit exists
-    if not unit_id in units.units.index:
+    if unit_id not in units.units.index:
         raise DataError(
             "Unit id is not valid (not an existing subwatershed or marine lease block ID)"
         )

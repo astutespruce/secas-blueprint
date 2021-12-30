@@ -1,16 +1,13 @@
 import asyncio
-import json
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
-
-import rasterio
 
 from .aoi import get_aoi_map_image
 from .basemap import get_basemap_image
 from .locator import get_locator_map_image
 from .ownership import get_ownership_map_image
 from .protection import get_protection_map_image
-from .raster import render_raster, extract_data_for_map
+from .raster import render_raster
 from .summary_unit import get_summary_unit_map_image
 from .mercator import get_zoom, get_map_bounds, get_map_scale
 from .util import pad_bounds, get_center, to_base64, merge_maps
@@ -300,7 +297,7 @@ async def render_maps(
                 )
 
     raster_input_ids = (
-        [i for i in input_ids if not i in {"car", "okchat", "txchat"}]
+        [i for i in input_ids if i not in {"car", "okchat", "txchat"}]
         if input_ids
         else []
     )

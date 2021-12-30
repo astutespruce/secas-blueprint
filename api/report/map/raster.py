@@ -1,23 +1,18 @@
 import math
-import os
 
 import numpy as np
 from PIL import Image
 from affine import Affine
 import rasterio
 from rasterio.enums import Resampling
-from rasterio.mask import raster_geometry_mask
 from rasterio import windows
 from rasterio.warp import (
     transform_bounds,
-    transform as transform_coords,
     calculate_default_transform,
     reproject,
 )
 
-
-from analysis.constants import DATA_CRS, MAP_CRS, GEO_CRS, DEBUG
-from analysis.lib.io import write_raster
+from analysis.constants import DATA_CRS, MAP_CRS, GEO_CRS
 
 
 def hex_to_rgb(color):

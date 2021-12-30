@@ -1,7 +1,6 @@
 from copy import deepcopy
 from pathlib import Path
 
-import pandas as pd
 import numpy as np
 import pygeos as pg
 import geopandas as gp
@@ -10,16 +9,13 @@ from analysis.lib.pygeos_util import (
     to_crs,
     to_dict,
     sjoin,
-    sjoin_geometry,
     intersection,
 )
 from analysis.constants import (
-    BLUEPRINT,
     INPUTS,
     INPUT_AREA_VALUES,
     URBAN_YEARS,
     DATA_CRS,
-    GEO_CRS,
     OWNERSHIP,
     PROTECTION,
     M2_ACRES,
@@ -99,7 +95,7 @@ class CustomArea(object):
                     has_overlapping_inputs = True
 
                 for input_id in input_ids:
-                    if not input_id in inputs:
+                    if input_id not in inputs:
                         input = deepcopy(INPUTS[input_id])
                         input["acres"] = acres
                         inputs[input_id] = input

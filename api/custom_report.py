@@ -1,7 +1,6 @@
 """Create a custom report for a user-uploaded area of interest.
 """
 import logging
-from pathlib import Path
 import tempfile
 
 import numpy as np
@@ -81,7 +80,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
         ctx["job_id"], 10, "Calculating results (this might take a while)"
     )
 
-    ### calculate results, data must be in DATA_CRS
+    # calculate results, data must be in DATA_CRS
     print("Calculating results...")
     results = CustomArea(geometry, df.crs, name).get_results()
 

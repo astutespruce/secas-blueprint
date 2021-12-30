@@ -5,7 +5,6 @@ TODO:
 
 import logging
 from pathlib import Path
-import os
 from secrets import compare_digest
 import shutil
 import tempfile
@@ -18,13 +17,11 @@ from arq.jobs import Job, JobStatus
 from fastapi import (
     FastAPI,
     File,
-    Header,
     UploadFile,
     Form,
     HTTPException,
     Depends,
     Security,
-    BackgroundTasks,
 )
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
@@ -36,8 +33,6 @@ from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
 from api.errors import DataError
 from api.geo import get_dataset
-from api.custom_report import create_custom_report
-from api.summary_unit_report import create_summary_unit_report
 from api.settings import (
     LOGGING_LEVEL,
     REDIS,
@@ -54,7 +49,7 @@ from api.progress import get_progress
 log = logging.getLogger("api")
 log.setLevel(LOGGING_LEVEL)
 
-### Create the main API app
+# Create the main API app
 app = FastAPI()
 
 if SENTRY_DSN:
@@ -85,7 +80,7 @@ async def catch_exceptions_middleware(request: Request, call_next):
         return Response("Internal server error", status_code=500)
 
 
-### Enable CORS
+# Enable CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
@@ -180,14 +175,14 @@ async def custom_report_endpoint(
     filename = save_file(file)
     log.debug(f"upload saved to: {filename}")
 
-    ### validate that upload has a shapefile or FGDB
+    # validate that upload has a shapefile or FGDB
     try:
         dataset, layer = get_dataset(ZipFile(filename))
 
     except ValueError as ex:
         raise HTTPException(status_code=400, detail=str(ex))
 
-    ### Create report task
+    # Create report task
     try:
         redis = await arq.create_pool(REDIS)
         job = await redis.enqueue_job(

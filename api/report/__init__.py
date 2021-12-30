@@ -1,8 +1,6 @@
 from base64 import b64encode
-from collections import OrderedDict
 from datetime import date
 from io import BytesIO
-from operator import itemgetter
 from pathlib import Path
 
 from weasyprint import HTML
@@ -15,7 +13,6 @@ from analysis.constants import (
     SLR_LEGEND,
     OWNERSHIP,
     PROTECTION,
-    DEBUG,
 )
 from api.report.format import format_number, format_percent
 
