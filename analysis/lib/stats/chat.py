@@ -1,5 +1,4 @@
 from pathlib import Path
-from copy import deepcopy
 
 import numpy as np
 import pandas as pd
@@ -296,7 +295,7 @@ def get_huc12_results(id, state):
     df = pd.read_feather(out_dir / f"{state}chat.feather", columns=columns).set_index(
         "id"
     )
-    if not id in df.index:
+    if id not in df.index:
         return dict()
 
     row = df.loc[id]
@@ -334,4 +333,3 @@ def get_huc12_results(id, state):
         "se_remainder": se_remainder,
         "se_remainder_percent": 100 * se_remainder / row.total_acres,
     }
-

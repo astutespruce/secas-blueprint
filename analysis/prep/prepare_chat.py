@@ -82,7 +82,7 @@ for state in ["ok", "tx"]:
 
     # convert attributes to categoricals for analysis
     for col in chat_fields:
-        if not col in state_df.columns:
+        if col not in state_df.columns:
             continue
 
         if state == "tx" and col == "chatrank":

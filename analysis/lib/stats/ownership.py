@@ -49,4 +49,3 @@ def summarize_by_unit(units_df, out_dir):
 
     by_owner.to_feather(out_dir / "ownership.feather")
     by_protection.to_feather(out_dir / "protection.feather")
-

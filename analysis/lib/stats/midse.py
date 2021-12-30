@@ -1,22 +1,15 @@
-import math
 from pathlib import Path
 
-from progress.bar import Bar
 import numpy as np
 import pandas as pd
-import pygeos as pg
 import rasterio
-from rasterio.mask import raster_geometry_mask
-from rasterio.windows import Window
 
 from analysis.constants import (
-    URBAN_YEARS,
     ACRES_PRECISION,
     M2_ACRES,
     INPUTS,
     MIDSE_BOUNDS,
 )
-from analysis.lib.pygeos_util import to_dict
 from analysis.lib.raster import (
     boundless_raster_geometry_mask,
     extract_count_in_geometry,
@@ -198,7 +191,7 @@ def get_huc12_results(id, analysis_acres, total_acres):
     """
     df = pd.read_feather(results_filename).set_index("id")
 
-    if not id in df.index:
+    if id not in df.index:
         return None
 
     values = pd.DataFrame(INPUTS["ms"]["values"])
@@ -230,4 +223,3 @@ def get_huc12_results(id, analysis_acres, total_acres):
         "remainder": remainder,
         "remainder_percent": 100 * remainder / total_acres,
     }
-

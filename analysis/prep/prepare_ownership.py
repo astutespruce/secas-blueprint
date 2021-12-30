@@ -5,12 +5,11 @@ import geopandas as gp
 import pygeos as pg
 from pyogrio import read_dataframe, write_dataframe
 
-# suppress warnings about writing to feather
-warnings.filterwarnings("ignore", message=".*initial implementation of Parquet.*")
-
 from analysis.constants import GEO_CRS, DATA_CRS, SE_STATES
 from analysis.lib.pygeos_util import explode
 
+# suppress warnings about writing to feather
+warnings.filterwarnings("ignore", message=".*initial implementation of Parquet.*")
 
 src_dir = Path("source_data/ownership")
 data_dir = Path("data")
@@ -121,4 +120,3 @@ write_dataframe(
     tile_dir / "ownership.geojson",
     driver="GeoJSONSeq",
 )
-

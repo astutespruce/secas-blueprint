@@ -4,7 +4,6 @@ from pathlib import Path
 import rasterio
 import geopandas as gp
 import pygeos as pg
-from pyogrio import write_dataframe
 
 from analysis.constants import DATA_CRS
 from analysis.lib.raster import add_overviews

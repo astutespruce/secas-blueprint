@@ -1,4 +1,3 @@
-import math
 from pathlib import Path
 
 from progress.bar import Bar
@@ -6,8 +5,6 @@ import numpy as np
 import pandas as pd
 import pygeos as pg
 import rasterio
-from rasterio.mask import raster_geometry_mask
-from rasterio.windows import Window
 
 from analysis.constants import URBAN_YEARS, ACRES_PRECISION, M2_ACRES
 from analysis.lib.raster import (

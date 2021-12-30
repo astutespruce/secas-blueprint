@@ -26,4 +26,3 @@ def write_raster(filename, data, transform, crs, nodata):
     }
     with rasterio.open(filename, "w", **meta) as out:
         out.write(data, 1)
-

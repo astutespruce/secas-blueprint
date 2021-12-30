@@ -5,6 +5,7 @@ NOTE: this must be run after prepare_input_areas.py
 """
 import os
 from pathlib import Path
+import warnings
 
 import geopandas as gp
 import pandas as pd
@@ -12,14 +13,12 @@ from pyogrio import read_dataframe, write_dataframe
 import pygeos as pg
 from progress.bar import Bar
 
-# suppress warnings abuot writing to feather
-import warnings
-
-warnings.filterwarnings("ignore", message=".*initial implementation of Parquet.*")
-
 from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES
 from analysis.lib.pygeos_util import to_dict
 from analysis.lib.raster import calculate_percent_overlap
+
+# suppress warnings about writing to feather
+warnings.filterwarnings("ignore", message=".*initial implementation of Parquet.*")
 
 
 src_dir = Path("source_data")

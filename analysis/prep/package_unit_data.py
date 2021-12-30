@@ -258,7 +258,7 @@ for state in ["ok", "tx"]:
     # extract CHAT overall rank
     rank_fields = [f"chatrank_{i}" for i in CHAT_CATEGORIES]
     for field in rank_fields:
-        if not field in chat.columns:
+        if field not in chat.columns:
             chat[field] = 0
 
     chat_rank_percent = encode_values(chat[rank_fields], chat.total_acres, 1000).rename(
@@ -409,4 +409,3 @@ if DEBUG:
 
 
 out.to_csv(out_dir / "unit_atts.csv", index=False, quoting=csv.QUOTE_NONNUMERIC)
-

@@ -1,19 +1,16 @@
 from pathlib import Path
+import warnings
 
 import pandas as pd
 import rasterio
 from rasterio.features import rasterize
 from pyogrio import read_dataframe, write_dataframe
 
-# suppress warnings abuot writing to feather
-import warnings
-
-warnings.filterwarnings("ignore", message=".*initial implementation of Parquet.*")
-
 from analysis.constants import MASK_FACTOR
 from analysis.lib.pygeos_util import explode, to_dict
 from analysis.lib.raster import add_overviews, create_lowres_mask
 
+warnings.filterwarnings("ignore", message=".*initial implementation of Parquet.*")
 
 src_dir = Path("source_data/blueprint")
 data_dir = Path("data")

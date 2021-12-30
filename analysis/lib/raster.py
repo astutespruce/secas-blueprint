@@ -1,5 +1,4 @@
 import math
-from pathlib import Path
 
 from affine import Affine
 from progress.bar import Bar
@@ -9,8 +8,7 @@ import pygeos as pg
 import rasterio
 from rasterio.enums import Resampling
 from rasterio.errors import WindowError
-from rasterio.features import bounds
-from rasterio.mask import raster_geometry_mask, geometry_mask
+from rasterio.mask import geometry_mask
 from rasterio.vrt import WarpedVRT
 from rasterio.windows import Window
 
@@ -181,12 +179,15 @@ def detect_data(dataset, shapes, bounds):
 
     # create mask
     # note: this intentionally uses all_touched=True
-    mask = geometry_mask(
-        shapes,
-        transform=dataset.window_transform(window),
-        out_shape=data.shape,
-        all_touched=True,
-    ) | (data == nodata)
+    mask = (
+        geometry_mask(
+            shapes,
+            transform=dataset.window_transform(window),
+            out_shape=data.shape,
+            all_touched=True,
+        )
+        | (data == nodata)
+    )
 
     if np.any(data[~mask]):
         return True

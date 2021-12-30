@@ -122,7 +122,7 @@ def sjoin_geometry(left, right, predicate="intersects", how="inner"):
     Series
         indexed on index of left, containing values of right index
     """
-    if not how in ("inner", "left"):
+    if how not in ("inner", "left"):
         raise NotImplementedError("Other join types not implemented")
 
     if isinstance(left, pd.Series):
@@ -435,4 +435,3 @@ def union_or_combine(geometries, grid_size=None, op="union"):
     parts.extend(pg.get_parts(geometries[discontiguous]))
 
     return pg.multipolygons(parts)
-

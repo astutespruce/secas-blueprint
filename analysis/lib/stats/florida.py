@@ -50,8 +50,7 @@ def extract_indicators(counts):
     indicators = {}
     for indicator in INDICATORS:
         id = indicator["id"]
-        domain = indicator["domain"]
-        if not id in counts:
+        if not id not in counts:
             continue
 
         values = counts[id]
@@ -79,7 +78,7 @@ def extract_indicators(counts):
     ecosystems = []
     for ecosystem in ECOSYSTEMS:
         id = ecosystem["id"]
-        if not id in ecosystem_ids:
+        if id not in ecosystem_ids:
             continue
 
         ecosystem = deepcopy(ecosystem)
@@ -138,7 +137,7 @@ def detect_indicators(geometries, indicators):
             mask = (data == nodata) | geometry_mask
 
         # if there are unmasked areas, keep this indicator
-        if mask.min() == False:
+        if not mask.min():
             indicators_with_data.append(indicator)
 
     return indicators_with_data
@@ -330,7 +329,7 @@ def get_huc12_results(id, analysis_acres, total_acres):
     """
     df = pd.read_feather(results_filename).set_index("id")
 
-    if not id in df.index:
+    if id not in df.index:
         return None
 
     values = pd.DataFrame(INPUTS["fl"]["values"])
@@ -379,4 +378,3 @@ def get_huc12_results(id, analysis_acres, total_acres):
         "remainder": remainder,
         "remainder_percent": 100 * remainder / total_acres,
     }
-

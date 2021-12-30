@@ -1,9 +1,6 @@
-import math
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
-import pygeos as pg
 import rasterio
 
 from analysis.constants import BLUEPRINT, INPUT_AREA_VALUES, ACRES_PRECISION, M2_ACRES

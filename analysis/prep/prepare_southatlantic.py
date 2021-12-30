@@ -95,4 +95,3 @@ for indicator in INDICATORS:
         factor=MASK_FACTOR,
         ignore_zero=False,
     )
-

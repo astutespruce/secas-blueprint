@@ -3,7 +3,6 @@ import os
 
 import numpy as np
 import rasterio
-from rasterio.windows import get_data_window
 from rasterio.enums import Resampling
 from rasterio.vrt import WarpedVRT
 

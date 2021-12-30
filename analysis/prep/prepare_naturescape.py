@@ -1,6 +1,5 @@
 from pathlib import Path
 import os
-import math
 
 import numpy as np
 import geopandas as gp

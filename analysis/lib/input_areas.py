@@ -78,4 +78,3 @@ def get_input_area_mask(input_area):
         mask[data == value] = 1
 
     return mask, transform, window
-

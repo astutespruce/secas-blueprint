@@ -4,9 +4,8 @@ import geopandas as gp
 import pandas as pd
 import pygeos as pg
 
-from analysis.constants import CARIBBEAN_BOUNDS, M2_ACRES, ACRES_PRECISION
+from analysis.constants import M2_ACRES
 
-from analysis.lib.bounds import bounds_overlap
 from analysis.lib.pygeos_util import intersection
 
 
@@ -185,4 +184,3 @@ def get_huc12_results(id, analysis_acres, total_acres):
         "analysis_acres": analysis_acres,
         "total_acres": total_acres,
     }
-

@@ -32,7 +32,7 @@ def find_adjacent_groups(left, right):
             nodes = next_nodes
             next_nodes = set()
             for node in nodes:
-                if not node in out:
+                if node not in out:
                     out.add(node)
                     next_nodes.update(adj_matrix[node])
         return out
@@ -46,7 +46,7 @@ def find_adjacent_groups(left, right):
     groups = []
     seen = set()
     for node in adj_matrix.keys():
-        if not node in seen:
+        if node not in seen:
             adj_nodes = _all_adj(adj_matrix, node)
             seen.update(adj_nodes)
             groups.append(adj_nodes)

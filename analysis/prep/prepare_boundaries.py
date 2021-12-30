@@ -1,17 +1,15 @@
 import os
 from pathlib import Path
+import warnings
+
 import geopandas as gp
 import pygeos as pg
 from pyogrio.geopandas import read_dataframe, write_dataframe
 
-# suppress warnings abuot writing to feather
-import warnings
-
-warnings.filterwarnings("ignore", message=".*initial implementation of Parquet.*")
-
 from analysis.constants import GEO_CRS, DATA_CRS
-from analysis.lib.pygeos_util import explode
 
+# suppress warnings abuot writing to feather
+warnings.filterwarnings("ignore", message=".*initial implementation of Parquet.*")
 
 src_dir = Path("source_data")
 data_dir = Path("data")

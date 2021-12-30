@@ -11,8 +11,6 @@ from time import time
 from pathlib import Path
 
 from tilecutter.mbtiles import render_tif_to_mbtiles
-from pymbtiles.ops import union, extend
-from pymbtiles import MBtiles
 
 from analysis.constants import BLUEPRINT
 
@@ -48,4 +46,3 @@ render_tif_to_mbtiles(
     },
 )
 print("Tiles done in {:.2f} min".format((time() - start) / 60.0))
-
