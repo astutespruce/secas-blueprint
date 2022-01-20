@@ -10,7 +10,7 @@ const { contactEmail } = config.siteMetadata
 const UploadError = ({ error, handleClearError }) => (
   <Alert variant="error" sx={{ mt: '2rem', mb: '4rem', py: '1rem' }}>
     <ExclamationTriangle
-      size="2rem"
+      size="32px"
       style={{
         margin: '0 1rem 0 0',
       }}

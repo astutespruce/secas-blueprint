@@ -157,7 +157,7 @@ const UploadContainer = () => {
                 }}
               >
                 <ExclamationTriangle
-                  size="1rem"
+                  size="16px"
                   style={{
                     margin: '0 0.5rem 0 0',
                     display: 'inline',

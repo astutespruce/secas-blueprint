@@ -155,7 +155,7 @@ const DownloadModal = ({ id, type, onClose }) => {
               }}
             >
               <ExclamationTriangle
-                size="1rem"
+                size="16px"
                 style={{
                   margin: '0 0.5rem 0 0',
                 }}
@@ -188,7 +188,7 @@ const DownloadModal = ({ id, type, onClose }) => {
     content = (
       <Alert variant="error" sx={{ mt: '1rem', mb: '1rem', py: '1rem' }}>
         <ExclamationTriangle
-          size="2rem"
+          size="32px"
           style={{
             margin: '0 1rem 0 0',
           }}

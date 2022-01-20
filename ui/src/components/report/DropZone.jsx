@@ -115,7 +115,7 @@ const DropZone = ({ name }) => {
         }}
       >
         <input name={name} {...getInputProps()} />
-        <Download size="2rem" style={{ marginBottom: '1rem' }} />
+        <Download size="32px" style={{ marginBottom: '1rem' }} />
         <Heading as="h3" sx={{ mb: '1rem' }}>
           Drop your zip file here
         </Heading>

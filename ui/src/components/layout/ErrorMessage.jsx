@@ -10,7 +10,7 @@ const ErrorMessage = ({ message }) => (
   <Container sx={{ py: '4rem' }}>
     <Box>
       <Heading as="h2" sx={{ mb: '1rem' }}>
-        <ExclamationTriangle size="2rem" style={{ marginRight: '.5rem' }} />
+        <ExclamationTriangle size="32px" style={{ marginRight: '.5rem' }} />
         Whoops! Something went wrong...
       </Heading>
       <Text sx={{ fontSize: 3, color: 'grey.9' }}>

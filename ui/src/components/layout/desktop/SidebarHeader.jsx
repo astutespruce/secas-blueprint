@@ -83,7 +83,7 @@ const SidebarHeader = ({ type, id, name, location, acres, onClose }) => {
           }}
           onClick={handleReportModalOpen}
         >
-          <Download size="1rem" style={{ marginRight: '0.5rem' }} />
+          <Download size="16px" style={{ marginRight: '0.5rem' }} />
           <Text>Export detailed maps and analysis</Text>
         </Flex>
       ) : null}

@@ -200,7 +200,7 @@ module.exports = {
   },
   styles: {
     root: {
-      height: '100vh',
+      height: '100%',
       overflowX: 'hidden',
       overflowY: 'hidden',
       margin: 0,

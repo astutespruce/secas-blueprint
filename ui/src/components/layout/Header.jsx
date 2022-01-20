@@ -92,7 +92,7 @@ const Header = () => {
               </Flex>
             </Link>
           </Flex>
-          {breakpoint >= 1 && <HeaderButtons />}
+          {!isMobile && breakpoint >= 1 ? <HeaderButtons /> : null}
         </>
       )}
     </Flex>

@@ -74,7 +74,7 @@ const IndicatorListItem = ({ indicator, onSelect }) => {
         {label}
       </Text>
       <Box>
-        <Check size="1rem" />
+        <Check size="16px" />
       </Box>
     </Flex>
   )

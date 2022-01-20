@@ -87,7 +87,7 @@ const MapModeToggle = ({ map, isMobile }) => {
             color: 'accent',
           }}
         >
-          <ExclamationTriangle size="1rem" style={{ marginRight: '.5rem' }} />
+          <ExclamationTriangle size="16px" style={{ marginRight: '.5rem' }} />
           <Text>
             Zoom in to select {mapMode === 'pixel' ? 'a pixel' : 'an area'}
           </Text>
