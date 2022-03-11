@@ -268,7 +268,7 @@
       ],
       "domain": [1, 5],
       "datasetID": "7ba798d863c84c57bf817d5e0517ec98",
-      "description": "Beach birds is a continuous index of habitat suitability for four shorebird species (Wilson's plover, American oystercatcher, least tern, piping plover), based on observed abundance. The relative use of beach habitat by these species for nesting, foraging, and breeding is an indicator of beach quality."
+      "description": "Beach birds is an index of habitat suitability for four shorebird species (Wilson's plover, American oystercatcher, least tern, piping plover), based on observed abundance. The relative use of beach habitat by these species for nesting, foraging, and breeding is an indicator of beach quality."
     },
     {
       "id": "sa:land_equitableparkaccess",
