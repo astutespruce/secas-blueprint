@@ -38,6 +38,15 @@ raster_result_funcs = {
 }
 
 
+def protection_label(value):
+    if not value["description"]:
+        return value["label"]
+
+    description = value["description"]
+    description = f"{description[0:1].lower()}{description[1:]}"
+    return f"{value['label']} - {description}"
+
+
 class SummaryUnits(object):
     def __init__(self, unit_type="huc12"):
         print(f"Loading {unit_type} summary data...")
@@ -204,7 +213,7 @@ class SummaryUnits(object):
             # use the native order of PROTECTION to drive order of results
             protection_results = [
                 {
-                    "label": value["label"],
+                    "label": protection_label(value),
                     "acres": protection.loc[protection.GAP_Sts == key].iloc[0].acres,
                 }
                 for key, value in PROTECTION.items()

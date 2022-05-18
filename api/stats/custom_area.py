@@ -53,6 +53,15 @@ raster_result_funcs = {
 }
 
 
+def protection_label(value):
+    if not value["description"]:
+        return value["label"]
+
+    description = value["description"]
+    description = f"{description[0:1].lower()}{description[1:]}"
+    return f"{value['label']} - {description}"
+
+
 class CustomArea(object):
     def __init__(self, geometry, crs, name):
         """Initialize a custom area from a pygeos geometry.
@@ -295,7 +304,10 @@ class CustomArea(object):
         )
         # use the native order of PROTECTION to drive order of results
         results["protection"] = [
-            {"label": value["label"], "acres": by_protection[key]}
+            {
+                "label": protection_label(value),
+                "acres": by_protection[key],
+            }
             for key, value in PROTECTION.items()
             if key in by_protection
         ]
