@@ -51,7 +51,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
 
     errors = []
 
-    await set_progress(ctx["job_id"], 0, "Loading data")
+    await set_progress(ctx["redis"], ctx["job_id"], 0, "Loading data")
 
     path = f"/vsizip/{zip_filename}/{dataset}"
 
@@ -59,7 +59,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
 
     geometry = pg.make_valid(df.geometry.values.data)
 
-    await set_progress(ctx["job_id"], 5, "Preparing area of interest")
+    await set_progress(ctx["redis"], ctx["job_id"], 5, "Preparing area of interest")
 
     # dissolve
     geometry = np.asarray([pg.union_all(geometry)])
@@ -77,7 +77,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
         )
 
     await set_progress(
-        ctx["job_id"], 10, "Calculating results (this might take a while)"
+        ctx["redis"], ctx["job_id"], 10, "Calculating results (this might take a while)"
     )
 
     # calculate results, data must be in DATA_CRS
@@ -101,7 +101,9 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
         for ecosystem in input_area.get("ecosystems", []):
             indicators.extend([i["id"] for i in ecosystem["indicators"]])
 
-    await set_progress(ctx["job_id"], 25, "Creating maps (this might take a while)")
+    await set_progress(
+        ctx["redis"], ctx["job_id"], 25, "Creating maps (this might take a while)"
+    )
 
     print("Rendering maps...")
     maps, scale, map_errors = await render_maps(
@@ -127,20 +129,24 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
             errors.append("Error creating one or more maps")
 
     await set_progress(
-        ctx["job_id"], 75, "Creating PDF (this might take a while)", errors=errors
+        ctx["redis"],
+        ctx["job_id"],
+        75,
+        "Creating PDF (this might take a while)",
+        errors=errors,
     )
 
     results["scale"] = scale
 
     pdf = create_report(maps=maps, results=results)
 
-    await set_progress(ctx["job_id"], 95, "Nearly done", errors=errors)
+    await set_progress(ctx["redis"], ctx["job_id"], 95, "Nearly done", errors=errors)
 
     fp, name = tempfile.mkstemp(suffix=".pdf", dir=TEMP_DIR)
     with open(fp, "wb") as out:
         out.write(pdf)
 
-    await set_progress(ctx["job_id"], 100, "All done!", errors=errors)
+    await set_progress(ctx["redis"], ctx["job_id"], 100, "All done!", errors=errors)
 
     log.debug(f"Created PDF at: {name}")
 

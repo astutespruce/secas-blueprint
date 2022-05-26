@@ -1,6 +1,7 @@
 import logging
 from time import time
 
+import arq
 from arq import cron
 import sentry_sdk
 
@@ -42,6 +43,14 @@ async def cleanup_files(ctx):
             path.unlink()
 
 
+async def startup(ctx):
+    ctx["redis"] = await arq.create_pool(REDIS)
+
+
+async def shutdown(ctx):
+    await ctx["redis"].close()
+
+
 class WorkerSettings:
     redis_settings = REDIS
     job_timeout = JOB_TIMEOUT
@@ -50,3 +59,6 @@ class WorkerSettings:
     # run cleanup every 60 minutes
     cron_jobs = [cron(cleanup_files, run_at_startup=True, minute=0, second=0)]
     functions = [create_custom_report, create_summary_unit_report]
+
+    on_startup = startup
+    on_shutdown = shutdown

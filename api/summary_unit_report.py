@@ -26,10 +26,10 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
 
     errors = []
 
-    await set_progress(ctx["job_id"], 0, "Loading data")
+    await set_progress(ctx["redis"], ctx["job_id"], 0, "Loading data")
 
     units = SummaryUnits(unit_type)
-    await set_progress(ctx["job_id"], 5, "Calculating results")
+    await set_progress(ctx["redis"], ctx["job_id"], 5, "Calculating results")
 
     # validate that unit exists
     if unit_id not in units.units.index:
@@ -38,7 +38,9 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
         )
 
     results = units.get_results(unit_id)
-    await set_progress(ctx["job_id"], 50, "Creating maps (this might take a while)")
+    await set_progress(
+        ctx["redis"], ctx["job_id"], 50, "Creating maps (this might take a while)"
+    )
 
     # only include urban up to 2060
     has_urban = "proj_urban" in results and results["proj_urban"][4] > 0
@@ -75,20 +77,24 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
             errors.append("Error creating one or more maps")
 
     await set_progress(
-        ctx["job_id"], 75, "Creating PDF (this might take a while)", errors=errors
+        ctx["redis"],
+        ctx["job_id"],
+        75,
+        "Creating PDF (this might take a while)",
+        errors=errors,
     )
 
     results["scale"] = scale
 
     pdf = create_report(maps=maps, results=results)
 
-    await set_progress(ctx["job_id"], 95, "Nearly done", errors=errors)
+    await set_progress(ctx["redis"], ctx["job_id"], 95, "Nearly done", errors=errors)
 
     fp, name = tempfile.mkstemp(suffix=".pdf", dir=TEMP_DIR)
     with open(fp, "wb") as out:
         out.write(pdf)
 
-    await set_progress(ctx["job_id"], 100, "All done!", errors=errors)
+    await set_progress(ctx["redis"], ctx["job_id"], 100, "All done!", errors=errors)
 
     log.debug(f"Created PDF at: {name}")
 
