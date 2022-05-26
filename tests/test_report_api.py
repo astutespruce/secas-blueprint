@@ -19,7 +19,10 @@ if not OUT_DIR.exists():
 
 def poll_until_done(job_id, current=0, max=100):
     r = httpx.get(f"{API_URL}/api/reports/status/{job_id}?token={API_TOKEN}")
-    r.raise_for_status()
+
+    if r.status_code != 200:
+        raise Exception(f"Error processing request (HTTP {r.status_code}): {r.text}")
+
     json = r.json()
     status = json.get("status")
     progress = json.get("progress")
@@ -64,7 +67,9 @@ def test_upload_file(filename):
         data={"name": "foo"},
         files=files,
     )
-    r.raise_for_status()
+
+    if r.status_code != 200:
+        raise Exception(f"Error processing request (HTTP {r.status_code}): {r.text}")
 
     json = r.json()
     job_id = json.get("job")
@@ -78,7 +83,8 @@ def test_upload_file(filename):
 def test_huc12_report(huc12_id):
     r = httpx.post(f"{API_URL}/api/reports/huc12/{huc12_id}?token={API_TOKEN}")
 
-    r.raise_for_status()
+    if r.status_code != 200:
+        raise Exception(f"Error processing request (HTTP {r.status_code}): {r.text}")
 
     json = r.json()
 
@@ -94,7 +100,6 @@ def test_huc12_report(huc12_id):
 
 
 if __name__ == "__main__":
-    # test_upload_file("examples/api/Razor.zip")
     # test_upload_file("examples/api/caledonia.zip")
 
     # test_huc12_report("0")

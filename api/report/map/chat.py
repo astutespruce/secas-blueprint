@@ -1,14 +1,19 @@
 from copy import deepcopy
+import json
 
+from PIL import Image
+from pymgl import Map
+
+from api.settings import TILE_DIR
 from analysis.constants import INPUTS
-
-from .util import render_mbgl_map
 
 
 # Note: only shows watersheds that are high or medium priority
 STYLE = {
     "version": 8,
-    "sources": {"chat": {"type": "vector", "url": "mbtiles://chat"}},
+    "sources": {
+        "chat": {"type": "vector", "url": f"mbtiles://{TILE_DIR}/chat.mbtiles"}
+    },
     "layers": [],
 }
 
@@ -32,7 +37,7 @@ def get_layer(state):
     }
 
 
-async def get_chat_map_image(state, center, zoom, width, height):
+def get_chat_map_image(state, center, zoom, width, height):
     """Create a rendered map image of CHAT Rank for a given state.
 
     Parameters
@@ -53,18 +58,11 @@ async def get_chat_map_image(state, center, zoom, width, height):
     style = deepcopy(STYLE)
     style["layers"].append(get_layer(state))
 
-    params = {
-        "style": style,
-        "center": center,
-        "zoom": zoom,
-        "width": width,
-        "height": height,
-    }
-
     try:
-        map = await render_mbgl_map(params)
+        img_data = Map(
+            json.dumps(style), width, height, 1, *center, zoom=zoom
+        ).renderBuffer()
+        return Image.frombytes("RGBA", (width, height), img_data), None
 
     except Exception as ex:
-        return None, f"Error generating {state} CHAT image ({type(ex)}): {ex}"
-
-    return map, None
+        return None, f"Error generating Caribbean image ({type(ex)}): {ex}"

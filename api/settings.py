@@ -8,7 +8,8 @@ from dotenv import load_dotenv
 load_dotenv()
 TEMP_DIR = Path(os.getenv("TEMP_DIR", "/tmp/se-reports"))
 SITE_URL = f'{os.getenv("ROOT_URL", "http://localhost")}/southeast'
-MBGLRENDER_HOST = os.getenv("MBGLRENDER_HOST", "localhost:8002")
+TILE_DIR = os.getenv("TILE_DIR", "/data/tiles")
+MAPBOX_ACCESS_TOKEN = os.getenv("MAPBOX_ACCESS_TOKEN")
 API_TOKEN = os.getenv("API_TOKEN")
 API_SECRET = os.getenv("API_SECRET")
 LOGGING_LEVEL = os.getenv("LOGGING_LEVEL", "DEBUG")

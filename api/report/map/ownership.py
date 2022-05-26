@@ -1,6 +1,10 @@
-from analysis.constants import OWNERSHIP
+import json
 
-from .util import render_mbgl_map
+from PIL import Image
+from pymgl import Map
+
+from api.settings import TILE_DIR
+from analysis.constants import OWNERSHIP
 
 
 # interleave keys and colors for mapbox
@@ -11,35 +15,41 @@ color_expr = (
 )
 
 
-STYLE = {
-    "version": 8,
-    "sources": {
-        "ownership": {
-            "type": "vector",
-            "url": "mbtiles://se_ownership",
-            "tileSize": 256,
-        }
-    },
-    "layers": [
-        {
-            "id": "fill",
-            "source": "ownership",
-            "source-layer": "ownership",
-            "type": "fill",
-            "paint": {"fill-opacity": 0.7, "fill-color": color_expr},
+STYLE = json.dumps(
+    {
+        "version": 8,
+        "sources": {
+            "ownership": {
+                "type": "vector",
+                "url": f"mbtiles://{TILE_DIR}/se_ownership.mbtiles",
+                "tileSize": 256,
+            }
         },
-        {
-            "id": "outline",
-            "source": "ownership",
-            "source-layer": "ownership",
-            "type": "line",
-            "paint": {"line-width": 0.5, "line-color": "#AAAAAA", "line-opacity": 1},
-        },
-    ],
-}
+        "layers": [
+            {
+                "id": "fill",
+                "source": "ownership",
+                "source-layer": "ownership",
+                "type": "fill",
+                "paint": {"fill-opacity": 0.7, "fill-color": color_expr},
+            },
+            {
+                "id": "outline",
+                "source": "ownership",
+                "source-layer": "ownership",
+                "type": "line",
+                "paint": {
+                    "line-width": 0.5,
+                    "line-color": "#AAAAAA",
+                    "line-opacity": 1,
+                },
+            },
+        ],
+    }
+)
 
 
-async def get_ownership_map_image(center, zoom, width, height):
+def get_ownership_map_image(center, zoom, width, height):
     """Create a rendered map image of land owner values from ownership data.
 
     Parameters
@@ -56,18 +66,9 @@ async def get_ownership_map_image(center, zoom, width, height):
     Image object
     """
 
-    params = {
-        "style": STYLE,
-        "center": center,
-        "zoom": zoom,
-        "width": width,
-        "height": height,
-    }
-
     try:
-        map = await render_mbgl_map(params)
+        img_data = Map(STYLE, width, height, 1, *center, zoom=zoom).renderBuffer()
+        return Image.frombytes("RGBA", (width, height), img_data), None
 
     except Exception as ex:
         return None, f"Error generating ownership image ({type(ex)}): {ex}"
-
-    return map, None

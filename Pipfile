@@ -26,12 +26,13 @@ progress = "*"
 pyogrio = {editable = true,path = "./../pyogrio"}
 python-dotenv = "*"
 python-multipart = "*"
-rasterio = "==1.2.10"
+rasterio = "*"
 sentry-sdk = "*"
 uvicorn = "*"
 weasyprint = "*"
 pygeos = "*"
 pyarrow = "*"
+pymgl = "*"
 
 [requires]
 python_version = "3.9"

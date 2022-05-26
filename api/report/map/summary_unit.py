@@ -1,11 +1,20 @@
 from copy import deepcopy
+import json
 
-from .util import render_mbgl_map
+from PIL import Image
+from pymgl import Map
+
+from api.settings import TILE_DIR
 
 
 STYLE = {
     "version": 8,
-    "sources": {"map_units": {"type": "vector", "url": "mbtiles://se_map_units"}},
+    "sources": {
+        "map_units": {
+            "type": "vector",
+            "url": f"mbtiles://{TILE_DIR}/se_map_units.mbtiles",
+        }
+    },
     "layers": [
         {
             "id": "mask",
@@ -25,7 +34,7 @@ STYLE = {
 }
 
 
-async def get_summary_unit_map_image(id, center, zoom, width, height):
+def get_summary_unit_map_image(id, center, zoom, width, height):
     """Create a rendered map image of an existing summary unit.
 
     Parameters
@@ -48,18 +57,11 @@ async def get_summary_unit_map_image(id, center, zoom, width, height):
     # filter IN current unit
     style["layers"][1]["filter"] = ["==", ["get", "id"], id]
 
-    params = {
-        "style": style,
-        "center": center,
-        "zoom": zoom,
-        "width": width,
-        "height": height,
-    }
-
     try:
-        map = await render_mbgl_map(params)
+        img_data = Map(
+            json.dumps(style), width, height, 1, *center, zoom=zoom
+        ).renderBuffer()
+        return Image.frombytes("RGBA", (width, height), img_data), None
 
     except Exception as ex:
         return None, f"Error generating summary_unit image ({type(ex)}): {ex}"
-
-    return map, None

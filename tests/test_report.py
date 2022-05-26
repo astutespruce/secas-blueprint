@@ -5,7 +5,6 @@ import os
 from pathlib import Path
 from time import time
 
-import pandas as pd
 import numpy as np
 import pygeos as pg
 from pyogrio.geopandas import read_dataframe
@@ -28,7 +27,7 @@ def write_cache(maps, scale, path):
 
     for name, data in maps.items():
         if data is not None:
-            with open(path / f"{name}.png", "wb") as out:
+            with open(path / f"{name.replace(':', '__')}.png", "wb") as out:
                 out.write(b64decode(data))
 
     with open(path / f"scale.json", "w") as out:
@@ -42,7 +41,7 @@ def read_cache(path):
 
     maps = {}
     for filename in path.glob("*.png"):
-        name = filename.stem
+        name = filename.stem.replace("__", ":")
         maps[name] = b64encode(open(filename, "rb").read()).decode("utf-8")
 
     scale = json.loads(open(path / "scale.json").read())
@@ -54,9 +53,31 @@ def read_cache(path):
 
 ### Create reports for an AOI
 aois = [
+    # {"name": "Greenway Priority 123 Merge", "path": "Greenway_priority123_Merge_Diss"},
+    # {"name": "South Carolina", "path": "SC_SECAS_states"},
+    # {
+    #     "name": "NWFL Sentinel Landscapes Geography",
+    #     "path": "NWFL_SentinelLandscapesGeography_20210812",
+    # }
+    # {"name": "Alabama", "path": "AL_SECAS_states"},
+    # {"name": "Arkansas", "path": "AR_SECAS_states"},
+    # {"name": "Florida", "path": "FL_SECAS_states"},
+    # {"name": "Georgia", "path": "GA_SECAS_states"},
+    # {"name": "Kentucky", "path": "KY_SECAS_states"},
+    # {"name": "Louisiana", "path": "LA_SECAS_states"},  # TODO: FIX this geometry
+    # {"name": "Mississippi", "path": "MS_SECAS_states"},
+    # {"name": "North Carolina", "path": "NC_SECAS_states"},
+    # {"name": "Tennessee", "path": "TN_SECAS_states"},
+    # {"name": "FL test", "path": "EvergladesHeadwaterComplex_APPTYPE_0"}
+    # {"name": "Guild Tracts", "path": "GuildTracts"}
+    # {"name": "Florida Panhandle Boundary", "path": "FL_panhadle_boundary"}
+    # {"name": "Dell Murphy wetlands", "path": "Dell Murphy wetlands"},
+    # {"name": "TRB GA", "path": "TRB_GA"},
+    # {"name": "Florida 5 Star County Boundary", "path": "FL_5StarCounty_Boundary"}
+    # {"name": "Cumberland Plateau Focus Area", "path": "NFWF_Cumberland_Fund_TN"}
     # {"name": "Enviva Hamlet", "path": "Enviva_Hamlet_80_mile_sourcing_radius"},
-    {"name": "LCP: Black River", "path": "LCP_BlackRiver"},
-    {"name": "Green River proposed boundary", "path": "GreenRiver_ProposedBoundary"},
+    # {"name": "LCP: Black River", "path": "LCP_BlackRiver"},
+    # {"name": "Green River proposed boundary", "path": "GreenRiver_ProposedBoundary"},
     # {"name": "LCP: Broad", "path": "LCP_Broad"},
     # {"name": "Caledonia area, MS", "path": "caledonia"},
     # {"name": "Napoleonville area, LA", "path": "Napoleonville"},
@@ -68,7 +89,7 @@ aois = [
     # {"name": "Doyle Springs, TN area", "path": "DoyleSprings"},
     # {"name": "Cave Spring, VA area", "path": "CaveSpring"},
     # {"name": "South Atlantic Offshore", "path": "SAOffshore"},
-    # {"name": "Florida Offshore", "path": "FLOffshore"}
+    # {"name": "Florida Offshore", "path": "FLOffshore"},
 ]
 
 
@@ -87,7 +108,9 @@ for aoi in aois:
     extent_area = (
         pg.area(pg.box(*pg.total_bounds(to_crs(geometry, df.crs, DATA_CRS)))) * M2_ACRES
     )
-    print("Area of extent", extent_area.round())
+    print(
+        f"Area of extent: {extent_area:,.0f}",
+    )
 
     ### calculate results, data must be in DATA_CRS
     print("Calculating results...")
@@ -118,10 +141,16 @@ for aoi in aois:
         has_ownership = "ownership" in results
         has_protection = "protection" in results
 
+        # compile indicator IDs across all inputs
+        indicators = []
+        for input_area in results["inputs"]:
+            for ecosystem in input_area.get("ecosystems", []):
+                indicators.extend([i["id"] for i in ecosystem["indicators"]])
+
         task = render_maps(
             bounds,
             geometry=geometry[0],
-            # indicators=results["indicators"],
+            indicators=indicators,
             input_ids=results["input_ids"],
             urban=has_urban,
             slr=has_slr,
@@ -150,21 +179,28 @@ for aoi in aois:
 ### Create reports for summary units
 ids = {
     "huc12": [
+        #     #     #     #     # "111102050103"  # has no protected areas
         "210100050503",  # PR
-        "110702071001",  # at junction of gulf_hypoxia, okchat, midse
-        "031200030902",  # at overlap area between FL, MidSE, and SA
-        "060200020506",  # in AppLCC area
-        "030101010301",  # in Nature's Network  / South Atlantic overlap area
-        ##################
-        #     #     "130301020902", # far western edge
-        #     #     "031501060512",  # partial overlap with SA raster inputs
-        #     "031700080402"
+        # "110702071001",  # at junction of gulf_hypoxia, okchat, midse
+        #     # "031501100102",  # has overlaps with MidSE, SA, and NatureScape
+        # "120100040301",  # at junction of txchat, midse
+        #     "031200030902",  # at overlap area between FL, MidSE, and SA
+        #     #     #     #     #     #     # "060200020506",  # in AppLCC area
+        #     #     # "050302030503",  # in Nature's Network area
+        #     #     # "030101010301",  # in Nature's Network  / South Atlantic overlap area
+        #     #     #     #     #     #     ##################
+        #     #     #     #     #     #     #     #     "130301020902", # far western edge
+        #     #     #     #     #     #     #     #     "031501060512",  # partial overlap with SA raster inputs
+        #     #     #     #     #     #     #     "031700080402"
+        # "030101030404",  # Nature's Network at edge of input area
+        # "031101020903",  # Florida with inland marine indicators
+        # "031102050805",  # Florida gulf coast
     ],
-    "marine_blocks": [
-        "NI18-07-6210",  # Atlantic coast
-        #     #     "NG16-03-299",  # Gulf coast
-        #     #     "NG17-10-6583",  # Florida keys, overlaps with protected areas
-    ],
+    # "marine_blocks": [
+    #     # "NI18-07-6210",  # Atlantic coast
+    #     #     # #     "NG16-03-299",  # Gulf coast
+    #     "NG17-10-6583"  # Florida keys, overlaps with protected areas
+    # ],
 }
 
 
@@ -188,6 +224,12 @@ for summary_type in ids:
         has_ownership = "ownership" in results
         has_protection = "protection" in results
 
+        # compile indicator IDs across all inputs
+        indicators = []
+        for input_area in results["inputs"]:
+            for ecosystem in input_area.get("ecosystems", []):
+                indicators.extend([i["id"] for i in ecosystem["indicators"]])
+
         maps = None
         if CACHE_MAPS:
             maps, scale = read_cache(cache_dir)
@@ -197,7 +239,7 @@ for summary_type in ids:
             task = render_maps(
                 results["bounds"],
                 summary_unit_id=id,
-                # indicators=results["indicators"],
+                indicators=indicators,
                 input_ids=results["input_ids"],
                 urban=has_urban,
                 slr=has_slr,
