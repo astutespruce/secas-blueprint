@@ -7,6 +7,7 @@ import logging
 from pathlib import Path
 from secrets import compare_digest
 import shutil
+import sys
 import tempfile
 from typing import Optional
 from zipfile import ZipFile
@@ -42,6 +43,7 @@ from api.settings import (
     TEMP_DIR,
     ALLOWED_ORIGINS,
     SENTRY_DSN,
+    TILE_DIR,
 )
 from api.progress import get_progress
 
@@ -49,7 +51,14 @@ from api.progress import get_progress
 log = logging.getLogger("api")
 log.setLevel(LOGGING_LEVEL)
 
-# Create the main API app
+
+# refuse to startup if TILE_DIR not available
+if not Path(TILE_DIR).exists():
+    log.error(f"Tile directory not found: {TILE_DIR}")
+    sys.exit(1)
+
+
+### Create the main API app
 app = FastAPI()
 
 if SENTRY_DSN:
