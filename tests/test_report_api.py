@@ -10,6 +10,7 @@ DELAY = 2  # seconds
 
 API_URL = "http://localhost:5000"
 # API_URL = "http://localhost:8080"
+# API_URL = "http://localhost:8080/southeast"
 
 OUT_DIR = Path("/tmp/api")
 

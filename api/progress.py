@@ -40,7 +40,6 @@ async def get_progress(redis, job_id):
         tuple of progress percent, message, errors
     """
     progress = await redis.get(f"{JOB_PREFIX}{job_id}")
-    redis.close()
 
     if progress is None:
         return 0, "", []
