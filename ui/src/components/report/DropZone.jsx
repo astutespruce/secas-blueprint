@@ -76,8 +76,12 @@ const DropZone = ({ name }) => {
     isDragReject,
   } = useDropzone({
     onDrop: handleDrop,
-    accept:
-      'application/zip,application/x-zip-compressed,application/x-compressed,multipart/x-zip',
+    accept: {
+      'application/zip': [],
+      'application/x-zip-compressed': [],
+      'application/x-compressed': [],
+      'multipart/x-zip': [],
+    },
     maxSize: MAXSIZE_MB * 1e6,
     multiple: false,
   })
@@ -98,7 +102,8 @@ const DropZone = ({ name }) => {
       }}
     >
       <Flex
-        {...getRootProps({ isDragActive, isDragAccept, isDragReject })}
+        // {...getRootProps({ isDragActive, isDragAccept, isDragReject })}
+        {...getRootProps()}
         sx={{
           flexDirection: 'column',
           alignItems: 'center',
