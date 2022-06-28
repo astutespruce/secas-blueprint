@@ -10,7 +10,7 @@ export const fonts = css`
   @font-face {
     font-family: 'Source Sans Pro';
     font-style: normal;
-    font-display: swap;
+    font-display: fallback;
     font-weight: 400;
     src: local('Source Sans Pro Regular normal'),
       local('Source Sans Pro-Regularnormal'),
@@ -20,7 +20,7 @@ export const fonts = css`
   @font-face {
     font-family: 'Source Sans Pro';
     font-style: normal;
-    font-display: swap;
+    font-display: fallback;
     font-weight: 700;
     src: local('Source Sans Pro Bold normal'),
       local('Source Sans Pro-Boldnormal'),
@@ -30,7 +30,7 @@ export const fonts = css`
   @font-face {
     font-family: 'Source Sans Pro';
     font-style: normal;
-    font-display: swap;
+    font-display: fallback;
     font-weight: 900;
     src: local('Source Sans Pro Black normal'),
       local('Source Sans Pro-Blacknormal'),
