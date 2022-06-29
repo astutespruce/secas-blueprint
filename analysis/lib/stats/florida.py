@@ -50,7 +50,7 @@ def extract_indicators(counts):
     indicators = {}
     for indicator in INDICATORS:
         id = indicator["id"]
-        if not id not in counts:
+        if id not in counts:
             continue
 
         values = counts[id]
@@ -72,7 +72,7 @@ def extract_indicators(counts):
             # reverse so that highest value is on top
             indicators[id]["values"].reverse()
 
-    ### aggregate indicators up to marine ecosystem
+    ### aggregate indicators up to ecosystem
     # determine ecosystems present from indicators
     ecosystem_ids = {id.split(":")[1].split("_")[0] for id in indicators}
     ecosystems = []
@@ -122,8 +122,9 @@ def detect_indicators(geometries, indicators):
     with rasterio.open(
         src_dir / indicators[0]["filename"].replace(".tif", "_mask.tif")
     ) as src:
+        # note: this intentionally uses all_touched=True
         geometry_mask, transform, window = raster_geometry_mask(
-            src, geometries, crop=True, all_touched=False
+            src, geometries, crop=True, all_touched=True
         )
 
     indicators_with_data = []

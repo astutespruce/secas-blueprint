@@ -126,8 +126,9 @@ def detect_indicators(geometries, indicators):
     with rasterio.open(
         src_dir / indicators[0]["filename"].replace(".tif", "_mask.tif")
     ) as src:
+        # note: this intentionally uses all_touched=True
         geometry_mask, transform, window = raster_geometry_mask(
-            src, geometries, crop=True, all_touched=False
+            src, geometries, crop=True, all_touched=True
         )
 
     indicators_with_data = []
