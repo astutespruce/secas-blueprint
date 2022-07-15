@@ -3,23 +3,7 @@ import json
 from PIL import Image
 from pymgl import Map
 
-
-STYLE = json.dumps(
-    {
-        "version": 8,
-        "sources": {
-            "basemap": {
-                "type": "raster",
-                "tiles": [
-                    "https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
-                ],
-                "tileSize": 256,
-                "maxzoom": 16,
-            }
-        },
-        "layers": [{"id": "basemap", "type": "raster", "source": "basemap"}],
-    }
-)
+from api.settings import MAPBOX_ACCESS_TOKEN
 
 
 def get_basemap_image(center, zoom, width, height):
@@ -40,7 +24,16 @@ def get_basemap_image(center, zoom, width, height):
     """
 
     try:
-        img_data = Map(STYLE, width, height, 1, *center, zoom=zoom).renderBuffer()
+        img_data = Map(
+            "mapbox://styles/mapbox/light-v9",
+            width,
+            height,
+            1,
+            *center,
+            zoom=zoom,
+            provider="mapbox",
+            token=MAPBOX_ACCESS_TOKEN,
+        ).renderBuffer()
         return Image.frombytes("RGBA", (width, height), img_data), None
 
     except Exception as ex:
