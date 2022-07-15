@@ -14,6 +14,7 @@ STYLE = json.dumps(
                     "https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
                 ],
                 "tileSize": 256,
+                "maxzoom": 16,
             }
         },
         "layers": [{"id": "basemap", "type": "raster", "source": "basemap"}],
