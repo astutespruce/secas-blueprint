@@ -1,26 +1,32 @@
 # SECAS Southeast Conservation Blueprint Sea Level Rise data
 
-NOTE: this is not aligned to the blueprint grid.
+### Download SLR data
 
-Data were obtained from Amy Keister on 3/10/2020. She exported individual
-Geotiffs created from the source files created in her processing chain for
-mosiacking SLR data obtained from NOAA (https://coast.noaa.gov/slrdata/).
+The latest SLR data are downloaded from [NOAA](https://coast.noaa.gov/slrdata/)
+as polygon extent of inundation per foot of depth between 0 and 10 feet.
 
-These are a series of GeoTIFF files
-for small areas along the coast, with varying footprints and resolution. To use
-here, we constructed a VRT using GDAL, and used a resolution of 15 meters for
-easier aggregation in results.
+Data downloaded 7/31/2022.
 
-Values are coded 0-6 for the amount of sea level rise that would impact a given
-area. Values are cumulative, so a value of 6 means that the area is also
-inundated by 1-5 feet.
+Data are downloaded using `analysis/prep/download_slr.py`.
 
-From within `data/threats/slr` directory:
+## Rasterize SLR data
 
-```
-gdalbuildvrt -overwrite -resolution user -tr 15 15 slr.vrt *.tif
-```
+SLR data polygons are rasterized to 15 meter resolution using SE Bluprint
+standard projection (EPSG:5070) and snapped to the Blueprint grid so that
+everything aligns correctly.
 
-To assist with checking if a given area of interest overlaps SLR data, the
-bounds of all SLR files are extracted to a dataset using
-`util/prepare_slr.py`.
+Data are prepared using `analysis/prep/rasterize_slr.py`
+
+Values are coded 0 (already inundated) - 10 feet.
+
+Because SLR data covers a relatively small area but a very large extent, data
+are retained in their original chunks as delivered by NOAA, and compiled into
+a virtual raster table using GDAL.
+
+This step also creates a polygon boundary dataset of all areas covered by SLR
+datasets, which can be intersected with an area of interest to determine if SLR
+data are available.
+
+The final output file of this step is `data/inputs/threats/slr/slr.vrt`.
+
+Both the VRT file and the individual GeoTIFFs need to be present for analysis.

@@ -39,6 +39,7 @@ SE_STATES = [
     "TN",
     "TX",
     "VA",
+    "USVI",
     "WV",
 ]
 
