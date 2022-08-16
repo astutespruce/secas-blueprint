@@ -23,6 +23,9 @@ def write_raster(filename, data, transform, crs, nodata):
         "crs": crs,
         "transform": transform,
         "compress": "lzw",
+        "tiled": True,
+        "blockxsize": 256,
+        "blockysize": 256,
     }
     with rasterio.open(filename, "w", **meta) as out:
         out.write(data, 1)
