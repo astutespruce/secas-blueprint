@@ -1,11 +1,29 @@
 import React from 'react'
-import { Box } from 'theme-ui'
+import { Alert, Box, Paragraph } from 'theme-ui'
 
 import { OutboundLink } from 'components/link'
 
 const Intro = () => (
   <>
     <Box as="section">
+      <Alert sx={{ bg: 'blue.1', fontWeight: 'normal', py: '0.5em' }}>
+        <Paragraph sx={{ fontSize: 1 }}>
+          <b>Head&apos;s up!</b>
+          <br />
+          A new version of the Southeast Conservation Blueprint is under
+          development and will be available in Fall 2022. This tool is being
+          substantially expanded in functionality as part of that data release
+          and will include the ability to explore the data-driven indicators
+          used to create Blueprint 2022, explore pixel-level values at a given
+          location, and create pixel-level filters to highlight areas of the
+          Blueprint within a range of values for one or more indicators. It will
+          also include the latest available versions of sea-level rise and
+          urbanization data.
+          <br />
+          Stay tuned!
+        </Paragraph>
+      </Alert>
+
       <p>
         The Southeast Conservation Blueprint is the primary product of the
         Southeast Conservation Adaptation Strategy (SECAS). It is a living,
