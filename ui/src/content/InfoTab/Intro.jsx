@@ -9,18 +9,13 @@ const Intro = () => (
       <Alert sx={{ bg: 'blue.1', fontWeight: 'normal', py: '0.5em' }}>
         <Paragraph sx={{ fontSize: 1 }}>
           <b>Head&apos;s up!</b>
-          <br />
-          A new version of the Southeast Conservation Blueprint is under
-          development and will be available in Fall 2022. This tool is being
-          substantially expanded in functionality as part of that data release
-          and will include the ability to explore the data-driven indicators
-          used to create Blueprint 2022, explore pixel-level values at a given
-          location, and create pixel-level filters to highlight areas of the
-          Blueprint within a range of values for one or more indicators. It will
-          also include the latest available versions of sea-level rise and
-          urbanization data.
-          <br />
-          Stay tuned!
+          <br />A new version of the Southeast Conservation Blueprint is under
+          development and will be available this fall. As part of that update,
+          this viewer will expand its functionality, including the ability to
+          explore the underlying indicators across the entire Southeast, see
+          values for individual pixels, and filter the Blueprint by indicator
+          scores. It will also incorporate improved data for sea-level rise and
+          urbanization. Stay tuned!
         </Paragraph>
       </Alert>
 
