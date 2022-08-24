@@ -14,40 +14,19 @@ from analysis.constants import URBAN_YEARS, DATA_CRS, MASK_FACTOR
 from analysis.lib.raster import add_overviews, create_lowres_mask
 from analysis.lib.io import write_raster
 
-# NOTE: bins are shifted up by 1 (except 0), because final bin 1 indicates already urban
-BINS = [
-    0,
-    0.025,
-    0.05,
-    0.1,
-    0.2,
-    0.3,
-    0.4,
-    0.5,
-    0.6,
-    0.7,
-    0.8,
-    0.9,
-    0.95,
-    0.975,
-    1,
-]
-
 CHUNK_SIZE = 500  # number of rows to read at a time
 NODATA = 255
 
 start = time()
 
+bnd_dir = Path("data/boundaries")
 src_dir = Path("source_data/urban")
 out_dir = Path("data/inputs/threats/urban")
 tmp_dir = Path("/tmp")
 
 out_dir.mkdir(parents=True, exist_ok=True)
 
-# TODO: use 2022 boundary raster, clipped to non-marine areas
-bnd_filename = "source_data/blueprint/1_ExtentLayers/BaseBlueprintExtent2022.tif"
-
-bnd_raster = rasterio.open(bnd_filename)
+bnd_raster = rasterio.open(bnd_dir / "nonmarine_mask.tif")
 bnd = pg.box(*bnd_raster.bounds)
 
 
@@ -104,17 +83,20 @@ for year in URBAN_YEARS:
         for window in Bar(f"Processing {year}", max=len(windows)).iter(windows):
             out_offset = window.row_off - full_window.row_off
             data = src.read(1, window=window)
+            # nan is areas not projected to urbanize and actual NODATA
+            data[np.isnan(data)] = np.float32(0.0)
 
             if year == 2020:
                 already_urban[out_offset : out_offset + window.height, :] = data == 1
 
-            binned = np.digitize(data, BINS).astype("uint8") + np.uint8(1)
-            # nan is areas not projected to urbanize and actual NODATA
-            binned[np.isnan(data)] = np.uint8(0)
+            # probability values are number of runs out of 50 that predicted
+            # urbanization; convert back to the number of runs
+            binned = (data * np.float32(50.0)).astype("uint8")
+
             out[out_offset : out_offset + window.height, :] = binned
 
-        # set a value of 1 where already urban
-        out = np.where(already_urban, 1, out)
+        # set a value of 51 where already urban
+        out = np.where(already_urban, np.uint8(51), out)
 
         print("Writing temporary raster")
         tmp_filename = tmp_dir / f"urban_{year}_binned.tif"
@@ -136,7 +118,7 @@ for year in URBAN_YEARS:
         data = vrt.read()[0]
 
     ### Set areas outside the SE Blueprint to NODATA
-    print("Masking to SE Blueprint extent")
+    print("Masking to inland areas in the SE")
     outside = bnd_raster.read(1) == 0
     data[outside] = NODATA
 
@@ -147,6 +129,9 @@ for year in URBAN_YEARS:
     add_overviews(outfilename)
 
     print(f"Done with {year} in {time()-year_start:.2f}s")
+
+
+bnd_raster.close()
 
 
 print("Creating urban mask")

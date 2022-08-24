@@ -23,9 +23,9 @@ def extract_by_geometry(geometries, bounds):
     """Calculate the area of overlap between geometries and urbanization
     for each decade from 2020 to 2100.
 
-    This is only applicable to inland (non-marine) areas.
+    Data are at 30 meters, pixel-aligned to Blueprint.
 
-    NOTE: urbanization is on a 60m grid
+    This is only applicable to inland (non-marine) areas.
 
     Parameters
     ----------
@@ -65,33 +65,11 @@ def extract_by_geometry(geometries, bounds):
     if results["shape_mask"] == 0:
         return None
 
-    # values are probability of urbanization per timestep * 1000 (uint16)
+    # values are number of runs out of 50 that are predicted to urbanize
+    # 51 = urban as of 2019 (NLCD)
     # NOTE: index 0 = not predicted to urbanize
-    # index 1 = already urban, so given a probability of 1
-    # actual probabilities start at 0.025
-    probabilities = (
-        np.array(
-            [
-                0,
-                1000,
-                25,
-                50,
-                100,
-                200,
-                300,
-                400,
-                500,
-                600,
-                700,
-                800,
-                900,
-                950,
-                975,
-                1000,
-            ]
-        )
-        / 1000
-    )
+
+    probabilities = np.append(np.arange(0, 51) / 50.0, np.array([1.0]))
     bins = np.arange(0, len(probabilities))
 
     for year in URBAN_YEARS:
@@ -101,9 +79,9 @@ def extract_by_geometry(geometries, bounds):
         )
 
         if year == 2020:
-            # extract area already urban (in index 1)
+            # extract area already urban (in index 51)
             results["urban"] = (
-                (counts[1] * cellsize).round(ACRES_PRECISION).astype("float32")
+                (counts[51] * cellsize).round(ACRES_PRECISION).astype("float32")
             )
 
         # total urbanization is sum of pixel counts * probability

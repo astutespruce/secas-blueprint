@@ -3,7 +3,7 @@ from pathlib import Path
 
 import httpx
 
-from analysis.constants import SE_STATES
+from analysis.constants import SECAS_STATES
 
 
 # Data URLS are obtained by opening the Javascript console for
@@ -123,7 +123,7 @@ out_dir = Path("source_data/slr")
 out_dir.mkdir(parents=True, exist_ok=True)
 
 # filter to Southeast states
-se_urls = [url for url in URLS if url.rsplit("/", 1)[1].split("_")[0] in SE_STATES]
+se_urls = [url for url in URLS if url.rsplit("/", 1)[1].split("_")[0] in SECAS_STATES]
 asyncio.run(download(se_urls, out_dir))
 
 print("All done!")

@@ -71,13 +71,7 @@ def create_report(maps, results):
     }
 
     if "urban" in results:
-        legends["urban"] = (
-            URBAN_LEGEND[1:3]
-            + URBAN_LEGEND[5:6]
-            + URBAN_LEGEND[8:9]
-            + URBAN_LEGEND[11:12]
-            + URBAN_LEGEND[-1:]
-        )
+        legends["urban"] = URBAN_LEGEND
 
     if "slr" in results:
         legends["slr"] = SLR_LEGEND

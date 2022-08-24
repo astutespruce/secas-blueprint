@@ -5,7 +5,7 @@ import geopandas as gp
 import pygeos as pg
 from pyogrio import read_dataframe, write_dataframe
 
-from analysis.constants import GEO_CRS, DATA_CRS, SE_STATES
+from analysis.constants import GEO_CRS, DATA_CRS, SECAS_STATES
 from analysis.lib.pygeos_util import explode
 
 # suppress warnings about writing to feather
@@ -55,7 +55,7 @@ print("Processing PAD-US lands...")
 #     df = pd.DataFrame(data, columns=columns)
 #     df["geometry"] = geometry
 
-#     df = df.loc[df.State_Nm.isin(SE_STATES + ["UNKF"])].copy()
+#     df = df.loc[df.State_Nm.isin(SECAS_STATES + ["UNKF"])].copy()
 #     # drop BOEM lease block groups
 #     df = df.loc[df.Agg_Src != "USGS_PADUS2_0Marine_BOEM_Block_Dissolve"].drop(
 #         columns=["Agg_Src"]
@@ -74,7 +74,7 @@ print("Processing PAD-US lands...")
 # df["geometry"] = from_wkb(df.geometry)
 
 # read specific states
-states = ",".join(f"'{s}'" for s in SE_STATES + ["UNKF"])
+states = ",".join(f"'{s}'" for s in SECAS_STATES + ["UNKF"])
 df = read_dataframe(
     src_dir / "pad_us2_1.gpkg",
     columns=[

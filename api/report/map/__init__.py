@@ -18,7 +18,7 @@ from .chat import get_chat_map_image
 
 from analysis.constants import (
     BLUEPRINT_COLORS,
-    URBAN_LEGEND,
+    URBAN_COLORS,
     SLR_LEGEND,
     INPUTS,
     INDICATOR_INDEX,
@@ -140,8 +140,7 @@ async def render_raster_maps(
         )
 
     if urban:
-        colors = {i: e["color"] for i, e in enumerate(URBAN_LEGEND) if e is not None}
-        task_args.append(("urban_2060", urban_filename, colors))
+        task_args.append(("urban_2060", urban_filename, URBAN_COLORS))
 
     if slr:
         colors = {i: e["color"] for i, e in enumerate(SLR_LEGEND)}
