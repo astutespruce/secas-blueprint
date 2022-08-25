@@ -214,7 +214,7 @@ def render_array(data, colors):
 
     for i, color in colors.items():
         r, g, b = hex_to_rgb(color)
-        a = 175
+        a = 175  # roughly 68% opacity
 
         rgba[data == i, :] = r, g, b, a
 
