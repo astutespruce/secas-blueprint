@@ -2,17 +2,7 @@
     <h3 id="Urban">Urban growth</h3>
 
     <p>
-        The SLEUTH urban growth model predicts the likelihood that an area will
-        urbanize at every decade from 2020 to 2100. Darker reds indicate higher
-        probability of urbanization. 2009 served as the baseline for current
-        urban areas. The 2009 urban extent combined developed areas from the
-        2001 National Landcover Database with areas of high road density from
-        U.S. Census TIGER Line data for 2000, 2006, 2008, and 2009. The model
-        used patterns of road network growth from 2000-2009 to predict what
-        future urbanization would look like if those trends continued. It
-        considered the influence of topography on ease of development and
-        excluded areas that are difficult or impossible to develop, like water
-        bodies, beaches, protected conservation lands, and most wetlands.
+        TODO: description of FUTURES data
     </p>
 
     {% if maps.urban_2060 %}
@@ -34,7 +24,7 @@
             <div class="legend">
                 <h4>Probability of urbanization by 2060</h4>
                 {% for item in legends.urban %}
-                    <div class="legend-element flex align-center {{'no-margin' if loop.index > 2 else ''}}">
+                    <div class="legend-element flex align-center">
                         <div class="legend-patch" style="background: {{item.color}}"></div>
                         <div>{{item.label}}</div>
                     </div>

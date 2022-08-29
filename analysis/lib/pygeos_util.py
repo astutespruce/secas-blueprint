@@ -216,7 +216,7 @@ def intersection(left, right, grid_size=0):
         )
     ).values
 
-    return out.append(rest, ignore_index=False)
+    return pd.concat([out, rest], ignore_index=False)
 
 
 def signed_area(ring):

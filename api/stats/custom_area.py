@@ -190,22 +190,17 @@ class CustomArea(object):
         dict
             {"slr_acres": <acres>, "slr": [<slr_0ft>, <slr_1ft>, ..., <slr_6ft>]}
         """
-        slr_bounds = gp.read_feather(slr_bounds_filename).geometry.values.data[0]
-        ix = pg.intersects(self.geometry, slr_bounds)
-
-        if not ix.sum():
-            # No overlap
-            return None
 
         # only extract SLR where there are overlaps
         slr_results = extract_slr_by_geometry(
-            self.shapes[ix], bounds=pg.total_bounds(self.geometry[ix])
+            self.shapes,
+            bounds=self.bounds,
         )
         # None only if no shape mask
         if slr_results is None:
             return None
 
-        slr = [slr_results[i] for i in range(7)]
+        slr = [slr_results[i] for i in range(11)]
 
         return {"slr_acres": slr_results["shape_mask"], "slr": slr}
 

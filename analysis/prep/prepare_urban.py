@@ -17,6 +17,11 @@ from analysis.lib.io import write_raster
 CHUNK_SIZE = 500  # number of rows to read at a time
 NODATA = 255
 
+# NOTE: bins are in counts of runs projected to urbanize
+# bins are 0: 0, 1: 0.25 - 0.5, 2: > 0.5, 3: already urban
+BINS = [0, 0.9999, 25]
+
+
 start = time()
 
 bnd_dir = Path("data/boundaries")
@@ -130,16 +135,38 @@ for year in URBAN_YEARS:
 
     print(f"Done with {year} in {time()-year_start:.2f}s")
 
-
 bnd_raster.close()
 
 
+### Create mask of where urban pixels are present through 2060
 print("Creating urban mask")
 create_lowres_mask(
-    out_dir / f"urban_{URBAN_YEARS[-1]}.tif",
+    out_dir / f"urban_2060.tif",
     out_dir / "urban_mask.tif",
     factor=MASK_FACTOR,
     ignore_zero=True,
 )
+
+
+### Reclassify 2060 into bins for report and tiles
+print("Reclassifying 2060 for mapping")
+with rasterio.open(out_dir / "urban_2060.tif") as src:
+    data = src.read(1)
+
+    binned = np.digitize(data, BINS, right=True).astype("uint8") - np.uint8(1)
+    binned[data == 51] = 3
+    binned[data == NODATA] = NODATA
+
+    outfilename = out_dir / "urban_2060_binned.tif"
+    write_raster(
+        outfilename,
+        binned,
+        transform=src.transform,
+        crs=src.crs,
+        nodata=NODATA,
+    )
+
+    add_overviews(outfilename)
+
 
 print(f"All done in {time()-start:.2f}s")

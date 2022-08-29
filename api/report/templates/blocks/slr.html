@@ -90,7 +90,7 @@
         {% with remainder=results.slr_acres - results['slr'][-1] %}
         {% if remainder > 0 %}
             <tr class="remainder-row">
-                <td class="label">Not projected to be inundated by up to 6 feet</td>
+                <td class="label">Not projected to be inundated by up to 10 feet</td>
                 <td class="acres">{{remainder|format_number}}</td>
                 <td class="percent">{{(100 * remainder / results.slr_acres)|format_percent}}%</td>
             </tr>

@@ -420,6 +420,10 @@ table tr.above-threshold td {
   font-size: 10pt;
 }
 
+.legend h4 {
+  margin-top: 0;
+}
+
 .legend-patch {
   flex: 0 0 auto;
   height: 10pt;

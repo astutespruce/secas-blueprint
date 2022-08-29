@@ -33,8 +33,8 @@ PADDING = 5
 
 src_dir = Path("data/inputs")
 blueprint_filename = src_dir / "se_blueprint2021.tif"
-urban_filename = src_dir / "threats/urban/urban_2060.tif"
-slr_filename = src_dir / "threats/slr/slr.vrt"
+urban_filename = src_dir / "threats/urban/urban_2060_binned.tif"
+slr_filename = src_dir / "threats/slr/slr.tif"
 inputs_dir = src_dir / "indicators"
 
 indicator_dirs = {

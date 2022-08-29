@@ -2,8 +2,6 @@ from pathlib import Path
 from collections import OrderedDict
 import json
 
-from analysis.lib.colors import interpolate_colormap
-
 
 # Set to True to output intermediate rasters for validation (uncomment in map.raster module)
 # Set to True to output /tmp/test.html for reports
@@ -81,47 +79,44 @@ PROTECTION = OrderedDict(
 )
 
 
-URBAN_YEARS = [2020, 2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100]
+# 2070 - 2100 intentionally not included
+URBAN_YEARS = [2020, 2030, 2040, 2050, 2060]
+
 
 # values are # out of 50 runs, and 51 = currently urban in 2019 NLCD
 # 0 (not urbanized) is deliberately excluded from colors
 URBAN_COLORS = {
-    i + 1: color
-    for i, color in enumerate(
-        interpolate_colormap(
-            {
-                1: "#FFEBD6",
-                5: "#FFEBD6",
-                15: "#F0BD9C",
-                25: "#E08465",
-                35: "#D14734",
-                45: "#C40A0A",
-                50: "#C40A0A",
-            }
-        )
-        + ["#696969"]  # already urbanized
-    )
+    1: "#fcbba1",  # low
+    2: "#a50f15",  # high
+    3: "#696969",  # already urban
 }
 
+# Note: for legend already urban is toward the top but it is value 3
 URBAN_LEGEND = [
+    {"label": "Not likely to urbanize", "color": None},
     {"label": "Urban in 2019", "color": "#696969"},
-    {"label": "<10%", "color": "#FFEBD6"},
-    {"label": "", "color": "#F0BD9C"},  # 30%
-    {"label": "50%", "color": "#E08465"},
-    {"label": "", "color": "#D14734"},  # 70%
-    {"label": ">=90%", "color": "#C40A0A"},
+    {
+        "label": "Moderate likelihood of urbanization (0.02 - 0.5 probability)",
+        "color": "#fcbba1",
+    },
+    {
+        "label": "High likelihood of urbanization (>0.50 probability)",
+        "color": "#a50f15",
+    },
 ]
 
-
-# TODO: rescale to depths 0-10
 SLR_LEGEND = [
-    {"label": "Current (already flooded at high tide)", "color": "#002673"},
-    {"label": "1 foot", "color": "#003BA1"},
-    {"label": "2 feet", "color": "#0053D0"},
-    {"label": "3 feet", "color": "#006EFF"},
-    {"label": "4 feet", "color": "#40A0FF"},
-    {"label": "5 feet", "color": "#80C9FF"},
-    {"label": "6 feet", "color": "#BFE9FF"},
+    {"label": "Current (already flooded at high tide)", "color": "#666666"},
+    {"label": "1 foot", "color": "#ffffcc"},
+    {"label": "2 feet", "color": "#b4e1b9"},
+    {"label": "3 feet", "color": "#90d9be"},
+    {"label": "4 feet", "color": "#6ed8d2"},
+    {"label": "5 feet", "color": "#4dd7e6"},
+    {"label": "6 feet", "color": "#40b4d4"},
+    {"label": "7 feet", "color": "#3391c1"},
+    {"label": "8 feet", "color": "#276ba3"},
+    {"label": "9 feet", "color": "#1e447a"},
+    {"label": "10 feet", "color": "#141d51"},
 ]
 
 

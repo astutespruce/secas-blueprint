@@ -9,6 +9,7 @@ import rasterio
 
 from analysis.constants import ACRES_PRECISION, M2_ACRES
 from analysis.lib.raster import (
+    detect_data,
     boundless_raster_geometry_mask,
     extract_count_in_geometry,
 )
@@ -16,8 +17,8 @@ from analysis.lib.pygeos_util import to_dict
 
 
 src_dir = Path("data/inputs/threats/slr")
-slr_bounds_filename = src_dir / "slr_bounds.feather"
-vrt_filename = src_dir / "slr.vrt"
+slr_mask_filename = src_dir / "slr_mask.tif"
+vrt_filename = src_dir / "slr.tif"
 
 results_filename = "data/results/huc12/slr.feather"
 
@@ -46,6 +47,11 @@ def extract_by_geometry(geometries, bounds):
         values are the area of incremental (not total!) sea level rise by foot
     """
 
+    # prescreen to make sure data are present
+    with rasterio.open(slr_mask_filename) as src:
+        if not detect_data(src, geometries, bounds):
+            return None
+
     results = {}
 
     # create mask and window
@@ -73,7 +79,7 @@ def extract_by_geometry(geometries, bounds):
     if results["shape_mask"] == 0:
         return None
 
-    bins = np.arange(7)
+    bins = np.arange(11)
     counts = extract_count_in_geometry(
         vrt_filename, shape_mask, window, bins=bins, boundless=True
     )
@@ -98,13 +104,6 @@ def summarize_by_huc12(geometries):
 
     # find the indexes of the geometries that overlap with SLR bounds; these are the only
     # ones that need to be analyzed for SLR impacts
-    slr_bounds = gp.read_feather(slr_bounds_filename).geometry
-    tree = pg.STRtree(geometries)
-    ix = tree.query(slr_bounds.geometry.values.data[0], predicate="intersects")
-    geometries = geometries.iloc[ix].copy()
-
-    if not len(geometries):
-        return
 
     results = []
     index = []
