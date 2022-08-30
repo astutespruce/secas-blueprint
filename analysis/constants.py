@@ -1,5 +1,6 @@
 from pathlib import Path
 from collections import OrderedDict
+from itertools import product
 import json
 
 
@@ -104,6 +105,20 @@ URBAN_LEGEND = [
         "color": "#a50f15",
     },
 ]
+
+SLR_YEARS = [2020, 2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100]
+SLR_PROJ_SCENARIOS = {
+    "l": "Low",
+    "il": "Intermediate-low",
+    "i": "Intermediate",
+    "ih": "Intermediate-high",
+    "h": "High",
+}
+SLR_PROJ_COLUMNS = [
+    f"{decade}_{scenario}"
+    for decade, scenario in product(SLR_YEARS, SLR_PROJ_SCENARIOS)
+]
+
 
 SLR_LEGEND = [
     {"label": "Current (already flooded at high tide)", "color": "#666666"},

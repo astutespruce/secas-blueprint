@@ -7,7 +7,13 @@ import pygeos as pg
 import geopandas as gp
 import rasterio
 
-from analysis.constants import ACRES_PRECISION, M2_ACRES
+from analysis.constants import (
+    ACRES_PRECISION,
+    M2_ACRES,
+    SLR_PROJ_COLUMNS,
+    SLR_YEARS,
+    SLR_PROJ_SCENARIOS,
+)
 from analysis.lib.raster import (
     detect_data,
     boundless_raster_geometry_mask,
@@ -18,12 +24,13 @@ from analysis.lib.pygeos_util import to_dict
 
 src_dir = Path("data/inputs/threats/slr")
 slr_mask_filename = src_dir / "slr_mask.tif"
-vrt_filename = src_dir / "slr.tif"
+depth_filename = src_dir / "slr.tif"
+proj_filename = src_dir / "noaa_1deg_cells.feather"
 
 results_filename = "data/results/huc12/slr.feather"
 
 
-def extract_by_geometry(geometries, bounds):
+def extract_by_geometry(geometry, shapes, bounds):
     """Calculate the area of overlap between geometries and each level of SLR
     between 0 (currently inundated) and 6 meters.
 
@@ -32,33 +39,40 @@ def extract_by_geometry(geometries, bounds):
 
     This is only applicable to inland (non-marine) areas that are near the coast.
 
-    NOTE: SLR is in a VRT with a cell size derived from the underlying rasters.
-
     Parameters
     ----------
-    geometries : list-like of geometry objects that provide __geo_interface__
+    geometry : pygeos geometry
+        Geometry (unioned) that defines the boundary for analysis; same as shapes
+    shapes : list-like of geometry objects that provide __geo_interface__
         Should be limited to features that intersect with bounds of SLR datasets
     bounds : list-like of [xmin, ymin, xmax, ymax]
 
     Returns
     -------
     dict
-        keys are mask, <decade>, ...
-        values are the area of incremental (not total!) sea level rise by foot
+        {
+            "shape_mask": <area>,
+            "depth": [area for 0ft inundation, area for 1ft, ..., area for 10f],
+            "projections": {
+                "low": [2020 ft, ..., 2100 ft],
+                ...,
+                "high": [2020 ft, ..., 2100 ft],
+            }
+        }
     """
 
     # prescreen to make sure data are present
     with rasterio.open(slr_mask_filename) as src:
-        if not detect_data(src, geometries, bounds):
+        if not detect_data(src, shapes, bounds):
             return None
 
     results = {}
 
     # create mask and window
-    with rasterio.open(vrt_filename) as src:
+    with rasterio.open(depth_filename) as src:
         try:
             shape_mask, transform, window = boundless_raster_geometry_mask(
-                src, geometries, bounds, all_touched=False
+                src, shapes, bounds, all_touched=False
             )
 
         except ValueError:
@@ -81,15 +95,36 @@ def extract_by_geometry(geometries, bounds):
 
     bins = np.arange(11)
     counts = extract_count_in_geometry(
-        vrt_filename, shape_mask, window, bins=bins, boundless=True
+        depth_filename, shape_mask, window, bins=bins, boundless=True
     )
 
     # accumulate values
     for bin in bins[1:]:
         counts[bin] = counts[bin] + counts[bin - 1]
 
-    acres = (counts * cellsize).round(ACRES_PRECISION).astype("float32")
-    results.update({i: a for i, a in enumerate(acres)})
+    results["depth"] = (
+        (counts * cellsize).round(ACRES_PRECISION).astype("float32").tolist()
+    )
+
+    # intersect with 1-degree pixels; there should always be data available if
+    # there are SLR depth data
+    df = gp.read_feather(proj_filename)
+    tree = pg.STRtree(df.geometry.values.data)
+    df = df.iloc[tree.query(geometry, predicate="intersects")].copy()
+
+    # calculate area-weighted means
+    area_factor = pg.area(pg.intersection(df.geometry.values.data, geometry)) / pg.area(
+        df.geometry.values.data
+    )
+
+    projections = df[SLR_PROJ_COLUMNS].multiply(area_factor, axis=0).sum().round(2)
+
+    results["projections"] = {
+        SLR_PROJ_SCENARIOS[scenario]: [
+            projections[f"{year}_{scenario}"] for year in SLR_YEARS
+        ]
+        for scenario in SLR_PROJ_SCENARIOS
+    }
 
     return results
 
@@ -104,6 +139,8 @@ def summarize_by_huc12(geometries):
 
     # find the indexes of the geometries that overlap with SLR bounds; these are the only
     # ones that need to be analyzed for SLR impacts
+
+    # TODO: update to latest structure and add in projections
 
     results = []
     index = []

@@ -3,15 +3,14 @@
 
     <p>
         NOAA's sea-level rise (SLR) inundation models represent areas likely to
-        experience flooding at high tide under various SLR projections. These
-        models are not linked to a future timeframe. NOAA calculates the inundation footprint
-        at "mean higher high water", or the average highest daily tide. Darker
-        blue areas will experience flooding first, and at greater depth,
-        compared to lighter blue areas. Each projection also includes the areas
-        predicted to be inundated at lower levels of SLR. For example, at 4 ft
-        of SLR, the area predicted to experience inundation includes not only
-        areas covered by the 4 ft projection, but also the 3 ft, 2 ft, 1 ft, and
-        current projections.
+        experience flooding at high tide based on each foot of inundation depth
+        above current levels. These inundation depth models are not linked to a
+        future timeframe; see the projections below. NOAA calculates the
+        inundation depth at "mean higher high water", or the average highest
+        daily tide. The area covered by each inundation depth level includes
+        areas predicted to be inundated at lower levels.For example, areas
+        inundated by 4 ft of SLR also includes areas inundated by 3 ft, 2 ft, 1
+        ft, and current inundation levels.
     </p>
 
     {% if maps.slr %}
@@ -50,9 +49,10 @@
     {% endif %}
 </div>
 
-<div class="no-break">
-    <!-- TODO: SLR figure - construct SVG? -->
 
+<!-- Inundation depth table: -->
+
+<div class="no-break">
     <div class="caption">
         Table {{table.counter}}: Extent of flooding by projected average highest daily tide due to sea level rise{% if results.name %} within {{results.name}}{% if results.type %} {{results.type}}{% endif %}{% else %} in this area{% endif %}.
         Values from the <a href="https://coast.noaa.gov/slrdata/">NOAA sea-level rise inundation data</a>.  Note: areas
@@ -104,5 +104,45 @@
         </tr>
         </tbody>
     </table>
+</div>
 
+
+
+
+<!-- Projection table: -->
+<div class="no-break">
+    <div class="caption">
+        Table {{table.counter}}: Projected sea level rise by decade{% if results.name %} within {{results.name}}{% if results.type %} {{results.type}}{% endif %}{% else %} in this area{% endif %}.
+        Values are based on area-weighted averages of decadal projections for 1-degree grid cells that overlap this area based on <a href="https://oceanservice.noaa.gov/hazards/sealevelrise/sealevelrise-tech-report.html">NOAA's 2022 Sea Level Rise Report</a>.
+    </div>
+    {% set table.counter=table.counter+1 %}
+
+    <table class="centered">
+        <thead>
+            <tr>
+                <th>SLR Scenario</th>
+                {% for year in range(2020, 2105, 10) %}
+                    <th>{{year}} (ft)</th>
+                {% endfor %}
+
+            </tr>
+        </thead>
+        <tbody>
+
+        {% for scenario in results['slr_proj'] %}
+            <tr>
+                <td>{{scenario}}</td>
+                {% for value in  results['slr_proj'][scenario] %}
+                    <td>
+                        {% if value == 0 %}
+                            0
+                        {% else %}
+                            {{value}}
+                        {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </div>

@@ -183,16 +183,26 @@ class CustomArea(object):
         }
 
     def get_slr(self):
-        """Extract SLR for any geometries that overlap bounds where SLR is available
+        """Extract SLR inundation depth and projected depth for any geometries
+        that overlap bounds where SLR is available
 
         Returns
         -------
         dict
-            {"slr_acres": <acres>, "slr": [<slr_0ft>, <slr_1ft>, ..., <slr_6ft>]}
+            {
+                "slr_acres": <acres>,
+                "slr": [<slr_0ft>, <slr_1ft>, ..., <slr_6ft>],
+                "slr_proj": {
+                    "low": [2020 ft, ..., 2100 ft],
+                    ...,
+                    "high": [2020 ft, ..., 2100 ft],
+                }
+            }
         """
 
         # only extract SLR where there are overlaps
         slr_results = extract_slr_by_geometry(
+            self.geometry[0],
             self.shapes,
             bounds=self.bounds,
         )
@@ -200,9 +210,11 @@ class CustomArea(object):
         if slr_results is None:
             return None
 
-        slr = [slr_results[i] for i in range(11)]
-
-        return {"slr_acres": slr_results["shape_mask"], "slr": slr}
+        return {
+            "slr_acres": slr_results["shape_mask"],
+            "slr": slr_results["depth"],
+            "slr_proj": slr_results["projections"],
+        }
 
     def get_counties(self):
         """Get county and state names that overlap this area.

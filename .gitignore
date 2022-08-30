@@ -12,6 +12,7 @@
 
 
 /source_data/ARCHIVE*
+/source_data/base_blueprint/*
 /source_data/blueprint/*
 /source_data/boundaries/*
 /source_data/ownership/*

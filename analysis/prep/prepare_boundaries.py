@@ -27,7 +27,7 @@ tile_dir.mkdir(exist_ok=True, parents=True)
 
 ### Extract the data extent and write to a new raster
 print("Extracting Base Blueprint extent")
-with rasterio.open(src_dir / "blueprint/BaseBlueprintExtent2022.tif") as src:
+with rasterio.open(src_dir / "base_blueprint/BaseBlueprintExtent2022.tif") as src:
     nodata = int(src.nodata)
     data = src.read(1)
 

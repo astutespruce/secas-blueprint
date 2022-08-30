@@ -23,7 +23,7 @@ from pyogrio import (
 )
 
 
-from analysis.constants import DATA_CRS, MASK_FACTOR
+from analysis.constants import DATA_CRS, MASK_FACTOR, SLR_YEARS, SLR_PROJ_COLUMNS
 from analysis.lib.io import write_raster
 from analysis.lib.pygeos_util import (
     to_dict_all,
@@ -344,8 +344,6 @@ df = (
     )
 )
 
-decade_cols = ["2020", "2030", "2040", "2050", "2060", "2070", "2080", "2090", "2100"]
-
 
 # Only keep those that are 1 degree cells (others are tide guages) that overlap
 # with the SECAS region
@@ -359,6 +357,7 @@ df = df.loc[
 ].set_index("PSMSL Site")
 
 # Apply the 2000-2005 offset to the project values
+decade_cols = [str(y) for y in SLR_YEARS]
 for col in decade_cols:
     df[col] += df.offset
 
@@ -419,11 +418,8 @@ df = df.take(ix).reset_index(drop=True)
 
 
 # reorder columns in ascending decade and scenario
-value_cols = [
-    f"{decade}_{scenario}"
-    for decade, scenario in product(decade_cols, ["l", "il", "i", "ih", "h"])
-]
-df = df[["geometry", "Region"] + value_cols]
+
+df = df[["geometry", "Region"] + SLR_PROJ_COLUMNS]
 
 df.to_feather(out_dir / "noaa_1deg_cells.feather")
 

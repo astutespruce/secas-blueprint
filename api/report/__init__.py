@@ -11,6 +11,7 @@ from analysis.constants import (
     BLUEPRINT,
     URBAN_LEGEND,
     SLR_LEGEND,
+    SLR_PROJ_SCENARIOS,
     OWNERSHIP,
     PROTECTION,
 )
@@ -101,7 +102,8 @@ def create_report(maps, results):
     print("Creating report...")
 
     # if DEBUG:
-    # with open("/tmp/test.html", "w") as out:
-    #     out.write(template.render(**context))
+    # FIXME:
+    with open("/tmp/test.html", "w") as out:
+        out.write(template.render(**context))
 
     return HTML(BytesIO((template.render(**context)).encode())).write_pdf()
