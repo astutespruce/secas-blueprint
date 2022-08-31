@@ -18,8 +18,8 @@ CHUNK_SIZE = 500  # number of rows to read at a time
 NODATA = 255
 
 # NOTE: bins are in counts of runs projected to urbanize
-# bins are 0: 0, 1: 0.25 - 0.5, 2: > 0.5, 3: already urban
-BINS = [0, 0.9999, 25]
+# bins are 0: 0, 1: >0 to 0.25, 2: > 0.25 to 0.5, 3: >0.5, 4: already urban
+BINS = [0, 0.9999, 12.5, 25]
 
 
 start = time()
@@ -154,7 +154,7 @@ with rasterio.open(out_dir / "urban_2060.tif") as src:
     data = src.read(1)
 
     binned = np.digitize(data, BINS, right=True).astype("uint8") - np.uint8(1)
-    binned[data == 51] = 3
+    binned[data == 51] = len(BINS)
     binned[data == NODATA] = NODATA
 
     outfilename = out_dir / "urban_2060_binned.tif"

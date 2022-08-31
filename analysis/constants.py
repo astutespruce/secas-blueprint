@@ -87,9 +87,10 @@ URBAN_YEARS = [2020, 2030, 2040, 2050, 2060]
 # values are # out of 50 runs, and 51 = currently urban in 2019 NLCD
 # 0 (not urbanized) is deliberately excluded from colors
 URBAN_COLORS = {
-    1: "#fcbba1",  # low
-    2: "#a50f15",  # high
-    3: "#696969",  # already urban
+    1: "#fee0d2",  # moderate
+    2: "#fc9272",  # high
+    3: "#cb181d",  # very high
+    4: "#696969",  # already urban
 }
 
 # Note: for legend already urban is toward the top but it is value 3
@@ -97,12 +98,16 @@ URBAN_LEGEND = [
     {"label": "Not likely to urbanize", "color": None},
     {"label": "Urban in 2019", "color": "#696969"},
     {
-        "label": "Moderate likelihood of urbanization (0.02 - 0.5 probability)",
-        "color": "#fcbba1",
+        "label": "Moderate likelihood of urbanization (0.02 - 0.25 probability)",
+        "color": "#fee0d2",
     },
     {
-        "label": "High likelihood of urbanization (>0.50 probability)",
-        "color": "#a50f15",
+        "label": "High likelihood of urbanization (>0.25 - 0.5 probability)",
+        "color": "#fc9272",
+    },
+    {
+        "label": "Very high likelihood of urbanization (>0.50 probability)",
+        "color": "#cb181d",
     },
 ]
 

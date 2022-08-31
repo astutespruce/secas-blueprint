@@ -14,6 +14,7 @@
       "base:land_interiorsoutheastgrasslands",
       "base:land_mavforestbirds_protection",
       "base:land_mavforestbirds_reforestation",
+      "base:land_playas",
       "base:land_resilientterrestrialsites",
       "base:land_saamphibianandreptileareas",
       "base:land_saforestbirds",
@@ -38,7 +39,6 @@
       "base:freshwater_naturallandcoverinfloodplains",
       "base:freshwater_networkcomplexity",
       "base:freshwater_permeablesurface",
-      "base:freshwater_playas",
       "base:freshwater_wvimperiledaquaticspecies"
     ]
   },
@@ -48,15 +48,15 @@
     "color": "#f5f5ff",
     "borderColor": "#c2c2ff",
     "indicators": [
-      "base:marine_samarinebirdsbinned",
       "base:marine_coastalshorelinecondition",
       "base:marine_estuarinecoastalcondition",
       "base:marine_islands",
       "base:marine_resilientcoastalsites",
-      "base:marine_seagrasses",
       "base:marine_sabeachbirds",
       "base:marine_sahardbottomanddeepseacoral",
       "base:marine_samammals",
+      "base:marine_samarinebirds",
+      "base:marine_seagrasses",
       "base:marine_stablecoastalwetlands"
     ]
   }
