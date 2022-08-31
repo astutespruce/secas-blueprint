@@ -1,0 +1,1317 @@
+{
+  "input": "base",
+  "indicators": [
+    {
+      "id": "base:freshwater_atlanticestuarinefishhabitat",
+      "filename": "AtlanticEstuarineFishHabitat.tif",
+      "label": "Atlantic estuarine fish habitat",
+      "values": [
+        {
+          "value": 0,
+          "label": "Final score of 0 (degraded areas of opportunity)",
+          "color": "#E1E1E1"
+        },
+        {
+          "value": 1,
+          "label": "Final score of 10 (degraded areas of opportunity)",
+          "color": "#B4CEC5"
+        },
+        {
+          "value": 2,
+          "label": "Final score of 20 (restoration opportunity areas)",
+          "color": "#8CBBAB"
+        },
+        {
+          "value": 3,
+          "label": "Final score of 30 (restoration opportunity areas)",
+          "color": "#69A893"
+        },
+        {
+          "value": 4,
+          "label": "Final score of 40 (restoration opportunity areas)",
+          "color": "#4B957C"
+        },
+        {
+          "value": 5,
+          "label": "Final score of 50 (restoration opportunity areas)",
+          "color": "#318267"
+        },
+        {
+          "value": 6,
+          "label": "Final score of 60 (restoration opportunity areas)",
+          "color": "#1C6F53"
+        },
+        {
+          "value": 7,
+          "label": "Final score of 70 (areas of excellent fish habitat)",
+          "color": "#0C5C41"
+        },
+        {
+          "value": 8,
+          "label": "Final score of 80 (areas of excellent fish habitat)",
+          "color": "#004930"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:freshwater_atlanticmigratoryfishhabitat",
+      "filename": "AtlanticMigratoryFishHabitat.tif",
+      "label": "Atlantic migratory fish habitat",
+      "values": [
+        {
+          "value": 0,
+          "label": "Final score of 0 (degraded areas of opportunity)",
+          "color": null
+        },
+        {
+          "value": 1,
+          "label": "Final score of 10 (degraded areas of opportunity)",
+          "color": "#FFF7FB"
+        },
+        {
+          "value": 2,
+          "label": "Final score of 20 (restoration opportunity areas)",
+          "color": "#E8E4F0"
+        },
+        {
+          "value": 3,
+          "label": "Final score of 30 (restoration opportunity areas)",
+          "color": "#C4CBE3"
+        },
+        {
+          "value": 4,
+          "label": "Final score of 40 (restoration opportunity areas)",
+          "color": "#91B4D6"
+        },
+        {
+          "value": 5,
+          "label": "Final score of 50 (restoration opportunity areas)",
+          "color": "#519BC6"
+        },
+        {
+          "value": 6,
+          "label": "Final score of 60 (areas of excellent fish habitat)",
+          "color": "#1379B5"
+        },
+        {
+          "value": 7,
+          "label": "Final score of 70 (areas of excellent fish habitat)",
+          "color": "#045D92"
+        },
+        {
+          "value": 8,
+          "label": "Final score of 80 (areas of excellent fish habitat)",
+          "color": "#023858"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:freshwater_gulfmigratoryfishconnectivity",
+      "filename": "GulfMigratoryFishConnectivity.tif",
+      "label": "GulfMigratoryFishConnectivity",
+      "values": [
+        {
+          "value": 1,
+          "label": "Presence of Alabama shad, American shad, or striped bass",
+          "color": "#66CDAB"
+        },
+        {
+          "value": 2,
+          "label": "Presence of Gulf sturgeon",
+          "color": "#00734C"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:freshwater_imperiledaquaticspecies",
+      "filename": "ImperiledAquaticSpecies.tif",
+      "label": "ImperiledAquaticSpecies",
+      "values": [
+        {
+          "value": 0,
+          "label": "No aquatic SGCN observed",
+          "color": "#FFFFBF"
+        },
+        {
+          "value": 1,
+          "label": "1 aquatic SGCN observed",
+          "color": "#DBF0AD"
+        },
+        {
+          "value": 2,
+          "label": "2 aquatic SGCN observed",
+          "color": "#B5E29B"
+        },
+        {
+          "value": 3,
+          "label": "3 aquatic SGCN observed",
+          "color": "#8FD38A"
+        },
+        {
+          "value": 4,
+          "label": "4 aquatic SGCN observed",
+          "color": "#7BC48E"
+        },
+        {
+          "value": 5,
+          "label": "5 aquatic SGCN observed",
+          "color": "#6CB696"
+        },
+        {
+          "value": 6,
+          "label": "6 aquatic SGCN observed",
+          "color": "#5EA79F"
+        },
+        {
+          "value": 7,
+          "label": "7 aquatic SGCN observed",
+          "color": "#518A98"
+        },
+        {
+          "value": 8,
+          "label": "8+ aquatic Species of Greatest Conservation Need (SGCN) observed",
+          "color": "#45668A"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:freshwater_naturallandcoverinfloodplains",
+      "filename": "NaturalLandcoverInFloodplains.tif",
+      "label": "Natural landcover in floodplains",
+      "values": [
+        {
+          "value": 1,
+          "label": "<",
+          "color": "#D0D1E6"
+        },
+        {
+          "value": 2,
+          "label": ">60-70%",
+          "color": "#A6BDDB"
+        },
+        {
+          "value": 3,
+          "label": ">70-80%",
+          "color": "#67A9CF"
+        },
+        {
+          "value": 4,
+          "label": ">80-90%",
+          "color": "#1C9099"
+        },
+        {
+          "value": 5,
+          "label": ">90% natural habitat within the estimated floodplain, by catchment",
+          "color": "#016C59"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:freshwater_networkcomplexity",
+      "filename": "NetworkComplexity.tif",
+      "label": "Network complexity",
+      "values": [
+        {
+          "value": 1,
+          "label": "1 connected stream class",
+          "color": "#FFFFD9"
+        },
+        {
+          "value": 2,
+          "label": "2 connected stream classes",
+          "color": "#EDF8B1"
+        },
+        {
+          "value": 3,
+          "label": "3 connected stream classes",
+          "color": "#C7E9B4"
+        },
+        {
+          "value": 4,
+          "label": "4 connected stream classes",
+          "color": "#7FCDBB"
+        },
+        {
+          "value": 5,
+          "label": "5 connected stream classes",
+          "color": "#41B6C4"
+        },
+        {
+          "value": 6,
+          "label": "6 connected stream classes",
+          "color": "#1D91C0"
+        },
+        {
+          "value": 7,
+          "label": "7 connected stream classes",
+          "color": "#225EA8"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:freshwater_permeablesurface",
+      "filename": "PermeableSurface.tif",
+      "label": "Permeable surface",
+      "values": [
+        {
+          "value": 1,
+          "label": "<",
+          "color": "#CCCCFF"
+        },
+        {
+          "value": 2,
+          "label": ">70-90% of catchment permeable (likely degraded water quality and not supporting many aquatic species)",
+          "color": "#9783F7"
+        },
+        {
+          "value": 3,
+          "label": ">90-95% of catchment permeable (likely declining water quality and supporting most aquatic species)",
+          "color": "#6145ED"
+        },
+        {
+          "value": 4,
+          "label": ">95% of catchment permeable (likely high water quality and supporting most sensitive aquatic species)",
+          "color": "#0000E0"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:freshwater_playas",
+      "filename": "Playas.tif",
+      "label": "Playas",
+      "values": [
+        {
+          "value": 1,
+          "label": "Other playa",
+          "color": "#FEE6CE"
+        },
+        {
+          "value": 2,
+          "label": "Healthy playa",
+          "color": "#FDAE6B"
+        },
+        {
+          "value": 3,
+          "label": "Healthy playa and part of a larger cluster",
+          "color": "#E6550D"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+
+    {
+      "id": "base:land_eastcoastalplainopenpinebirds",
+      "filename": "EastCoastalPlainOpenPineBirds.tif",
+      "label": "East Coastal Plain open pine birds",
+      "values": [
+        {
+          "value": 1,
+          "label": "Low priority for open pine conservation for focal bird species (score 0-20)",
+          "color": "#FDFEBE"
+        },
+        {
+          "value": 2,
+          "label": "Medium-low priority (score >20-40)",
+          "color": "#CBCD90"
+        },
+        {
+          "value": 3,
+          "label": "Medium priority (score >40-60)",
+          "color": "#999D64"
+        },
+        {
+          "value": 4,
+          "label": "Medium-high priority (score >60-80)",
+          "color": "#696F3A"
+        },
+        {
+          "value": 5,
+          "label": "High priority for open pine conservation for focal bird species (Bachman's sparrow, red-cockaded woodpecker, Henslow's sparrow, red-headed woodpecker, Northern bobwhite, and brown-headed nuthatch) (score >80-100)",
+          "color": "#3A4311"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:land_equitableaccesstopotentialparks",
+      "filename": "EquitableAccessToPotentialParks.tif",
+      "label": "Equitable access to potential parks",
+      "values": [
+        {
+          "value": 1,
+          "label": "Moderate priority for a new park that would create nearby equitable access",
+          "color": "#C9AFD9"
+        },
+        {
+          "value": 2,
+          "label": "High priority for a new park that would create nearby equitable access",
+          "color": "#8343A6"
+        },
+        {
+          "value": 3,
+          "label": "Very high priority for a new park that would create nearby equitable access",
+          "color": "#4C0073"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:land_firefrequency",
+      "filename": "FireFrequency.tif",
+      "label": "Fire frequency",
+      "values": [
+        {
+          "value": 0,
+          "label": "Not burned from 2013-2021 or row crop",
+          "color": null
+        },
+        {
+          "value": 1,
+          "label": "Burned 1 time from 2013-2021",
+          "color": "#FEE6CE"
+        },
+        {
+          "value": 2,
+          "label": "Burned 2 times from 2013-2021",
+          "color": "#FDAE6B"
+        },
+        {
+          "value": 3,
+          "label": "Burned 3+ times from 2013-2021",
+          "color": "#E6550D"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:land_greatplainsperennialgrasslands",
+      "filename": "GreatPlainsPerennialGrasslands.tif",
+      "label": "Great Plains perennial grasslands",
+      "values": [
+        {
+          "value": 1,
+          "label": "0-20% perennial forbs and perennial grass",
+          "color": "#FDFEBE"
+        },
+        {
+          "value": 2,
+          "label": "21-40% perennial forbs and perennial grass",
+          "color": "#CBCD90"
+        },
+        {
+          "value": 3,
+          "label": "41-60% perennial forbs and perennial grass",
+          "color": "#999D64"
+        },
+        {
+          "value": 4,
+          "label": "61-80% perennial forbs and perennial grass",
+          "color": "#696F3A"
+        },
+        {
+          "value": 5,
+          "label": "81-100% perennial forbs and perennial grass",
+          "color": "#3A4311"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:land_greenwaysandtrails",
+      "filename": "GreenwaysAndTrails.tif",
+      "label": "Greenways and trails",
+      "values": [
+        {
+          "value": 1,
+          "label": "Sidewalk or other path",
+          "color": "#A50026"
+        },
+        {
+          "value": 2,
+          "label": "Developed and connected for <1.9 km",
+          "color": "#EA593A"
+        },
+        {
+          "value": 3,
+          "label": "Partly natural and connected for <1.9 km or developed and connected for 1.9 to <5 km",
+          "color": "#FDBF6F"
+        },
+        {
+          "value": 4,
+          "label": "Mostly natural and connected for <1.9 km, partly natural and connected for 1.9 to <5 km, or developed and connected for 5 to <40 km",
+          "color": "#FFFFBF"
+        },
+        {
+          "value": 5,
+          "label": "Mostly natural and connected for 1.9-<5 km, partly natural and connected for 5 to <40 km, or developed and > 40 km",
+          "color": "#B7E075"
+        },
+        {
+          "value": 6,
+          "label": "Mostly natural and connected for 5-<40 km or partly natural and connected for > 40 km",
+          "color": "#4DB15D"
+        },
+        {
+          "value": 7,
+          "label": "Mostly natural and connected for > 40 km",
+          "color": "#006837"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+
+    {
+      "id": "base:land_intacthabitatcores",
+      "filename": "IntactHabitatCores.tif",
+      "label": "Intact habitat cores",
+      "values": [
+        {
+          "value": 0,
+          "label": "Not a core",
+          "color": null
+        },
+        {
+          "value": 1,
+          "label": "Small core (>100-1,000 acres)",
+          "color": "#AADFD3"
+        },
+        {
+          "value": 2,
+          "label": "Medium core (>1,000-10,000 acres)",
+          "color": "#37A266"
+        },
+        {
+          "value": 3,
+          "label": "Large core (>10,000 acres)",
+          "color": "#00441B"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:land_interiorsoutheastgrasslands",
+      "filename": "InteriorSoutheastGrasslands.tif",
+      "label": "Interior Southeast grasslands",
+      "values": [
+        {
+          "value": 0,
+          "label": "Grassland less likely",
+          "color": null
+        },
+        {
+          "value": 1,
+          "label": "Grassland geology",
+          "color": "#FFEBAF"
+        },
+        {
+          "value": 2,
+          "label": "Potentially compatible management outside of grassland geology (undeveloped powerline right-of-way or perennial forbs and grasses)",
+          "color": "#FFD37F"
+        },
+        {
+          "value": 3,
+          "label": "Potentially compatible management within grassland geology (undeveloped powerline right-of-way or perennial forbs and grasses)",
+          "color": "#FFAA00"
+        },
+        {
+          "value": 4,
+          "label": "Known grassland buffer",
+          "color": "#A87000"
+        },
+        {
+          "value": 5,
+          "label": "Known grassland",
+          "color": "#734C00"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:land_mavforestbirds_protection",
+      "filename": "MississippiAlluvialValleyForestBirds_Protection.tif",
+      "label": "Mississippi Alluvial Valley forest birds protection",
+      "values": [
+        {
+          "value": 1,
+          "label": "Lowest priority forest breeding bird habitat patch for future protection (score 0-10)",
+          "color": "#C2523C"
+        },
+        {
+          "value": 2,
+          "label": "(score >10-20)",
+          "color": "#DA7528"
+        },
+        {
+          "value": 3,
+          "label": "(score >20-30)",
+          "color": "#EFAA11"
+        },
+        {
+          "value": 4,
+          "label": "(score >30-40)",
+          "color": "#F9DD07"
+        },
+        {
+          "value": 5,
+          "label": "(score >40-50)",
+          "color": "#C0F700"
+        },
+        {
+          "value": 6,
+          "label": "(score >50-60)",
+          "color": "#32E300"
+        },
+        {
+          "value": 7,
+          "label": "(score >60-70)",
+          "color": "#0EC546"
+        },
+        {
+          "value": 8,
+          "label": "(score >70-80)",
+          "color": "#1EA088"
+        },
+        {
+          "value": 9,
+          "label": "(score >80-90)",
+          "color": "#166C8B"
+        },
+        {
+          "value": 10,
+          "label": "Highest priority forest breeding bird habitat patch for future protection (score >90-100)",
+          "color": "#0B2C7A"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:land_mavforestbirds_reforestation",
+      "filename": "MississippiAlluvialValleyForestBirds_Reforestation.tif",
+      "label": "Mississippi Alluvial Valley forest birds reforestation",
+      "values": [
+        {
+          "value": 1,
+          "label": "Reforestation least likely to contribute to forest breeding bird habitat needs (<10th percentile)",
+          "color": "#000000"
+        },
+        {
+          "value": 2,
+          "label": "Reforestation least likely to contribute to forest breeding bird habitat needs (10th-<20th percentile)",
+          "color": "#9C9C9C"
+        },
+        {
+          "value": 3,
+          "label": "Reforestation least likely to contribute to forest breeding bird habitat needs (20th-<30th percentile)",
+          "color": "#1800ED"
+        },
+        {
+          "value": 4,
+          "label": "Reforestation least likely to contribute to forest breeding bird habitat needs (30th-<40th percentile)",
+          "color": "#7000BF"
+        },
+        {
+          "value": 5,
+          "label": "Reforestation least likely to contribute to forest breeding bird habitat needs (40th-<50th percentile)",
+          "color": "#C191FF"
+        },
+        {
+          "value": 6,
+          "label": "Reforestation least likely to contribute to forest breeding bird habitat needs (50th-<60th percentile)",
+          "color": "#004DA8"
+        },
+        {
+          "value": 7,
+          "label": "Reforestation less likely to contribute to forest breeding bird habitat needs (60th-<70th percentile)",
+          "color": "#00FFC5"
+        },
+        {
+          "value": 8,
+          "label": "Reforestation more likely to contribute to forest breeding bird habitat needs (70th-<80th percentile)",
+          "color": "#4CE600"
+        },
+        {
+          "value": 9,
+          "label": "Reforestation most likely to contribute to forest breeding bird habitat needs (80th-<90th percentile)",
+          "color": "#FFFF00"
+        },
+        {
+          "value": 10,
+          "label": "Reforestation most likely to contribute to forest breeding bird habitat needs (>",
+          "color": "#FF0000"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:land_resilientterrestrialsites",
+      "filename": "ResilientTerrestrialSites.tif",
+      "label": "Resilient terrestrial sites",
+      "values": [
+        {
+          "value": 0,
+          "label": "Developed",
+          "color": "#9C9C9C"
+        },
+        {
+          "value": 1,
+          "label": "Least resilient",
+          "color": "#9C551F"
+        },
+        {
+          "value": 2,
+          "label": "Less resilient",
+          "color": "#BF874B"
+        },
+        {
+          "value": 3,
+          "label": "Slightly less resilient",
+          "color": "#E0C080"
+        },
+        {
+          "value": 4,
+          "label": "Average/median resilience",
+          "color": "#FFFFBF"
+        },
+        {
+          "value": 5,
+          "label": "Slightly more resilient",
+          "color": "#A9C276"
+        },
+        {
+          "value": 6,
+          "label": "More resilient",
+          "color": "#5E8A3A"
+        },
+        {
+          "value": 7,
+          "label": "Most resilient",
+          "color": "#205905"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:land_saamphibianandreptileareas",
+      "filename": "SouthAtlanticAmphibianAndReptileAreas.tif",
+      "label": "South Atlantic amphibian & reptile areas",
+      "values": [
+        {
+          "value": 0,
+          "label": "Not a Priority Amphibian and Reptile Conservation Area (PARCA)",
+          "color": "#D3FFBE"
+        },
+        {
+          "value": 1,
+          "label": "Priority Amphibian and Reptile Conservation Area (PARCA)",
+          "color": "#55FF00"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:land_saforestbirds",
+      "filename": "SouthAtlanticForestBirds.tif",
+      "label": "South Atlantic forest birds",
+      "values": [
+        {
+          "value": 0,
+          "label": "Less potential for presence of forest bird index species",
+          "color": null
+        },
+        {
+          "value": 1,
+          "label": "Very small patches or near open areas (potential for presence of wood thrush, whip-poor-will, red-headed woodpecker, Chuck-will's widow, or American woodcock)",
+          "color": "#D9F0A3"
+        },
+        {
+          "value": 2,
+          "label": "Small patches often near water (potential presence of hooded warbler or Kentucky warbler)",
+          "color": "#ADDD8E"
+        },
+        {
+          "value": 3,
+          "label": "Medium patches (potential for presence of Acadian flycatcher)",
+          "color": "#78C679"
+        },
+        {
+          "value": 4,
+          "label": "Large patches often near water (potential for presence of Northern parula, black-throated green warbler, or Prothonotary warbler)",
+          "color": "#31A354"
+        },
+        {
+          "value": 5,
+          "label": "Very large patches near water (potential for presence of Swainsons warbler)",
+          "color": "#006837"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+
+    {
+      "id": "base:land_salowurbanhistoric",
+      "filename": "SouthAtlanticLowUrbanHistoric.tif",
+      "label": "South Atlanti low-urban historic landscapes",
+      "values": [
+        {
+          "value": 0,
+          "label": "Not in the National Register of Historic Places",
+          "color": null
+        },
+        {
+          "value": 1,
+          "label": "Historic place with nearby high-urban buffer",
+          "color": "#BCAAA4"
+        },
+        {
+          "value": 2,
+          "label": "Historic place with nearby low-urban buffer",
+          "color": "#795548"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:marine_samarinebirdsbinned",
+      "filename": "SouthAtlanticMarineBirdsBinned.tif",
+      "label": "SouthAtlanticMarineBirdsBinned",
+      "values": [
+        {
+          "value": 1,
+          "label": "≤20th percentile of importance",
+          "color": "#FEF6B5"
+        },
+        {
+          "value": 2,
+          "label": ">20th-40th percentile of importance",
+          "color": "#FECE97"
+        },
+        {
+          "value": 3,
+          "label": ">40th-60th percentile of importance",
+          "color": "#FFA679"
+        },
+        {
+          "value": 4,
+          "label": ">60th-80th percentile of importance",
+          "color": "#F07C7E"
+        },
+        {
+          "value": 5,
+          "label": ">80th percentile of importance for marine bird index species",
+          "color": "#E15383"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+
+    {
+      "id": "base:land_samaritimeforest",
+      "filename": "SouthAtlanticMaritimeForest.tif",
+      "label": "South Atlantic maritime forest",
+      "values": [
+        {
+          "value": 1,
+          "label": "Maritime Forest",
+          "color": "#00FFC5"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:land_urbanparksize",
+      "filename": "UrbanParkSize.tif",
+      "label": "Urban park size",
+      "values": [
+        {
+          "value": 1,
+          "label": "5-10 acre urban park",
+          "color": "#DFC2BC"
+        },
+        {
+          "value": 2,
+          "label": ">10-30 acre urban park",
+          "color": "#BD97AE"
+        },
+        {
+          "value": 3,
+          "label": ">30-50 acre urban park",
+          "color": "#96679D"
+        },
+        {
+          "value": 4,
+          "label": ">50-75 acre urban park",
+          "color": "#673C83"
+        },
+        {
+          "value": 5,
+          "label": ">75 acre urban park",
+          "color": "#2D2C55"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:land_wcpforestedwetlandbirds",
+      "filename": "WestCoastalPlainAndOuachitasForestedWetlandBirds.tif",
+      "label": "West Coastal Plain & Ouachitas forested wetland birds",
+      "values": [
+        {
+          "value": 1,
+          "label": "Low habitat suitability for forested wetland bird umbrella species (score 0-20)",
+          "color": "#EDF8E9"
+        },
+        {
+          "value": 2,
+          "label": "Medium-low habitat suitability (score >20-40)",
+          "color": "#BAE4B3"
+        },
+        {
+          "value": 3,
+          "label": "Medium habitat suitability (score >40-60)",
+          "color": "#74C476"
+        },
+        {
+          "value": 4,
+          "label": "Medium-high habitat suitability (score >60-80)",
+          "color": "#31A354"
+        },
+        {
+          "value": 5,
+          "label": "High habitat suitability for forested wetland bird umbrella species (Acadian flycatcher, Kentucky warbler, yellow-throated warbler, prothonotary warbler, red-shouldered hawk) (score >80)",
+          "color": "#006D2C"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:land_wcpopenpinebirds",
+      "filename": "WestCoastalPlainAndOuachitasOpenPineBirds.tif",
+      "label": "West Coastal Plain & Ouachitas open pine birds",
+      "values": [
+        {
+          "value": 0,
+          "label": "Pine patch too small and isolated to support a population of any umbrella bird species or not an upland pine patch",
+          "color": null
+        },
+        {
+          "value": 1,
+          "label": "Pine patch part of a cluster of nearby patches able to support a population of 1 umbrella bird species if managed in open condition",
+          "color": "#C2523C"
+        },
+        {
+          "value": 2,
+          "label": "Pine patch part of a cluster of nearby patches able to support a population of 2 umbrella bird species if managed in open condition",
+          "color": "#EDA113"
+        },
+        {
+          "value": 3,
+          "label": "Pine patch part of a cluster of nearby patches able to support a population of all 3 umbrella bird species if managed in open condition",
+          "color": "#F9DD07"
+        },
+        {
+          "value": 4,
+          "label": "Pine patch large enough to support a population of 1 umbrella bird species if managed in open condition",
+          "color": "#00DB00"
+        },
+        {
+          "value": 5,
+          "label": "Pine patch large enough to support a population of 2 umbrella bird species if managed in open condition",
+          "color": "#20998F"
+        },
+        {
+          "value": 6,
+          "label": "Pine patch large enough to support a population of all 3 umbrella bird species (brown-headed nuthatch, Bachman's sparrow, red-cockaded woodpecker) if managed in open condition",
+          "color": "#0B2C7A"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:land_wgcmottledducknesting",
+      "filename": "WestGulfCoastMottledDuckNesting.tif",
+      "label": "West Gulf Coast Mottled Duck nesting",
+      "values": [
+        {
+          "value": 1,
+          "label": "0-10th percentile of suitable Mottled Duck nesting habitat",
+          "color": "#FFFFBF"
+        },
+        {
+          "value": 2,
+          "label": "10th-20th percentile of suitable Mottled Duck nesting habitat",
+          "color": "#DFF2AF"
+        },
+        {
+          "value": 3,
+          "label": "20th-30th percentile of suitable Mottled Duck nesting habitat",
+          "color": "#BEE59F"
+        },
+        {
+          "value": 4,
+          "label": "30th-40th percentile of suitable Mottled Duck nesting habitat",
+          "color": "#9CD890"
+        },
+        {
+          "value": 5,
+          "label": "40th-50th percentile of suitable Mottled Duck nesting habitat",
+          "color": "#82CB8A"
+        },
+        {
+          "value": 6,
+          "label": "50th-60th percentile of suitable Mottled Duck nesting habitat",
+          "color": "#74BE91"
+        },
+        {
+          "value": 7,
+          "label": "60th-70th percentile of suitable Mottled Duck nesting habitat",
+          "color": "#67AB99"
+        },
+        {
+          "value": 8,
+          "label": "70th-80th percentile of suitable Mottled Duck nesting habitat",
+          "color": "#5BA4A1"
+        },
+        {
+          "value": 9,
+          "label": "80th-90th percentile of suitable Mottled Duck nesting habitat",
+          "color": "#508697"
+        },
+        {
+          "value": 10,
+          "label": "90th-100th percentile of suitable Mottled Duck nesting habitat",
+          "color": "#45668A"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:freshwater_wvimperiledaquaticspecies",
+      "filename": "WestVirginiaImperiledAquaticSpecies.tif",
+      "label": "West Virginia imperiled aquatic species",
+      "values": [
+        {
+          "value": 0,
+          "label": "No aquatic imperiled (G1/G2) or threatened/endangered species observed",
+          "color": "#FFFFBF"
+        },
+        {
+          "value": 1,
+          "label": "1 aquatic imperiled (G1/G2) or threatened/endangered species observed",
+          "color": "#DBF0AD"
+        },
+        {
+          "value": 2,
+          "label": "2 aquatic imperiled (G1/G2) or threatened/endangered species observed",
+          "color": "#B5E29B"
+        },
+        {
+          "value": 3,
+          "label": "3 aquatic imperiled (G1/G2) or threatened/endangered species observed",
+          "color": "#8FD38A"
+        },
+        {
+          "value": 5,
+          "label": "5 aquatic imperiled (G1/G2) or threatened/endangered species observed",
+          "color": "#6CB696"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:marine_coastalshorelinecondition",
+      "filename": "CoastalShorelineCondition.tif",
+      "label": "Coastal shoreline condition",
+      "values": [
+        {
+          "value": 0,
+          "label": "Armored",
+          "color": null
+        },
+        {
+          "value": 1,
+          "label": "Partially armored",
+          "color": "#FFCCFF"
+        },
+        {
+          "value": 2,
+          "label": "Partially armored and harder to develop",
+          "color": "#F092EE"
+        },
+        {
+          "value": 3,
+          "label": "Natural",
+          "color": "#DB58D9"
+        },
+        {
+          "value": 4,
+          "label": "Natural and harder to develop",
+          "color": "#A300A3"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:marine_estuarinecoastalcondition",
+      "filename": "EstuarineCoastalCondition.tif",
+      "label": "Estuarine coastal condition",
+      "values": [
+        {
+          "value": 1,
+          "label": "Poor",
+          "color": "#C2523C"
+        },
+        {
+          "value": 2,
+          "label": "Fair to poor",
+          "color": "#F2B60F"
+        },
+        {
+          "value": 3,
+          "label": "Fair",
+          "color": "#77ED00"
+        },
+        {
+          "value": 4,
+          "label": "Good to fair",
+          "color": "#1BAA7D"
+        },
+        {
+          "value": 5,
+          "label": "Good",
+          "color": "#0B2C7A"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:marine_islands",
+      "filename": "Islands.tif",
+      "label": "Islands",
+      "values": [
+        {
+          "value": 1,
+          "label": "Island",
+          "color": "#FEE6CE"
+        },
+        {
+          "value": 2,
+          "label": "Island critical habitat for any of six threatened and endangered species (piping plover, loggerhead sea turtle, Cape Sable thoroughwort, Florida semaphore cactus, silver rice rat, or Bartram's hairstreak butterfly)",
+          "color": "#E6AE0D"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:marine_resilientcoastalsites",
+      "filename": "ResilientCoastalSites.tif",
+      "label": "Resilient coastal sites",
+      "values": [
+        {
+          "value": 1,
+          "label": "Least resilient",
+          "color": "#9C551F"
+        },
+        {
+          "value": 2,
+          "label": "Less resilient",
+          "color": "#BF874B"
+        },
+        {
+          "value": 3,
+          "label": "Slightly less resilient",
+          "color": "#E0C080"
+        },
+        {
+          "value": 4,
+          "label": "Average/median resilience",
+          "color": "#FFFFBF"
+        },
+        {
+          "value": 5,
+          "label": "Slightly more resilient",
+          "color": "#A9C276"
+        },
+        {
+          "value": 6,
+          "label": "More resilient",
+          "color": "#5E8A3A"
+        },
+        {
+          "value": 7,
+          "label": "Most resilient",
+          "color": "#205905"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:marine_seagrasses",
+      "filename": "Seagrasses.tif",
+      "label": "Seagrasses",
+      "values": [
+        {
+          "value": 1,
+          "label": "Seagrasses present",
+          "color": "#4C7300"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:marine_sabeachbirds",
+      "filename": "SouthAtlanticBeachBirds.tif",
+      "label": "South Atlantic beach birds",
+      "values": [
+        {
+          "value": 1,
+          "label": "<",
+          "color": "#FFFFED"
+        },
+        {
+          "value": 2,
+          "label": ">20th-40th percentile of importance",
+          "color": "#E2DEB9"
+        },
+        {
+          "value": 3,
+          "label": ">40th-60th percentile of importance",
+          "color": "#C4BA8C"
+        },
+        {
+          "value": 4,
+          "label": ">60th-80th percentile of importance",
+          "color": "#A79565"
+        },
+        {
+          "value": 5,
+          "label": ">80th percentile of importance for bird index species (American oystercatcher, Wilson's plover, least tern, and piping plover)",
+          "color": "#89703C"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:marine_sahardbottomanddeepseacoral",
+      "filename": "SouthAtlanticHardbottomAndDeepSeaCoral.tif",
+      "label": "South Atlantic hardbottom & deep-sea coral",
+      "values": [
+        {
+          "value": 1,
+          "label": "Low suitability for coral or hardbottom",
+          "color": "#B6EFB6"
+        },
+        {
+          "value": 2,
+          "label": "Medium suitability for coral or hardbottom",
+          "color": "#97C5AC"
+        },
+        {
+          "value": 3,
+          "label": "High suitability for coral or hardbottom",
+          "color": "#7597A2"
+        },
+        {
+          "value": 4,
+          "label": "Very high suitability for coral or hardbottom",
+          "color": "#555F96"
+        },
+        {
+          "value": 5,
+          "label": "Observed coral or hardbottom",
+          "color": "#141C66"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:marine_samammals",
+      "filename": "SouthAtlanticMarineMammalsBinned.tif",
+      "label": "South Atlantic marine mammals",
+      "values": [
+        {
+          "value": 1,
+          "label": "≤20th percentile of importance",
+          "color": "#BFD3E6"
+        },
+        {
+          "value": 2,
+          "label": ">20th-40th percentile of importance",
+          "color": "#8C96C6"
+        },
+        {
+          "value": 3,
+          "label": ">40th-60th percentile of importance",
+          "color": "#8C6BB1"
+        },
+        {
+          "value": 4,
+          "label": ">60th-80th percentile of importance",
+          "color": "#88419D"
+        },
+        {
+          "value": 5,
+          "label": ">80th percentile of importance for marine mammal index species",
+          "color": "#6E016B"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    },
+    {
+      "id": "base:marine_stablecoastalwetlands",
+      "filename": "StableCoastalWetlands.tif",
+      "label": "Stable coastal wetlands",
+      "values": [
+        {
+          "value": 1,
+          "label": "Stable coastal wetlands",
+          "color": "#75B2B3"
+        }
+      ],
+      "description": "TODO:",
+      "url": ""
+    }
+  ]
+}
