@@ -113,9 +113,8 @@ def extract_by_geometry(geometry, shapes, bounds):
     df = df.iloc[tree.query(geometry, predicate="intersects")].copy()
 
     # calculate area-weighted means
-    area_factor = pg.area(pg.intersection(df.geometry.values.data, geometry)) / pg.area(
-        df.geometry.values.data
-    )
+    intersection_area = pg.area(pg.intersection(df.geometry.values.data, geometry))
+    area_factor = intersection_area / intersection_area.sum()
 
     projections = df[SLR_PROJ_COLUMNS].multiply(area_factor, axis=0).sum().round(2)
 
