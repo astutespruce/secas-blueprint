@@ -10,7 +10,8 @@ from rasterio.enums import Resampling
 from rasterio.vrt import WarpedVRT
 from rasterio.windows import Window
 
-from analysis.constants import URBAN_YEARS, DATA_CRS, MASK_FACTOR
+from analysis.constants import URBAN_YEARS, DATA_CRS, MASK_FACTOR, URBAN_COLORS
+from analysis.lib.colors import interpolate_colormap, hex_to_uint8
 from analysis.lib.raster import add_overviews, create_lowres_mask
 from analysis.lib.io import write_raster
 
@@ -20,6 +21,20 @@ NODATA = 255
 # NOTE: bins are in counts of runs projected to urbanize
 # bins are 0: 0, 1: >0 to 0.25, 2: > 0.25 to 0.5, 3: >0.5, 4: already urban
 BINS = [0, 0.9999, 12.5, 25]
+
+
+# Create color ramp for outputs
+
+colormap = {
+    0: (255, 255, 255, 0),
+    **{
+        i + 1: hex_to_uint8(color) + (255,)
+        for i, color in enumerate(
+            interpolate_colormap({1: URBAN_COLORS[1], 50: URBAN_COLORS[3]})
+        )
+    },
+    51: hex_to_uint8(URBAN_COLORS[4]),
+}
 
 
 start = time()
@@ -130,6 +145,9 @@ for year in URBAN_YEARS:
     print("Writing final dataset")
     write_raster(outfilename, data, bnd_raster.transform, bnd_raster.crs, nodata=NODATA)
 
+    with rasterio.open(outfilename, "r+") as out:
+        out.write_colormap(1, colormap)
+
     print("Adding overviews")
     add_overviews(outfilename)
 
@@ -150,6 +168,10 @@ create_lowres_mask(
 
 ### Reclassify 2060 into bins for report and tiles
 print("Reclassifying 2060 for mapping")
+
+colormap = {k: hex_to_uint8(color) + (255,) for k, color in URBAN_COLORS.items()}
+colormap[0] = (255, 255, 255, 0)
+
 with rasterio.open(out_dir / "urban_2060.tif") as src:
     data = src.read(1)
 
@@ -165,6 +187,9 @@ with rasterio.open(out_dir / "urban_2060.tif") as src:
         crs=src.crs,
         nodata=NODATA,
     )
+
+    with rasterio.open(outfilename, "r+") as out:
+        out.write_colormap(1, colormap)
 
     add_overviews(outfilename)
 

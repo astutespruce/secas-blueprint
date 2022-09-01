@@ -35,6 +35,19 @@ if not outfilename.exists():
         nodata = int(src.nodata)
         data = src.read(1)
 
+        df = (
+            read_dataframe(src_dir / "Blueprint2022.tif.vat.dbf")
+            .set_index("Value")[["Red", "Green", "Blue"]]
+            .astype("uint8")
+        )
+        df["Alpha"] = 255
+        df.loc[0, "Alpha"] = 0
+
+        # uncomment to print blueprint colors
+        # print(df[['Red','Green', 'Blue']].apply(lambda row: f"#{row.Red:02X}{row.Green:02X}{row.Blue:02X}", axis=1))
+
+        colormap = df.apply(tuple, axis=1).to_dict()
+
         write_raster(
             outfilename,
             data[data_window.toslices()],
@@ -43,7 +56,11 @@ if not outfilename.exists():
             nodata=nodata,
         )
 
+        with rasterio.open(outfilename, "r+") as out:
+            out.write_colormap(1, colormap)
+
         add_overviews(outfilename)
+
 
 ### Extract indicators and associated json
 print("Extracting indicators")
@@ -96,7 +113,7 @@ for tif in tifs:
     df["blue"] = df.blue.astype("uint8")
 
     df["label"] = df["label"].apply(
-        lambda x: x.split("=")[1].strip() if "=" in x else x
+        lambda x: x.split("=", 1)[1].strip() if "=" in x else x
     )
     df["color"] = df[["red", "green", "blue"]].apply(
         lambda row: f"#{row[0]:02X}{row[1]:02X}{row[2]:02X}", axis=1
@@ -114,6 +131,16 @@ for tif in tifs:
         "url": "",
     }
     indicators.append(indicator)
+
+    colors = df.set_index("value")[["red", "green", "blue"]]
+    colors["Alpha"] = 255
+    colors.loc[
+        (colors.red == 255) & (colors.green == 255) & (colors.blue == 255), "Alpha"
+    ] = 0
+    colormap = colors.apply(tuple, axis=1).to_dict()
+
+    with rasterio.open(outfilename, "r+") as src:
+        src.write_colormap(1, colormap)
 
 
 outfilename = json_dir / "base.json"

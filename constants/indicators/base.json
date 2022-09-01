@@ -388,17 +388,17 @@
         },
         {
           "value": 5,
-          "label": "Mostly natural and connected for 1.9-<5 km, partly natural and connected for 5 to <40 km, or developed and > 40 km",
+          "label": "Mostly natural and connected for 1.9 to <5 km, partly natural and connected for 5 to <40 km, or developed and ≥ 40 km",
           "color": "#B7E075"
         },
         {
           "value": 6,
-          "label": "Mostly natural and connected for 5-<40 km or partly natural and connected for > 40 km",
+          "label": "Mostly natural and connected for 5 to <40 km or partly natural and connected for ≥ 40 km",
           "color": "#4DB15D"
         },
         {
           "value": 7,
-          "label": "Mostly natural and connected for > 40 km",
+          "label": "Mostly natural and connected for ≥ 40 km",
           "color": "#006837"
         }
       ],
@@ -728,7 +728,7 @@
     {
       "id": "base:land_salowurbanhistoric",
       "filename": "SouthAtlanticLowUrbanHistoric.tif",
-      "label": "South Atlanti low-urban historic landscapes",
+      "label": "South Atlantic low-urban historic landscapes",
       "values": [
         {
           "value": 0,
