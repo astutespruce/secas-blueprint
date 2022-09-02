@@ -80,8 +80,7 @@ PROTECTION = OrderedDict(
 )
 
 
-# 2070 - 2100 intentionally not included
-URBAN_YEARS = [2020, 2030, 2040, 2050, 2060]
+URBAN_YEARS = [2020, 2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100]
 
 
 # values are # out of 50 runs, and 51 = currently urban in 2019 NLCD
@@ -98,15 +97,15 @@ URBAN_LEGEND = [
     {"label": "Not likely to urbanize", "color": None},
     {"label": "Urban in 2019", "color": "#696969"},
     {
-        "label": "Moderate likelihood of urbanization (0.02 - 0.25 probability)",
+        "label": "Moderate likelihood of urbanization (2 - 25% probability)",
         "color": "#F3C6A8",
     },
     {
-        "label": "High likelihood of urbanization (>0.25 - 0.5 probability)",
+        "label": "High likelihood of urbanization (25 - 50% probability)",
         "color": "#DA6C51",
     },
     {
-        "label": "Very high likelihood of urbanization (>0.50 probability)",
+        "label": "Very high likelihood of urbanization (>50% probability)",
         "color": "#C40A0A",
     },
 ]
@@ -126,17 +125,17 @@ SLR_PROJ_COLUMNS = [
 
 
 SLR_LEGEND = [
-    {"label": "Current (already flooded at high tide)", "color": "#666666"},
-    {"label": "1 foot", "color": "#ffffcc"},
-    {"label": "2 feet", "color": "#b4e1b9"},
-    {"label": "3 feet", "color": "#90d9be"},
-    {"label": "4 feet", "color": "#6ed8d2"},
-    {"label": "5 feet", "color": "#4dd7e6"},
-    {"label": "6 feet", "color": "#40b4d4"},
-    {"label": "7 feet", "color": "#3391c1"},
-    {"label": "8 feet", "color": "#276ba3"},
-    {"label": "9 feet", "color": "#1e447a"},
-    {"label": "10 feet", "color": "#141d51"},
+    {"label": "0", "color": "#00094E"},
+    {"label": "1", "color": "#031386"},
+    {"label": "2", "color": "#0821BD"},
+    {"label": "3", "color": "#1136E0"},
+    {"label": "4", "color": "#1E50EE"},
+    {"label": "5", "color": "#2D6BFC"},
+    {"label": "6", "color": "#2D8CFC"},
+    {"label": "7", "color": "#2CADFC"},
+    {"label": "8", "color": "#47D4FC"},
+    {"label": "9", "color": "#7DF5FD"},
+    {"label": "10", "color": "#B3FEF7"},
 ]
 
 

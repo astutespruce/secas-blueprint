@@ -242,6 +242,12 @@ table tr.above-threshold td {
   border-bottom: 2px solid #333;
 }
 
+table tr.highlight-row td,
+table th.highlight-col,
+table td.highlight-col {
+  background: #ffffe5;
+}
+
 .divider-wide {
   margin-bottom: 10pt;
   border-bottom: 6pt solid #0b316b;

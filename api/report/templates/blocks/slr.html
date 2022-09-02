@@ -8,7 +8,7 @@
         future timeframe; see the projections below. NOAA calculates the
         inundation depth at "mean higher high water", or the average highest
         daily tide. The area covered by each inundation depth level includes
-        areas predicted to be inundated at lower levels.For example, areas
+        areas predicted to be inundated at lower levels. For example, areas
         inundated by 4 ft of SLR also includes areas inundated by 3 ft, 2 ft, 1
         ft, and current inundation levels.
     </p>
@@ -30,15 +30,15 @@
             </div>
 
             <div class="legend flex-grow">
-                <h4>Flooding extent by projected sea-level rise</h4>
-                {% for item in legends.slr %}
-                    <div class="legend-element flex align-center no-margin">
-                        <div class="legend-patch" style="background: {{item.color}}"></div>
-                        <div class="legend-label">{{item.label}}</div>
-                    </div>
-                {% endfor %}
-                <!-- space is required or last label doesn't render -->
-                &nbsp;
+                <h4>Flooding extent by projected sea-level rise (ft)</h4>
+                <div class="flex">
+                    {% for item in legends.slr %}
+                        <div class="flex-grow" style="width: 100%;">
+                            <div style="background: {{item.color}}; opacity: 0.7; height: 14pt; border: 1px solid #aaa; border-bottom: 1px solid #aaa; border-right: 1px solid #aaa;{% if loop.index == 0 %}border-left; 1px solid #aaa;{% endif %}"></div>
+                            <div class="legend-label text-center">{{item.label}}</div>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
 
@@ -106,14 +106,14 @@
     </table>
 </div>
 
-
-
-
 <!-- Projection table: -->
 <div class="no-break">
     <div class="caption">
         Table {{table.counter}}: Projected sea level rise by decade{% if results.name %} within {{results.name}}{% if results.type %} {{results.type}}{% endif %}{% else %} in this area{% endif %}.
-        Values are based on area-weighted averages of decadal projections for 1-degree grid cells that overlap this area based on <a href="https://oceanservice.noaa.gov/hazards/sealevelrise/sealevelrise-tech-report.html">NOAA's 2022 Sea Level Rise Report</a>.
+        Values are based on area-weighted averages of decadal projections for
+        1-degree grid cells that overlap this area
+        based on <a href="https://oceanservice.noaa.gov/hazards/sealevelrise/sealevelrise-tech-report.html">NOAA's 2022 Sea Level Rise Report</a>.
+        The <a href="https://secassoutheast.org/our-goal">SECAS goal</a> is a 10% or greater improvement in the health, function, and connectivity of Southeastern ecosystems by 2060.
     </div>
     {% set table.counter=table.counter+1 %}
 
@@ -122,7 +122,7 @@
             <tr>
                 <th>SLR Scenario</th>
                 {% for year in range(2020, 2105, 10) %}
-                    <th>{{year}} (ft)</th>
+                    <th {% if year == 2060 %}class="highlight-col"{% endif %}>{{year}} (ft)</th>
                 {% endfor %}
 
             </tr>
@@ -133,7 +133,7 @@
             <tr>
                 <td>{{scenario}}</td>
                 {% for value in  results['slr_proj'][scenario] %}
-                    <td>
+                    <td {% if loop.index == 5 %}class="highlight-col"{% endif %}>
                         {% if value == 0 %}
                             0
                         {% else %}
