@@ -24,6 +24,7 @@ from analysis.lib.pygeos_util import to_dict
 
 src_dir = Path("data/inputs/threats/slr")
 slr_mask_filename = src_dir / "slr_mask.tif"
+extent_filename = src_dir / "extracted_slr_bounds.feather"
 depth_filename = src_dir / "slr.tif"
 proj_filename = src_dir / "noaa_1deg_cells.feather"
 
@@ -102,9 +103,7 @@ def extract_by_geometry(geometry, shapes, bounds):
     for bin in bins[1:]:
         counts[bin] = counts[bin] + counts[bin - 1]
 
-    results["depth"] = (
-        (counts * cellsize).round(ACRES_PRECISION).astype("float32").tolist()
-    )
+    results["depth"] = (counts * cellsize).round(ACRES_PRECISION).tolist()
 
     # intersect with 1-degree pixels; there should always be data available if
     # there are SLR depth data
@@ -139,7 +138,14 @@ def summarize_by_huc12(geometries):
     # find the indexes of the geometries that overlap with SLR bounds; these are the only
     # ones that need to be analyzed for SLR impacts
 
-    # TODO: update to latest structure and add in projections
+    slr_mask = gp.read_feather(extent_filename)
+
+    ix = np.unique(
+        pg.STRtree(geometries).query_bulk(
+            slr_mask.geometry.values.data, predicate="intersects"
+        )[1]
+    )
+    geometries = geometries.take(ix)
 
     results = []
     index = []
@@ -147,7 +153,7 @@ def summarize_by_huc12(geometries):
         "Calculating SLR counts for HUC12", max=len(geometries)
     ).iter(geometries.iteritems()):
         zone_results = extract_by_geometry(
-            [to_dict(geometry)], bounds=pg.total_bounds(geometry)
+            geometry, [to_dict(geometry)], bounds=pg.total_bounds(geometry)
         )
         if zone_results is None:
             continue
@@ -157,10 +163,10 @@ def summarize_by_huc12(geometries):
 
     df = pd.DataFrame(results, index=index)
 
-    # reorder columns
-    df = df[["shape_mask"] + list(df.columns.difference(["shape_mask"]))]
-    # extract only areas that actually had SLR pixels
-    df = df[df[df.columns[1:]].sum(axis=1) > 0]
-    df.columns = [str(c) for c in df.columns]
-    df = df.reset_index().rename(columns={"index": "id"}).round()
+    df = (
+        df[["shape_mask"] + list(df.columns.difference(["shape_mask"]))]
+        .reset_index()
+        .rename(columns={"index": "id"})
+        .round()
+    )
     df.to_feather(results_filename)

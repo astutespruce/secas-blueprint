@@ -23,7 +23,14 @@ from pyogrio import (
 )
 
 
-from analysis.constants import DATA_CRS, MASK_FACTOR, SLR_YEARS, SLR_PROJ_COLUMNS
+from analysis.constants import (
+    DATA_CRS,
+    MASK_FACTOR,
+    SLR_YEARS,
+    SLR_PROJ_COLUMNS,
+    SLR_LEGEND,
+)
+from analysis.lib.colors import hex_to_uint8
 from analysis.lib.io import write_raster
 from analysis.lib.pygeos_util import (
     to_dict_all,
@@ -162,6 +169,10 @@ out_dir.mkdir(parents=True, exist_ok=True)
 
 start = time()
 
+
+colormap = {int(e["label"]): hex_to_uint8(e["color"]) + (255,) for e in SLR_LEGEND}
+
+
 # use the Base Blueprint extent grid to derive the master offset coordinates
 # so that everything is correctly aligned
 # NOTE: SLR data extends beyond the base blueprint extent, don't use it for masking
@@ -279,7 +290,10 @@ with rasterio.open(vrt_filename) as src:
     data = src.read(1)
     write_raster(outfilename, data, transform=src.transform, crs=src.crs, nodata=NODATA)
 
-add_overviews(outfilename)
+    with rasterio.open(outfilename, "r+") as out:
+        out.write_colormap(1, colormap)
+
+    add_overviews(outfilename)
 
 print("Creating SLR mask")
 create_lowres_mask(
@@ -296,8 +310,8 @@ with rasterio.open(out_dir / "slr_mask.tif") as src:
     polys = drop_all_holes(pg.from_geojson([json.dumps(p["geometry"]) for p in f]))
 
 slr_mask = gp.GeoDataFrame(geometry=polys, crs=DATA_CRS)
+slr_mask.to_feather(out_dir / "extracted_slr_bounds.feather")
 write_dataframe(slr_mask, tmp_dir / "extracted_slr_bounds.fgb")
-
 
 ### Create 1-degree grid cell dataset from NOAA CSV
 print("Extracting NOAA SLR projections at 1-degree cell level")
