@@ -189,11 +189,7 @@ def extract_by_geometry(geometries, bounds, prescreen=False, marine=False):
         cellsize = src.res[0] * src.res[1] * M2_ACRES
 
     results["shape_mask"] = (
-        ((~shape_mask).sum() * cellsize)
-        .round(ACRES_PRECISION)
-        .astype("float32")
-        .round(ACRES_PRECISION)
-        .astype("float32")
+        ((~shape_mask).sum() * cellsize).round(ACRES_PRECISION).astype("float32")
     )
 
     # Nothing in shape mask, return None

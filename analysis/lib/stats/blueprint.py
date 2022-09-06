@@ -58,11 +58,7 @@ def extract_by_geometry(geometries, bounds):
 
     results = {
         "shape_mask": (
-            ((~shape_mask).sum() * cellsize)
-            .round(ACRES_PRECISION)
-            .astype("float32")
-            .round(ACRES_PRECISION)
-            .astype("float32")
+            ((~shape_mask).sum() * cellsize).round(ACRES_PRECISION).astype("float32")
         )
     }
 

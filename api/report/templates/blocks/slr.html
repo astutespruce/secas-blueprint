@@ -73,9 +73,7 @@
             {% for acres in results['slr'] %}
             <tr>
                 <td class="label">
-                    {% if loop.first %}
-                        &lt; {{loop.index}} foot
-                    {% elif loop.index == 2 %}
+                    {% if loop.index == 2 %}
                         {{loop.index - 1}} foot
                     {% else %}
                         {{loop.index - 1}} feet
