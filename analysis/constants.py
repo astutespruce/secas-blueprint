@@ -20,8 +20,7 @@ M_MILES = 0.000621371
 # 32 is OK for regional level maps; 16 is more typical for big areas like ACF
 OVERVIEW_FACTORS = [2, 4, 8, 16, 32]
 
-# Use 480m cells for mask
-MASK_FACTOR = 16
+MASK_RESOLUTION = 480  # meters
 
 SECAS_STATES = [
     "AL",

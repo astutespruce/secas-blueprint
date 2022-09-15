@@ -5,9 +5,12 @@ import numpy as np
 from pyogrio import read_dataframe
 import rasterio
 from rasterio import windows
+from rasterio.enums import Resampling
+from rasterio.vrt import WarpedVRT
 
+from analysis.constants import MASK_RESOLUTION
 from analysis.lib.io import write_raster
-from analysis.lib.raster import add_overviews
+from analysis.lib.raster import add_overviews, create_lowres_mask
 
 
 src_dir = Path("source_data/base_blueprint")
@@ -23,9 +26,14 @@ NODATA = 255  # standardize NODATA of all indicators
 
 # data window is used to extract the data extent in the blueprint and indicators;
 # all have the same original extent
+# this value is calculated in prepare_boundaries.py
 data_window = window = windows.Window(
     col_off=855, row_off=806, width=106719, height=60170
 )
+
+with rasterio.open(src_dir / "BaseBlueprintExtent2022.tif") as src:
+    orig_transform = src.transform
+    dst_transform = windows.transform(data_window, src.transform)
 
 
 outfilename = out_dir / "base_blueprint.tif"
@@ -33,7 +41,7 @@ if not outfilename.exists():
     print("Extracting Base Blueprint")
     with rasterio.open(src_dir / "Blueprint2022.tif") as src:
         nodata = int(src.nodata)
-        data = src.read(1)
+        data = src.read(1, window=data_window)
 
         df = (
             read_dataframe(src_dir / "Blueprint2022.tif.vat.dbf")
@@ -50,7 +58,7 @@ if not outfilename.exists():
 
         write_raster(
             outfilename,
-            data[data_window.toslices()],
+            data,
             transform=windows.transform(data_window, src.transform),
             crs=src.crs,
             nodata=nodata,
@@ -60,6 +68,13 @@ if not outfilename.exists():
             out.write_colormap(1, colormap)
 
         add_overviews(outfilename)
+
+        create_lowres_mask(
+            outfilename,
+            str(outfilename).replace(".tif", "_mask.tif"),
+            resolution=MASK_RESOLUTION,
+            ignore_zero=False,
+        )
 
 
 ### Extract indicators and associated json
@@ -72,25 +87,7 @@ for tif in tifs:
         # print(f"Skipping {tif} because binned version available")
         continue
 
-    # clip to new TIF, standardize nodata
-    outfilename = out_dir / Path(tif).name
-    if not outfilename.exists():
-        print(f"Clipping {tif}")
-        with rasterio.open(tif) as src:
-            nodata = int(src.nodata)
-            # manually checked value range to verify that all can be safely cast to uint8
-            data = src.read(1).astype("uint8")
-            data = np.where(data == nodata, NODATA, data)
-
-            write_raster(
-                outfilename,
-                data[data_window.toslices()],
-                transform=windows.transform(data_window, src.transform),
-                crs=src.crs,
-                nodata=NODATA,
-            )
-
-            add_overviews(outfilename)
+    print(f"Processing {tif}")
 
     # read data tables and extract indicator values
     df = read_dataframe(f"{tif}.vat.dbf")
@@ -139,8 +136,56 @@ for tif in tifs:
     ] = 0
     colormap = colors.apply(tuple, axis=1).to_dict()
 
-    with rasterio.open(outfilename, "r+") as src:
-        src.write_colormap(1, colormap)
+    has_zero = df.value.min() == 0
+
+    # clip to new TIF, standardize nodata
+    # Note: manually checked value range to verify that all can be safely cast to uint8
+    outfilename = out_dir / Path(tif).name
+    if not outfilename.exists():
+        with rasterio.open(tif) as src:
+            nodata = int(src.nodata)
+
+            if src.transform == orig_transform:
+                # if exactly aligned with blueprint extent, we can safely read a window out of the data
+                print("Reading data via window")
+                data = src.read(1, window=data_window).astype("uint8")
+            else:
+                # use a WarpedVRT to read data, which may differ in terms of
+                # resolution or offset
+                print("Reading data via warped VRT")
+                with WarpedVRT(
+                    src,
+                    width=data_window.width,
+                    height=data_window.height,
+                    nodata=nodata,
+                    transform=dst_transform,
+                    resampling=Resampling.nearest,
+                ) as vrt:
+                    data = vrt.read()[0]
+
+            data = np.where(data == nodata, NODATA, data)
+
+            write_raster(
+                outfilename,
+                data,
+                transform=dst_transform,
+                crs=src.crs,
+                nodata=NODATA,
+            )
+
+            add_overviews(outfilename)
+
+        with rasterio.open(outfilename, "r+") as src:
+            src.write_colormap(1, colormap)
+
+        print("Creating mask...")
+
+        create_lowres_mask(
+            outfilename,
+            str(outfilename).replace(".tif", "_mask.tif"),
+            resolution=MASK_RESOLUTION,
+            ignore_zero=not has_zero,
+        )
 
 
 outfilename = json_dir / "base.json"

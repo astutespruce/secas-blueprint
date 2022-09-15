@@ -179,15 +179,12 @@ def detect_data(dataset, shapes, bounds):
 
     # create mask
     # note: this intentionally uses all_touched=True
-    mask = (
-        geometry_mask(
-            shapes,
-            transform=dataset.window_transform(window),
-            out_shape=data.shape,
-            all_touched=True,
-        )
-        | (data == nodata)
-    )
+    mask = geometry_mask(
+        shapes,
+        transform=dataset.window_transform(window),
+        out_shape=data.shape,
+        all_touched=True,
+    ) | (data == nodata)
 
     if np.any(data[~mask]):
         return True
@@ -195,8 +192,8 @@ def detect_data(dataset, shapes, bounds):
     return False
 
 
-def create_lowres_mask(filename, outfilename, factor, ignore_zero=False):
-    """Create a resampled mask based on dimensions of raster / factor.
+def create_lowres_mask(filename, outfilename, resolution, ignore_zero=False):
+    """Create a resampled lower resolution mask.
 
     This is used to pre-screen areas where data are present for higher-resolution
     analysis.
@@ -208,18 +205,19 @@ def create_lowres_mask(filename, outfilename, factor, ignore_zero=False):
     ----------
     filename : str
     outfilename : str
-    factor : int
+    resolution : int
+        target resolution
     ignore_zero : bool, optional (default: False)
         if True, 0 values are treated as nodata
     """
     with rasterio.open(filename) as src:
-
         nodata = src.nodatavals[0]
-        width = math.ceil(src.width / factor)
-        height = math.ceil(src.height / factor)
-        dst_transform = src.transform * Affine.scale(
-            src.width / width, src.height / height
+        # output is still precisely aligned to same upper left coordinate
+        dst_transform = Affine(
+            resolution, 0, src.transform.c, 0, -resolution, src.transform.f
         )
+        width = math.ceil((src.width * src.transform.a) / resolution)
+        height = math.ceil((src.height * (-src.transform.e)) / resolution)
 
         with WarpedVRT(
             src,

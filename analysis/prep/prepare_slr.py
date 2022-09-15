@@ -25,7 +25,7 @@ from pyogrio import (
 
 from analysis.constants import (
     DATA_CRS,
-    MASK_FACTOR,
+    MASK_RESOLUTION,
     SLR_YEARS,
     SLR_PROJ_COLUMNS,
     SLR_LEGEND,
@@ -299,7 +299,7 @@ print("Creating SLR mask")
 create_lowres_mask(
     outfilename,
     out_dir / "slr_mask.tif",
-    factor=MASK_FACTOR * 2,  # convert to 480m to match others, since resolution is 15m
+    resolution=MASK_RESOLUTION,
     ignore_zero=False,
 )
 

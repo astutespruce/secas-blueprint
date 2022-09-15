@@ -137,22 +137,22 @@
       "values": [
         {
           "value": 1,
-          "label": "<",
+          "label": "≤60% natural habitat within the estimated floodplain, by catchment",
           "color": "#D0D1E6"
         },
         {
           "value": 2,
-          "label": ">60-70%",
+          "label": "60-70%",
           "color": "#A6BDDB"
         },
         {
           "value": 3,
-          "label": ">70-80%",
+          "label": "70-80%",
           "color": "#67A9CF"
         },
         {
           "value": 4,
-          "label": ">80-90%",
+          "label": "80-90%",
           "color": "#1C9099"
         },
         {
@@ -216,17 +216,17 @@
       "values": [
         {
           "value": 1,
-          "label": "<",
+          "label": "≤70% of catchment permeable (likely degraded instream flow, water quality, and aquatic species communities)",
           "color": "#CCCCFF"
         },
         {
           "value": 2,
-          "label": ">70-90% of catchment permeable (likely degraded water quality and not supporting many aquatic species)",
+          "label": "70-90% of catchment permeable (likely degraded water quality and not supporting many aquatic species)",
           "color": "#9783F7"
         },
         {
           "value": 3,
-          "label": ">90-95% of catchment permeable (likely declining water quality and supporting most aquatic species)",
+          "label": "90-95% of catchment permeable (likely declining water quality and supporting most aquatic species)",
           "color": "#6145ED"
         },
         {
@@ -478,7 +478,7 @@
     {
       "id": "base:land_mavforestbirds_protection",
       "filename": "MississippiAlluvialValleyForestBirds_Protection.tif",
-      "label": "Mississippi Alluvial Valley forest birds - protection",
+      "label": "Mississippi Alluvial Valley forest birds (protection)",
       "values": [
         {
           "value": 1,
@@ -537,7 +537,7 @@
     {
       "id": "base:land_mavforestbirds_reforestation",
       "filename": "MississippiAlluvialValleyForestBirds_Reforestation.tif",
-      "label": "Mississippi Alluvial Valley forest birds - reforestation",
+      "label": "Mississippi Alluvial Valley forest birds (reforestation)",
       "values": [
         {
           "value": 1,
@@ -546,47 +546,47 @@
         },
         {
           "value": 2,
-          "label": "Reforestation least likely to contribute to forest breeding bird habitat needs (10th-<20th percentile)",
+          "label": "Reforestation least likely to contribute to forest breeding bird habitat needs (10th to <20th percentile)",
           "color": "#9C9C9C"
         },
         {
           "value": 3,
-          "label": "Reforestation least likely to contribute to forest breeding bird habitat needs (20th-<30th percentile)",
+          "label": "Reforestation least likely to contribute to forest breeding bird habitat needs (20th to <30th percentile)",
           "color": "#1800ED"
         },
         {
           "value": 4,
-          "label": "Reforestation least likely to contribute to forest breeding bird habitat needs (30th-<40th percentile)",
+          "label": "Reforestation least likely to contribute to forest breeding bird habitat needs (30th to <40th percentile)",
           "color": "#7000BF"
         },
         {
           "value": 5,
-          "label": "Reforestation least likely to contribute to forest breeding bird habitat needs (40th-<50th percentile)",
+          "label": "Reforestation least likely to contribute to forest breeding bird habitat needs (40th to <50th percentile)",
           "color": "#C191FF"
         },
         {
           "value": 6,
-          "label": "Reforestation least likely to contribute to forest breeding bird habitat needs (50th-<60th percentile)",
+          "label": "Reforestation least likely to contribute to forest breeding bird habitat needs (50th to <60th percentile)",
           "color": "#004DA8"
         },
         {
           "value": 7,
-          "label": "Reforestation less likely to contribute to forest breeding bird habitat needs (60th-<70th percentile)",
+          "label": "Reforestation less likely to contribute to forest breeding bird habitat needs (60th to <70th percentile)",
           "color": "#00FFC5"
         },
         {
           "value": 8,
-          "label": "Reforestation more likely to contribute to forest breeding bird habitat needs (70th-<80th percentile)",
+          "label": "Reforestation more likely to contribute to forest breeding bird habitat needs (70th to <80th percentile)",
           "color": "#4CE600"
         },
         {
           "value": 9,
-          "label": "Reforestation most likely to contribute to forest breeding bird habitat needs (80th-<90th percentile)",
+          "label": "Reforestation most likely to contribute to forest breeding bird habitat needs (80th to <90th percentile)",
           "color": "#FFFF00"
         },
         {
           "value": 10,
-          "label": "Reforestation most likely to contribute to forest breeding bird habitat needs (>",
+          "label": "Reforestation most likely to contribute to forest breeding bird habitat needs (≥90th percentile)",
           "color": "#FF0000"
         }
       ],
@@ -717,7 +717,7 @@
         },
         {
           "value": 5,
-          "label": "Very large patches near water (potential for presence of Swainsons warbler)",
+          "label": "Very large patches near water (potential for presence of Swainson's warbler)",
           "color": "#006837"
         }
       ],
@@ -1197,7 +1197,7 @@
       "values": [
         {
           "value": 1,
-          "label": "<",
+          "label": "≤20th percentile of importance for bird index species",
           "color": "#FFFFED"
         },
         {

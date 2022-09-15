@@ -10,7 +10,7 @@ from rasterio.enums import Resampling
 from rasterio.vrt import WarpedVRT
 from rasterio.windows import Window
 
-from analysis.constants import URBAN_YEARS, DATA_CRS, MASK_FACTOR, URBAN_COLORS
+from analysis.constants import MASK_RESOLUTION, URBAN_YEARS, DATA_CRS, URBAN_COLORS
 from analysis.lib.colors import interpolate_colormap, hex_to_uint8
 from analysis.lib.raster import add_overviews, create_lowres_mask
 from analysis.lib.io import write_raster
@@ -156,12 +156,12 @@ for year in URBAN_YEARS:
 bnd_raster.close()
 
 
-### Create mask of where urban pixels are present through 2060
+### Create mask of where urban pixels are present through 2100
 print("Creating urban mask")
 create_lowres_mask(
-    out_dir / f"urban_2060.tif",
+    out_dir / f"urban_2100.tif",
     out_dir / "urban_mask.tif",
-    factor=MASK_FACTOR,
+    resolution=MASK_RESOLUTION,
     ignore_zero=True,
 )
 

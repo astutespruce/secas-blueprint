@@ -33,6 +33,7 @@ with rasterio.open(src_dir / "base_blueprint/BaseBlueprintExtent2022.tif") as sr
 
     # uncomment to recalculate
     # window = windows.get_data_window(data, nodata=nodata)
+    # print(window)
 
     window = windows.Window(col_off=855, row_off=806, width=106719, height=60170)
     transform = windows.transform(window, src.transform)
@@ -50,13 +51,14 @@ with rasterio.open(src_dir / "base_blueprint/BaseBlueprintExtent2022.tif") as sr
     # Note: this is still within the total footprint of the above; it is not
     # a smaller shape
     df = read_dataframe(
-        src_dir / "blueprint/BaseBlueprintSubRgn.shp", columns=["SubRgn"]
+        src_dir / "base_blueprint/BaseBlueprintSubRgn.shp", columns=["SubRgn"]
     )
     df = df.loc[~df.SubRgn.str.contains("Marine")]
     shapes = to_dict_all(df.geometry.values.data)
     nonmarine_mask = rasterize(
         shapes, data.shape, transform=transform, dtype="uint8", fill=0, default_value=1
     )
+
     write_raster(
         bnd_dir / "nonmarine_mask.tif",
         nonmarine_mask,
@@ -109,6 +111,7 @@ states = (
     .to_crs(DATA_CRS)
 )
 write_dataframe(states, bnd_dir / "states.fgb")
+states.to_feather(out_dir / "states.feather")
 
 fips_list = ",".join(f"'{fips}'" for fips in states.STATEFP.unique())
 counties = (
