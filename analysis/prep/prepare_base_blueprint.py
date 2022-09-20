@@ -4,13 +4,15 @@ from pathlib import Path
 import numpy as np
 from pyogrio import read_dataframe
 import rasterio
+from rasterio.features import rasterize
 from rasterio import windows
 from rasterio.enums import Resampling
 from rasterio.vrt import WarpedVRT
 
 from analysis.constants import MASK_RESOLUTION
-from analysis.lib.io import write_raster
-from analysis.lib.raster import add_overviews, create_lowres_mask
+from analysis.lib.colors import hex_to_uint8
+from analysis.lib.geometry import to_dict_all
+from analysis.lib.raster import add_overviews, create_lowres_mask, write_raster
 
 
 src_dir = Path("source_data/base_blueprint")
@@ -193,3 +195,83 @@ if not outfilename.exists():
     with open(outfilename, "w") as out:
         data = {"input": "base", "indicators": indicators}
         out.write(json.dumps(data, indent=2))
+
+
+### Prepare hubs and corridors
+print("Processing hubs and corridors")
+
+inland_hubs = read_dataframe(src_dir / "InlandHubs2022.shp", columns=[])
+marine_hubs = read_dataframe(src_dir / "EstuarineAndMarineHubs2022.shp", columns=[])
+
+with rasterio.open(bnd_dir / "base_blueprint_extent.tif") as src, rasterio.open(
+    src_dir / "InlandCorridors2022.tif"
+) as inland, rasterio.open(src_dir / "MarineCorridors2022.tif") as marine:
+    print("Rasterizing hubs...")
+    # rasterize hubs to match inland
+    inland_hubs_data = rasterize(
+        to_dict_all(inland_hubs.geometry.values.data),
+        src.shape,
+        transform=src.transform,
+        dtype="uint8",
+    )
+    marine_hubs_data = rasterize(
+        to_dict_all(marine_hubs.geometry.values.data),
+        src.shape,
+        transform=src.transform,
+        dtype="uint8",
+    )
+
+    # Inland corridors are at 30m snapped to blueprint extent
+    inland_data = inland.read(1, window=data_window)
+
+    # Marine corridors are at 90m
+    print("Reading and warping marine corridors...")
+    vrt = WarpedVRT(
+        marine,
+        width=src.width,
+        height=src.height,
+        nodata=marine.nodata,
+        transform=src.transform,
+        resampling=Resampling.nearest,
+    )
+    marine_data = vrt.read()[0]
+
+    # consolidate all values into a single raster, writing hubs over corridors
+    # 4 = not a hub or corridor, but within data extent
+    data = np.ones(shape=src.shape, dtype="uint8") * 4
+    data[inland_data == 1] = 1
+    data[marine_data == 1] = 3
+    data[inland_hubs_data == 1] = 0
+    data[marine_hubs_data == 1] = 2
+
+    # stamp back in nodata from Blueprint extent
+    extent_data = src.read(1)
+    data[extent_data == int(src.nodata)] = 255
+
+    outfilename = out_dir / "corridors.tif"
+    write_raster(
+        outfilename,
+        data,
+        src.transform,
+        crs=src.crs,
+        nodata=NODATA,
+    )
+
+    add_overviews(outfilename)
+
+    create_lowres_mask(
+        outfilename,
+        str(outfilename).replace(".tif", "_mask.tif"),
+        resolution=MASK_RESOLUTION,
+        ignore_zero=False,
+    )
+
+    colormap = {
+        e["value"]: hex_to_uint8(e["color"])
+        if e["color"] is not None
+        else (255, 255, 255, 0)
+        for e in json.loads(open(json_dir / "../corridors.json").read())
+    }
+
+    with rasterio.open(outfilename, "r+") as src:
+        src.write_colormap(1, colormap)

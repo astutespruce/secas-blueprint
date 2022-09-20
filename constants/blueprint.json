@@ -1,27 +1,41 @@
 [
   {
     "value": 0,
-    "label": "Not identified as high or medium",
+    "label": "Lower priority",
     "percent": 50,
     "description": "",
-    "color": "#ffebc2"
+    "color": null
   },
   {
     "value": 1,
-    "label": "Medium conservation value",
-    "shortLabel": "Medium",
-    "percent": 20,
-    "description": "Areas that might require more restoration, but are important for buffering high value areas and maintaining connectivity.",
-    "report_description": "This class covers an additional 20% of the Southeast Blueprint geography.",
-    "color": "#4FAFEE"
+    "label": "Priority connections",
+    "shortLabel": "Connections",
+    "percent": 5,
+    "description": "Connections between priority areas that cover the shortest distance possible while routing through as much Blueprint priority as possible.",
+    "color": "#6C6C6C"
   },
   {
     "value": 2,
-    "label": "High conservation value",
+    "label": "Medium priority",
+    "shortLabel": "Medium",
+    "percent": 20,
+    "description": "Areas where conservation action would make an above-average impact, based on a suite of natural and cultural resource indicators.",
+    "color": "#8C96C6"
+  },
+  {
+    "value": 3,
+    "label": "High priority",
     "shortLabel": "High",
-    "percent": 30,
-    "description": "The most important for ecosystem health, function, and connectivity.",
-    "report_description": "This class covers roughly 30% of the Southeast Blueprint geography.",
-    "color": "#0B316B"
+    "percent": 15,
+    "description": "Areas where conservation action would make a big impact, based on a suite of natural and cultural resource indicators.",
+    "color": "#843F98"
+  },
+  {
+    "value": 4,
+    "label": "Highest priority",
+    "shortLabel": "Highest",
+    "percent": 10,
+    "description": "Areas where conservation action would make the biggest impact, based on a suite of natural and cultural resource indicators.",
+    "color": "#4D004B"
   }
 ]

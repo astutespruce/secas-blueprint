@@ -4,7 +4,7 @@
     "label": "Lower priority",
     "percent": 50,
     "description": "",
-    "color": ""
+    "color": null
   },
   {
     "value": 1,
@@ -12,7 +12,6 @@
     "shortLabel": "Connections",
     "percent": 10,
     "description": "Connections between priority areas that cover the shortest distance possible while routing through as much Blueprint priority as possible.",
-    "report_description": "Connections between priority areas that cover the shortest distance possible while routing through as much Blueprint priority as possible. This class covers an additional 5% of the Southeast; in total, the Blueprint covers 50%.",
     "color": "#686868"
   },
   {
@@ -21,7 +20,6 @@
     "shortLabel": "Medium",
     "percent": 20,
     "description": "Areas where conservation action would make an above-average impact, based on a suite of natural and cultural resource indicators.",
-    "report_description": "Areas where conservation action would make an above-average impact, based on a suite of natural and cultural resource indicators. This class covers 20% of the Southeast; together, the highest, high, and medium priority categories cover 45%.",
     "color": "#8C96C6"
   },
   {
@@ -30,7 +28,6 @@
     "shortLabel": "High",
     "percent": 15,
     "description": "Areas where conservation action would make a big impact, based on a suite of natural and cultural resource indicators.",
-    "report_description": "Areas where conservation action would make a big impact, based on a suite of natural and cultural resource indicators. This class covers an additional 15% of the Southeast; together, the highest and high priority categories cover 25%.",
     "color": "#88419D"
   },
   {
@@ -39,7 +36,6 @@
     "shortLabel": "Highest",
     "percent": 10,
     "description": "Areas where conservation action would make the biggest impact, based on a suite of natural and cultural resource indicators.",
-    "report_description": "Areas where conservation action would make the biggest impact, based on a suite of natural and cultural resource indicators. This class covers 10% of the Southeast.",
     "color": "#4D004B"
   }
 ]

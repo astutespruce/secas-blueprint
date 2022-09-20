@@ -13,7 +13,7 @@ from rasterio.vrt import WarpedVRT
 from rasterio.windows import Window
 
 from analysis.constants import OVERVIEW_FACTORS, DATA_CRS
-from analysis.lib.pygeos_util import to_dict
+from analysis.lib.geometry import to_dict
 
 
 def get_window(dataset, bounds):
@@ -366,3 +366,33 @@ def extract_window(src, window, transform, nodata):
     )
 
     return vrt.read()[0]
+
+
+def write_raster(filename, data, transform, crs, nodata):
+    """Write data to a GeoTIFF.
+
+    Parameters
+    ----------
+    filename : str
+    data : 2d ndarray
+    transform : rasterio transform object
+    crs : rasterio.crs object
+    nodata : int
+    """
+
+    meta = {
+        "driver": "GTiff",
+        "dtype": data.dtype,
+        "nodata": nodata,
+        "width": data.shape[1],
+        "height": data.shape[0],
+        "count": 1,
+        "crs": crs,
+        "transform": transform,
+        "compress": "lzw",
+        "tiled": True,
+        "blockxsize": 256,
+        "blockysize": 256,
+    }
+    with rasterio.open(filename, "w", **meta) as out:
+        out.write(data, 1)

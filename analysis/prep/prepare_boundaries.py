@@ -2,50 +2,142 @@ from pathlib import Path
 import warnings
 
 import geopandas as gp
+import pandas as pd
 import pygeos as pg
 from pyogrio.geopandas import read_dataframe, write_dataframe
 import rasterio
 from rasterio.features import rasterize
 from rasterio import windows
 
-from analysis.constants import GEO_CRS, DATA_CRS, SECAS_STATES
-from analysis.lib.io import write_raster
-from analysis.lib.pygeos_util import to_dict_all
+from analysis.constants import DATA_CRS, SECAS_STATES, MASK_RESOLUTION
+from analysis.lib.geometry import dissolve, make_valid, to_dict_all, to_dict
+from analysis.lib.raster import write_raster, add_overviews, create_lowres_mask
 
 # suppress warnings about writing to feather
 warnings.filterwarnings("ignore", message=".*initial implementation of Parquet.*")
 
 src_dir = Path("source_data")
 data_dir = Path("data")
+json_dir = Path("constants")
 bnd_dir = data_dir / "boundaries"  # used for processing but not as inputs
 out_dir = data_dir / "inputs/boundaries"  # used as inputs for other steps
-tile_dir = data_dir / "for_tiles"
 
 bnd_dir.mkdir(exist_ok=True, parents=True)
 out_dir.mkdir(exist_ok=True, parents=True)
-tile_dir.mkdir(exist_ok=True, parents=True)
 
-### Extract the data extent and write to a new raster
-print("Extracting Base Blueprint extent")
-with rasterio.open(src_dir / "base_blueprint/BaseBlueprintExtent2022.tif") as src:
+
+### Extract Blueprint boundary polygon
+bnd_df = read_dataframe(src_dir / "blueprint/SE_Blueprint_Extent.shp")[["geometry"]]
+# boundary has multiple geometries, union together and cleanup
+bnd_df = gp.GeoDataFrame(
+    geometry=[pg.union_all(pg.make_valid(bnd_df.geometry.values.data))],
+    index=[0],
+    crs=bnd_df.crs,
+)
+bnd_df.to_feather(out_dir / "se_boundary.feather")
+write_dataframe(bnd_df, data_dir / "boundaries/se_boundary.fgb")
+
+
+### Extract Blueprint extent
+print("Extracting SE Blueprint extent")
+with rasterio.open(src_dir / "blueprint/SE_Blueprint_2022.tif") as src:
     nodata = int(src.nodata)
     data = src.read(1)
+
+    data[data != nodata] = 1
 
     # uncomment to recalculate
     # window = windows.get_data_window(data, nodata=nodata)
     # print(window)
 
-    window = windows.Window(col_off=855, row_off=806, width=106719, height=60170)
+    window = windows.Window(col_off=855, row_off=294, width=144065, height=71409)
     transform = windows.transform(window, src.transform)
 
     data = data[window.toslices()]
+    outfilename = bnd_dir / "se_blueprint_extent.tif"
     write_raster(
-        bnd_dir / "base_blueprint_extent.tif",
+        outfilename,
         data,
         transform,
         crs=src.crs,
         nodata=nodata,
     )
+
+    add_overviews(outfilename)
+
+
+### Extract input areas
+df = read_dataframe(src_dir / "blueprint/InputAreas.shp", columns=["gridcode"]).rename(
+    columns={"gridcode": "value"}
+)
+
+df["geometry"] = make_valid(df.geometry.values.data)
+df = dissolve(df, by="value")
+
+inputs = {1: "base", 2: "flm", 3: "car"}
+df["id"] = df["value"].map(inputs)
+
+df[["id", "value"]].to_json(json_dir / "input_area_values.json", orient="records")
+write_dataframe(df, bnd_dir / "input_areas.fgb")
+df.to_feather(out_dir / "input_areas.feather")
+
+# rasterize to match the blueprint
+# convert to pairs of GeoJSON , value
+df = pd.DataFrame(df[["geometry", "value"]].copy())
+df.geometry = df.geometry.values.data
+shapes = df.apply(lambda row: (to_dict(row.geometry), row.value), axis=1)
+
+print("Rasterizing inputs...")
+with rasterio.open(bnd_dir / "se_blueprint_extent.tif") as src:
+    data = rasterize(
+        shapes.values, src.shape, transform=src.transform, dtype="uint8", fill=255
+    )
+
+    outfilename = out_dir / "input_areas.tif"
+    write_raster(
+        outfilename,
+        data,
+        src.transform,
+        crs=src.crs,
+        nodata=255,
+    )
+
+    add_overviews(outfilename)
+
+    create_lowres_mask(
+        outfilename,
+        str(outfilename).replace(".tif", "_mask.tif"),
+        resolution=MASK_RESOLUTION,
+        ignore_zero=True,
+    )
+
+
+### Extract the Base Blueprint data extent and write to a new raster
+# NOTE: the data extent transform is exactly the same as the data extent transform
+# for full SE Blueprint (above)
+print("Extracting Base Blueprint extent")
+with rasterio.open(src_dir / "blueprint/BaseBlueprintExtent2022.tif") as src:
+    nodata = int(src.nodata)
+    data = src.read(1)
+
+    # uncomment to recalculate
+    window = windows.get_data_window(data, nodata=nodata)
+    print(window)
+
+    # window = windows.Window(col_off=855, row_off=806, width=106719, height=60170)
+    transform = windows.transform(window, src.transform)
+
+    data = data[window.toslices()]
+    outfilename = bnd_dir / "base_blueprint_extent.tif"
+    write_raster(
+        outfilename,
+        data,
+        transform,
+        crs=src.crs,
+        nodata=nodata,
+    )
+
+    add_overviews(outfilename)
 
     ### Extract a non-marine mask aligned to the above
     # Note: this is still within the total footprint of the above; it is not
@@ -59,47 +151,20 @@ with rasterio.open(src_dir / "base_blueprint/BaseBlueprintExtent2022.tif") as sr
         shapes, data.shape, transform=transform, dtype="uint8", fill=0, default_value=1
     )
 
+    outfilename = bnd_dir / "nonmarine_mask.tif"
     write_raster(
-        bnd_dir / "nonmarine_mask.tif",
+        outfilename,
         nonmarine_mask,
         transform=transform,
         crs=src.crs,
         nodata=0,
     )
 
-
-# ### TODO: Extract the boundary
-# bnd_df = read_dataframe(
-#     src_dir / "blueprint/SE_Blueprint_2021_Vectors.gdb",
-#     layer="SECAS_Boundary_2021_20211117",
-# )[["geometry"]]
-# # boundary has multiple geometries, union together and cleanup
-# bnd_df = gp.GeoDataFrame(
-#     geometry=[pg.union_all(pg.make_valid(bnd_df.geometry.values.data))],
-#     index=[0],
-#     crs=bnd_df.crs,
-# )
-# bnd_df.to_feather(out_dir / "se_boundary.feather")
-# write_dataframe(bnd_df, data_dir / "boundaries/se_boundary.fgb")
-
-# # create GeoJSON for tiling
-# bnd_geo = bnd_df.to_crs(GEO_CRS)
-# write_dataframe(bnd_geo, tile_dir / "se_boundary.geojson", driver="GeoJSONSeq")
-
-# ### Create mask by cutting SA bounds out of world bounds
-# print("Creating mask...")
-# world = pg.box(-180, -85, 180, 85)
-# mask = pg.normalize(pg.difference(world, bnd_geo.geometry.values.data))
-
-# write_dataframe(
-#     gp.GeoDataFrame({"geometry": mask}, index=[0], crs=GEO_CRS),
-#     tile_dir / "se_mask.geojson",
-#     driver="GeoJSONSeq",
-# )
+    add_overviews(outfilename)
 
 
 ### Extract SECAS states and counties
-print("Extracting states and counties...")
+# print("Extracting states and counties...")
 state_list = ",".join(f"'{state}'" for state in SECAS_STATES)
 states = (
     read_dataframe(
