@@ -305,7 +305,7 @@
           "color": "#3A4311"
         }
       ],
-      "description": "TODO:",
+      "description": "This indicator identifies areas within the historic longleaf pine range east of the Mississippi River where creating or maintaining open pine habitat would most benefit six focal species of birds (Bachman's sparrow, red-cockaded woodpecker, Henslow's sparrow, red-headed woodpecker, Northern bobwhite, brown-headed nuthatch). It prioritizes areas for open pine conservation based on suitability for longleaf pine, feasibility of prescribed burning, proximity to protected lands, habitat suitability for focal bird species, and proximity to source bird populations. It originates from the East Gulf Coastal Plain Joint Venture's prioritization of areas for open pine ecosystem restoration.",
       "url": ""
     },
     {
@@ -329,7 +329,7 @@
           "color": "#4C0073"
         }
       ],
-      "description": "Equitable access to potential parks measures the number of nearby people within socially vulnerable communities who would benefit from the creation of a new park. This cultural resource indicator depicts undeveloped areas where people currently lack access to protected open space within a short walk (0.5 miles). If conserved and made open to the public, these places would fill gaps in equitable access to open space for underserved residents. Parks help foster a conservation ethic by providing opportunities for people to connect with nature, and also support ecosystem services like offsetting heat island effects, water filtration, stormwater retention, and more.",
+      "description": "This cultural resource indicator prioritizes places to create new parks that would fill gaps in equitable access to open space within socially vulnerable communities. It identifies areas where residents currently lack access to parks within a 10-minute walk (accounting for walkable road networks and access barriers like highways and fences), then prioritizes based on park need using demographic and environmental metrics. Parks help improve public health, foster a conservation ethic by providing opportunities for people to connect with nature, and support critical ecosystem services. This indicator originates from the Trust for Public Land’s ParkServe park priority areas.",
       "url": ""
     },
     {
@@ -358,7 +358,7 @@
           "color": "#E6550D"
         }
       ],
-      "description": "Fire frequency uses remote sensing to estimate the number of times an area has been burned from 2010-2019. Many Southeastern ecosystems rely on regular, low intensity fires to maintain habitat, encourage native plant growth, and reduce wildfire risk.",
+      "description": "This indicator uses remote sensing to estimate the number of times an area has been burned from 2013 to 2021. Many Southeastern ecosystems rely on regular, low-intensity fires to maintain habitat, encourage native plant growth, and reduce wildfire risk. This indicator combines burned area layers from both U.S. Geological Survey Landsat data and the inter-agency Monitoring Trends in Burn Severity program. Landsat-based fire predictions within the range of longleaf pine are also available through Southeast FireMap.",
       "url": "",
       "goodThreshold": 2
     },
@@ -393,7 +393,7 @@
           "color": "#3A4311"
         }
       ],
-      "description": "TODO:",
+      "description": "This indicator measures the percent of perennial forbs and perennial grass to evaluate grassland condition across the Great Plains. Grasslands in this area with a high percentage of perennials are less likely to be impacted by woody encroachment, less susceptible to non-native annual grasses, and more likely to support important plants, birds, and pollinators. This indicator originates from Rangeland Analysis Platform vegetation cover data.",
       "url": ""
     },
     {
@@ -437,7 +437,7 @@
           "color": "#006837"
         }
       ],
-      "description": "This cultural resource indicator measures both the natural condition and connected length of greenways and trails to characterize the quality of the recreational experience. Natural condition is based on the amount of impervious surface surrounding the path. Connected length captures how far a person can go without leaving a dedicated path, based on common distances for walking, running, and biking.",
+      "description": "This cultural resource indicator measures both the natural condition and connected length of greenways and trails to characterize the quality of the recreational experience. Natural condition is based on the amount of impervious surface surrounding the path. Connected length captures how far a person can go without leaving a dedicated path, based on common distances for walking, running, and biking. This indicator originates from OpenStreetMap.",
       "url": "",
       "goodThreshold": 4
     },
@@ -467,7 +467,7 @@
           "color": "#00441B"
         }
       ],
-      "description": "This indicator represents the size of large, unfragmented patches of natural habitat. It identifies minimally disturbed natural areas at least 100 acres in size and greater than 200 meters wide. Large areas of intact natural habitat benefit numerous species, including reptiles and amphibians, birds, and large mammals.",
+      "description": "This indicator represents the size of large, unfragmented patches of natural habitat. It identifies minimally disturbed natural areas at least 100 acres in size and greater than 200 meters wide. Large areas of intact natural habitat are important for many wildlife species, including reptiles and amphibians, birds, and large mammals. This indicator originates from Esri’s green infrastructure data.",
       "url": "",
       "goodThreshold": 1
     },
@@ -507,7 +507,7 @@
           "color": "#734C00"
         }
       ],
-      "description": "TODO:",
+      "description": "This indicator represents grasslands in the interior southeastern United States, which support important plants, birds, and pollinators. It includes grasslands with and without trees that are historically maintained by geology (e.g., outcrops, glades, and barrens), fire (e.g., Piedmont prairies), and/or the regular violent flooding on the banks of high-energy rivers known as “riverscour” (e.g, riverscour prairies). Known grasslands receive the highest scores, followed by bumble bee habitat buffers around known sites, areas in potentially compatible management, and restoration opportunities within grassland geology. This indicator combines data from multiple sources, including the Southeastern Grasslands Initiative, the Central Hardwoods Joint Venture, the Rangeland Analysis Platform, and The Nature Conservancy.",
       "url": ""
     },
     {
@@ -566,7 +566,7 @@
           "color": "#0B2C7A"
         }
       ],
-      "description": "TODO:",
+      "description": "This indicator prioritizes areas for new land protection within the Mississippi Alluvial Valley (MAV) based on benefits to forest breeding birds that depend on large interior cores of bottomland hardwood habitat (Swainson’s warbler, cerulean warbler, swallow-tailed kite). The model considers core size, the amount of existing protected land within the forest patch, proximity to reforestation priority areas, and risk of conversion to agriculture based on flooding frequency. The highest scores represent drier, unprotected forest patches with cores at least 2,000 ha (~5,000 ac) that are adjacent to priority areas from a complementary reforestation model also developed by the Lower Mississippi Valley Joint Venture (LMVJV). This indicator originates from the LMVJV’s MAV forest breeding bird protection priorities.",
       "url": ""
     },
     {
@@ -625,7 +625,7 @@
           "color": "#FF0000"
         }
       ],
-      "description": "TODO:",
+      "description": "This indicator prioritizes areas for reforestation within the Mississippi Alluvial Valley (MAV) based on benefits to three species of forest breeding birds that depend on large interior cores of bottomland hardwood habitat (Swainson’s warbler, cerulean warbler, swallow-tailed kite). The model considers the core size, number of cores, and percent of local forest cover that would result from reforestation, as well as risk of conversion to agriculture based on flooding frequency. The highest scores represent drier areas where reforestation would create new forest patches containing interior cores at least 2,000 ha (~5,000 ac). It originates from the Lower Mississippi Valley Joint Venture’s MAV forest breeding bird reforestation priorities.",
       "url": ""
     },
     {
@@ -649,8 +649,9 @@
           "color": "#E6550D"
         }
       ],
-      "description": "TODO:",
-      "url": ""
+      "description": "This indicator represents the condition and location of playas, which are round, shallow depressions found primarily in the western Great Plains that serve as temporary wetlands by collecting water from rainfall and runoff. It defines a healthy playa as one that is not farmed, hydrologically modified, within a wind farm, or impacted by sediment accumulation due to agriculture. It also considers the increased benefits to wildlife provided by clusters of nearby playas, compared to more sparsely distributed playas. Playas play a critical role in recharging the Ogallala aquifer and provide habitat and food for birds and other animals. This indicator originates from the Playa Lakes Joint Venture’s probable playas dataset.",
+      "url": "",
+      "goodThreshold": 2
     },
     {
       "id": "base:land_resilientterrestrialsites",
@@ -698,7 +699,7 @@
           "color": "#205905"
         }
       ],
-      "description": "Resilient sites depicts an area's capacity to continue supporting species diversity and ecosystem function in the face of climate change. It evaluates the ability of coastal habitats to migrate to adjacent lowlands in response to sea-level rise, based on the physical and condition characteristics of current tidal complexes, their predicted migration space, and surrounding buffer areas—characteristics like marsh complex size, sediment balance, water quality, and many others. In inland terrestrial areas, this indicator measures landscape diversity and local connectedness to identify resilient sites that contain many different microclimates and allow species to move to adjust to changing conditions.",
+      "description": "This indicator depicts an area's capacity to maintain species diversity and ecosystem function in the face of climate change. It measures two factors that influence resilience. The first, landscape diversity, reflects the number of microhabitats and climatic gradients created by topography, elevation, and hydrology. The second, local connectedness, reflects the degree of habitat fragmentation and strength of barriers to species movement. Highly resilient sites contain many different habitat niches that support biodiversity, and allow species to move freely through the landscape to find suitable microclimates as the climate changes. This indicator originates from The Nature Conservancy’s Resilient Land data.",
       "url": ""
     },
     {
@@ -717,7 +718,7 @@
           "color": "#55FF00"
         }
       ],
-      "description": "The amphibian and reptile areas indicator draws from Priority Amphibian and Reptile Conservation Areas (PARCAs). PARCA is an expert-driven, nonregulatory designation that captures places capable of supporting viable amphibian and reptile populations. PARCAs include areas where rare or at-risk species have been observed or are likely to occur (like embedded, isolated wetlands).",
+      "description": "This indicator represents Priority Amphibian and Reptile Conservation Areas (PARCAs) in the South Atlantic. PARCA is an expert-driven, nonregulatory designation that includes places capable of supporting viable amphibian and reptile populations, places occupied by rare or imperiled species, and places rich in biodiversity or species unique to that geographic area (i.e., endemism).",
       "url": ""
     },
     {
@@ -756,7 +757,7 @@
           "color": "#006837"
         }
       ],
-      "description": "Forest birds is an index of habitat suitability for twelve upland hardwood and forested wetland bird species (wood thrush, whip-poor-will, American woodcock, red-headed woodpecker, Chuck-will's widow, hooded warbler, Kentucky warbler, Acadian flycatcher, Northern parula, black-throated green warbler, prothonotary warbler, Swainson's warbler) based on patch size and other ecosystem characteristics such as proximity to water and proximity to forest and ecotone edge. The needs of these species are increasingly restrictive at higher index values, reflecting better quality habitat.",
+      "description": "This indicator is an index of habitat suitability for twelve upland hardwood and forested wetland bird species (wood thrush, whip-poor-will, American woodcock, red-headed woodpecker, Chuck-will's widow, hooded warbler, Kentucky warbler, Acadian flycatcher, Northern parula, black-throated green warbler, prothonotary warbler, Swainson's warbler) based on patch size and other ecosystem characteristics such as proximity to water and proximity to forest and ecotone edge. The needs of these species are increasingly restrictive at higher index values, reflecting better quality habitat. This indicator originates from Southeast Gap Analysis Program and Designing Sustainable Landscapes bird habitat models.",
       "url": "",
       "goodThreshold": 2
     },
@@ -781,7 +782,7 @@
           "color": "#795548"
         }
       ],
-      "description": "Low-urban historic landscapes is an index of sites on the National Register of Historic Places surrounded by limited urban development. This cultural resource indicator identifies significant historic places that remain connected to their context in the natural world.",
+      "description": "This cultural resource indicator is an index of sites on the National Register of Historic Places surrounded by limited urban development. It identifies significant historic places that remain connected to their context in the natural world. This indicator originates from the National Park Service and various state historic resource agencies.",
       "url": "",
       "goodThreshold": 2
     },
@@ -816,7 +817,7 @@
           "color": "#2D2C55"
         }
       ],
-      "description": "Urban park size measures the size of parks larger than 10 acres in the urban environment. Protected natural areas in urban environments provide urban residents a nearby place to connect with nature, and offer refugia for some species. This indicator complements the equitable access to potential parks indicator by capturing the value of existing parks.",
+      "description": "This cultural resource indicator measures the size of parks larger than 5 acres in the urban environment. Protected natural areas in urban environments provide urban residents a nearby place to connect with nature, and offer refugia for some species. This indicator complements the equitable access to potential parks indicator by capturing the value of existing parks.",
       "url": ""
     },
     {
@@ -850,7 +851,7 @@
           "color": "#006D2C"
         }
       ],
-      "description": "TODO:",
+      "description": "This indicator is an index of habitat suitability for five forested wetland bird species (Acadian flycatcher, Kentucky warbler, yellow-throated warbler, prothonotary warbler, red-shouldered hawk) within bottomland hardwood forests and riparian areas in the West Gulf Coastal Plain and Ouachitas Bird Conservation Region. It uses metrics like patch size, dispersal distance, distance to water, and more to assess the potential for habitat to support sustainable populations of these birds. This indicator originates from the Lower Mississippi Valley Joint Venture’s West Gulf Coastal Plain and Ouachitas forested wetland decision support model.",
       "url": ""
     },
     {
@@ -894,7 +895,7 @@
           "color": "#0B2C7A"
         }
       ],
-      "description": "TODO:",
+      "description": "This indicator identifies areas with existing pine trees that, if managed for open condition, could support a population of three umbrella bird species (brown-headed nuthatch, Bachman’s sparrow, red-cockaded woodpecker). It evaluates potential habitat based on each species’ habitat needs and population dynamics, prioritizing opportunities to restore and manage habitat to benefit open pine birds. Final scores reflect both the selectiveness of the species and whether an area meets the habitat requirements through one large patch, or clusters of smaller patches in sufficiently close proximity for breeding pairs to disperse. This indicator updates the West Gulf Coastal Plain/Ouachita Joint Venture’s open pine decision support model.",
       "url": ""
     },
     {
@@ -953,7 +954,7 @@
           "color": "#45668A"
         }
       ],
-      "description": "TODO:",
+      "description": "This indicator depicts marshes and grasslands along the coast of Louisiana and Texas that are important for mottled duck nesting, based on key biological parameters such as patch size, land cover type, and distance to brood rearing habitat. As a non-migratory bird endemic to the Gulf coast, mottled ducks serve as good indicators of coastal marsh health and function. Urban growth, agricultural development, and hydrologic changes due to human alteration and climate change have caused significant mottled duck habitat loss and population declines. This indicator originates from a mottled duck decision support tool developed by the Gulf Coast Prairie Landscape Conservation Cooperative.",
       "url": ""
     },
     {
