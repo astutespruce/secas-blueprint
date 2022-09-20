@@ -52,7 +52,7 @@
           "color": "#023858"
         }
       ],
-      "description": "This indicator measures the condition of migratory fish habitat along the Atlantic coast, by catchment. It incorporates metrics of water quality, aquatic connectivity, habitat fragmentation, flow alteration, and more. Areas of excellent fish habitat are already in good condition and face few threats; restoration opportunity areas are doing well in some respects, but restoration projects could significantly improve them; degraded areas of opportunity face many challenges, and restoration projects are unlikely to increase available fish habitat unless particularly large in scope and scale.",
+      "description": "This indicator measures the condition of migratory fish habitat along the Atlantic coast within each catchment, using metrics of water quality, aquatic connectivity, habitat fragmentation, flow alteration, and more. Areas of excellent fish habitat are already in good condition and face few threats; restoration opportunity areas are doing well in some respects, but restoration projects could significantly improve them; degraded areas of opportunity face many challenges, and restoration projects are unlikely to increase available fish habitat unless particularly large in scope and scale. This indicator originates from the Atlantic Coast Fish Habitat Partnership's fish habitat conservation area mapping and prioritization project.",
       "url": "",
       "goodThreshold": 7
     },
@@ -72,7 +72,7 @@
           "color": "#00734C"
         }
       ],
-      "description": "Gulf migratory fish connectivity is an index capturing how far upstream migratory fish in the Gulf of Mexico have been observed. Migratory fish presence reflects uninterrupted connections between freshwater, estuarine, and marine ecosystems. This indicator applies only to the estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood, also known as the 1% annual chance flood.",
+      "description": "This indicator captures how far upstream migratory fish in the Gulf of Mexico have been observed. How far upstream migratory fish can travel reflects not just the presence of dams and other barriers, but also the presence of measures like fish ladders that allow specific species to access habitat upstream of dams. This indicator originates from The Nature Conservancy's Southeast Aquatic Connectivity Assessment Project and applies to the Environmental Protection Agency's estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood, also known as the 1% annual chance flood.",
       "url": "",
       "goodThreshold": 1
     },
@@ -127,7 +127,41 @@
           "color": "#45668A"
         }
       ],
-      "description": "Imperiled aquatic species measures the number of aquatic animal Species of Greatest Conservation Need (SGCN) observed within each HUC12 subwatershed. SGCN are identified in State Wildlife Action Plans as most in need of conservation action. This indicator captures patterns of rare and endemic species diversity not well-represented by other freshwater aquatic indicators. It applies only to the estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood, also known as the 1% annual chance flood.",
+      "description": "This indicator measures the number of aquatic animal Species of Greatest Conservation Need (SGCN) observed within each 12-digit HUC subwatershed, including fish, mussels, snails, crayfish, and amphibians. SGCN are identified in State Wildlife Action Plans as most in need of conservation action.  This indicator captures patterns of rare and endemic species diversity not well-represented by other freshwater aquatic indicators. It originates from state Natural Heritage Program data collected by the Southeast Aquatic Resources Partnership and applies to the Environmental Protection Agency's estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood, also known as the 1% annual chance flood.",
+      "url": ""
+    },
+    {
+      "id": "base:freshwater_wvimperiledaquaticspecies",
+      "filename": "WestVirginiaImperiledAquaticSpecies.tif",
+      "label": "West Virginia imperiled aquatic species",
+      "values": [
+        {
+          "value": 0,
+          "label": "No aquatic imperiled (G1/G2) or threatened/endangered species observed",
+          "color": "#FFFFBF"
+        },
+        {
+          "value": 1,
+          "label": "1 aquatic imperiled (G1/G2) or threatened/endangered species observed",
+          "color": "#DBF0AD"
+        },
+        {
+          "value": 2,
+          "label": "2 aquatic imperiled (G1/G2) or threatened/endangered species observed",
+          "color": "#B5E29B"
+        },
+        {
+          "value": 3,
+          "label": "3 aquatic imperiled (G1/G2) or threatened/endangered species observed",
+          "color": "#8FD38A"
+        },
+        {
+          "value": 5,
+          "label": "5 aquatic imperiled (G1/G2) or threatened/endangered species observed",
+          "color": "#6CB696"
+        }
+      ],
+      "description": "This indicator counts the number of aquatic species within each 12-digit HUC subwatershed in West Virginia that are listed as G1 (globally critically imperiled), G2 (globally imperiled), or threatened/endangered under the U.S. Endangered Species Act. It captures patterns of rare and endemic species diversity not well-represented by other freshwater aquatic indicators. It fills a key gap in the imperiled aquatic species indicator, which does not yet cover West Virginia. This indicator originates from the Environmental Protection Agency's EnviroAtlas data.",
       "url": ""
     },
     {
@@ -161,8 +195,9 @@
           "color": "#016C59"
         }
       ],
-      "description": "TODO:",
-      "url": ""
+      "description": "This indicator measures the amount of natural landcover in the estimated floodplain of rivers and streams within each catchment. It assesses the stream channel and its surrounding riparian buffer, measuring the percent of unaltered habitat like forests, wetlands, or open water (rather than agriculture or development). Intact vegetated buffers within the floodplain of rivers and streams provide aquatic habitat, improve water quality, reduce erosion and flooding, recharge groundwater, and more. This indicator originates from the 2019 National Land Cover Database and applies to the Environmental Protection Agency's estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood, also known as the 1% annual chance flood.",
+      "url": "",
+      "goodThreshold": 4
     },
     {
       "id": "base:freshwater_networkcomplexity",
@@ -205,7 +240,7 @@
           "color": "#225EA8"
         }
       ],
-      "description": "Network complexity depicts the number of different stream size classes in a river network not separated by dams or waterfalls. River networks with a variety of connected stream classes help retain aquatic biodiversity in a changing climate by allowing species to access climate refugia and move between habitats. This indicator applies only to the estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood, also known as the 1% annual chance flood.",
+      "description": "This indicator depicts the number of different stream size classes in a river network not separated by dams or waterfalls. River networks with a variety of connected stream classes help retain aquatic biodiversity in a changing climate by allowing species to access climate refugia and move between habitats. This indicator originates from the Southeast Aquatic Resources Partnership and applies to the Environmental Protection Agency's estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood, also known as the 1% annual chance flood.",
       "url": "",
       "goodThreshold": 4
     },
@@ -235,7 +270,7 @@
           "color": "#0000E0"
         }
       ],
-      "description": "Permeable surface measures the percent of non-impervious cover by catchment. High levels of impervious surface degrade water quality and alter freshwater flow, impacting both aquatic species communities and ecosystem services for people, like the availability of clean drinking water.",
+      "description": "This indicator measures the average percent of non-impervious cover within each catchment. High levels of impervious surface degrade water quality and alter freshwater flow, impacting both aquatic species communities and ecosystem services for people, like the availability of clean drinking water. This indicator originates from the 2019 National Land Cover Database percent developed impervious layer.",
       "url": "",
       "goodThreshold": 4
     },
@@ -751,20 +786,6 @@
       "goodThreshold": 2
     },
     {
-      "id": "base:land_samaritimeforest",
-      "filename": "SouthAtlanticMaritimeForest.tif",
-      "label": "South Atlantic maritime forest",
-      "values": [
-        {
-          "value": 1,
-          "label": "Maritime Forest",
-          "color": "#00FFC5"
-        }
-      ],
-      "description": "Maritime forest extent depicts maritime forest currently present in the South Atlantic geography. Since maritime forest has been substantially reduced from its historic extent, protecting the remaining acreage of existing maritime forest is important.",
-      "url": ""
-    },
-    {
       "id": "base:land_urbanparksize",
       "filename": "UrbanParkSize.tif",
       "label": "Urban park size",
@@ -936,40 +957,6 @@
       "url": ""
     },
     {
-      "id": "base:freshwater_wvimperiledaquaticspecies",
-      "filename": "WestVirginiaImperiledAquaticSpecies.tif",
-      "label": "West Virginia imperiled aquatic species",
-      "values": [
-        {
-          "value": 0,
-          "label": "No aquatic imperiled (G1/G2) or threatened/endangered species observed",
-          "color": "#FFFFBF"
-        },
-        {
-          "value": 1,
-          "label": "1 aquatic imperiled (G1/G2) or threatened/endangered species observed",
-          "color": "#DBF0AD"
-        },
-        {
-          "value": 2,
-          "label": "2 aquatic imperiled (G1/G2) or threatened/endangered species observed",
-          "color": "#B5E29B"
-        },
-        {
-          "value": 3,
-          "label": "3 aquatic imperiled (G1/G2) or threatened/endangered species observed",
-          "color": "#8FD38A"
-        },
-        {
-          "value": 5,
-          "label": "5 aquatic imperiled (G1/G2) or threatened/endangered species observed",
-          "color": "#6CB696"
-        }
-      ],
-      "description": "TODO:",
-      "url": ""
-    },
-    {
       "id": "base:marine_atlanticestuarinefishhabitat",
       "filename": "AtlanticEstuarineFishHabitat.tif",
       "label": "Atlantic estuarine fish habitat",
@@ -1020,43 +1007,9 @@
           "color": "#004930"
         }
       ],
-      "description": "This indicator measures the condition of estuarine fish habitat along the Atlantic coast. It incorporates metrics of water quality, marsh edges, seagrass and oyster reefs, fragmentation, human development, and more. Areas of excellent fish habitat are already in good condition and face few threats; restoration opportunity areas are doing well in some respects, but restoration projects could significantly improve them; degraded areas of opportunity face many challenges, and restoration projects are unlikely to increase available fish habitat unless particularly large in scope and scale.",
+      "description": "This indicator measures the condition of estuarine fish habitat along the Atlantic coast using metrics of water quality, marsh edges, seagrass and oyster reefs, fragmentation, human development, and more. Areas of excellent fish habitat are already in good condition and face few threats; restoration opportunity areas are doing well in some respects, but restoration projects could significantly improve them; degraded areas of opportunity face many challenges, and restoration projects are unlikely to increase available fish habitat unless particularly large in scope and scale. This indicator originates from the Atlantic Coast Fish Habitat Partnership's fish habitat conservation area mapping and prioritization project.",
       "url": "",
       "goodThreshold": 7
-    },
-    {
-      "id": "base:marine_samarinebirds",
-      "filename": "SouthAtlanticMarineBirdsBinned.tif",
-      "label": "SouthAtlanticMarineBirdsBinned",
-      "values": [
-        {
-          "value": 1,
-          "label": "≤20th percentile of importance",
-          "color": "#FEF6B5"
-        },
-        {
-          "value": 2,
-          "label": ">20th-40th percentile of importance",
-          "color": "#FECE97"
-        },
-        {
-          "value": 3,
-          "label": ">40th-60th percentile of importance",
-          "color": "#FFA679"
-        },
-        {
-          "value": 4,
-          "label": ">60th-80th percentile of importance",
-          "color": "#F07C7E"
-        },
-        {
-          "value": 5,
-          "label": ">80th percentile of importance for marine bird index species",
-          "color": "#E15383"
-        }
-      ],
-      "description": "Marine birds is a continuous index of highly productive areas for birds that feed exclusively or mainly at sea. It uses seasonal predictions of relative abundance for sixteen species of marine birds (Audubon’s shearwater, white-winged scoter, black scoter, horned grebe, band-rumped storm-petrel, Bermuda petrel, Manx shearwater, black-capped petrel, Northern gannet, Bonaparte's gull. common loon, red-throated loon, Cory's shearwater, royal tern, great shearwater, sooty shearwater, common tern). Marine birds help identify key areas of ocean productivity and complement the marine mammal index by providing finer spatial resolution and stronger connections to forage fish productivity.",
-      "url": ""
     },
     {
       "id": "base:marine_coastalshorelinecondition",
@@ -1089,8 +1042,9 @@
           "color": "#A300A3"
         }
       ],
-      "description": "TODO:",
-      "url": ""
+      "description": "This indicator assesses shoreline condition based on the presence of hardened structures like jetties, groins, and riprap, as well as other human development. By restricting the natural movement of sediment, shoreline armoring increases erosion, prevents the inland migration of coastal ecosystems in response to sea-level rise, and degrades habitat for birds, sea turtles, fish, plants, and other species both on and offshore. Natural shorelines in harder-to-develop coastal areas receive the highest shoreline condition scores, while hardened shorelines receive the lowest scores. This indicator originates from the National Oceanic and Atmospheric Administration's Environmental Sensitivity Index dataset.",
+      "url": "",
+      "goodThreshold": 3
     },
     {
       "id": "base:marine_estuarinecoastalcondition",
@@ -1123,7 +1077,7 @@
           "color": "#0B2C7A"
         }
       ],
-      "description": "Estuarine coastal condition is an index of water quality, sediment quality, and benthic community condition that reflects the overall abiotic status of open water estuaries. Developed by the Environmental Protection Agency (EPA), these measures capture human impacts on the environment like nonpoint source pollution.",
+      "description": "This indicator combines measures of water quality, sediment quality, contaminants in fish tissue, and benthic community condition to create an overall index of coastal estuarine condition. Estuaries serve as important nursery habitat for wildlife, including many species of fish and shellfish eaten as seafood. They also improve water quality by filtering out sediments and pollutants, provide recreational opportunities, and support coastal economies. This indicator originates from the Environmental Protection Agency's National Coastal Condition Assessment data.",
       "url": "",
       "goodThreshold": 4
     },
@@ -1143,7 +1097,7 @@
           "color": "#E6AE0D"
         }
       ],
-      "description": "TODO:",
+      "description": "This indicator represents important habitat for island-dependent species across the Southeast. Because the isolation of islands can make them ecologically unique and protect them from disturbance and mainland predators, they often serve as important habitat for many species of mammals, plants, and insects, as well as breeding coastal birds and sea turtles. The highest scores go to island critical habitat for six threatened and endangered animal and plant species: piping plover, loggerhead sea turtle, Cape Sable thoroughwort, Florida semaphore cactus, silver rice rat, and Bartram's hairstreak butterfly. This indicator originates from U.S. Fish and Wildlife Service critical habitat data and island boundaries from the U.S. Geological Survey and Esri.",
       "url": ""
     },
     {
@@ -1187,7 +1141,21 @@
           "color": "#205905"
         }
       ],
-      "description": "TODO:",
+      "description": "This indicator depicts the capacity of coastal habitats to migrate to adjacent lowlands in order to sustain biodiversity and natural services under increasing inundation from sea-level rise. It is based on the physical and condition characteristics of current tidal complexes, their predicted migration space, and surrounding buffer areas. These characteristics include marsh complex size, shared edge with migration space, sediment balance, water quality, natural landcover, landform diversity, and many others. This indicator originates from The Nature Conservancy's Resilient Coastal Sites project.",
+      "url": ""
+    },
+    {
+      "id": "base:marine_seagrasses",
+      "filename": "Seagrasses.tif",
+      "label": "Seagrasses",
+      "values": [
+        {
+          "value": 1,
+          "label": "Seagrasses present",
+          "color": "#4C7300"
+        }
+      ],
+      "description": "This indicator represents the presence of seagrass in the Atlantic Ocean and Gulf of Mexico. Seagrasses provide food and habitat for a range of marine and estuarine wildlife, including fish, sea turtles, shrimp, crabs, oysters, and more. They also produce oxygen, filter water, control erosion, and buffer storms. Seagrasses serve as an important indicator of the overall health of coastal ecosystems because they are sensitive to water quality and require sufficiently clear water for sunlight to penetrate. This indicator originates from the National Oceanic and Atmospheric Administration's Marine Cadastre.",
       "url": ""
     },
     {
@@ -1221,7 +1189,7 @@
           "color": "#89703C"
         }
       ],
-      "description": "Beach birds is an index of habitat suitability for four shorebird species (Wilson's plover, American oystercatcher, least tern, piping plover), based on observed abundance. The relative use of beach habitat by these species for nesting, foraging, and breeding is an indicator of beach quality.",
+      "description": "This indicator is an index of habitat suitability for four shorebird species (American oystercatcher, Wilson's plover, least tern, piping plover) in the South Atlantic, based on observed abundance. The relative use of beach habitat by shorebirds for nesting, foraging, and breeding is an indicator of beach health and quality. It originates from data collected by waterbird biologists from the U.S. Fish and Wildlife Service and state wildlife agencies in Florida, Georgia, South Carolina and North Carolina.",
       "url": ""
     },
     {
@@ -1255,9 +1223,42 @@
           "color": "#141C66"
         }
       ],
-      "description": "Hardbottom and deep-sea coral measures known and predicted suitable locations of hardbottom habitat and deep-sea corals. Hardbottom provides an anchor for important seafloor habitats such as deep-sea corals, plants, and sponges. Many deep-sea corals form tree-like shapes and complex reefs that provide valuable habitat structure. Hardbottom and associated deep-sea coral communities support a wide range of invertebrate and fish species.",
-      "url": "",
-      "goodThreshold": 2
+      "description": "This indicator measures known and predicted suitable locations of hardbottom habitat and deep-sea corals. Hardbottom provides an anchor for important seafloor habitats such as deep-sea corals, plants, and sponges. Hardbottom and associated deep-sea coral communities provide valuable habitat structure that supports a wide range of invertebrate and fish species. This indicator combines multiple datasets from the National Oceanic and Atmospheric Administration and The Nature Conservancy.",
+      "url": ""
+    },
+    {
+      "id": "base:marine_samarinebirds",
+      "filename": "SouthAtlanticMarineBirdsBinned.tif",
+      "label": "SouthAtlanticMarineBirdsBinned",
+      "values": [
+        {
+          "value": 1,
+          "label": "≤20th percentile of importance",
+          "color": "#FEF6B5"
+        },
+        {
+          "value": 2,
+          "label": ">20th-40th percentile of importance",
+          "color": "#FECE97"
+        },
+        {
+          "value": 3,
+          "label": ">40th-60th percentile of importance",
+          "color": "#FFA679"
+        },
+        {
+          "value": 4,
+          "label": ">60th-80th percentile of importance",
+          "color": "#F07C7E"
+        },
+        {
+          "value": 5,
+          "label": ">80th percentile of importance for marine bird index species",
+          "color": "#E15383"
+        }
+      ],
+      "description": "This indicator is a continuous index of highly productive areas for birds that feed exclusively or mainly at sea. It uses seasonal predictions of relative abundance for seventeen species of marine birds (Audubon's shearwater, white-winged scoter, black scoter, horned grebe, band-rumped storm-petrel, Bermuda petrel, Manx shearwater, black-capped petrel, Northern gannet, Bonaparte's gull. common loon, red-throated loon, Cory's shearwater, royal tern, great shearwater, sooty shearwater, common tern). This indicator originates from Marine-life Data and Analysis Team marine bird models.",
+      "url": ""
     },
     {
       "id": "base:marine_samammals",
@@ -1290,21 +1291,21 @@
           "color": "#6E016B"
         }
       ],
-      "description": "TODO:",
+      "description": "This indicator is a continuous index of dolphin and whale density based on monthly density predictions for ten species of cetaceans and yearly density predictions for three rarer cetacean species (monthly: North Atlantic right whale, sperm whale, Sei whale, humpback whale, fin whale, bottlenose dolphin, short-beaked common dolphin, Risso's dolphin, harbor porpoise, and Atlantic white-sided dolphin; yearly: pilot whale, beaked whale, striped dolphin). This indicator originates from Duke Marine Lab marine mammal models.",
       "url": ""
     },
     {
-      "id": "base:marine_seagrasses",
-      "filename": "Seagrasses.tif",
-      "label": "Seagrasses",
+      "id": "base:marine_samaritimeforest",
+      "filename": "SouthAtlanticMaritimeForest.tif",
+      "label": "South Atlantic maritime forest",
       "values": [
         {
           "value": 1,
-          "label": "Seagrasses present",
-          "color": "#4C7300"
+          "label": "Maritime Forest",
+          "color": "#00FFC5"
         }
       ],
-      "description": "TODO:",
+      "description": "This indicator depicts maritime forest currently present in the South Atlantic. Since maritime forest has been substantially reduced from its historic extent, protecting the remaining acreage of existing maritime forest is important. This indicator originates from Landfire Existing Vegetation Type data.",
       "url": ""
     },
     {
@@ -1318,8 +1319,9 @@
           "color": "#75B2B3"
         }
       ],
-      "description": "TODO:",
-      "url": ""
+      "description": "This indicator uses remote sensing to calculate the unvegetated-vegetated ratio of tidal wetlands, which compares how much of a wetland is not covered by plants (e.g., sediment, rocks, open water) to how much is covered by plants. This ratio, and how it changes over time, is a good surrogate for salt marsh degradation processes like sediment loss and conversion to open water. It helps differentiate between stable marshes that are more resilient, and declining marshes that are more vulnerable to threats like sea-level rise, erosion, and coastal development. This indicator originates from a U.S. Geological Survey project on an unvegetated to vegetated ratio for coastal wetlands.",
+      "url": "",
+      "goodThreshold": 1
     }
   ]
 }

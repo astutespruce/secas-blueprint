@@ -19,7 +19,6 @@
       "base:land_saamphibianandreptileareas",
       "base:land_saforestbirds",
       "base:land_salowurbanhistoric",
-      "base:land_samaritimeforest",
       "base:land_urbanparksize",
       "base:land_wcpforestedwetlandbirds",
       "base:land_wcpopenpinebirds",
@@ -36,10 +35,10 @@
       "base:freshwater_atlanticmigratoryfishhabitat",
       "base:freshwater_gulfmigratoryfishconnectivity",
       "base:freshwater_imperiledaquaticspecies",
+      "base:freshwater_wvimperiledaquaticspecies",
       "base:freshwater_naturallandcoverinfloodplains",
       "base:freshwater_networkcomplexity",
-      "base:freshwater_permeablesurface",
-      "base:freshwater_wvimperiledaquaticspecies"
+      "base:freshwater_permeablesurface"
     ]
   },
   {
@@ -52,11 +51,12 @@
       "base:marine_estuarinecoastalcondition",
       "base:marine_islands",
       "base:marine_resilientcoastalsites",
+      "base:marine_seagrasses",
       "base:marine_sabeachbirds",
       "base:marine_sahardbottomanddeepseacoral",
       "base:marine_samammals",
       "base:marine_samarinebirds",
-      "base:marine_seagrasses",
+      "base:marine_samaritimeforest",
       "base:marine_stablecoastalwetlands"
     ]
   }
