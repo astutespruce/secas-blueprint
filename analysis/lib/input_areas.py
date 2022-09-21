@@ -2,43 +2,14 @@ from pathlib import Path
 import math
 
 import numpy as np
-import geopandas as gp
-import pygeos as pg
 import rasterio
 from rasterio.windows import Window
 
-from analysis.constants import INPUT_AREA_VALUES
+from analysis.constants import INPUT_AREA_VALUES, INPUT_AREA_BOUNDS
 
 
 data_dir = Path("data/inputs")
 bnd_dir = data_dir / "boundaries"
-
-
-def get_input_area_boundary(input_area):
-    """Extract and union polygons associated with input area into a single
-    boundary (Multi)Polygon.
-
-    Parameters
-    ----------
-    input_area : str
-        id of input area
-
-    Returns
-    -------
-    (Multi)Polygon
-    """
-    # have to make valid or we get errors during union for FL
-    values = [
-        e["value"] for e in INPUT_AREA_VALUES if input_area in set(e["id"].split(","))
-    ]
-
-    inputs_df = gp.read_feather(bnd_dir / "input_areas.feather")
-
-    bnd = pg.union_all(
-        pg.make_valid(inputs_df.loc[inputs_df.value.isin(values)].geometry.values.data)
-    )
-
-    return bnd
 
 
 def get_input_area_mask(input_area):
@@ -47,7 +18,7 @@ def get_input_area_mask(input_area):
     Parameters
     ----------
     input_area : str
-        one of the major input area codes, e.g., "gh", "sa", etc
+        one of the major input area codes: {"base", "flm", "car"}
 
     Returns
     -------
@@ -55,15 +26,9 @@ def get_input_area_mask(input_area):
         mask is 1 INSIDE input area, 0 outside
     """
 
-    values = [
-        e["value"] for e in INPUT_AREA_VALUES if input_area in set(e["id"].split(","))
-    ]
-
-    bnd = get_input_area_boundary(input_area)
-
     ### Get window into raster for bounds of input area
-    with rasterio.open(data_dir / "input_areas.tif") as src:
-        window = src.window(*pg.total_bounds(bnd))
+    with rasterio.open(bnd_dir / "input_areas.tif") as src:
+        window = src.window(*INPUT_AREA_BOUNDS[input_area])
         window_floored = window.round_offsets(op="floor", pixel_precision=3)
         w = math.ceil(window.width + window.col_off - window_floored.col_off)
         h = math.ceil(window.height + window.row_off - window_floored.row_off)
@@ -74,7 +39,6 @@ def get_input_area_mask(input_area):
         data = src.read(1, window=window)
 
     mask = np.zeros(shape=data.shape, dtype="uint8")
-    for value in values:
-        mask[data == value] = 1
+    mask[data == INPUT_AREA_VALUES[input_area]] = 1
 
     return mask, transform, window

@@ -2,6 +2,7 @@ from pathlib import Path
 from collections import OrderedDict
 from itertools import product
 import json
+from rasterio.windows import Window
 
 
 # Set to True to output intermediate rasters for validation (uncomment in map.raster module)
@@ -56,7 +57,17 @@ BLUEPRINT_COLORS = {
 }
 
 INPUTS = {e["id"]: e for e in json.loads(open(json_dir / "inputs.json").read())}
-INPUT_AREA_VALUES = json.loads(open(json_dir / "input_area_values.json").read())
+INPUT_AREA_VALUES = {
+    e["id"]: e["value"]
+    for e in json.loads(open(json_dir / "input_area_values.json").read())
+}
+# Bounds are in DATA_CRS and are used for filtering areas of interest for
+# potential overlaps with input areas
+INPUT_AREA_BOUNDS = {
+    "base": [-1000334.18062565, 258944.14681537, 2201235.81937435, 2064044.14681537],
+    "car": [3039495.81937435, -78225.85318463, 3321615.81937435, 39584.14681537],
+    "flm": [816225.81937435, 178034.14681537, 1891275.81937435, 1015394.14681537],
+}
 
 
 ECOSYSTEMS = json.loads(open(json_dir / "ecosystems.json").read())
@@ -138,20 +149,3 @@ SLR_LEGEND = [
     {"label": "9", "color": "#7DF5FD"},
     {"label": "10", "color": "#B3FEF7"},
 ]
-
-
-# everything is on a 0 - 6 range (0 is NODATA)
-CHAT_CATEGORIES = [0, 1, 2, 3, 4, 5, 6]
-
-# Bounds are in DATA_CRS and are used for filtering areas of interest for
-# potential overlaps with input areas
-OKCHAT_BOUNDS = [-622242.1977, 1171575.80999999, 142996.3598, 1574946.4713]
-TXCHAT_BOUNDS = [-1001835.1092, 310419.3859, 238110.7568, 1519532.92749999]
-GULF_HYPOXIA_BOUNDS = [18925.0875, 1453115.574, 608245.08747, 1963775.574]
-CARIBBEAN_BOUNDS = [3039491.3248, -78234.1061, 3321630.2684, 39575.8386]
-NATURES_NETWORK_BOUNDS = [1079305.0874, 1566755.574, 2268265.0875, 3023045.574]
-NATURESCAPE_BOUNDS = [645325.0874, 1093385.574, 1343365.0875, 2064065.574]
-SOUTHATLANTIC_BOUNDS = [933865.0874, 758285.574, 2200555.0875, 1819415.574]
-FLORIDA_BOUNDS = [796765.0874, 269495.5740, 1600825.0875, 961145.574]
-FLORIDA_MARINE_BOUNDS = [811825.0874, 177875.574, 1894105.0875, 1018475.574]
-MIDSE_BOUNDS = [120775.0874, 669545.574, 1218685.0875, 1872785.574]

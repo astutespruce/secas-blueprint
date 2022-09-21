@@ -1,8 +1,7 @@
 from pathlib import Path
-import os
 import warnings
 
-from pyogrio import read_dataframe, write_dataframe
+from pyogrio import read_dataframe
 
 from analysis.constants import DATA_CRS
 
@@ -12,10 +11,8 @@ warnings.filterwarnings("ignore", message=".*initial implementation of Parquet.*
 
 src_dir = Path("source_data/caribbean")
 out_dir = Path("data/inputs/indicators/caribbean")
-tile_dir = Path("data/for_tiles")
 
-if not out_dir.exists():
-    os.makedirs(out_dir)
+out_dir.mkdir(exist_ok=True, parents=True)
 
 df = (
     read_dataframe(
@@ -26,8 +23,3 @@ df = (
 )
 
 df.to_feather(out_dir / "caribbean.feather")
-
-# for tiles
-write_dataframe(
-    df[["geometry", "carrank"]], tile_dir / "caribbean.geojson", driver="GeoJSONSeq"
-)
