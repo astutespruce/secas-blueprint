@@ -43,6 +43,8 @@ SECAS_STATES = [
     "WV",
 ]
 
+SECAS_HUC2 = [2, 3, 5, 6, 7, 8, 10, 11, 12, 13, 21]
+
 
 json_dir = Path("constants")
 

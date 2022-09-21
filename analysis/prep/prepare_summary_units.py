@@ -1,8 +1,3 @@
-"""
-Prepare HUC12 and Marine Lease Block input areas.
-
-NOTE: this must be run after prepare_input_areas.py
-"""
 import os
 from pathlib import Path
 import warnings
@@ -13,8 +8,8 @@ from pyogrio import read_dataframe, write_dataframe
 import pygeos as pg
 from progress.bar import Bar
 
-from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES
-from analysis.lib.pygeos_util import to_dict
+from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES, SECAS_HUC2
+from analysis.lib.geometry import to_dict, make_valid
 from analysis.lib.raster import calculate_percent_overlap
 
 # suppress warnings about writing to feather
@@ -25,7 +20,6 @@ src_dir = Path("source_data")
 data_dir = Path("data")
 analysis_dir = data_dir / "inputs/summary_units"
 bnd_dir = data_dir / "boundaries"  # GIS files output for reference
-tile_dir = data_dir / "for_tiles"
 input_area_mask = data_dir / "inputs/input_areas_mask.tif"
 
 if not analysis_dir.exists():
@@ -37,31 +31,34 @@ bnd = bnd_df.geometry.values.data[0]
 ### Extract HUC12 within boundary
 print("Reading source HUC12s...")
 merged = None
-for huc2 in [2, 3, 5, 6, 7, 8, 10, 11, 12, 13, 21]:
-    df = read_dataframe(
-        src_dir
-        / f"summary_units/huc12/WBD_{huc2:02}_HU2_GDB/WBD_{huc2:02}_HU2_GDB.gdb",
-        layer="WBDHU12",
-    )[["huc12", "name", "geometry"]].rename(columns={"huc12": "id"})
+for huc2 in SECAS_HUC2:
+    df = (
+        read_dataframe(
+            src_dir
+            / f"summary_units/huc12/WBD_{huc2:02}_HU2_GDB/WBD_{huc2:02}_HU2_GDB.gdb",
+            layer="WBDHU12",
+        )[["huc12", "name", "geometry"]]
+        .rename(columns={"huc12": "id"})
+        .to_crs(DATA_CRS)
+    )
 
     if merged is None:
         merged = df
 
     else:
-        merged = merged.append(df, ignore_index=True)
+        merged = pd.concat([merged, df], ignore_index=True)
 
-print("Projecting to match SE region data...")
-huc12 = merged.to_crs(DATA_CRS)
+huc12 = merged.reset_index(drop=True)
 
 
-# select out those within the SE states
+# select HUC12s within the SE states
 print("Selecting HUC12s in region...")
 tree = pg.STRtree(huc12.geometry.values.data)
 ix = tree.query(bnd, predicate="intersects")
 huc12 = huc12.iloc[ix].copy().reset_index(drop=True)
 
 # make sure data are valid
-huc12["geometry"] = pg.make_valid(huc12.geometry.values.data)
+huc12["geometry"] = make_valid(huc12.geometry.values.data)
 
 # calculate area
 huc12["acres"] = (pg.area(huc12.geometry.values.data) * M2_ACRES).round().astype("uint")
@@ -73,16 +70,13 @@ tree = pg.STRtree(huc12.geometry.values.data)
 ix = tree.query(bnd, predicate="contains")
 
 edge_df = huc12.loc[~huc12.id.isin(huc12.iloc[ix].id)].copy()
-geometries = pd.Series(edge_df.geometry.values.data, index=edge_df.id)
-drop_ids = []
-for id, geometry in Bar(
-    "Calculating HUC12 overlap with input area", max=len(geometries)
-).iter(geometries.iteritems()):
-    percent_overlap = calculate_percent_overlap(
-        input_area_mask, [to_dict(geometry)], bounds=pg.total_bounds(geometry)
-    )
-    if percent_overlap < 50:
-        drop_ids.append(id)
+edge_df["overlap"] = (
+    100
+    * pg.area(pg.intersection(edge_df.geometry.values.data, bnd))
+    / pg.area(edge_df.geometry.values.data)
+)
+
+drop_ids = edge_df.loc[edge_df.overlap < 50].id
 
 print(f"Dropping {len(drop_ids)} HUC12s that do not sufficiently overlap input areas")
 huc12 = huc12.loc[~huc12.id.isin(drop_ids)].copy()
@@ -93,7 +87,7 @@ huc12 = huc12.join(huc12_wgs84.bounds)
 
 # Save in EPSG:5070 for analysis
 huc12.to_feather(analysis_dir / "huc12.feather")
-write_dataframe(huc12, bnd_dir / "huc12.gpkg")
+write_dataframe(huc12, bnd_dir / "huc12.fgb")
 
 
 ### Marine units
@@ -108,7 +102,7 @@ gulf = read_dataframe(
     columns=["PROT_NUMBE", "BLOCK_NUMB"],
 )
 
-marine = atl.append(gulf, ignore_index=True)
+marine = pd.concat([atl, gulf], ignore_index=True)
 marine["id"] = marine.PROT_NUMBE.str.strip() + "-" + marine.BLOCK_NUMB.str.strip()
 marine["name"] = (
     marine.PROT_NUMBE.str.strip() + ": Block " + marine.BLOCK_NUMB.str.strip()
@@ -159,8 +153,4 @@ marine = marine.join(marine_wgs84.bounds)
 
 # Save in EPSG:5070 for analysis
 marine.to_feather(analysis_dir / "marine_blocks.feather")
-write_dataframe(marine, bnd_dir / "marine_blocks.gpkg")
-
-# ### Merge HUC12 and marine into single units file and export for creating tiles
-df = huc12_wgs84.append(marine_wgs84, ignore_index=True, sort=False)
-write_dataframe(df, tile_dir / "units.geojson", driver="GeoJSONSeq")
+write_dataframe(marine, bnd_dir / "marine_blocks.fgb")
