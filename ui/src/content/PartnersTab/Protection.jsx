@@ -50,10 +50,10 @@ const Protection = ({ protection }) => {
           </>
         ) : null}
         Land and marine protectection status is derived from the{' '}
-        <OutboundLink to="https://www.sciencebase.gov/catalog/item/5f186a2082cef313ed843257">
+        <OutboundLink to="https://www.usgs.gov/programs/gap-analysis-project/science/pad-us-data-download">
           Protected Areas Database of the United States
         </OutboundLink>{' '}
-        (PAD-US v2.1).
+        (PAD-US v3.0).
       </Text>
     </>
   )
