@@ -9,8 +9,7 @@ import pygeos as pg
 from progress.bar import Bar
 
 from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES, SECAS_HUC2
-from analysis.lib.geometry import to_dict, make_valid
-from analysis.lib.raster import calculate_percent_overlap
+from analysis.lib.geometry import make_valid
 
 # suppress warnings about writing to feather
 warnings.filterwarnings("ignore", message=".*initial implementation of Parquet.*")

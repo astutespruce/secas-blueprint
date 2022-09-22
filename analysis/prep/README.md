@@ -21,20 +21,5 @@ Note: once tiles are rendered, they are moved to `secas-docker/tiles` directory.
 
 ## Indicators
 
-### South Atlantic
-
-These are prepared in the `sa-blueprint-sv` project, and then further processed using `prepare_southatlantic.py`.
-
-These are warped and masked from `sa-blueprint-sv/data/inputs/indicators` to `data/inputs/indicators/southatlantic`
-
-Indicator config is copied from `sa-blueprint-sv/constants/indicators.json`, and wrapped in:
-
-```json
-{
-    "input": "sa",
-    "indicators": <indicators.json contents from sa-blueprint-sv, prefix ids>
-}
-```
-
 The full indicator IDs are prefixed with "sa:" and added to the appropriate
 ecosystem indicators list in `constants/ecosystems.json`.

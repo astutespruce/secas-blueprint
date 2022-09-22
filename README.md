@@ -1,33 +1,16 @@
 # SECAS Southeast Conservation Blueprint Explorer
 
-This application provides a simple user interface for exploring the [SECAS Southeast Conservation Blueprint](http://secassoutheast.org/blueprint.html).
+This application provides a simple user interface for exploring the
+[SECAS Southeast Conservation Blueprint](http://secassoutheast.org/blueprint.html).
 
-## Architecture
+This tool is available at
+[https://blueprint.geoplatform.gov/southeast/](https://blueprint.geoplatform.gov/southeast/).
 
-This uses a data processing pipeline in Python to prepare all spatial data for use in this application.
+## Local development
 
-The user interface is creating using GatsbyJS as a static web application.
+See [local development instructions](./Developing.md)
 
-The API is implemented in Python and provides summary reports for pre-defined summary units and user-defined areas.
+## Credits
 
-## Development
-
-Python dependencies are managed using `poetry`. First, install poetry, then
-`poetry install` to install most of them.
-
-`pymgl` requires extra steps on Arm64 architectures because no wheel is yet available.
-It is currently built locally in a sibling folder and added as a wheel here.
-
-### Other dependencies
-
-On MacOS, install other dependencies:
-
-- `brew install gdal`
-- `brew install pango`
-
-For Macos M1 (Arm64), you also need to setup a symlink for one of the libraries
-to be found:
-
-```
-sudo ln -s /opt/homebrew/opt/fontconfig/lib/libfontconfig.1.dylib /usr/local/lib/fontconfig-1
-```
+This project is developed under a grant from the U.S. Fish and Wildlife Service
+to support the [Southeast Conservation Adaptation Strategy](https://secassoutheast.org/).

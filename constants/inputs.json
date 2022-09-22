@@ -1,9 +1,72 @@
 [
   {
+    "id": "base",
+    "value": 1,
+    "label": "Southeast Base Blueprint",
+    "shortLabel": "Base Blueprint",
+    "version": "2022",
+    "bounds": [
+      -1000334.18062565, 258944.14681537, 2201235.81937435, 2064044.14681537
+    ],
+    "dataURL": "",
+    "infoURL": "",
+    "cpaURL": "",
+    "filename": "base/base_blueprint.tif",
+    "valueField": "base_blueprint",
+    "valueLabel": "Blueprint 2022 Priority ",
+    "values": [
+      {
+        "value": 0,
+        "label": "Lower priority",
+        "percent": 50,
+        "description": "",
+        "color": null
+      },
+      {
+        "value": 1,
+        "label": "Priority connections",
+        "shortLabel": "Connections",
+        "percent": 5,
+        "description": "Connections between priority areas that cover the shortest distance possible while routing through as much Blueprint priority as possible.",
+        "color": "#686868"
+      },
+      {
+        "value": 2,
+        "label": "Medium priority",
+        "shortLabel": "Medium",
+        "percent": 20,
+        "description": "Areas where conservation action would make an above-average impact, based on a suite of natural and cultural resource indicators.",
+        "color": "#8C96C6"
+      },
+      {
+        "value": 3,
+        "label": "High conservation value",
+        "shortLabel": "High",
+        "percent": 15,
+        "description": "Areas where conservation action would make a big impact, based on a suite of natural and cultural resource indicators.",
+        "color": "#88419D"
+      },
+      {
+        "value": 4,
+        "label": "Highest priority",
+        "shortLabel": "Highest",
+        "percent": 10,
+        "description": "Areas where conservation action would make the biggest impact, based on a suite of natural and cultural resource indicators.",
+        "color": "#4D004B"
+      }
+    ],
+    "domain": [1, 4],
+    "description": ""
+  },
+  {
     "id": "flm",
+    "value": 2,
     "label": "Florida Marine Blueprint",
     "shortLabel": "Florida (marine)",
     "version": "2.0",
+    "bounds": [
+      816225.81937435, 178034.14681537, 1891275.81937435, 1015394.14681537
+    ],
     "dataURL": "",
     "infoURL": "",
     "cpaURL": "https://flcpa.databasin.org/",
@@ -47,9 +110,13 @@
   },
   {
     "id": "car",
+    "value": 3,
     "label": "Caribbean Landscape Conservation Design",
     "shortLabel": "Caribbean",
     "version": "",
+    "bounds": [
+      3039495.81937435, -78225.85318463, 3321615.81937435, 39584.14681537
+    ],
     "dataURL": "https://caribbeanlcc.databasin.org/galleries/ecb079d09f5a430fafc2d48d68bdf1b4",
     "infoURL": "https://caribbeanlcc.databasin.org/galleries/ecb079d09f5a430fafc2d48d68bdf1b4",
     "cpaURL": "https://seregion.databasin.org/",

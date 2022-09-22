@@ -56,19 +56,9 @@ BLUEPRINT_COLORS = {
     if "color" in entry and entry["value"] > 0
 }
 
+# Note: value field is the value in the input_areas raster, bounds are in
+# EPSG:5070
 INPUTS = {e["id"]: e for e in json.loads(open(json_dir / "inputs.json").read())}
-INPUT_AREA_VALUES = {
-    e["id"]: e["value"]
-    for e in json.loads(open(json_dir / "input_area_values.json").read())
-}
-# Bounds are in DATA_CRS and are used for filtering areas of interest for
-# potential overlaps with input areas
-INPUT_AREA_BOUNDS = {
-    "base": [-1000334.18062565, 258944.14681537, 2201235.81937435, 2064044.14681537],
-    "car": [3039495.81937435, -78225.85318463, 3321615.81937435, 39584.14681537],
-    "flm": [816225.81937435, 178034.14681537, 1891275.81937435, 1015394.14681537],
-}
-
 
 ECOSYSTEMS = json.loads(open(json_dir / "ecosystems.json").read())
 

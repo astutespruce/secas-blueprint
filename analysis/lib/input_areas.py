@@ -5,7 +5,7 @@ import numpy as np
 import rasterio
 from rasterio.windows import Window
 
-from analysis.constants import INPUT_AREA_VALUES, INPUT_AREA_BOUNDS
+from analysis.constants import INPUTS
 
 
 data_dir = Path("data/inputs")
@@ -27,8 +27,8 @@ def get_input_area_mask(input_area):
     """
 
     ### Get window into raster for bounds of input area
-    with rasterio.open(bnd_dir / "input_areas.tif") as src:
-        window = src.window(*INPUT_AREA_BOUNDS[input_area])
+    with rasterio.open(bnd_dir / "INPUTS.tif") as src:
+        window = src.window(*INPUTS[input_area]["bounds"])
         window_floored = window.round_offsets(op="floor", pixel_precision=3)
         w = math.ceil(window.width + window.col_off - window_floored.col_off)
         h = math.ceil(window.height + window.row_off - window_floored.row_off)
@@ -39,6 +39,6 @@ def get_input_area_mask(input_area):
         data = src.read(1, window=window)
 
     mask = np.zeros(shape=data.shape, dtype="uint8")
-    mask[data == INPUT_AREA_VALUES[input_area]] = 1
+    mask[data == INPUTS[input_area]["value"]] = 1
 
     return mask, transform, window

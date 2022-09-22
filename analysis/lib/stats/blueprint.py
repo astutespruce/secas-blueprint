@@ -3,7 +3,7 @@ from pathlib import Path
 import numpy as np
 import rasterio
 
-from analysis.constants import BLUEPRINT, INPUT_AREA_VALUES, ACRES_PRECISION, M2_ACRES
+from analysis.constants import BLUEPRINT, INPUTS, ACRES_PRECISION, M2_ACRES
 from analysis.lib.raster import (
     detect_data,
     boundless_raster_geometry_mask,
@@ -81,7 +81,7 @@ def extract_by_geometry(geometries, bounds):
         bp_inputs_filename,
         shape_mask,
         window,
-        bins=range(0, len(INPUT_AREA_VALUES)),
+        bins=range(0, len(INPUTS)),
         boundless=True,
     )
     results["inputs"] = (

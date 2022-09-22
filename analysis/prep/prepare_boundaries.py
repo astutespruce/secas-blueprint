@@ -9,7 +9,7 @@ import rasterio
 from rasterio.features import rasterize
 from rasterio import windows
 
-from analysis.constants import DATA_CRS, SECAS_STATES, MASK_RESOLUTION
+from analysis.constants import DATA_CRS, SECAS_STATES, MASK_RESOLUTION, INPUTS
 from analysis.lib.geometry import dissolve, make_valid, to_dict_all, to_dict
 from analysis.lib.raster import write_raster, add_overviews, create_lowres_mask
 
@@ -74,10 +74,9 @@ df = read_dataframe(src_dir / "blueprint/InputAreas.shp", columns=["gridcode"]).
 df["geometry"] = make_valid(df.geometry.values.data)
 df = dissolve(df, by="value")
 
-inputs = {1: "base", 2: "flm", 3: "car"}
+inputs = {e["value"]: e["id"] for e in INPUTS}
 df["id"] = df["value"].map(inputs)
 
-df[["id", "value"]].to_json(json_dir / "input_area_values.json", orient="records")
 write_dataframe(df, bnd_dir / "input_areas.fgb")
 df.to_feather(out_dir / "input_areas.feather")
 
