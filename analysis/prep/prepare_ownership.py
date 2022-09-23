@@ -37,6 +37,7 @@ df = read_dataframe(
         "Loc_Nm",
         "Loc_Own",
         "Agg_Src",
+        "Des_Tp",
     ],
     where=f"State_Nm in ({states})",
 )
@@ -46,8 +47,10 @@ df = df.loc[df.Agg_Src != "USGS_PADUS2_0Marine_BOEM_Block_Dissolve"].drop(
     columns=["Agg_Src"]
 )
 
-# drop proclamation boundaries
-df = df.loc[df.Category != "Proclamation"].reset_index(drop=True)
+# drop proclamation boundaries but retain military lands that only show up as proclamation
+df = df.loc[(df.Category != "Proclamation") | (df.Des_Tp == "MIL")].reset_index(
+    drop=True
+)
 
 
 tree = pg.STRtree(df.geometry.values.data)
