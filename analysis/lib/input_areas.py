@@ -27,7 +27,7 @@ def get_input_area_mask(input_area):
     """
 
     ### Get window into raster for bounds of input area
-    with rasterio.open(bnd_dir / "INPUTS.tif") as src:
+    with rasterio.open(bnd_dir / "input_areas.tif") as src:
         window = src.window(*INPUTS[input_area]["bounds"])
         window_floored = window.round_offsets(op="floor", pixel_precision=3)
         w = math.ceil(window.width + window.col_off - window_floored.col_off)

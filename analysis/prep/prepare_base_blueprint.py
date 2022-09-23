@@ -26,6 +26,9 @@ out_dir.mkdir(exist_ok=True, parents=True)
 
 NODATA = 255  # standardize NODATA of all indicators
 
+# filenames of indicators that need to be clipped to inland mask
+CLIP_INLAND = ["FireFrequency.tif", "IntactHabitatCores.tif"]
+
 # data window is used to extract the data extent in the blueprint and indicators;
 # all have the same original extent
 # this value is calculated in prepare_boundaries.py
@@ -78,6 +81,7 @@ if not outfilename.exists():
             ignore_zero=False,
         )
 
+inland_mask = None
 
 ### Extract indicators and associated json
 print("Extracting indicators")
@@ -166,6 +170,15 @@ for tif in tifs:
                     data = vrt.read()[0]
 
             data = np.where(data == nodata, NODATA, data)
+
+            if Path(tif).name in CLIP_INLAND:
+                print("Clipping to inland mask")
+
+                if inland_mask is None:
+                    with rasterio.open(bnd_dir / "nonmarine_mask.tif") as mask_src:
+                        inland_mask = mask_src.read(1)
+
+                data = np.where(inland_mask == 1, data, NODATA)
 
             write_raster(
                 outfilename,
