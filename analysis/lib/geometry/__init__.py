@@ -5,3 +5,5 @@ from analysis.lib.geometry.aggregate import (
 )
 from analysis.lib.geometry.clean import make_valid
 from analysis.lib.geometry.conversion import to_dict, to_dict_all
+from analysis.lib.geometry.crs import to_crs
+from analysis.lib.geometry.intersection import intersection

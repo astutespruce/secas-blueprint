@@ -59,8 +59,11 @@ BLUEPRINT_COLORS = {
 # Note: value field is the value in the input_areas raster, bounds are in
 # EPSG:5070
 INPUTS = {e["id"]: e for e in json.loads(open(json_dir / "inputs.json").read())}
+INPUTS_BY_VALUE = {e["value"]: e for e in INPUTS.values()}
 
+CORRIDORS = json.loads(open(json_dir / "corridors.json").read())
 ECOSYSTEMS = json.loads(open(json_dir / "ecosystems.json").read())
+
 
 # Combine all constants/indicators/*.json files into a single data structure
 raw_indicators = [
@@ -96,8 +99,8 @@ URBAN_COLORS = {
 
 # Note: for legend already urban is toward the top but it is value 3
 URBAN_LEGEND = [
-    {"label": "Not likely to urbanize", "color": None},
     {"label": "Urban in 2019", "color": "#696969"},
+    {"label": "Not likely to urbanize", "color": None},
     {
         "label": "Moderate likelihood of urbanization (2 - 25% probability)",
         "color": "#F3C6A8",

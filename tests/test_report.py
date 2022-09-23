@@ -9,16 +9,16 @@ import numpy as np
 import pygeos as pg
 from pyogrio.geopandas import read_dataframe
 
+
+from analysis.constants import GEO_CRS, DATA_CRS, M2_ACRES
+from analysis.lib.geometry import to_crs
 from api.report import create_report
 from api.report.map import render_maps
-from analysis.constants import BLUEPRINT, GEO_CRS, DATA_CRS, M2_ACRES
-from api.report.format import format_number
 from api.stats import SummaryUnits, CustomArea
-from analysis.lib.pygeos_util import to_crs
 
 
 # if True, cache maps if not previously created, then reuse
-CACHE_MAPS = True
+CACHE_MAPS = False
 
 
 def write_cache(maps, scale, path):
@@ -82,7 +82,7 @@ aois = [
     # {"name": "Caledonia area, MS", "path": "caledonia"},
     # {"name": "Napoleonville area, LA", "path": "Napoleonville"},
     # {"name": "Area in El Yunque National Forest, PR", "path": "yunque"},
-    # {"name": "San Juan area, PR", "path": "SanJuan"},
+    {"name": "San Juan area, PR", "path": "SanJuan"},
     # {"name": "Area near Magnet, TX", "path": "magnet"},
     # {"name": "TriState area at junction of MO, OK, KS", "path": "TriState"},
     # {"name": "Quincy, FL area", "path": "Quincy"},
@@ -90,6 +90,7 @@ aois = [
     # {"name": "Cave Spring, VA area", "path": "CaveSpring"},
     # {"name": "South Atlantic Offshore", "path": "SAOffshore"},
     # {"name": "Florida Offshore", "path": "FLOffshore"},
+    # {"name": "Razor", "path": "Razor"}
 ]
 
 
@@ -99,15 +100,13 @@ for aoi in aois:
     print(f"Creating report for {name}...")
 
     start = time()
-    df = read_dataframe(f"examples/{path}.shp", columns=[])
+    df = read_dataframe(f"examples/{path}.shp", columns=[]).to_crs(DATA_CRS)
     geometry = pg.make_valid(df.geometry.values.data)
 
     # dissolve
     geometry = np.asarray([pg.union_all(geometry)])
 
-    extent_area = (
-        pg.area(pg.box(*pg.total_bounds(to_crs(geometry, df.crs, DATA_CRS)))) * M2_ACRES
-    )
+    extent_area = pg.area(pg.box(*pg.total_bounds(geometry))) * M2_ACRES
     print(
         f"Area of extent: {extent_area:,.0f}",
     )
@@ -178,24 +177,25 @@ for aoi in aois:
 
 ### Create reports for summary units
 ids = {
-    "huc12": [
-        #     #     #     #     # "111102050103"  # has no protected areas
-        "210100050503",  # PR
-        # "110702071001",  # at junction of gulf_hypoxia, okchat, midse
-        #     # "031501100102",  # has overlaps with MidSE, SA, and NatureScape
-        # "120100040301",  # at junction of txchat, midse
-        #     "031200030902",  # at overlap area between FL, MidSE, and SA
-        #     #     #     #     #     #     # "060200020506",  # in AppLCC area
-        #     #     # "050302030503",  # in Nature's Network area
-        #     #     # "030101010301",  # in Nature's Network  / South Atlantic overlap area
-        #     #     #     #     #     #     ##################
-        #     #     #     #     #     #     #     #     "130301020902", # far western edge
-        #     #     #     #     #     #     #     #     "031501060512",  # partial overlap with SA raster inputs
-        #     #     #     #     #     #     #     "031700080402"
-        # "030101030404",  # Nature's Network at edge of input area
-        # "031101020903",  # Florida with inland marine indicators
-        # "031102050805",  # Florida gulf coast
-    ],
+    # "huc12": [
+    #     "030502050309"
+    #     #     #     #     # "111102050103"  # has no protected areas
+    # "210100050503",  # PR
+    # "110702071001",  # at junction of gulf_hypoxia, okchat, midse
+    #     # "031501100102",  # has overlaps with MidSE, SA, and NatureScape
+    # "120100040301",  # at junction of txchat, midse
+    #     "031200030902",  # at overlap area between FL, MidSE, and SA
+    #     #     #     #     #     #     # "060200020506",  # in AppLCC area
+    #     #     # "050302030503",  # in Nature's Network area
+    #     #     # "030101010301",  # in Nature's Network  / South Atlantic overlap area
+    #     #     #     #     #     #     ##################
+    #     #     #     #     #     #     #     #     "130301020902", # far western edge
+    #     #     #     #     #     #     #     #     "031501060512",  # partial overlap with SA raster inputs
+    #     #     #     #     #     #     #     "031700080402"
+    # "030101030404",  # Nature's Network at edge of input area
+    # "031101020903",  # Florida with inland marine indicators
+    # "031102050805",  # Florida gulf coast
+    # ],
     # "marine_blocks": [
     #     # "NI18-07-6210",  # Atlantic coast
     #     #     # #     "NG16-03-299",  # Gulf coast

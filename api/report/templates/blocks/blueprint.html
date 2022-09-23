@@ -57,13 +57,7 @@
 <div class="spacer"></div>
 
 {% with number=table.counter,label="Extent of each Blueprint priority category" %}
-{% if results.has_overlapping_inputs %}
-    {% with extra="Note: this area includes overlapping Blueprint inputs in some areas.  Values of a single Blueprint input may not directly correspond to final Blueprint values." %}
-        {% include "elements/table_caption.html" %}
-    {% endwith %}
-{% else %}
     {% include "elements/table_caption.html" %}
-{% endif %}
 {% endwith %}
 {% set table.counter=table.counter+1 %}
 

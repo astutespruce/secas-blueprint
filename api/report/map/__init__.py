@@ -12,9 +12,6 @@ from .summary_unit import get_summary_unit_map_image
 from .mercator import get_zoom, get_map_bounds, get_map_scale
 from .util import pad_bounds, get_center, png_bytes_to_base64, to_base64, merge_maps
 
-# input area specific map handlers
-from .caribbean import get_caribbean_map_image
-from .chat import get_chat_map_image
 
 from analysis.constants import (
     BLUEPRINT_COLORS,
@@ -32,16 +29,16 @@ PADDING = 5
 
 
 src_dir = Path("data/inputs")
-blueprint_filename = src_dir / "se_blueprint2021.tif"
+blueprint_filename = src_dir / "se_blueprint_2022.tif"
 urban_filename = src_dir / "threats/urban/urban_2060_binned.tif"
 slr_filename = src_dir / "threats/slr/slr.tif"
 inputs_dir = src_dir / "indicators"
 
+#
 indicator_dirs = {
-    "sa": inputs_dir / "southatlantic",
-    "fl": inputs_dir / "florida",
-    "flm": inputs_dir / "florida_marine",
-    "nn": inputs_dir / "natures_network",
+    "base": inputs_dir / "base",
+    # TODO: enable when FL Marine Blueprint indicators available
+    # "flm": inputs_dir / "florida_marine",
 }
 
 
@@ -120,7 +117,9 @@ async def render_raster_maps(
 
         # exclude 0 values
         colors = {
-            e["value"]: e["color"] for e in input_info["values"] if e["value"] != 0
+            e["value"]: e["color"]
+            for e in input_info["values"]
+            if e["value"] != 0 and e["color"] is not None
         }
         task_args.append((input_id, inputs_dir / input_info["filename"], colors))
 
@@ -263,39 +262,7 @@ async def render_maps(
                 merge_maps([basemap_image, protection_image, aoi_image])
             )
 
-    if input_ids:
-        if "car" in input_ids:
-            car_image, error = get_caribbean_map_image(center, zoom, WIDTH, HEIGHT)
-            if error:
-                errors["car"] = error
-            else:
-                maps["car"] = to_base64(
-                    merge_maps([basemap_image, car_image, aoi_image])
-                )
-
-        if "okchat" in input_ids:
-            okchat_image, error = get_chat_map_image("ok", center, zoom, WIDTH, HEIGHT)
-            if error:
-                errors["okchat"] = error
-            else:
-                maps["okchat"] = to_base64(
-                    merge_maps([basemap_image, okchat_image, aoi_image])
-                )
-
-        if "txchat" in input_ids:
-            txchat_image, error = get_chat_map_image("tx", center, zoom, WIDTH, HEIGHT)
-            if error:
-                errors["txchat"] = error
-            else:
-                maps["txchat"] = to_base64(
-                    merge_maps([basemap_image, txchat_image, aoi_image])
-                )
-
-    raster_input_ids = (
-        [i for i in input_ids if i not in {"car", "okchat", "txchat"}]
-        if input_ids
-        else []
-    )
+    raster_input_ids = input_ids
 
     # Use background threads for rendering rasters
     raster_maps, raster_map_errors = await render_raster_maps(

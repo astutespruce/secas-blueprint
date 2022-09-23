@@ -213,7 +213,7 @@
     <ul>
         {% for entry in results.protected_areas %}
             <li>
-                {{entry.name}} ({{entry.owner}}; {{entry.acres|format_number}} acres)
+                {{entry.name}} ({{entry.owner}}{% if entry.owner %}; {% endif %}{{entry.acres|format_number}} acres)
             </li>
         {% endfor %}
 

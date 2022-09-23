@@ -6,22 +6,15 @@ import pandas as pd
 
 
 from analysis.constants import (
-    INPUTS,
-    INPUT_AREA_VALUES,
+    INPUTS_BY_VALUE,
     OWNERSHIP,
     PROTECTION,
 )
 
 from analysis.lib.stats import (
+    get_base_blueprint_unit_results,
     get_caribbean_huc12_results,
-    get_chat_huc12_results,
-    get_florida_huc12_results,
     get_florida_marine_block_results,
-    get_gulf_hypoxia_huc12_results,
-    get_midse_huc12_results,
-    get_naturescape_huc12_results,
-    get_natures_network_huc12_results,
-    get_southatlantic_unit_results,
 )
 
 
@@ -29,12 +22,9 @@ input_dir = Path("data/inputs")
 results_dir = Path("data/results")
 
 raster_result_funcs = {
-    "fl": get_florida_huc12_results,
+    "base": get_base_blueprint_unit_results,
+    "car": get_caribbean_huc12_results,
     "flm": get_florida_marine_block_results,
-    "gh": get_gulf_hypoxia_huc12_results,
-    "ms": get_midse_huc12_results,
-    "app": get_naturescape_huc12_results,
-    "nn": get_natures_network_huc12_results,
 }
 
 
@@ -112,22 +102,13 @@ class SummaryUnits(object):
         # only pull in Blueprint inputs that are present, and flatten
         # overlapping inputs
         inputs = dict()
-        has_overlapping_inputs = False
         input_cols = [c for c in blueprint.index if c.startswith("inputs_")]
         for i, col in enumerate(input_cols):
-            input_ids = INPUT_AREA_VALUES[i]["id"].split(",")
             acres = blueprint[col]
             if acres > 0:
-                if len(input_ids) > 1:
-                    has_overlapping_inputs = True
-
-                for input_id in input_ids:
-                    if input_id not in inputs:
-                        input = deepcopy(INPUTS[input_id])
-                        input["acres"] = acres
-                        inputs[input_id] = input
-                    else:
-                        inputs[input_id]["acres"] += acres
+                input = deepcopy(INPUTS_BY_VALUE[i + 1])
+                input["acres"] = acres
+                inputs[input["id"]] = input
 
         inputs = sorted(inputs.values(), key=lambda x: x["acres"], reverse=True)
 
@@ -179,7 +160,6 @@ class SummaryUnits(object):
 
         results["inputs"] = inputs
         results["input_ids"] = [i["id"] for i in inputs]
-        results["has_overlapping_inputs"] = has_overlapping_inputs
 
         try:
             ownership = self.ownership.loc[self.ownership.index.isin([id])]

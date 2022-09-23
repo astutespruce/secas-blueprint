@@ -31,7 +31,6 @@
     "color": "#eef7fc",
     "borderColor": "#c3e3f4",
     "indicators": [
-      "base:freshwater_atlanticestuarinefishhabitat",
       "base:freshwater_atlanticmigratoryfishhabitat",
       "base:freshwater_gulfmigratoryfishconnectivity",
       "base:freshwater_imperiledaquaticspecies",
@@ -47,6 +46,7 @@
     "color": "#f5f5ff",
     "borderColor": "#c2c2ff",
     "indicators": [
+      "base:marine_atlanticestuarinefishhabitat",
       "base:marine_coastalshorelinecondition",
       "base:marine_estuarinecoastalcondition",
       "base:marine_islands",

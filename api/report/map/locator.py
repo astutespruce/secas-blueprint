@@ -5,7 +5,7 @@ import pygeos as pg
 from pymgl import Map
 
 from api.settings import MAPBOX_ACCESS_TOKEN, TILE_DIR
-from analysis.lib.pygeos_util import to_dict
+from analysis.lib.geometry import to_dict
 
 
 ZOOM = 1.75

@@ -23,7 +23,7 @@
 
             <div class="legend">
                 {% for entry in indicator["values"] %}
-                    <div class="legend-element flex align-center {% if (legends[indicator.id]|length) >5 %}narrow-margin{% endif %}">
+                    <div class="legend-element flex {% if (legends[indicator.id]|length) >5 %}narrow-margin{% endif %}">
                         <div class="legend-patch" style="background: {{entry.color}}"></div>
                         <div class="legend-label">{{entry.label}}</div>
                     </div>

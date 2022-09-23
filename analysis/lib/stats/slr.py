@@ -19,7 +19,7 @@ from analysis.lib.raster import (
     boundless_raster_geometry_mask,
     extract_count_in_geometry,
 )
-from analysis.lib.pygeos_util import to_dict
+from analysis.lib.geometry import to_dict
 
 
 src_dir = Path("data/inputs/threats/slr")

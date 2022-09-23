@@ -5,15 +5,13 @@ import numpy as np
 import pygeos as pg
 import geopandas as gp
 
-from analysis.lib.pygeos_util import (
+from analysis.lib.geometry import (
     to_crs,
     to_dict,
-    sjoin,
     intersection,
 )
 from analysis.constants import (
-    INPUTS,
-    INPUT_AREA_VALUES,
+    INPUTS_BY_VALUE,
     URBAN_YEARS,
     DATA_CRS,
     OWNERSHIP,
@@ -24,15 +22,9 @@ from analysis.lib.stats import (
     extract_blueprint_by_geometry,
     extract_urban_by_geometry,
     extract_slr_by_geometry,
+    summarize_base_blueprint_by_aoi,
     summarize_caribbean_by_aoi,
-    summarize_chat_by_aoi,
-    summarize_florida_by_aoi,
     summarize_florida_marine_by_aoi,
-    summarize_gulf_hypoxia_by_aoi,
-    summarize_midse_by_aoi,
-    summarize_naturescape_by_aoi,
-    summarize_natures_network_by_aoi,
-    summarize_southatlantic_by_aoi,
 )
 
 
@@ -43,13 +35,9 @@ ownership_filename = data_dir / "boundaries/ownership.feather"
 slr_bounds_filename = data_dir / "threats/slr/slr_bounds.feather"
 
 raster_result_funcs = {
-    "fl": summarize_florida_by_aoi,
+    "base": summarize_base_blueprint_by_aoi,
     "flm": summarize_florida_marine_by_aoi,
-    "gh": summarize_gulf_hypoxia_by_aoi,
-    "ms": summarize_midse_by_aoi,
-    "app": summarize_naturescape_by_aoi,
-    "nn": summarize_natures_network_by_aoi,
-    "sa": summarize_southatlantic_by_aoi,
+    "car": summarize_caribbean_by_aoi,
 }
 
 
@@ -84,47 +72,24 @@ class CustomArea(object):
         # there are small rounding errors
         remainder = remainder if remainder >= 1 else 0
 
-        # only pull in Blueprint inputs that are present, and flatten
-        # overlapping inputs
         inputs = dict()
-        has_overlapping_inputs = False
-        for i, acres in enumerate(blueprint["inputs"]):
-            input_ids = INPUT_AREA_VALUES[i]["id"].split(",")
+        # only pull in Blueprint inputs that are present
+        # value 0 is not used
+        for i, acres in enumerate(blueprint["inputs"][1:]):
             if acres > 0:
-                if len(input_ids) > 1:
-                    has_overlapping_inputs = True
-
-                for input_id in input_ids:
-                    if input_id not in inputs:
-                        input = deepcopy(INPUTS[input_id])
-                        input["acres"] = acres
-                        inputs[input_id] = input
-                    else:
-                        inputs[input_id]["acres"] += acres
+                input = deepcopy(INPUTS_BY_VALUE[i + 1])
+                input["acres"] = acres
+                inputs[input["id"]] = input
 
         inputs = sorted(inputs.values(), key=lambda x: x["acres"], reverse=True)
 
+        # TODO: remove?
         # extract input priorities from each input present
-        df = gp.GeoDataFrame(geometry=self.geometry, crs=DATA_CRS)
-        aoi_acres = pg.area(self.geometry).sum() * M2_ACRES
+        # df = gp.GeoDataFrame(geometry=self.geometry, crs=DATA_CRS)
+        # aoi_acres = pg.area(self.geometry).sum() * M2_ACRES
 
         for entry in inputs:
             input_id = entry["id"]
-
-            if input_id in ["okchat", "txchat"]:
-                state = input_id[:2]
-                chat_results = summarize_chat_by_aoi(df, state, aoi_acres)
-
-                if chat_results is not None:
-                    entry.update(chat_results)
-
-                continue
-
-            if input_id == "car":
-                caribbean_results = summarize_caribbean_by_aoi(df, aoi_acres, aoi_acres)
-                entry.update(caribbean_results)
-
-                continue
 
             # Remaining inputs are raster-based
             results_func = raster_result_funcs.get(input_id, None)
@@ -148,7 +113,6 @@ class CustomArea(object):
             "blueprint_total": blueprint_total,
             "inputs": inputs,
             "input_ids": [i["id"] for i in inputs],
-            "has_overlapping_inputs": has_overlapping_inputs,
         }
 
         return results
@@ -230,7 +194,7 @@ class CustomArea(object):
         ]
 
         df = (
-            sjoin(self.gdf, counties)[["FIPS", "state", "county"]]
+            gp.sjoin(self.gdf, counties)[["FIPS", "state", "county"]]
             .reset_index(drop=True)
             .sort_values(by=["state", "county"])
         )
@@ -266,7 +230,7 @@ class CustomArea(object):
         ownership = gp.read_feather(ownership_filename)
         df = intersection(self.gdf, ownership)
 
-        if not len(df):
+        if df is None:
             return None
 
         df["acres"] = pg.area(df.geometry_right.values.data) * M2_ACRES

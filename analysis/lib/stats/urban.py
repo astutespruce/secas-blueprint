@@ -12,7 +12,7 @@ from analysis.lib.raster import (
     extract_count_in_geometry,
     detect_data,
 )
-from analysis.lib.pygeos_util import to_dict
+from analysis.lib.geometry import to_dict
 
 
 src_dir = Path("data/inputs/threats/urban")

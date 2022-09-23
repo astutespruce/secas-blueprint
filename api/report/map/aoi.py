@@ -4,7 +4,7 @@ import json
 from PIL import Image
 from pymgl import Map
 
-from analysis.lib.pygeos_util import to_dict
+from analysis.lib.geometry import to_dict
 
 
 STYLE = {

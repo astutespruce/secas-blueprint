@@ -13,9 +13,9 @@ from analysis.lib.raster import (
 
 
 src_dir = Path("data/inputs")
-blueprint_filename = src_dir / "se_blueprint2021.tif"
-bp_inputs_filename = src_dir / "input_areas.tif"
-bp_inputs_mask_filename = src_dir / "input_areas_mask.tif"
+blueprint_filename = src_dir / "se_blueprint_2022.tif"
+bp_inputs_filename = src_dir / "boundaries/input_areas.tif"
+bp_inputs_mask_filename = src_dir / "boundaries/input_areas_mask.tif"
 
 
 def extract_by_geometry(geometries, bounds):
@@ -81,7 +81,8 @@ def extract_by_geometry(geometries, bounds):
         bp_inputs_filename,
         shape_mask,
         window,
-        bins=range(0, len(INPUTS)),
+        # values are 1-3
+        bins=range(0, len(INPUTS) + 1),
         boundless=True,
     )
     results["inputs"] = (

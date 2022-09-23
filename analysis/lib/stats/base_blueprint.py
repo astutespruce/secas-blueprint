@@ -21,15 +21,15 @@ from analysis.lib.raster import (
     summarize_raster_by_geometry,
 )
 
-ID = "flm"
-INDICATORS = ALL_INDICATORS.get(ID, [])
+ID = "base"
+INDICATORS = ALL_INDICATORS[ID]
 INDICATOR_INDEX = OrderedDict({indicator["id"]: indicator for indicator in INDICATORS})
 
-
-src_dir = Path("data/inputs/indicators/florida_marine")
-flm_filename = src_dir / "flm_blueprint.tif"
-mask_filename = src_dir / "flm_blueprint_mask.tif"
-results_filename = "data/results/marine_blocks/florida.feather"
+src_dir = Path("data/inputs/indicators/base")
+base_blueprint_filename = src_dir / "base_blueprint.tif"
+mask_filename = src_dir / "base_blueprint_mask.tif"
+corridors_filename = src_dir / "corridors.tif"
+corridors_mask_filename = src_dir / "corridors_mask.tif"
 
 
 def extract_indicators(counts):
@@ -71,21 +71,40 @@ def extract_indicators(counts):
             # reverse so that highest value is on top
             indicators[id]["values"].reverse()
 
-    ### aggregate indicators up to marine ecosystem
-    ecosystem = deepcopy([e for e in ECOSYSTEMS if e["id"] == "marine"][0])
+            if "goodThreshold" in indicator:
+                indicators[id]["has_good_threshold"] = True
+                indicators[id]["good_total"] = values[
+                    indicator["goodThreshold"] :
+                ].sum()
 
-    ecosystem["indicator_summary"] = [
-        {"id": id, "label": INDICATOR_INDEX[id]["label"], "present": id in indicators}
-        for id in ecosystem["indicators"]
-        if id.startswith("flm:")
-    ]
+    ### aggregate indicators up to ecosystems
+    # determine ecosystems present from indicators
+    ecosystem_ids = {id.split(":")[1].split("_")[0] for id in indicators}
+    ecosystems = []
+    for ecosystem in ECOSYSTEMS:
+        id = ecosystem["id"]
+        if id not in ecosystem_ids:
+            continue
 
-    # update ecosystem with only indicators that are present
-    ecosystem["indicators"] = [
-        indicators[id] for id in ecosystem["indicators"] if id in indicators
-    ]
+        ecosystem = deepcopy(ecosystem)
 
-    return [ecosystem]
+        ecosystem["indicator_summary"] = [
+            {
+                "id": id,
+                "label": INDICATOR_INDEX[id]["label"],
+                "present": id in indicators,
+            }
+            for id in ecosystem["indicators"]
+            if id.startswith("base:")
+        ]
+
+        # update ecosystem with only indicators that are present
+        ecosystem["indicators"] = [
+            indicators[id] for id in ecosystem["indicators"] if id in indicators
+        ]
+        ecosystems.append(ecosystem)
+
+    return ecosystems
 
 
 def detect_indicators(geometries, indicators):
@@ -130,9 +149,8 @@ def detect_indicators(geometries, indicators):
     return indicators_with_data
 
 
-def extract_by_geometry(geometries, bounds, prescreen=False):
-    """Calculate the area of overlap between geometries and Florida
-    Marine Blueprint dataset.
+def extract_by_geometry(geometries, bounds, prescreen=False, marine=False):
+    """Calculate the area of overlap between geometries and the Base Blueprint.
 
     Parameters
     ----------
@@ -141,6 +159,8 @@ def extract_by_geometry(geometries, bounds, prescreen=False):
     prescreen : bool (default False)
         if True, prescreen using lower resolution mask to determine if there
         is overlap with this dataset
+    marine : bool (default False)
+        True for marine lease blocks, False otherwise.
 
     Returns
     -------
@@ -156,7 +176,7 @@ def extract_by_geometry(geometries, bounds, prescreen=False):
     results = {}
 
     # create mask and window
-    with rasterio.open(flm_filename) as src:
+    with rasterio.open(base_blueprint_filename) as src:
         try:
             shape_mask, transform, window = boundless_raster_geometry_mask(
                 src, geometries, bounds, all_touched=False
@@ -179,7 +199,11 @@ def extract_by_geometry(geometries, bounds, prescreen=False):
     max_value = INPUTS[ID]["values"][-1]["value"]
 
     counts = extract_count_in_geometry(
-        flm_filename, shape_mask, window, np.arange(max_value + 1), boundless=True
+        base_blueprint_filename,
+        shape_mask,
+        window,
+        np.arange(max_value + 1),
+        boundless=True,
     )
 
     # there is no overlap
@@ -188,31 +212,37 @@ def extract_by_geometry(geometries, bounds, prescreen=False):
 
     results[ID] = (counts * cellsize).round(ACRES_PRECISION).astype("float32")
 
-    # TODO: enable when indicator data available
-    # indicators = detect_indicators(geometries, INDICATORS)
+    if marine:
+        # marine areas only have marine indicators
+        indicators = [i for i in INDICATORS if i["id"].startswith("base:marine_")]
+        indicators = detect_indicators(geometries, indicators)
 
-    # for indicator in indicators:
-    #     id = indicator["id"]
-    #     filename = src_dir / indicator["filename"]
+    else:
+        # include all indicators that are present in area
+        indicators = detect_indicators(geometries, INDICATORS)
 
-    #     values = [e["value"] for e in indicator["values"]]
-    #     bins = np.arange(0, max(values) + 1)
-    #     counts = extract_count_in_geometry(
-    #         filename, shape_mask, window, bins, boundless=True
-    #     )
+    for indicator in indicators:
+        id = indicator["id"]
+        filename = src_dir / indicator["filename"]
 
-    #     # Some indicators exclude 0 values, their counts need to be zeroed out here
-    #     min_value = min(values)
-    #     if min_value > 0:
-    #         counts[range(0, min_value)] = 0
+        values = [e["value"] for e in indicator["values"]]
+        bins = np.arange(0, max(values) + 1)
+        counts = extract_count_in_geometry(
+            filename, shape_mask, window, bins, boundless=True
+        )
 
-    #     results[id] = (counts * cellsize).round(ACRES_PRECISION).astype("float32")
+        # Some indicators exclude 0 values, their counts need to be zeroed out here
+        min_value = min(values)
+        if min_value > 0:
+            counts[range(0, min_value)] = 0
+
+        results[id] = (counts * cellsize).round(ACRES_PRECISION).astype("float32")
 
     return results
 
 
 def summarize_by_aoi(shapes, bounds, outside_se_acres):
-    """Get results for Florida Marine Blueprint dataset
+    """Get results for Base Blueprint dataset
     for a given area of interest.
 
     Parameters
@@ -227,10 +257,11 @@ def summarize_by_aoi(shapes, bounds, outside_se_acres):
     dict
         {
             "priorities": [...],
+            "ecosystems": [...],
             "legend": [...],
             "analysis_notes": <analysis_notes>,
-            "remainder": <acres outside of input>,
-            "remainder_percent" <percent of total acres outside input>
+            "total_acres": <total area of shape mask>,
+            "analysis_acres": <area of shape mask minus area outside SE>,
         }
     """
 
@@ -248,7 +279,7 @@ def summarize_by_aoi(shapes, bounds, outside_se_acres):
     df["percent"] = 100 * np.divide(df.acres, total_acres)
 
     # sort into correct order
-    df.sort_values(by=["blueprint", "value"], ascending=[False, True], inplace=True)
+    df.sort_values(by=["blueprint", "value"], ascending=False, inplace=True)
 
     priorities = df[["value", "blueprint", "label", "acres", "percent"]].to_dict(
         orient="records"
@@ -271,35 +302,41 @@ def summarize_by_aoi(shapes, bounds, outside_se_acres):
     }
 
 
-def summarize_by_marine_block(geometries):
-    """Summarize by marine_block
+def summarize_by_unit(geometries, out_dir, marine=False):
+    """Summarize by HUC12 / marine lease block
 
     Parameters
     ----------
-    geometries : Series of pygeos geometries, indexed by marine block ID
+    geometries : Series of pygeos geometries, indexed by HUC12 / marine lease block id
+    out_dir : str or Path object
+    marine : bool
+        True for marine lease blocks, False otherwise
     """
 
     summarize_raster_by_geometry(
         geometries,
         extract_by_geometry,
-        outfilename=results_filename,
-        progress_label="Calculating Florida Marine Blueprint area by Marine Block",
+        outfilename=out_dir / "base_blueprint.feather",
+        progress_label="Summarizing Base Blueprint",
         bounds=INPUTS[ID]["bounds"],
+        marine=marine,
     )
 
 
-def get_marine_block_results(id, analysis_acres, total_acres):
-    """Get results for Florida Conservation Blueprint dataset for a given
-    marine block.
+def get_unit_results(unit_type, id, analysis_acres, total_acres):
+    """Get results for Base Blueprint dataset for a given HUC12 or marine lease
+    block.
 
     Parameters
     ----------
+    unit_type : str, one of ['huc12', 'marine_blocks']
+
     id : str
-        marine block ID
+        HUC12 or marine lease block ID
     analysis_acres : float
-        area of marine block summary unit less any area outside SE Blueprint
+        area of summary unit less any area outside SE Blueprint
     total_acres : float
-        area of marine block summary unit
+        area of summary unit
 
     Returns
     -------
@@ -312,6 +349,11 @@ def get_marine_block_results(id, analysis_acres, total_acres):
             "remainder_percent" <percent of total acres outside input>
         }
     """
+    if unit_type == "huc12":
+        results_filename = "data/results/huc12/southatlantic.feather"
+    else:
+        results_filename = "data/results/marine_blocks/southatlantic.feather"
+
     df = pd.read_feather(results_filename).set_index("id")
 
     if id not in df.index:
@@ -320,13 +362,13 @@ def get_marine_block_results(id, analysis_acres, total_acres):
     values = pd.DataFrame(INPUTS[ID]["values"])
 
     row = df.loc[id]
-    cols = [c for c in row.index if c.startswith("flm_")]
+    blueprint_cols = [c for c in row.index if c.startswith("base_")]
 
-    df = values.join(pd.Series(row[cols].values, name="acres"))
+    df = values.join(pd.Series(row[blueprint_cols].values, name="acres"))
     df["percent"] = 100 * np.divide(df.acres, row.shape_mask)
 
     # sort into correct order
-    df.sort_values(by=["blueprint", "value"], ascending=[False, True], inplace=True)
+    df.sort_values(by=["blueprint", "value"], ascending=False, inplace=True)
 
     priorities = df[["value", "blueprint", "label", "acres", "percent"]].to_dict(
         orient="records"
@@ -355,11 +397,11 @@ def get_marine_block_results(id, analysis_acres, total_acres):
     }
 
     return {
-        "priorities": priorities,
+        # "priorities": priorities,
         "ecosystems": extract_indicators(counts),
-        "legend": legend,
+        # "legend": legend,
         "analysis_acres": analysis_acres,
         "total_acres": total_acres,
-        "remainder": remainder,
-        "remainder_percent": 100 * remainder / total_acres,
+        # "remainder": remainder,
+        # "remainder_percent": 100 * remainder / total_acres,
     }

@@ -4,7 +4,7 @@ import geopandas as gp
 import pygeos as pg
 
 from analysis.constants import M2_ACRES
-from analysis.lib.pygeos_util import intersection
+from analysis.lib.geometry import intersection
 
 src_dir = Path("data/inputs/boundaries")
 ownership_filename = src_dir / "ownership.feather"
@@ -21,7 +21,7 @@ def summarize_by_unit(units_df, out_dir):
 
     df = intersection(units_df, ownership)
 
-    if not len(df):
+    if df is None:
         return
 
     df["acres"] = pg.area(df.geometry_right.values.data) * M2_ACRES
