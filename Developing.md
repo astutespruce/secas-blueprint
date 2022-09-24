@@ -29,3 +29,7 @@ to be found:
 ```
 sudo ln -s /opt/homebrew/opt/fontconfig/lib/libfontconfig.1.dylib /usr/local/lib/fontconfig-1
 ```
+
+Tilesets are created using `tippecanoe` (installed via homebrew) or
+[`rastertiler-rs`](https://github.com/brendan-ward/rastertiler-rs) built from
+source. See [analysis/prep/tiles/README](./analysis/prep/tiles/README.md) for more information
