@@ -2,7 +2,7 @@
   {
     "id": "base",
     "value": 1,
-    "label": "Southeast Base Blueprint",
+    "label": "Base Blueprint",
     "shortLabel": "Base Blueprint",
     "version": "2022",
     "bounds": [
@@ -20,7 +20,8 @@
         "label": "Lower priority",
         "percent": 50,
         "description": "",
-        "color": null
+        "color": null,
+        "blueprint": 0
       },
       {
         "value": 1,
@@ -28,7 +29,7 @@
         "shortLabel": "Connections",
         "percent": 5,
         "description": "Connections between priority areas that cover the shortest distance possible while routing through as much Blueprint priority as possible.",
-        "color": "#686868",
+        "color": "#6C6C6C",
         "blueprint": 1
       },
       {
@@ -42,11 +43,11 @@
       },
       {
         "value": 3,
-        "label": "High conservation value",
+        "label": "High priority",
         "shortLabel": "High",
         "percent": 15,
         "description": "Areas where conservation action would make a big impact, based on a suite of natural and cultural resource indicators.",
-        "color": "#88419D",
+        "color": "#843F98",
         "blueprint": 3
       },
       {

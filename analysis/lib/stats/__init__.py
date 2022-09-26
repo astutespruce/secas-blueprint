@@ -1,6 +1,6 @@
-from analysis.lib.stats.blueprint import (
-    extract_by_geometry as extract_blueprint_by_geometry,
-    summarize_by_unit as summarize_bluprint_by_unit,
+from analysis.lib.stats.core import (
+    extract_by_geometry as extract_core_results_by_geometry,
+    summarize_by_unit as summarize_core_results_by_unit,
 )
 
 from analysis.lib.stats.base_blueprint import (
@@ -42,7 +42,8 @@ from analysis.lib.stats.florida_marine import (
 
 __all__ = [
     "extract_blueprint_by_geometry",
-    "get_base_blueprint_unit_results," "summarize_bluprint_by_unit",
+    "extract_core_results_by_geometry",
+    "summarize_core_results_by_unit",
     "summarize_ownership_by_unit",
     "summarize_counties_by_huc12",
     "extract_urban_by_geometry",
