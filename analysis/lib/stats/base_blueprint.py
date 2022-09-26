@@ -13,6 +13,7 @@ from analysis.constants import (
     INPUTS,
     ECOSYSTEMS,
     INDICATORS as ALL_INDICATORS,
+    CORRIDORS,
 )
 from analysis.lib.raster import (
     boundless_raster_geometry_mask,
@@ -188,9 +189,7 @@ def extract_by_geometry(geometries, bounds, prescreen=False, marine=False):
         # square meters to acres
         cellsize = src.res[0] * src.res[1] * M2_ACRES
 
-    results["shape_mask"] = (
-        ((~shape_mask).sum() * cellsize).round(ACRES_PRECISION).astype("float32")
-    )
+    results["shape_mask"] = ((~shape_mask).sum() * cellsize).round(ACRES_PRECISION)
 
     # Nothing in shape mask, return None
     if results["shape_mask"] == 0:
@@ -210,7 +209,27 @@ def extract_by_geometry(geometries, bounds, prescreen=False, marine=False):
     if counts.max() == 0:
         return None
 
-    results[ID] = (counts * cellsize).round(ACRES_PRECISION).astype("float32")
+    results[ID] = (counts * cellsize).round(ACRES_PRECISION)
+
+    # calculate corridors, if any overlap
+    with rasterio.open(corridors_mask_filename) as corridors_mask:
+        if detect_data(corridors_mask, geometries, bounds):
+            corridor_counts = extract_count_in_geometry(
+                base_blueprint_filename,
+                shape_mask,
+                window,
+                np.arange(CORRIDORS[-1]["value"] + 1),
+                boundless=True,
+            )
+            if corridor_counts.sum() > 0:
+                results["corridors"] = (corridor_counts * cellsize).round(
+                    ACRES_PRECISION
+                )
+            else:
+                results["corridors"] = None
+
+        else:
+            results["corridors"] = None
 
     if marine:
         # marine areas only have marine indicators
@@ -236,7 +255,7 @@ def extract_by_geometry(geometries, bounds, prescreen=False, marine=False):
         if min_value > 0:
             counts[range(0, min_value)] = 0
 
-        results[id] = (counts * cellsize).round(ACRES_PRECISION).astype("float32")
+        results[id] = (counts * cellsize).round(ACRES_PRECISION)
 
     return results
 
@@ -293,6 +312,7 @@ def summarize_by_aoi(shapes, bounds, outside_se_acres):
 
     return {
         "priorities": priorities,
+        "corridors": counts["corridors"],
         "ecosystems": extract_indicators(counts),
         "legend": legend,
         "analysis_acres": analysis_acres,

@@ -66,6 +66,14 @@ class CustomArea(object):
         if core_results is None:
             return None
 
+        results = {
+            "promote_base": core_results["promote_base"],
+            "analysis_acres": core_results["shape_mask"],
+            "analysis_remainder": core_results["remainder"],
+            "blueprint": core_results.get("blueprint", None),  # backfilled below
+            "blueprint_total": core_results["blueprint_total"],
+        }
+
         inputs = {
             id: {**INPUTS[id], "acres": acres}
             for id, acres in core_results["inputs"].items()
@@ -93,21 +101,19 @@ class CustomArea(object):
                 # this is an error, this should not occur
                 print("Raster results are none for", input_id)
 
-            if input_id == "base" and core_results["promote_base"]:
-                # backfill main blueprint from base
-                core_results["blueprint"] = [
-                    e["acres"] for e in raster_results["priorities"]
-                ]
+            if input_id == "base":
+                if core_results["promote_base"]:
+                    # backfill main blueprint from base
+                    results["blueprint"] = [
+                        e["acres"] for e in raster_results["priorities"]
+                    ]
 
-        results = {
-            "promote_base": core_results["promote_base"],
-            "analysis_acres": core_results["shape_mask"],
-            "analysis_remainder": core_results["remainder"],
-            "blueprint": core_results["blueprint"],
-            "analysis_area": core_results["analysis_area"],
-            "inputs": inputs,
-            "input_ids": [i["id"] for i in inputs],
-        }
+                if raster_results["corridors"] is not None:
+                    results["corridors"] = raster_results["corridors"]
+                    results["corridors_total"] = raster_results["corridors"].sum()
+
+        results["inputs"] = inputs
+        results["input_ids"] = [i["id"] for i in inputs]
 
         return results
 

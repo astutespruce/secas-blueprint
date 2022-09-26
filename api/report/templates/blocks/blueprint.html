@@ -99,6 +99,12 @@
 
 {% if results.promote_base %}
     {% with src=results.inputs[0] %}
+        {% if "corridors" in results %}
+            {% include "blocks/corridors.html" %}
+        {% else %}
+            {% include "blocks/no_corridors.html" %}
+        {% endif %}
+
         {% with ecosystems=src.ecosystems %}
             {% include "blocks/ecosystems.html" %}
         {% endwith %}

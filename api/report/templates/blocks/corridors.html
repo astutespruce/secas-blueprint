@@ -1,0 +1,116 @@
+<section>
+    <h2 id="Corridors">Hubs and Corridors</h2>
+
+    <p>
+        The Blueprint uses a least-cost path connectivity analysis to identify corridors that link hubs across the shortest distance possible, while also routing through as much Blueprint priority as possible.
+        <br>
+        <br>
+
+        {% if results.corridors[0] or results.corridors[1] %}
+        Inland hubs are large patches (~5,000+ acres) of highest priority Blueprint areas and/or protected lands. Inland corridors connect those hubs within broad areas of established conservation interest for connectivity.
+        {% endif %}
+
+        {% if results.corridors[2] or results.corridors[3] %}
+        Marine and estuarine hubs are large estuaries and large patches (~5,000+ acres) of highest priority Blueprint areas. Marine and estuarine corridors connect those hubs within broad marine mammal movement areas.
+        {% endif %}
+    </p>
+
+    {% if maps.corridors %}
+    <div class="map-container">
+        <img src="data:image/png;base64,{{maps.corridors}}" alt="Corridors map" class="map">
+
+        {% include "elements/north_arrow.html" %}
+    </div>
+
+    {% include "elements/map_footer.html" %}
+
+    <div class="flex map-footer">
+        <div class="map-locator-container">
+            {% if maps.locator %}
+                <img src="data:image/png;base64,{{maps.locator}}" alt="Locator map" class="map-locator">
+            {% endif %}
+        </div>
+
+        <div class="legend">
+            {% for item in legends.corridors %}
+                <div class="legend-element flex align-center">
+                    <div class="legend-patch" style="background: {{item.color}}"></div>
+                    <div class="legend-label">{{item.label}}</div>
+                </div>
+            {% endfor %}
+            <!-- space is required or last label doesn't render -->
+            &nbsp;
+        </div>
+    </div>
+
+    {% else %}
+    <div class="map-placeholder text-center">
+        map could not be created
+    </div>
+    {% endif %}
+    </section>
+
+    <section>
+
+    {% with number=table.counter,label="Extent of hubs and corridors" %}
+        {% include "elements/table_caption.html" %}
+    {% endwith %}
+    {% set table.counter=table.counter+1 %}
+
+    <table class="centered">
+    <thead>
+    <tr>
+        <th class="label">Type</th>
+        <th class="acres">Acres</th>
+        <th class="percent">Percent of Area</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% with acres=results.corridors %}
+    {% for item in results.corridors %}
+        {% if acres[loop.index-1] > 0 %}
+        <tr>
+            <td class="label">{{legends.corridors[loop.index-1].label}}</td>
+            <td class="acres">{{acres[loop.index-1]|format_number}}</td>
+            <td class="percent">{{(100 * acres[loop.index-1] / results.analysis_acres)|format_percent}}%</td>
+        </tr>
+        {% endif %}
+    {% endfor %}
+    {% endwith %}
+
+    {% with acres=results.analysis_acres-results.corridors_total %}
+    {% if acres > 0 %}
+    <tr>
+        <td class="label">Not a hub or corridor</td>
+        <td class="acres">{{acres|format_number}}</td>
+        <td class="percent">{{(100 * acres / results.analysis_acres)|format_percent}}%</td>
+    </tr>
+    {% endif %}
+    {% endwith %}
+
+    {% if src.remainder %}
+        <tr class="remainder-row">
+            <td class="label">Outside {{src.label}} input area</td>
+            <td class="acres">{{src.remainder|format_number}}</td>
+            <td class="percent">{{src.remainder_percent|format_percent}}%</td>
+        </tr>
+    {% endif %}
+
+    {% if results.analysis_remainder > 0 %}
+        <tr class="remainder-row">
+            <td class="label">Outside Southeast Blueprint</td>
+            <td class="acres">{{results.analysis_remainder|format_number}}</td>
+            <td class="percent">{{(100 * results.analysis_remainder / results.analysis_acres)|format_percent}}%</td>
+        </tr>
+    {% endif %}
+
+    <tr class="total-row">
+        <td class="label align-right">Total area</td>
+        <td class="acres">{{results.analysis_acres|format_number}}</td>
+        <td class="percent">100%</td>
+    </tr>
+    </tbody>
+    </table>
+
+
+</section>

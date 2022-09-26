@@ -61,6 +61,11 @@ BLUEPRINT_COLORS = {
 INPUTS = {e["id"]: e for e in json.loads(open(json_dir / "inputs.json").read())}
 
 CORRIDORS = json.loads(open(json_dir / "corridors.json").read())
+CORRIDORS_COLORS = {
+    i: entry["color"]
+    for i, entry in enumerate(CORRIDORS)
+    if entry.get("color", None) is not None
+}
 ECOSYSTEMS = json.loads(open(json_dir / "ecosystems.json").read())
 
 

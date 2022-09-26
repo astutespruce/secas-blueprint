@@ -15,6 +15,12 @@
 
 
     {% if results.promote_base %}
+      <div class="divider"></div>
+      <li>
+        <a href="#Corridors" class="toctext">Hubs and Corridors</a>
+        <a href="#Corridors" class="tocpagenr"></a>
+      </li>
+
       {% with src=results.inputs[0] %}
         <div class="divider"></div>
         <li>
@@ -31,13 +37,24 @@
         <a href="#{{src.id}}" class="toctext">Blueprint Input: {{src.label}}</a>
         <a href="#{{src.id}}" class="tocpagenr"></a>
 
-        {% if src.ecosystems %}
-        <ul>
-          <li>
-            <a href="#{{src.id}}IndicatorSummary" class="toctext">Indicator Summary</a>
-            <a href="#{{src.id}}IndicatorSummary" class="tocpagenr"></a>
-          </li>
-        </ul>
+        {% if src.id == "base" or src.ecosystems %}
+          <ul>
+            {% if src.id == "base" %}
+              <li>
+                <a href="#Corridors" class="toctext">Hubs and Corridors</a>
+                <a href="#Corridors" class="tocpagenr"></a>
+              </li>
+            {% endif %}
+
+            {% if src.ecosystems %}
+
+              <li>
+                <a href="#{{src.id}}IndicatorSummary" class="toctext">Indicator Summary</a>
+                <a href="#{{src.id}}IndicatorSummary" class="tocpagenr"></a>
+              </li>
+
+            {% endif %}
+          </ul>
         {% endif %}
       </li>
       {% endfor %}

@@ -33,9 +33,9 @@ def extract_by_geometry(geometries, bounds):
     dict or None (if does not overlap Blueprint data)
         {
             "shape_mask": <acres within rasterized shape>,
-            "analysis_area": <acres within blueprint>,
             "inputs": {<id>: <acres within input>, ...}
-            "blueprint": None (if only input is base) or <acres by Blueprint category>
+            "blueprint": None (if only input is base) or <acres by Blueprint category>,
+            "blueprint_total": <total acres within blueprint area>,
         }
     """
 
@@ -83,7 +83,7 @@ def extract_by_geometry(geometries, bounds):
 
     results = {
         "shape_mask": ((shape_mask_count * cellsize).round(ACRES_PRECISION)),
-        "analysis_area": (analysis_count * cellsize).round(ACRES_PRECISION),
+        "blueprint_total": (analysis_count * cellsize).round(ACRES_PRECISION),
         "remainder": ((shape_mask_count - analysis_count) * cellsize).round(
             ACRES_PRECISION
         ),

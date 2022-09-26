@@ -80,9 +80,9 @@ aois = [
     # {"name": "Green River proposed boundary", "path": "GreenRiver_ProposedBoundary"},
     # {"name": "LCP: Broad", "path": "LCP_Broad"},
     # {"name": "Caledonia area, MS", "path": "caledonia"},
-    # {"name": "Napoleonville area, LA", "path": "Napoleonville"},
+    {"name": "Napoleonville area, LA", "path": "Napoleonville"},
     # {"name": "Area in El Yunque National Forest, PR", "path": "yunque"},
-    {"name": "San Juan area, PR", "path": "SanJuan"},
+    # {"name": "San Juan area, PR", "path": "SanJuan"},
     # {"name": "Area near Magnet, TX", "path": "magnet"},
     # {"name": "TriState area at junction of MO, OK, KS", "path": "TriState"},
     # {"name": "Quincy, FL area", "path": "Quincy"},
@@ -135,7 +135,8 @@ for aoi in aois:
         geometry = to_crs(geometry, df.crs, GEO_CRS)
         bounds = pg.total_bounds(geometry)
 
-        has_urban = "proj_urban" in results and results["proj_urban"][4] > 0
+        has_corridors = "corridors" in results
+        has_urban = "proj_urban" in results and results["proj_urban"][-1] > 0
         has_slr = "slr" in results
         has_ownership = "ownership" in results
         has_protection = "protection" in results
@@ -151,6 +152,7 @@ for aoi in aois:
             geometry=geometry[0],
             indicators=indicators,
             input_ids=results["input_ids"],
+            corridors=has_corridors,
             urban=has_urban,
             slr=has_slr,
             ownership=has_ownership,
@@ -219,7 +221,8 @@ for summary_type in ids:
         # Fetch results
         results = units.get_results(id)
 
-        has_urban = "proj_urban" in results and results["proj_urban"][4] > 0
+        has_corridors = "corridors" in results
+        has_urban = "proj_urban" in results and results["proj_urban"][-1] > 0
         has_slr = "slr" in results
         has_ownership = "ownership" in results
         has_protection = "protection" in results
@@ -241,6 +244,7 @@ for summary_type in ids:
                 summary_unit_id=id,
                 indicators=indicators,
                 input_ids=results["input_ids"],
+                corridors=has_corridors,
                 urban=has_urban,
                 slr=has_slr,
                 ownership=has_ownership,

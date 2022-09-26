@@ -9,9 +9,9 @@ from jinja2 import Environment, FileSystemLoader
 from api.settings import SITE_URL
 from analysis.constants import (
     BLUEPRINT,
+    CORRIDORS,
     URBAN_LEGEND,
     SLR_LEGEND,
-    SLR_PROJ_SCENARIOS,
     OWNERSHIP,
     PROTECTION,
 )
@@ -70,6 +70,9 @@ def create_report(maps, results):
         # sort Blueprint descending order
         "blueprint": BLUEPRINT[::-1]
     }
+
+    if "corridors" in results:
+        legends["corridors"] = CORRIDORS
 
     if "urban" in results:
         legends["urban"] = URBAN_LEGEND
