@@ -13,44 +13,36 @@
       <a href="#Blueprint" class="tocpagenr"></a>
     </li>
 
-    <!--<div class="divider"></div>
-     <li>
-      <a href="#Inputs" class="toctext">Blueprint Inputs</a>
-      <a href="#Inputs" class="tocpagenr"></a>
-      <ul>
-        {% for src in results.inputs %}
-        <li>
-          <a href="#{{src.id}}" class="toctext">{{src.label}}</a>
-          <a href="#{{src.id}}" class="tocpagenr"></a>
-          <ul>
-            <li>
-              <a href="#{{src.id}}IndicatorSummary" class="toctext">Indicator Summary</a>
-              <a href="#{{src.id}}IndicatorSummary" class="tocpagenr"></a>
-            </li>
-          </ul>
-        </li>
-        {% endfor %}
-      </ul>
-    </li> -->
 
-    {% for src in results.inputs %}
-    <div class="divider"></div>
-    <li>
-      <a href="#{{src.id}}" class="toctext">Blueprint Input: {{src.label}}</a>
-      <a href="#{{src.id}}" class="tocpagenr"></a>
-
-      {% if src.ecosystems %}
-      <ul>
+    {% if results.promote_base %}
+      {% with src=results.inputs[0] %}
+        <div class="divider"></div>
         <li>
           <a href="#{{src.id}}IndicatorSummary" class="toctext">Indicator Summary</a>
           <a href="#{{src.id}}IndicatorSummary" class="tocpagenr"></a>
         </li>
-      </ul>
+      {% endwith %}
+
+    {% else %}
+
+      {% for src in results.inputs %}
+      <div class="divider"></div>
+      <li>
+        <a href="#{{src.id}}" class="toctext">Blueprint Input: {{src.label}}</a>
+        <a href="#{{src.id}}" class="tocpagenr"></a>
+
+        {% if src.ecosystems %}
+        <ul>
+          <li>
+            <a href="#{{src.id}}IndicatorSummary" class="toctext">Indicator Summary</a>
+            <a href="#{{src.id}}IndicatorSummary" class="tocpagenr"></a>
+          </li>
+        </ul>
+        {% endif %}
+      </li>
+      {% endfor %}
+
       {% endif %}
-    </li>
-    {% endfor %}
-
-
 
 
     {% if not results.is_marine %}

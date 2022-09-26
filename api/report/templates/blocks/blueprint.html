@@ -97,9 +97,18 @@
     </tbody>
 </table>
 
+{% if results.promote_base %}
+    {% with src=results.inputs[0] %}
+        {% with ecosystems=src.ecosystems %}
+            {% include "blocks/ecosystems.html" %}
+        {% endwith %}
+    {% endwith %}
 
-{% for src in results.inputs %}
-    {% include "blocks/blueprint_input.html" %}
-{% endfor %}
+{% else %}
+    {% for src in results.inputs %}
+        {% include "blocks/blueprint_input.html" %}
+    {% endfor %}
+
+{% endif %}
 
 </section>

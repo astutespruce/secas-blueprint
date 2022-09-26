@@ -59,7 +59,6 @@ BLUEPRINT_COLORS = {
 # Note: value field is the value in the input_areas raster, bounds are in
 # EPSG:5070
 INPUTS = {e["id"]: e for e in json.loads(open(json_dir / "inputs.json").read())}
-INPUTS_BY_VALUE = {e["value"]: e for e in INPUTS.values()}
 
 CORRIDORS = json.loads(open(json_dir / "corridors.json").read())
 ECOSYSTEMS = json.loads(open(json_dir / "ecosystems.json").read())

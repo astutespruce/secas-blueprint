@@ -11,7 +11,7 @@ from analysis.lib.geometry import (
     intersection,
 )
 from analysis.constants import (
-    INPUTS_BY_VALUE,
+    INPUTS,
     URBAN_YEARS,
     DATA_CRS,
     OWNERSHIP,
@@ -19,7 +19,7 @@ from analysis.constants import (
     M2_ACRES,
 )
 from analysis.lib.stats import (
-    extract_blueprint_by_geometry,
+    extract_core_results_by_geometry,
     extract_urban_by_geometry,
     extract_slr_by_geometry,
     summarize_base_blueprint_by_aoi,
@@ -61,32 +61,18 @@ class CustomArea(object):
         self.name = name
 
     def get_blueprint(self):
-        blueprint = extract_blueprint_by_geometry(self.shapes, bounds=self.bounds)
+        core_results = extract_core_results_by_geometry(self.shapes, bounds=self.bounds)
 
-        if blueprint is None or blueprint["shape_mask"] == 0:
+        if core_results is None:
             return None
 
-        blueprint_total = blueprint["blueprint"].sum()
+        inputs = {
+            id: {**INPUTS[id], "acres": acres}
+            for id, acres in core_results["inputs"].items()
+        }
 
-        remainder = abs(blueprint["shape_mask"] - blueprint_total)
-        # there are small rounding errors
-        remainder = remainder if remainder >= 1 else 0
-
-        inputs = dict()
-        # only pull in Blueprint inputs that are present
-        # value 0 is not used
-        for i, acres in enumerate(blueprint["inputs"][1:]):
-            if acres > 0:
-                input = deepcopy(INPUTS_BY_VALUE[i + 1])
-                input["acres"] = acres
-                inputs[input["id"]] = input
-
+        # sort by descending acres
         inputs = sorted(inputs.values(), key=lambda x: x["acres"], reverse=True)
-
-        # TODO: remove?
-        # extract input priorities from each input present
-        # df = gp.GeoDataFrame(geometry=self.geometry, crs=DATA_CRS)
-        # aoi_acres = pg.area(self.geometry).sum() * M2_ACRES
 
         for entry in inputs:
             input_id = entry["id"]
@@ -98,19 +84,27 @@ class CustomArea(object):
                 continue
 
             raster_results = results_func(
-                self.shapes, self.bounds, outside_se_acres=remainder
+                self.shapes, self.bounds, outside_se_acres=core_results["remainder"]
             )
 
             if raster_results is not None:
                 entry.update(raster_results)
             else:
+                # this is an error, this should not occur
                 print("Raster results are none for", input_id)
 
+            if input_id == "base" and core_results["promote_base"]:
+                # backfill main blueprint from base
+                core_results["blueprint"] = [
+                    e["acres"] for e in raster_results["priorities"]
+                ]
+
         results = {
-            "analysis_acres": blueprint["shape_mask"],
-            "analysis_remainder": remainder,
-            "blueprint": blueprint["blueprint"].tolist(),
-            "blueprint_total": blueprint_total,
+            "promote_base": core_results["promote_base"],
+            "analysis_acres": core_results["shape_mask"],
+            "analysis_remainder": core_results["remainder"],
+            "blueprint": core_results["blueprint"],
+            "analysis_area": core_results["analysis_area"],
             "inputs": inputs,
             "input_ids": [i["id"] for i in inputs],
         }
