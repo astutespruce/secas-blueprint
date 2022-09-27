@@ -18,6 +18,7 @@
             </div>
 
             <div class="legend">
+                <h4>Priorities for a connected network of lands and waters</h4>
                 <!-- omit not a priority -->
                 {% for item in legends.blueprint[:-1] %}
                     <div class="legend-element flex align-center">
@@ -44,7 +45,7 @@
         <h4>
             {{item.label}}
             {% if 'priority' in item.label %}
-            for conservation action
+            for a connected network of lands and waters
             {% endif %}
         </h4>
         <p>

@@ -3,7 +3,7 @@
 <div class="no-break">
     {% include "elements/indicator_header.html" %}
 
-    <p>{{indicator.description}}</p>
+    <p class="indicator-description">{{indicator.description}}</p>
 
     {% if maps[indicator.id] %}
         <div class="map-container">
@@ -22,8 +22,11 @@
             </div>
 
             <div class="legend">
+                {% if indicator.valueLabel %}
+                    <h4>{{indicator.valueLabel}}</h4>
+                {% endif %}
                 {% for entry in indicator["values"] %}
-                    <div class="legend-element flex {% if (legends[indicator.id]|length) >5 %}narrow-margin{% endif %}">
+                    <div class="legend-element flex {% if (indicator["values"]|length) >5 %}narrow-margin{% endif %}">
                         <div class="legend-patch" style="background: {{entry.color}}"></div>
                         <div class="legend-label">{{entry.label}}</div>
                     </div>
@@ -58,7 +61,7 @@
             <thead>
                 <tr>
                     <th class="level"></th>
-                    <th class="label">Indicator Values</th>
+                    <th class="label">Indicator Values{% if indicator.valueLabel %}: {{indicator.valueLabel}}{% endif %}</th>
                     <th class="acres">Acres</th>
                     <th class="percent">Percent of Area</th>
                     <th class="threshold"></th>
@@ -134,7 +137,7 @@
             <thead>
                 <tr>
                     <th class="level"></th>
-                    <th class="label">Indicator Values</th>
+                    <th class="label">Indicator Values{% if indicator.valueLabel %}: {{indicator.valueLabel}}{% endif %}</th>
                     <th class="acres">Acres</th>
                     <th class="percent">Percent of Area</th>
                 </tr>

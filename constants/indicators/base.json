@@ -329,7 +329,7 @@
           "color": "#4C0073"
         }
       ],
-      "description": "This cultural resource indicator prioritizes places to create new parks that would fill gaps in equitable access to open space within socially vulnerable communities. It identifies areas where residents currently lack access to parks within a 10-minute walk (accounting for walkable road networks and access barriers like highways and fences), then prioritizes based on park need using demographic and environmental metrics. Parks help improve public health, foster a conservation ethic by providing opportunities for people to connect with nature, and support critical ecosystem services. This indicator originates from the Trust for Public Land’s ParkServe park priority areas.",
+      "description": "This cultural resource indicator prioritizes places to create new parks that would fill gaps in equitable access to open space within socially vulnerable communities. It identifies areas where residents currently lack access to parks within a 10-minute walk (accounting for walkable road networks and access barriers like highways and fences), then prioritizes based on park need using demographic and environmental metrics. Parks help improve public health, foster a conservation ethic by providing opportunities for people to connect with nature, and support critical ecosystem services. This indicator originates from the Trust for Public Land's ParkServe park priority areas.",
       "url": ""
     },
     {
@@ -467,7 +467,7 @@
           "color": "#00441B"
         }
       ],
-      "description": "This indicator represents the size of large, unfragmented patches of natural habitat. It identifies minimally disturbed natural areas at least 100 acres in size and greater than 200 meters wide. Large areas of intact natural habitat are important for many wildlife species, including reptiles and amphibians, birds, and large mammals. This indicator originates from Esri’s green infrastructure data.",
+      "description": "This indicator represents the size of large, unfragmented patches of natural habitat. It identifies minimally disturbed natural areas at least 100 acres in size and greater than 200 meters wide. Large areas of intact natural habitat are important for many wildlife species, including reptiles and amphibians, birds, and large mammals. This indicator originates from Esri's green infrastructure data.",
       "url": "",
       "goodThreshold": 1
     },
@@ -514,10 +514,11 @@
       "id": "base:land_mavforestbirds_protection",
       "filename": "MississippiAlluvialValleyForestBirds_Protection.tif",
       "label": "Mississippi Alluvial Valley forest birds (protection)",
+      "valueLabel": "Priority of forest breeding bird habitat patch for future protection",
       "values": [
         {
           "value": 1,
-          "label": "Lowest priority forest breeding bird habitat patch for future protection (score 0-10)",
+          "label": "Lowest priority (score 0-10)",
           "color": "#C2523C"
         },
         {
@@ -562,70 +563,71 @@
         },
         {
           "value": 10,
-          "label": "Highest priority forest breeding bird habitat patch for future protection (score >90-100)",
+          "label": "Highest priority (score >90-100)",
           "color": "#0B2C7A"
         }
       ],
-      "description": "This indicator prioritizes areas for new land protection within the Mississippi Alluvial Valley (MAV) based on benefits to forest breeding birds that depend on large interior cores of bottomland hardwood habitat (Swainson’s warbler, cerulean warbler, swallow-tailed kite). The model considers core size, the amount of existing protected land within the forest patch, proximity to reforestation priority areas, and risk of conversion to agriculture based on flooding frequency. The highest scores represent drier, unprotected forest patches with cores at least 2,000 ha (~5,000 ac) that are adjacent to priority areas from a complementary reforestation model also developed by the Lower Mississippi Valley Joint Venture (LMVJV). This indicator originates from the LMVJV’s MAV forest breeding bird protection priorities.",
+      "description": "This indicator prioritizes areas for new land protection within the Mississippi Alluvial Valley (MAV) based on benefits to forest breeding birds that depend on large interior cores of bottomland hardwood habitat (Swainson's warbler, cerulean warbler, swallow-tailed kite). The model considers core size, the amount of existing protected land within the forest patch, proximity to reforestation priority areas, and risk of conversion to agriculture based on flooding frequency. The highest scores represent drier, unprotected forest patches with cores at least 2,000 ha (~5,000 ac) that are adjacent to priority areas from a complementary reforestation model also developed by the Lower Mississippi Valley Joint Venture (LMVJV). This indicator originates from the LMVJV's MAV forest breeding bird protection priorities.",
       "url": ""
     },
     {
       "id": "base:land_mavforestbirds_reforestation",
       "filename": "MississippiAlluvialValleyForestBirds_Reforestation.tif",
       "label": "Mississippi Alluvial Valley forest birds (reforestation)",
+      "valueLabel": "Likelihood that reforestation will contribute to forest breeding bird habitat needs",
       "values": [
         {
           "value": 1,
-          "label": "Reforestation least likely to contribute to forest breeding bird habitat needs (<10th percentile)",
+          "label": "Least likely (<10th percentile)",
           "color": "#000000"
         },
         {
           "value": 2,
-          "label": "Reforestation least likely to contribute to forest breeding bird habitat needs (10th to <20th percentile)",
+          "label": "Least likely (10th to <20th percentile) ",
           "color": "#9C9C9C"
         },
         {
           "value": 3,
-          "label": "Reforestation least likely to contribute to forest breeding bird habitat needs (20th to <30th percentile)",
+          "label": "Least likely (20th to <30th percentile)",
           "color": "#1800ED"
         },
         {
           "value": 4,
-          "label": "Reforestation least likely to contribute to forest breeding bird habitat needs (30th to <40th percentile)",
+          "label": "Least likely (30th to <40th percentile)",
           "color": "#7000BF"
         },
         {
           "value": 5,
-          "label": "Reforestation least likely to contribute to forest breeding bird habitat needs (40th to <50th percentile)",
+          "label": "Least likely (40th to <50th percentile)",
           "color": "#C191FF"
         },
         {
           "value": 6,
-          "label": "Reforestation least likely to contribute to forest breeding bird habitat needs (50th to <60th percentile)",
+          "label": "Least likely (50th to <60th percentile)",
           "color": "#004DA8"
         },
         {
           "value": 7,
-          "label": "Reforestation less likely to contribute to forest breeding bird habitat needs (60th to <70th percentile)",
+          "label": "Less likely (60th to <70th percentile)",
           "color": "#00FFC5"
         },
         {
           "value": 8,
-          "label": "Reforestation more likely to contribute to forest breeding bird habitat needs (70th to <80th percentile)",
+          "label": "More likely (70th to <80th percentile)",
           "color": "#4CE600"
         },
         {
           "value": 9,
-          "label": "Reforestation most likely to contribute to forest breeding bird habitat needs (80th to <90th percentile)",
+          "label": "Most likely (80th to <90th percentile)",
           "color": "#FFFF00"
         },
         {
           "value": 10,
-          "label": "Reforestation most likely to contribute to forest breeding bird habitat needs (≥90th percentile)",
+          "label": "Most likely (≥90th percentile)",
           "color": "#FF0000"
         }
       ],
-      "description": "This indicator prioritizes areas for reforestation within the Mississippi Alluvial Valley (MAV) based on benefits to three species of forest breeding birds that depend on large interior cores of bottomland hardwood habitat (Swainson’s warbler, cerulean warbler, swallow-tailed kite). The model considers the core size, number of cores, and percent of local forest cover that would result from reforestation, as well as risk of conversion to agriculture based on flooding frequency. The highest scores represent drier areas where reforestation would create new forest patches containing interior cores at least 2,000 ha (~5,000 ac). It originates from the Lower Mississippi Valley Joint Venture’s MAV forest breeding bird reforestation priorities.",
+      "description": "This indicator prioritizes areas for reforestation within the Mississippi Alluvial Valley (MAV) based on benefits to three species of forest breeding birds that depend on large interior cores of bottomland hardwood habitat (Swainson's warbler, cerulean warbler, swallow-tailed kite). The model considers the core size, number of cores, and percent of local forest cover that would result from reforestation, as well as risk of conversion to agriculture based on flooding frequency. The highest scores represent drier areas where reforestation would create new forest patches containing interior cores at least 2,000 ha (~5,000 ac). It originates from the Lower Mississippi Valley Joint Venture's MAV forest breeding bird reforestation priorities.",
       "url": ""
     },
     {
@@ -649,7 +651,7 @@
           "color": "#E6550D"
         }
       ],
-      "description": "This indicator represents the condition and location of playas, which are round, shallow depressions found primarily in the western Great Plains that serve as temporary wetlands by collecting water from rainfall and runoff. It defines a healthy playa as one that is not farmed, hydrologically modified, within a wind farm, or impacted by sediment accumulation due to agriculture. It also considers the increased benefits to wildlife provided by clusters of nearby playas, compared to more sparsely distributed playas. Playas play a critical role in recharging the Ogallala aquifer and provide habitat and food for birds and other animals. This indicator originates from the Playa Lakes Joint Venture’s probable playas dataset.",
+      "description": "This indicator represents the condition and location of playas, which are round, shallow depressions found primarily in the western Great Plains that serve as temporary wetlands by collecting water from rainfall and runoff. It defines a healthy playa as one that is not farmed, hydrologically modified, within a wind farm, or impacted by sediment accumulation due to agriculture. It also considers the increased benefits to wildlife provided by clusters of nearby playas, compared to more sparsely distributed playas. Playas play a critical role in recharging the Ogallala aquifer and provide habitat and food for birds and other animals. This indicator originates from the Playa Lakes Joint Venture's probable playas dataset.",
       "url": "",
       "goodThreshold": 2
     },
@@ -699,7 +701,7 @@
           "color": "#205905"
         }
       ],
-      "description": "This indicator depicts an area's capacity to maintain species diversity and ecosystem function in the face of climate change. It measures two factors that influence resilience. The first, landscape diversity, reflects the number of microhabitats and climatic gradients created by topography, elevation, and hydrology. The second, local connectedness, reflects the degree of habitat fragmentation and strength of barriers to species movement. Highly resilient sites contain many different habitat niches that support biodiversity, and allow species to move freely through the landscape to find suitable microclimates as the climate changes. This indicator originates from The Nature Conservancy’s Resilient Land data.",
+      "description": "This indicator depicts an area's capacity to maintain species diversity and ecosystem function in the face of climate change. It measures two factors that influence resilience. The first, landscape diversity, reflects the number of microhabitats and climatic gradients created by topography, elevation, and hydrology. The second, local connectedness, reflects the degree of habitat fragmentation and strength of barriers to species movement. Highly resilient sites contain many different habitat niches that support biodiversity, and allow species to move freely through the landscape to find suitable microclimates as the climate changes. This indicator originates from The Nature Conservancy's Resilient Land data.",
       "url": ""
     },
     {
@@ -851,7 +853,7 @@
           "color": "#006D2C"
         }
       ],
-      "description": "This indicator is an index of habitat suitability for five forested wetland bird species (Acadian flycatcher, Kentucky warbler, yellow-throated warbler, prothonotary warbler, red-shouldered hawk) within bottomland hardwood forests and riparian areas in the West Gulf Coastal Plain and Ouachitas Bird Conservation Region. It uses metrics like patch size, dispersal distance, distance to water, and more to assess the potential for habitat to support sustainable populations of these birds. This indicator originates from the Lower Mississippi Valley Joint Venture’s West Gulf Coastal Plain and Ouachitas forested wetland decision support model.",
+      "description": "This indicator is an index of habitat suitability for five forested wetland bird species (Acadian flycatcher, Kentucky warbler, yellow-throated warbler, prothonotary warbler, red-shouldered hawk) within bottomland hardwood forests and riparian areas in the West Gulf Coastal Plain and Ouachitas Bird Conservation Region. It uses metrics like patch size, dispersal distance, distance to water, and more to assess the potential for habitat to support sustainable populations of these birds. This indicator originates from the Lower Mississippi Valley Joint Venture's West Gulf Coastal Plain and Ouachitas forested wetland decision support model.",
       "url": ""
     },
     {
@@ -895,7 +897,7 @@
           "color": "#0B2C7A"
         }
       ],
-      "description": "This indicator identifies areas with existing pine trees that, if managed for open condition, could support a population of three umbrella bird species (brown-headed nuthatch, Bachman’s sparrow, red-cockaded woodpecker). It evaluates potential habitat based on each species’ habitat needs and population dynamics, prioritizing opportunities to restore and manage habitat to benefit open pine birds. Final scores reflect both the selectiveness of the species and whether an area meets the habitat requirements through one large patch, or clusters of smaller patches in sufficiently close proximity for breeding pairs to disperse. This indicator updates the West Gulf Coastal Plain/Ouachita Joint Venture’s open pine decision support model.",
+      "description": "This indicator identifies areas with existing pine trees that, if managed for open condition, could support a population of three umbrella bird species (brown-headed nuthatch, Bachman's sparrow, red-cockaded woodpecker). It evaluates potential habitat based on each species' habitat needs and population dynamics, prioritizing opportunities to restore and manage habitat to benefit open pine birds. Final scores reflect both the selectiveness of the species and whether an area meets the habitat requirements through one large patch, or clusters of smaller patches in sufficiently close proximity for breeding pairs to disperse. This indicator updates the West Gulf Coastal Plain/Ouachita Joint Venture's open pine decision support model.",
       "url": ""
     },
     {

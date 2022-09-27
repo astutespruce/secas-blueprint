@@ -25,7 +25,7 @@ from api.settings import MAP_RENDER_THREADS
 
 
 WIDTH = 740
-HEIGHT = 440
+HEIGHT = 420
 PADDING = 5
 
 

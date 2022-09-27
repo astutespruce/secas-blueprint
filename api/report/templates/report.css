@@ -332,6 +332,11 @@ table td.highlight-col {
   width: 100%;
 }
 
+.map-credits {
+  font-size: 7pt;
+  line-height: 1;
+}
+
 .map-locator-container {
   flex: 0 0 auto;
   margin-right: 12pt;
@@ -464,6 +469,10 @@ table td.highlight-col {
   color: #666;
 }
 
+.indicator-description {
+  font-size: 11pt;
+}
+
 .ecosystem-header,
 .indicator-header {
   font-family: Raleway, sans-serif;
@@ -526,6 +535,11 @@ img.logo {
   padding: 0.25rem;
   background: rgba(255, 255, 255, 0.5);
   border-radius: 0.25rem;
+  line-height: 1;
+}
+
+.north-arrow-container > div:first-of-type {
+  margin-left: 0.25pt;
 }
 
 .north-arrow {

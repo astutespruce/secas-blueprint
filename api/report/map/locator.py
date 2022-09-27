@@ -10,7 +10,7 @@ from analysis.lib.geometry import to_dict
 
 ZOOM = 1.75
 CENTER = [-85.941, 29.283]
-WIDTH = 250
+WIDTH = 230
 HEIGHT = 150
 
 
