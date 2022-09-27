@@ -215,12 +215,13 @@ def extract_by_geometry(geometries, bounds, prescreen=False, marine=False):
     with rasterio.open(corridors_mask_filename) as corridors_mask:
         if detect_data(corridors_mask, geometries, bounds):
             corridor_counts = extract_count_in_geometry(
-                base_blueprint_filename,
+                corridors_filename,
                 shape_mask,
                 window,
                 np.arange(CORRIDORS[-1]["value"] + 1),
                 boundless=True,
             )
+
             if corridor_counts.sum() > 0:
                 results["corridors"] = (corridor_counts * cellsize).round(
                     ACRES_PRECISION
