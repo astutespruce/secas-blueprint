@@ -55,9 +55,7 @@
 <div class="no-break">
     <div class="caption">
         Table {{table.counter}}: Extent of flooding by projected average highest daily tide due to sea level rise{% if results.name %} within {{results.name}}{% if results.type %} {{results.type}}{% endif %}{% else %} in this area{% endif %}.
-        Values from the <a href="https://coast.noaa.gov/slrdata/">NOAA sea-level rise inundation data</a>.  Note: areas
-        are based on 15 meter pixels, unlike the 30 meter pixels used for the Blueprint and its inputs; this will cause
-        the total acreage to be different.
+        Values from the <a href="https://coast.noaa.gov/slrdata/">NOAA sea-level rise inundation data</a>.
     </div>
     {% set table.counter=table.counter+1 %}
 

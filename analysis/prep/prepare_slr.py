@@ -7,8 +7,7 @@ from time import time
 
 import rasterio
 from rasterio.features import geometry_mask, dataset_features
-from rasterio.enums import Resampling
-from rasterio.vrt import WarpedVRT
+from rasterio.windows import Window
 import pandas as pd
 import numpy as np
 import pygeos as pg
@@ -32,15 +31,18 @@ from analysis.constants import (
     SLR_LEGEND,
 )
 from analysis.lib.colors import hex_to_uint8
-from analysis.lib.geometry import to_dict_all
-from analysis.lib.raster import add_overviews, create_lowres_mask, write_raster
+from analysis.lib.raster import write_raster
+from analysis.lib.geometry import (
+    to_dict_all,
+)
+from analysis.lib.raster import add_overviews, create_lowres_mask
 
 
 set_gdal_config_options({"OGR_ORGANIZE_POLYGONS": "ONLY_CCW"})
 
 BLUEPRINT_RES = 30
-SLR_RES = 15
-MIN_AREA = SLR_RES * SLR_RES
+SLR_RES = 30
+MIN_AREA = SLR_RES * SLR_RES / 2  # must be at least 1/2 of 30m pixel
 LEVELS = list(range(0, 11))  # 0-10 feet inundation
 NODATA = 255
 
@@ -165,19 +167,16 @@ tmp_dir.mkdir(parents=True, exist_ok=True)
 out_dir = Path("data/inputs/threats/slr")
 out_dir.mkdir(parents=True, exist_ok=True)
 
-tile_input_dir = Path("data/for_tiles")
-tile_input_dir.mkdir(parents=True, exist_ok=True)
-
 start = time()
 
 
 colormap = {int(e["label"]): hex_to_uint8(e["color"]) + (255,) for e in SLR_LEGEND}
 
 
-# use the Blueprint extent grid to derive the master offset coordinates
+# use the SE Blueprint extent grid to derive the master offset coordinates
 # so that everything is correctly aligned
-with rasterio.open(bnd_dir / "se_blueprint_extent.tif") as src:
-    align_ul = np.take(src.transform, [2, 5]).tolist()
+extent_raster = rasterio.open(bnd_dir / "se_blueprint_extent.tif")
+align_ul = np.take(extent_raster.transform, [2, 5]).tolist()
 
 for gdb in sorted(src_dir.glob("*slr_data_dist/*.gdb")):
     chunk_start = time()
@@ -283,12 +282,34 @@ ret = subprocess.run(
 ret.check_returncode()
 
 
-### Combine into a single raster
+## Combine into a single raster and mask to SE Blueprint extent
 print("Combining into single raster")
 outfilename = out_dir / "slr.tif"
-with rasterio.open(vrt_filename) as src:
-    data = src.read(1)
-    write_raster(outfilename, data, transform=src.transform, crs=src.crs, nodata=NODATA)
+with rasterio.open(vrt_filename) as vrt:
+    # calculate write window
+    left = int((vrt.transform[2] - extent_raster.transform[2]) / vrt.res[0])
+    top = int((extent_raster.transform[5] - vrt.transform[5]) / vrt.res[0])
+
+    width = extent_raster.width - left
+    height = extent_raster.height - top
+
+    # only read up to the number of pixels required to fill SE Blueprint extent
+    # SLR origin is located within SE Blueprint extent
+    data = vrt.read(1, window=Window(0, 0, width, height))
+    out = np.ones(extent_raster.shape, dtype="uint8") * np.uint8(NODATA)
+    out[top:, left:] = data
+
+    # Clip to SE extent mask
+    mask = extent_raster.read(1)
+    out = np.where(mask == 1, out, np.uint8(NODATA))
+
+    write_raster(
+        outfilename,
+        out,
+        transform=extent_raster.transform,
+        crs=extent_raster.crs,
+        nodata=NODATA,
+    )
 
     with rasterio.open(outfilename, "r+") as out:
         out.write_colormap(1, colormap)
@@ -302,43 +323,6 @@ create_lowres_mask(
     resolution=MASK_RESOLUTION,
     ignore_zero=False,
 )
-
-
-### Create 30m version snapped to blueprint extent for tiles
-print("Creating 30m version of SLR for tiles")
-with rasterio.open(
-    bnd_dir / "se_blueprint_extent.tif"
-) as blueprint_extent, rasterio.open(out_dir / "slr.tif") as src:
-
-    with WarpedVRT(
-        src,
-        width=blueprint_extent.width,
-        height=blueprint_extent.height,
-        nodata=NODATA,
-        transform=blueprint_extent.transform,
-        resampling=Resampling.nearest,
-    ) as vrt:
-        data = vrt.read()[0]
-
-    mask = blueprint_extent.read(1)
-
-    # mask out to match Blueprint data pixels
-    data = np.where(mask == 1, data, NODATA)
-
-    outfilename = tile_input_dir / "slr_30m.tif"
-    write_raster(
-        outfilename,
-        data,
-        transform=blueprint_extent.transform,
-        crs=blueprint_extent.crs,
-        nodata=NODATA,
-    )
-
-    with rasterio.open(outfilename, "r+") as out:
-        out.write_colormap(1, colormap)
-
-    add_overviews(outfilename)
-
 
 ### Extract a boundary polygon of everywhere that we extracted SLR data according
 # to the low resolution mask
