@@ -213,8 +213,9 @@ def get_custom_area_results(df):
         reverse=True,
     )
 
-    input_ids = [i["id"] for i in inputs]
+    corridors = None
 
+    input_ids = [i["id"] for i in inputs]
     for input_area in inputs:
         id = input_area["id"]
         if id == "base":
@@ -223,6 +224,7 @@ def get_custom_area_results(df):
 
             if input_info["promote_base"]:
                 blueprint = base_results["priorities"]
+                corridors = base_results["corridors"]
 
         elif id == "car":
             input_area.update(extract_caribbean_by_mask(**config))
@@ -254,6 +256,7 @@ def get_custom_area_results(df):
             100 * config["outside_se_acres"] / config["rasterized_acres"]
         ),
         "blueprint": blueprint,
+        "corridors": corridors,
         "inputs": inputs,
         "input_ids": input_ids,
         "promote_base": input_info["promote_base"],

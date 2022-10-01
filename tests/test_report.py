@@ -74,7 +74,7 @@ aois = [
     # {"name": "FL test", "path": "EvergladesHeadwaterComplex_APPTYPE_0"}
     # {"name": "Guild Tracts", "path": "GuildTracts"}
     # {"name": "Florida Panhandle Boundary", "path": "FL_panhadle_boundary"}
-    # {"name": "Dell Murphy wetlands", "path": "Dell Murphy wetlands"},
+    {"name": "Dell Murphy wetlands", "path": "Dell Murphy wetlands"},
     # {"name": "TRB GA", "path": "TRB_GA"},
     # {"name": "Florida 5 Star County Boundary", "path": "FL_5StarCounty_Boundary"}
     # {"name": "Cumberland Plateau Focus Area", "path": "NFWF_Cumberland_Fund_TN"}
@@ -92,7 +92,7 @@ aois = [
     # {"name": "Doyle Springs, TN area", "path": "DoyleSprings"},
     # {"name": "Cave Spring, VA area", "path": "CaveSpring"},
     # {"name": "South Atlantic Offshore", "path": "SAOffshore"},
-    {"name": "Florida Offshore", "path": "FLOffshore"},
+    # {"name": "Florida Offshore", "path": "FLOffshore"},
     # {"name": "Razor", "path": "Razor"}
 ]
 
@@ -119,8 +119,6 @@ for aoi in aois:
     ### calculate results, data must be in DATA_CRS
     print("Calculating results...")
     results = get_custom_area_results(df)
-
-    print(results["inputs"][0].keys())
 
     if results is None:
         print(f"AOI: {path} does not overlap Blueprint")

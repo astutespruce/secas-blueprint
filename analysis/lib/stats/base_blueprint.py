@@ -139,9 +139,15 @@ def extract_base_blueprint_by_mask(
         * cellsize
     )
 
+    # only keep the ones that are present
     corridors = [
-        {**e, "acres": corridor_acres[i]}
+        {
+            **e,
+            "acres": corridor_acres[i],
+            "percent": 100 * corridor_acres[i] / rasterized_acres,
+        }
         for i, e in enumerate(pluck(CORRIDORS, ["label"]))
+        if corridor_acres[i]
     ]
 
     ### for each indicator present, merge indicator info with acres
@@ -181,8 +187,12 @@ def extract_base_blueprint_by_mask(
             **indicator,
             # merge acres and sort highest value to lowest
             "values": [
-                {**v, "acres": acres, "percent": 100 * acres / rasterized_acres}
-                for v, acres in zip(indicator["values"], indicator_acres)
+                {
+                    **v,
+                    "acres": indicator_acres[v["value"]],
+                    "percent": 100 * indicator_acres[v["value"]] / rasterized_acres,
+                }
+                for v in indicator["values"]
             ][::-1],
             "total_acres": total_indicator_acres,
             "outside_indicator_acres": outside_indicator_acres,
