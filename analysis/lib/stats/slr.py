@@ -15,95 +15,103 @@ from analysis.constants import (
     SLR_PROJ_SCENARIOS,
 )
 from analysis.lib.raster import (
-    detect_data,
+    detect_data_by_mask,
     boundless_raster_geometry_mask,
     extract_count_in_geometry,
 )
 from analysis.lib.geometry import to_dict
 
 
-src_dir = Path("data/inputs/threats/slr")
-slr_mask_filename = src_dir / "slr_mask.tif"
-extent_filename = src_dir / "extracted_slr_bounds.feather"
-depth_filename = src_dir / "slr.tif"
-proj_filename = src_dir / "noaa_1deg_cells.feather"
+SLR_BINS = np.arange(11)
 
+
+src_dir = Path("data/inputs/threats/slr")
+depth_filename = src_dir / "slr.tif"
+mask_filename = src_dir / "slr_mask.tif"
+extent_filename = src_dir / "extracted_slr_bounds.feather"
+proj_filename = src_dir / "noaa_1deg_cells.feather"
 results_filename = "data/results/huc12/slr.feather"
 
 
-def extract_by_geometry(geometry, shapes, bounds):
-    """Calculate the area of overlap between geometries and each level of SLR
-    between 0 (currently inundated) and 6 meters.
-
-    Values are cumulative; the total area inundated is added to each higher
-    level of SLR
-
-    This is only applicable to inland (non-marine) areas that are near the coast.
+def extract_slr_by_mask_and_geometry(
+    shape_mask,
+    window,
+    cellsize,
+    prescreen_mask,
+    prescreen_window,
+    rasterized_acres,
+    outside_se_acres,
+    geometry,
+    **kwargs,
+):
+    """Calculate area inundated at each depth level based on shape_mask and
+    projections by NOAA scenario and decade based on geometry
 
     Parameters
     ----------
+    shape_mask : 2d array
+        True outside shapes
+    window : rasterio.windows.Window
+        read window for Southeast standard origin
+    cellsize : float
+        pixel area in acres
+    prescreen_mask : 2d array
+        True outside shapes, at lower resolution
+    prescreen_window : rasterio.windows.Window
+        read window for Southeast standard origin at lower resolution
+    rasterized_acres : float
+        rasterized area of shape mask
+    outside_se_acres : float
+        acres outside SE Blueprint
     geometry : pygeos geometry
-        Geometry (unioned) that defines the boundary for analysis; same as shapes
-    shapes : list-like of geometry objects that provide __geo_interface__
-        Should be limited to features that intersect with bounds of SLR datasets
-    bounds : list-like of [xmin, ymin, xmax, ymax]
 
     Returns
     -------
     dict
         {
-            "shape_mask": <area>,
-            "depth": [area for 0ft inundation, area for 1ft, ..., area for 10f],
+            "depth": [{
+                "label": <label>,
+                "acres": <acres>,
+                "percent": <percent>
+            }, ... <for each inundation depth>],
+            "total_slr_acres": <acres within this dataset>,
+            "notinundated_acres" : <acres not inundated by 10ft >,
+            "notinundated_percent" : <percent not inundated by 10ft >,
             "projections": {
-                "low": [2020 ft, ..., 2100 ft],
-                ...,
-                "high": [2020 ft, ..., 2100 ft],
+                <scenario>: [<depth in 2020>, <depth in 2030>, ... <depth in 2100>]
             }
         }
     """
-
     # prescreen to make sure data are present
-    with rasterio.open(slr_mask_filename) as src:
-        if not detect_data(src, shapes, bounds):
+    with rasterio.open(mask_filename) as src:
+        if not detect_data_by_mask(src, prescreen_mask, prescreen_window):
             return None
 
-    results = {}
-
-    # create mask and window
-    with rasterio.open(depth_filename) as src:
-        try:
-            shape_mask, transform, window = boundless_raster_geometry_mask(
-                src, shapes, bounds, all_touched=False
-            )
-
-        except ValueError:
-            return None
-
-        # square meters to acres
-        cellsize = src.res[0] * src.res[1] * M2_ACRES
-
-        data = src.read(1, window=window, boundless=True)
-        nodata = src.nodatavals[0]
-        mask = (data == nodata) | shape_mask
-        data = np.where(mask, nodata, data)
-
-    results["shape_mask"] = (
-        ((~shape_mask).sum() * cellsize).round(ACRES_PRECISION).astype("float32")
+    slr_acres = (
+        extract_count_in_geometry(
+            depth_filename, shape_mask, window, bins=SLR_BINS, boundless=True
+        )
+        * cellsize
     )
-
-    if results["shape_mask"] == 0:
-        return None
-
-    bins = np.arange(11)
-    counts = extract_count_in_geometry(
-        depth_filename, shape_mask, window, bins=bins, boundless=True
-    )
+    total_slr_acres = slr_acres.sum()
 
     # accumulate values
-    for bin in bins[1:]:
-        counts[bin] = counts[bin] + counts[bin - 1]
+    slr_acres = np.cumsum(slr_acres)
 
-    results["depth"] = (counts * cellsize).round(ACRES_PRECISION).tolist()
+    slr_results = [
+        {
+            "label": f"{i} {'foot' if i==1 else 'feet'}",
+            "acres": acres,
+            "percent": 100 * acres / rasterized_acres,
+        }
+        for i, acres in enumerate(slr_acres)
+    ]
+
+    # since areas not inundated are NODATA, and SLR is theoretically available
+    # everywhere, use area not accounted for in inundated depth bins for this value
+    not_inundated_acres = rasterized_acres - outside_se_acres - total_slr_acres
+    if not_inundated_acres < 1e-6:
+        not_inundated_acres = 0
 
     # intersect with 1-degree pixels; there should always be data available if
     # there are SLR depth data
@@ -117,11 +125,19 @@ def extract_by_geometry(geometry, shapes, bounds):
 
     projections = df[SLR_PROJ_COLUMNS].multiply(area_factor, axis=0).sum().round(2)
 
-    results["projections"] = {
+    projections = {
         SLR_PROJ_SCENARIOS[scenario]: [
             projections[f"{year}_{scenario}"] for year in SLR_YEARS
         ]
         for scenario in SLR_PROJ_SCENARIOS
+    }
+
+    results = {
+        "depth": slr_results,
+        "total_slr_acres": total_slr_acres,
+        "notinundated_acres": not_inundated_acres,
+        "notinundated_percent": 100 * not_inundated_acres / rasterized_acres,
+        "projections": projections,
     }
 
     return results

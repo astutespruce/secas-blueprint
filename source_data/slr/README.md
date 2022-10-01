@@ -17,11 +17,11 @@ major steps:
 
 ### Rasterize SLR data
 
-SLR data polygons are rasterized to 15 meter resolution using SE Bluprint
+SLR data polygons are rasterized to 30 meter resolution using SE Bluprint
 standard projection (EPSG:5070) and snapped to the Blueprint grid so that
 everything aligns correctly.
 
-Small isolated polygons and holes, less than a 15x15m pixel in area, are removed.
+Small isolated polygons and holes less than half a pixel in area are removed.
 
 Values are coded 0 (already inundated) - 10 feet.
 

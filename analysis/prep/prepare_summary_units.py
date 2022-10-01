@@ -6,13 +6,14 @@ import geopandas as gp
 import pandas as pd
 from pyogrio import read_dataframe, write_dataframe
 import pygeos as pg
+import numpy as np
 import rasterio
 from rasterio.features import rasterize
 from rasterio.windows import Window
 
 from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES, SECAS_HUC2
 from analysis.lib.geometry import make_valid, to_dict
-from analysis.lib.raster import write_raster, add_overviews
+from analysis.lib.raster import write_raster, add_overviews, get_window
 
 # suppress warnings about writing to feather
 warnings.filterwarnings("ignore", message=".*initial implementation of Parquet.*")
@@ -92,16 +93,12 @@ huc12 = huc12.join(huc12_wgs84.bounds)
 huc12.loc[huc12.id.str.startswith("21"), "input_id"] = "car"
 huc12.input_id = huc12.input_id.fillna("base")
 
-# Save in EPSG:5070 for analysis
-huc12.to_feather(analysis_dir / "huc12.feather")
-write_dataframe(huc12, bnd_dir / "huc12.fgb")
-
+huc12["value"] = np.arange(1, len(huc12) + 1).astype("uint16")
 
 # rasterize for summary unit analysis, use full extent
 print("Rasterizing geometries")
-tmp = pd.DataFrame(huc12)
+tmp = pd.DataFrame(huc12[["id", "value", "geometry"]].join(huc12.bounds))
 tmp["geometry"] = tmp.geometry.values.data
-tmp["value"] = tmp.index.values + 1
 
 with rasterio.open(input_area_filename) as src:
     # create tuples of GeoJSON, value
@@ -116,10 +113,23 @@ with rasterio.open(input_area_filename) as src:
         dtype="uint16",
     )
 
+    # calculate pixel count of each unit
+    counts = np.zeros((len(tmp),), dtype="uint")
+    for i, (_, row) in enumerate(tmp.iterrows()):
+        unit_window = get_window(src, (row.minx, row.miny, row.maxx, row.maxy))
+        counts[i] = (data[unit_window.toslices()] == row.value).sum().astype("uint")
+
+    huc12["pixels"] = counts
+
     outfilename = bnd_dir / "huc12.tif"
     write_raster(outfilename, data, transform=src.transform, crs=src.crs, nodata=0)
 
     add_overviews(outfilename)
+
+
+# Save in EPSG:5070 for analysis
+huc12.to_feather(analysis_dir / "huc12.feather")
+write_dataframe(huc12, bnd_dir / "huc12.fgb")
 
 
 ### Marine units
@@ -227,14 +237,12 @@ tmp.contains = tmp.contains.fillna(True)
 tmp = tmp.loc[tmp.contains, ["input_id", "block_id"]].set_index("block_id")
 marine = marine.join(tmp, on="id")
 
-# Save in EPSG:5070 for analysis
-marine.to_feather(analysis_dir / "marine_blocks.feather")
-write_dataframe(marine, bnd_dir / "marine_blocks.fgb")
+marine["value"] = np.arange(1, len(marine) + 1).astype("uint16")
 
 
 # rasterize for summary unit analysis, use full extent
 print("Rasterizing geometries")
-tmp = pd.DataFrame(marine)
+tmp = pd.DataFrame(marine[["id", "value", "geometry"]].join(marine.bounds))
 tmp["geometry"] = tmp.geometry.values.data
 tmp["value"] = tmp.index.values + 1
 
@@ -251,7 +259,20 @@ with rasterio.open(input_area_filename) as src:
         dtype="uint16",
     )
 
+    # calculate pixel count of each unit
+    counts = np.zeros((len(tmp),), dtype="uint")
+    for i, (_, row) in enumerate(tmp.iterrows()):
+        unit_window = get_window(src, (row.minx, row.miny, row.maxx, row.maxy))
+        counts[i] = (data[unit_window.toslices()] == row.value).sum().astype("uint")
+
+    marine["pixels"] = counts
+
     outfilename = bnd_dir / "marine_blocks.tif"
     write_raster(outfilename, data, transform=src.transform, crs=src.crs, nodata=0)
 
     add_overviews(outfilename)
+
+
+# Save in EPSG:5070 for analysis
+marine.to_feather(analysis_dir / "marine_blocks.feather")
+write_dataframe(marine, bnd_dir / "marine_blocks.fgb")

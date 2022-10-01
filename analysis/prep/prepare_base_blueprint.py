@@ -9,7 +9,7 @@ from rasterio import windows
 from rasterio.enums import Resampling
 from rasterio.vrt import WarpedVRT
 
-from analysis.constants import MASK_RESOLUTION
+from analysis.constants import MASK_RESOLUTION, CORRIDORS
 from analysis.lib.colors import hex_to_uint8
 from analysis.lib.geometry import to_dict_all
 from analysis.lib.raster import add_overviews, create_lowres_mask, write_raster
@@ -251,7 +251,7 @@ with rasterio.open(bnd_dir / "base_blueprint_extent.tif") as src, rasterio.open(
 
     # consolidate all values into a single raster, writing hubs over corridors
     # 4 = not a hub or corridor, but within data extent
-    data = np.ones(shape=src.shape, dtype="uint8") * 4
+    data = np.ones(shape=src.shape, dtype="uint8") * np.uint8(4)
     data[inland_data == 1] = 1
     data[marine_data == 1] = 3
     data[inland_hubs_data == 1] = 0
@@ -259,7 +259,7 @@ with rasterio.open(bnd_dir / "base_blueprint_extent.tif") as src, rasterio.open(
 
     # stamp back in nodata from Blueprint extent
     extent_data = src.read(1)
-    data[extent_data == int(src.nodata)] = 255
+    data[extent_data == np.uint8(src.nodata)] = 255
 
     outfilename = out_dir / "corridors.tif"
     write_raster(
@@ -272,18 +272,11 @@ with rasterio.open(bnd_dir / "base_blueprint_extent.tif") as src, rasterio.open(
 
     add_overviews(outfilename)
 
-    create_lowres_mask(
-        outfilename,
-        str(outfilename).replace(".tif", "_mask.tif"),
-        resolution=MASK_RESOLUTION,
-        ignore_zero=False,
-    )
-
     colormap = {
         e["value"]: hex_to_uint8(e["color"])
         if e["color"] is not None
         else (255, 255, 255, 0)
-        for e in json.loads(open(json_dir / "../corridors.json").read())
+        for e in CORRIDORS
     }
 
     with rasterio.open(outfilename, "r+") as src:

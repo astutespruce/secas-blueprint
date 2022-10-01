@@ -1,9 +1,9 @@
-from copy import deepcopy
 from pathlib import Path
 
+import geopandas as gp
 import numpy as np
 import pygeos as pg
-import geopandas as gp
+
 
 from analysis.lib.geometry import (
     to_crs,
@@ -18,15 +18,19 @@ from analysis.constants import (
     PROTECTION,
     M2_ACRES,
 )
-from analysis.lib.stats import (
-    extract_core_results_by_geometry,
-    extract_urban_by_geometry,
-    extract_slr_by_geometry,
-    summarize_base_blueprint_by_aoi,
-    summarize_caribbean_by_aoi,
-    summarize_florida_marine_by_aoi,
-)
 
+from analysis.lib.stats.core import (
+    get_shape_mask,
+    extract_input_areas_by_mask,
+    extract_blueprint_by_mask,
+)
+from analysis.lib.stats.florida_marine import extract_florida_marine_by_mask
+from analysis.lib.util import subset_dict
+
+from analysis.lib.stats.base_blueprint import extract_base_blueprint_by_mask
+from analysis.lib.stats.caribbean import extract_caribbean_by_mask
+from analysis.lib.stats.slr import extract_slr_by_mask_and_geometry
+from analysis.lib.stats.urban import extract_urban_by_mask
 
 data_dir = Path("data/inputs")
 boundary_filename = data_dir / "boundaries/se_boundary.feather"
@@ -34,296 +38,231 @@ county_filename = data_dir / "boundaries/counties.feather"
 ownership_filename = data_dir / "boundaries/ownership.feather"
 slr_bounds_filename = data_dir / "threats/slr/slr_bounds.feather"
 
-raster_result_funcs = {
-    "base": summarize_base_blueprint_by_aoi,
-    "flm": summarize_florida_marine_by_aoi,
-    "car": summarize_caribbean_by_aoi,
-}
+
+def get_counties(df):
+    """Get the counties that overlap the Data Frame
+
+    Parameters
+    ----------
+    df : GeoDataFrame
+
+    Returns
+    -------
+    list of dicts
+        [{'FIPS': <FIPS>, 'state': <state>, 'county': <county>}]
+    """
+    counties = gp.read_feather(county_filename)[["geometry", "FIPS", "state", "county"]]
+
+    df = (
+        gp.sjoin(df, counties)[["FIPS", "state", "county"]]
+        .reset_index(drop=True)
+        .sort_values(by=["state", "county"])
+    )
+
+    if not len(df):
+        return None
+
+    return df.to_dict(orient="records")
 
 
-class CustomArea(object):
-    def __init__(self, geometry, crs, name):
-        """Initialize a custom area from a pygeos geometry.
+def get_ownership(df):
+    """Get ownership and protection levels and other statistics for the DataFrame
 
-        Parameters
-        ----------
-        geometry : pygeos Geometry
-        crs : pyproj CRS object
-        name : string
-            name of custom area
-        """
+    Parameters
+    ----------
+    df : GeoDataFrame
 
-        self.geometry = to_crs(geometry, crs, DATA_CRS)
-        self.gdf = gp.GeoDataFrame({"geometry": self.geometry}, crs=DATA_CRS)
-        self.bounds = pg.total_bounds(self.geometry)
-        # wrap geometry as a dict for rasterio
-        self.shapes = np.asarray([to_dict(self.geometry[0])])
-        self.name = name
-
-    def get_blueprint(self):
-        core_results = extract_core_results_by_geometry(self.shapes, bounds=self.bounds)
-
-        if core_results is None:
-            return None
-
-        results = {
-            "promote_base": core_results["promote_base"],
-            "analysis_acres": core_results["shape_mask"],
-            "analysis_remainder": core_results["remainder"],
-            "blueprint": core_results.get("blueprint", None),  # backfilled below
-            "blueprint_total": core_results["blueprint_total"],
-        }
-
-        inputs = {
-            id: {**INPUTS[id], "acres": acres}
-            for id, acres in core_results["inputs"].items()
-        }
-
-        # sort by descending acres
-        inputs = sorted(inputs.values(), key=lambda x: x["acres"], reverse=True)
-
-        for entry in inputs:
-            input_id = entry["id"]
-
-            # Remaining inputs are raster-based
-            results_func = raster_result_funcs.get(input_id, None)
-            if not results_func:
-                print(f"WARNING: missing AOI summary func for {input_id}")
-                continue
-
-            raster_results = results_func(
-                self.shapes, self.bounds, outside_se_acres=core_results["remainder"]
-            )
-
-            if raster_results is not None:
-                entry.update(raster_results)
-            else:
-                # this is an error, this should not occur
-                print("Raster results are none for", input_id)
-
-            if input_id == "base":
-                if core_results["promote_base"]:
-                    # backfill main blueprint from base
-                    results["blueprint"] = [
-                        e["acres"] for e in raster_results["priorities"]
-                    ]
-
-                if raster_results["corridors"] is not None:
-                    results["corridors"] = raster_results["corridors"]
-                    results["corridors_total"] = raster_results["corridors"].sum()
-
-        results["inputs"] = inputs
-        results["input_ids"] = [i["id"] for i in inputs]
-
-        return results
-
-    def get_urban(self):
-        """Extract current and projected urbanization.
-
-        Returns
-        -------
-        dict
-            {
-                "urban_acres": <urban analysis acres>,
-                "urban": <current urban>,
-                "proj_urban": [<urbanization 2020>, ..., <urbanization 2060>]
-            }
-        """
-        urban = extract_urban_by_geometry(self.shapes, bounds=self.bounds)
-
-        if urban is None or urban["shape_mask"] == 0:
-            return None
-
-        proj_urban = [urban[year] for year in URBAN_YEARS]
-        if not sum(proj_urban):
-            return None
-
-        return {
-            "urban_acres": urban["shape_mask"],
-            "urban": urban["urban"],
-            "proj_urban": proj_urban,
-        }
-
-    def get_slr(self):
-        """Extract SLR inundation depth and projected depth for any geometries
-        that overlap bounds where SLR is available
-
-        Returns
-        -------
-        dict
-            {
-                "slr_acres": <acres>,
-                "slr": [<slr_0ft>, <slr_1ft>, ..., <slr_6ft>],
-                "slr_proj": {
-                    "low": [2020 ft, ..., 2100 ft],
-                    ...,
-                    "high": [2020 ft, ..., 2100 ft],
+    Returns
+    -------
+    dict
+        {
+            "ownership": [
+                {
+                    "label": <ownership type label>,
+                    "acres": <acres of overlap>
                 }
-            }
-        """
-
-        # only extract SLR where there are overlaps
-        slr_results = extract_slr_by_geometry(
-            self.geometry[0],
-            self.shapes,
-            bounds=self.bounds,
-        )
-        # None only if no shape mask
-        if slr_results is None:
-            return None
-
-        return {
-            "slr_acres": slr_results["shape_mask"],
-            "slr": slr_results["depth"],
-            "slr_proj": slr_results["projections"],
+            ],
+            "protection": [
+                {
+                    "label": <protection type label>,
+                    "acres": <acres of overlap>
+                }
+            ],
+            "protected_areas" [<top 25 protected area names and areas>],
+            "num_protected_areas": <total number protected areas>
         }
+    """
+    ownership = gp.read_feather(ownership_filename)
+    df = intersection(df, ownership)
 
-    def get_counties(self):
-        """Get county and state names that overlap this area.
+    if df is None:
+        return None
 
-        Returns
-        -------
-        dict
-            {"counties": [
-                {"FIPS": <FIPS>, "state": <state name>, "county": <county_name>},
-                ...
-            ]
-        """
-        counties = gp.read_feather(county_filename)[
-            ["geometry", "FIPS", "state", "county"]
-        ]
+    df["acres"] = pg.area(df.geometry_right.values.data) * M2_ACRES
+    df = df.loc[df.acres > 0].copy()
 
-        df = (
-            gp.sjoin(self.gdf, counties)[["FIPS", "state", "county"]]
-            .reset_index(drop=True)
-            .sort_values(by=["state", "county"])
-        )
+    if not len(df):
+        return None
 
-        if not len(df):
-            return None
+    results = dict()
 
-        return {"counties": df.to_dict(orient="records")}
+    by_owner = (
+        df[["Own_Type", "acres"]]
+        .groupby(by="Own_Type")
+        .acres.sum()
+        .astype("float32")
+        .to_dict()
+    )
+    # use the native order of OWNERSHIP to drive order of results
+    results["ownership"] = [
+        {"label": value["label"], "acres": by_owner[key]}
+        for key, value in OWNERSHIP.items()
+        if key in by_owner
+    ]
 
-    def get_ownership(self):
-        """Get ownership and protection levels and other statistics for this area
-
-        Returns
-        -------
-        dict
-            {
-                "ownership": [
-                    {
-                        "label": <ownership type label>,
-                        "acres": <acres of overlap>
-                    }
-                ],
-                "protection": [
-                    {
-                        "label": <protection type label>,
-                        "acres": <acres of overlap>
-                    }
-                ],
-                "protected_areas" [<top 25 protected area names and areas>],
-                "num_protected_areas": <total number protected areas>
-            }
-        """
-        ownership = gp.read_feather(ownership_filename)
-        df = intersection(self.gdf, ownership)
-
-        if df is None:
-            return None
-
-        df["acres"] = pg.area(df.geometry_right.values.data) * M2_ACRES
-        df = df.loc[df.acres > 0].copy()
-
-        if not len(df):
-            return None
-
-        results = dict()
-
-        by_owner = (
-            df[["Own_Type", "acres"]]
-            .groupby(by="Own_Type")
-            .acres.sum()
-            .astype("float32")
-            .to_dict()
-        )
-        # use the native order of OWNERSHIP to drive order of results
-        results["ownership"] = [
-            {"label": value["label"], "acres": by_owner[key]}
-            for key, value in OWNERSHIP.items()
-            if key in by_owner
-        ]
-
-        by_protection = (
-            df[["GAP_Sts", "acres"]]
-            .groupby(by="GAP_Sts")
-            .acres.sum()
-            .astype("float32")
-            .to_dict()
-        )
-        # use the native order of PROTECTION to drive order of results
-        results["protection"] = [
-            {
-                "label": value["label"],
-                "acres": by_protection[key],
-            }
-            for key, value in PROTECTION.items()
-            if key in by_protection
-        ]
-
-        by_area = (
-            df[["Loc_Nm", "Loc_Own", "acres"]]
-            .groupby(by=[df.index.get_level_values(0), "Loc_Nm", "Loc_Own"])
-            .acres.sum()
-            .astype("float32")
-            .round()
-            .reset_index()
-            .rename(columns={"level_0": "id", "Loc_Nm": "name", "Loc_Own": "owner"})
-            .sort_values(by="acres", ascending=False)
-        )
-        # drop very small areas, these are not helpful
-        by_area = by_area.loc[by_area.acres >= 1].copy()
-
-        results["protected_areas"] = by_area.head(25).to_dict(orient="records")
-        results["num_protected_areas"] = len(by_area)
-
-        return results
-
-    def get_results(self):
-        se_bnd = gp.read_feather(boundary_filename)
-
-        # if area of interest does not intersect SE region boundary,
-        # there will be no results
-        if not pg.intersects(self.geometry, se_bnd.geometry.values.data).max():
-            return None
-
-        results = {
-            "type": "",
-            "acres": pg.area(self.geometry).sum() * M2_ACRES,
-            "name": self.name,
+    by_protection = (
+        df[["GAP_Sts", "acres"]]
+        .groupby(by="GAP_Sts")
+        .acres.sum()
+        .astype("float32")
+        .to_dict()
+    )
+    # use the native order of PROTECTION to drive order of results
+    results["protection"] = [
+        {
+            "label": value["label"],
+            "acres": by_protection[key],
         }
+        for key, value in PROTECTION.items()
+        if key in by_protection
+    ]
 
-        blueprint_results = self.get_blueprint()
-        if blueprint_results is None:
-            return None
+    by_area = (
+        df[["Loc_Nm", "Loc_Own", "acres"]]
+        .groupby(by=[df.index.get_level_values(0), "Loc_Nm", "Loc_Own"])
+        .acres.sum()
+        .astype("float32")
+        .round()
+        .reset_index()
+        .rename(columns={"level_0": "id", "Loc_Nm": "name", "Loc_Own": "owner"})
+        .sort_values(by="acres", ascending=False)
+    )
+    # drop very small areas, these are not helpful
+    by_area = by_area.loc[by_area.acres >= 1].copy()
 
-        results.update(blueprint_results)
+    results["protected_areas"] = by_area.head(25).to_dict(orient="records")
+    results["num_protected_areas"] = len(by_area)
 
-        urban_results = self.get_urban()
-        if urban_results is not None:
-            results.update(urban_results)
+    return results
 
-        slr_results = self.get_slr()
-        if slr_results is not None:
-            results.update(slr_results)
 
-        ownership_results = self.get_ownership()
-        if ownership_results is not None:
-            results.update(ownership_results)
+def get_custom_area_results(df):
+    """Calculate statistics for custom area
 
-        county_results = self.get_counties()
-        if county_results is not None:
-            results.update(county_results)
+    df : GeoDataFrame
+        expected to only have one row representing the analysis area
+    """
 
-        return results
+    if len(df) > 1:
+        raise ValueError(
+            f"DataFrame for custom area had more rows than expected: {len(df)}"
+        )
+
+    geometry = df.geometry.values.data[0]
+    bounds = pg.bounds(geometry).tolist()
+    shapes = [to_dict(geometry)]
+
+    # if area of interest does not intersect SE region boundary,
+    # there will be no results
+    se_bnd = gp.read_feather(boundary_filename)
+    if not pg.intersects(geometry, se_bnd.geometry.values.data).max():
+        return None
+
+    config = get_shape_mask(shapes, bounds)
+
+    # there was an intersection but no data once rasterized
+    if config["rasterized_acres"] == 0:
+        return None
+
+    input_info = extract_input_areas_by_mask(
+        config["shape_mask"], config["window"], config["cellsize"]
+    )
+
+    config.update(
+        {
+            "inside_se_acres": input_info["inside_se_acres"],
+            "outside_se_acres": config["rasterized_acres"]
+            - input_info["inside_se_acres"],
+        }
+    )
+
+    # if area covers more than just base blueprint, extract SE blueprint
+    if not input_info["promote_base"]:
+        blueprint = extract_blueprint_by_mask(**config)
+
+    # merge in main input info
+    inputs = sorted(
+        [
+            {
+                **INPUTS[id],
+                "acres": acres,
+            }
+            for id, acres in input_info["inputs"].items()
+        ],
+        key=lambda x: x["acres"],
+        reverse=True,
+    )
+
+    input_ids = [i["id"] for i in inputs]
+
+    for input_area in inputs:
+        id = input_area["id"]
+        if id == "base":
+            base_results = extract_base_blueprint_by_mask(**config)
+            input_area.update(base_results)
+
+            if input_info["promote_base"]:
+                blueprint = base_results["priorities"]
+
+        elif id == "car":
+            input_area.update(extract_caribbean_by_mask(**config))
+
+        elif "flm":
+            input_area.update(extract_florida_marine_by_mask(**config))
+
+    # urban not available for PR
+    if "base" in input_ids:
+        urban = extract_urban_by_mask(**config)
+    else:
+        urban = None
+
+    # SLR not applicable to FL Marine
+    if input_ids != ["flm"]:
+        slr = extract_slr_by_mask_and_geometry(**config, geometry=geometry)
+    else:
+        slr = None
+
+    counties = get_counties(df)
+    ownership_info = get_ownership(df)
+
+    results = {
+        "acres": pg.area(geometry) * M2_ACRES,
+        **subset_dict(
+            config, {"rasterized_acres", "inside_se_acres", "outside_se_acres"}
+        ),
+        "outside_se_percent": (
+            100 * config["outside_se_acres"] / config["rasterized_acres"]
+        ),
+        "blueprint": blueprint,
+        "inputs": inputs,
+        "input_ids": input_ids,
+        "promote_base": input_info["promote_base"],
+        "urban": urban,
+        "slr": slr,
+        "counties": counties,
+    }
+
+    if ownership_info is not None:
+        results.update(ownership_info)
+
+    return results

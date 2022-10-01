@@ -1,23 +1,18 @@
 from pathlib import Path
-from collections import OrderedDict
-from copy import deepcopy
 
 import numpy as np
 import pandas as pd
 import rasterio
-from rasterio.mask import raster_geometry_mask
 
 from analysis.constants import (
-    ACRES_PRECISION,
-    M2_ACRES,
     INPUTS,
 )
 from analysis.lib.raster import (
-    boundless_raster_geometry_mask,
     extract_count_in_geometry,
-    detect_data,
     summarize_raster_by_geometry,
+    offset_window,
 )
+from analysis.lib.util import pluck
 
 ID = "car"
 
@@ -25,11 +20,6 @@ src_dir = Path("data/inputs/indicators/caribbean")
 caribbean_filename = src_dir / "caribbean_lcd.tif"
 mask_filename = src_dir / "caribbean_lcd_mask.tif"
 results_filename = "data/results/huc12/caribbean.feather"
-
-
-# COLORS = {0: "#EEE", 1: "#807dba", 2: "#005a32"}
-
-# LABELS = {0: "Not a priority", 1: "Medium priority", 2: "High priority"}
 
 LEGEND = [
     {"label": "Rank 1-3: highest priority", "color": "#4D004B"},
@@ -39,64 +29,90 @@ LEGEND = [
 ]
 
 
-def extract_by_geometry(geometries, bounds, prescreen=False):
-    """Calculate the area of overlap between geometries and Caribbean LCD dataset.
+def extract_caribbean_by_mask(
+    shape_mask,
+    window,
+    origin,
+    cellsize,
+    rasterized_acres,
+    outside_se_acres,
+    **kwargs,
+):
+    """Calculate the area of each Caribbean LCD watershed rank based on shape_mask
+
+    It is assumed shape_mask has already been prescreened to ensure overlap with
+    Caribbean LCD.
 
     Parameters
     ----------
-    geometries : list-like of geometry objects that provide __geo_interface__
-    bounds : list-like of [xmin, ymin, xmax, ymax]
-    prescreen : bool (default False)
-        if True, prescreen using lower resolution mask to determine if there
-        is overlap with this dataset
+    shape_mask : 2d array
+        True outside shapes
+    window : rasterio.windows.Window
+        read window for Southeast standard origin
+    origin : list
+        [xmin, ymin] of origin of grid from which window is based
+    cellsize : float
+        pixel area in acres
+    rasterized_acres : float
+        rasterized area of shape mask
+    outside_se_acres : float
+        acres outside SE Blueprint
 
     Returns
     -------
-    dict or None (if does not overlap)
+    dict
+        {
+            "priorities": <acres by priority category>,
+            "legend": <entries for legend>,
+            "total_acres": <total acres within input>,
+            "outside_input_acres": <acres outside this input but within SE>,
+            "outside_input_percent": <percent outside this input but within SE>,
+        }
     """
 
-    if prescreen:
-        # prescreen to make sure data are present
-        with rasterio.open(mask_filename) as src:
-            if not detect_data(src, geometries, bounds):
-                return None
-
-    results = {}
-
-    # create mask and window
+    # adjust window to align with Caribbean
     with rasterio.open(caribbean_filename) as src:
-        try:
-            shape_mask, transform, window = boundless_raster_geometry_mask(
-                src, geometries, bounds, all_touched=False
-            )
-
-        except ValueError:
-            return None
-
-        # square meters to acres
-        cellsize = src.res[0] * src.res[1] * M2_ACRES
-
-    results["shape_mask"] = (
-        ((~shape_mask).sum() * cellsize).round(ACRES_PRECISION).astype("float32")
-    )
-
-    # Nothing in shape mask, return None
-    if results["shape_mask"] == 0:
-        return None
+        car_origin = [src.transform.c, src.transform.f]
+        read_window = offset_window(origin, car_origin, src.res[0], window)
 
     max_value = INPUTS[ID]["values"][-1]["value"]
 
-    counts = extract_count_in_geometry(
-        caribbean_filename, shape_mask, window, np.arange(max_value + 1), boundless=True
+    priority_acres = (
+        extract_count_in_geometry(
+            caribbean_filename,
+            shape_mask,
+            read_window,
+            np.arange(max_value + 1),
+            boundless=True,
+        )
+        * cellsize
     )
 
-    # there is no overlap
-    if counts.max() == 0:
-        return None
+    total_acres = priority_acres.sum()
+    outside_input_acres = rasterized_acres - outside_se_acres - total_acres
+    if outside_input_acres < 1e-6:
+        outside_input_acres = 0
 
-    results[ID] = (counts * cellsize).round(ACRES_PRECISION).astype("float32")
+    # only include priority ranks that are present
+    priorities = [
+        {
+            **e,
+            "acres": priority_acres[i],
+            "percent": 100 * priority_acres[i] / rasterized_acres,
+        }
+        for i, e in enumerate(
+            pluck(INPUTS[ID]["values"], ["blueprint", "value", "label"])
+        )
+        if priority_acres[i]
+    ]
 
-    return results
+    return {
+        "priorities": priorities,
+        "legend": LEGEND,
+        "total_acres": total_acres,
+        "outside_input_acres": outside_input_acres,
+        "outside_input_percent": 100 * outside_input_acres / rasterized_acres,
+    }
 
 
 def summarize_by_aoi(shapes, bounds, outside_se_acres):

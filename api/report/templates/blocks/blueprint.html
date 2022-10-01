@@ -71,28 +71,25 @@
         </tr>
     </thead>
     <tbody>
-        <!-- sort blueprint from highest priority to lowest -->
-        {% with acres=results.blueprint[::-1] %}
-        {% for item in legends.blueprint %}
+        {% for item in results.blueprint %}
         <tr>
             <td class="label">{{item.label}}</td>
-            <td class="acres">{{acres[loop.index-1]|format_number}}</td>
-            <td class="percent">{{(100 * acres[loop.index-1] / results.analysis_acres)|format_percent}}%</td>
+            <td class="acres">{{item.acres|format_number}}</td>
+            <td class="percent">{{item.percent|format_percent}}%</td>
         </tr>
         {% endfor %}
-        {% endwith %}
 
-        {% if results.analysis_remainder > 0 %}
+        {% if results.outside_se_acres > 0 %}
             <tr class="remainder-row">
                 <td class="label">Outside Southeast Blueprint</td>
-                <td class="acres">{{results.analysis_remainder|format_number}}</td>
-                <td class="percent">{{(100 * results.analysis_remainder / results.analysis_acres)|format_percent}}%</td>
+                <td class="acres">{{results.outside_se_acres|format_number}}</td>
+                <td class="percent">{{results.outside_se_percent|format_percent}}%</td>
             </tr>
         {% endif %}
 
         <tr class="total-row">
             <td class="label align-right">Total area</td>
-            <td class="acres">{{results.analysis_acres|format_number}}</td>
+            <td class="acres">{{results.rasterized_acres|format_number}}</td>
             <td class="percent">100%</td>
         </tr>
     </tbody>

@@ -41,6 +41,7 @@ data = rasterize(
     (window.height, window.width),
     transform=transform,
     dtype="uint8",
+    fill=NODATA,
 )
 
 # apply input area mask

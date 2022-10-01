@@ -91,7 +91,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
         results["name"] = name
 
     has_corridors = "corridors" in results
-    has_urban = "proj_urban" in results and results["proj_urban"][-1] > 0
+    has_urban = "urban" in results
     has_slr = "slr" in results
     has_ownership = "ownership" in results
     has_protection = "protection" in results

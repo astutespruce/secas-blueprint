@@ -55,13 +55,29 @@ template = env.get_template("report.html")
 css_template = env.get_template("report.css")
 
 
-def create_report(maps, results):
+def create_report(maps, results, name=None, area_type=None):
+    """Create PDF report with maps and results
+
+    Parameters
+    ----------
+    maps : dict
+    results : dict
+    name : str, optional (default: None)
+        name of area to show as report title / header
+    area_type : str, optional (default: None)
+        type of area, if applicable (e.g., subwatershed)
+
+    Returns
+    -------
+    bytes
+    """
+
     title = "Southeast Conservation Blueprint Summary"
     subtitle = ""
-    if "name" in results and results["name"] is not None:
-        subtitle = f"for {results['name']}"
-        if "type" in results:
-            subtitle += " " + results["type"]
+    if name is not None:
+        subtitle = f"for {name}"
+        if area_type is not None:
+            subtitle += " " + area_type
 
     ownership_acres = sum([e["acres"] for e in results.get("ownership", [])])
     protection_acres = sum([e["acres"] for e in results.get("protection", [])])

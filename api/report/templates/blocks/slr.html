@@ -68,36 +68,35 @@
             </tr>
         </thead>
         <tbody>
-            {% for acres in results['slr'] %}
-            <tr>
-                <td class="label">
-                    {% if loop.index == 2 %}
-                        {{loop.index - 1}} foot
-                    {% else %}
-                        {{loop.index - 1}} feet
-                    {% endif %}
-                </td>
-                <td class="acres">{{acres|format_number}}</td>
-                <td class="percent">{{(100 * acres / results.slr_acres)|format_percent}}%</td>
+            {% for entry in results.slr.depth %}
+                <tr>
+                    <td class="label">{{entry.label}}</td>
+                    <td class="acres">{{entry.acres|format_number}}</td>
+                    <td class="percent">{{entry.percent|format_percent}}%</td>
+                </tr>
+            {% endfor %}
+
+            {% if results.slr.notinundated_acres %}
+                <tr class="remainder-row">
+                    <td class="label">Not projected to be inundated by up to 10 feet</td>
+                    <td class="acres">{{results.slr.notinundated_acres|format_number}}</td>
+                    <td class="percent">{{results.slr.notinundated_percent|format_percent}}%</td>
+                </tr>
+            {% endif %}
+
+            {% if results.outside_se_acres > 0 %}
+                <tr class="remainder-row">
+                    <td class="label">Outside Southeast Blueprint</td>
+                    <td class="acres">{{results.outside_se_acres|format_number}}</td>
+                    <td class="percent">{{results.outside_se_percent|format_percent}}%</td>
+                </tr>
+            {% endif %}
+
+            <tr class="total-row">
+                <td class="align-right">Total area</td>
+                <td class="acres">{{results.rasterized_acres|format_number}}</td>
+                <td class="percent">100%</td>
             </tr>
-        {% endfor %}
-
-
-        {% with remainder=results.slr_acres - results['slr'][-1] %}
-        {% if remainder > 0 %}
-            <tr class="remainder-row">
-                <td class="label">Not projected to be inundated by up to 10 feet</td>
-                <td class="acres">{{remainder|format_number}}</td>
-                <td class="percent">{{(100 * remainder / results.slr_acres)|format_percent}}%</td>
-            </tr>
-        {% endif %}
-        {% endwith %}
-
-        <tr class="total-row">
-            <td class="align-right">Total area</td>
-            <td class="acres">{{results.slr_acres|format_number}}</td>
-            <td class="percent">100%</td>
-        </tr>
         </tbody>
     </table>
 </div>
@@ -125,10 +124,10 @@
         </thead>
         <tbody>
 
-        {% for scenario in results['slr_proj'] %}
+        {% for scenario in results.slr.projections %}
             <tr>
                 <td>{{scenario}}</td>
-                {% for value in  results['slr_proj'][scenario] %}
+                {% for value in  results.slr.projections[scenario] %}
                     <td {% if loop.index == 5 %}class="highlight-col"{% endif %}>
                         {% if value == 0 %}
                             0

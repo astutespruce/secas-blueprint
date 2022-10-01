@@ -94,12 +94,6 @@ def extract_count_in_geometry(filename, geometry_mask, window, bins, boundless=F
     # slice out flattened array of values that are not masked
     values = data[~mask]
 
-    # DEBUG
-    # print(
-    #     f"Memory of data ({filename}): {data.size * data.itemsize / (1024 * 1024):0.2f} MB",
-    #     data.dtype,
-    # )
-
     # count number of pixels in each bin
     return np.bincount(
         values, minlength=len(bins) if bins is not None else None
@@ -192,6 +186,36 @@ def detect_data(dataset, shapes, bounds):
     return False
 
 
+def detect_data_by_mask(dataset, mask, window):
+    """Detect if any data pixels are found based on mask.
+
+    Typically this is performed against a reduced resolution version of a data
+    file as a pre-screening step.
+
+    Parameters
+    ----------
+    dataset : open rasterio.Dataset
+    mask : 2d array
+        True outside shapes
+    window : rasterio.windows.Window
+    Returns
+    -------
+    bool
+        Returns True if there are data pixels present
+    """
+
+    data = dataset.read(1, window=window, boundless=True)
+    nodata = np.uint8(dataset.nodata)
+
+    all_masked = mask | (data == nodata)
+
+    # if there are unmasked non-nodata pixels, then there are data
+    if not all_masked.min():
+        return True
+
+    return False
+
+
 def create_lowres_mask(filename, outfilename, resolution, ignore_zero=False):
     """Create a resampled lower resolution mask.
 
@@ -245,63 +269,116 @@ def create_lowres_mask(filename, outfilename, resolution, ignore_zero=False):
                 out.write(data)
 
 
+# def summarize_raster_by_geometry(
+#     geometries, extract_func, outfilename, progress_label="", bounds=None, **kwargs
+# ):
+#     """Summarize values of input dataset by geometry and writes results to
+#     a feather file, with one column for shape_mask and one for each raster value.
+
+#     Parameters
+#     ----------
+#     geometries : Series of pygeos geometries, indexed by HUC12 / marine block
+#     extract_func : function that extracts results for each geometry
+#     outfilename : str
+#     progress_label : str
+#     """
+
+#     if bounds is not None:
+#         # select only those areas that overlap input area
+#         tree = pg.STRtree(geometries)
+#         ix = tree.query(pg.box(*bounds))
+#         geometries = geometries.iloc[ix].copy()
+
+#     if not len(geometries):
+#         return
+
+#     index = []
+#     results = []
+#     for ix, geometry in Bar(progress_label, max=len(geometries)).iter(
+#         geometries.iteritems()
+#     ):
+#         zone_results = extract_func(
+#             [to_dict(geometry)], bounds=pg.total_bounds(geometry), **kwargs
+#         )
+#         if zone_results is None:
+#             continue
+
+#         index.append(ix)
+#         results.append(zone_results)
+
+#     if not len(results):
+#         return
+
+#     df = pd.DataFrame(results, index=index)
+#     df.index.name = geometries.index.name
+
+#     df.reset_index().to_feather(outfilename)
+
+
 def summarize_raster_by_geometry(
-    geometries, extract_func, outfilename, progress_label="", bounds=None, **kwargs
+    df, units_dataset, value_dataset, bins, progress_label="Summarizing data..."
 ):
-    """Summarize values of input dataset by geometry and writes results to
-    a feather file, with one column for shape_mask and one for each raster value.
+    """Calculate counts of pixels per bin for each unit in df
 
     Parameters
     ----------
-    geometries : Series of pygeos geometries, indexed by HUC12 / marine block
-    extract_func : function that extracts results for each geometry
-    outfilename : str
-    progress_label : str
+    df : DataFrame
+        must have a column "value" that corresponds to the value in units_dataset.
+        units must not extend beyond extent of value_dataset and must have
+        result of df.bounds joined in
+    units_dataset : open rasterio Dataset
+    value_dataset : open rasterio Dataset
+    bins : array-like of value bins
+    message : str, optional
+
+    Returns
+    -------
+    ndarray of shape(n, m) where n=len(df) and m=len(bins), in same order as df
     """
+    nodata = np.uint8(value_dataset.nodata)
 
-    if bounds is not None:
-        # select only those areas that overlap input area
-        tree = pg.STRtree(geometries)
-        ix = tree.query(pg.box(*bounds))
-        geometries = geometries.iloc[ix].copy()
+    unit_data = units_dataset.read(1)
+    value_data = value_dataset.read(1)
 
-    if not len(geometries):
-        return
+    num_bins = len(bins)
 
-    index = []
-    results = []
-    for ix, geometry in Bar(progress_label, max=len(geometries)).iter(
-        geometries.iteritems()
-    ):
-        zone_results = extract_func(
-            [to_dict(geometry)], bounds=pg.total_bounds(geometry), **kwargs
+    # both rasters have same origin point
+    same_origin = (
+        units_dataset.transform.c == value_dataset.transform.c
+        and units_dataset.transform.f == value_dataset.transform.f
+    )
+
+    out = np.zeros((len(df), len(bins)), dtype="uint")
+    for i, (_, row) in Bar(progress_label, max=len(df)).iter(enumerate(df.iterrows())):
+        value_window = get_window(
+            value_dataset, (row.minx, row.miny, row.maxx, row.maxy)
         )
-        if zone_results is None:
-            continue
+        if same_origin:
+            unit_window = value_window
+        else:
+            unit_window = get_window(
+                units_dataset, (row.minx, row.miny, row.maxx, row.maxy)
+            )
 
-        index.append(ix)
-        results.append(zone_results)
+        values = value_data[value_window.toslices()]
+        in_unit = unit_data[unit_window.toslices()] == row.value
+        values_in_unit = values[in_unit & (values != nodata)]
+        out[i, :] = np.bincount(values_in_unit, minlength=num_bins).astype("uint")
 
-    if not len(results):
-        return
+        # DEBUG:
+        # tmp = np.where(in_unit, values, nodata)
+        # outfilename="/tmp/values.tif"
+        # write_raster(
+        #     outfilename,
+        #     tmp,
+        #     transform=dataset.window_transform(window),
+        #     crs=dataset.crs,
+        #     nodata=nodata,
+        # )
+        # with rasterio.open(outfilename, "r+") as out:
+        #     out.write_colormap(1, dataset.colormap(1))
 
-    df = pd.DataFrame(results, index=index)
-
-    results = df[["shape_mask"]].copy()
-    results.index.name = "id"
-
-    avg_cols = [c for c in df.columns if c.endswith("_avg")]
-
-    # each column is an array of counts for each
-    for col in df.columns.difference(["shape_mask"] + avg_cols):
-        s = df[col].apply(pd.Series).fillna(0)
-        s.columns = [f"{col}_{c}" for c in s.columns]
-        results = results.join(s)
-
-    if len(avg_cols) > 0:
-        results = results.join(df[avg_cols]).round()
-
-    results.reset_index().to_feather(outfilename)
+    return out
 
 
 def add_overviews(filename):
@@ -396,3 +473,32 @@ def write_raster(filename, data, transform, crs, nodata):
     }
     with rasterio.open(filename, "w", **meta) as out:
         out.write(data, 1)
+
+
+def offset_window(window_origin, target_origin, resolution, window):
+    """Calculate window for a target grid with a different origin.
+
+    Origins must only differ by an integer number of pixels.
+
+    Parameters
+    ----------
+    window_origin : list
+        [xmin, ymin] of grid corresponding to window
+    target_origin : list
+        [xmin, ymin] of grid corresponding to dataset to align to
+    resolution : float
+    window : rasterio.windows.Window
+
+    Returns
+    -------
+    rasterio.windows.Window
+    """
+
+    offset_cols = int((target_origin[0] - window_origin[0]) / resolution)
+    offset_rows = int((window_origin[1] - target_origin[1]) / resolution)
+    return Window(
+        window.col_off - offset_cols,
+        window.row_off - offset_rows,
+        window.width,
+        window.height,
+    )

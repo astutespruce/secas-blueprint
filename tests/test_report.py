@@ -5,16 +5,19 @@ import os
 from pathlib import Path
 from time import time
 
+import geopandas as gp
 import numpy as np
 import pygeos as pg
 from pyogrio.geopandas import read_dataframe
 
 
 from analysis.constants import GEO_CRS, DATA_CRS, M2_ACRES
-from analysis.lib.geometry import to_crs
+from analysis.lib.geometry import to_crs, dissolve
 from api.report import create_report
 from api.report.map import render_maps
-from api.stats import SummaryUnits, CustomArea
+
+# from api.stats import SummaryUnits, CustomArea
+from api.stats.custom_area import get_custom_area_results
 
 
 # if True, cache maps if not previously created, then reuse
@@ -80,7 +83,7 @@ aois = [
     # {"name": "Green River proposed boundary", "path": "GreenRiver_ProposedBoundary"},
     # {"name": "LCP: Broad", "path": "LCP_Broad"},
     # {"name": "Caledonia area, MS", "path": "caledonia"},
-    {"name": "Napoleonville area, LA", "path": "Napoleonville"},
+    # {"name": "Napoleonville area, LA", "path": "Napoleonville"},
     # {"name": "Area in El Yunque National Forest, PR", "path": "yunque"},
     # {"name": "San Juan area, PR", "path": "SanJuan"},
     # {"name": "Area near Magnet, TX", "path": "magnet"},
@@ -89,7 +92,7 @@ aois = [
     # {"name": "Doyle Springs, TN area", "path": "DoyleSprings"},
     # {"name": "Cave Spring, VA area", "path": "CaveSpring"},
     # {"name": "South Atlantic Offshore", "path": "SAOffshore"},
-    # {"name": "Florida Offshore", "path": "FLOffshore"},
+    {"name": "Florida Offshore", "path": "FLOffshore"},
     # {"name": "Razor", "path": "Razor"}
 ]
 
@@ -101,19 +104,23 @@ for aoi in aois:
 
     start = time()
     df = read_dataframe(f"examples/{path}.shp", columns=[]).to_crs(DATA_CRS)
-    geometry = pg.make_valid(df.geometry.values.data)
+    df["geometry"] = pg.make_valid(df.geometry.values.data)
+    df["group"] = 1
+    df = dissolve(df, by="group")
 
     # dissolve
-    geometry = np.asarray([pg.union_all(geometry)])
+    # geometry = np.asarray([pg.union_all(geometry)])
 
-    extent_area = pg.area(pg.box(*pg.total_bounds(geometry))) * M2_ACRES
+    extent_area = pg.area(pg.box(*df.total_bounds)) * M2_ACRES
     print(
-        f"Area of extent: {extent_area:,.0f}",
+        f"Area of extent: {extent_area:,.0f} acres",
     )
 
     ### calculate results, data must be in DATA_CRS
     print("Calculating results...")
-    results = CustomArea(geometry, df.crs, name=name).get_results()
+    results = get_custom_area_results(df)
+
+    print(results["inputs"][0].keys())
 
     if results is None:
         print(f"AOI: {path} does not overlap Blueprint")
@@ -132,11 +139,9 @@ for aoi in aois:
 
     if not maps:
         print("Rendering maps...")
-        geometry = to_crs(geometry, df.crs, GEO_CRS)
-        bounds = pg.total_bounds(geometry)
 
         has_corridors = "corridors" in results
-        has_urban = "proj_urban" in results and results["proj_urban"][-1] > 0
+        has_urban = "urban" in results
         has_slr = "slr" in results
         has_ownership = "ownership" in results
         has_protection = "protection" in results
@@ -147,9 +152,10 @@ for aoi in aois:
             for ecosystem in input_area.get("ecosystems", []):
                 indicators.extend([i["id"] for i in ecosystem["indicators"]])
 
+        geo_df = df.to_crs(GEO_CRS)
         task = render_maps(
-            bounds,
-            geometry=geometry[0],
+            geo_df.total_bounds,
+            geometry=geo_df.geometry.values.data[0],
             indicators=indicators,
             input_ids=results["input_ids"],
             corridors=has_corridors,
@@ -169,7 +175,7 @@ for aoi in aois:
 
     results["scale"] = scale
 
-    pdf = create_report(maps=maps, results=results)
+    pdf = create_report(maps=maps, results=results, name=name)
 
     with open(out_dir / f"{path}_report.pdf", "wb") as out:
         out.write(pdf)
@@ -206,61 +212,61 @@ ids = {
 }
 
 
-for summary_type in ids:
-    units = SummaryUnits(summary_type)
+# for summary_type in ids:
+#     units = SummaryUnits(summary_type)
 
-    for id in ids[summary_type]:
-        print(f"Creating report for for {id}...")
+#     for id in ids[summary_type]:
+#         print(f"Creating report for for {id}...")
 
-        out_dir = Path(f"/tmp/{id}")
-        cache_dir = out_dir / "maps"
+#         out_dir = Path(f"/tmp/{id}")
+#         cache_dir = out_dir / "maps"
 
-        if not out_dir.exists():
-            os.makedirs(out_dir)
+#         if not out_dir.exists():
+#             os.makedirs(out_dir)
 
-        # Fetch results
-        results = units.get_results(id)
+#         # Fetch results
+#         results = units.get_results(id)
 
-        has_corridors = "corridors" in results
-        has_urban = "proj_urban" in results and results["proj_urban"][-1] > 0
-        has_slr = "slr" in results
-        has_ownership = "ownership" in results
-        has_protection = "protection" in results
+#         has_corridors = "corridors" in results
+#         has_urban = "urban" in results
+#         has_slr = "slr" in results
+#         has_ownership = "ownership" in results
+#         has_protection = "protection" in results
 
-        # compile indicator IDs across all inputs
-        indicators = []
-        for input_area in results["inputs"]:
-            for ecosystem in input_area.get("ecosystems", []):
-                indicators.extend([i["id"] for i in ecosystem["indicators"]])
+#         # compile indicator IDs across all inputs
+#         indicators = []
+#         for input_area in results["inputs"]:
+#             for ecosystem in input_area.get("ecosystems", []):
+#                 indicators.extend([i["id"] for i in ecosystem["indicators"]])
 
-        maps = None
-        if CACHE_MAPS:
-            maps, scale = read_cache(cache_dir)
+#         maps = None
+#         if CACHE_MAPS:
+#             maps, scale = read_cache(cache_dir)
 
-        if not maps:
-            print("Rendering maps...")
-            task = render_maps(
-                results["bounds"],
-                summary_unit_id=id,
-                indicators=indicators,
-                input_ids=results["input_ids"],
-                corridors=has_corridors,
-                urban=has_urban,
-                slr=has_slr,
-                ownership=has_ownership,
-                protection=has_protection,
-            )
-            maps, scale, errors = asyncio.run(task)
+#         if not maps:
+#             print("Rendering maps...")
+#             task = render_maps(
+#                 results["bounds"],
+#                 summary_unit_id=id,
+#                 indicators=indicators,
+#                 input_ids=results["input_ids"],
+#                 corridors=has_corridors,
+#                 urban=has_urban,
+#                 slr=has_slr,
+#                 ownership=has_ownership,
+#                 protection=has_protection,
+#             )
+#             maps, scale, errors = asyncio.run(task)
 
-            if errors:
-                print("Errors", errors)
+#             if errors:
+#                 print("Errors", errors)
 
-            if CACHE_MAPS:
-                write_cache(maps, scale, cache_dir)
+#             if CACHE_MAPS:
+#                 write_cache(maps, scale, cache_dir)
 
-        results["scale"] = scale
+#         results["scale"] = scale
 
-        pdf = create_report(maps=maps, results=results)
+#         pdf = create_report(maps=maps, results=results)
 
-        with open(out_dir / f"{id}_report.pdf", "wb") as out:
-            out.write(pdf)
+#         with open(out_dir / f"{id}_report.pdf", "wb") as out:
+#             out.write(pdf)

@@ -1,27 +1,24 @@
 from pathlib import Path
 from collections import OrderedDict
-from copy import deepcopy
 
 import numpy as np
 import pandas as pd
 import rasterio
-from rasterio.mask import raster_geometry_mask
 
 from analysis.constants import (
-    ACRES_PRECISION,
-    M2_ACRES,
     INPUTS,
-    ECOSYSTEMS,
     INDICATORS as ALL_INDICATORS,
 )
 from analysis.lib.raster import (
-    boundless_raster_geometry_mask,
     extract_count_in_geometry,
-    detect_data,
     summarize_raster_by_geometry,
+    offset_window,
 )
+from analysis.lib.util import pluck
 
 ID = "flm"
+
+# TODO: indicators once available
 INDICATORS = ALL_INDICATORS.get(ID, [])
 INDICATOR_INDEX = OrderedDict({indicator["id"]: indicator for indicator in INDICATORS})
 
@@ -32,183 +29,90 @@ mask_filename = src_dir / "flm_blueprint_mask.tif"
 results_filename = "data/results/marine_blocks/florida.feather"
 
 
-def extract_indicators(counts):
-    """Extract indicator info from globals and merge with counts to get full results.
+def extract_florida_marine_by_mask(
+    shape_mask,
+    window,
+    origin,
+    cellsize,
+    rasterized_acres,
+    outside_se_acres,
+    **kwargs,
+):
+    """Calculate the area of each Florida Marine Blueprint priority category
+    based on shape_mask.
+
+    It is assumed shape_mask has already been prescreened to ensure overlap with
+    Florida Marine.
 
     Parameters
     ----------
-    counts : dict
-        lookup of indicator ID to array of counts [counts[0]...counts[max_value]]
+    shape_mask : 2d array
+        True outside shapes
+    window : rasterio.windows.Window
+        read window for Southeast standard origin
+    origin : list
+        [xmin, ymin] of origin of grid from which window is based
+    cellsize : float
+        pixel area in acres
+    rasterized_acres : float
+        rasterized area of shape mask
+    outside_se_acres : float
+        acres outside SE Blueprint
 
     Returns
     -------
-    list of ecosystem objects
+    dict
+        {
+            "priorities": <acres by priority category>,
+            "legend": <entries for legend>,
+            "total_acres": <total acres within input>,
+            "outside_input_acres": <acres outside this input but within SE>,
+            "outside_input_percent": <percent outside this input but within SE>,
+        }
     """
 
-    ### Merge indicator info with counts and tabulate areas
-    indicators = {}
-    for indicator in INDICATORS:
-        id = indicator["id"]
-        if id not in counts:
-            continue
-
-        values = counts[id]
-
-        # drop indicators that are not present in this area
-        # if only 0 values are present, ignore this indicator
-        if values[1:].max() > 0:
-            indicators[id] = deepcopy(indicator)
-
-            # ignore values below min_value, they were added as padding
-            min_value = indicator["values"][0]["value"]
-            indicators[id]["min_value"] = min_value
-            indicators[id]["total_acres"] = values[min_value:].sum()
-
-            # merge in area and percent
-            for value in indicators[id]["values"]:
-                value["acres"] = int(values[value["value"]])
-
-            # reverse so that highest value is on top
-            indicators[id]["values"].reverse()
-
-    ### aggregate indicators up to marine ecosystem
-    ecosystem = deepcopy([e for e in ECOSYSTEMS if e["id"] == "marine"][0])
-
-    ecosystem["indicator_summary"] = [
-        {"id": id, "label": INDICATOR_INDEX[id]["label"], "present": id in indicators}
-        for id in ecosystem["indicators"]
-        if id.startswith("flm:")
-    ]
-
-    # update ecosystem with only indicators that are present
-    ecosystem["indicators"] = [
-        indicators[id] for id in ecosystem["indicators"] if id in indicators
-    ]
-
-    return [ecosystem]
-
-
-def detect_indicators(geometries, indicators):
-    """Check area of interest against coarse resolution indicator mask for
-    each indicator to see if indicator is present in this area.
-
-    Parameters
-    ----------
-    geometries : list-like of geometry objects that provide __geo_interface__
-    indicators : list-like of indicator IDs
-
-    Returns
-    -------
-    list of indicator IDs present in area
-    """
-
-    if not indicators:
-        return []
-
-    with rasterio.open(
-        src_dir / indicators[0]["filename"].replace(".tif", "_mask.tif")
-    ) as src:
-        # note: this intentionally uses all_touched=True
-        geometry_mask, transform, window = raster_geometry_mask(
-            src, geometries, crop=True, all_touched=True
-        )
-
-    indicators_with_data = []
-    for indicator in indicators:
-        with rasterio.open(
-            src_dir / indicator["filename"].replace(".tif", "_mask.tif")
-        ) as src:
-            data = src.read(1, window=window)
-            nodata = src.nodatavals[0]
-
-            mask = (data == nodata) | geometry_mask
-
-        # if there are unmasked areas, keep this indicator
-        if not mask.min():
-            indicators_with_data.append(indicator)
-
-    return indicators_with_data
-
-
-def extract_by_geometry(geometries, bounds, prescreen=False):
-    """Calculate the area of overlap between geometries and Florida
-    Marine Blueprint dataset.
-
-    Parameters
-    ----------
-    geometries : list-like of geometry objects that provide __geo_interface__
-    bounds : list-like of [xmin, ymin, xmax, ymax]
-    prescreen : bool (default False)
-        if True, prescreen using lower resolution mask to determine if there
-        is overlap with this dataset
-
-    Returns
-    -------
-    dict or None (if does not overlap)
-    """
-
-    if prescreen:
-        # prescreen to make sure data are present
-        with rasterio.open(mask_filename) as src:
-            if not detect_data(src, geometries, bounds):
-                return None
-
-    results = {}
-
-    # create mask and window
+    # adjust window to align with Florida Marine
     with rasterio.open(flm_filename) as src:
-        try:
-            shape_mask, transform, window = boundless_raster_geometry_mask(
-                src, geometries, bounds, all_touched=False
-            )
-
-        except ValueError:
-            return None
-
-        # square meters to acres
-        cellsize = src.res[0] * src.res[1] * M2_ACRES
-
-    results["shape_mask"] = (
-        ((~shape_mask).sum() * cellsize).round(ACRES_PRECISION).astype("float32")
-    )
-
-    # Nothing in shape mask, return None
-    if results["shape_mask"] == 0:
-        return None
+        flm_origin = [src.transform.c, src.transform.f]
+        read_window = offset_window(origin, flm_origin, src.res[0], window)
 
     max_value = INPUTS[ID]["values"][-1]["value"]
 
-    counts = extract_count_in_geometry(
-        flm_filename, shape_mask, window, np.arange(max_value + 1), boundless=True
+    priority_acres = (
+        extract_count_in_geometry(
+            flm_filename,
+            shape_mask,
+            read_window,
+            np.arange(max_value + 1),
+            boundless=True,
+        )
+        * cellsize
     )
 
-    # there is no overlap
-    if counts.max() == 0:
-        return None
+    total_acres = priority_acres.sum()
+    outside_input_acres = rasterized_acres - outside_se_acres - total_acres
+    if outside_input_acres < 1e-6:
+        outside_input_acres = 0
 
-    results[ID] = (counts * cellsize).round(ACRES_PRECISION).astype("float32")
+    priorities = [
+        {
+            **e,
+            "acres": priority_acres[i],
+            "percent": 100 * priority_acres[i] / rasterized_acres,
+        }
+        for i, e in enumerate(
+            pluck(INPUTS[ID]["values"], ["blueprint", "value", "label"])
+        )
+    ]
 
-    # TODO: enable when indicator data available
-    # indicators = detect_indicators(geometries, INDICATORS)
-
-    # for indicator in indicators:
-    #     id = indicator["id"]
-    #     filename = src_dir / indicator["filename"]
-
-    #     values = [e["value"] for e in indicator["values"]]
-    #     bins = np.arange(0, max(values) + 1)
-    #     counts = extract_count_in_geometry(
-    #         filename, shape_mask, window, bins, boundless=True
-    #     )
-
-    #     # Some indicators exclude 0 values, their counts need to be zeroed out here
-    #     min_value = min(values)
-    #     if min_value > 0:
-    #         counts[range(0, min_value)] = 0
-
-    #     results[id] = (counts * cellsize).round(ACRES_PRECISION).astype("float32")
-
-    return results
+    return {
+        "priorities": priorities,
+        # don't include Not a priority in legend
+        "legend": pluck(INPUTS[ID]["values"], ["label", "color"])[:-1],
+        "total_acres": total_acres,
+        "outside_input_acres": outside_input_acres,
+        "outside_input_percent": 100 * outside_input_acres / rasterized_acres,
+    }
 
 
 def summarize_by_aoi(shapes, bounds, outside_se_acres):

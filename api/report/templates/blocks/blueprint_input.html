@@ -8,7 +8,7 @@
         </div>
 
         <div style="flex: 0 0 auto; margin-left: 1rem; font-size: smaller; font-weight: normal;">
-            ({{(100 * src.acres / results.analysis_acres)|format_percent}}% of area)
+            ({{(100 * src.acres / results.rasterized_acres)|format_percent}}% of area)
         </div>
     </h3>
 
@@ -112,25 +112,25 @@
                     </tr>
                 {% endfor %}
 
-                {% if src.remainder %}
+                {% if src.outside_input_acres %}
                     <tr class="remainder-row">
                         <td class="label">Outside {{src.label}} input area</td>
-                        <td class="acres">{{src.remainder|format_number}}</td>
-                        <td class="percent">{{src.remainder_percent|format_percent}}%</td>
+                        <td class="acres">{{src.outside_input_acres|format_number}}</td>
+                        <td class="percent">{{src.outside_input_percent|format_percent}}%</td>
                     </tr>
                 {% endif %}
 
-                {% if results.analysis_remainder > 0 %}
+                {% if results.outside_se_acres > 0 %}
                     <tr class="remainder-row">
                         <td class="label">Outside Southeast Blueprint</td>
-                        <td class="acres">{{results.analysis_remainder|format_number}}</td>
-                        <td class="percent">{{(100 * results.analysis_remainder / results.analysis_acres)|format_percent}}%</td>
+                        <td class="acres">{{results.outside_se_acres|format_number}}</td>
+                        <td class="percent">{{results.outside_se_percent|format_percent}}%</td>
                     </tr>
                 {% endif %}
 
                 <tr class="total-row">
                     <td class="label align-right">Total area</td>
-                    <td class="acres">{{results.analysis_acres|format_number}}</td>
+                    <td class="acres">{{results.rasterized_acres|format_number}}</td>
                     <td class="percent">100%</td>
                 </tr>
             </tbody>
