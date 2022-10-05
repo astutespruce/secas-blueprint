@@ -124,4 +124,6 @@ def create_report(maps, results, name=None, area_type=None):
     # with open("/tmp/test.html", "w") as out:
     #     out.write(template.render(**context))
 
-    return HTML(BytesIO((template.render(**context)).encode())).write_pdf()
+    return HTML(BytesIO((template.render(**context)).encode())).write_pdf(
+        variant="pdf/a-4b"
+    )
