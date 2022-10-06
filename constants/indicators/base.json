@@ -345,17 +345,17 @@
         {
           "value": 1,
           "label": "Burned 1 time from 2013-2021",
-          "color": "#FEE6CE"
+          "color": "#FDBE85"
         },
         {
           "value": 2,
           "label": "Burned 2 times from 2013-2021",
-          "color": "#FDAE6B"
+          "color": "#FD8D3C"
         },
         {
           "value": 3,
           "label": "Burned 3+ times from 2013-2021",
-          "color": "#E6550D"
+          "color": "#D94701"
         }
       ],
       "description": "This indicator uses remote sensing to estimate the number of times an area has been burned from 2013 to 2021. Many Southeastern ecosystems rely on regular, low-intensity fires to maintain habitat, encourage native plant growth, and reduce wildfire risk. This indicator combines burned area layers from both U.S. Geological Survey Landsat data and the inter-agency Monitoring Trends in Burn Severity program. Landsat-based fire predictions within the range of longleaf pine are also available through Southeast FireMap.",
