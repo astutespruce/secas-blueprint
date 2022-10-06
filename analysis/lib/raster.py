@@ -3,8 +3,6 @@ import math
 from affine import Affine
 from progress.bar import Bar
 import numpy as np
-import pandas as pd
-import pygeos as pg
 import rasterio
 from rasterio.enums import Resampling
 from rasterio.errors import WindowError
@@ -13,16 +11,17 @@ from rasterio.vrt import WarpedVRT
 from rasterio.windows import Window
 
 from analysis.constants import OVERVIEW_FACTORS, DATA_CRS
-from analysis.lib.geometry import to_dict
 
 
-def get_window(dataset, bounds):
+def get_window(dataset, bounds, boundless=True):
     """Calculate the window into dataset that contains bounds, for boundless reading.
 
     Parameters
     ----------
     dataset : open rasterio dataset
     bounds : list-like of [xmin, ymin, xmax, ymax]
+    boundless : bool, optional (default: True)
+        if True, returned window may extend beyond the dataset
 
     Returns
     -------
@@ -30,11 +29,25 @@ def get_window(dataset, bounds):
     """
     window = dataset.window(*bounds)
     window_floored = window.round_offsets(op="floor", pixel_precision=3)
+    col_off = window_floored.col_off
+    row_off = window_floored.row_off
     w = math.ceil(window.width + window.col_off - window_floored.col_off)
     h = math.ceil(window.height + window.row_off - window_floored.row_off)
-    window = Window(window_floored.col_off, window_floored.row_off, w, h)
 
-    return window
+    if not boundless:
+        if col_off < 0:
+            w = w - col_off
+            col_off = 0
+        if row_off < 0:
+            h = h - row_off
+            row_off = 0
+        if col_off + w > dataset.width:
+            w = dataset.width - col_off
+
+        if row_off + h > dataset.height:
+            h = dataset.height - row_off
+
+    return Window(col_off, row_off, w, h)
 
 
 def boundless_raster_geometry_mask(dataset, shapes, bounds, all_touched=False):
@@ -336,10 +349,6 @@ def summarize_raster_by_geometry(
     ndarray of shape(n, m) where n=len(df) and m=len(bins), in same order as df
     """
     nodata = np.uint8(value_dataset.nodata)
-
-    unit_data = units_dataset.read(1)
-    value_data = value_dataset.read(1)
-
     num_bins = len(bins)
 
     # both rasters have same origin point
@@ -348,16 +357,44 @@ def summarize_raster_by_geometry(
         and units_dataset.transform.f == value_dataset.transform.f
     )
 
+    # get read window for df
+    value_read_window = get_window(value_dataset, df.total_bounds, boundless=False)
+    if same_origin:
+        unit_read_window = value_read_window
+
+    else:
+        unit_read_window = get_window(units_dataset, df.total_bounds, boundless=False)
+
+    with Bar("Reading data", max=2) as bar:
+        unit_data = units_dataset.read(1, window=unit_read_window)
+        bar.next()
+        value_data = value_dataset.read(1, window=value_read_window)
+        bar.next()
+
+    # TODO: consider moving this loop to Cython
     out = np.zeros((len(df), len(bins)), dtype="uint")
     for i, (_, row) in Bar(progress_label, max=len(df)).iter(enumerate(df.iterrows())):
         value_window = get_window(
-            value_dataset, (row.minx, row.miny, row.maxx, row.maxy)
+            value_dataset, (row.minx, row.miny, row.maxx, row.maxy), boundless=False
         )
+        value_window = Window(
+            value_window.col_off - value_read_window.col_off,
+            value_window.row_off - value_read_window.row_off,
+            value_window.width,
+            value_window.height,
+        )
+
         if same_origin:
             unit_window = value_window
         else:
             unit_window = get_window(
-                units_dataset, (row.minx, row.miny, row.maxx, row.maxy)
+                units_dataset, (row.minx, row.miny, row.maxx, row.maxy), boundless=False
+            )
+            unit_window = Window(
+                unit_window.col_off - unit_read_window.col_off,
+                unit_window.row_off - unit_read_window.row_off,
+                unit_window.width,
+                unit_window.height,
             )
 
         values = value_data[value_window.toslices()]
@@ -365,18 +402,30 @@ def summarize_raster_by_geometry(
         values_in_unit = values[in_unit & (values != nodata)]
         out[i, :] = np.bincount(values_in_unit, minlength=num_bins).astype("uint")
 
-        # DEBUG:
-        # tmp = np.where(in_unit, values, nodata)
-        # outfilename="/tmp/values.tif"
+        # DEBUG: write value and unit rasters
+        # outfilename = "/tmp/values.tif"
         # write_raster(
         #     outfilename,
-        #     tmp,
-        #     transform=dataset.window_transform(window),
-        #     crs=dataset.crs,
+        #     np.where(in_unit, values, nodata),
+        #     transform=value_dataset.window_transform(
+        #         get_window(value_dataset, (row.minx, row.miny, row.maxx, row.maxy))
+        #     ),
+        #     crs=value_dataset.crs,
         #     nodata=nodata,
         # )
-        # with rasterio.open(outfilename, "r+") as out:
-        #     out.write_colormap(1, dataset.colormap(1))
+        # if value_dataset.colormap(1):
+        #     with rasterio.open(outfilename, "r+") as out_raster:
+        #         out_raster.write_colormap(1, value_dataset.colormap(1))
+
+        # write_raster(
+        #     "/tmp/unit.tif",
+        #     np.where(in_unit, 1, 0).astype("uint8"),
+        #     transform=units_dataset.window_transform(
+        #         get_window(units_dataset, (row.minx, row.miny, row.maxx, row.maxy))
+        #     ),
+        #     crs=units_dataset.crs,
+        #     nodata=0,
+        # )
 
     return out
 

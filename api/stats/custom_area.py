@@ -256,7 +256,6 @@ def get_custom_area_results(df):
             100 * config["outside_se_acres"] / config["rasterized_acres"]
         ),
         "blueprint": blueprint,
-        "corridors": corridors,
         "inputs": inputs,
         "input_ids": input_ids,
         "promote_base": input_info["promote_base"],
@@ -264,6 +263,9 @@ def get_custom_area_results(df):
         "slr": slr,
         "counties": counties,
     }
+
+    if corridors is not None:
+        results["corridors"] = corridors
 
     if ownership_info is not None:
         results.update(ownership_info)

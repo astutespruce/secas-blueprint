@@ -10,6 +10,7 @@ from analysis.constants import (
     ECOSYSTEMS,
     INDICATORS as ALL_INDICATORS,
     CORRIDORS,
+    M2_ACRES,
 )
 from analysis.lib.util import pluck
 from analysis.lib.raster import (
@@ -17,6 +18,7 @@ from analysis.lib.raster import (
     detect_data_by_mask,
     summarize_raster_by_geometry,
 )
+from analysis.lib.stats.core import huc12_raster_filename, marine_raster_filename
 
 ID = "base"
 
@@ -91,7 +93,7 @@ def extract_base_blueprint_by_mask(
     dict
         {
             "priorities": <acres by priority category>,
-            "corridors" <acres by corridors category or None>,
+            "corridors" <acres by corridors category; key only present if corridors are present>,
             "ecosystems": <dict: ecosystem and indicator info>,
             "legend": <entries for legend>,
             "total_acres": <total acres within input>,
@@ -236,116 +238,174 @@ def extract_base_blueprint_by_mask(
         "priorities": priorities[::-1],
         # don't include Not a priority in legend
         "legend": pluck(INPUTS[ID]["values"], ["label", "color"])[:0:-1],
-        "corridors": corridors,
         "ecosystems": ecosystems,
         "total_acres": total_acres,
         "outside_input_acres": outside_input_acres,
         "outside_input_percent": 100 * outside_input_acres / rasterized_acres,
     }
+    if corridors is not None:
+        results["corridors"] = corridors
 
     return results
 
 
-def summarize_by_unit(geometries, out_dir, marine=False):
-    """Summarize by HUC12 / marine lease block
+# def summarize_by_unit(geometries, out_dir, marine=False):
+#     """Summarize by HUC12 / marine lease block
+
+#     Parameters
+#     ----------
+#     geometries : Series of pygeos geometries, indexed by HUC12 / marine lease block id
+#     out_dir : str or Path object
+#     marine : bool
+#         True for marine lease blocks, False otherwise
+#     """
+
+#     summarize_raster_by_geometry(
+#         geometries,
+#         extract_by_geometry,
+#         outfilename=out_dir / "base_blueprint.feather",
+#         progress_label="Summarizing Base Blueprint",
+#         bounds=INPUTS[ID]["bounds"],
+#         marine=marine,
+#     )
+
+
+def summarize_blueprint_by_unit(df, out_dir, marine=False):
+    """Summarize by HUC12 or marine lease block
 
     Parameters
     ----------
-    geometries : Series of pygeos geometries, indexed by HUC12 / marine lease block id
-    out_dir : str or Path object
+    df : GeoDataFrame
+        must have a "value" column with same values as used for corresponding units
+        raster, and must have result of df.bounds joined in
+    out_dir : str
     marine : bool
-        True for marine lease blocks, False otherwise
+        if True, will summarize marine lease blocks, otherwise HUC12s
     """
 
-    summarize_raster_by_geometry(
-        geometries,
-        extract_by_geometry,
-        outfilename=out_dir / "base_blueprint.feather",
-        progress_label="Summarizing Base Blueprint",
-        bounds=INPUTS[ID]["bounds"],
-        marine=marine,
-    )
-
-
-def get_unit_results(unit_type, id, analysis_acres, total_acres):
-    """Get results for Base Blueprint dataset for a given HUC12 or marine lease
-    block.
-
-    Parameters
-    ----------
-    unit_type : str, one of ['huc12', 'marine_blocks']
-
-    id : str
-        HUC12 or marine lease block ID
-    analysis_acres : float
-        area of summary unit less any area outside SE Blueprint
-    total_acres : float
-        area of summary unit
-
-    Returns
-    -------
-    dict
-        {
-            "priorities": [...],
-            "legend": [...],
-            "analysis_notes": <analysis_notes>,
-            "remainder": <acres outside of input>,
-            "remainder_percent" <percent of total acres outside input>
-        }
-    """
-    if unit_type == "huc12":
-        results_filename = "data/results/huc12/southatlantic.feather"
-    else:
-        results_filename = "data/results/marine_blocks/southatlantic.feather"
-
-    df = pd.read_feather(results_filename).set_index("id")
-
-    if id not in df.index:
-        return None
-
-    values = pd.DataFrame(INPUTS[ID]["values"])
-
-    row = df.loc[id]
-    blueprint_cols = [c for c in row.index if c.startswith("base_")]
-
-    df = values.join(pd.Series(row[blueprint_cols].values, name="acres"))
-    df["percent"] = 100 * np.divide(df.acres, row.shape_mask)
-
-    # sort into correct order
-    df.sort_values(by=["blueprint", "value"], ascending=False, inplace=True)
-
-    priorities = df[["value", "blueprint", "label", "acres", "percent"]].to_dict(
-        orient="records"
-    )
-
-    # don't include Not a priority in legend
-    legend = df[["label", "color"]].iloc[:-1].to_dict(orient="records")
-
-    remainder = max(analysis_acres - df.acres.sum(), 0)
-    remainder = remainder if remainder >= 1 else 0
-
-    # Bring in indicators
-    prefix = ID
-    indicator_cols = [c for c in row.index if c.startswith(f"{prefix}:")]
-    indicators_present = {c.rsplit("_", 1)[0] for c in indicator_cols}
-
-    counts = {
-        id: np.array(
-            [
-                getattr(row, c)
-                for c in indicator_cols
-                if c.startswith(id) and not c.endswith("avg")
-            ]
+    if not len(df.columns.intersection({"value", "pixels"})) == 2:
+        raise ValueError(
+            "GeoDataFrame for summary must include value and pixels columns"
         )
-        for id in indicators_present
-    }
 
-    return {
-        # "priorities": priorities,
-        "ecosystems": extract_indicators(counts),
-        # "legend": legend,
-        "analysis_acres": analysis_acres,
-        "total_acres": total_acres,
-        # "remainder": remainder,
-        # "remainder_percent": 100 * remainder / total_acres,
-    }
+    units_raster_filename = marine_raster_filename if marine else huc12_raster_filename
+    with rasterio.open(units_raster_filename) as units_dataset, rasterio.open(
+        base_blueprint_filename
+    ) as value_dataset:
+        cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
+        bins = range(0, INPUTS[ID]["values"][-1]["value"] + 1)
+
+        blueprint_counts = summarize_raster_by_geometry(
+            df,
+            units_dataset,
+            value_dataset,
+            bins=bins,
+            progress_label="Summarizing Base Blueprint",
+        )
+
+    # NOTE: use count of pixels to calculate area outside SE; otherwise small
+    # floating point errors
+    total = blueprint_counts.sum(axis=1)
+    outside_se = df.pixels - total
+
+    # output values are acres
+    out = pd.DataFrame(
+        blueprint_counts * cellsize,
+        columns=[f"value_{v}" for v in bins],
+        index=df.index,
+    )
+
+    # TODO: drop columns not applicable
+
+    out["total"] = total * cellsize
+    out["outside_se"] = outside_se * cellsize
+    # TODO: area outside input
+
+    # TODO: add list of indicators present, store each in its own file?
+
+    out.reset_index().to_feather(out_dir / "base_blueprint.feather")
+
+
+# FIXME: rework
+# def get_unit_results(unit_type, id, analysis_acres, total_acres):
+#     """Get results for Base Blueprint dataset for a given HUC12 or marine lease
+#     block.
+
+#     Parameters
+#     ----------
+#     unit_type : str, one of ['huc12', 'marine_blocks']
+
+#     id : str
+#         HUC12 or marine lease block ID
+#     analysis_acres : float
+#         area of summary unit less any area outside SE Blueprint
+#     total_acres : float
+#         area of summary unit
+
+#     Returns
+#     -------
+#     dict
+#         {
+#             "priorities": [...],
+#             "legend": [...],
+#             "analysis_notes": <analysis_notes>,
+#             "remainder": <acres outside of input>,
+#             "remainder_percent" <percent of total acres outside input>
+#         }
+#     """
+#     if unit_type == "huc12":
+#         results_filename = "data/results/huc12/southatlantic.feather"
+#     else:
+#         results_filename = "data/results/marine_blocks/southatlantic.feather"
+
+#     df = pd.read_feather(results_filename).set_index("id")
+
+#     if id not in df.index:
+#         return None
+
+#     values = pd.DataFrame(INPUTS[ID]["values"])
+
+#     row = df.loc[id]
+#     blueprint_cols = [c for c in row.index if c.startswith("base_")]
+
+#     df = values.join(pd.Series(row[blueprint_cols].values, name="acres"))
+#     df["percent"] = 100 * np.divide(df.acres, row.shape_mask)
+
+#     # sort into correct order
+#     df.sort_values(by=["blueprint", "value"], ascending=False, inplace=True)
+
+#     priorities = df[["value", "blueprint", "label", "acres", "percent"]].to_dict(
+#         orient="records"
+#     )
+
+#     # don't include Not a priority in legend
+#     legend = df[["label", "color"]].iloc[:-1].to_dict(orient="records")
+
+#     remainder = max(analysis_acres - df.acres.sum(), 0)
+#     remainder = remainder if remainder >= 1 else 0
+
+#     # Bring in indicators
+#     prefix = ID
+#     indicator_cols = [c for c in row.index if c.startswith(f"{prefix}:")]
+#     indicators_present = {c.rsplit("_", 1)[0] for c in indicator_cols}
+
+#     counts = {
+#         id: np.array(
+#             [
+#                 getattr(row, c)
+#                 for c in indicator_cols
+#                 if c.startswith(id) and not c.endswith("avg")
+#             ]
+#         )
+#         for id in indicators_present
+#     }
+
+#     return {
+#         # "priorities": priorities,
+#         "ecosystems": extract_indicators(counts),
+#         # "legend": legend,
+#         "analysis_acres": analysis_acres,
+#         "total_acres": total_acres,
+#         # "remainder": remainder,
+#         # "remainder_percent": 100 * remainder / total_acres,
+#     }

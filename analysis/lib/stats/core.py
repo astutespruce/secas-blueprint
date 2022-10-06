@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import pandas as pd
 import rasterio
 
 from analysis.constants import BLUEPRINT, INPUTS, M2_ACRES
@@ -171,7 +172,7 @@ def extract_blueprint_by_mask(shape_mask, window, cellsize, rasterized_acres, **
     return blueprint
 
 
-def summarize_by_unit(df, out_dir, marine=False):
+def summarize_blueprint_by_unit(df, out_dir, marine=False):
     """Summarize by HUC12 or marine lease block
 
     Parameters
@@ -184,10 +185,16 @@ def summarize_by_unit(df, out_dir, marine=False):
         if True, will summarize marine lease blocks, otherwise HUC12s
     """
 
+    if not len(df.columns.intersection({"value", "pixels"})) == 2:
+        raise ValueError(
+            "GeoDataFrame for summary must include value and pixels columns"
+        )
+
     units_raster_filename = marine_raster_filename if marine else huc12_raster_filename
     with rasterio.open(units_raster_filename) as units_dataset, rasterio.open(
         blueprint_filename
     ) as value_dataset:
+        cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
         bins = range(0, len(BLUEPRINT))
 
         blueprint_counts = summarize_raster_by_geometry(
@@ -198,11 +205,18 @@ def summarize_by_unit(df, out_dir, marine=False):
             progress_label="Summarizing Southeast Blueprint",
         )
 
-    # no need to calculate overlap with inputs; that is done in advance and there
-    # is only one Blueprint input per summary unit
+    # NOTE: use count of pixels to calculate area outside SE; otherwise small
+    # floating point errors
+    total = blueprint_counts.sum(axis=1)
+    outside_se = df.pixels - total
 
-    # use the sum of the blueprint area to calculate area outside SE
-    blueprint_totals = blueprint_counts.sum(axis=1)
-    remainder = df.pixels - blueprint_totals
+    # output values are acres
+    out = pd.DataFrame(
+        blueprint_counts * cellsize,
+        columns=[f"value_{v}" for v in bins],
+        index=df.index,
+    )
+    out["total"] = total * cellsize
+    out["outside_se"] = outside_se * cellsize
 
-    outfilename = (out_dir / "core.feather",)
+    out.reset_index().to_feather(out_dir / "blueprint.feather")
