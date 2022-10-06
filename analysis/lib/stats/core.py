@@ -185,10 +185,8 @@ def summarize_blueprint_by_unit(df, out_dir, marine=False):
         if True, will summarize marine lease blocks, otherwise HUC12s
     """
 
-    if not len(df.columns.intersection({"value", "pixels"})) == 2:
-        raise ValueError(
-            "GeoDataFrame for summary must include value and pixels columns"
-        )
+    if not "value" in df.columns:
+        raise ValueError("GeoDataFrame for summary must include value column")
 
     units_raster_filename = marine_raster_filename if marine else huc12_raster_filename
     with rasterio.open(units_raster_filename) as units_dataset, rasterio.open(
@@ -197,26 +195,21 @@ def summarize_blueprint_by_unit(df, out_dir, marine=False):
         cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
         bins = range(0, len(BLUEPRINT))
 
-        blueprint_counts = summarize_raster_by_geometry(
-            df,
-            units_dataset,
-            value_dataset,
-            bins=bins,
-            progress_label="Summarizing Southeast Blueprint",
+        blueprint_acres = (
+            summarize_raster_by_geometry(
+                df,
+                units_dataset,
+                value_dataset,
+                bins=bins,
+                progress_label="Summarizing Southeast Blueprint",
+            )
+            * cellsize
         )
 
-    # NOTE: use count of pixels to calculate area outside SE; otherwise small
-    # floating point errors
-    total = blueprint_counts.sum(axis=1)
-    outside_se = df.pixels - total
-
-    # output values are acres
     out = pd.DataFrame(
-        blueprint_counts * cellsize,
+        blueprint_acres,
         columns=[f"value_{v}" for v in bins],
         index=df.index,
     )
-    out["total"] = total * cellsize
-    out["outside_se"] = outside_se * cellsize
 
     out.reset_index().to_feather(out_dir / "blueprint.feather")

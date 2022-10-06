@@ -270,7 +270,7 @@ def extract_base_blueprint_by_mask(
 #     )
 
 
-def summarize_blueprint_by_unit(df, out_dir, marine=False):
+def summarize_base_blueprint_by_unit(df, out_dir, marine=False):
     """Summarize by HUC12 or marine lease block
 
     Parameters
@@ -283,45 +283,104 @@ def summarize_blueprint_by_unit(df, out_dir, marine=False):
         if True, will summarize marine lease blocks, otherwise HUC12s
     """
 
-    if not len(df.columns.intersection({"value", "pixels"})) == 2:
+    if not len(df.columns.intersection({"value", "outside_se"})) == 2:
         raise ValueError(
-            "GeoDataFrame for summary must include value and pixels columns"
+            "GeoDataFrame for summary must include value and outside_se columns"
         )
 
     units_raster_filename = marine_raster_filename if marine else huc12_raster_filename
-    with rasterio.open(units_raster_filename) as units_dataset, rasterio.open(
-        base_blueprint_filename
-    ) as value_dataset:
+    units_dataset = rasterio.open(units_raster_filename)
+    with rasterio.open(base_blueprint_filename) as value_dataset:
         cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
         bins = range(0, INPUTS[ID]["values"][-1]["value"] + 1)
 
-        blueprint_counts = summarize_raster_by_geometry(
-            df,
-            units_dataset,
-            value_dataset,
-            bins=bins,
-            progress_label="Summarizing Base Blueprint",
+        priority_acres = (
+            summarize_raster_by_geometry(
+                df,
+                units_dataset,
+                value_dataset,
+                bins=bins,
+                progress_label="Summarizing Base Blueprint",
+            )
+            * cellsize
         )
 
-    # NOTE: use count of pixels to calculate area outside SE; otherwise small
-    # floating point errors
-    total = blueprint_counts.sum(axis=1)
-    outside_se = df.pixels - total
+    with rasterio.open(corridors_filename) as value_dataset:
+        bins = range(0, CORRIDORS[-1]["value"] + 1)
 
-    # output values are acres
-    out = pd.DataFrame(
-        blueprint_counts * cellsize,
-        columns=[f"value_{v}" for v in bins],
+        corridor_acres = (
+            summarize_raster_by_geometry(
+                df,
+                units_dataset,
+                value_dataset,
+                bins=bins,
+                progress_label="Summarizing Base Blueprint Corridors",
+            )
+            * cellsize
+        )
+
+    priorities = pd.DataFrame(
+        priority_acres,
+        columns=[f"priority_{v}" for v in bins],
+        index=df.index,
+    )
+    total_acres = priority_acres.sum(axis=1)
+    outside_input_acres = (
+        df.rasterized_acres.values - df.outside_se.values - total_acres
+    )
+    outside_input_acres[outside_input_acres < 1e-6] = 0
+    priorities["outside_input"] = outside_input_acres
+
+    corridors = pd.DataFrame(
+        corridor_acres,
+        columns=[f"corridors_{v}" for v in bins],
         index=df.index,
     )
 
-    # TODO: drop columns not applicable
+    out = priorities.join(corridors)
 
-    out["total"] = total * cellsize
-    out["outside_se"] = outside_se * cellsize
-    # TODO: area outside input
+    # only use marine indicators in marine blocks; otherwise check them all
+    if marine:
+        check_indicators = [i for i in INDICATORS if i["id"].startswith("base:marine_")]
+    else:
+        check_indicators = INDICATORS
 
-    # TODO: add list of indicators present, store each in its own file?
+    for indicator in check_indicators:
+        id = indicator["id"]
+        filename = src_dir / indicator["filename"]
+        values = [v["value"] for v in indicator["values"]]
+        with rasterio.open(filename) as value_dataset:
+            indicator_acres = (
+                summarize_raster_by_geometry(
+                    df,
+                    units_dataset,
+                    value_dataset,
+                    bins=range(0, values[-1] + 1),
+                    progress_label=f"Summarizing {indicator['label']}",
+                )
+                * cellsize
+            )
+
+            # skip any where no data are present in any units
+            if not indicator_acres.any():
+                print(f"{indicator['label']} is not present in any summary units")
+                continue
+
+        # Some indicators exclude 0 values, their columns need to be dropped
+        if values[0] > 0:
+            indicator_acres = indicator_acres[:, values[0] :]
+
+        total_indicator_acres = indicator_acres.sum(axis=1)
+        outside_indicator_acres = total_acres - total_indicator_acres
+        outside_indicator_acres[outside_indicator_acres < 1e-6] = 0
+        indicator_df = pd.DataFrame(
+            indicator_acres, columns=[f"{id}_value_{v}" for v in values], index=df.index
+        )
+        indicator_df[f"{id}_outside"] = outside_indicator_acres
+
+        out = out.join(indicator_df)
+
+    units_dataset.close()
 
     out.reset_index().to_feather(out_dir / "base_blueprint.feather")
 

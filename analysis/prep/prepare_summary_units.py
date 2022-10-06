@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 import warnings
 
+from progress.bar import Bar
 import geopandas as gp
 import pandas as pd
 from pyogrio import read_dataframe, write_dataframe
@@ -33,105 +34,116 @@ bnd = bnd_df.geometry.values.data[0]
 
 input_areas = gp.read_feather(data_dir / "inputs/boundaries/input_areas.feather")
 
-# ### Extract HUC12 within boundary
-# print("Reading source HUC12s...")
-# merged = None
-# for huc2 in SECAS_HUC2:
-#     df = (
-#         read_dataframe(
-#             src_dir
-#             / f"summary_units/huc12/WBD_{huc2:02}_HU2_GDB/WBD_{huc2:02}_HU2_GDB.gdb",
-#             layer="WBDHU12",
-#         )[["huc12", "name", "geometry"]]
-#         .rename(columns={"huc12": "id"})
-#         .to_crs(DATA_CRS)
-#     )
+### Extract HUC12 within boundary
+print("Reading source HUC12s...")
+merged = None
+for huc2 in SECAS_HUC2:
+    df = (
+        read_dataframe(
+            src_dir
+            / f"summary_units/huc12/WBD_{huc2:02}_HU2_GDB/WBD_{huc2:02}_HU2_GDB.gdb",
+            layer="WBDHU12",
+        )[["huc12", "name", "geometry"]]
+        .rename(columns={"huc12": "id"})
+        .to_crs(DATA_CRS)
+    )
 
-#     if merged is None:
-#         merged = df
+    if merged is None:
+        merged = df
 
-#     else:
-#         merged = pd.concat([merged, df], ignore_index=True)
+    else:
+        merged = pd.concat([merged, df], ignore_index=True)
 
-# huc12 = merged.reset_index(drop=True)
-
-
-# # select HUC12s within the SE states
-# print("Selecting HUC12s in region...")
-# tree = pg.STRtree(huc12.geometry.values.data)
-# ix = tree.query(bnd, predicate="intersects")
-# huc12 = huc12.iloc[ix].copy().reset_index(drop=True)
-
-# # make sure data are valid
-# huc12["geometry"] = make_valid(huc12.geometry.values.data)
-
-# # calculate area
-# huc12["acres"] = pg.area(huc12.geometry.values.data) * M2_ACRES
-
-# # for those that touch the edge of the region, drop any that are not >= 50% in
-# # raster input area.
-# tree = pg.STRtree(huc12.geometry.values.data)
-# ix = tree.query(bnd, predicate="contains")
-
-# edge_df = huc12.loc[~huc12.id.isin(huc12.iloc[ix].id)].copy()
-# edge_df["overlap"] = (
-#     100
-#     * pg.area(pg.intersection(edge_df.geometry.values.data, bnd))
-#     / pg.area(edge_df.geometry.values.data)
-# )
-
-# drop_ids = edge_df.loc[edge_df.overlap < 50].id
-
-# print(f"Dropping {len(drop_ids)} HUC12s that do not sufficiently overlap input areas")
-# huc12 = huc12.loc[~huc12.id.isin(drop_ids)].copy()
-
-# # extract geographic bounds
-# huc12_wgs84 = huc12.to_crs(GEO_CRS)
-# huc12 = huc12.join(huc12_wgs84.bounds)
-
-# # Areas where HUC2 == 21 are in Puerto Rico, everwhere else has Base Blueprint
-# huc12.loc[huc12.id.str.startswith("21"), "input_id"] = "car"
-# huc12.input_id = huc12.input_id.fillna("base")
-
-# huc12["value"] = np.arange(1, len(huc12) + 1).astype("uint16")
-
-# # rasterize for summary unit analysis, use full extent
-# print("Rasterizing geometries")
-# tmp = pd.DataFrame(huc12[["id", "value", "geometry"]].join(huc12.bounds))
-# tmp["geometry"] = tmp.geometry.values.data
-
-# with rasterio.open(input_area_filename) as src:
-#     # create tuples of GeoJSON, value
-#     shapes = tmp.apply(lambda row: (to_dict(row.geometry), row.value), axis=1)
-
-#     data = rasterize(
-#         shapes,
-#         (src.height, src.width),
-#         transform=src.transform,
-#         fill=0,  # values are >= 1
-#         # can use uint16 since there are ~25k watersheds
-#         dtype="uint16",
-#     )
-
-#     # calculate pixel count of each unit
-#     counts = np.zeros((len(tmp),), dtype="uint")
-#     for i, (_, row) in enumerate(tmp.iterrows()):
-#         unit_window = get_window(src, (row.minx, row.miny, row.maxx, row.maxy))
-#         counts[i] = (data[unit_window.toslices()] == row.value).sum().astype("uint")
-
-#     huc12["pixels"] = counts
-#     cellsize = src.res[0] * src.res[0] * M2_ACRES
-#     huc12["rasterized_acres"] = counts * cellsize
-
-#     outfilename = bnd_dir / "huc12.tif"
-#     write_raster(outfilename, data, transform=src.transform, crs=src.crs, nodata=0)
-
-#     add_overviews(outfilename)
+huc12 = merged.reset_index(drop=True)
 
 
-# # Save in EPSG:5070 for analysis
-# huc12.to_feather(analysis_dir / "huc12.feather")
-# write_dataframe(huc12, bnd_dir / "huc12.fgb")
+# select HUC12s within the SE states
+print("Selecting HUC12s in region...")
+tree = pg.STRtree(huc12.geometry.values.data)
+ix = tree.query(bnd, predicate="intersects")
+huc12 = huc12.iloc[ix].copy().reset_index(drop=True)
+
+# make sure data are valid
+huc12["geometry"] = make_valid(huc12.geometry.values.data)
+
+# calculate area
+huc12["acres"] = pg.area(huc12.geometry.values.data) * M2_ACRES
+
+# for those that touch the edge of the region, drop any that are not >= 50% in
+# raster input area.
+tree = pg.STRtree(huc12.geometry.values.data)
+ix = tree.query(bnd, predicate="contains")
+
+edge_df = huc12.loc[~huc12.id.isin(huc12.iloc[ix].id)].copy()
+edge_df["overlap"] = (
+    100
+    * pg.area(pg.intersection(edge_df.geometry.values.data, bnd))
+    / pg.area(edge_df.geometry.values.data)
+)
+
+drop_ids = edge_df.loc[edge_df.overlap < 50].id
+
+print(f"Dropping {len(drop_ids)} HUC12s that do not sufficiently overlap input areas")
+huc12 = huc12.loc[~huc12.id.isin(drop_ids)].copy()
+
+# extract geographic bounds
+huc12_wgs84 = huc12.to_crs(GEO_CRS)
+huc12 = huc12.join(huc12_wgs84.bounds)
+
+# Areas where HUC2 == 21 are in Puerto Rico, everwhere else has Base Blueprint
+huc12.loc[huc12.id.str.startswith("21"), "input_id"] = "car"
+huc12.input_id = huc12.input_id.fillna("base")
+
+huc12["value"] = np.arange(1, len(huc12) + 1).astype("uint16")
+
+# rasterize for summary unit analysis, use full extent
+print("Rasterizing geometries")
+tmp = pd.DataFrame(huc12[["id", "value", "geometry"]].join(huc12.bounds))
+tmp["geometry"] = tmp.geometry.values.data
+
+with rasterio.open(input_area_filename) as src:
+    input_areas_data = src.read(1)
+    nodata = np.uint(src.nodata)
+
+    # create tuples of GeoJSON, value
+    shapes = tmp.apply(lambda row: (to_dict(row.geometry), row.value), axis=1)
+
+    data = rasterize(
+        shapes,
+        (src.height, src.width),
+        transform=src.transform,
+        fill=0,  # values are >= 1
+        # can use uint16 since there are ~25k watersheds
+        dtype="uint16",
+    )
+
+    # calculate pixel count of each unit
+    counts = np.zeros((len(tmp),), dtype="uint")
+    outside_se_counts = np.zeros((len(tmp),), dtype="uint")
+    for i, (_, row) in Bar("Rasterizing units", max=len(tmp)).iter(
+        enumerate(tmp.iterrows())
+    ):
+        unit_window = get_window(src, (row.minx, row.miny, row.maxx, row.maxy))
+        in_unit = data[unit_window.toslices()] == row.value
+        counts[i] = in_unit.sum().astype("uint")
+
+        outside_se = input_areas_data[unit_window.toslices()][in_unit] == nodata
+        outside_se_counts[i] = outside_se.sum().astype("uint")
+
+    huc12["pixels"] = counts
+    cellsize = src.res[0] * src.res[0] * M2_ACRES
+    huc12["rasterized_acres"] = counts * cellsize
+    huc12["outside_se"] = outside_se_counts * cellsize
+
+    outfilename = bnd_dir / "huc12.tif"
+    write_raster(outfilename, data, transform=src.transform, crs=src.crs, nodata=0)
+
+    add_overviews(outfilename)
+
+
+# Save in EPSG:5070 for analysis
+huc12.to_feather(analysis_dir / "huc12.feather")
+write_dataframe(huc12, bnd_dir / "huc12.fgb")
 
 
 ### Marine units
@@ -245,6 +257,9 @@ tmp = pd.DataFrame(marine[["id", "value", "geometry"]].join(marine.bounds))
 tmp["geometry"] = tmp.geometry.values.data
 
 with rasterio.open(input_area_filename) as src:
+    input_areas_data = src.read(1)
+    nodata = np.uint(src.nodata)
+
     # create tuples of GeoJSON, value
     shapes = tmp.apply(lambda row: (to_dict(row.geometry), row.value), axis=1)
 
@@ -259,13 +274,19 @@ with rasterio.open(input_area_filename) as src:
 
     # calculate pixel count of each unit
     counts = np.zeros((len(tmp),), dtype="uint")
+    outside_se_counts = np.zeros((len(tmp),), dtype="uint")
     for i, (_, row) in enumerate(tmp.iterrows()):
         unit_window = get_window(src, (row.minx, row.miny, row.maxx, row.maxy))
-        counts[i] = (data[unit_window.toslices()] == row.value).sum().astype("uint")
+        in_unit = data[unit_window.toslices()] == row.value
+        counts[i] = in_unit.sum().astype("uint")
+
+        outside_se = input_areas_data[unit_window.toslices()][in_unit] == nodata
+        outside_se_counts[i] = outside_se.sum().astype("uint")
 
     marine["pixels"] = counts
     cellsize = src.res[0] * src.res[0] * M2_ACRES
     marine["rasterized_acres"] = counts * cellsize
+    marine["outside_se"] = outside_se_counts * cellsize
 
     outfilename = bnd_dir / "marine_blocks.tif"
     write_raster(outfilename, data, transform=src.transform, crs=src.crs, nodata=0)
