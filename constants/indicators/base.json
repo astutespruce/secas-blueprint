@@ -9,42 +9,42 @@
         {
           "value": 0,
           "label": "Final score of 0 (degraded areas of opportunity)",
-          "color": null
+          "color": "#EEE9F3"
         },
         {
           "value": 1,
           "label": "Final score of 10 (degraded areas of opportunity)",
-          "color": "#FFF7FB"
+          "color": "#D6D6E9"
         },
         {
           "value": 2,
           "label": "Final score of 20 (restoration opportunity areas)",
-          "color": "#E8E4F0"
+          "color": "#B4C4DF"
         },
         {
           "value": 3,
           "label": "Final score of 30 (restoration opportunity areas)",
-          "color": "#C4CBE3"
+          "color": "#8AB2D4"
         },
         {
           "value": 4,
           "label": "Final score of 40 (restoration opportunity areas)",
-          "color": "#91B4D6"
+          "color": "#589EC8"
         },
         {
           "value": 5,
           "label": "Final score of 50 (restoration opportunity areas)",
-          "color": "#519BC6"
+          "color": "#2685BB"
         },
         {
           "value": 6,
           "label": "Final score of 60 (areas of excellent fish habitat)",
-          "color": "#1379B5"
+          "color": "#056BA8"
         },
         {
           "value": 7,
           "label": "Final score of 70 (areas of excellent fish habitat)",
-          "color": "#045D92"
+          "color": "#045687"
         },
         {
           "value": 8,
@@ -64,12 +64,12 @@
         {
           "value": 1,
           "label": "Presence of Alabama shad, American shad, or striped bass",
-          "color": "#66CDAB"
+          "color": "#9ECAE1"
         },
         {
           "value": 2,
           "label": "Presence of Gulf sturgeon",
-          "color": "#00734C"
+          "color": "#3182BD"
         }
       ],
       "description": "This indicator captures how far upstream migratory fish in the Gulf of Mexico have been observed. How far upstream migratory fish can travel reflects not just the presence of dams and other barriers, but also the presence of measures like fish ladders that allow specific species to access habitat upstream of dams. This indicator originates from The Nature Conservancy's Southeast Aquatic Connectivity Assessment Project and applies to the Environmental Protection Agency's estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood, also known as the 1% annual chance flood.",
@@ -84,47 +84,47 @@
         {
           "value": 0,
           "label": "No aquatic SGCN observed",
-          "color": "#FFFFBF"
+          "color": "#FFFFD9"
         },
         {
           "value": 1,
           "label": "1 aquatic SGCN observed",
-          "color": "#DBF0AD"
+          "color": "#EDF8B1"
         },
         {
           "value": 2,
           "label": "2 aquatic SGCN observed",
-          "color": "#B5E29B"
+          "color": "#C7E9B4"
         },
         {
           "value": 3,
           "label": "3 aquatic SGCN observed",
-          "color": "#8FD38A"
+          "color": "#7FCDBB"
         },
         {
           "value": 4,
           "label": "4 aquatic SGCN observed",
-          "color": "#7BC48E"
+          "color": "#41B6C4"
         },
         {
           "value": 5,
           "label": "5 aquatic SGCN observed",
-          "color": "#6CB696"
+          "color": "#1D91C0"
         },
         {
           "value": 6,
           "label": "6 aquatic SGCN observed",
-          "color": "#5EA79F"
+          "color": "#225EA8"
         },
         {
           "value": 7,
           "label": "7 aquatic SGCN observed",
-          "color": "#518A98"
+          "color": "#253494"
         },
         {
           "value": 8,
           "label": "8+ aquatic Species of Greatest Conservation Need (SGCN) observed",
-          "color": "#45668A"
+          "color": "#081D58"
         }
       ],
       "description": "This indicator measures the number of aquatic animal Species of Greatest Conservation Need (SGCN) observed within each 12-digit HUC subwatershed, including fish, mussels, snails, crayfish, and amphibians. SGCN are identified in State Wildlife Action Plans as most in need of conservation action.  This indicator captures patterns of rare and endemic species diversity not well-represented by other freshwater aquatic indicators. It originates from state Natural Heritage Program data collected by the Southeast Aquatic Resources Partnership and applies to the Environmental Protection Agency's estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood, also known as the 1% annual chance flood.",
@@ -138,27 +138,27 @@
         {
           "value": 0,
           "label": "No aquatic imperiled (G1/G2) or threatened/endangered species observed",
-          "color": "#FFFFBF"
+          "color": "#FFFFD9"
         },
         {
           "value": 1,
           "label": "1 aquatic imperiled (G1/G2) or threatened/endangered species observed",
-          "color": "#DBF0AD"
+          "color": "#EDF8B1"
         },
         {
           "value": 2,
           "label": "2 aquatic imperiled (G1/G2) or threatened/endangered species observed",
-          "color": "#B5E29B"
+          "color": "#C7E9B4"
         },
         {
           "value": 3,
           "label": "3 aquatic imperiled (G1/G2) or threatened/endangered species observed",
-          "color": "#8FD38A"
+          "color": "#7FCDBB"
         },
         {
           "value": 5,
           "label": "5 aquatic imperiled (G1/G2) or threatened/endangered species observed",
-          "color": "#6CB696"
+          "color": "#1D91C0"
         }
       ],
       "description": "This indicator counts the number of aquatic species within each 12-digit HUC subwatershed in West Virginia that are listed as G1 (globally critically imperiled), G2 (globally imperiled), or threatened/endangered under the U.S. Endangered Species Act. It captures patterns of rare and endemic species diversity not well-represented by other freshwater aquatic indicators. It fills a key gap in the imperiled aquatic species indicator, which does not yet cover West Virginia. This indicator originates from the Environmental Protection Agency's EnviroAtlas data.",
@@ -172,27 +172,27 @@
         {
           "value": 1,
           "label": "≤60% natural habitat within the estimated floodplain, by catchment",
-          "color": "#D0D1E6"
+          "color": "#B6EFB6"
         },
         {
           "value": 2,
-          "label": "60-70%",
-          "color": "#A6BDDB"
+          "label": ">60-70%",
+          "color": "#98C7AD"
         },
         {
           "value": 3,
-          "label": "70-80%",
-          "color": "#67A9CF"
+          "label": ">70-80%",
+          "color": "#7090A1"
         },
         {
           "value": 4,
-          "label": "80-90%",
-          "color": "#1C9099"
+          "label": ">80-90%",
+          "color": "#3D4D8A"
         },
         {
           "value": 5,
           "label": ">90% natural habitat within the estimated floodplain, by catchment",
-          "color": "#016C59"
+          "color": "#090D5E"
         }
       ],
       "description": "This indicator measures the amount of natural landcover in the estimated floodplain of rivers and streams within each catchment. It assesses the stream channel and its surrounding riparian buffer, measuring the percent of unaltered habitat like forests, wetlands, or open water (rather than agriculture or development). Intact vegetated buffers within the floodplain of rivers and streams provide aquatic habitat, improve water quality, reduce erosion and flooding, recharge groundwater, and more. This indicator originates from the 2019 National Land Cover Database and applies to the Environmental Protection Agency's estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood, also known as the 1% annual chance flood.",
@@ -207,37 +207,37 @@
         {
           "value": 1,
           "label": "1 connected stream class",
-          "color": "#FFFFD9"
+          "color": "#E8E0EF"
         },
         {
           "value": 2,
           "label": "2 connected stream classes",
-          "color": "#EDF8B1"
+          "color": "#C4CBE3"
         },
         {
           "value": 3,
           "label": "3 connected stream classes",
-          "color": "#C7E9B4"
+          "color": "#8BB4D6"
         },
         {
           "value": 4,
           "label": "4 connected stream classes",
-          "color": "#7FCDBB"
+          "color": "#4B9BC6"
         },
         {
           "value": 5,
           "label": "5 connected stream classes",
-          "color": "#41B6C4"
+          "color": "#118599"
         },
         {
           "value": 6,
           "label": "6 connected stream classes",
-          "color": "#1D91C0"
+          "color": "#016F60"
         },
         {
           "value": 7,
           "label": "7 connected stream classes",
-          "color": "#225EA8"
+          "color": "#014636"
         }
       ],
       "description": "This indicator depicts the number of different stream size classes in a river network not separated by dams or waterfalls. River networks with a variety of connected stream classes help retain aquatic biodiversity in a changing climate by allowing species to access climate refugia and move between habitats. This indicator originates from the Southeast Aquatic Resources Partnership and applies to the Environmental Protection Agency's estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood, also known as the 1% annual chance flood.",
@@ -256,12 +256,12 @@
         },
         {
           "value": 2,
-          "label": "70-90% of catchment permeable (likely degraded water quality and not supporting many aquatic species)",
+          "label": ">70-90% of catchment permeable (likely degraded water quality and not supporting many aquatic species)",
           "color": "#9783F7"
         },
         {
           "value": 3,
-          "label": "90-95% of catchment permeable (likely declining water quality and supporting most aquatic species)",
+          "label": ">90-95% of catchment permeable (likely declining water quality and supporting most aquatic species)",
           "color": "#6145ED"
         },
         {
@@ -282,27 +282,27 @@
         {
           "value": 1,
           "label": "Low priority for open pine conservation for focal bird species (score 0-20)",
-          "color": "#FDFEBE"
+          "color": "#E4DBEC"
         },
         {
           "value": 2,
           "label": "Medium-low priority (score >20-40)",
-          "color": "#CBCD90"
+          "color": "#CB99CA"
         },
         {
           "value": 3,
           "label": "Medium priority (score >40-60)",
-          "color": "#999D64"
+          "color": "#E4439A"
         },
         {
           "value": 4,
           "label": "Medium-high priority (score >60-80)",
-          "color": "#696F3A"
+          "color": "#BF0D51"
         },
         {
           "value": 5,
           "label": "High priority for open pine conservation for focal bird species (Bachman's sparrow, red-cockaded woodpecker, Henslow's sparrow, red-headed woodpecker, Northern bobwhite, and brown-headed nuthatch) (score >80-100)",
-          "color": "#3A4311"
+          "color": "#67001F"
         }
       ],
       "description": "This indicator identifies areas within the historic longleaf pine range east of the Mississippi River where creating or maintaining open pine habitat would most benefit six focal species of birds (Bachman's sparrow, red-cockaded woodpecker, Henslow's sparrow, red-headed woodpecker, Northern bobwhite, brown-headed nuthatch). It prioritizes areas for open pine conservation based on suitability for longleaf pine, feasibility of prescribed burning, proximity to protected lands, habitat suitability for focal bird species, and proximity to source bird populations. It originates from the East Gulf Coastal Plain Joint Venture's prioritization of areas for open pine ecosystem restoration.",
@@ -316,17 +316,17 @@
         {
           "value": 1,
           "label": "Moderate priority for a new park that would create nearby equitable access",
-          "color": "#C9AFD9"
+          "color": "#DFB8E6"
         },
         {
           "value": 2,
           "label": "High priority for a new park that would create nearby equitable access",
-          "color": "#8343A6"
+          "color": "#AC66ED"
         },
         {
           "value": 3,
           "label": "Very high priority for a new park that would create nearby equitable access",
-          "color": "#4C0073"
+          "color": "#700CF2"
         }
       ],
       "description": "This cultural resource indicator prioritizes places to create new parks that would fill gaps in equitable access to open space within socially vulnerable communities. It identifies areas where residents currently lack access to parks within a 10-minute walk (accounting for walkable road networks and access barriers like highways and fences), then prioritizes based on park need using demographic and environmental metrics. Parks help improve public health, foster a conservation ethic by providing opportunities for people to connect with nature, and support critical ecosystem services. This indicator originates from the Trust for Public Land's ParkServe park priority areas.",
@@ -370,27 +370,27 @@
         {
           "value": 1,
           "label": "0-20% perennial forbs and perennial grass",
-          "color": "#FDFEBE"
+          "color": "#FFF9C4"
         },
         {
           "value": 2,
           "label": "21-40% perennial forbs and perennial grass",
-          "color": "#CBCD90"
+          "color": "#E1EA62"
         },
         {
           "value": 3,
           "label": "41-60% perennial forbs and perennial grass",
-          "color": "#999D64"
+          "color": "#AFB42B"
         },
         {
           "value": 4,
           "label": "61-80% perennial forbs and perennial grass",
-          "color": "#696F3A"
+          "color": "#6A7514"
         },
         {
           "value": 5,
           "label": "81-100% perennial forbs and perennial grass",
-          "color": "#3A4311"
+          "color": "#2D3606"
         }
       ],
       "description": "This indicator measures the percent of perennial forbs and perennial grass to evaluate grassland condition across the Great Plains. Grasslands in this area with a high percentage of perennials are less likely to be impacted by woody encroachment, less susceptible to non-native annual grasses, and more likely to support important plants, birds, and pollinators. This indicator originates from Rangeland Analysis Platform vegetation cover data.",
@@ -423,17 +423,17 @@
         },
         {
           "value": 5,
-          "label": "Mostly natural and connected for 1.9 to <5 km, partly natural and connected for 5 to <40 km, or developed and ≥ 40 km",
+          "label": "Mostly natural and connected for 1.9 to <5 km, partly natural and connected for 5 to <40 km, or developed and ≥40 km",
           "color": "#B7E075"
         },
         {
           "value": 6,
-          "label": "Mostly natural and connected for 5 to <40 km or partly natural and connected for ≥ 40 km",
+          "label": "Mostly natural and connected for 5 to <40 km or partly natural and connected for ≥40 km",
           "color": "#4DB15D"
         },
         {
           "value": 7,
-          "label": "Mostly natural and connected for ≥ 40 km",
+          "label": "Mostly natural and connected for ≥40 km",
           "color": "#006837"
         }
       ],
@@ -484,27 +484,27 @@
         {
           "value": 1,
           "label": "Grassland geology",
-          "color": "#FFEBAF"
+          "color": "#FAFDCA"
         },
         {
           "value": 2,
           "label": "Potentially compatible management outside of grassland geology (undeveloped powerline right-of-way or perennial forbs and grasses)",
-          "color": "#FFD37F"
+          "color": "#C5E799"
         },
         {
           "value": 3,
           "label": "Potentially compatible management within grassland geology (undeveloped powerline right-of-way or perennial forbs and grasses)",
-          "color": "#FFAA00"
+          "color": "#67BE70"
         },
         {
           "value": 4,
           "label": "Known grassland buffer",
-          "color": "#A87000"
+          "color": "#1E8041"
         },
         {
           "value": 5,
           "label": "Known grassland",
-          "color": "#734C00"
+          "color": "#004529"
         }
       ],
       "description": "This indicator represents grasslands in the interior southeastern United States, which support important plants, birds, and pollinators. It includes grasslands with and without trees that are historically maintained by geology (e.g., outcrops, glades, and barrens), fire (e.g., Piedmont prairies), and/or the regular violent flooding on the banks of high-energy rivers known as “riverscour” (e.g, riverscour prairies). Known grasslands receive the highest scores, followed by bumble bee habitat buffers around known sites, areas in potentially compatible management, and restoration opportunities within grassland geology. This indicator combines data from multiple sources, including the Southeastern Grasslands Initiative, the Central Hardwoods Joint Venture, the Rangeland Analysis Platform, and The Nature Conservancy.",
@@ -519,52 +519,52 @@
         {
           "value": 1,
           "label": "Lowest priority (score 0-10)",
-          "color": "#C2523C"
+          "color": "#FDFEC0"
         },
         {
           "value": 2,
           "label": "(score >10-20)",
-          "color": "#DA7528"
+          "color": "#FFD396"
         },
         {
           "value": 3,
           "label": "(score >20-30)",
-          "color": "#EFAA11"
+          "color": "#FFA973"
         },
         {
           "value": 4,
           "label": "(score >30-40)",
-          "color": "#F9DD07"
+          "color": "#FB7D5E"
         },
         {
           "value": 5,
           "label": "(score >40-50)",
-          "color": "#C0F700"
+          "color": "#EA5562"
         },
         {
           "value": 6,
           "label": "(score >50-60)",
-          "color": "#32E300"
+          "color": "#C93E73"
         },
         {
           "value": 7,
           "label": "(score >60-70)",
-          "color": "#0EC546"
+          "color": "#A3317F"
         },
         {
           "value": 8,
           "label": "(score >70-80)",
-          "color": "#1EA088"
+          "color": "#7E2482"
         },
         {
           "value": 9,
           "label": "(score >80-90)",
-          "color": "#166C8B"
+          "color": "#5A167F"
         },
         {
           "value": 10,
           "label": "Highest priority (score >90-100)",
-          "color": "#0B2C7A"
+          "color": "#331068"
         }
       ],
       "description": "This indicator prioritizes areas for new land protection within the Mississippi Alluvial Valley (MAV) based on benefits to forest breeding birds that depend on large interior cores of bottomland hardwood habitat (Swainson's warbler, cerulean warbler, swallow-tailed kite). The model considers core size, the amount of existing protected land within the forest patch, proximity to reforestation priority areas, and risk of conversion to agriculture based on flooding frequency. The highest scores represent drier, unprotected forest patches with cores at least 2,000 ha (~5,000 ac) that are adjacent to priority areas from a complementary reforestation model also developed by the Lower Mississippi Valley Joint Venture (LMVJV). This indicator originates from the LMVJV's MAV forest breeding bird protection priorities.",
@@ -583,7 +583,7 @@
         },
         {
           "value": 2,
-          "label": "Least likely (10th to <20th percentile) ",
+          "label": "Least likely (10th to <20th percentile)",
           "color": "#9C9C9C"
         },
         {
@@ -638,17 +638,17 @@
         {
           "value": 1,
           "label": "Other playa",
-          "color": "#FEE6CE"
+          "color": "#C4B5AF"
         },
         {
           "value": 2,
           "label": "Healthy playa",
-          "color": "#FDAE6B"
+          "color": "#785448"
         },
         {
           "value": 3,
           "label": "Healthy playa and part of a larger cluster",
-          "color": "#E6550D"
+          "color": "#472E29"
         }
       ],
       "description": "This indicator represents the condition and location of playas, which are round, shallow depressions found primarily in the western Great Plains that serve as temporary wetlands by collecting water from rainfall and runoff. It defines a healthy playa as one that is not farmed, hydrologically modified, within a wind farm, or impacted by sediment accumulation due to agriculture. It also considers the increased benefits to wildlife provided by clusters of nearby playas, compared to more sparsely distributed playas. Playas play a critical role in recharging the Ogallala aquifer and provide habitat and food for birds and other animals. This indicator originates from the Playa Lakes Joint Venture's probable playas dataset.",
@@ -712,12 +712,12 @@
         {
           "value": 0,
           "label": "Not a Priority Amphibian and Reptile Conservation Area (PARCA)",
-          "color": "#D3FFBE"
+          "color": null
         },
         {
           "value": 1,
           "label": "Priority Amphibian and Reptile Conservation Area (PARCA)",
-          "color": "#55FF00"
+          "color": "#38A800"
         }
       ],
       "description": "This indicator represents Priority Amphibian and Reptile Conservation Areas (PARCAs) in the South Atlantic. PARCA is an expert-driven, nonregulatory designation that includes places capable of supporting viable amphibian and reptile populations, places occupied by rare or imperiled species, and places rich in biodiversity or species unique to that geographic area (i.e., endemism).",
@@ -736,27 +736,27 @@
         {
           "value": 1,
           "label": "Very small patches or near open areas (potential for presence of wood thrush, whip-poor-will, red-headed woodpecker, Chuck-will's widow, or American woodcock)",
-          "color": "#D9F0A3"
+          "color": "#FBE6BB"
         },
         {
           "value": 2,
           "label": "Small patches often near water (potential presence of hooded warbler or Kentucky warbler)",
-          "color": "#ADDD8E"
+          "color": "#F5BA98"
         },
         {
           "value": 3,
           "label": "Medium patches (potential for presence of Acadian flycatcher)",
-          "color": "#78C679"
+          "color": "#E67E7D"
         },
         {
           "value": 4,
           "label": "Large patches often near water (potential for presence of Northern parula, black-throated green warbler, or Prothonotary warbler)",
-          "color": "#31A354"
+          "color": "#B24C65"
         },
         {
           "value": 5,
           "label": "Very large patches near water (potential for presence of Swainson's warbler)",
-          "color": "#006837"
+          "color": "#70284A"
         }
       ],
       "description": "This indicator is an index of habitat suitability for twelve upland hardwood and forested wetland bird species (wood thrush, whip-poor-will, American woodcock, red-headed woodpecker, Chuck-will's widow, hooded warbler, Kentucky warbler, Acadian flycatcher, Northern parula, black-throated green warbler, prothonotary warbler, Swainson's warbler) based on patch size and other ecosystem characteristics such as proximity to water and proximity to forest and ecotone edge. The needs of these species are increasingly restrictive at higher index values, reflecting better quality habitat. This indicator originates from Southeast Gap Analysis Program and Designing Sustainable Landscapes bird habitat models.",
@@ -776,12 +776,12 @@
         {
           "value": 1,
           "label": "Historic place with nearby high-urban buffer",
-          "color": "#BCAAA4"
+          "color": "#E2C786"
         },
         {
           "value": 2,
           "label": "Historic place with nearby low-urban buffer",
-          "color": "#795548"
+          "color": "#774508"
         }
       ],
       "description": "This cultural resource indicator is an index of sites on the National Register of Historic Places surrounded by limited urban development. It identifies significant historic places that remain connected to their context in the natural world. This indicator originates from the National Park Service and various state historic resource agencies.",
@@ -796,27 +796,27 @@
         {
           "value": 1,
           "label": "5-10 acre urban park",
-          "color": "#DFC2BC"
+          "color": "#FFFFBE"
         },
         {
           "value": 2,
           "label": ">10-30 acre urban park",
-          "color": "#BD97AE"
+          "color": "#E6B7C4"
         },
         {
           "value": 3,
           "label": ">30-50 acre urban park",
-          "color": "#96679D"
+          "color": "#CC71B4"
         },
         {
           "value": 4,
           "label": ">50-75 acre urban park",
-          "color": "#673C83"
+          "color": "#7C2E7D"
         },
         {
           "value": 5,
           "label": ">75 acre urban park",
-          "color": "#2D2C55"
+          "color": "#4B076E"
         }
       ],
       "description": "This cultural resource indicator measures the size of parks larger than 5 acres in the urban environment. Protected natural areas in urban environments provide urban residents a nearby place to connect with nature, and offer refugia for some species. This indicator complements the equitable access to potential parks indicator by capturing the value of existing parks.",
@@ -830,27 +830,27 @@
         {
           "value": 1,
           "label": "Low habitat suitability for forested wetland bird umbrella species (score 0-20)",
-          "color": "#EDF8E9"
+          "color": "#FFFF80"
         },
         {
           "value": 2,
           "label": "Medium-low habitat suitability (score >20-40)",
-          "color": "#BAE4B3"
+          "color": "#FAD155"
         },
         {
           "value": 3,
           "label": "Medium habitat suitability (score >40-60)",
-          "color": "#74C476"
+          "color": "#F2A72E"
         },
         {
           "value": 4,
           "label": "Medium-high habitat suitability (score >60-80)",
-          "color": "#31A354"
+          "color": "#AD5313"
         },
         {
           "value": 5,
           "label": "High habitat suitability for forested wetland bird umbrella species (Acadian flycatcher, Kentucky warbler, yellow-throated warbler, prothonotary warbler, red-shouldered hawk) (score >80)",
-          "color": "#006D2C"
+          "color": "#6B0601"
         }
       ],
       "description": "This indicator is an index of habitat suitability for five forested wetland bird species (Acadian flycatcher, Kentucky warbler, yellow-throated warbler, prothonotary warbler, red-shouldered hawk) within bottomland hardwood forests and riparian areas in the West Gulf Coastal Plain and Ouachitas Bird Conservation Region. It uses metrics like patch size, dispersal distance, distance to water, and more to assess the potential for habitat to support sustainable populations of these birds. This indicator originates from the Lower Mississippi Valley Joint Venture's West Gulf Coastal Plain and Ouachitas forested wetland decision support model.",
@@ -869,32 +869,32 @@
         {
           "value": 1,
           "label": "Pine patch part of a cluster of nearby patches able to support a population of 1 umbrella bird species if managed in open condition",
-          "color": "#C2523C"
+          "color": "#FEE6E3"
         },
         {
           "value": 2,
           "label": "Pine patch part of a cluster of nearby patches able to support a population of 2 umbrella bird species if managed in open condition",
-          "color": "#EDA113"
+          "color": "#FCBEBE"
         },
         {
           "value": 3,
           "label": "Pine patch part of a cluster of nearby patches able to support a population of all 3 umbrella bird species if managed in open condition",
-          "color": "#F9DD07"
+          "color": "#F87CA8"
         },
         {
           "value": 4,
           "label": "Pine patch large enough to support a population of 1 umbrella bird species if managed in open condition",
-          "color": "#00DB00"
+          "color": "#D92F95"
         },
         {
           "value": 5,
           "label": "Pine patch large enough to support a population of 2 umbrella bird species if managed in open condition",
-          "color": "#20998F"
+          "color": "#92017A"
         },
         {
           "value": 6,
           "label": "Pine patch large enough to support a population of all 3 umbrella bird species (brown-headed nuthatch, Bachman's sparrow, red-cockaded woodpecker) if managed in open condition",
-          "color": "#0B2C7A"
+          "color": "#49006A"
         }
       ],
       "description": "This indicator identifies areas with existing pine trees that, if managed for open condition, could support a population of three umbrella bird species (brown-headed nuthatch, Bachman's sparrow, red-cockaded woodpecker). It evaluates potential habitat based on each species' habitat needs and population dynamics, prioritizing opportunities to restore and manage habitat to benefit open pine birds. Final scores reflect both the selectiveness of the species and whether an area meets the habitat requirements through one large patch, or clusters of smaller patches in sufficiently close proximity for breeding pairs to disperse. This indicator updates the West Gulf Coastal Plain/Ouachita Joint Venture's open pine decision support model.",
@@ -907,53 +907,53 @@
       "values": [
         {
           "value": 1,
-          "label": "0-10th percentile of suitable Mottled Duck nesting habitat",
-          "color": "#FFFFBF"
+          "label": "0-10th percentile of suitable mottled duck nesting habitat",
+          "color": "#FFFFBE"
         },
         {
           "value": 2,
-          "label": "10th-20th percentile of suitable Mottled Duck nesting habitat",
-          "color": "#DFF2AF"
+          "label": "10th-20th percentile of suitable mottled duck nesting habitat",
+          "color": "#FFEFA3"
         },
         {
           "value": 3,
-          "label": "20th-30th percentile of suitable Mottled Duck nesting habitat",
-          "color": "#BEE59F"
+          "label": "20th-30th percentile of suitable mottled duck nesting habitat",
+          "color": "#FEDD7F"
         },
         {
           "value": 4,
-          "label": "30th-40th percentile of suitable Mottled Duck nesting habitat",
-          "color": "#9CD890"
+          "label": "30th-40th percentile of suitable mottled duck nesting habitat",
+          "color": "#FEBF5A"
         },
         {
           "value": 5,
-          "label": "40th-50th percentile of suitable Mottled Duck nesting habitat",
-          "color": "#82CB8A"
+          "label": "40th-50th percentile of suitable mottled duck nesting habitat",
+          "color": "#FD9D43"
         },
         {
           "value": 6,
-          "label": "50th-60th percentile of suitable Mottled Duck nesting habitat",
-          "color": "#74BE91"
+          "label": "50th-60th percentile of suitable mottled duck nesting habitat",
+          "color": "#FD7134"
         },
         {
           "value": 7,
-          "label": "60th-70th percentile of suitable Mottled Duck nesting habitat",
-          "color": "#67AB99"
+          "label": "60th-70th percentile of suitable mottled duck nesting habitat",
+          "color": "#F43D25"
         },
         {
           "value": 8,
-          "label": "70th-80th percentile of suitable Mottled Duck nesting habitat",
-          "color": "#5BA4A1"
+          "label": "70th-80th percentile of suitable mottled duck nesting habitat",
+          "color": "#DB141E"
         },
         {
           "value": 9,
-          "label": "80th-90th percentile of suitable Mottled Duck nesting habitat",
-          "color": "#508697"
+          "label": "80th-90th percentile of suitable mottled duck nesting habitat",
+          "color": "#B60026"
         },
         {
           "value": 10,
-          "label": "90th-100th percentile of suitable Mottled Duck nesting habitat",
-          "color": "#45668A"
+          "label": "90th-100th percentile of suitable mottled duck nesting habitat",
+          "color": "#800026"
         }
       ],
       "description": "This indicator depicts marshes and grasslands along the coast of Louisiana and Texas that are important for mottled duck nesting, based on key biological parameters such as patch size, land cover type, and distance to brood rearing habitat. As a non-migratory bird endemic to the Gulf coast, mottled ducks serve as good indicators of coastal marsh health and function. Urban growth, agricultural development, and hydrologic changes due to human alteration and climate change have caused significant mottled duck habitat loss and population declines. This indicator originates from a mottled duck decision support tool developed by the Gulf Coast Prairie Landscape Conservation Cooperative.",
@@ -967,47 +967,47 @@
         {
           "value": 0,
           "label": "Final score of 0 (degraded areas of opportunity)",
-          "color": "#E1E1E1"
+          "color": "#E3F4DD"
         },
         {
           "value": 1,
           "label": "Final score of 10 (degraded areas of opportunity)",
-          "color": "#B4CEC5"
+          "color": "#D0EDCA"
         },
         {
           "value": 2,
           "label": "Final score of 20 (restoration opportunity areas)",
-          "color": "#8CBBAB"
+          "color": "#B4E2BA"
         },
         {
           "value": 3,
           "label": "Final score of 30 (restoration opportunity areas)",
-          "color": "#69A893"
+          "color": "#8FD4BD"
         },
         {
           "value": 4,
           "label": "Final score of 40 (restoration opportunity areas)",
-          "color": "#4B957C"
+          "color": "#67C1CB"
         },
         {
           "value": 5,
           "label": "Final score of 50 (restoration opportunity areas)",
-          "color": "#318267"
+          "color": "#42A6CC"
         },
         {
           "value": 6,
           "label": "Final score of 60 (restoration opportunity areas)",
-          "color": "#1C6F53"
+          "color": "#2384BA"
         },
         {
           "value": 7,
           "label": "Final score of 70 (areas of excellent fish habitat)",
-          "color": "#0C5C41"
+          "color": "#0864A7"
         },
         {
           "value": 8,
           "label": "Final score of 80 (areas of excellent fish habitat)",
-          "color": "#004930"
+          "color": "#084081"
         }
       ],
       "description": "This indicator measures the condition of estuarine fish habitat along the Atlantic coast using metrics of water quality, marsh edges, seagrass and oyster reefs, fragmentation, human development, and more. Areas of excellent fish habitat are already in good condition and face few threats; restoration opportunity areas are doing well in some respects, but restoration projects could significantly improve them; degraded areas of opportunity face many challenges, and restoration projects are unlikely to increase available fish habitat unless particularly large in scope and scale. This indicator originates from the Atlantic Coast Fish Habitat Partnership's fish habitat conservation area mapping and prioritization project.",
@@ -1022,27 +1022,27 @@
         {
           "value": 0,
           "label": "Armored",
-          "color": null
+          "color": "#FFE4DE"
         },
         {
           "value": 1,
           "label": "Partially armored",
-          "color": "#FFCCFF"
+          "color": "#F9CBC1"
         },
         {
           "value": 2,
           "label": "Partially armored and harder to develop",
-          "color": "#F092EE"
+          "color": "#A2B7B6"
         },
         {
           "value": 3,
           "label": "Natural",
-          "color": "#DB58D9"
+          "color": "#188288"
         },
         {
           "value": 4,
           "label": "Natural and harder to develop",
-          "color": "#A300A3"
+          "color": "#004D56"
         }
       ],
       "description": "This indicator assesses shoreline condition based on the presence of hardened structures like jetties, groins, and riprap, as well as other human development. By restricting the natural movement of sediment, shoreline armoring increases erosion, prevents the inland migration of coastal ecosystems in response to sea-level rise, and degrades habitat for birds, sea turtles, fish, plants, and other species both on and offshore. Natural shorelines in harder-to-develop coastal areas receive the highest shoreline condition scores, while hardened shorelines receive the lowest scores. This indicator originates from the National Oceanic and Atmospheric Administration's Environmental Sensitivity Index dataset.",
@@ -1092,12 +1092,12 @@
         {
           "value": 1,
           "label": "Island",
-          "color": "#FEE6CE"
+          "color": "#FFCCFF"
         },
         {
           "value": 2,
           "label": "Island critical habitat for any of six threatened and endangered species (piping plover, loggerhead sea turtle, Cape Sable thoroughwort, Florida semaphore cactus, silver rice rat, or Bartram's hairstreak butterfly)",
-          "color": "#E6AE0D"
+          "color": "#C700C7"
         }
       ],
       "description": "This indicator represents important habitat for island-dependent species across the Southeast. Because the isolation of islands can make them ecologically unique and protect them from disturbance and mainland predators, they often serve as important habitat for many species of mammals, plants, and insects, as well as breeding coastal birds and sea turtles. The highest scores go to island critical habitat for six threatened and endangered animal and plant species: piping plover, loggerhead sea turtle, Cape Sable thoroughwort, Florida semaphore cactus, silver rice rat, and Bartram's hairstreak butterfly. This indicator originates from U.S. Fish and Wildlife Service critical habitat data and island boundaries from the U.S. Geological Survey and Esri.",
@@ -1155,7 +1155,7 @@
         {
           "value": 1,
           "label": "Seagrasses present",
-          "color": "#4C7300"
+          "color": "#AFB42B"
         }
       ],
       "description": "This indicator represents the presence of seagrass in the Atlantic Ocean and Gulf of Mexico. Seagrasses provide food and habitat for a range of marine and estuarine wildlife, including fish, sea turtles, shrimp, crabs, oysters, and more. They also produce oxygen, filter water, control erosion, and buffer storms. Seagrasses serve as an important indicator of the overall health of coastal ecosystems because they are sensitive to water quality and require sufficiently clear water for sunlight to penetrate. This indicator originates from the National Oceanic and Atmospheric Administration's Marine Cadastre.",
@@ -1169,27 +1169,27 @@
         {
           "value": 1,
           "label": "≤20th percentile of importance for bird index species",
-          "color": "#FFFFED"
+          "color": "#FEEACC"
         },
         {
           "value": 2,
           "label": ">20th-40th percentile of importance",
-          "color": "#E2DEB9"
+          "color": "#FDC38D"
         },
         {
           "value": 3,
           "label": ">40th-60th percentile of importance",
-          "color": "#C4BA8C"
+          "color": "#F67B51"
         },
         {
           "value": 4,
           "label": ">60th-80th percentile of importance",
-          "color": "#A79565"
+          "color": "#CF2518"
         },
         {
           "value": 5,
           "label": ">80th percentile of importance for bird index species (American oystercatcher, Wilson's plover, least tern, and piping plover)",
-          "color": "#89703C"
+          "color": "#7F0000"
         }
       ],
       "description": "This indicator is an index of habitat suitability for four shorebird species (American oystercatcher, Wilson's plover, least tern, piping plover) in the South Atlantic, based on observed abundance. The relative use of beach habitat by shorebirds for nesting, foraging, and breeding is an indicator of beach health and quality. It originates from data collected by waterbird biologists from the U.S. Fish and Wildlife Service and state wildlife agencies in Florida, Georgia, South Carolina and North Carolina.",
@@ -1203,27 +1203,27 @@
         {
           "value": 1,
           "label": "Low suitability for coral or hardbottom",
-          "color": "#B6EFB6"
+          "color": "#EEB1B1"
         },
         {
           "value": 2,
           "label": "Medium suitability for coral or hardbottom",
-          "color": "#97C5AC"
+          "color": "#C7787B"
         },
         {
           "value": 3,
           "label": "High suitability for coral or hardbottom",
-          "color": "#7597A2"
+          "color": "#AB6779"
         },
         {
           "value": 4,
           "label": "Very high suitability for coral or hardbottom",
-          "color": "#555F96"
+          "color": "#8F5677"
         },
         {
           "value": 5,
           "label": "Observed coral or hardbottom",
-          "color": "#141C66"
+          "color": "#693F5A"
         }
       ],
       "description": "This indicator measures known and predicted suitable locations of hardbottom habitat and deep-sea corals. Hardbottom provides an anchor for important seafloor habitats such as deep-sea corals, plants, and sponges. Hardbottom and associated deep-sea coral communities provide valuable habitat structure that supports a wide range of invertebrate and fish species. This indicator combines multiple datasets from the National Oceanic and Atmospheric Administration and The Nature Conservancy.",
@@ -1237,27 +1237,27 @@
         {
           "value": 1,
           "label": "≤20th percentile of importance",
-          "color": "#FEF6B5"
+          "color": "#FEE825"
         },
         {
           "value": 2,
           "label": ">20th-40th percentile of importance",
-          "color": "#FECE97"
+          "color": "#6DCF5A"
         },
         {
           "value": 3,
           "label": ">40th-60th percentile of importance",
-          "color": "#FFA679"
+          "color": "#1F9E89"
         },
         {
           "value": 4,
           "label": ">60th-80th percentile of importance",
-          "color": "#F07C7E"
+          "color": "#31688E"
         },
         {
           "value": 5,
           "label": ">80th percentile of importance for marine bird index species",
-          "color": "#E15383"
+          "color": "#482878"
         }
       ],
       "description": "This indicator is a continuous index of highly productive areas for birds that feed exclusively or mainly at sea. It uses seasonal predictions of relative abundance for seventeen species of marine birds (Audubon's shearwater, white-winged scoter, black scoter, horned grebe, band-rumped storm-petrel, Bermuda petrel, Manx shearwater, black-capped petrel, Northern gannet, Bonaparte's gull. common loon, red-throated loon, Cory's shearwater, royal tern, great shearwater, sooty shearwater, common tern). This indicator originates from Marine-life Data and Analysis Team marine bird models.",
@@ -1271,27 +1271,27 @@
         {
           "value": 1,
           "label": "≤20th percentile of importance",
-          "color": "#BFD3E6"
+          "color": "#FDF6B5"
         },
         {
           "value": 2,
           "label": ">20th-40th percentile of importance",
-          "color": "#8C96C6"
+          "color": "#FAD18C"
         },
         {
           "value": 3,
           "label": ">40th-60th percentile of importance",
-          "color": "#8C6BB1"
+          "color": "#F6A972"
         },
         {
           "value": 4,
           "label": ">60th-80th percentile of importance",
-          "color": "#88419D"
+          "color": "#EF7E72"
         },
         {
           "value": 5,
           "label": ">80th percentile of importance for marine mammal index species",
-          "color": "#6E016B"
+          "color": "#E24C80"
         }
       ],
       "description": "This indicator is a continuous index of dolphin and whale density based on monthly density predictions for ten species of cetaceans and yearly density predictions for three rarer cetacean species (monthly: North Atlantic right whale, sperm whale, Sei whale, humpback whale, fin whale, bottlenose dolphin, short-beaked common dolphin, Risso's dolphin, harbor porpoise, and Atlantic white-sided dolphin; yearly: pilot whale, beaked whale, striped dolphin). This indicator originates from Duke Marine Lab marine mammal models.",
@@ -1304,8 +1304,8 @@
       "values": [
         {
           "value": 1,
-          "label": "Maritime Forest",
-          "color": "#00FFC5"
+          "label": "Maritime forest",
+          "color": "#546327"
         }
       ],
       "description": "This indicator depicts maritime forest currently present in the South Atlantic. Since maritime forest has been substantially reduced from its historic extent, protecting the remaining acreage of existing maritime forest is important. This indicator originates from Landfire Existing Vegetation Type data.",
@@ -1319,7 +1319,7 @@
         {
           "value": 1,
           "label": "Stable coastal wetlands",
-          "color": "#75B2B3"
+          "color": "#10CBCB"
         }
       ],
       "description": "This indicator uses remote sensing to calculate the unvegetated-vegetated ratio of tidal wetlands, which compares how much of a wetland is not covered by plants (e.g., sediment, rocks, open water) to how much is covered by plants. This ratio, and how it changes over time, is a good surrogate for salt marsh degradation processes like sediment loss and conversion to open water. It helps differentiate between stable marshes that are more resilient, and declining marshes that are more vulnerable to threats like sea-level rise, erosion, and coastal development. This indicator originates from a U.S. Geological Survey project on an unvegetated to vegetated ratio for coastal wetlands.",

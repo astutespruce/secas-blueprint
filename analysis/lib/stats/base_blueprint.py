@@ -16,7 +16,7 @@ from analysis.lib.util import pluck
 from analysis.lib.raster import (
     extract_count_in_geometry,
     detect_data_by_mask,
-    summarize_raster_by_geometry,
+    summarize_raster_by_units_grid,
 )
 from analysis.lib.stats.core import huc12_raster_filename, marine_raster_filename
 
@@ -270,7 +270,7 @@ def extract_base_blueprint_by_mask(
 #     )
 
 
-def summarize_base_blueprint_by_unit(df, out_dir, marine=False):
+def summarize_base_blueprint_by_units_grid(df, units_grid, out_dir, marine=False):
     """Summarize by HUC12 or marine lease block
 
     Parameters
@@ -278,6 +278,7 @@ def summarize_base_blueprint_by_unit(df, out_dir, marine=False):
     df : GeoDataFrame
         must have a "value" column with same values as used for corresponding units
         raster, and must have result of df.bounds joined in
+    units_grid : SummaryUnitGrid instance
     out_dir : str
     marine : bool
         if True, will summarize marine lease blocks, otherwise HUC12s
@@ -288,16 +289,14 @@ def summarize_base_blueprint_by_unit(df, out_dir, marine=False):
             "GeoDataFrame for summary must include value and outside_se columns"
         )
 
-    units_raster_filename = marine_raster_filename if marine else huc12_raster_filename
-    units_dataset = rasterio.open(units_raster_filename)
     with rasterio.open(base_blueprint_filename) as value_dataset:
         cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
         bins = range(0, INPUTS[ID]["values"][-1]["value"] + 1)
 
         priority_acres = (
-            summarize_raster_by_geometry(
+            summarize_raster_by_units_grid(
                 df,
-                units_dataset,
+                units_grid,
                 value_dataset,
                 bins=bins,
                 progress_label="Summarizing Base Blueprint",
@@ -309,9 +308,9 @@ def summarize_base_blueprint_by_unit(df, out_dir, marine=False):
         bins = range(0, CORRIDORS[-1]["value"] + 1)
 
         corridor_acres = (
-            summarize_raster_by_geometry(
+            summarize_raster_by_units_grid(
                 df,
-                units_dataset,
+                units_grid,
                 value_dataset,
                 bins=bins,
                 progress_label="Summarizing Base Blueprint Corridors",
@@ -351,9 +350,9 @@ def summarize_base_blueprint_by_unit(df, out_dir, marine=False):
         values = [v["value"] for v in indicator["values"]]
         with rasterio.open(filename) as value_dataset:
             indicator_acres = (
-                summarize_raster_by_geometry(
+                summarize_raster_by_units_grid(
                     df,
-                    units_dataset,
+                    units_grid,
                     value_dataset,
                     bins=range(0, values[-1] + 1),
                     progress_label=f"Summarizing {indicator['label']}",
@@ -379,8 +378,6 @@ def summarize_base_blueprint_by_unit(df, out_dir, marine=False):
         indicator_df[f"{id}_outside"] = outside_indicator_acres
 
         out = out.join(indicator_df)
-
-    units_dataset.close()
 
     out.reset_index().to_feather(out_dir / "base_blueprint.feather")
 
