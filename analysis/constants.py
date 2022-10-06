@@ -17,6 +17,8 @@ ACRES_PRECISION = 1
 # meters to acres
 M2_ACRES = 0.000247105
 M_MILES = 0.000621371
+STANDARD_RESOLUTION = 30  # meters
+PIXEL_ACRES = STANDARD_RESOLUTION * STANDARD_RESOLUTION * M2_ACRES
 
 # 32 is OK for regional level maps; 16 is more typical for big areas like ACF
 OVERVIEW_FACTORS = [2, 4, 8, 16, 32]
@@ -146,3 +148,26 @@ SLR_LEGEND = [
     {"label": "9", "color": "#7DF5FD"},
     {"label": "10", "color": "#B3FEF7"},
 ]
+
+
+# Original codes
+NLCD_CODES = {
+    11: {"label": "Open water", "color": "#466B9F"},
+    12: {"label": "Perennial ice/snow", "color": "#D1DEF8"},
+    21: {"label": "Developed (open space)", "color": "#DEC5C5"},
+    22: {"label": "Developed (low intensity)", "color": "#D99282"},
+    23: {"label": "Developed (medium intensity)", "color": "#EB0000"},
+    24: {"label": "Developed (high intensity)", "color": "#AB0000"},
+    31: {"label": "Barren land", "color": "#B3AC9F"},
+    41: {"label": "Deciduous forest", "color": "#68AB5F"},
+    42: {"label": "Evergreen forest", "color": "#1C5F2C"},
+    43: {"label": "Mixed forest", "color": "#B5C58F"},
+    52: {"label": "Shrub/scrub", "color": "#CCB879"},
+    71: {"label": "Grassland/herbaceous", "color": "#DFDFC2"},
+    81: {"label": "Pasture/hay", "color": "#DCD939"},
+    82: {"label": "Cultivated crops", "color": "#AB6C28"},
+    90: {"label": "Woody wetlands", "color": "#B8D9EB"},
+    95: {"label": "Emergent herbaceous wetlands", "color": "#6C9FB8"},
+}
+
+NLCD_INDEXES = {i: e for i, e in enumerate(NLCD_CODES.values())}

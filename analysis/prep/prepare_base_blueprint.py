@@ -16,6 +16,7 @@ from analysis.lib.raster import add_overviews, create_lowres_mask, write_raster
 
 
 src_dir = Path("source_data/base_blueprint")
+indicators_dir = src_dir / "indicators"
 data_dir = Path("data")
 bnd_dir = data_dir / "boundaries"  # used for processing but not as inputs
 out_dir = data_dir / "inputs/indicators/base"
@@ -86,17 +87,32 @@ inland_mask = None
 ### Extract indicators and associated json
 print("Extracting indicators")
 
-indicators = []
-tifs = sorted(str(f) for f in (src_dir / "indicators").glob("*.tif"))
-for tif in tifs:
-    if tif.replace(".tif", "Binned.tif") in tifs:
-        # print(f"Skipping {tif} because binned version available")
-        continue
+# IMPORTANT: indicators are driven from the JSON data; each one needs to have an entry there
+indicators_json_filename = json_dir / "base.json"
 
+# Create index of indicators by filename so that we can splice in updates to values
+indicators = {
+    entry["filename"]: entry
+    for entry in json.loads(open(indicators_json_filename).read())["indicators"]
+}
+
+tifs = [f.name for f in (src_dir / "indicators").glob("*.tif")]
+# also drop any that have binned equivalents
+new = [
+    f
+    for f in tifs
+    if not f in indicators and f.replace(".tif", "Binned.tif") not in tifs
+]
+
+if new:
+    print(f"WARNING: new indicators not accounted for {new}")
+
+
+for tif, indicator in indicators.items():
     print(f"Processing {tif}")
 
     # read data tables and extract indicator values
-    df = read_dataframe(f"{tif}.vat.dbf")
+    df = read_dataframe(indicators_dir / f"{tif}.vat.dbf")
     desc_col = [c for c in df.columns if c.lower().startswith("desc")][0]
     red_col = [c for c in df.columns if c.lower() == "red"][0]
     green_col = [c for c in df.columns if c.lower() == "green"][0]
@@ -111,13 +127,45 @@ for tif in tifs:
             blue_col: "blue",
         }
     )
-    df["red"] = df.red.astype("uint8")
-    df["green"] = df.green.astype("uint8")
-    df["blue"] = df.blue.astype("uint8")
 
-    df["label"] = df["label"].apply(
-        lambda x: x.split("=", 1)[1].strip() if "=" in x else x
+    df[["red", "green", "blue"]] = df[["red", "green", "blue"]].astype("uint8")
+
+    df["label"] = (
+        df["label"]
+        .apply(lambda x: x.split("=", 1)[1].strip() if "=" in x else x)
+        .str.replace("<=", "≤")
+        .str.replace(">=", "≥")
+        .str.replace("’", "'")
+        .str.strip()
     )
+
+    # shorten labels for MAV birds
+    if tif == "MississippiAlluvialValleyForestBirds_Protection.tif":
+        df["label"] = df["label"].str.replace(
+            "forest breeding bird habitat patch for future protection ", ""
+        )
+
+    elif tif == "MississippiAlluvialValleyForestBirds_Reforestation.tif":
+        df["label"] = (
+            df["label"]
+            .str.replace(
+                "Reforestation least likely to contribute to forest breeding bird habitat needs",
+                "Least likely",
+            )
+            .str.replace(
+                "Reforestation less likely to contribute to forest breeding bird habitat needs",
+                "Less likely",
+            )
+            .str.replace(
+                "Reforestation more likely to contribute to forest breeding bird habitat needs",
+                "More likely",
+            )
+            .str.replace(
+                "Reforestation most likely to contribute to forest breeding bird habitat needs",
+                "Most likely",
+            )
+        )
+
     df["color"] = df[["red", "green", "blue"]].apply(
         lambda row: f"#{row[0]:02X}{row[1]:02X}{row[2]:02X}", axis=1
     )
@@ -125,15 +173,10 @@ for tif in tifs:
     # All white is intended to be transparent
     df.loc[df.color == "#FFFFFF", "color"] = None
 
-    indicator = {
-        "id": f"base:ECO_{outfilename.stem.lower()}",
-        "filename": outfilename.name,
-        "label": outfilename.stem,
-        "values": df[["value", "label", "color"]].to_dict(orient="records"),
-        "description": "TODO:",
-        "url": "",
-    }
-    indicators.append(indicator)
+    values = df[["value", "label", "color"]].to_dict(orient="records")
+
+    # update values to latest labels, colors
+    indicator["values"] = values
 
     colors = df.set_index("value")[["red", "green", "blue"]]
     colors["Alpha"] = 255
@@ -146,9 +189,9 @@ for tif in tifs:
 
     # clip to new TIF, standardize nodata
     # Note: manually checked value range to verify that all can be safely cast to uint8
-    outfilename = out_dir / Path(tif).name
+    outfilename = out_dir / tif
     if not outfilename.exists():
-        with rasterio.open(tif) as src:
+        with rasterio.open(indicators_dir / tif) as src:
             nodata = int(src.nodata)
 
             if src.transform == orig_transform:
@@ -203,81 +246,80 @@ for tif in tifs:
         )
 
 
-outfilename = json_dir / "base.json"
-if not outfilename.exists():
-    with open(outfilename, "w") as out:
-        data = {"input": "base", "indicators": indicators}
-        out.write(json.dumps(data, indent=2))
+with open(indicators_json_filename, "w") as out:
+    data = {"input": "base", "indicators": list(indicators.values())}
+    out.write(json.dumps(data, indent=2, ensure_ascii=False))
 
 
 ### Prepare hubs and corridors
-print("Processing hubs and corridors")
+outfilename = out_dir / "corridors.tif"
+if not outfilename.exists():
+    print("Processing hubs and corridors")
 
-inland_hubs = read_dataframe(src_dir / "InlandHubs2022.shp", columns=[])
-marine_hubs = read_dataframe(src_dir / "EstuarineAndMarineHubs2022.shp", columns=[])
+    inland_hubs = read_dataframe(src_dir / "InlandHubs2022.shp", columns=[])
+    marine_hubs = read_dataframe(src_dir / "EstuarineAndMarineHubs2022.shp", columns=[])
 
-with rasterio.open(bnd_dir / "base_blueprint_extent.tif") as src, rasterio.open(
-    src_dir / "InlandCorridors2022.tif"
-) as inland, rasterio.open(src_dir / "MarineCorridors2022.tif") as marine:
-    print("Rasterizing hubs...")
-    # rasterize hubs to match inland
-    inland_hubs_data = rasterize(
-        to_dict_all(inland_hubs.geometry.values.data),
-        src.shape,
-        transform=src.transform,
-        dtype="uint8",
-    )
-    marine_hubs_data = rasterize(
-        to_dict_all(marine_hubs.geometry.values.data),
-        src.shape,
-        transform=src.transform,
-        dtype="uint8",
-    )
+    with rasterio.open(bnd_dir / "base_blueprint_extent.tif") as src, rasterio.open(
+        src_dir / "InlandCorridors2022.tif"
+    ) as inland, rasterio.open(src_dir / "MarineCorridors2022.tif") as marine:
+        print("Rasterizing hubs...")
+        # rasterize hubs to match inland
+        inland_hubs_data = rasterize(
+            to_dict_all(inland_hubs.geometry.values.data),
+            src.shape,
+            transform=src.transform,
+            dtype="uint8",
+        )
+        marine_hubs_data = rasterize(
+            to_dict_all(marine_hubs.geometry.values.data),
+            src.shape,
+            transform=src.transform,
+            dtype="uint8",
+        )
 
-    # Inland corridors are at 30m snapped to blueprint extent
-    inland_data = inland.read(1, window=data_window)
+        # Inland corridors are at 30m snapped to blueprint extent
+        inland_data = inland.read(1, window=data_window)
 
-    # Marine corridors are at 90m
-    print("Reading and warping marine corridors...")
-    vrt = WarpedVRT(
-        marine,
-        width=src.width,
-        height=src.height,
-        nodata=marine.nodata,
-        transform=src.transform,
-        resampling=Resampling.nearest,
-    )
-    marine_data = vrt.read()[0]
+        # Marine corridors are at 90m
+        print("Reading and warping marine corridors...")
+        vrt = WarpedVRT(
+            marine,
+            width=src.width,
+            height=src.height,
+            nodata=marine.nodata,
+            transform=src.transform,
+            resampling=Resampling.nearest,
+        )
+        marine_data = vrt.read()[0]
 
-    # consolidate all values into a single raster, writing hubs over corridors
-    # 4 = not a hub or corridor, but within data extent
-    data = np.ones(shape=src.shape, dtype="uint8") * np.uint8(4)
-    data[inland_data == 1] = 1
-    data[marine_data == 1] = 3
-    data[inland_hubs_data == 1] = 0
-    data[marine_hubs_data == 1] = 2
+        # consolidate all values into a single raster, writing hubs over corridors
+        # 4 = not a hub or corridor, but within data extent
+        data = np.ones(shape=src.shape, dtype="uint8") * np.uint8(4)
+        data[inland_data == 1] = 1
+        data[marine_data == 1] = 3
+        data[inland_hubs_data == 1] = 0
+        data[marine_hubs_data == 1] = 2
 
-    # stamp back in nodata from Blueprint extent
-    extent_data = src.read(1)
-    data[extent_data == np.uint8(src.nodata)] = 255
+        # stamp back in nodata from Blueprint extent
+        extent_data = src.read(1)
+        data[extent_data == np.uint8(src.nodata)] = 255
 
-    outfilename = out_dir / "corridors.tif"
-    write_raster(
-        outfilename,
-        data,
-        src.transform,
-        crs=src.crs,
-        nodata=NODATA,
-    )
+        write_raster(
+            outfilename,
+            data,
+            src.transform,
+            crs=src.crs,
+            nodata=NODATA,
+        )
 
-    add_overviews(outfilename)
+        add_overviews(outfilename)
 
-    colormap = {
-        e["value"]: hex_to_uint8(e["color"])
-        if e["color"] is not None
-        else (255, 255, 255, 0)
-        for e in CORRIDORS
-    }
+        colormap = {
+            e["value"]: hex_to_uint8(e["color"])
+            if e["color"] is not None
+            else (255, 255, 255, 0)
+            for e in CORRIDORS
+        }
 
-    with rasterio.open(outfilename, "r+") as src:
-        src.write_colormap(1, colormap)
+        with rasterio.open(outfilename, "r+") as src:
+            src.write_colormap(1, colormap)

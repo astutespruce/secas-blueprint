@@ -15,21 +15,13 @@
 /source_data/base_blueprint/*
 /source_data/blueprint/*
 /source_data/boundaries/*
+/source_data/nlcd/*
 /source_data/ownership/*
 /source_data/slr/*
 /source_data/urban/*
 /source_data/summary_units/*
-
 /source_data/caribbean/*
-/source_data/chat/*
 /source_data/florida/*
-/source_data/gulf_hypoxia/*
-/source_data/midSE/*
-/source_data/natures_network/*
-/source_data/naturescape/*
-/source_data/southatlantic/*
-/source_data/tnc_resilience/*
-
 
 /data/*
 /examples/*

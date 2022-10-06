@@ -4,6 +4,8 @@ Urbanization data were provided by Anna Petrasova (Center for Geospatial Analyti
 North Carolina State University) to USFWS staff on 6/23/2022, and downloaded
 from USFWS teams site on 8/2/2022.
 
+## Data processing
+
 Data are processed using `analysis/prep/prepare_urban.py`.
 
 Data are clipped to the inland portion of the Base Blueprint. Data are not
@@ -13,5 +15,11 @@ Data are first converted from floating point to frequency bins (number of times
 out of 50 model runs that predicted urbanization).
 
 Value 51 denotes currently urbanized in NLCD 2019.
+
+NLCD 2019 values contained within the data provided by the FUTURES are not quite
+correct; they are masked out in areas covered by protected areas within PAD-US.
+
+To get around this, we merged in NLCD 2019 prepared for use in this tool; see
+`source_data/nlcd/README.md`.
 
 # TODO: citation
