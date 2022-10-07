@@ -5,13 +5,10 @@ import numpy as np
 import pandas as pd
 import rasterio
 
-from analysis.constants import (
-    INPUTS,
-    INDICATORS as ALL_INDICATORS,
-)
+from analysis.constants import INPUTS, INDICATORS as ALL_INDICATORS, M2_ACRES
 from analysis.lib.raster import (
     extract_count_in_geometry,
-    summarize_raster_by_geometry,
+    summarize_raster_by_units_grid,
     offset_window,
 )
 from analysis.lib.util import pluck
@@ -115,155 +112,142 @@ def extract_florida_marine_by_mask(
     }
 
 
-def summarize_by_aoi(shapes, bounds, outside_se_acres):
-    """Get results for Florida Marine Blueprint dataset
-    for a given area of interest.
+def summarize_florida_marine_by_units_grid(df, units_grid, out_dir):
+    """Summarize by marine lease block
 
     Parameters
     ----------
-    shapes : list-like of geometry objects that provide __geo_interface__
-    bounds : list-like of [xmin, ymin, xmax, ymax]
-    outside_se_acres : float
-        acres of the analysis area that are outside the SE Blueprint region
-
-    Returns
-    -------
-    dict
-        {
-            "priorities": [...],
-            "legend": [...],
-            "analysis_notes": <analysis_notes>,
-            "remainder": <acres outside of input>,
-            "remainder_percent" <percent of total acres outside input>
-        }
+    df : GeoDataFrame
+        must have a "value" column with same values as used for corresponding units
+        raster, and must have result of df.bounds joined in
+    units_grid : SummaryUnitGrid instance
+    out_dir : str
     """
 
-    counts = extract_by_geometry(shapes, bounds, prescreen=False)
-
-    if counts is None:
-        return None
-
-    total_acres = counts["shape_mask"]
-    analysis_acres = total_acres - outside_se_acres
-
-    values = pd.DataFrame(INPUTS[ID]["values"])
-
-    df = values.join(pd.Series(counts[ID], name="acres"))
-    df["percent"] = 100 * np.divide(df.acres, total_acres)
-
-    # sort into correct order
-    df.sort_values(by=["blueprint", "value"], ascending=[False, True], inplace=True)
-
-    priorities = df[["value", "blueprint", "label", "acres", "percent"]].to_dict(
-        orient="records"
-    )
-
-    # don't include Not a priority in legend
-    legend = df[["label", "color"]].iloc[:-1].to_dict(orient="records")
-
-    remainder = max(analysis_acres - df.acres.sum(), 0)
-    remainder = remainder if remainder >= 1 else 0
-
-    return {
-        "priorities": priorities,
-        "ecosystems": extract_indicators(counts),
-        "legend": legend,
-        "analysis_acres": analysis_acres,
-        "total_acres": total_acres,
-        "remainder": remainder,
-        "remainder_percent": 100 * remainder / total_acres,
-    }
-
-
-def summarize_by_marine_block(geometries):
-    """Summarize by marine_block
-
-    Parameters
-    ----------
-    geometries : Series of pygeos geometries, indexed by marine block ID
-    """
-
-    summarize_raster_by_geometry(
-        geometries,
-        extract_by_geometry,
-        outfilename=results_filename,
-        progress_label="Calculating Florida Marine Blueprint area by Marine Block",
-        bounds=INPUTS[ID]["bounds"],
-    )
-
-
-def get_marine_block_results(id, analysis_acres, total_acres):
-    """Get results for Florida Conservation Blueprint dataset for a given
-    marine block.
-
-    Parameters
-    ----------
-    id : str
-        marine block ID
-    analysis_acres : float
-        area of marine block summary unit less any area outside SE Blueprint
-    total_acres : float
-        area of marine block summary unit
-
-    Returns
-    -------
-    dict
-        {
-            "priorities": [...],
-            "legend": [...],
-            "analysis_notes": <analysis_notes>,
-            "remainder": <acres outside of input>,
-            "remainder_percent" <percent of total acres outside input>
-        }
-    """
-    df = pd.read_feather(results_filename).set_index("id")
-
-    if id not in df.index:
-        return None
-
-    values = pd.DataFrame(INPUTS[ID]["values"])
-
-    row = df.loc[id]
-    cols = [c for c in row.index if c.startswith("flm_")]
-
-    df = values.join(pd.Series(row[cols].values, name="acres"))
-    df["percent"] = 100 * np.divide(df.acres, row.shape_mask)
-
-    # sort into correct order
-    df.sort_values(by=["blueprint", "value"], ascending=[False, True], inplace=True)
-
-    priorities = df[["value", "blueprint", "label", "acres", "percent"]].to_dict(
-        orient="records"
-    )
-
-    # don't include Not a priority in legend
-    legend = df[["label", "color"]].iloc[:-1].to_dict(orient="records")
-
-    remainder = max(analysis_acres - df.acres.sum(), 0)
-    remainder = remainder if remainder >= 1 else 0
-
-    # Bring in indicators
-    prefix = ID
-    indicator_cols = [c for c in row.index if c.startswith(f"{prefix}:")]
-    indicators_present = {c.rsplit("_", 1)[0] for c in indicator_cols}
-
-    counts = {
-        id: np.array(
-            [
-                getattr(row, c)
-                for c in indicator_cols
-                if c.startswith(id) and not c.endswith("avg")
-            ]
+    if not len(df.columns.intersection({"value", "outside_se"})) == 2:
+        raise ValueError(
+            "GeoDataFrame for summary must include value and outside_se columns"
         )
-        for id in indicators_present
-    }
 
-    return {
-        "priorities": priorities,
-        "ecosystems": extract_indicators(counts),
-        "legend": legend,
-        "analysis_acres": analysis_acres,
-        "total_acres": total_acres,
-        "remainder": remainder,
-        "remainder_percent": 100 * remainder / total_acres,
-    }
+    with rasterio.open(flm_filename) as value_dataset:
+        cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
+        bins = range(0, INPUTS[ID]["values"][-1]["value"] + 1)
+
+        priority_acres = (
+            summarize_raster_by_units_grid(
+                df,
+                units_grid,
+                value_dataset,
+                bins=bins,
+                progress_label="Summarizing Base Blueprint",
+            )
+            * cellsize
+        )
+
+    priorities = pd.DataFrame(
+        priority_acres,
+        columns=[f"priority_{v}" for v in bins],
+        index=df.index,
+    )
+    total_acres = priority_acres.sum(axis=1)
+    outside_input_acres = (
+        df.rasterized_acres.values - df.outside_se.values - total_acres
+    )
+    outside_input_acres[outside_input_acres < 1e-6] = 0
+    priorities["outside_input"] = outside_input_acres
+
+    priorities.reset_index().to_feather(out_dir / f"{ID}.feather")
+
+
+# def summarize_by_marine_block(geometries):
+#     """Summarize by marine_block
+
+#     Parameters
+#     ----------
+#     geometries : Series of pygeos geometries, indexed by marine block ID
+#     """
+
+#     summarize_raster_by_geometry(
+#         geometries,
+#         extract_by_geometry,
+#         outfilename=results_filename,
+#         progress_label="Calculating Florida Marine Blueprint area by Marine Block",
+#         bounds=INPUTS[ID]["bounds"],
+#     )
+
+
+# def get_marine_block_results(id, analysis_acres, total_acres):
+#     """Get results for Florida Conservation Blueprint dataset for a given
+#     marine block.
+
+#     Parameters
+#     ----------
+#     id : str
+#         marine block ID
+#     analysis_acres : float
+#         area of marine block summary unit less any area outside SE Blueprint
+#     total_acres : float
+#         area of marine block summary unit
+
+#     Returns
+#     -------
+#     dict
+#         {
+#             "priorities": [...],
+#             "legend": [...],
+#             "analysis_notes": <analysis_notes>,
+#             "remainder": <acres outside of input>,
+#             "remainder_percent" <percent of total acres outside input>
+#         }
+#     """
+#     df = pd.read_feather(results_filename).set_index("id")
+
+#     if id not in df.index:
+#         return None
+
+#     values = pd.DataFrame(INPUTS[ID]["values"])
+
+#     row = df.loc[id]
+#     cols = [c for c in row.index if c.startswith("flm_")]
+
+#     df = values.join(pd.Series(row[cols].values, name="acres"))
+#     df["percent"] = 100 * np.divide(df.acres, row.shape_mask)
+
+#     # sort into correct order
+#     df.sort_values(by=["blueprint", "value"], ascending=[False, True], inplace=True)
+
+#     priorities = df[["value", "blueprint", "label", "acres", "percent"]].to_dict(
+#         orient="records"
+#     )
+
+#     # don't include Not a priority in legend
+#     legend = df[["label", "color"]].iloc[:-1].to_dict(orient="records")
+
+#     remainder = max(analysis_acres - df.acres.sum(), 0)
+#     remainder = remainder if remainder >= 1 else 0
+
+#     # Bring in indicators
+#     prefix = ID
+#     indicator_cols = [c for c in row.index if c.startswith(f"{prefix}:")]
+#     indicators_present = {c.rsplit("_", 1)[0] for c in indicator_cols}
+
+#     counts = {
+#         id: np.array(
+#             [
+#                 getattr(row, c)
+#                 for c in indicator_cols
+#                 if c.startswith(id) and not c.endswith("avg")
+#             ]
+#         )
+#         for id in indicators_present
+#     }
+
+#     return {
+#         "priorities": priorities,
+#         "ecosystems": extract_indicators(counts),
+#         "legend": legend,
+#         "analysis_acres": analysis_acres,
+#         "total_acres": total_acres,
+#         "remainder": remainder,
+#         "remainder_percent": 100 * remainder / total_acres,
+#     }

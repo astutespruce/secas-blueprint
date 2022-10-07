@@ -7,7 +7,7 @@ from analysis.constants import BLUEPRINT, INPUTS, M2_ACRES
 from analysis.lib.raster import (
     boundless_raster_geometry_mask,
     extract_count_in_geometry,
-    summarize_raster_by_geometry,
+    summarize_raster_by_units_grid,
 )
 from analysis.lib.util import pluck
 
@@ -15,10 +15,6 @@ src_dir = Path("data/inputs")
 blueprint_filename = src_dir / "se_blueprint_2022.tif"
 bp_inputs_filename = src_dir / "boundaries/input_areas.tif"
 bp_inputs_mask_filename = src_dir / "boundaries/input_areas_mask.tif"
-
-bnd_dir = Path("data/boundaries")
-huc12_raster_filename = bnd_dir / "huc12.tif"
-marine_raster_filename = bnd_dir / "marine_blocks.tif"
 
 
 def get_shape_mask(shapes, bounds):
@@ -172,7 +168,7 @@ def extract_blueprint_by_mask(shape_mask, window, cellsize, rasterized_acres, **
     return blueprint
 
 
-def summarize_blueprint_by_unit(df, out_dir, marine=False):
+def summarize_blueprint_by_units_grid(df, units_grid, out_dir):
     """Summarize by HUC12 or marine lease block
 
     Parameters
@@ -180,25 +176,21 @@ def summarize_blueprint_by_unit(df, out_dir, marine=False):
     df : GeoDataFrame
         must have a "value" column with same values as used for corresponding units
         raster, and must have result of df.bounds joined in
+    units_grid : SummaryUnitGrid instance
     out_dir : str
-    marine : bool
-        if True, will summarize marine lease blocks, otherwise HUC12s
     """
 
     if not "value" in df.columns:
         raise ValueError("GeoDataFrame for summary must include value column")
 
-    units_raster_filename = marine_raster_filename if marine else huc12_raster_filename
-    with rasterio.open(units_raster_filename) as units_dataset, rasterio.open(
-        blueprint_filename
-    ) as value_dataset:
+    with rasterio.open(blueprint_filename) as value_dataset:
         cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
         bins = range(0, len(BLUEPRINT))
 
         blueprint_acres = (
-            summarize_raster_by_geometry(
+            summarize_raster_by_units_grid(
                 df,
-                units_dataset,
+                units_grid,
                 value_dataset,
                 bins=bins,
                 progress_label="Summarizing Southeast Blueprint",

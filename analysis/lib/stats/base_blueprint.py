@@ -18,7 +18,6 @@ from analysis.lib.raster import (
     detect_data_by_mask,
     summarize_raster_by_units_grid,
 )
-from analysis.lib.stats.core import huc12_raster_filename, marine_raster_filename
 
 ID = "base"
 
@@ -379,7 +378,7 @@ def summarize_base_blueprint_by_units_grid(df, units_grid, out_dir, marine=False
 
         out = out.join(indicator_df)
 
-    out.reset_index().to_feather(out_dir / "base_blueprint.feather")
+    out.reset_index().to_feather(out_dir / f"{ID}.feather")
 
 
 # FIXME: rework

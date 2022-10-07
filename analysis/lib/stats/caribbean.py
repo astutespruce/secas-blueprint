@@ -4,12 +4,10 @@ import numpy as np
 import pandas as pd
 import rasterio
 
-from analysis.constants import (
-    INPUTS,
-)
+from analysis.constants import INPUTS, M2_ACRES
 from analysis.lib.raster import (
     extract_count_in_geometry,
-    summarize_raster_by_geometry,
+    summarize_raster_by_units_grid,
     offset_window,
 )
 from analysis.lib.util import pluck
@@ -173,81 +171,108 @@ def summarize_by_aoi(shapes, bounds, outside_se_acres):
     }
 
 
-def summarize_by_huc12(geometries, out_dir):
-    """Summarize by HUC12
+def summarize_caribbean_by_units_grid(df, units_grid, out_dir):
+    """Summarize by marine lease block
 
     Parameters
     ----------
-    geometries : Series of pygeos geometries, indexed by HUC12
-    out_dir : str or Path object
-    marine : bool
-        True for marine lease blocks, False otherwise
+    df : GeoDataFrame
+        must have a "value" column with same values as used for corresponding units
+        raster, and must have result of df.bounds joined in
+    units_grid : SummaryUnitGrid instance
+    out_dir : str
     """
 
-    summarize_raster_by_geometry(
-        geometries,
-        extract_by_geometry,
-        outfilename=results_filename,
-        progress_label="Summarizing Caribbean LCD",
-        bounds=INPUTS[ID]["bounds"],
+    if not len(df.columns.intersection({"value", "outside_se"})) == 2:
+        raise ValueError(
+            "GeoDataFrame for summary must include value and outside_se columns"
+        )
+
+    with rasterio.open(caribbean_filename) as value_dataset:
+        cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
+        bins = range(0, INPUTS[ID]["values"][-1]["value"] + 1)
+
+        priority_acres = (
+            summarize_raster_by_units_grid(
+                df,
+                units_grid,
+                value_dataset,
+                bins=bins,
+                progress_label="Summarizing Base Blueprint",
+            )
+            * cellsize
+        )
+
+    priorities = pd.DataFrame(
+        priority_acres,
+        columns=[f"priority_{v}" for v in bins],
+        index=df.index,
     )
-
-
-def get_huc12_results(id, analysis_acres, total_acres):
-    """Get results for Base Blueprint dataset for a given HUC12
-
-    Parameters
-    ----------
-    id : str
-        HUC12
-    analysis_acres : float
-        area of summary unit less any area outside SE Blueprint
-    total_acres : float
-        area of summary unit
-
-    Returns
-    -------
-    dict
-        {
-            "priorities": [...],
-            "legend": [...],
-            "analysis_notes": <analysis_notes>,
-            "remainder": <acres outside of input>,
-            "remainder_percent" <percent of total acres outside input>
-        }
-    """
-
-    df = pd.read_feather(results_filename).set_index("id")
-
-    if id not in df.index:
-        return None
-
-    values = pd.DataFrame(INPUTS[ID]["values"])
-
-    row = df.loc[id]
-    blueprint_cols = [c for c in row.index if c.startswith("base_")]
-
-    df = values.join(pd.Series(row[blueprint_cols].values, name="acres"))
-    df["percent"] = 100 * np.divide(df.acres, row.shape_mask)
-
-    # sort into correct order
-    df.sort_values(by=["blueprint", "value"], ascending=False, inplace=True)
-
-    # drop any values that are not present
-    df = df.loc[df.acres > 0]
-
-    priorities = df[["value", "blueprint", "label", "acres", "percent"]].to_dict(
-        orient="records"
+    total_acres = priority_acres.sum(axis=1)
+    outside_input_acres = (
+        df.rasterized_acres.values - df.outside_se.values - total_acres
     )
+    outside_input_acres[outside_input_acres < 1e-6] = 0
+    priorities["outside_input"] = outside_input_acres
 
-    remainder = max(analysis_acres - df.acres.sum(), 0)
-    remainder = remainder if remainder >= 1 else 0
+    priorities.reset_index().to_feather(out_dir / f"{ID}.feather")
 
-    return {
-        "priorities": priorities,
-        "legend": LEGEND,
-        "analysis_acres": analysis_acres,
-        "total_acres": total_acres,
-        "remainder": remainder,
-        "remainder_percent": 100 * remainder / total_acres,
-    }
+
+# def get_huc12_results(id, analysis_acres, total_acres):
+#     """Get results for Base Blueprint dataset for a given HUC12
+
+#     Parameters
+#     ----------
+#     id : str
+#         HUC12
+#     analysis_acres : float
+#         area of summary unit less any area outside SE Blueprint
+#     total_acres : float
+#         area of summary unit
+
+#     Returns
+#     -------
+#     dict
+#         {
+#             "priorities": [...],
+#             "legend": [...],
+#             "analysis_notes": <analysis_notes>,
+#             "remainder": <acres outside of input>,
+#             "remainder_percent" <percent of total acres outside input>
+#         }
+#     """
+
+#     df = pd.read_feather(results_filename).set_index("id")
+
+#     if id not in df.index:
+#         return None
+
+#     values = pd.DataFrame(INPUTS[ID]["values"])
+
+#     row = df.loc[id]
+#     blueprint_cols = [c for c in row.index if c.startswith("base_")]
+
+#     df = values.join(pd.Series(row[blueprint_cols].values, name="acres"))
+#     df["percent"] = 100 * np.divide(df.acres, row.shape_mask)
+
+#     # sort into correct order
+#     df.sort_values(by=["blueprint", "value"], ascending=False, inplace=True)
+
+#     # drop any values that are not present
+#     df = df.loc[df.acres > 0]
+
+#     priorities = df[["value", "blueprint", "label", "acres", "percent"]].to_dict(
+#         orient="records"
+#     )
+
+#     remainder = max(analysis_acres - df.acres.sum(), 0)
+#     remainder = remainder if remainder >= 1 else 0
+
+#     return {
+#         "priorities": priorities,
+#         "legend": LEGEND,
+#         "analysis_acres": analysis_acres,
+#         "total_acres": total_acres,
+#         "remainder": remainder,
+#         "remainder_percent": 100 * remainder / total_acres,
+#     }

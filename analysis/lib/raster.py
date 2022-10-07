@@ -328,7 +328,103 @@ def create_lowres_mask(filename, outfilename, resolution, ignore_zero=False):
 #     df.reset_index().to_feather(outfilename)
 
 
-def summarize_raster_by_geometry(
+class SummaryUnitGrid(object):
+    def __init__(self, dataset, bounds):
+        self.dataset = dataset
+        self.window = get_window(dataset, bounds, boundless=False)
+        self.data = dataset.read(1, window=self.window)
+
+
+def summarize_raster_by_units_grid(
+    df,
+    units_grid,
+    value_dataset,
+    bins,
+    progress_label="Summarizing data...",
+):
+    """Calculate counts of pixels per bin for each unit in df
+
+    Parameters
+    ----------
+    df : DataFrame
+        must have a column "value" that corresponds to the value in units_dataset.
+        units must not extend beyond extent of value_dataset and must have
+        result of df.bounds joined in
+    units_grid : SummaryUnitGrid instance
+    value_dataset : open rasterio Dataset
+    bins : array-like of value bins
+    message : str, optional
+
+    Returns
+    -------
+    ndarray of shape(n, m) where n=len(df) and m=len(bins), in same order as df
+    """
+    nodata = np.uint8(value_dataset.nodata)
+    num_bins = len(bins)
+
+    # get read window for df
+    value_read_window = get_window(value_dataset, df.total_bounds, boundless=False)
+    value_data = value_dataset.read(1, window=value_read_window)
+
+    # TODO: consider moving this loop to Cython
+    out = np.zeros((len(df), len(bins)), dtype="uint")
+    for i, (_, row) in Bar(progress_label, max=len(df)).iter(enumerate(df.iterrows())):
+        value_window = get_window(
+            value_dataset, (row.minx, row.miny, row.maxx, row.maxy), boundless=False
+        )
+        value_window = Window(
+            value_window.col_off - value_read_window.col_off,
+            value_window.row_off - value_read_window.row_off,
+            value_window.width,
+            value_window.height,
+        )
+
+        unit_window = get_window(
+            units_grid.dataset,
+            (row.minx, row.miny, row.maxx, row.maxy),
+            boundless=False,
+        )
+        unit_window = Window(
+            unit_window.col_off - units_grid.window.col_off,
+            unit_window.row_off - units_grid.window.row_off,
+            unit_window.width,
+            unit_window.height,
+        )
+
+        values = value_data[value_window.toslices()]
+        in_unit = units_grid.data[unit_window.toslices()] == row.value
+        values_in_unit = values[in_unit & (values != nodata)]
+        out[i, :] = np.bincount(values_in_unit, minlength=num_bins).astype("uint")
+
+        # DEBUG: write value and unit rasters
+        # outfilename = "/tmp/values.tif"
+        # write_raster(
+        #     outfilename,
+        #     np.where(in_unit, values, nodata),
+        #     transform=value_dataset.window_transform(
+        #         get_window(value_dataset, (row.minx, row.miny, row.maxx, row.maxy))
+        #     ),
+        #     crs=value_dataset.crs,
+        #     nodata=nodata,
+        # )
+        # if value_dataset.colormap(1):
+        #     with rasterio.open(outfilename, "r+") as out_raster:
+        #         out_raster.write_colormap(1, value_dataset.colormap(1))
+
+        # write_raster(
+        #     "/tmp/unit.tif",
+        #     np.where(in_unit, 1, 0).astype("uint8"),
+        #     transform=units_grid.dataset.window_transform(
+        #         get_window(units_grid.dataset, (row.minx, row.miny, row.maxx, row.maxy))
+        #     ),
+        #     crs=units_grid.dataset.crs,
+        #     nodata=0,
+        # )
+
+    return out
+
+
+def summarize_raster_by_units_dataset(
     df, units_dataset, value_dataset, bins, progress_label="Summarizing data..."
 ):
     """Calculate counts of pixels per bin for each unit in df
