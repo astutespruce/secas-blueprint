@@ -4,19 +4,16 @@ import geopandas as gp
 import numpy as np
 import pygeos as pg
 
-
-from analysis.lib.geometry import (
-    to_crs,
-    to_dict,
-    intersection,
-)
+from analysis.lib.geometry import to_dict, intersection, to_crs
 from analysis.constants import (
-    INPUTS,
-    URBAN_YEARS,
     DATA_CRS,
+    GEO_CRS,
+    INPUTS,
+    M_MILES,
     OWNERSHIP,
     PROTECTION,
     M2_ACRES,
+    LTA_SEARCH_RADIUS_BINS,
 )
 
 from analysis.lib.stats.core import (
@@ -34,35 +31,8 @@ from analysis.lib.stats.urban import extract_urban_by_mask
 
 data_dir = Path("data/inputs")
 boundary_filename = data_dir / "boundaries/se_boundary.feather"
-county_filename = data_dir / "boundaries/counties.feather"
 ownership_filename = data_dir / "boundaries/ownership.feather"
 slr_bounds_filename = data_dir / "threats/slr/slr_bounds.feather"
-
-
-def get_counties(df):
-    """Get the counties that overlap the Data Frame
-
-    Parameters
-    ----------
-    df : GeoDataFrame
-
-    Returns
-    -------
-    list of dicts
-        [{'FIPS': <FIPS>, 'state': <state>, 'county': <county>}]
-    """
-    counties = gp.read_feather(county_filename)[["geometry", "FIPS", "state", "county"]]
-
-    df = (
-        gp.sjoin(df, counties)[["FIPS", "state", "county"]]
-        .reset_index(drop=True)
-        .sort_values(by=["state", "county"])
-    )
-
-    if not len(df):
-        return None
-
-    return df.to_dict(orient="records")
 
 
 def get_ownership(df):
@@ -171,6 +141,17 @@ def get_custom_area_results(df):
     geometry = df.geometry.values.data[0]
     bounds = pg.bounds(geometry).tolist()
     shapes = [to_dict(geometry)]
+    center = pg.centroid(pg.box(*bounds))
+    extent_radius = int(round(pg.distance(pg.points(*bounds[0:2]), center) * M_MILES))
+
+    lta_search_radius = LTA_SEARCH_RADIUS_BINS[
+        min(
+            np.digitize(extent_radius, LTA_SEARCH_RADIUS_BINS),
+            len(LTA_SEARCH_RADIUS_BINS) - 1,
+        )
+    ]
+
+    center = pg.get_coordinates(to_crs(np.array(center), DATA_CRS, GEO_CRS)).tolist()[0]
 
     # if area of interest does not intersect SE region boundary,
     # there will be no results
@@ -244,11 +225,12 @@ def get_custom_area_results(df):
     else:
         slr = None
 
-    counties = get_counties(df)
     ownership_info = get_ownership(df)
 
     results = {
         "acres": pg.area(geometry) * M2_ACRES,
+        "center": center,
+        "lta_search_radius": lta_search_radius,
         **subset_dict(
             config, {"rasterized_acres", "inside_se_acres", "outside_se_acres"}
         ),
@@ -261,7 +243,6 @@ def get_custom_area_results(df):
         "promote_base": input_info["promote_base"],
         "urban": urban,
         "slr": slr,
-        "counties": counties,
     }
 
     if corridors is not None:

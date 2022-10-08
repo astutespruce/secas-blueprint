@@ -227,20 +227,17 @@
 
 
 
-{% if results.counties %}
-<h4 id="LandTrusts">
-    Land Trusts (by county)
-</h4>
-<ul>
-    {% for county in results.counties %}
-        <li>
-            <a href="https://www.findalandtrust.org/counties/{{county.FIPS}}">
-                {{county.county}} County, {{county.state}}
-            </a>
-        </li>
-    {% endfor %}
-</ul>
+{% if  results.lta_search_radius%}
+    <h4 id="LandTrusts">
+        Nearby land trusts
+    </h4>
 
+    <p>
+    <a href="https://landtrustalliance.org/land-trusts/explore?nearby=false&location={{results.center[1]}}%2C{{results.center[0]}}&radius={{results.lta_search_radius*1609.34}}">
+        Click here
+    </a> to search for land trusts within {{results.lta_search_radius}} miles
+    of this area on the Land Trust Alliance website.
+    </p>
 {% endif %}
 
 </section>

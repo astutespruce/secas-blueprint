@@ -59,7 +59,7 @@
     {
       "id": "base:freshwater_gulfmigratoryfishconnectivity",
       "filename": "GulfMigratoryFishConnectivity.tif",
-      "label": "GulfMigratoryFishConnectivity",
+      "label": "Gulf migratory fish connectivity",
       "values": [
         {
           "value": 1,
@@ -79,7 +79,7 @@
     {
       "id": "base:freshwater_imperiledaquaticspecies",
       "filename": "ImperiledAquaticSpecies.tif",
-      "label": "ImperiledAquaticSpecies",
+      "label": "Imperiled aquatic species",
       "values": [
         {
           "value": 0,
@@ -903,7 +903,7 @@
     {
       "id": "base:land_wgcmottledducknesting",
       "filename": "WestGulfCoastMottledDuckNesting.tif",
-      "label": "West Gulf Coast Mottled Duck nesting",
+      "label": "West Gulf Coast mottled duck nesting",
       "values": [
         {
           "value": 1,
@@ -1232,7 +1232,7 @@
     {
       "id": "base:marine_samarinebirds",
       "filename": "SouthAtlanticMarineBirdsBinned.tif",
-      "label": "SouthAtlanticMarineBirdsBinned",
+      "label": "South Atlantic Marine Birds",
       "values": [
         {
           "value": 1,

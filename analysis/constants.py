@@ -171,3 +171,11 @@ NLCD_CODES = {
 }
 
 NLCD_INDEXES = {i: e for i, e in enumerate(NLCD_CODES.values())}
+
+LTA_SEARCH_RADIUS_BINS = [
+    25,
+    50,
+    100,
+    250,
+    500,
+]

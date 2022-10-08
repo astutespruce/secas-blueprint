@@ -56,6 +56,6 @@ def intersection(left, right, grid_size=0):
         tmp.geometry.values.data, tmp.geometry_right.values, grid_size=grid_size
     )
 
-    return left.join(intersects.drop(columns=["geometry"])).join(
+    return left.join(intersects.drop(columns=["geometry"]), how="inner").join(
         right.drop(columns=["geometry"]), on="index_right"
     )
