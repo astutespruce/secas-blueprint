@@ -1,6 +1,5 @@
 from pathlib import Path
 
-from progress.bar import Bar
 import numpy as np
 import pandas as pd
 import pygeos as pg
@@ -8,7 +7,6 @@ import geopandas as gp
 import rasterio
 
 from analysis.constants import (
-    ACRES_PRECISION,
     M2_ACRES,
     SLR_PROJ_COLUMNS,
     SLR_YEARS,
@@ -16,8 +14,8 @@ from analysis.constants import (
 )
 from analysis.lib.raster import (
     detect_data_by_mask,
-    boundless_raster_geometry_mask,
     extract_count_in_geometry,
+    summarize_raster_by_units_grid,
 )
 from analysis.lib.geometry import to_dict
 
@@ -143,46 +141,90 @@ def extract_slr_by_mask_and_geometry(
     return results
 
 
-def summarize_by_huc12(geometries):
-    """Summarize by HUC12
+def summarize_slr_by_units_grid(df, units_grid, out_dir):
+    """Summarize by SLR inundation depth and projections by HUC12
 
     Parameters
     ----------
-    geometries : Series of pygeos geometries, indexed by HUC12 id
+    df : GeoDataFrame
+        must have a "value" column with same values as used for corresponding units
+        raster, and must have result of df.bounds joined in
+    units_grid : SummaryUnitGrid instance
+    out_dir : str
     """
 
-    # find the indexes of the geometries that overlap with SLR bounds; these are the only
-    # ones that need to be analyzed for SLR impacts
-
-    slr_mask = gp.read_feather(extent_filename)
-
-    ix = np.unique(
-        pg.STRtree(geometries).query_bulk(
-            slr_mask.geometry.values.data, predicate="intersects"
-        )[1]
-    )
-    geometries = geometries.take(ix)
-
-    results = []
-    index = []
-    for huc12, geometry in Bar(
-        "Calculating SLR counts for HUC12", max=len(geometries)
-    ).iter(geometries.iteritems()):
-        zone_results = extract_by_geometry(
-            geometry, [to_dict(geometry)], bounds=pg.total_bounds(geometry)
+    if (
+        not len(df.columns.intersection({"value", "rasterized_acres", "outside_se"}))
+        == 3
+    ):
+        raise ValueError(
+            "GeoDataFrame for summary must include value, rasterized_acres, outside_se columns"
         )
-        if zone_results is None:
-            continue
 
-        index.append(huc12)
-        results.append(zone_results)
+    # prescreen to areas that overlap with SLR inundation depth extent
+    slr_extent = gp.read_feather(extent_filename, columns=[])
+    tree = pg.STRtree(df.geometry.values.data)
+    ix = tree.query_bulk(slr_extent.geometry.values.data, predicate="intersects")[1]
+    df = df.take(np.unique(ix))
 
-    df = pd.DataFrame(results, index=index)
+    with rasterio.open(depth_filename) as value_dataset:
+        cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
 
-    df = (
-        df[["shape_mask"] + list(df.columns.difference(["shape_mask"]))]
-        .reset_index()
-        .rename(columns={"index": "id"})
-        .round()
+        slr_acres = (
+            summarize_raster_by_units_grid(
+                df,
+                units_grid,
+                value_dataset,
+                bins=SLR_BINS,
+                progress_label="Summarizing SLR inundation depth",
+            )
+            * cellsize
+        )
+
+        total_slr_acres = slr_acres.sum(axis=1)
+
+        # accumulate values
+        slr_acres = np.cumsum(slr_acres, axis=1)
+
+    # since areas not inundated are NODATA, and SLR is theoretically available
+    # everywhere, use area not accounted for in inundated depth bins for this value
+    not_inundated_acres = df.rasterized_acres - df.outside_se - total_slr_acres
+    not_inundated_acres[not_inundated_acres < 1e-6] = 0
+
+    slr = pd.DataFrame(
+        slr_acres,
+        columns=[f"depth_{v}" for v in SLR_BINS],
+        index=df.index,
     )
-    df.to_feather(results_filename)
+    slr["not_inundated"] = not_inundated_acres
+
+    proj = gp.read_feather(proj_filename)
+    tree = pg.STRtree(df.geometry.values.data)
+    left, right = tree.query_bulk(proj.geometry.values.data, predicate="intersects")
+
+    # for each unit, calculate the area-weighted mean
+    tmp = pd.DataFrame(
+        {
+            "geometry": df.geometry.values.data.take(right),
+            "proj": proj.index.values.take(left),
+            "proj_geometry": proj.geometry.values.data.take(left),
+        },
+        index=df.index.values.take(right),
+    ).join(proj[SLR_PROJ_COLUMNS], on="proj")
+
+    tmp["intersection_area"] = pg.area(
+        pg.intersection(tmp.geometry.values.data, tmp.proj_geometry.values)
+    )
+    tmp = tmp.join(
+        tmp.groupby(level=0).intersection_area.sum().rename("total_intersection_area")
+    )
+    tmp["area_factor"] = tmp.intersection_area / tmp.total_intersection_area
+
+    for col in SLR_PROJ_COLUMNS:
+        tmp[col] = tmp[col] * tmp.area_factor
+
+    tmp = tmp[SLR_PROJ_COLUMNS].groupby(level=0).sum()
+
+    slr = slr.join(tmp)
+
+    slr.reset_index().to_feather(out_dir / "slr.feather")

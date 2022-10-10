@@ -12,7 +12,7 @@ Source data are stored in `source_data`; see associated README files for data so
 6. `prepare_<input_id>.py`: Prepare each blueprint input dataset
 7. `prepare_slr.py`: Prepare SLR data (if needed; can directly copy outputs from sa-blueprint-sv)
 8. `prepare_urban.py` Prepare urbanization data
-9. `tabulate_area.py`: Tabulate Blueprint, all inputs, and threats by HUC12 and marine lease block
+9. `tabulate_summary_units.py`: Tabulate Blueprint, all inputs, and threats by HUC12 and marine lease block
 10. `package_unit_data.py`: Restructure data for HUC12 and marine lease blocks to attach to boundary datasets for map tiles
 11. `create_tiles.sh`: Create vector tiles from HUC12, marine lease blocks, blueprint region and mask, input areas, and protected areas
 12. `render_blueprint_tiles.py`: Create image tiles from Blueprint.

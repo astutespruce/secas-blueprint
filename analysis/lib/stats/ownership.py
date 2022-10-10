@@ -10,21 +10,29 @@ src_dir = Path("data/inputs/boundaries")
 ownership_filename = src_dir / "ownership.feather"
 
 
-def summarize_by_unit(units_df, out_dir):
+def summarize_ownership_by_units(df, out_dir):
+    """Calculate overlap with ownership and protection
+
+    Parameters
+    ----------
+    df : GeoDataFrame
+        contains unit boundaries, indexed by id
+    out_dir : str
+    """
     print("Calculating overlap with land ownership and protection")
 
     ownership = gp.read_feather(
         ownership_filename, columns=["geometry", "Own_Type", "GAP_Sts"]
     )
 
-    index_name = units_df.index.name
+    index_name = df.index.name
 
-    df = intersection(units_df, ownership)
+    df = intersection(df, ownership)
 
     if df is None:
         return
 
-    df["acres"] = pg.area(df.geometry_right.values.data) * M2_ACRES
+    df["acres"] = pg.area(df.geometry_right.values) * M2_ACRES
 
     # drop areas that touch but have no overlap
     df = df.loc[df.acres > 0].copy()

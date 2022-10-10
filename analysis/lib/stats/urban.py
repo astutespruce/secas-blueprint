@@ -6,16 +6,22 @@ import pandas as pd
 import pygeos as pg
 import rasterio
 
-from analysis.constants import URBAN_YEARS, ACRES_PRECISION, M2_ACRES
+from analysis.constants import URBAN_YEARS, M2_ACRES
 from analysis.lib.raster import (
-    boundless_raster_geometry_mask,
     extract_count_in_geometry,
     detect_data_by_mask,
+    summarize_raster_by_units_grid,
 )
-from analysis.lib.geometry import to_dict
+
+
+# values are number of runs out of 50 that are predicted to urbanize
+# 51 = urban as of 2019 (NLCD)
+# NOTE: index 0 = not predicted to urbanize
+PROBABILITIES = np.append(np.arange(0, 51) / 50.0, np.array([1.0]))
 
 
 src_dir = Path("data/inputs/threats/urban")
+urban_filename = str(src_dir / "urban_{year}.tif")
 mask_filename = src_dir / "urban_mask.tif"
 results_filename = "data/results/huc12/urban.feather"
 
@@ -72,15 +78,11 @@ def extract_urban_by_mask(
         if not detect_data_by_mask(src, prescreen_mask, prescreen_window):
             return None
 
-    # values are number of runs out of 50 that are predicted to urbanize
-    # 51 = urban as of 2019 (NLCD)
-    # NOTE: index 0 = not predicted to urbanize
-    probabilities = np.append(np.arange(0, 51) / 50.0, np.array([1.0]))
-    bins = np.arange(0, len(probabilities))
+    bins = np.arange(0, len(PROBABILITIES))
 
     urban_results = []
     for year in URBAN_YEARS:
-        filename = src_dir / f"urban_{year}.tif"
+        filename = urban_filename.format(year=year)
         urban_acres = (
             extract_count_in_geometry(
                 filename, shape_mask, window, bins, boundless=True
@@ -103,7 +105,7 @@ def extract_urban_by_mask(
             )
 
         # total urbanization is sum of acres by probability bin * probability
-        projected_acres = (urban_acres * probabilities).sum()
+        projected_acres = (urban_acres * PROBABILITIES).sum()
         urban_results.append(
             {
                 "year": year,
@@ -134,32 +136,74 @@ def extract_urban_by_mask(
     return results
 
 
-def summarize_by_huc12(geometries):
-    """Calculate current and projected urbanization for each decade from 2020 to
-    2100
+def summarize_urban_by_units_grid(df, units_grid, out_dir):
+    """Summarize urban by HUC12
 
     Parameters
     ----------
-    geometries : Series of pygeos geometries, indexed by HUC12 id
+    df : GeoDataFrame
+        must have a "value" column with same values as used for corresponding units
+        raster, and must have result of df.bounds joined in
+    units_grid : SummaryUnitGrid instance
+    out_dir : str
     """
 
-    index = []
-    results = []
-    for huc12, geometry in Bar(
-        "Calculating Urbanization counts for HUC12", max=len(geometries)
-    ).iter(geometries.iteritems()):
-        zone_results = extract_by_geometry(
-            [to_dict(geometry)], bounds=pg.total_bounds(geometry)
+    if (
+        not len(df.columns.intersection({"value", "rasterized_acres", "outside_se"}))
+        == 3
+    ):
+        raise ValueError(
+            "GeoDataFrame for summary must include value, rasterized_acres, outside_se columns"
         )
-        if zone_results is None:
-            continue
 
-        index.append(huc12)
-        results.append(zone_results)
+    bins = np.arange(0, len(PROBABILITIES))
 
-    cols = ["shape_mask", "urban"] + URBAN_YEARS
-    df = pd.DataFrame(results, index=index)[cols]
-    df = df.reset_index().rename(columns={"index": "id"}).round()
-    df.columns = [str(c) for c in df.columns]
+    year = URBAN_YEARS[0]
+    with rasterio.open(urban_filename.format(year=year)) as value_dataset:
+        cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
 
-    df.to_feather(results_filename)
+        urban_acres = (
+            summarize_raster_by_units_grid(
+                df,
+                units_grid,
+                value_dataset,
+                bins=bins,
+                progress_label=f"Summarizing Urban {year}",
+            )
+            * cellsize
+        )
+
+        # total urbanization is sum of acres by probability bin * probability
+        projected_acres = (urban_acres * PROBABILITIES).sum(axis=1)
+
+    already_urban_acres = urban_acres[:, 51]
+    total_urban_acres = urban_acres.sum(axis=1)
+    outside_urban_acres = df.rasterized_acres - df.outside_se - total_urban_acres
+    outside_urban_acres[outside_urban_acres < 1e-6] = 0
+
+    urban = pd.DataFrame(
+        {"urban_2019": already_urban_acres, f"urban_proj_{year}": projected_acres},
+        index=df.index,
+    )
+
+    for year in URBAN_YEARS[1:]:
+        with rasterio.open(urban_filename.format(year=year)) as value_dataset:
+            cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
+
+            urban_acres = (
+                summarize_raster_by_units_grid(
+                    df,
+                    units_grid,
+                    value_dataset,
+                    bins=bins,
+                    progress_label=f"Summarizing Urban {year}",
+                )
+                * cellsize
+            )
+
+            # total urbanization is sum of acres by probability bin * probability
+            urban[f"urban_proj_{year}"] = (urban_acres * PROBABILITIES).sum(axis=1)
+
+    urban["outside_urban"] = outside_urban_acres
+
+    urban.reset_index().to_feather(out_dir / "urban.feather")

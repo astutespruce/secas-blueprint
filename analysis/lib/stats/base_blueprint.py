@@ -283,9 +283,12 @@ def summarize_base_blueprint_by_units_grid(df, units_grid, out_dir, marine=False
         if True, will summarize marine lease blocks, otherwise HUC12s
     """
 
-    if not len(df.columns.intersection({"value", "outside_se"})) == 2:
+    if (
+        not len(df.columns.intersection({"value", "rasterized_acres", "outside_se"}))
+        == 3
+    ):
         raise ValueError(
-            "GeoDataFrame for summary must include value and outside_se columns"
+            "GeoDataFrame for summary must include value, rasterized_acres, outside_se columns"
         )
 
     with rasterio.open(base_blueprint_filename) as value_dataset:

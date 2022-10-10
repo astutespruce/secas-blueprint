@@ -124,9 +124,12 @@ def summarize_florida_marine_by_units_grid(df, units_grid, out_dir):
     out_dir : str
     """
 
-    if not len(df.columns.intersection({"value", "outside_se"})) == 2:
+    if (
+        not len(df.columns.intersection({"value", "rasterized_acres", "outside_se"}))
+        == 3
+    ):
         raise ValueError(
-            "GeoDataFrame for summary must include value and outside_se columns"
+            "GeoDataFrame for summary must include value, rasterized_acres, outside_se columns"
         )
 
     with rasterio.open(flm_filename) as value_dataset:
