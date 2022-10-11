@@ -124,6 +124,7 @@ def create_report(maps, results, name=None, area_type=None):
     # with open("/tmp/test.html", "w") as out:
     #     out.write(template.render(**context))
 
-    return HTML(BytesIO((template.render(**context)).encode())).write_pdf(
-        variant="pdf/a-4b"
-    )
+    # Can add variant="pdf/a-4b" to resolve issues viewing legend patches in
+    # some copies of Acrobat Pro; having enabled causes alert in Acrobat Reader
+    # / Pro about editing
+    return HTML(BytesIO((template.render(**context)).encode())).write_pdf()

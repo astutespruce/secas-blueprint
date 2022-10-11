@@ -225,8 +225,7 @@ def summarize_blueprint_by_units_grid(df, units_grid, out_dir):
 
 
 def get_unit_core_results(unit_type, unit_id):
-    """Get results for a single summary unit (HUC12 / marine lease block) or
-    raise ValueError if not found.
+    """Get results for a single summary unit (HUC12 / marine lease block).
 
     Parameters
     ----------
@@ -235,7 +234,7 @@ def get_unit_core_results(unit_type, unit_id):
 
     Returns
     -------
-    DataFrame, dict<results>
+    DataFrame, dict<results> (None, None if id not present)
     """
 
     units_filename = huc12_filename if unit_type == "huc12" else marine_filename
@@ -260,7 +259,7 @@ def get_unit_core_results(unit_type, unit_id):
     )
 
     if len(df) == 0:
-        raise ValueError(f"{unit_id} is not present in {unit_type} summary units")
+        return None, None
 
     unit = df.iloc[0]
 

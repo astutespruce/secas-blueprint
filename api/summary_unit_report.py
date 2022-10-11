@@ -5,7 +5,7 @@ from api.errors import DataError
 from api.report.map import render_maps
 from api.report import create_report
 from api.settings import LOGGING_LEVEL, TEMP_DIR
-from api.stats import SummaryUnits
+from api.stats.summary_units import get_summary_unit_results
 from api.progress import set_progress
 
 log = logging.getLogger(__name__)
@@ -25,25 +25,20 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
     """
 
     errors = []
+    await set_progress(ctx["redis"], ctx["job_id"], 0, "Calculating results")
 
-    await set_progress(ctx["redis"], ctx["job_id"], 0, "Loading data")
-
-    units = SummaryUnits(unit_type)
-    await set_progress(ctx["redis"], ctx["job_id"], 5, "Calculating results")
-
-    # validate that unit exists
-    if unit_id not in units.units.index:
+    results = get_summary_unit_results(unit_type, unit_id)
+    if results is None:
         raise DataError(
             "Unit id is not valid (not an existing subwatershed or marine lease block ID)"
         )
 
-    results = units.get_results(unit_id)
     await set_progress(
         ctx["redis"], ctx["job_id"], 50, "Creating maps (this might take a while)"
     )
 
-    # only include urban up to 2060
-    has_urban = "proj_urban" in results and results["proj_urban"][4] > 0
+    has_corridors = "corridors" in results
+    has_urban = "urban" in results
     has_slr = "slr" in results
     has_ownership = "ownership" in results
     has_protection = "protection" in results
@@ -59,6 +54,7 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
         summary_unit_id=unit_id,
         input_ids=results["input_ids"],
         indicators=indicators,
+        corridors=has_corridors,
         urban=has_urban,
         slr=has_slr,
         ownership=has_ownership,

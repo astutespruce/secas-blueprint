@@ -171,14 +171,17 @@ def extract_base_blueprint_by_mask(
             * cellsize
         )
 
+        if indicator_acres.sum() == 0:
+            continue
+
         # Some indicators exclude 0 values, their counts need to be zeroed out here
         min_value = indicator["values"][0]["value"]
         if min_value > 0:
             indicator_acres[range(0, min_value)] = 0
 
         # if only 0 values are present, ignore this indicator
-        if indicator_acres[1:].max() == 0:
-            continue
+        # if indicator_acres[1:].max() == 0:
+        #     continue
 
         total_indicator_acres = indicator_acres[min_value:].sum()
         outside_indicator_acres = total_acres - total_indicator_acres
@@ -329,6 +332,7 @@ def summarize_base_blueprint_by_units_grid(df, units_grid, out_dir, marine=False
     for indicator in check_indicators:
         id = indicator["id"]
         filename = src_dir / indicator["filename"]
+        # WARNING: some indicators have missing values in the range and are non-contiguous
         values = [v["value"] for v in indicator["values"]]
         with rasterio.open(filename) as value_dataset:
             indicator_acres = (
@@ -354,8 +358,11 @@ def summarize_base_blueprint_by_units_grid(df, units_grid, out_dir, marine=False
         total_indicator_acres = indicator_acres.sum(axis=1)
         outside_indicator_acres = total_acres - total_indicator_acres
         outside_indicator_acres[outside_indicator_acres < 1e-6] = 0
+        # store a column of 0s for indicators with discontinuous value ranges
         indicator_df = pd.DataFrame(
-            indicator_acres, columns=[f"{id}_value_{v}" for v in values], index=df.index
+            indicator_acres,
+            columns=[f"{id}_value_{v}" for v in range(values[0], values[-1] + 1)],
+            index=df.index,
         )
         indicator_df[f"{id}_outside"] = outside_indicator_acres
 

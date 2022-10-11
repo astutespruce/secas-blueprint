@@ -21,11 +21,14 @@ def get_summary_unit_results(unit_type, unit_id):
 
     Returns
     -------
-    dict
+    dict (None if id not present)
     """
     results_dir = data_dir / "results" / unit_type
 
     df, results = get_unit_core_results(unit_type, unit_id)
+    if df is None:
+        return None
+
     unit = df.iloc[0]
 
     results.update(get_ownership_unit_results(results_dir, unit_id, unit.acres))

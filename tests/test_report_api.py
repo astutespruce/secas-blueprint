@@ -1,6 +1,6 @@
 from pathlib import Path
-import os
 import time
+import subprocess
 import httpx
 from api.settings import API_TOKEN
 
@@ -13,9 +13,7 @@ API_URL = "http://localhost:5000"
 # API_URL = "http://localhost:8080/southeast"
 
 OUT_DIR = Path("/tmp/api")
-
-if not OUT_DIR.exists():
-    os.makedirs(OUT_DIR)
+OUT_DIR.mkdir(exist_ok=True, parents=True)
 
 
 def poll_until_done(job_id, current=0, max=100):
@@ -60,12 +58,14 @@ def download_file(url):
     with open(filename, "wb") as out:
         out.write(r.read())
 
+    subprocess.run(["open", filename])
+
 
 def test_upload_file(filename):
     files = {"file": open(filename, "rb")}
     r = httpx.post(
         f"{API_URL}/api/reports/custom?token={API_TOKEN}",
-        data={"name": "foo"},
+        data={"name": "Test Custom Area"},
         files=files,
     )
 
@@ -101,9 +101,9 @@ def test_huc12_report(huc12_id):
 
 
 if __name__ == "__main__":
-    # test_upload_file("examples/api/caledonia.zip")
+    test_upload_file("examples/api/napoleonville.zip")
 
     # test_huc12_report("0")
 
-    test_huc12_report("031501060512")
+    # test_huc12_report("031501060512")
     # test_huc12_report("031700080402")

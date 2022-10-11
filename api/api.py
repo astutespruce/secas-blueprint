@@ -1,8 +1,3 @@
-"""
-TODO:
-* validate max size (on nginx side)
-"""
-
 import logging
 from pathlib import Path
 from secrets import compare_digest
@@ -139,7 +134,7 @@ def save_file(file: UploadFile) -> Path:
     return Path(name)
 
 
-def validate_file_type(file):
+def validate_content_type(file):
     if not (
         file.content_type
         in {
@@ -171,7 +166,7 @@ async def custom_report_endpoint(
     name: Optional[str] = Form(None),
     token: APIKey = Depends(get_token),
 ):
-    validate_file_type(file)
+    validate_content_type(file)
 
     filename = save_file(file)
     log.debug(f"upload saved to: {filename}")

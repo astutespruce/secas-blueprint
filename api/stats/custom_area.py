@@ -28,110 +28,12 @@ from analysis.lib.stats.base_blueprint import extract_base_blueprint_by_mask
 from analysis.lib.stats.caribbean import extract_caribbean_by_mask
 from analysis.lib.stats.slr import extract_slr_by_mask_and_geometry
 from analysis.lib.stats.urban import extract_urban_by_mask
+from analysis.lib.stats.ownership import get_ownership_for_aoi
 
 data_dir = Path("data/inputs")
 boundary_filename = data_dir / "boundaries/se_boundary.feather"
 ownership_filename = data_dir / "boundaries/ownership.feather"
 slr_bounds_filename = data_dir / "threats/slr/slr_bounds.feather"
-
-
-def get_ownership(df, total_acres):
-    """Get ownership and protection levels and other statistics for the DataFrame
-
-    Parameters
-    ----------
-    df : GeoDataFrame
-    total_acres : float
-
-    Returns
-    -------
-    dict
-        {
-            "ownership": [
-                {
-                    "label": <ownership type label>,
-                    "acres": <acres of overlap>,
-                    "percent" <percent of overlap>
-                }
-            ],
-            "protection": [
-                {
-                    "label": <protection type label>,
-                    "acres": <acres of overlap>,
-                    "percent" <percent of overlap>
-                }
-            ],
-            "protected_areas" [<top 25 protected area names and areas>],
-            "num_protected_areas": <total number protected areas>
-        }
-    """
-    ownership = gp.read_feather(ownership_filename)
-    df = intersection(df, ownership)
-
-    if df is None:
-        return None
-
-    df["acres"] = pg.area(df.geometry_right.values.data) * M2_ACRES
-    df = df.loc[df.acres > 0].copy()
-
-    if not len(df):
-        return None
-
-    results = dict()
-
-    by_owner = (
-        df[["Own_Type", "acres"]]
-        .groupby(by="Own_Type")
-        .acres.sum()
-        .astype("float32")
-        .to_dict()
-    )
-    # use the native order of OWNERSHIP to drive order of results
-    results["ownership"] = [
-        {
-            "label": value["label"],
-            "acres": by_owner[key],
-            "percent": 100 * by_owner[key] / total_acres,
-        }
-        for key, value in OWNERSHIP.items()
-        if key in by_owner
-    ]
-
-    by_protection = (
-        df[["GAP_Sts", "acres"]]
-        .groupby(by="GAP_Sts")
-        .acres.sum()
-        .astype("float32")
-        .to_dict()
-    )
-    # use the native order of PROTECTION to drive order of results
-    results["protection"] = [
-        {
-            "label": value["label"],
-            "acres": by_protection[key],
-            "percent": 100 * by_protection[key] / total_acres,
-        }
-        for key, value in PROTECTION.items()
-        if key in by_protection
-    ]
-
-    by_area = (
-        df[["Loc_Nm", "Loc_Own", "acres"]]
-        .groupby(by=[df.index.get_level_values(0), "Loc_Nm", "Loc_Own"])
-        .acres.sum()
-        .astype("float32")
-        .round()
-        .reset_index()
-        .rename(columns={"level_0": "id", "Loc_Nm": "name", "Loc_Own": "owner"})
-        .sort_values(by="acres", ascending=False)
-    )
-    # drop very small areas, these are not helpful
-    by_area = by_area.loc[by_area.acres >= 1].copy()
-
-    results["protected_areas"] = by_area.head(25).to_dict(orient="records")
-    results["num_protected_areas"] = len(by_area)
-
-    return results
 
 
 def get_custom_area_results(df):
@@ -234,7 +136,7 @@ def get_custom_area_results(df):
     else:
         slr = None
 
-    ownership_info = get_ownership(df, total_acres=polygon_acres)
+    ownership_info = get_ownership_for_aoi(df, total_acres=polygon_acres)
 
     results = {
         "acres": polygon_acres,
