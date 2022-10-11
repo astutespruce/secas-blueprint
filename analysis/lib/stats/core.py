@@ -1,17 +1,34 @@
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
+import pygeos as pg
 import rasterio
 
-from analysis.constants import BLUEPRINT, INPUTS, M2_ACRES
+from analysis.constants import (
+    BLUEPRINT,
+    INPUTS,
+    M2_ACRES,
+    DATA_CRS,
+    GEO_CRS,
+    M_MILES,
+    LTA_SEARCH_RADIUS_BINS,
+)
+from analysis.lib.geometry import to_crs
 from analysis.lib.raster import (
     boundless_raster_geometry_mask,
     extract_count_in_geometry,
     summarize_raster_by_units_grid,
 )
+from analysis.lib.stats.summary_units import (
+    read_unit_from_feather,
+    huc12_filename,
+    marine_filename,
+)
 from analysis.lib.util import pluck
 
-src_dir = Path("data/inputs")
+data_dir = Path("data")
+src_dir = data_dir / "inputs"
 blueprint_filename = src_dir / "se_blueprint_2022.tif"
 bp_inputs_filename = src_dir / "boundaries/input_areas.tif"
 bp_inputs_mask_filename = src_dir / "boundaries/input_areas_mask.tif"
@@ -205,3 +222,103 @@ def summarize_blueprint_by_units_grid(df, units_grid, out_dir):
     )
 
     out.reset_index().to_feather(out_dir / "blueprint.feather")
+
+
+def get_unit_core_results(unit_type, unit_id):
+    """Get results for a single summary unit (HUC12 / marine lease block) or
+    raise ValueError if not found.
+
+    Parameters
+    ----------
+    unit_type : str, one of {'huc12', 'marine_blocks'}
+    unit_id : str
+
+    Returns
+    -------
+    DataFrame, dict<results>
+    """
+
+    units_filename = huc12_filename if unit_type == "huc12" else marine_filename
+    results_dir = data_dir / "results" / unit_type
+
+    # read units and select by ID
+    df = read_unit_from_feather(
+        units_filename,
+        unit_id,
+        columns=[
+            "id",
+            "name",
+            "acres",
+            "rasterized_acres",
+            "outside_se",
+            "input_id",
+            "minx",
+            "miny",
+            "maxx",
+            "maxy",
+        ],
+    )
+
+    if len(df) == 0:
+        raise ValueError(f"{unit_id} is not present in {unit_type} summary units")
+
+    unit = df.iloc[0]
+
+    name_suffix = "subwatershed" if unit_type == "huc12" else "marine lease block"
+    name = f"{unit['name']} {name_suffix}"
+
+    bounds = df[["minx", "miny", "maxx", "maxy"]].apply(list, axis=1)[0]
+
+    box = to_crs(np.array([pg.box(*bounds)]), GEO_CRS, DATA_CRS)[0]
+    center = [(unit.minx + unit.maxx) / 2.0, (unit.miny + unit.maxy) / 2.0]
+    extent_radius = int(
+        round(
+            pg.distance(pg.get_point(pg.get_exterior_ring(box), 0), pg.centroid(box))
+            * M_MILES
+        )
+    )
+    lta_search_radius = LTA_SEARCH_RADIUS_BINS[
+        min(
+            np.digitize(extent_radius, LTA_SEARCH_RADIUS_BINS),
+            len(LTA_SEARCH_RADIUS_BINS) - 1,
+        )
+    ]
+
+    # read SE Blueprint
+    blueprint_results = (
+        read_unit_from_feather(results_dir / "blueprint.feather", unit_id)
+        .iloc[0]
+        .values
+    )
+
+    # transform and reorder into descending priority
+    blueprint = [
+        {
+            "value": entry["value"],
+            "label": entry["label"],
+            "acres": blueprint_results[entry["value"]],
+            "percent": 100 * blueprint_results[entry["value"]] / unit.rasterized_acres,
+        }
+        for entry in BLUEPRINT
+    ][::-1]
+
+    within_input = unit.rasterized_acres - unit.outside_se
+    if within_input < 1e-6:
+        within_input = 0
+
+    results = {
+        "name": name,
+        "acres": unit.acres,
+        "rasterized_acres": unit.rasterized_acres,
+        "outside_se_acres": unit.outside_se,
+        "outside_se_percent": 100 * unit.outside_se / unit.rasterized_acres,
+        "inputs": [{**INPUTS[unit.input_id], "acres": within_input}],
+        "input_ids": [unit.input_id],
+        "promote_base": unit.input_id == "base",
+        "blueprint": blueprint,
+        "bounds": bounds,
+        "center": center,
+        "lta_search_radius": lta_search_radius,
+    }
+
+    return df, results

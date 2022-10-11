@@ -11,13 +11,13 @@ from analysis.lib.raster import (
     offset_window,
 )
 from analysis.lib.util import pluck
+from analysis.lib.stats.summary_units import read_unit_from_feather
 
 ID = "car"
 
 src_dir = Path("data/inputs/indicators/caribbean")
 caribbean_filename = src_dir / "caribbean_lcd.tif"
 mask_filename = src_dir / "caribbean_lcd_mask.tif"
-results_filename = "data/results/huc12/caribbean.feather"
 
 LEGEND = [
     {"label": "Rank 1-3: highest priority", "color": "#4D004B"},
@@ -113,64 +113,6 @@ def extract_caribbean_by_mask(
     }
 
 
-def summarize_by_aoi(shapes, bounds, outside_se_acres):
-    """Calculate ranks and areas of overlap within Caribbean Priority Watersheds.
-
-    Parameters
-    ----------
-    shapes : list-like of geometry objects that provide __geo_interface__
-    bounds : list-like of [xmin, ymin, xmax, ymax]
-    outside_se_acres : float
-        acres of the analysis area that are outside the SE Blueprint region
-
-    Returns
-    -------
-    dict
-        {
-            "priorities": [...],
-            "legend": [...],
-            "analysis_notes": <analysis_notes>,
-            "remainder": <acres outside of input>,
-            "remainder_percent" <percent of total acres outside input>
-        }
-    """
-
-    counts = extract_by_geometry(shapes, bounds, prescreen=False)
-
-    if counts is None:
-        return None
-
-    total_acres = counts["shape_mask"]
-    analysis_acres = total_acres - outside_se_acres
-
-    values = pd.DataFrame(INPUTS[ID]["values"])
-
-    df = values.join(pd.Series(counts[ID], name="acres"))
-    df["percent"] = 100 * np.divide(df.acres, total_acres)
-
-    # sort into correct order
-    df.sort_values(by=["blueprint", "value"], ascending=[False, True], inplace=True)
-
-    # drop any values that are not present
-    df = df.loc[df.acres > 0]
-
-    priorities = df[["value", "blueprint", "label", "acres", "percent"]].to_dict(
-        orient="records"
-    )
-
-    remainder = max(analysis_acres - df.acres.sum(), 0)
-    remainder = remainder if remainder >= 1 else 0
-
-    return {
-        "priorities": priorities,
-        "legend": LEGEND,
-        "analysis_acres": analysis_acres,
-        "total_acres": total_acres,
-        "remainder": remainder,
-        "remainder_percent": 100 * remainder / total_acres,
-    }
-
-
 def summarize_caribbean_by_units_grid(df, units_grid, out_dir):
     """Summarize by marine lease block
 
@@ -221,61 +163,56 @@ def summarize_caribbean_by_units_grid(df, units_grid, out_dir):
     priorities.reset_index().to_feather(out_dir / f"{ID}.feather")
 
 
-# def get_huc12_results(id, analysis_acres, total_acres):
-#     """Get results for Base Blueprint dataset for a given HUC12
+def get_caribbean_unit_results(results_dir, unit_id, rasterized_acres):
+    """Get HUC12 results for unit_id
 
-#     Parameters
-#     ----------
-#     id : str
-#         HUC12
-#     analysis_acres : float
-#         area of summary unit less any area outside SE Blueprint
-#     total_acres : float
-#         area of summary unit
+    Parameters
+    ----------
+    results_dir : Path
+    unit_id : str
+    rasterized_acres : float
 
-#     Returns
-#     -------
-#     dict
-#         {
-#             "priorities": [...],
-#             "legend": [...],
-#             "analysis_notes": <analysis_notes>,
-#             "remainder": <acres outside of input>,
-#             "remainder_percent" <percent of total acres outside input>
-#         }
-#     """
+    Returns
+    -------
+     Returns
+    -------
+    dict (empty if no results for unit_id)
+        {
+            "priorities": <acres by priority category>,
+            "legend": <entries for legend>,
+            "total_acres": <total acres within input>,
+            "outside_input_acres": <acres outside this input but within SE>,
+            "outside_input_percent": <percent outside this input but within SE>,
+        }
+    """
 
-#     df = pd.read_feather(results_filename).set_index("id")
+    car_results = read_unit_from_feather(results_dir / f"{ID}.feather", unit_id)
+    if len(car_results) == 0:
+        return {}
 
-#     if id not in df.index:
-#         return None
+    unit = car_results.iloc[0]
 
-#     values = pd.DataFrame(INPUTS[ID]["values"])
+    cols = [c for c in car_results if c.startswith("priority_")]
+    priority_acres = unit[cols].values
+    total_acres = priority_acres.sum()
 
-#     row = df.loc[id]
-#     blueprint_cols = [c for c in row.index if c.startswith("base_")]
+    # only include priority ranks that are present
+    priorities = [
+        {
+            **e,
+            "acres": priority_acres[i],
+            "percent": 100 * priority_acres[i] / rasterized_acres,
+        }
+        for i, e in enumerate(
+            pluck(INPUTS[ID]["values"], ["blueprint", "value", "label"])
+        )
+        if priority_acres[i]
+    ]
 
-#     df = values.join(pd.Series(row[blueprint_cols].values, name="acres"))
-#     df["percent"] = 100 * np.divide(df.acres, row.shape_mask)
-
-#     # sort into correct order
-#     df.sort_values(by=["blueprint", "value"], ascending=False, inplace=True)
-
-#     # drop any values that are not present
-#     df = df.loc[df.acres > 0]
-
-#     priorities = df[["value", "blueprint", "label", "acres", "percent"]].to_dict(
-#         orient="records"
-#     )
-
-#     remainder = max(analysis_acres - df.acres.sum(), 0)
-#     remainder = remainder if remainder >= 1 else 0
-
-#     return {
-#         "priorities": priorities,
-#         "legend": LEGEND,
-#         "analysis_acres": analysis_acres,
-#         "total_acres": total_acres,
-#         "remainder": remainder,
-#         "remainder_percent": 100 * remainder / total_acres,
-#     }
+    return {
+        "priorities": priorities,
+        "legend": LEGEND,
+        "total_acres": total_acres,
+        "outside_input_acres": unit.outside_input,
+        "outside_input_percent": 100 * unit.outside_input / rasterized_acres,
+    }

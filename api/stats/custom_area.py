@@ -35,12 +35,13 @@ ownership_filename = data_dir / "boundaries/ownership.feather"
 slr_bounds_filename = data_dir / "threats/slr/slr_bounds.feather"
 
 
-def get_ownership(df):
+def get_ownership(df, total_acres):
     """Get ownership and protection levels and other statistics for the DataFrame
 
     Parameters
     ----------
     df : GeoDataFrame
+    total_acres : float
 
     Returns
     -------
@@ -49,13 +50,15 @@ def get_ownership(df):
             "ownership": [
                 {
                     "label": <ownership type label>,
-                    "acres": <acres of overlap>
+                    "acres": <acres of overlap>,
+                    "percent" <percent of overlap>
                 }
             ],
             "protection": [
                 {
                     "label": <protection type label>,
-                    "acres": <acres of overlap>
+                    "acres": <acres of overlap>,
+                    "percent" <percent of overlap>
                 }
             ],
             "protected_areas" [<top 25 protected area names and areas>],
@@ -85,7 +88,11 @@ def get_ownership(df):
     )
     # use the native order of OWNERSHIP to drive order of results
     results["ownership"] = [
-        {"label": value["label"], "acres": by_owner[key]}
+        {
+            "label": value["label"],
+            "acres": by_owner[key],
+            "percent": 100 * by_owner[key] / total_acres,
+        }
         for key, value in OWNERSHIP.items()
         if key in by_owner
     ]
@@ -102,6 +109,7 @@ def get_ownership(df):
         {
             "label": value["label"],
             "acres": by_protection[key],
+            "percent": 100 * by_protection[key] / total_acres,
         }
         for key, value in PROTECTION.items()
         if key in by_protection
@@ -205,7 +213,7 @@ def get_custom_area_results(df):
 
             if input_info["promote_base"]:
                 blueprint = base_results["priorities"]
-                corridors = base_results["corridors"]
+                corridors = base_results.get("corridors", None)
 
         elif id == "car":
             input_area.update(extract_caribbean_by_mask(**config))
@@ -231,9 +239,7 @@ def get_custom_area_results(df):
         "acres": pg.area(geometry) * M2_ACRES,
         "center": center,
         "lta_search_radius": lta_search_radius,
-        **subset_dict(
-            config, {"rasterized_acres", "inside_se_acres", "outside_se_acres"}
-        ),
+        **subset_dict(config, {"rasterized_acres", "outside_se_acres"}),
         "outside_se_percent": (
             100 * config["outside_se_acres"] / config["rasterized_acres"]
         ),
@@ -241,12 +247,16 @@ def get_custom_area_results(df):
         "inputs": inputs,
         "input_ids": input_ids,
         "promote_base": input_info["promote_base"],
-        "urban": urban,
-        "slr": slr,
     }
 
     if corridors is not None:
         results["corridors"] = corridors
+
+    if slr is not None:
+        results["slr"] = slr
+
+    if urban is not None:
+        results["urban"] = urban
 
     if ownership_info is not None:
         results.update(ownership_info)

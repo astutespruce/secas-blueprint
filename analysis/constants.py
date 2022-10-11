@@ -1,8 +1,6 @@
 from pathlib import Path
-from collections import OrderedDict
 from itertools import product
 import json
-from rasterio.windows import Window
 
 
 # Set to True to output intermediate rasters for validation (uncomment in map.raster module)
@@ -83,12 +81,12 @@ for indicators in INDICATORS.values():
     for indicator in indicators:
         INDICATOR_INDEX[indicator["id"]] = indicator
 
-OWNERSHIP = OrderedDict(
-    {e["value"]: e for e in json.loads(open(json_dir / "ownership.json").read())}
-)
-PROTECTION = OrderedDict(
-    {e["value"]: e for e in json.loads(open(json_dir / "protection.json").read())}
-)
+OWNERSHIP = {
+    e["value"]: e for e in json.loads(open(json_dir / "ownership.json").read())
+}
+PROTECTION = {
+    e["value"]: e for e in json.loads(open(json_dir / "protection.json").read())
+}
 
 
 URBAN_YEARS = [2020, 2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100]

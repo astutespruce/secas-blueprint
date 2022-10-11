@@ -132,7 +132,7 @@
                         {% if value == 0 %}
                             0
                         {% else %}
-                            {{value}}
+                            {{value|format_number}}
                         {% endif %}
                     </td>
                 {% endfor %}

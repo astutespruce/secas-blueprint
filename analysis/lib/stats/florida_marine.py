@@ -12,6 +12,7 @@ from analysis.lib.raster import (
     offset_window,
 )
 from analysis.lib.util import pluck
+from analysis.lib.stats.summary_units import read_unit_from_feather
 
 ID = "flm"
 
@@ -23,7 +24,6 @@ INDICATOR_INDEX = OrderedDict({indicator["id"]: indicator for indicator in INDIC
 src_dir = Path("data/inputs/indicators/florida_marine")
 flm_filename = src_dir / "flm_blueprint.tif"
 mask_filename = src_dir / "flm_blueprint_mask.tif"
-results_filename = "data/results/marine_blocks/florida.feather"
 
 
 def extract_florida_marine_by_mask(
@@ -93,13 +93,17 @@ def extract_florida_marine_by_mask(
 
     priorities = [
         {
-            **e,
-            "acres": priority_acres[i],
-            "percent": 100 * priority_acres[i] / rasterized_acres,
+            **entry,
+            "acres": priority_acres[entry["value"]],
+            "percent": 100 * priority_acres[entry["value"]] / rasterized_acres,
         }
-        for i, e in enumerate(
-            pluck(INPUTS[ID]["values"], ["blueprint", "value", "label"])
-        )
+        for entry in pluck(INPUTS[ID]["values"], ["blueprint", "value", "label"])
+    ] + [
+        {
+            "label": "Not a priority",
+            "acres": priority_acres[0],
+            "percent": 100 * priority_acres[0] / rasterized_acres,
+        }
     ]
 
     return {
@@ -162,95 +166,59 @@ def summarize_florida_marine_by_units_grid(df, units_grid, out_dir):
     priorities.reset_index().to_feather(out_dir / f"{ID}.feather")
 
 
-# def summarize_by_marine_block(geometries):
-#     """Summarize by marine_block
+def get_florida_marine_unit_results(results_dir, unit_id, rasterized_acres):
+    """Get Florida Marine Blueprint marine block results for unit_id
 
-#     Parameters
-#     ----------
-#     geometries : Series of pygeos geometries, indexed by marine block ID
-#     """
+    Parameters
+    ----------
+    results_dir : Path
+    unit_id : str
+    rasterized_acres : float
 
-#     summarize_raster_by_geometry(
-#         geometries,
-#         extract_by_geometry,
-#         outfilename=results_filename,
-#         progress_label="Calculating Florida Marine Blueprint area by Marine Block",
-#         bounds=INPUTS[ID]["bounds"],
-#     )
+    Returns
+    -------
+     Returns
+    -------
+    dict (empty if no results for unit_id)
+        {
+            "priorities": <acres by priority category>,
+            "legend": <entries for legend>,
+            "total_acres": <total acres within input>,
+            "outside_input_acres": <acres outside this input but within SE>,
+            "outside_input_percent": <percent outside this input but within SE>,
+        }
+    """
 
+    flm_results = read_unit_from_feather(results_dir / f"{ID}.feather", unit_id)
+    if len(flm_results) == 0:
+        return {}
 
-# def get_marine_block_results(id, analysis_acres, total_acres):
-#     """Get results for Florida Conservation Blueprint dataset for a given
-#     marine block.
+    unit = flm_results.iloc[0]
 
-#     Parameters
-#     ----------
-#     id : str
-#         marine block ID
-#     analysis_acres : float
-#         area of marine block summary unit less any area outside SE Blueprint
-#     total_acres : float
-#         area of marine block summary unit
+    cols = [c for c in flm_results if c.startswith("priority_")]
 
-#     Returns
-#     -------
-#     dict
-#         {
-#             "priorities": [...],
-#             "legend": [...],
-#             "analysis_notes": <analysis_notes>,
-#             "remainder": <acres outside of input>,
-#             "remainder_percent" <percent of total acres outside input>
-#         }
-#     """
-#     df = pd.read_feather(results_filename).set_index("id")
+    priority_acres = unit[cols].values
+    total_acres = priority_acres.sum()
 
-#     if id not in df.index:
-#         return None
+    priorities = [
+        {
+            **entry,
+            "acres": priority_acres[entry["value"]],
+            "percent": 100 * priority_acres[entry["value"]] / rasterized_acres,
+        }
+        for entry in pluck(INPUTS[ID]["values"], ["blueprint", "value", "label"])
+    ] + [
+        {
+            "label": "Not a priority",
+            "acres": priority_acres[0],
+            "percent": 100 * priority_acres[0] / rasterized_acres,
+        }
+    ]
 
-#     values = pd.DataFrame(INPUTS[ID]["values"])
-
-#     row = df.loc[id]
-#     cols = [c for c in row.index if c.startswith("flm_")]
-
-#     df = values.join(pd.Series(row[cols].values, name="acres"))
-#     df["percent"] = 100 * np.divide(df.acres, row.shape_mask)
-
-#     # sort into correct order
-#     df.sort_values(by=["blueprint", "value"], ascending=[False, True], inplace=True)
-
-#     priorities = df[["value", "blueprint", "label", "acres", "percent"]].to_dict(
-#         orient="records"
-#     )
-
-#     # don't include Not a priority in legend
-#     legend = df[["label", "color"]].iloc[:-1].to_dict(orient="records")
-
-#     remainder = max(analysis_acres - df.acres.sum(), 0)
-#     remainder = remainder if remainder >= 1 else 0
-
-#     # Bring in indicators
-#     prefix = ID
-#     indicator_cols = [c for c in row.index if c.startswith(f"{prefix}:")]
-#     indicators_present = {c.rsplit("_", 1)[0] for c in indicator_cols}
-
-#     counts = {
-#         id: np.array(
-#             [
-#                 getattr(row, c)
-#                 for c in indicator_cols
-#                 if c.startswith(id) and not c.endswith("avg")
-#             ]
-#         )
-#         for id in indicators_present
-#     }
-
-#     return {
-#         "priorities": priorities,
-#         "ecosystems": extract_indicators(counts),
-#         "legend": legend,
-#         "analysis_acres": analysis_acres,
-#         "total_acres": total_acres,
-#         "remainder": remainder,
-#         "remainder_percent": 100 * remainder / total_acres,
-#     }
+    return {
+        "priorities": priorities,
+        "legend": pluck(INPUTS[ID]["values"], ["label", "color"])[:-1],
+        "total_acres": total_acres,
+        "outside_input_acres": unit.outside_input,
+        "outside_input_percent": 100 * unit.outside_input / rasterized_acres,
+    }

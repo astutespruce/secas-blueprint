@@ -18,6 +18,7 @@ from analysis.lib.raster import (
     detect_data_by_mask,
     summarize_raster_by_units_grid,
 )
+from analysis.lib.stats.summary_units import read_unit_from_feather
 
 ID = "base"
 
@@ -242,31 +243,10 @@ def extract_base_blueprint_by_mask(
         "outside_input_acres": outside_input_acres,
         "outside_input_percent": 100 * outside_input_acres / rasterized_acres,
     }
-    if corridors is not None:
+    if len(corridors):
         results["corridors"] = corridors
 
     return results
-
-
-# def summarize_by_unit(geometries, out_dir, marine=False):
-#     """Summarize by HUC12 / marine lease block
-
-#     Parameters
-#     ----------
-#     geometries : Series of pygeos geometries, indexed by HUC12 / marine lease block id
-#     out_dir : str or Path object
-#     marine : bool
-#         True for marine lease blocks, False otherwise
-#     """
-
-#     summarize_raster_by_geometry(
-#         geometries,
-#         extract_by_geometry,
-#         outfilename=out_dir / "base_blueprint.feather",
-#         progress_label="Summarizing Base Blueprint",
-#         bounds=INPUTS[ID]["bounds"],
-#         marine=marine,
-#     )
 
 
 def summarize_base_blueprint_by_units_grid(df, units_grid, out_dir, marine=False):
@@ -384,86 +364,140 @@ def summarize_base_blueprint_by_units_grid(df, units_grid, out_dir, marine=False
     out.reset_index().to_feather(out_dir / f"{ID}.feather")
 
 
-# FIXME: rework
-# def get_unit_results(unit_type, id, analysis_acres, total_acres):
-#     """Get results for Base Blueprint dataset for a given HUC12 or marine lease
-#     block.
+def get_base_blueprint_unit_results(results_dir, unit_id, rasterized_acres):
+    """Get Base Blueprint HUC12 / marine block results for unit_id
 
-#     Parameters
-#     ----------
-#     unit_type : str, one of ['huc12', 'marine_blocks']
+    Parameters
+    ----------
+    results_dir : Path
+    unit_id : str
+    rasterized_acres : float
 
-#     id : str
-#         HUC12 or marine lease block ID
-#     analysis_acres : float
-#         area of summary unit less any area outside SE Blueprint
-#     total_acres : float
-#         area of summary unit
+    Returns
+    -------
+     Returns
+    -------
+    dict (empty if no results for unit_id)
+        {
+            "priorities": <acres by priority category>,
+            "corridors" <acres by corridors category; key only present if corridors are present>,
+            "ecosystems": <dict: ecosystem and indicator info>,
+            "legend": <entries for legend>,
+            "total_acres": <total acres within input>,
+            "outside_input_acres": <acres outside this input but within SE>,
+            "outside_input_percent": <percent outside this input but within SE>,
+        }
+    """
 
-#     Returns
-#     -------
-#     dict
-#         {
-#             "priorities": [...],
-#             "legend": [...],
-#             "analysis_notes": <analysis_notes>,
-#             "remainder": <acres outside of input>,
-#             "remainder_percent" <percent of total acres outside input>
-#         }
-#     """
-#     if unit_type == "huc12":
-#         results_filename = "data/results/huc12/southatlantic.feather"
-#     else:
-#         results_filename = "data/results/marine_blocks/southatlantic.feather"
+    base_results = read_unit_from_feather(results_dir / f"{ID}.feather", unit_id)
+    if len(base_results) == 0:
+        return {}
 
-#     df = pd.read_feather(results_filename).set_index("id")
+    unit = base_results.iloc[0]
 
-#     if id not in df.index:
-#         return None
+    priority_cols = [c for c in base_results if c.startswith("priority_")]
+    priority_acres = unit[priority_cols].values
+    total_acres = priority_acres.sum()
 
-#     values = pd.DataFrame(INPUTS[ID]["values"])
+    # get priority results in descending order
+    priorities = [
+        {
+            **entry,
+            "acres": priority_acres[entry["value"]],
+            "percent": 100 * priority_acres[entry["value"]] / rasterized_acres,
+        }
+        for entry in pluck(INPUTS[ID]["values"], ["blueprint", "value", "label"])
+    ][::-1]
 
-#     row = df.loc[id]
-#     blueprint_cols = [c for c in row.index if c.startswith("base_")]
+    corridor_cols = [c for c in base_results if c.startswith("corridors_")]
+    corridor_acres = unit[corridor_cols].values
+    # only keep the ones that are present
+    corridors = [
+        {
+            **e,
+            "acres": corridor_acres[i],
+            "percent": 100 * corridor_acres[i] / rasterized_acres,
+        }
+        for i, e in enumerate(pluck(CORRIDORS, ["label"]))
+        if corridor_acres[i]
+    ]
 
-#     df = values.join(pd.Series(row[blueprint_cols].values, name="acres"))
-#     df["percent"] = 100 * np.divide(df.acres, row.shape_mask)
+    # only check areas of indicators actually present in summaries for unit type
+    check_indicators = [
+        e for e in INDICATORS if f"{e['id']}_outside" in base_results.columns
+    ]
 
-#     # sort into correct order
-#     df.sort_values(by=["blueprint", "value"], ascending=False, inplace=True)
+    indicators = {}
+    for indicator in check_indicators:
+        id = indicator["id"]
+        values = indicator["values"]
+        indicator_cols = [f"{id}_value_{v['value']}" for v in values]
+        indicator_acres = unit[indicator_cols].values
+        total_acres = indicator_acres.sum()
 
-#     priorities = df[["value", "blueprint", "label", "acres", "percent"]].to_dict(
-#         orient="records"
-#     )
+        if total_acres == 0:
+            continue
 
-#     # don't include Not a priority in legend
-#     legend = df[["label", "color"]].iloc[:-1].to_dict(orient="records")
+        outside_acres = unit[f"{id}_outside"]
 
-#     remainder = max(analysis_acres - df.acres.sum(), 0)
-#     remainder = remainder if remainder >= 1 else 0
+        indicator_results = {
+            **indicator,
+            # merge acres and sort highest value to lowest
+            "values": [
+                {
+                    **v,
+                    "acres": indicator_acres[i],
+                    "percent": 100 * indicator_acres[i] / rasterized_acres,
+                }
+                for i, v in enumerate(values)
+            ][::-1],
+            "total_acres": total_acres,
+            "outside_indicator_acres": outside_acres,
+            "outside_indicator_percent": 100 * outside_acres / rasterized_acres,
+        }
 
-#     # Bring in indicators
-#     prefix = ID
-#     indicator_cols = [c for c in row.index if c.startswith(f"{prefix}:")]
-#     indicators_present = {c.rsplit("_", 1)[0] for c in indicator_cols}
+        if "goodThreshold" in indicator:
+            indicator_results["good_total"] = indicator_acres[
+                # adjust index because values are only from min_value to max_value
+                indicator["goodThreshold"]
+                - indicator["values"][0]["value"] :
+            ].sum()
 
-#     counts = {
-#         id: np.array(
-#             [
-#                 getattr(row, c)
-#                 for c in indicator_cols
-#                 if c.startswith(id) and not c.endswith("avg")
-#             ]
-#         )
-#         for id in indicators_present
-#     }
+        indicators[id] = indicator_results
 
-#     return {
-#         # "priorities": priorities,
-#         "ecosystems": extract_indicators(counts),
-#         # "legend": legend,
-#         "analysis_acres": analysis_acres,
-#         "total_acres": total_acres,
-#         # "remainder": remainder,
-#         # "remainder_percent": 100 * remainder / total_acres,
-#     }
+    # aggregate indicators up to ecosystems
+    ecosystem_ids = {id.split(":")[1].split("_")[0] for id in indicators}
+    ecosystems_present = [deepcopy(e) for e in ECOSYSTEMS if e["id"] in ecosystem_ids]
+    ecosystems = []
+    for ecosystem in ecosystems_present:
+        id = ecosystem["id"]
+
+        ecosystem["indicator_summary"] = [
+            {
+                "id": id,
+                "label": INDICATOR_INDEX[id]["label"],
+                "present": id in indicators,
+            }
+            for id in ecosystem["indicators"]
+            if id.startswith("base:")
+        ]
+
+        # update ecosystem with only indicators that are present
+        ecosystem["indicators"] = [
+            indicators[id] for id in ecosystem["indicators"] if id in indicators
+        ]
+        ecosystems.append(ecosystem)
+
+    results = {
+        "priorities": priorities,
+        "legend": pluck(INPUTS[ID]["values"], ["label", "color"])[:0:-1],
+        "ecosystems": ecosystems,
+        "total_acres": total_acres,
+        "outside_input_acres": unit.outside_input,
+        "outside_input_percent": 100 * unit.outside_input / rasterized_acres,
+    }
+
+    if len(corridors):
+        results["corridors"] = corridors
+
+    return results

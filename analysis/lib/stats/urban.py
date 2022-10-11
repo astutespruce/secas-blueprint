@@ -1,18 +1,16 @@
 from pathlib import Path
 
-from progress.bar import Bar
 import numpy as np
 import pandas as pd
-import pygeos as pg
 import rasterio
 
-from analysis.constants import URBAN_YEARS, M2_ACRES
+from analysis.constants import M2_ACRES, URBAN_YEARS
 from analysis.lib.raster import (
-    extract_count_in_geometry,
     detect_data_by_mask,
+    extract_count_in_geometry,
     summarize_raster_by_units_grid,
 )
-
+from analysis.lib.stats.summary_units import read_unit_from_feather
 
 # values are number of runs out of 50 that are predicted to urbanize
 # 51 = urban as of 2019 (NLCD)
@@ -204,6 +202,67 @@ def summarize_urban_by_units_grid(df, units_grid, out_dir):
             # total urbanization is sum of acres by probability bin * probability
             urban[f"urban_proj_{year}"] = (urban_acres * PROBABILITIES).sum(axis=1)
 
+    urban["noturban_2100"] = urban_acres[:, 0]  # set to 2100 by last loop
     urban["outside_urban"] = outside_urban_acres
 
     urban.reset_index().to_feather(out_dir / "urban.feather")
+
+
+def get_urban_unit_results(results_dir, unit_id, rasterized_acres):
+    """Get current and projected urbanization for the unit_id
+
+    Parameters
+    ----------
+    results_dir : Path
+    unit_id : str
+    rasterized_acres : float
+
+    Returns
+    -------
+    dict (empty if no results available for unit_id)
+        {
+            "entries": [{
+                "label": <label>,
+                "acres": <acres>,
+                "percent": <percent>
+            }, ... <for current urban, projected urban, and area not urbanized by 2100 (if any)>],
+            "outside_urban_acres": <acres outside this dataset but within SE>,
+            "outside_urban_percent": <percent outside this dataset but within SE>,
+            "noturban_2100_acres": <acres not urbanized by 2100>,
+            "noturban_2100_percent": <percent not urbanized by 2100>,
+            "percent_increase_by_2060": <percent of (2060-2019) / 2019>
+        }
+    """
+    urban_results = read_unit_from_feather(results_dir / "urban.feather", unit_id)
+    if len(urban_results) == 0:
+        return {}
+
+    unit = urban_results.iloc[0]
+
+    entries = [
+        {
+            "label": "Urban in 2019",
+            "acres": unit.urban_2019,
+            "percent": 100 * unit.urban_2019 / rasterized_acres,
+        }
+    ] + [
+        {
+            "label": f"{year} projected extent",
+            "acres": unit[f"urban_proj_{year}"],
+            "percent": 100 * unit[f"urban_proj_{year}"] / rasterized_acres,
+        }
+        for year in URBAN_YEARS
+    ]
+
+    return {
+        "entries": entries,
+        "outside_urban_acres": unit.outside_urban,
+        "outside_urban_percent": 100 * unit.outside_urban / rasterized_acres,
+        "noturban_2100_acres": unit.noturban_2100,
+        "noturban_2100_percent": 100 * unit.noturban_2100 / rasterized_acres,
+        "percent_increase_by_2060": 100
+        * (unit.urban_proj_2060 - unit.urban_2019)
+        / unit.urban_2019
+        if unit.urban_2019
+        else 0,
+    }

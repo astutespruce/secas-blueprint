@@ -40,17 +40,6 @@ units_df = gp.read_feather(
 units_df = units_df.join(units_df.bounds)
 
 
-# FIXME: remove
-import pandas as pd
-
-units_df = pd.concat(
-    [
-        units_df.loc[units_df.input_id == "base"].head(100),
-        units_df.loc[units_df.input_id == "car"].head(100),
-    ]
-)
-
-
 print("Reading HUC12 grid")
 with rasterio.open(huc12_raster_filename) as units_dataset:
     units_grid = SummaryUnitGrid(units_dataset, units_df.total_bounds)
@@ -95,14 +84,6 @@ units_df = gp.read_feather(
     columns=["id", "value", "rasterized_acres", "outside_se", "input_id", "geometry"],
 ).set_index("id")
 units_df = units_df.join(units_df.bounds)
-
-# FIXME: remove
-units_df = pd.concat(
-    [
-        units_df.loc[units_df.input_id == "base"].head(100),
-        units_df.loc[units_df.input_id == "flm"].head(100),
-    ]
-)
 
 
 print("Reading marine blocks grid")

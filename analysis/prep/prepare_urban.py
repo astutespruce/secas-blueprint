@@ -50,126 +50,126 @@ bnd_raster = rasterio.open(bnd_dir / "nonmarine_mask.tif")
 bnd = pg.box(*bnd_raster.bounds)
 
 
-# # Read NLCD 2019 prepared using analysis/prep/prepare_nlcd.py
-# # this aligns exactly to bnd_raster
-# print("Reading NLCD 2019")
-# with rasterio.open(nlcd_dir / "landcover_2019.tif") as src:
-#     already_urban = src.read(1)
-#     already_urban = np.where((already_urban >= 2) & (already_urban <= 5), True, False)
+# Read NLCD 2019 prepared using analysis/prep/prepare_nlcd.py
+# this aligns exactly to bnd_raster
+print("Reading NLCD 2019")
+with rasterio.open(nlcd_dir / "landcover_2019.tif") as src:
+    already_urban = src.read(1)
+    already_urban = np.where((already_urban >= 2) & (already_urban <= 5), True, False)
 
 
-# ### Find the overlapping window for the SE Blueprint extent
-# # NOTE: the urban layers are basically in same projection but use NAD83 instead of WGS84
-# with rasterio.open(src_dir / "probability_SSP2_2020.tif") as src:
-#     window = src.window(*pg.total_bounds(bnd))
-#     window_floored = window.round_offsets(op="floor", pixel_precision=3)
-#     w = math.ceil(window.width + window.col_off - window_floored.col_off)
-#     h = math.ceil(window.height + window.row_off - window_floored.row_off)
-#     window = Window(window_floored.col_off, window_floored.row_off, w, h)
-#     # make sure that window is within extent of data
-#     window = window.intersection(Window(0, 0, src.width, src.height))
-#     transform = src.window_transform(window)
+### Find the overlapping window for the SE Blueprint extent
+# NOTE: the urban layers are basically in same projection but use NAD83 instead of WGS84
+with rasterio.open(src_dir / "probability_SSP2_2020.tif") as src:
+    window = src.window(*pg.total_bounds(bnd))
+    window_floored = window.round_offsets(op="floor", pixel_precision=3)
+    w = math.ceil(window.width + window.col_off - window_floored.col_off)
+    h = math.ceil(window.height + window.row_off - window_floored.row_off)
+    window = Window(window_floored.col_off, window_floored.row_off, w, h)
+    # make sure that window is within extent of data
+    window = window.intersection(Window(0, 0, src.width, src.height))
+    transform = src.window_transform(window)
 
-# full_window = window
+full_window = window
 
-# ### Calculate windows for extracting data
-# # The full raster is too big to read into memory and digitize, so
-# # we process in chunks based on the window
-# # NOTE: data are provided using a blocksize that is full width and 1px high
-# offsets = list(range(0, full_window.height + 1, CHUNK_SIZE))
-# heights = ([CHUNK_SIZE] * (len(offsets) - 1)) + [full_window.height - offsets[-1]]
-# windows = [
-#     Window(
-#         full_window.col_off,
-#         full_window.row_off + offsets[i],
-#         full_window.width,
-#         heights[i],
-#     )
-#     for i in range(len(offsets))
-# ]
-
-
-# ### Extract data
-# # NOTE: the source data do not distinguish between NODATA outside analysis area
-# # and areas not projected to urbanize
-
-# for year in URBAN_YEARS:
-#     year_start = time()
-#     outfilename = out_dir / f"urban_{year}.tif"
-
-#     if outfilename.exists():
-#         print(f"Skipping {year} (already exists)")
-#         continue
-
-#     with rasterio.open(src_dir / f"probability_SSP2_{year}.tif") as src:
-#         out = np.zeros((full_window.height, full_window.width), dtype="uint8")
-
-#         for window in Bar(f"Processing {year}", max=len(windows)).iter(windows):
-#             out_offset = window.row_off - full_window.row_off
-#             data = src.read(1, window=window)
-#             # nan is areas not projected to urbanize and actual NODATA
-#             data[np.isnan(data)] = np.float32(0.0)
-
-#             # probability values are number of runs out of 50 that predicted
-#             # urbanization; convert back to the number of runs
-#             binned = (data * np.float32(50.0)).astype("uint8")
-
-#             out[out_offset : out_offset + window.height, :] = binned
-
-#         print("Writing temporary raster")
-#         tmp_filename = tmp_dir / f"urban_{year}_binned.tif"
-#         write_raster(tmp_filename, out, transform, crs=src.crs, nodata=NODATA)
-
-#     ### Warp and extract to SE Blueprint extent
-#     print("Warping to align with SE Blueprint")
-#     with rasterio.open(tmp_filename) as src:
-#         vrt = WarpedVRT(
-#             src,
-#             width=bnd_raster.width,
-#             height=bnd_raster.height,
-#             nodata=NODATA,
-#             transform=bnd_raster.transform,
-#             crs=DATA_CRS,
-#             resampling=Resampling.nearest,
-#         )
-
-#         data = vrt.read()[0]
-
-#     print("Setting already urban")
-#     # set a value of 51 where already urban
-#     data = np.where(already_urban, np.uint8(51), data)
-
-#     ### Set areas outside the SE Blueprint to NODATA
-#     print("Masking to inland areas in the SE")
-#     outside = bnd_raster.read(1) == 0
-#     data[outside] = NODATA
-
-#     print("Writing final dataset")
-#     write_raster(outfilename, data, bnd_raster.transform, bnd_raster.crs, nodata=NODATA)
-
-#     with rasterio.open(outfilename, "r+") as out:
-#         out.write_colormap(1, colormap)
-
-#     print("Adding overviews")
-#     add_overviews(outfilename)
-
-#     print(f"Done with {year} in {time()-year_start:.2f}s")
-
-# bnd_raster.close()
-
-# del already_urban
+### Calculate windows for extracting data
+# The full raster is too big to read into memory and digitize, so
+# we process in chunks based on the window
+# NOTE: data are provided using a blocksize that is full width and 1px high
+offsets = list(range(0, full_window.height + 1, CHUNK_SIZE))
+heights = ([CHUNK_SIZE] * (len(offsets) - 1)) + [full_window.height - offsets[-1]]
+windows = [
+    Window(
+        full_window.col_off,
+        full_window.row_off + offsets[i],
+        full_window.width,
+        heights[i],
+    )
+    for i in range(len(offsets))
+]
 
 
-# ### Create mask of where urban pixels are present through 2100
-# print("Creating urban mask")
-# outfilename = out_dir / "urban_mask.tif"
-# if not outfilename.exists():
-#     create_lowres_mask(
-#         out_dir / f"urban_2100.tif",
-#         outfilename,
-#         resolution=MASK_RESOLUTION,
-#         ignore_zero=True,
-#     )
+### Extract data
+# NOTE: the source data do not distinguish between NODATA outside analysis area
+# and areas not projected to urbanize
+
+for year in URBAN_YEARS:
+    year_start = time()
+    outfilename = out_dir / f"urban_{year}.tif"
+
+    if outfilename.exists():
+        print(f"Skipping {year} (already exists)")
+        continue
+
+    with rasterio.open(src_dir / f"probability_SSP2_{year}.tif") as src:
+        out = np.zeros((full_window.height, full_window.width), dtype="uint8")
+
+        for window in Bar(f"Processing {year}", max=len(windows)).iter(windows):
+            out_offset = window.row_off - full_window.row_off
+            data = src.read(1, window=window)
+            # nan is areas not projected to urbanize and actual NODATA
+            data[np.isnan(data)] = np.float32(0.0)
+
+            # probability values are number of runs out of 50 that predicted
+            # urbanization; convert back to the number of runs
+            binned = (data * np.float32(50.0)).astype("uint8")
+
+            out[out_offset : out_offset + window.height, :] = binned
+
+        print("Writing temporary raster")
+        tmp_filename = tmp_dir / f"urban_{year}_binned.tif"
+        write_raster(tmp_filename, out, transform, crs=src.crs, nodata=NODATA)
+
+    ### Warp and extract to SE Blueprint extent
+    print("Warping to align with SE Blueprint")
+    with rasterio.open(tmp_filename) as src:
+        vrt = WarpedVRT(
+            src,
+            width=bnd_raster.width,
+            height=bnd_raster.height,
+            nodata=NODATA,
+            transform=bnd_raster.transform,
+            crs=DATA_CRS,
+            resampling=Resampling.nearest,
+        )
+
+        data = vrt.read()[0]
+
+    print("Setting already urban")
+    # set a value of 51 where already urban
+    data = np.where(already_urban, np.uint8(51), data)
+
+    ### Set areas outside the SE Blueprint to NODATA
+    print("Masking to inland areas in the SE")
+    outside = bnd_raster.read(1) == 0
+    data[outside] = NODATA
+
+    print("Writing final dataset")
+    write_raster(outfilename, data, bnd_raster.transform, bnd_raster.crs, nodata=NODATA)
+
+    with rasterio.open(outfilename, "r+") as out:
+        out.write_colormap(1, colormap)
+
+    print("Adding overviews")
+    add_overviews(outfilename)
+
+    print(f"Done with {year} in {time()-year_start:.2f}s")
+
+bnd_raster.close()
+
+del already_urban
+
+
+### Create mask of where urban pixels (including 0) are present through 2100
+print("Creating urban mask")
+outfilename = out_dir / "urban_mask.tif"
+if not outfilename.exists():
+    create_lowres_mask(
+        out_dir / f"urban_2100.tif",
+        outfilename,
+        resolution=MASK_RESOLUTION,
+        ignore_zero=False,
+    )
 
 
 ### Reclassify 2060 into bins for report and tiles

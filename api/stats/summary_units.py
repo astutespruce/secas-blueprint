@@ -1,231 +1,65 @@
-from copy import deepcopy
 from pathlib import Path
 
-import numpy as np
-import pandas as pd
+from analysis.lib.stats.core import get_unit_core_results
+from analysis.lib.stats.base_blueprint import get_base_blueprint_unit_results
+from analysis.lib.stats.caribbean import get_caribbean_unit_results
+from analysis.lib.stats.florida_marine import get_florida_marine_unit_results
+from analysis.lib.stats.ownership import get_ownership_unit_results
+from analysis.lib.stats.urban import get_urban_unit_results
+from analysis.lib.stats.slr import get_slr_unit_results
+
+data_dir = Path("data")
 
 
-from analysis.constants import (
-    INPUTS_BY_VALUE,
-    OWNERSHIP,
-    PROTECTION,
-)
+def get_summary_unit_results(unit_type, unit_id):
+    """Get statistics for a single summary unit (HUC12 / marine block)
 
-from analysis.lib.stats import (
-    get_base_blueprint_unit_results,
-    get_caribbean_huc12_results,
-    get_florida_marine_block_results,
-)
+    Parameters
+    ----------
+    unit_type : str, one of {"huc12", "marine_blocks"}
+    unit_id : str
 
+    Returns
+    -------
+    dict
+    """
+    results_dir = data_dir / "results" / unit_type
 
-input_dir = Path("data/inputs")
-results_dir = Path("data/results")
+    df, results = get_unit_core_results(unit_type, unit_id)
+    unit = df.iloc[0]
 
-raster_result_funcs = {
-    "base": get_base_blueprint_unit_results,
-    "car": get_caribbean_huc12_results,
-    "flm": get_florida_marine_block_results,
-}
+    results.update(get_ownership_unit_results(results_dir, unit_id, unit.acres))
 
+    if unit_type == "huc12":
+        slr_results = get_slr_unit_results(results_dir, unit_id, unit.rasterized_acres)
+        if slr_results:
+            results["slr"] = slr_results
 
-class SummaryUnits(object):
-    def __init__(self, unit_type="huc12"):
-        print(f"Loading {unit_type} summary data...")
-        self.unit_type = unit_type
+        if unit.input_id == "base":
+            base_blueprint_results = get_base_blueprint_unit_results(
+                results_dir, unit_id, unit.rasterized_acres
+            )
+            results["inputs"][0].update(base_blueprint_results)
+            if "corridors" in base_blueprint_results:
+                results["corridors"] = base_blueprint_results["corridors"]
 
-        self.working_dir = results_dir / unit_type
+            urban_results = get_urban_unit_results(
+                results_dir, unit_id, unit.rasterized_acres
+            )
+            if urban_results:
+                results["urban"] = urban_results
 
-        self.units = pd.read_feather(
-            input_dir / "summary_units" / f"{unit_type}.feather",
-            columns=["id", "name", "acres", "minx", "miny", "maxx", "maxy"],
-        ).set_index("id")
-
-        self.blueprint = pd.read_feather(
-            self.working_dir / "blueprint.feather"
-        ).set_index("id")
-
-        self.ownership = pd.read_feather(
-            self.working_dir / "ownership.feather"
-        ).set_index("id")
-
-        self.protection = pd.read_feather(
-            self.working_dir / "protection.feather"
-        ).set_index("id")
-
-        if unit_type == "huc12":
-            self.slr = pd.read_feather(self.working_dir / "slr.feather").set_index("id")
-            self.urban = pd.read_feather(self.working_dir / "urban.feather").set_index(
-                "id"
+        if unit.input_id == "car":
+            results["inputs"][0].update(
+                get_caribbean_unit_results(results_dir, unit_id, unit.rasterized_acres)
             )
 
-            self.counties = pd.read_feather(
-                self.working_dir / "counties.feather"
-            ).set_index("id")
-
-    def get_results(self, id):
-        if id not in self.units.index:
-            raise ValueError("ID not in units index")
-
-        unit = self.units.loc[id]
-        results = unit[["name", "acres"]].to_dict()
-        results["bounds"] = unit[["minx", "miny", "maxx", "maxy"]].tolist()
-        results["type"] = (
-            "subwatershed" if self.unit_type == "huc12" else "marine lease block"
-        )
-        results["is_marine"] = self.unit_type == "marine_blocks"
-
-        blueprint = None
-        try:
-            blueprint = self.blueprint.loc[id]
-
-        except KeyError:
-            # no Blueprint results, there won't be other results
-            return results
-
-        # unpack blueprint values
-        blueprint_values = np.array(
-            [
-                getattr(blueprint, c)
-                for c in blueprint.index
-                if c.startswith("blueprint_")
-            ]
-        )
-        results["blueprint"] = blueprint_values.tolist()
-        results["blueprint_total"] = blueprint_values.sum()
-
-        results["analysis_acres"] = blueprint.shape_mask
-
-        remainder = abs(blueprint.shape_mask - results["blueprint_total"])
-        # there are small rounding errors, only keep if > 1
-        results["analysis_remainder"] = remainder if remainder >= 1 else 0
-
-        # only pull in Blueprint inputs that are present, and flatten
-        # overlapping inputs
-        inputs = dict()
-        input_cols = [c for c in blueprint.index if c.startswith("inputs_")]
-        for i, col in enumerate(input_cols):
-            acres = blueprint[col]
-            if acres > 0:
-                input = deepcopy(INPUTS_BY_VALUE[i + 1])
-                input["acres"] = acres
-                inputs[input["id"]] = input
-
-        inputs = sorted(inputs.values(), key=lambda x: x["acres"], reverse=True)
-
-        # read in input_priorities
-        for entry in inputs:
-            input_id = entry["id"]
-
-            if input_id in ["okchat", "txchat"]:
-                state = input_id[:2]
-                chat_results = get_chat_huc12_results(id, state)
-                entry.update(chat_results)
-
-                continue
-
-            if input_id == "car":
-                caribbean_results = get_caribbean_huc12_results(
-                    id,
-                    results["acres"] - results["analysis_remainder"],
-                    results["acres"],
+    else:
+        if unit.input_id == "flm":
+            results["inputs"][0].update(
+                get_florida_marine_unit_results(
+                    results_dir, unit_id, unit.rasterized_acres
                 )
-                entry.update(caribbean_results)
-
-                continue
-
-            # Remaining inputs are raster-based
-            analysis_acres = results["analysis_acres"] - results["analysis_remainder"]
-            total_acres = results["analysis_acres"]
-
-            # South Atlantic is a special case because it also has marine and HUC12 results
-            if input_id == "sa":
-                southatlantic_results = get_southatlantic_unit_results(
-                    self.unit_type, id, analysis_acres, total_acres
-                )
-                if southatlantic_results is not None:
-                    entry.update(southatlantic_results)
-
-                continue
-
-            results_func = raster_result_funcs.get(input_id, None)
-            if not results_func:
-                print(
-                    f"WARNING: missing summary unit raster results func for {input_id}"
-                )
-                continue
-
-            raster_results = results_func(id, analysis_acres, total_acres)
-            if raster_results is not None:
-                entry.update(raster_results)
-
-        results["inputs"] = inputs
-        results["input_ids"] = [i["id"] for i in inputs]
-
-        try:
-            ownership = self.ownership.loc[self.ownership.index.isin([id])]
-            ownerships_present = ownership.Own_Type.unique()
-            # use the native order of OWNERSHIP to drive order of results
-            ownership_results = [
-                {
-                    "label": value["label"],
-                    "acres": ownership.loc[ownership.Own_Type == key].iloc[0].acres,
-                }
-                for key, value in OWNERSHIP.items()
-                if key in ownerships_present
-            ]
-            results["ownership"] = ownership_results
-
-        except KeyError:
-            pass
-
-        try:
-            protection = self.protection.loc[self.protection.index.isin([id])]
-            protection_present = protection.GAP_Sts.unique()
-            # use the native order of PROTECTION to drive order of results
-            protection_results = [
-                {
-                    "label": value["label"],
-                    "acres": protection.loc[protection.GAP_Sts == key].iloc[0].acres,
-                }
-                for key, value in PROTECTION.items()
-                if key in protection_present
-            ]
-
-            results["protection"] = protection_results
-
-        except KeyError:
-            pass
-
-        if self.unit_type == "marine_blocks":
-            return results
-
-        try:
-            counties = self.counties.loc[self.counties.index.isin([id])].sort_values(
-                by=["state", "county"]
             )
-            results["counties"] = counties.to_dict(orient="records")
 
-        except KeyError:
-            pass
-
-        try:
-            slr = self.slr.loc[id]
-            if slr[1:].max():
-                results["slr_acres"] = slr.shape_mask
-                results["slr"] = slr[1:].tolist()
-
-        except KeyError:
-            pass
-
-        try:
-            # only keep through 2060
-            urban = self.urban.loc[id][:7]
-            if urban[1:].max():
-                results["urban_acres"] = urban.shape_mask
-                results["urban"] = urban[1]
-                results["proj_urban"] = urban[2:].tolist()
-
-        except KeyError:
-            pass
-
-        return results
+    return results

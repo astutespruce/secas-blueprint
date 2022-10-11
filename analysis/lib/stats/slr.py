@@ -17,7 +17,7 @@ from analysis.lib.raster import (
     extract_count_in_geometry,
     summarize_raster_by_units_grid,
 )
-from analysis.lib.geometry import to_dict
+from analysis.lib.stats.summary_units import read_unit_from_feather
 
 
 SLR_BINS = np.arange(11)
@@ -130,15 +130,13 @@ def extract_slr_by_mask_and_geometry(
         for scenario in SLR_PROJ_SCENARIOS
     }
 
-    results = {
+    return {
         "depth": slr_results,
         "total_slr_acres": total_slr_acres,
         "notinundated_acres": not_inundated_acres,
         "notinundated_percent": 100 * not_inundated_acres / rasterized_acres,
         "projections": projections,
     }
-
-    return results
 
 
 def summarize_slr_by_units_grid(df, units_grid, out_dir):
@@ -228,3 +226,56 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
     slr = slr.join(tmp)
 
     slr.reset_index().to_feather(out_dir / "slr.feather")
+
+
+def get_slr_unit_results(results_dir, unit_id, rasterized_acres):
+    """Get SLR depth and projection results for unit_id
+
+    Parameters
+    ----------
+    results_dir : Path
+    unit_id : str
+    rasterized_acres : float
+
+    Returns
+    -------
+    dict (empty if no SLR data available for unit_id)
+        {
+            "depth": [{
+                "label": <label>,
+                "acres": <acres>,
+                "percent": <percent>
+            }, ... <for each inundation depth>],
+            "notinundated_acres" : <acres not inundated by 10ft >,
+            "notinundated_percent" : <percent not inundated by 10ft >,
+            "projections": {
+                <scenario>: [<depth in 2020>, <depth in 2030>, ... <depth in 2100>]
+            }
+        }
+    """
+    slr_results = read_unit_from_feather(results_dir / "slr.feather", unit_id)
+    if len(slr_results) == 0:
+        return {}
+
+    unit = slr_results.iloc[0]
+
+    depth = [
+        {
+            "label": f"{i} {'foot' if i==1 else 'feet'}",
+            "acres": unit[f"depth_{i}"],
+            "percent": 100 * unit[f"depth_{i}"] / rasterized_acres,
+        }
+        for i in SLR_BINS
+    ]
+
+    projections = {
+        SLR_PROJ_SCENARIOS[scenario]: [unit[f"{year}_{scenario}"] for year in SLR_YEARS]
+        for scenario in SLR_PROJ_SCENARIOS
+    }
+
+    return {
+        "depth": depth,
+        "notinundated_acres": unit.not_inundated,
+        "notinundated_percent": 100 * unit.not_inundated / rasterized_acres,
+        "projections": projections,
+    }
