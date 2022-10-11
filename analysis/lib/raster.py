@@ -282,52 +282,6 @@ def create_lowres_mask(filename, outfilename, resolution, ignore_zero=False):
                 out.write(data)
 
 
-# def summarize_raster_by_geometry(
-#     geometries, extract_func, outfilename, progress_label="", bounds=None, **kwargs
-# ):
-#     """Summarize values of input dataset by geometry and writes results to
-#     a feather file, with one column for shape_mask and one for each raster value.
-
-#     Parameters
-#     ----------
-#     geometries : Series of pygeos geometries, indexed by HUC12 / marine block
-#     extract_func : function that extracts results for each geometry
-#     outfilename : str
-#     progress_label : str
-#     """
-
-#     if bounds is not None:
-#         # select only those areas that overlap input area
-#         tree = pg.STRtree(geometries)
-#         ix = tree.query(pg.box(*bounds))
-#         geometries = geometries.iloc[ix].copy()
-
-#     if not len(geometries):
-#         return
-
-#     index = []
-#     results = []
-#     for ix, geometry in Bar(progress_label, max=len(geometries)).iter(
-#         geometries.iteritems()
-#     ):
-#         zone_results = extract_func(
-#             [to_dict(geometry)], bounds=pg.total_bounds(geometry), **kwargs
-#         )
-#         if zone_results is None:
-#             continue
-
-#         index.append(ix)
-#         results.append(zone_results)
-
-#     if not len(results):
-#         return
-
-#     df = pd.DataFrame(results, index=index)
-#     df.index.name = geometries.index.name
-
-#     df.reset_index().to_feather(outfilename)
-
-
 class SummaryUnitGrid(object):
     def __init__(self, dataset, bounds):
         self.dataset = dataset
@@ -384,11 +338,12 @@ def summarize_raster_by_units_grid(
             (row.minx, row.miny, row.maxx, row.maxy),
             boundless=False,
         )
+        # have to limit unit window to extent of area where value grid is available
         unit_window = Window(
             unit_window.col_off - units_grid.window.col_off,
             unit_window.row_off - units_grid.window.row_off,
-            unit_window.width,
-            unit_window.height,
+            min(unit_window.width, value_window.width),
+            min(unit_window.height, value_window.height),
         )
 
         values = value_data[value_window.toslices()]

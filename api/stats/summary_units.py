@@ -55,6 +55,7 @@ def get_summary_unit_results(unit_type, unit_id):
             )
 
     else:
+        results["exclude_threats"] = True
         if unit.input_id == "flm":
             results["inputs"][0].update(
                 get_florida_marine_unit_results(

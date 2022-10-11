@@ -108,8 +108,7 @@ def extract_florida_marine_by_mask(
 
     return {
         "priorities": priorities,
-        # don't include Not a priority in legend
-        "legend": pluck(INPUTS[ID]["values"], ["label", "color"])[:-1],
+        "legend": pluck(INPUTS[ID]["values"], ["label", "color"]),
         "total_acres": total_acres,
         "outside_input_acres": outside_input_acres,
         "outside_input_percent": 100 * outside_input_acres / rasterized_acres,
@@ -217,7 +216,7 @@ def get_florida_marine_unit_results(results_dir, unit_id, rasterized_acres):
 
     return {
         "priorities": priorities,
-        "legend": pluck(INPUTS[ID]["values"], ["label", "color"])[:-1],
+        "legend": pluck(INPUTS[ID]["values"], ["label", "color"]),
         "total_acres": total_acres,
         "outside_input_acres": unit.outside_input,
         "outside_input_percent": 100 * unit.outside_input / rasterized_acres,

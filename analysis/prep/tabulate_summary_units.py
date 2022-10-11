@@ -68,12 +68,12 @@ with rasterio.open(huc12_raster_filename) as units_dataset:
     summarize_slr_by_units_grid(units_df, units_grid, out_dir)
 
 print(f"Processed {len(units_df):,} zones in {(time() - start) / 60.0:.2f}m")
-
+print("\n\n--------------------------------------------------\n\n")
 
 #########################################################################
 ########### Marine Lease Blocks #########################################
 #########################################################################
-print("\n\n--------------------------------------------------\n\n")
+
 out_dir = data_dir / "results/marine_blocks"
 out_dir.mkdir(exist_ok=True, parents=True)
 

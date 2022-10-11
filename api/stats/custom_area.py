@@ -147,6 +147,7 @@ def get_custom_area_results(df):
         )
 
     geometry = df.geometry.values.data[0]
+    polygon_acres = pg.area(geometry) * M2_ACRES
     bounds = pg.bounds(geometry).tolist()
     shapes = [to_dict(geometry)]
     center = pg.centroid(pg.box(*bounds))
@@ -233,10 +234,10 @@ def get_custom_area_results(df):
     else:
         slr = None
 
-    ownership_info = get_ownership(df)
+    ownership_info = get_ownership(df, total_acres=polygon_acres)
 
     results = {
-        "acres": pg.area(geometry) * M2_ACRES,
+        "acres": polygon_acres,
         "center": center,
         "lta_search_radius": lta_search_radius,
         **subset_dict(config, {"rasterized_acres", "outside_se_acres"}),
