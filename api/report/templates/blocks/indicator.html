@@ -3,7 +3,9 @@
 <div class="no-break">
     {% include "elements/indicator_header.html" %}
 
-    <p class="indicator-description">{{indicator.description}}</p>
+    <p class="indicator-description">
+        {{indicator.description}}
+    </p>
 
     {% if maps[indicator.id] %}
         <div class="map-container">
@@ -193,5 +195,10 @@
         </table>
     {% endif %}
 </div>
+
+<p>
+    For more information and to download GIS data,
+    <a href="{{indicator.url}}">view this indicator in the SECAS Atlas</a>.
+</p>
 
 </div>

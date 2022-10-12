@@ -53,7 +53,7 @@
         }
       ],
       "description": "This indicator measures the condition of migratory fish habitat along the Atlantic coast within each catchment, using metrics of water quality, aquatic connectivity, habitat fragmentation, flow alteration, and more. Areas of excellent fish habitat are already in good condition and face few threats; restoration opportunity areas are doing well in some respects, but restoration projects could significantly improve them; degraded areas of opportunity face many challenges, and restoration projects are unlikely to increase available fish habitat unless particularly large in scope and scale. This indicator originates from the Atlantic Coast Fish Habitat Partnership's fish habitat conservation area mapping and prioritization project.",
-      "url": "",
+      "url": "https://secas-fws.hub.arcgis.com/maps/4377bc1e3f0e4dfba14a456b292fed06/about",
       "goodThreshold": 7
     },
     {
@@ -73,7 +73,7 @@
         }
       ],
       "description": "This indicator captures how far upstream migratory fish in the Gulf of Mexico have been observed. How far upstream migratory fish can travel reflects not just the presence of dams and other barriers, but also the presence of measures like fish ladders that allow specific species to access habitat upstream of dams. This indicator originates from The Nature Conservancy's Southeast Aquatic Connectivity Assessment Project and applies to the Environmental Protection Agency's estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood, also known as the 1% annual chance flood.",
-      "url": "",
+      "url": "https://secas-fws.hub.arcgis.com/maps/bfc9887eec4d4151a265306c016da3a7/about",
       "goodThreshold": 1
     },
     {
@@ -128,7 +128,7 @@
         }
       ],
       "description": "This indicator measures the number of aquatic animal Species of Greatest Conservation Need (SGCN) observed within each 12-digit HUC subwatershed, including fish, mussels, snails, crayfish, and amphibians. SGCN are identified in State Wildlife Action Plans as most in need of conservation action.  This indicator captures patterns of rare and endemic species diversity not well-represented by other freshwater aquatic indicators. It originates from state Natural Heritage Program data collected by the Southeast Aquatic Resources Partnership and applies to the Environmental Protection Agency's estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood, also known as the 1% annual chance flood.",
-      "url": ""
+      "url": "https://secas-fws.hub.arcgis.com/maps/440540b416a24492be37d2adbeebaba7/about"
     },
     {
       "id": "base:freshwater_wvimperiledaquaticspecies",
@@ -162,7 +162,7 @@
         }
       ],
       "description": "This indicator counts the number of aquatic species within each 12-digit HUC subwatershed in West Virginia that are listed as G1 (globally critically imperiled), G2 (globally imperiled), or threatened/endangered under the U.S. Endangered Species Act. It captures patterns of rare and endemic species diversity not well-represented by other freshwater aquatic indicators. It fills a key gap in the imperiled aquatic species indicator, which does not yet cover West Virginia. This indicator originates from the Environmental Protection Agency's EnviroAtlas data.",
-      "url": ""
+      "url": "https://secas-fws.hub.arcgis.com/maps/be4132db534948d79fffe618cd756553/about"
     },
     {
       "id": "base:freshwater_naturallandcoverinfloodplains",
@@ -196,7 +196,7 @@
         }
       ],
       "description": "This indicator measures the amount of natural landcover in the estimated floodplain of rivers and streams within each catchment. It assesses the stream channel and its surrounding riparian buffer, measuring the percent of unaltered habitat like forests, wetlands, or open water (rather than agriculture or development). Intact vegetated buffers within the floodplain of rivers and streams provide aquatic habitat, improve water quality, reduce erosion and flooding, recharge groundwater, and more. This indicator originates from the 2019 National Land Cover Database and applies to the Environmental Protection Agency's estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood, also known as the 1% annual chance flood.",
-      "url": "",
+      "url": "https://secas-fws.hub.arcgis.com/maps/2fb891f8979e4d92bb26d82de00368c5/about",
       "goodThreshold": 4
     },
     {
@@ -241,7 +241,7 @@
         }
       ],
       "description": "This indicator depicts the number of different stream size classes in a river network not separated by dams or waterfalls. River networks with a variety of connected stream classes help retain aquatic biodiversity in a changing climate by allowing species to access climate refugia and move between habitats. This indicator originates from the Southeast Aquatic Resources Partnership and applies to the Environmental Protection Agency's estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood, also known as the 1% annual chance flood.",
-      "url": "",
+      "url": "https://secas-fws.hub.arcgis.com/maps/2b4941e659c04a7ab130b5e583e5f72d/about",
       "goodThreshold": 4
     },
     {
@@ -271,7 +271,7 @@
         }
       ],
       "description": "This indicator measures the average percent of non-impervious cover within each catchment. High levels of impervious surface degrade water quality and alter freshwater flow, impacting both aquatic species communities and ecosystem services for people, like the availability of clean drinking water. This indicator originates from the 2019 National Land Cover Database percent developed impervious layer.",
-      "url": "",
+      "url": "https://secas-fws.hub.arcgis.com/maps/aa97cd14024b41eda478de9e59e6a79c/about",
       "goodThreshold": 4
     },
     {
@@ -306,7 +306,7 @@
         }
       ],
       "description": "This indicator identifies areas within the historic longleaf pine range east of the Mississippi River where creating or maintaining open pine habitat would most benefit six focal species of birds (Bachman's sparrow, red-cockaded woodpecker, Henslow's sparrow, red-headed woodpecker, Northern bobwhite, brown-headed nuthatch). It prioritizes areas for open pine conservation based on suitability for longleaf pine, feasibility of prescribed burning, proximity to protected lands, habitat suitability for focal bird species, and proximity to source bird populations. It originates from the East Gulf Coastal Plain Joint Venture's prioritization of areas for open pine ecosystem restoration.",
-      "url": ""
+      "url": "https://secas-fws.hub.arcgis.com/maps/3db2eff1dd244c398817a6fa24e2d1ef/about"
     },
     {
       "id": "base:land_equitableaccesstopotentialparks",
@@ -330,7 +330,7 @@
         }
       ],
       "description": "This cultural resource indicator prioritizes places to create new parks that would fill gaps in equitable access to open space within socially vulnerable communities. It identifies areas where residents currently lack access to parks within a 10-minute walk (accounting for walkable road networks and access barriers like highways and fences), then prioritizes based on park need using demographic and environmental metrics. Parks help improve public health, foster a conservation ethic by providing opportunities for people to connect with nature, and support critical ecosystem services. This indicator originates from the Trust for Public Land's ParkServe park priority areas.",
-      "url": ""
+      "url": "https://secas-fws.hub.arcgis.com/maps/6220194d8377482ca3847921bc38a9ce/about"
     },
     {
       "id": "base:land_firefrequency",
@@ -359,7 +359,7 @@
         }
       ],
       "description": "This indicator uses remote sensing to estimate the number of times an area has been burned from 2013 to 2021. Many Southeastern ecosystems rely on regular, low-intensity fires to maintain habitat, encourage native plant growth, and reduce wildfire risk. This indicator combines burned area layers from both U.S. Geological Survey Landsat data and the inter-agency Monitoring Trends in Burn Severity program. Landsat-based fire predictions within the range of longleaf pine are also available through Southeast FireMap.",
-      "url": "",
+      "url": "https://secas-fws.hub.arcgis.com/maps/059a25c9524d46b4a87416e1a64852e8/about",
       "goodThreshold": 2
     },
     {
@@ -394,7 +394,7 @@
         }
       ],
       "description": "This indicator measures the percent of perennial forbs and perennial grass to evaluate grassland condition across the Great Plains. Grasslands in this area with a high percentage of perennials are less likely to be impacted by woody encroachment, less susceptible to non-native annual grasses, and more likely to support important plants, birds, and pollinators. This indicator originates from Rangeland Analysis Platform vegetation cover data.",
-      "url": ""
+      "url": "https://secas-fws.hub.arcgis.com/maps/196fbe9a575f4971b0dd8d39b8ccb2cb/about"
     },
     {
       "id": "base:land_greenwaysandtrails",
@@ -438,7 +438,7 @@
         }
       ],
       "description": "This cultural resource indicator measures both the natural condition and connected length of greenways and trails to characterize the quality of the recreational experience. Natural condition is based on the amount of impervious surface surrounding the path. Connected length captures how far a person can go without leaving a dedicated path, based on common distances for walking, running, and biking. This indicator originates from OpenStreetMap.",
-      "url": "",
+      "url": "https://secas-fws.hub.arcgis.com/maps/cea6ca7ea4f14c9398b6ae5b95426faa/about",
       "goodThreshold": 4
     },
     {
@@ -468,7 +468,7 @@
         }
       ],
       "description": "This indicator represents the size of large, unfragmented patches of natural habitat. It identifies minimally disturbed natural areas at least 100 acres in size and greater than 200 meters wide. Large areas of intact natural habitat are important for many wildlife species, including reptiles and amphibians, birds, and large mammals. This indicator originates from Esri's green infrastructure data.",
-      "url": "",
+      "url": "https://secas-fws.hub.arcgis.com/maps/21c79c52af78431cb19d8a1ee9293f4e/about",
       "goodThreshold": 1
     },
     {
@@ -508,7 +508,7 @@
         }
       ],
       "description": "This indicator represents grasslands in the interior southeastern United States, which support important plants, birds, and pollinators. It includes grasslands with and without trees that are historically maintained by geology (e.g., outcrops, glades, and barrens), fire (e.g., Piedmont prairies), and/or the regular violent flooding on the banks of high-energy rivers known as “riverscour” (e.g, riverscour prairies). Known grasslands receive the highest scores, followed by bumble bee habitat buffers around known sites, areas in potentially compatible management, and restoration opportunities within grassland geology. This indicator combines data from multiple sources, including the Southeastern Grasslands Initiative, the Central Hardwoods Joint Venture, the Rangeland Analysis Platform, and The Nature Conservancy.",
-      "url": ""
+      "url": "https://secas-fws.hub.arcgis.com/maps/d55fb1a9f54443428803bda6e95e2448/about"
     },
     {
       "id": "base:land_mavforestbirds_protection",
@@ -568,7 +568,7 @@
         }
       ],
       "description": "This indicator prioritizes areas for new land protection within the Mississippi Alluvial Valley (MAV) based on benefits to forest breeding birds that depend on large interior cores of bottomland hardwood habitat (Swainson's warbler, cerulean warbler, swallow-tailed kite). The model considers core size, the amount of existing protected land within the forest patch, proximity to reforestation priority areas, and risk of conversion to agriculture based on flooding frequency. The highest scores represent drier, unprotected forest patches with cores at least 2,000 ha (~5,000 ac) that are adjacent to priority areas from a complementary reforestation model also developed by the Lower Mississippi Valley Joint Venture (LMVJV). This indicator originates from the LMVJV's MAV forest breeding bird protection priorities.",
-      "url": ""
+      "url": "https://secas-fws.hub.arcgis.com/maps/f6963f0308ca4d91870bc0de8a451c28/about"
     },
     {
       "id": "base:land_mavforestbirds_reforestation",
@@ -628,7 +628,7 @@
         }
       ],
       "description": "This indicator prioritizes areas for reforestation within the Mississippi Alluvial Valley (MAV) based on benefits to three species of forest breeding birds that depend on large interior cores of bottomland hardwood habitat (Swainson's warbler, cerulean warbler, swallow-tailed kite). The model considers the core size, number of cores, and percent of local forest cover that would result from reforestation, as well as risk of conversion to agriculture based on flooding frequency. The highest scores represent drier areas where reforestation would create new forest patches containing interior cores at least 2,000 ha (~5,000 ac). It originates from the Lower Mississippi Valley Joint Venture's MAV forest breeding bird reforestation priorities.",
-      "url": ""
+      "url": "https://secas-fws.hub.arcgis.com/maps/2bdb6ea340124e8fad748d71d5a1872a/about"
     },
     {
       "id": "base:land_playas",
@@ -652,7 +652,7 @@
         }
       ],
       "description": "This indicator represents the condition and location of playas, which are round, shallow depressions found primarily in the western Great Plains that serve as temporary wetlands by collecting water from rainfall and runoff. It defines a healthy playa as one that is not farmed, hydrologically modified, within a wind farm, or impacted by sediment accumulation due to agriculture. It also considers the increased benefits to wildlife provided by clusters of nearby playas, compared to more sparsely distributed playas. Playas play a critical role in recharging the Ogallala aquifer and provide habitat and food for birds and other animals. This indicator originates from the Playa Lakes Joint Venture's probable playas dataset.",
-      "url": "",
+      "url": "https://secas-fws.hub.arcgis.com/maps/8383b6d8f2d54b7c9c470fc6bbda8c94/about",
       "goodThreshold": 2
     },
     {
@@ -702,7 +702,7 @@
         }
       ],
       "description": "This indicator depicts an area's capacity to maintain species diversity and ecosystem function in the face of climate change. It measures two factors that influence resilience. The first, landscape diversity, reflects the number of microhabitats and climatic gradients created by topography, elevation, and hydrology. The second, local connectedness, reflects the degree of habitat fragmentation and strength of barriers to species movement. Highly resilient sites contain many different habitat niches that support biodiversity, and allow species to move freely through the landscape to find suitable microclimates as the climate changes. This indicator originates from The Nature Conservancy's Resilient Land data.",
-      "url": ""
+      "url": "https://secas-fws.hub.arcgis.com/maps/f776465ae36d4471bf5985cf1a536681/about"
     },
     {
       "id": "base:land_saamphibianandreptileareas",
@@ -721,7 +721,7 @@
         }
       ],
       "description": "This indicator represents Priority Amphibian and Reptile Conservation Areas (PARCAs) in the South Atlantic. PARCA is an expert-driven, nonregulatory designation that includes places capable of supporting viable amphibian and reptile populations, places occupied by rare or imperiled species, and places rich in biodiversity or species unique to that geographic area (i.e., endemism).",
-      "url": ""
+      "url": "https://secas-fws.hub.arcgis.com/maps/25be97acb1824422bfd160b89dac0cad/about"
     },
     {
       "id": "base:land_saforestbirds",
@@ -760,7 +760,7 @@
         }
       ],
       "description": "This indicator is an index of habitat suitability for twelve upland hardwood and forested wetland bird species (wood thrush, whip-poor-will, American woodcock, red-headed woodpecker, Chuck-will's widow, hooded warbler, Kentucky warbler, Acadian flycatcher, Northern parula, black-throated green warbler, prothonotary warbler, Swainson's warbler) based on patch size and other ecosystem characteristics such as proximity to water and proximity to forest and ecotone edge. The needs of these species are increasingly restrictive at higher index values, reflecting better quality habitat. This indicator originates from Southeast Gap Analysis Program and Designing Sustainable Landscapes bird habitat models.",
-      "url": "",
+      "url": "https://secas-fws.hub.arcgis.com/maps/cc3ad92d1d9d453999143cebf83ed9c4/about",
       "goodThreshold": 2
     },
     {
@@ -785,7 +785,7 @@
         }
       ],
       "description": "This cultural resource indicator is an index of sites on the National Register of Historic Places surrounded by limited urban development. It identifies significant historic places that remain connected to their context in the natural world. This indicator originates from the National Park Service and various state historic resource agencies.",
-      "url": "",
+      "url": "https://secas-fws.hub.arcgis.com/maps/5617f7c70bcf435b93d13dd2a235684b/about",
       "goodThreshold": 2
     },
     {
@@ -820,7 +820,7 @@
         }
       ],
       "description": "This cultural resource indicator measures the size of parks larger than 5 acres in the urban environment. Protected natural areas in urban environments provide urban residents a nearby place to connect with nature, and offer refugia for some species. This indicator complements the equitable access to potential parks indicator by capturing the value of existing parks.",
-      "url": ""
+      "url": "https://secas-fws.hub.arcgis.com/maps/2de0d381b86e479b89816922083331f7/about"
     },
     {
       "id": "base:land_wcpforestedwetlandbirds",
@@ -854,7 +854,7 @@
         }
       ],
       "description": "This indicator is an index of habitat suitability for five forested wetland bird species (Acadian flycatcher, Kentucky warbler, yellow-throated warbler, prothonotary warbler, red-shouldered hawk) within bottomland hardwood forests and riparian areas in the West Gulf Coastal Plain and Ouachitas Bird Conservation Region. It uses metrics like patch size, dispersal distance, distance to water, and more to assess the potential for habitat to support sustainable populations of these birds. This indicator originates from the Lower Mississippi Valley Joint Venture's West Gulf Coastal Plain and Ouachitas forested wetland decision support model.",
-      "url": ""
+      "url": "https://secas-fws.hub.arcgis.com/maps/2c1e3d975f7743fdbf9a12e5f1b419b6/about"
     },
     {
       "id": "base:land_wcpopenpinebirds",
@@ -898,7 +898,7 @@
         }
       ],
       "description": "This indicator identifies areas with existing pine trees that, if managed for open condition, could support a population of three umbrella bird species (brown-headed nuthatch, Bachman's sparrow, red-cockaded woodpecker). It evaluates potential habitat based on each species' habitat needs and population dynamics, prioritizing opportunities to restore and manage habitat to benefit open pine birds. Final scores reflect both the selectiveness of the species and whether an area meets the habitat requirements through one large patch, or clusters of smaller patches in sufficiently close proximity for breeding pairs to disperse. This indicator updates the West Gulf Coastal Plain/Ouachita Joint Venture's open pine decision support model.",
-      "url": ""
+      "url": "https://secas-fws.hub.arcgis.com/maps/d618416b80b34972bd0132086e08b02c/about"
     },
     {
       "id": "base:land_wgcmottledducknesting",
@@ -957,7 +957,7 @@
         }
       ],
       "description": "This indicator depicts marshes and grasslands along the coast of Louisiana and Texas that are important for mottled duck nesting, based on key biological parameters such as patch size, land cover type, and distance to brood rearing habitat. As a non-migratory bird endemic to the Gulf coast, mottled ducks serve as good indicators of coastal marsh health and function. Urban growth, agricultural development, and hydrologic changes due to human alteration and climate change have caused significant mottled duck habitat loss and population declines. This indicator originates from a mottled duck decision support tool developed by the Gulf Coast Prairie Landscape Conservation Cooperative.",
-      "url": ""
+      "url": "https://secas-fws.hub.arcgis.com/maps/b80ea69a05144c989fb7ea1dda584886/about"
     },
     {
       "id": "base:marine_atlanticestuarinefishhabitat",
@@ -1011,7 +1011,7 @@
         }
       ],
       "description": "This indicator measures the condition of estuarine fish habitat along the Atlantic coast using metrics of water quality, marsh edges, seagrass and oyster reefs, fragmentation, human development, and more. Areas of excellent fish habitat are already in good condition and face few threats; restoration opportunity areas are doing well in some respects, but restoration projects could significantly improve them; degraded areas of opportunity face many challenges, and restoration projects are unlikely to increase available fish habitat unless particularly large in scope and scale. This indicator originates from the Atlantic Coast Fish Habitat Partnership's fish habitat conservation area mapping and prioritization project.",
-      "url": "",
+      "url": "https://secas-fws.hub.arcgis.com/maps/1f004fe5be6c41a9af35c544938c6a39/about",
       "goodThreshold": 7
     },
     {
@@ -1046,7 +1046,7 @@
         }
       ],
       "description": "This indicator assesses shoreline condition based on the presence of hardened structures like jetties, groins, and riprap, as well as other human development. By restricting the natural movement of sediment, shoreline armoring increases erosion, prevents the inland migration of coastal ecosystems in response to sea-level rise, and degrades habitat for birds, sea turtles, fish, plants, and other species both on and offshore. Natural shorelines in harder-to-develop coastal areas receive the highest shoreline condition scores, while hardened shorelines receive the lowest scores. This indicator originates from the National Oceanic and Atmospheric Administration's Environmental Sensitivity Index dataset.",
-      "url": "",
+      "url": "https://secas-fws.hub.arcgis.com/maps/6c360789744a4bcca16cc9b17ab4d7be/about",
       "goodThreshold": 3
     },
     {
@@ -1081,7 +1081,7 @@
         }
       ],
       "description": "This indicator combines measures of water quality, sediment quality, contaminants in fish tissue, and benthic community condition to create an overall index of coastal estuarine condition. Estuaries serve as important nursery habitat for wildlife, including many species of fish and shellfish eaten as seafood. They also improve water quality by filtering out sediments and pollutants, provide recreational opportunities, and support coastal economies. This indicator originates from the Environmental Protection Agency's National Coastal Condition Assessment data.",
-      "url": "",
+      "url": "https://secas-fws.hub.arcgis.com/maps/e8ce606adff54a7ea39f3cb8ed4c4d04/about",
       "goodThreshold": 4
     },
     {
@@ -1101,7 +1101,7 @@
         }
       ],
       "description": "This indicator represents important habitat for island-dependent species across the Southeast. Because the isolation of islands can make them ecologically unique and protect them from disturbance and mainland predators, they often serve as important habitat for many species of mammals, plants, and insects, as well as breeding coastal birds and sea turtles. The highest scores go to island critical habitat for six threatened and endangered animal and plant species: piping plover, loggerhead sea turtle, Cape Sable thoroughwort, Florida semaphore cactus, silver rice rat, and Bartram's hairstreak butterfly. This indicator originates from U.S. Fish and Wildlife Service critical habitat data and island boundaries from the U.S. Geological Survey and Esri.",
-      "url": ""
+      "url": "https://secas-fws.hub.arcgis.com/maps/b296b3717bca4e118b087a936d1520a2/about"
     },
     {
       "id": "base:marine_resilientcoastalsites",
@@ -1145,7 +1145,7 @@
         }
       ],
       "description": "This indicator depicts the capacity of coastal habitats to migrate to adjacent lowlands in order to sustain biodiversity and natural services under increasing inundation from sea-level rise. It is based on the physical and condition characteristics of current tidal complexes, their predicted migration space, and surrounding buffer areas. These characteristics include marsh complex size, shared edge with migration space, sediment balance, water quality, natural landcover, landform diversity, and many others. This indicator originates from The Nature Conservancy's Resilient Coastal Sites project.",
-      "url": ""
+      "url": "https://secas-fws.hub.arcgis.com/maps/0534ee723e0e4c92aba1c84d2266d587/about"
     },
     {
       "id": "base:marine_seagrasses",
@@ -1159,7 +1159,7 @@
         }
       ],
       "description": "This indicator represents the presence of seagrass in the Atlantic Ocean and Gulf of Mexico. Seagrasses provide food and habitat for a range of marine and estuarine wildlife, including fish, sea turtles, shrimp, crabs, oysters, and more. They also produce oxygen, filter water, control erosion, and buffer storms. Seagrasses serve as an important indicator of the overall health of coastal ecosystems because they are sensitive to water quality and require sufficiently clear water for sunlight to penetrate. This indicator originates from the National Oceanic and Atmospheric Administration's Marine Cadastre.",
-      "url": ""
+      "url": "https://secas-fws.hub.arcgis.com/maps/e699390f4f5d4433b4e24d8b63049e6d/about"
     },
     {
       "id": "base:marine_sabeachbirds",
@@ -1193,7 +1193,7 @@
         }
       ],
       "description": "This indicator is an index of habitat suitability for four shorebird species (American oystercatcher, Wilson's plover, least tern, piping plover) in the South Atlantic, based on observed abundance. The relative use of beach habitat by shorebirds for nesting, foraging, and breeding is an indicator of beach health and quality. It originates from data collected by waterbird biologists from the U.S. Fish and Wildlife Service and state wildlife agencies in Florida, Georgia, South Carolina and North Carolina.",
-      "url": ""
+      "url": "https://secas-fws.hub.arcgis.com/maps/7ef059126fdb47278b506d8981c4fb79/about"
     },
     {
       "id": "base:marine_sahardbottomanddeepseacoral",
@@ -1227,7 +1227,7 @@
         }
       ],
       "description": "This indicator measures known and predicted suitable locations of hardbottom habitat and deep-sea corals. Hardbottom provides an anchor for important seafloor habitats such as deep-sea corals, plants, and sponges. Hardbottom and associated deep-sea coral communities provide valuable habitat structure that supports a wide range of invertebrate and fish species. This indicator combines multiple datasets from the National Oceanic and Atmospheric Administration and The Nature Conservancy.",
-      "url": ""
+      "url": "https://secas-fws.hub.arcgis.com/maps/b0d94a7883434eddb54e86fc0fe364b6/about"
     },
     {
       "id": "base:marine_samarinebirds",
@@ -1261,7 +1261,7 @@
         }
       ],
       "description": "This indicator is a continuous index of highly productive areas for birds that feed exclusively or mainly at sea. It uses seasonal predictions of relative abundance for seventeen species of marine birds (Audubon's shearwater, white-winged scoter, black scoter, horned grebe, band-rumped storm-petrel, Bermuda petrel, Manx shearwater, black-capped petrel, Northern gannet, Bonaparte's gull. common loon, red-throated loon, Cory's shearwater, royal tern, great shearwater, sooty shearwater, common tern). This indicator originates from Marine-life Data and Analysis Team marine bird models.",
-      "url": ""
+      "url": "https://secas-fws.hub.arcgis.com/maps/248ff3b52839435caecc23dad5b0977d/about"
     },
     {
       "id": "base:marine_samammals",
@@ -1295,7 +1295,7 @@
         }
       ],
       "description": "This indicator is a continuous index of dolphin and whale density based on monthly density predictions for ten species of cetaceans and yearly density predictions for three rarer cetacean species (monthly: North Atlantic right whale, sperm whale, Sei whale, humpback whale, fin whale, bottlenose dolphin, short-beaked common dolphin, Risso's dolphin, harbor porpoise, and Atlantic white-sided dolphin; yearly: pilot whale, beaked whale, striped dolphin). This indicator originates from Duke Marine Lab marine mammal models.",
-      "url": ""
+      "url": "https://secas-fws.hub.arcgis.com/maps/39a474a7412a497f8d2355082957c2b7/about"
     },
     {
       "id": "base:marine_samaritimeforest",
@@ -1309,7 +1309,7 @@
         }
       ],
       "description": "This indicator depicts maritime forest currently present in the South Atlantic. Since maritime forest has been substantially reduced from its historic extent, protecting the remaining acreage of existing maritime forest is important. This indicator originates from Landfire Existing Vegetation Type data.",
-      "url": ""
+      "url": "https://secas-fws.hub.arcgis.com/maps/7efdd58004fb42f3ace28e2f304323ec/about"
     },
     {
       "id": "base:marine_stablecoastalwetlands",
@@ -1323,7 +1323,7 @@
         }
       ],
       "description": "This indicator uses remote sensing to calculate the unvegetated-vegetated ratio of tidal wetlands, which compares how much of a wetland is not covered by plants (e.g., sediment, rocks, open water) to how much is covered by plants. This ratio, and how it changes over time, is a good surrogate for salt marsh degradation processes like sediment loss and conversion to open water. It helps differentiate between stable marshes that are more resilient, and declining marshes that are more vulnerable to threats like sea-level rise, erosion, and coastal development. This indicator originates from a U.S. Geological Survey project on an unvegetated to vegetated ratio for coastal wetlands.",
-      "url": "",
+      "url": "https://secas-fws.hub.arcgis.com/maps/bc0bc1770c904c33bca16d8857b93d2a/about",
       "goodThreshold": 1
     }
   ]
