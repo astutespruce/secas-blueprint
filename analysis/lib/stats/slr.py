@@ -8,6 +8,7 @@ import rasterio
 
 from analysis.constants import (
     M2_ACRES,
+    SLR_DEPTH_BINS,
     SLR_PROJ_COLUMNS,
     SLR_YEARS,
     SLR_PROJ_SCENARIOS,
@@ -18,9 +19,6 @@ from analysis.lib.raster import (
     summarize_raster_by_units_grid,
 )
 from analysis.lib.stats.summary_units import read_unit_from_feather
-
-
-SLR_BINS = np.arange(11)
 
 
 src_dir = Path("data/inputs/threats/slr")
@@ -87,7 +85,7 @@ def extract_slr_by_mask_and_geometry(
 
     slr_acres = (
         extract_count_in_geometry(
-            depth_filename, shape_mask, window, bins=SLR_BINS, boundless=True
+            depth_filename, shape_mask, window, bins=SLR_DEPTH_BINS, boundless=True
         )
         * cellsize
     )
@@ -173,7 +171,7 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
                 df,
                 units_grid,
                 value_dataset,
-                bins=SLR_BINS,
+                bins=SLR_DEPTH_BINS,
                 progress_label="Summarizing SLR inundation depth",
             )
             * cellsize
@@ -191,7 +189,7 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
 
     slr = pd.DataFrame(
         slr_acres,
-        columns=[f"depth_{v}" for v in SLR_BINS],
+        columns=[f"depth_{v}" for v in SLR_DEPTH_BINS],
         index=df.index,
     )
     slr["not_inundated"] = not_inundated_acres
@@ -265,7 +263,7 @@ def get_slr_unit_results(results_dir, unit_id, rasterized_acres):
             "acres": unit[f"depth_{i}"],
             "percent": 100 * unit[f"depth_{i}"] / rasterized_acres,
         }
-        for i in SLR_BINS
+        for i in SLR_DEPTH_BINS
     ]
 
     projections = {

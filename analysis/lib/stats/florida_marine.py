@@ -135,9 +135,10 @@ def summarize_florida_marine_by_units_grid(df, units_grid, out_dir):
             "GeoDataFrame for summary must include value, rasterized_acres, outside_se columns"
         )
 
+    values = INPUTS[ID]["values"]
     with rasterio.open(flm_filename) as value_dataset:
         cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
-        bins = range(0, INPUTS[ID]["values"][-1]["value"] + 1)
+        bins = range(0, values[-1]["value"] + 1)
 
         priority_acres = (
             summarize_raster_by_units_grid(
@@ -145,14 +146,17 @@ def summarize_florida_marine_by_units_grid(df, units_grid, out_dir):
                 units_grid,
                 value_dataset,
                 bins=bins,
-                progress_label="Summarizing Base Blueprint",
+                progress_label="Summarizing Florida Marine Blueprint",
             )
             * cellsize
         )
 
+    # discard priority 0 column
+    priority_acres = priority_acres[:, values[0]["value"] :]
+
     priorities = pd.DataFrame(
         priority_acres,
-        columns=[f"priority_{v}" for v in bins],
+        columns=[f"priority_{v['value']}" for v in values],
         index=df.index,
     )
     total_acres = priority_acres.sum(axis=1)
@@ -194,7 +198,8 @@ def get_florida_marine_unit_results(results_dir, unit_id, rasterized_acres):
 
     unit = flm_results.iloc[0]
 
-    cols = [c for c in flm_results if c.startswith("priority_")]
+    values = pluck(INPUTS[ID]["values"], ["blueprint", "value", "label"])
+    cols = [f"priority_{v['value']}" for v in values]
 
     priority_acres = unit[cols].values
     total_acres = priority_acres.sum()
@@ -202,10 +207,10 @@ def get_florida_marine_unit_results(results_dir, unit_id, rasterized_acres):
     priorities = [
         {
             **entry,
-            "acres": priority_acres[entry["value"]],
-            "percent": 100 * priority_acres[entry["value"]] / rasterized_acres,
+            "acres": priority_acres[i],
+            "percent": 100 * priority_acres[i] / rasterized_acres,
         }
-        for entry in pluck(INPUTS[ID]["values"], ["blueprint", "value", "label"])
+        for i, entry in enumerate(values)
     ] + [
         {
             "label": "Not a priority",

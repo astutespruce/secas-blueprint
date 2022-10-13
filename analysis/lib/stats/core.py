@@ -9,10 +9,6 @@ from analysis.constants import (
     BLUEPRINT,
     INPUTS,
     M2_ACRES,
-    DATA_CRS,
-    GEO_CRS,
-    M_MILES,
-    LTA_SEARCH_RADIUS_BINS,
 )
 from analysis.lib.geometry import to_crs
 from analysis.lib.raster import (
@@ -20,6 +16,7 @@ from analysis.lib.raster import (
     extract_count_in_geometry,
     summarize_raster_by_units_grid,
 )
+from analysis.lib.stats.ownership import get_lta_search_info
 from analysis.lib.stats.summary_units import (
     read_unit_from_feather,
     huc12_filename,
@@ -268,21 +265,6 @@ def get_unit_core_results(unit_type, unit_id):
 
     bounds = df[["minx", "miny", "maxx", "maxy"]].apply(list, axis=1)[0]
 
-    box = to_crs(np.array([pg.box(*bounds)]), GEO_CRS, DATA_CRS)[0]
-    center = [(unit.minx + unit.maxx) / 2.0, (unit.miny + unit.maxy) / 2.0]
-    extent_radius = int(
-        round(
-            pg.distance(pg.get_point(pg.get_exterior_ring(box), 0), pg.centroid(box))
-            * M_MILES
-        )
-    )
-    lta_search_radius = LTA_SEARCH_RADIUS_BINS[
-        min(
-            np.digitize(extent_radius, LTA_SEARCH_RADIUS_BINS),
-            len(LTA_SEARCH_RADIUS_BINS) - 1,
-        )
-    ]
-
     # read SE Blueprint
     blueprint_results = (
         read_unit_from_feather(results_dir / "blueprint.feather", unit_id)
@@ -316,8 +298,13 @@ def get_unit_core_results(unit_type, unit_id):
         "promote_base": unit.input_id == "base",
         "blueprint": blueprint,
         "bounds": bounds,
-        "center": center,
-        "lta_search_radius": lta_search_radius,
     }
+
+    if unit_type == "huc12":
+        center, lta_search_radius = get_lta_search_info(
+            df[["minx", "miny", "maxx", "maxy"]].values
+        )
+        results["center"] = center[0]
+        results["lta_search_radius"] = lta_search_radius[0]
 
     return df, results

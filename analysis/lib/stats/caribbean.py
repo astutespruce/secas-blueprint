@@ -148,9 +148,12 @@ def summarize_caribbean_by_units_grid(df, units_grid, out_dir):
             * cellsize
         )
 
+    # remove 0 bin; priorities are 1-24
+    priority_acres = priority_acres[:, 1:]
+
     priorities = pd.DataFrame(
         priority_acres,
-        columns=[f"priority_{v}" for v in bins],
+        columns=[f"priority_{v}" for v in bins[1:]],
         index=df.index,
     )
     total_acres = priority_acres.sum(axis=1)
@@ -192,7 +195,9 @@ def get_caribbean_unit_results(results_dir, unit_id, rasterized_acres):
 
     unit = car_results.iloc[0]
 
-    cols = [c for c in car_results if c.startswith("priority_")]
+    values = pluck(INPUTS[ID]["values"], ["blueprint", "value", "label"])
+
+    cols = [f"priority_{v['value']}" for v in values]
     priority_acres = unit[cols].values
     total_acres = priority_acres.sum()
 
@@ -203,9 +208,7 @@ def get_caribbean_unit_results(results_dir, unit_id, rasterized_acres):
             "acres": priority_acres[i],
             "percent": 100 * priority_acres[i] / rasterized_acres,
         }
-        for i, e in enumerate(
-            pluck(INPUTS[ID]["values"], ["blueprint", "value", "label"])
-        )
+        for i, e in enumerate(values)
         if priority_acres[i]
     ]
 

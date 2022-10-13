@@ -12,7 +12,7 @@ import rasterio
 from rasterio.features import rasterize
 from rasterio.windows import Window
 
-from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES, SECAS_HUC2
+from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES
 from analysis.lib.geometry import make_valid, to_dict
 from analysis.lib.raster import write_raster, add_overviews, get_window
 
@@ -145,6 +145,7 @@ with rasterio.open(input_area_filename) as src:
 huc12.to_feather(analysis_dir / "huc12.feather")
 write_dataframe(huc12, bnd_dir / "huc12.fgb")
 
+###############################################################################
 
 ### Marine units
 print("Reading marine blocks...")
@@ -200,7 +201,8 @@ marine["geometry"] = pg.make_valid(marine.geometry.values.data)
 
 marine["acres"] = pg.area(marine.geometry.values.data) * M2_ACRES
 
-marine = marine.loc[marine.acres > 0].dropna()
+# only keep those that are larger than 100 acres (arbitrary); others are slivers
+marine = marine.loc[marine.acres > 100].dropna()
 
 # only keep those that are >= 50% within region
 tree = pg.STRtree(marine.geometry.values.data)

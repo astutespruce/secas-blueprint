@@ -4,31 +4,20 @@ import geopandas as gp
 import numpy as np
 import pygeos as pg
 
-from analysis.lib.geometry import to_dict, intersection, to_crs
-from analysis.constants import (
-    DATA_CRS,
-    GEO_CRS,
-    INPUTS,
-    M_MILES,
-    OWNERSHIP,
-    PROTECTION,
-    M2_ACRES,
-    LTA_SEARCH_RADIUS_BINS,
-)
-
-from analysis.lib.stats.core import (
-    get_shape_mask,
-    extract_input_areas_by_mask,
-    extract_blueprint_by_mask,
-)
-from analysis.lib.stats.florida_marine import extract_florida_marine_by_mask
-from analysis.lib.util import subset_dict
-
+from analysis.constants import DATA_CRS, GEO_CRS, INPUTS, M2_ACRES
+from analysis.lib.geometry import to_dict, to_crs
 from analysis.lib.stats.base_blueprint import extract_base_blueprint_by_mask
 from analysis.lib.stats.caribbean import extract_caribbean_by_mask
+from analysis.lib.stats.core import (
+    extract_blueprint_by_mask,
+    extract_input_areas_by_mask,
+    get_shape_mask,
+)
+from analysis.lib.stats.florida_marine import extract_florida_marine_by_mask
+from analysis.lib.stats.ownership import get_lta_search_info, get_ownership_for_aoi
 from analysis.lib.stats.slr import extract_slr_by_mask_and_geometry
 from analysis.lib.stats.urban import extract_urban_by_mask
-from analysis.lib.stats.ownership import get_ownership_for_aoi
+from analysis.lib.util import subset_dict
 
 data_dir = Path("data/inputs")
 boundary_filename = data_dir / "boundaries/se_boundary.feather"
@@ -50,19 +39,14 @@ def get_custom_area_results(df):
 
     geometry = df.geometry.values.data[0]
     polygon_acres = pg.area(geometry) * M2_ACRES
-    bounds = pg.bounds(geometry).tolist()
     shapes = [to_dict(geometry)]
-    center = pg.centroid(pg.box(*bounds))
-    extent_radius = int(round(pg.distance(pg.points(*bounds[0:2]), center) * M_MILES))
+    bounds = pg.bounds(geometry)
 
-    lta_search_radius = LTA_SEARCH_RADIUS_BINS[
-        min(
-            np.digitize(extent_radius, LTA_SEARCH_RADIUS_BINS),
-            len(LTA_SEARCH_RADIUS_BINS) - 1,
-        )
-    ]
+    geo_bounds = pg.bounds(to_crs(np.array([pg.box(*bounds)]), DATA_CRS, GEO_CRS))
 
-    center = pg.get_coordinates(to_crs(np.array(center), DATA_CRS, GEO_CRS)).tolist()[0]
+    center, lta_search_radius = get_lta_search_info(geo_bounds)
+    center = center[0]
+    lta_search_radius = lta_search_radius[0]
 
     # if area of interest does not intersect SE region boundary,
     # there will be no results

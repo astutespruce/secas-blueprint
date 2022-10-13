@@ -1,12 +1,12 @@
 """
-Extract summary unit data created using tabulate_area.py and postprocess to join
-into vector tiles.
+Extract summary unit data created using tabulate_summary_units.py and
+postprocess to join into vector tiles.
 
 The following code compacts values in a few ways.  These were tested against
 versions of the vector tiles that retained individual integer columns, and the
 compacted version here ended up being smaller.
 
-Blueprint and inputs were encoded to a pipe-delimited series of percents * 10
+Blueprint is encoded to a pipe-delimited series of percents * 10
 (to preserve 1 decimal place in frontend), omitting any 0 values:
 <value0>|<value1>|...
 
@@ -20,385 +20,406 @@ where there was no change from the baseline just include the baseline.
 
 Values that could have multiple key:value entries (ownership, protection) are dictionary-encoded:
 FED:<fed_%>,LOC:<loc_%>,...
-
-Counties are encoded as:
-<FIPS>:state|county,<FIPS>|...
-
-
 """
 
 from pathlib import Path
-import csv
 
+import numpy as np
 import pandas as pd
+import pyarrow as pa
+from pyarrow.csv import write_csv
 
-
-from analysis.constants import DEBUG, CHAT_CATEGORIES, INDICATORS
-from analysis.lib.attribute_encoding import (
-    encode_values,
-    delta_encode_values,
-    encode_indicators,
+from analysis.constants import (
+    CORRIDORS,
+    INPUTS,
+    BLUEPRINT,
+    DEBUG,
+    INDICATORS,
+    SLR_DEPTH_BINS,
+    SLR_PROJ_SCENARIOS,
+    SLR_YEARS,
+    URBAN_YEARS,
 )
+from analysis.lib.attribute_encoding import encode_values, delta_encode_values
+from analysis.lib.stats.ownership import get_lta_search_info
+
+
+def encode_ownership_protection(df, field):
+    """Calculate dictionary-encoded values for land ownership or protection
+
+    For example:
+        FED:<fed_percent * 10>,LOC: <loc_percent * 10>, ...
+
+    Parameters
+    ----------
+    df : DataFrame
+        must include field, "acres", "total_acres"
+    field : str
+        name of field to dictionary encode
+
+    Returns
+    -------
+    Series
+    """
+    # calculate percent * 10% (percent at 1 decimal place)
+    df["percent"] = (1000 * df.acres / df.total_acres).round().astype("uint")
+    # drop anything that rounded to 0%
+    df = df.loc[df.percent > 0].copy()
+
+    return pd.Series(
+        (df[field] + ":" + df.percent.astype("str"))
+        .groupby(level=0)
+        .apply(lambda r: ",".join(v for v in r))
+    )
+
+
+def encode_base_blueprint(df):
+    """Encode Base Blueprint, Corridors, and Indicators
+
+    Parameters
+    ----------
+    df : DataFrame
+        must include "rasterized_acres"
+
+    Returns
+    -------
+    DataFrame
+    """
+    priority_cols = [f"priority_{v['value']}" for v in INPUTS["base"]["values"]]
+    base_blueprint = encode_values(
+        df[priority_cols],
+        df.rasterized_acres,
+        1000,
+    ).rename("base")
+
+    corridor_cols = [f"corridors_{v['value']}" for v in CORRIDORS]
+    corridors = encode_values(
+        df[corridor_cols],
+        df.rasterized_acres,
+        1000,
+    ).rename("corridors")
+
+    # only check areas of indicators actually present in summaries for unit type
+    check_indicators = {
+        e["id"]: e for e in INDICATORS["base"] if f"{e['id']}_outside" in df.columns
+    }
+
+    # Create a DataFrame with one encoded column per indicator
+    indicators = df[[]]
+
+    # serialized indictor ID is its position in full indicators list
+    for i, id in enumerate([i["id"] for i in INDICATORS["base"]]):
+        if not id in check_indicators:
+            continue
+
+        indicator = check_indicators[id]
+        values = indicator["values"]
+        cols = [f"{id}_value_{v['value']}" for v in values]
+        indicator_acres = df[cols]
+        total_acres = indicator_acres.sum(axis=1)
+
+        indicator_acres = indicator_acres.loc[total_acres > 0]
+
+        # if only 0 values are present, ignore this indicator
+        if values[0]["value"] == 0:
+            indicator_acres = indicator_acres.loc[
+                indicator_acres[indicator_acres.columns[1:]].max(axis=1) > 0
+            ]
+
+        if len(indicator_acres) == 0:
+            continue
+
+        indicator_acres = indicator_acres.join(df.rasterized_acres)
+        encoded = encode_values(
+            indicator_acres[cols], indicator_acres.rasterized_acres, 1000
+        ).rename(i)
+
+        indicators = indicators.join(encoded, how="left")
+
+    indicators = (
+        indicators.fillna("")
+        .apply(lambda row: ",".join((f"{k}:{v}" for k, v in row.items() if v)), axis=1)
+        .rename("base_indicators")
+    )
+
+    return pd.DataFrame(base_blueprint).join(corridors).join(indicators)
 
 
 data_dir = Path("data")
-results_dir = data_dir / "results"
 out_dir = data_dir / "for_tiles"
+out_dir.mkdir(exist_ok=True, parents=True)
 
 ###################################################################
 ### HUC12
 ###################################################################
 
-working_dir = results_dir / "huc12"
+results_dir = data_dir / "results/huc12"
 
 print("Reading HUC12 units...")
 huc12 = pd.read_feather(
-    data_dir / "inputs/summary_units" / "huc12.feather", columns=["id", "name", "acres"]
+    data_dir / "inputs/summary_units" / "huc12.feather",
+    columns=[
+        "id",
+        "name",
+        "acres",
+        "rasterized_acres",
+        "outside_se",
+        "input_id",
+        "minx",
+        "miny",
+        "maxx",
+        "maxy",
+    ],
 ).set_index("id")
-huc12.acres = huc12.acres.round().astype("uint")
 huc12["type"] = "subwatershed"
 
-
-print("Encoding HUC12 Blueprint & input values...")
-blueprint = pd.read_feather(results_dir / "huc12/blueprint.feather").set_index("id")
-
-# Unpack blueprint values
-blueprint_cols = [c for c in blueprint.columns if c.startswith("blueprint_")]
-input_cols = [c for c in blueprint.columns if c.startswith("inputs_")]
-blueprint_total = blueprint[blueprint_cols].sum(axis=1).rename("blueprint_total")
-shape_mask = blueprint.shape_mask
-
-# convert Blueprint to integer percents * 10, and pack into pipe-delimited string
-blueprint_percent = encode_values(blueprint[blueprint_cols], shape_mask, 1000).rename(
-    "blueprint"
+center, lta_search_radius = get_lta_search_info(
+    huc12[["minx", "miny", "maxx", "maxy"]].values
 )
 
-# convert input areas to integer percents * 10, and pack into pipe-delimited string
-inputs_percent = encode_values(blueprint[input_cols], shape_mask, 1000).rename("inputs")
-
-
-blueprint_df = (
-    blueprint[["shape_mask"]]
-    .round()
-    .astype("uint")
-    .join(blueprint_total.round().astype("uint"))
-    .join(blueprint_percent)
-    .join(inputs_percent)
-)
-blueprint_df.blueprint_total = blueprint_df.blueprint_total.fillna(0)
-
-
-### Convert SLR and urban to integer acres, and delta encode
-print("Encoding SLR values...")
-slr = (
-    pd.read_feather(working_dir / "slr.feather").set_index("id").round().astype("uint")
-)
-
-slr = delta_encode_values(
-    slr.drop(columns=["shape_mask"]), slr.shape_mask, 1000
-).rename("slr")
-
-
-print("Encoding urban values...")
-urban = (
-    pd.read_feather(working_dir / "urban.feather")
+### Southeast Blueprint
+# convert integer percents * 10, and pack into pipe-delimited string
+print("Encoding Southeast Blueprint...")
+blueprint_results = (
+    pd.read_feather(results_dir / "blueprint.feather")
     .set_index("id")
-    .round()
-    .astype("uint")
+    .join(huc12.rasterized_acres)
+)
+
+blueprint_cols = [f"value_{v['value']}" for v in BLUEPRINT]
+blueprint = encode_values(
+    blueprint_results[blueprint_cols], blueprint_results.rasterized_acres, 1000
+).rename("blueprint")
+
+
+# Base Blueprint
+print("Encoding Base Blueprint")
+base_results = (
+    pd.read_feather(results_dir / "base.feather")
+    .set_index("id")
+    .join(huc12.rasterized_acres)
+)
+base = encode_base_blueprint(base_results)
+
+### Caribbean
+# Dictionary encode <priority>:<percent>, only for priorities > 0
+print("Encoding Caribbean LCD")
+
+
+def encode_caribbean_priorities(row):
+    row = row.dropna().astype("uint")
+    return ",".join([f"{row.index[i]}:{v}" for i, v in enumerate(row.values)])
+
+
+cols = [f"priority_{v['value']}" for v in INPUTS["car"]["values"]]
+col_map = {f"priority_{v['value']}": v["value"] for v in INPUTS["car"]["values"]}
+
+car_df = (
+    pd.read_feather(results_dir / "car.feather")
+    .set_index("id")
+    .join(huc12.rasterized_acres)
+)
+
+# convert to percent * 10 and fill with nan so that we can drop them at row level
+car_df[cols] = (1000 * car_df[cols].divide(car_df.rasterized_acres, axis=0)).round()
+for col in cols:
+    ix = car_df[col] == 0
+    car_df.loc[ix, col] = np.nan
+
+# rename columns to integer priority to make encoding easier
+caribbean = (
+    car_df[cols].rename(columns=col_map).apply(encode_caribbean_priorities, axis=1)
+).rename("car")
+
+### SLR Depth
+# delta encode percent * 10
+print("Encoding SLR values...")
+slr_results = (
+    pd.read_feather(results_dir / "slr.feather")
+    .set_index("id")
+    .join(huc12.rasterized_acres)
+)
+depth_cols = [f"depth_{d}" for d in SLR_DEPTH_BINS]
+
+slr_depth = delta_encode_values(
+    slr_results[depth_cols], huc12.rasterized_acres.loc[slr_results.index], 1000
+).rename("slr_depth")
+
+
+### SLR scenario projections
+# delta encode feet * 10 (1 decimal place) by ascending scenario; scenarios
+# are comma-delimited
+proj_results = None
+# div is just so we can reuse delta encoding logic and divide everything by 1
+div = np.ones((len(slr_results),))
+for scenario in SLR_PROJ_SCENARIOS:
+    proj_cols = [f"{year}_{scenario}" for year in SLR_YEARS]
+    proj = delta_encode_values(slr_results[proj_cols], div, 10).rename(
+        f"slr_proj_{scenario}"
+    )
+
+    if proj_results is None:
+        proj_results = pd.DataFrame(proj)
+    else:
+        proj_results = proj_results.join(proj)
+
+slr_proj = proj_results.apply(lambda row: ",".join(row), axis=1).rename("slr_proj")
+
+slr = pd.DataFrame(slr_depth).join(slr_proj)
+
+
+### Urban
+# delta encode urban 2019 and future projections
+print("Encoding urban values...")
+cols = ["id", "urban_2019"] + [f"urban_proj_{year}" for year in URBAN_YEARS]
+urban_results = pd.read_feather(results_dir / "urban.feather", columns=cols).set_index(
+    "id"
 )
 
 urban = delta_encode_values(
-    urban.drop(columns=["shape_mask"]), urban.shape_mask, 1000
+    urban_results, huc12.rasterized_acres.loc[urban_results.index], 1000
 ).rename("urban")
 
-### Dictionary encode ownership and protection for each HUC12:
-# FED:<fed_acres>,LOC: <loc_acres>, ...
-ownership = (
-    pd.read_feather(working_dir / "ownership.feather")
+### Ownership / protection
+# Dictionary encode ownership and protection
+ownership_results = (
+    pd.read_feather(results_dir / "ownership.feather")
     .set_index("id")
     .join(huc12.acres.rename("total_acres"), how="inner")
 )
-
-ownership["percent"] = (
-    (1000 * ownership.acres / ownership.total_acres).round().astype("uint")
-)
-# drop anything at 0%
-ownership = ownership.loc[ownership.percent > 0].copy()
-
-ownership = pd.Series(
-    (ownership.Own_Type + ":" + ownership.percent.astype("str"))
-    .groupby(level=0)
-    .apply(lambda r: ",".join(v for v in r)),
-    name="ownership",
+ownership = encode_ownership_protection(ownership_results, "Own_Type").rename(
+    "ownership"
 )
 
-protection = (
-    pd.read_feather(working_dir / "protection.feather")
+protection_results = (
+    pd.read_feather(results_dir / "protection.feather")
     .set_index("id")
     .join(huc12.acres.rename("total_acres"), how="inner")
 )
-
-protection["percent"] = (
-    (1000 * protection.acres / protection.total_acres).round().astype("uint")
-)
-# drop anything at 0%
-protection = protection.loc[protection.percent > 0].copy()
-
-
-protection = pd.Series(
-    (protection.GAP_Sts.astype("str") + ":" + protection.percent.astype("str"))
-    .groupby(level=0)
-    .apply(lambda r: ",".join(v for v in r)),
-    name="protection",
+protection = encode_ownership_protection(protection_results, "GAP_Sts").rename(
+    "protection"
 )
 
-### Convert counties into a dict encoded string per HUC12,
-# dividing state and county by "|" and entries by ","
-# <FIPS>:state|county,
-counties = pd.Series(
-    pd.read_feather(working_dir / "counties.feather")
-    .set_index("id")
-    .apply(
-        lambda r: ":".join([r.values[0], "|".join((str(v) for v in r.values[1:]))]),
-        axis=1,
-    )
-    .groupby(level=0)
-    .apply(lambda g: ",".join((v for v in g.values))),
-    name="counties",
-)
 
 huc12 = (
-    huc12.join(blueprint_df, how="left")
+    huc12[["name", "input_id"]]
+    .join(huc12[["acres", "rasterized_acres", "outside_se"]].round().astype("uint"))
+    .join(blueprint, how="left")
+    .join(base, how="left")
+    .join(caribbean, how="left")
     .join(slr, how="left")
     .join(urban, how="left")
     .join(ownership, how="left")
     .join(protection, how="left")
-    .join(counties, how="left")
 )
-
-huc12.blueprint_total = huc12.blueprint_total.fillna(0)
-
-
-### Add in other inputs
-
-# Gulf Hypoxia
-gh_df = pd.read_feather(working_dir / "gulf_hypoxia.feather").set_index("id")
-gh_cols = [c for c in gh_df.columns if c.startswith("gh_")]
-gh_percent = encode_values(gh_df[gh_cols], gh_df.shape_mask, 1000).rename(
-    "gulf_hypoxia"
-)
-
-# Caribbean
-car_df = pd.read_feather(working_dir / "caribbean.feather").set_index("id")
-
-
-# Florida
-fl_df = pd.read_feather(working_dir / "florida.feather").set_index("id")
-fl_cols = [c for c in fl_df.columns if c.startswith("fl_")]
-fl_percent = encode_values(fl_df[fl_cols], fl_df.shape_mask, 1000).rename(
-    "fl_blueprint"
-)
-fl_indicators = encode_indicators(fl_df, fl_df.shape_mask, "fl", INDICATORS["fl"])
-fl_df = pd.DataFrame(fl_percent).join(fl_indicators)
-
-
-# Middle Southeast
-ms_df = pd.read_feather(working_dir / "midse.feather").set_index("id")
-ms_cols = [c for c in ms_df.columns if c.startswith("ms_")]
-ms_percent = encode_values(ms_df[ms_cols], ms_df.shape_mask, 1000).rename(
-    "midse_blueprint"
-)
-
-
-# Nature's Network
-nn_df = pd.read_feather(working_dir / "natures_network.feather").set_index("id")
-nn_cols = [c for c in nn_df.columns if c.startswith("nn_")]
-nn_percent = encode_values(nn_df[nn_cols], nn_df.shape_mask, 1000).rename("nn_priority")
-
-nn_indicators = encode_indicators(nn_df, nn_df.shape_mask, "nn", INDICATORS["nn"])
-nn_df = pd.DataFrame(nn_percent).join(nn_indicators)
-
-
-# NatureScape
-ns_df = pd.read_feather(working_dir / "naturescape.feather").set_index("id")
-ns_cols = [c for c in ns_df.columns if c.startswith("app_")]
-ns_percent = encode_values(ns_df[ns_cols], ns_df.shape_mask, 1000).rename("ns_priority")
-
-
-# South Atlantic
-sa_df = pd.read_feather(working_dir / "southatlantic.feather").set_index("id")
-sa_blueprint_cols = [c for c in sa_df.columns if c.startswith("sa_")]
-sa_percent = encode_values(sa_df[sa_blueprint_cols], sa_df.shape_mask, 1000).rename(
-    "sa_blueprint"
-)
-sa_indicators = encode_indicators(sa_df, sa_df.shape_mask, "sa", INDICATORS["sa"])
-
-sa_df = pd.DataFrame(sa_percent).join(sa_indicators)
-
-
-huc12 = (
-    huc12.join(gh_percent, how="left")
-    .join(car_df, how="left")
-    .join(fl_df, how="left")
-    .join(ms_percent, how="left")
-    .join(nn_df, how="left")
-    .join(ns_percent, how="left")
-    .join(sa_df, how="left")
-)
-
-
-### Convert CHAT
-for state in ["ok", "tx"]:
-    chat = (
-        pd.read_feather(working_dir / f"{state}chat.feather")
-        .set_index("id")
-        .join(huc12.acres)
-    )
-
-    # extract CHAT overall rank
-    rank_fields = [f"chatrank_{i}" for i in CHAT_CATEGORIES]
-    for field in rank_fields:
-        if field not in chat.columns:
-            chat[field] = 0
-
-    chat_rank_percent = encode_values(chat[rank_fields], chat.total_acres, 1000).rename(
-        f"{state}chatrank"
-    )
-
-    # calculate areas outside SE and outside CHAT
-    huc12 = huc12.join(chat_rank_percent, how="left")
 
 
 ###################################################################
 ### Marine
 ###################################################################
 
-working_dir = results_dir / "marine_blocks"
+results_dir = data_dir / "results/marine_blocks"
 
 print("--------------------------------")
 print("Reading marine_blocks...")
 marine = pd.read_feather(
     data_dir / "inputs/summary_units/marine_blocks.feather",
-    columns=["id", "name", "acres"],
+    columns=[
+        "id",
+        "name",
+        "acres",
+        "rasterized_acres",
+        "outside_se",
+        "input_id",
+    ],
 ).set_index("id")
-marine.acres = marine.acres.round().astype("uint")
-marine = marine.loc[marine.acres > 0].dropna()
 marine["type"] = "marine lease block"
 
 
-print("Encoding marine Blueprint & inputs...")
-blueprint = (
-    pd.read_feather(working_dir / "blueprint.feather")
-    .rename(columns={"index": "id"})
+### Southeast Blueprint
+# convert integer percents * 10, and pack into pipe-delimited string
+print("Encoding Southeast Blueprint...")
+blueprint_results = (
+    pd.read_feather(results_dir / "blueprint.feather")
     .set_index("id")
+    .join(marine.rasterized_acres)
 )
 
-# Unpack blueprint values
-blueprint_cols = [c for c in blueprint.columns if c.startswith("blueprint_")]
-input_cols = [c for c in blueprint.columns if c.startswith("inputs_")]
-blueprint_total = blueprint[blueprint_cols].sum(axis=1).rename("blueprint_total")
-shape_mask = blueprint.shape_mask
-
-# convert Blueprint to integer percents * 10, and pack into pipe-delimited string
-blueprint_percent = encode_values(blueprint[blueprint_cols], shape_mask, 1000).rename(
-    "blueprint"
-)
+blueprint_cols = [f"value_{v['value']}" for v in BLUEPRINT]
+blueprint = encode_values(
+    blueprint_results[blueprint_cols], blueprint_results.rasterized_acres, 1000
+).rename("blueprint")
 
 
-# convert input areas to integer percents * 10, and pack into pipe-delimited string
-inputs_percent = encode_values(blueprint[input_cols], shape_mask, 1000).rename("inputs")
-
-
-blueprint_df = (
-    blueprint[["shape_mask"]]
-    .round()
-    .astype("uint")
-    .join(blueprint_total.round().astype("uint"))
-    .join(blueprint_percent)
-    .join(inputs_percent)
-)
-
-### Dictionary encode ownership and protection for each HUC12:
-# FED:<fed_acres>,LOC: <loc_acres>, ...
-ownership = (
-    pd.read_feather(working_dir / "ownership.feather")
+### Base Blueprint
+base_results = (
+    pd.read_feather(results_dir / "base.feather")
     .set_index("id")
-    .join(marine.acres.rename("total_acres"), how="left")
-    .dropna()
+    .join(marine.rasterized_acres)
 )
+base = encode_base_blueprint(base_results)
 
-ownership["percent"] = (
-    (1000 * ownership.acres / ownership.total_acres).round().astype("uint")
-)
-# drop anything at 0%
-ownership = ownership.loc[ownership.percent > 0].copy()
 
-ownership = pd.Series(
-    (ownership.Own_Type + ":" + ownership.percent.astype("str"))
-    .groupby(level=0)
-    .apply(lambda r: ",".join(v for v in r)),
-    name="ownership",
-)
-
-protection = (
-    pd.read_feather(working_dir / "protection.feather")
+### Florida Marine Blueprint
+flm_results = (
+    pd.read_feather(results_dir / "flm.feather")
     .set_index("id")
-    .join(marine.acres.rename("total_acres"), how="left")
-    .dropna()
+    .join(marine.rasterized_acres)
+)
+cols = [f"priority_{v['value']}" for v in INPUTS["flm"]["values"]]
+flm = encode_values(flm_results[cols], flm_results.rasterized_acres, 1000).rename("flm")
+
+
+### Ownership / protection
+# Dictionary encode ownership and protection
+ownership_results = (
+    pd.read_feather(results_dir / "ownership.feather")
+    .set_index("id")
+    .join(marine.acres.rename("total_acres"), how="inner")
+)
+ownership = encode_ownership_protection(ownership_results, "Own_Type").rename(
+    "ownership"
 )
 
-protection["percent"] = (
-    (1000 * protection.acres / protection.total_acres).round().astype("uint")
+protection_results = (
+    pd.read_feather(results_dir / "protection.feather")
+    .set_index("id")
+    .join(marine.acres.rename("total_acres"), how="inner")
 )
-# drop anything at 0%
-protection = protection.loc[protection.percent > 0].copy()
-
-
-protection = pd.Series(
-    (protection.GAP_Sts.astype("str") + ":" + protection.percent.astype("str"))
-    .groupby(level=0)
-    .apply(lambda r: ",".join(v for v in r)),
-    name="protection",
+protection = encode_ownership_protection(protection_results, "GAP_Sts").rename(
+    "protection"
 )
-
 
 marine = (
-    marine.join(blueprint_df, how="inner")
+    marine[["name", "input_id"]]
+    .join(marine[["acres", "rasterized_acres", "outside_se"]].round().astype("uint"))
+    .join(blueprint, how="left")
+    .join(base, how="left")
+    .join(flm, how="left")
     .join(ownership, how="left")
     .join(protection, how="left")
 )
-marine.blueprint_total = marine.blueprint_total.fillna(0)
 
-### Marine input areas
+##################################
 
-# Florida (marine)
-fl_df = pd.read_feather(working_dir / "florida.feather").set_index("id")
-fl_cols = [c for c in fl_df.columns if c.startswith("flm_")]
-fl_percent = encode_values(fl_df[fl_cols], fl_df.shape_mask, 1000).rename(
-    "flm_blueprint"
-)
-fl_indicators = encode_indicators(fl_df, fl_df.shape_mask, "flm", INDICATORS["flm"])
-fl_df = pd.DataFrame(fl_percent).join(fl_indicators)
+### Merge HUC12 and Marine Blocks into single dataframe
+
+out = pd.concat(
+    [huc12.reset_index(), marine.reset_index()], ignore_index=True, sort=False
+).reset_index(drop=True)
 
 
-# South Atlantic (marine)
-sa_df = pd.read_feather(working_dir / "southatlantic.feather").set_index("id")
-sa_blueprint_cols = [c for c in sa_df.columns if c.startswith("sa_")]
-sa_percent = encode_values(sa_df[sa_blueprint_cols], sa_df.shape_mask, 1000).rename(
-    "sa_blueprint"
-)
-sa_indicators = encode_indicators(sa_df, sa_df.shape_mask, "sa", INDICATORS["sa"])
-sa_df = pd.DataFrame(sa_percent).join(sa_indicators)
+for col in [
+    "car",
+    "flm",
+    "ownership",
+    "protection",
+    "slr_depth",
+    "slr_proj",
+    "urban",
+] + base.columns.tolist():
+    marine[col] = marine[col].fillna("")
 
-
-marine = marine.join(sa_df, how="left").join(fl_df, how="left")
-
-
-out = huc12.reset_index().append(marine.reset_index(), ignore_index=True, sort=False)
-
-
-# fill specifics fields as needed
-out.carrank = out.carrank.fillna(0).astype("uint8")
 
 # everything else is blank strings
 out = out.fillna("")
@@ -408,4 +429,7 @@ if DEBUG:
     out.to_feather("/tmp/tile_attributes.feather")
 
 
-out.to_csv(out_dir / "unit_atts.csv", index=False, quoting=csv.QUOTE_NONNUMERIC)
+out = pa.Table.from_pandas(out)
+
+
+write_csv(out, out_dir / "unit_atts.csv")

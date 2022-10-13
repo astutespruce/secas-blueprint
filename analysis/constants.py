@@ -2,7 +2,6 @@ from pathlib import Path
 from itertools import product
 import json
 
-
 # Set to True to output intermediate rasters for validation (uncomment in map.raster module)
 # Set to True to output /tmp/test.html for reports
 DEBUG = False
@@ -118,6 +117,9 @@ URBAN_LEGEND = [
         "color": "#C40A0A",
     },
 ]
+
+# depth in 1 foot increments from 0
+SLR_DEPTH_BINS = list(range(11))
 
 SLR_YEARS = [2020, 2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100]
 SLR_PROJ_SCENARIOS = {

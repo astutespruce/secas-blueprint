@@ -180,8 +180,8 @@ def extract_base_blueprint_by_mask(
             indicator_acres[range(0, min_value)] = 0
 
         # if only 0 values are present, ignore this indicator
-        # if indicator_acres[1:].max() == 0:
-        #     continue
+        if indicator_acres[1:].max() == 0:
+            continue
 
         total_indicator_acres = indicator_acres[min_value:].sum()
         outside_indicator_acres = total_acres - total_indicator_acres
@@ -442,7 +442,10 @@ def get_base_blueprint_unit_results(results_dir, unit_id, rasterized_acres):
         indicator_acres = unit[indicator_cols].values
         total_acres = indicator_acres.sum()
 
-        if total_acres == 0:
+        # if only 0 values are present, ignore this indicator
+        if total_acres == 0 or (
+            values[0]["value"] == 0 and indicator_acres[1:].max() == 0
+        ):
             continue
 
         outside_acres = unit[f"{id}_outside"]

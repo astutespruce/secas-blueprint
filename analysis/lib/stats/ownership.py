@@ -1,10 +1,20 @@
 from pathlib import Path
 
 import geopandas as gp
+import numpy as np
+import pandas as pd
 import pygeos as pg
 
-from analysis.constants import M2_ACRES, OWNERSHIP, PROTECTION
-from analysis.lib.geometry import intersection
+from analysis.constants import (
+    M2_ACRES,
+    OWNERSHIP,
+    PROTECTION,
+    GEO_CRS,
+    DATA_CRS,
+    M_MILES,
+    LTA_SEARCH_RADIUS_BINS,
+)
+from analysis.lib.geometry import intersection, to_crs
 from analysis.lib.stats.summary_units import read_unit_from_feather
 
 
@@ -231,3 +241,40 @@ def get_ownership_unit_results(results_dir, unit_id, acres):
         ]
 
     return results
+
+
+def get_lta_search_info(bounds):
+    """Calculate geographic center and search radius in miles (binned to match
+    website) to search against Land Trust Alliance website.
+
+    Parameters
+    ----------
+    bounds : ndarray of shape (n, 4), in GEO_CRS
+
+    Returns
+    -------
+    ndarray of shape (n, 2), ndarray of shape (n,)
+        centers in long, lat and search distance in miles
+    """
+    boxes = to_crs(pg.box(*bounds.T), GEO_CRS, DATA_CRS)
+    centers = np.dstack(
+        [(bounds[:, 0] + bounds[:, 2]) / 2, (bounds[:, 1] + bounds[:, 3]) / 2]
+    )[0]
+
+    extent_radius = (
+        pg.distance(pg.get_point(pg.get_exterior_ring(boxes), 0), pg.centroid(boxes))
+        * M_MILES
+    )
+
+    indexes = np.clip(
+        np.digitize(extent_radius, LTA_SEARCH_RADIUS_BINS),
+        0,
+        len(LTA_SEARCH_RADIUS_BINS) - 1,
+    )
+
+    return (
+        centers,
+        pd.Series(indexes)
+        .map({i: v for i, v in enumerate(LTA_SEARCH_RADIUS_BINS)})
+        .values,
+    )
