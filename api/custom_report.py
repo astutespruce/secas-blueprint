@@ -56,7 +56,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
     df = read_dataframe(path, layer=layer, columns=[]).to_crs(DATA_CRS)
     df["geometry"] = pg.make_valid(df.geometry.values.data)
     df["group"] = 1
-    df = dissolve(df, by="group")
+    df = dissolve(df.explode(ignore_index=True), by="group")
 
     # estimate area
     extent_area = pg.area(pg.box(*df.total_bounds)) * M2_ACRES

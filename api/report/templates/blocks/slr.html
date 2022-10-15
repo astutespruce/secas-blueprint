@@ -69,20 +69,12 @@
         </thead>
         <tbody>
             {% for entry in results.slr.depth %}
-                <tr>
+                <tr {% if entry.value > 10 %}class="remainder-row"{% endif %}>
                     <td class="label">{{entry.label}}</td>
                     <td class="acres">{{entry.acres|format_number}}</td>
                     <td class="percent">{{entry.percent|format_percent}}%</td>
                 </tr>
             {% endfor %}
-
-            {% if results.slr.notinundated_acres %}
-                <tr class="remainder-row">
-                    <td class="label">Not projected to be inundated by up to 10 feet</td>
-                    <td class="acres">{{results.slr.notinundated_acres|format_number}}</td>
-                    <td class="percent">{{results.slr.notinundated_percent|format_percent}}%</td>
-                </tr>
-            {% endif %}
 
             {% if results.outside_se_acres > 0 %}
                 <tr class="remainder-row">

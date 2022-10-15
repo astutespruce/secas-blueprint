@@ -50,8 +50,15 @@ Only those cells that intersect with areas where SLR data were available,
 according to the coarse-resolution (480m) mask of SLR data, are retained for
 analysis.
 
-These are ultimately intersected with a user's area of interest to calculate
-the mean of medians (each grid cell is a median) for each NOAA scenario for each
-decade.
+These are ultimately intersected with a user's area of interest to calculate the
+area-weighted mean of medians (each grid cell is a median) for each NOAA
+scenario for each decade.
 
-TODO: decide if statistics should be area-weighted or regular.
+## NOAA data extent and areas data unavailable
+
+Shapefiles of the NOAA data extent and areas not modeled were obtained directly from
+William Brooks at NOAA on 10/13/2022. These include:
+
+- data extent: extent of areas where NOAA processed data
+- areas not modeled: extent of areas within data extent where no modeled data are available
+- veil: inland counties not considered for SLR analysis

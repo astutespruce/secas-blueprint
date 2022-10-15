@@ -48,135 +48,133 @@ def read_cache(path):
 
     return maps, scale
 
-    # ### Create reports for an AOI
-    # aois = [
-    #     {"name": "Test", "path": "030902030700"}
-    #     # {"name": "Yazoo Watershed, MS", "path": "YazooUse"},
-    #     # {"name": "Weyerhaeuser (Andrews)", "path": "Weyerhaeuser_Andrews"},
-    #     # {"name": "Greenway Priority 123 Merge", "path": "Greenway_priority123_Merge_Diss"},
-    #     # {"name": "South Carolina", "path": "SC_SECAS_states"},
-    #     # {
-    #     #     "name": "NWFL Sentinel Landscapes Geography",
-    #     #     "path": "NWFL_SentinelLandscapesGeography_20210812",
-    #     # }
-    #     # {"name": "Alabama", "path": "AL_SECAS_states"},
-    #     # {"name": "Arkansas", "path": "AR_SECAS_states"},
-    #     # {"name": "Florida", "path": "FL_SECAS_states"},
-    #     # {"name": "Georgia", "path": "GA_SECAS_states"},
-    #     # {"name": "Kentucky", "path": "KY_SECAS_states"},
-    #     # {"name": "Louisiana", "path": "LA_SECAS_states"},  # TODO: FIX this geometry
-    #     # {"name": "Mississippi", "path": "MS_SECAS_states"},
-    #     # {"name": "North Carolina", "path": "NC_SECAS_states"},
-    #     # {"name": "Tennessee", "path": "TN_SECAS_states"},
-    #     # {"name": "FL test", "path": "EvergladesHeadwaterComplex_APPTYPE_0"}
-    #     # {"name": "Guild Tracts", "path": "GuildTracts"}
-    #     # {"name": "Florida Panhandle Boundary", "path": "FL_panhadle_boundary"}
-    #     # {"name": "Dell Murphy wetlands", "path": "Dell Murphy wetlands"},
-    #     # {"name": "TRB GA", "path": "TRB_GA"},
-    #     # {"name": "Florida 5 Star County Boundary", "path": "FL_5StarCounty_Boundary"}
-    #     # {"name": "Cumberland Plateau Focus Area", "path": "NFWF_Cumberland_Fund_TN"}
-    #     # {"name": "Enviva Hamlet", "path": "Enviva_Hamlet_80_mile_sourcing_radius"},
-    #     # {"name": "LCP: Black River", "path": "LCP_BlackRiver"},
-    #     # {"name": "Green River proposed boundary", "path": "GreenRiver_ProposedBoundary"},
-    #     # {"name": "LCP: Broad", "path": "LCP_Broad"},
-    #     # {"name": "Caledonia area, MS", "path": "caledonia"},
-    #     # {"name": "Napoleonville area, LA", "path": "Napoleonville"},
-    #     # {"name": "Area in El Yunque National Forest, PR", "path": "yunque"},
-    #     # {"name": "San Juan area, PR", "path": "SanJuan"},
-    #     # {"name": "Area near Magnet, TX", "path": "magnet"},
-    #     # {"name": "TriState area at junction of MO, OK, KS", "path": "TriState"},
-    #     # {"name": "Quincy, FL area", "path": "Quincy"},
-    #     # {"name": "Doyle Springs, TN area", "path": "DoyleSprings"},
-    #     # {"name": "Cave Spring, VA area", "path": "CaveSpring"},
-    #     # {"name": "South Atlantic Offshore", "path": "SAOffshore"},
-    #     # {"name": "Florida Offshore", "path": "FLOffshore"},
-    #     # {"name": "Razor", "path": "Razor"}
-    # ]
 
-    # for aoi in aois:
-    #     name = aoi["name"]
-    #     path = aoi["path"]
-    #     print(f"Creating report for {name}...")
+### Create reports for an AOI
+aois = [
+    {"name": "SLR test area", "path": "fl_slr_test"},
+    # {"name": "Test", "path": "030902030700"}
+    # {"name": "Yazoo Watershed, MS", "path": "YazooUse"},
+    # {"name": "Weyerhaeuser (Andrews)", "path": "Weyerhaeuser_Andrews"},
+    # {"name": "Greenway Priority 123 Merge", "path": "Greenway_priority123_Merge_Diss"},
+    # {"name": "South Carolina", "path": "SC_SECAS_states"},
+    # {
+    #     "name": "NWFL Sentinel Landscapes Geography",
+    #     "path": "NWFL_SentinelLandscapesGeography_20210812",
+    # }
+    # {"name": "Alabama", "path": "AL_SECAS_states"},
+    # {"name": "Arkansas", "path": "AR_SECAS_states"},
+    # {"name": "Florida", "path": "FL_SECAS_states"},
+    # {"name": "Georgia", "path": "GA_SECAS_states"},
+    # {"name": "Kentucky", "path": "KY_SECAS_states"},
+    # {"name": "Louisiana", "path": "LA_SECAS_states"},  # TODO: FIX this geometry
+    # {"name": "Mississippi", "path": "MS_SECAS_states"},
+    # {"name": "North Carolina", "path": "NC_SECAS_states"},
+    # {"name": "South Carolina", "path": "SC_SECAS_states"},
+    # {"name": "Tennessee", "path": "TN_SECAS_states"},
+    # {"name": "FL test", "path": "EvergladesHeadwaterComplex_APPTYPE_0"}
+    # {"name": "Guild Tracts", "path": "GuildTracts"}
+    # {"name": "Florida Panhandle Boundary", "path": "FL_panhadle_boundary"}
+    # {"name": "Dell Murphy wetlands", "path": "Dell Murphy wetlands"},
+    # {"name": "TRB GA", "path": "TRB_GA"},
+    # {"name": "Florida 5 Star County Boundary", "path": "FL_5StarCounty_Boundary"}
+    # {"name": "Cumberland Plateau Focus Area", "path": "NFWF_Cumberland_Fund_TN"}
+    # {"name": "Enviva Hamlet", "path": "Enviva_Hamlet_80_mile_sourcing_radius"},
+    # {"name": "LCP: Black River", "path": "LCP_BlackRiver"},
+    # {"name": "Green River proposed boundary", "path": "GreenRiver_ProposedBoundary"},
+    # {"name": "LCP: Broad", "path": "LCP_Broad"},
+    # {"name": "Caledonia area, MS", "path": "caledonia"},
+    # {"name": "Napoleonville area, LA", "path": "Napoleonville"},
+    # {"name": "Area in El Yunque National Forest, PR", "path": "yunque"},
+    # {"name": "San Juan area, PR", "path": "SanJuan"},
+    # {"name": "Area near Magnet, TX", "path": "magnet"},
+    # {"name": "TriState area at junction of MO, OK, KS", "path": "TriState"},
+    # {"name": "Quincy, FL area", "path": "Quincy"},
+    # {"name": "Doyle Springs, TN area", "path": "DoyleSprings"},
+    # {"name": "Cave Spring, VA area", "path": "CaveSpring"},
+    # {"name": "South Atlantic Offshore", "path": "SAOffshore"},
+    # {"name": "Florida Offshore", "path": "FLOffshore"},
+    # {"name": "Razor", "path": "Razor"},
+]
 
-    #     start = time()
+for aoi in aois:
+    name = aoi["name"]
+    path = aoi["path"]
+    print(f"Creating report for {name}...")
+
+    start = time()
     df = read_dataframe(f"examples/{path}.shp", columns=[]).to_crs(DATA_CRS)
     df["geometry"] = pg.make_valid(df.geometry.values.data)
     df["group"] = 1
-    df = dissolve(df, by="group")
-
-    # dissolve
-    # geometry = np.asarray([pg.union_all(geometry)])
+    df = dissolve(df.explode(ignore_index=True), by="group")
 
     extent_area = pg.area(pg.box(*df.total_bounds)) * M2_ACRES
+    print(
+        f"Area of extent: {extent_area:,.0f} acres",
+    )
 
+    ### calculate results, data must be in DATA_CRS
+    print("Calculating results...")
+    results = get_custom_area_results(df)
 
-#     print(
-#         f"Area of extent: {extent_area:,.0f} acres",
-#     )
+    if results is None:
+        print(f"AOI: {path} does not overlap Blueprint")
+        continue
 
-#     ### calculate results, data must be in DATA_CRS
-#     print("Calculating results...")
-#     results = get_custom_area_results(df)
+    out_dir = Path("/tmp/aoi") / path
+    if not out_dir.exists():
+        os.makedirs(out_dir)
 
-#     if results is None:
-#         print(f"AOI: {path} does not overlap Blueprint")
-#         continue
+    cache_dir = out_dir / "maps"
 
-#     out_dir = Path("/tmp/aoi") / path
-#     if not out_dir.exists():
-#         os.makedirs(out_dir)
+    maps = None
+    scale = None
+    if CACHE_MAPS:
+        maps, scale = read_cache(cache_dir)
 
-#     cache_dir = out_dir / "maps"
+    if not maps:
+        print("Rendering maps...")
 
-#     maps = None
-#     scale = None
-#     if CACHE_MAPS:
-#         maps, scale = read_cache(cache_dir)
+        has_corridors = "corridors" in results
+        has_urban = "urban" in results
+        has_slr = "slr" in results
+        has_ownership = "ownership" in results
+        has_protection = "protection" in results
 
-#     if not maps:
-#         print("Rendering maps...")
+        # compile indicator IDs across all inputs
+        indicators = []
+        for input_area in results["inputs"]:
+            for ecosystem in input_area.get("ecosystems", []):
+                indicators.extend([i["id"] for i in ecosystem["indicators"]])
 
-#         has_corridors = "corridors" in results
-#         has_urban = "urban" in results
-#         has_slr = "slr" in results
-#         has_ownership = "ownership" in results
-#         has_protection = "protection" in results
+        geo_df = df.to_crs(GEO_CRS)
+        task = render_maps(
+            geo_df.total_bounds,
+            geometry=geo_df.geometry.values.data[0],
+            indicators=indicators,
+            input_ids=results["input_ids"],
+            corridors=has_corridors,
+            urban=has_urban,
+            slr=has_slr,
+            ownership=has_ownership,
+            protection=has_protection,
+        )
 
-#         # compile indicator IDs across all inputs
-#         indicators = []
-#         for input_area in results["inputs"]:
-#             for ecosystem in input_area.get("ecosystems", []):
-#                 indicators.extend([i["id"] for i in ecosystem["indicators"]])
+        maps, scale, errors = asyncio.run(task)
 
-#         geo_df = df.to_crs(GEO_CRS)
-#         task = render_maps(
-#             geo_df.total_bounds,
-#             geometry=geo_df.geometry.values.data[0],
-#             indicators=indicators,
-#             input_ids=results["input_ids"],
-#             corridors=has_corridors,
-#             urban=has_urban,
-#             slr=has_slr,
-#             ownership=has_ownership,
-#             protection=has_protection,
-#         )
+        if errors:
+            print("Errors", errors)
 
-#         maps, scale, errors = asyncio.run(task)
+        if CACHE_MAPS:
+            write_cache(maps, scale, cache_dir)
 
-#         if errors:
-#             print("Errors", errors)
+    results["scale"] = scale
 
-#         if CACHE_MAPS:
-#             write_cache(maps, scale, cache_dir)
+    pdf = create_report(maps=maps, results=results, name=name)
 
-#     results["scale"] = scale
+    with open(out_dir / f"{path}_report.pdf", "wb") as out:
+        out.write(pdf)
 
-#     pdf = create_report(maps=maps, results=results, name=name)
-
-#     with open(out_dir / f"{path}_report.pdf", "wb") as out:
-#         out.write(pdf)
-
-#     print("Elapsed {:.2f}s".format(time() - start))
+    print("Elapsed {:.2f}s".format(time() - start))
 
 ############################################################
 
@@ -184,18 +182,18 @@ def read_cache(path):
 ids = {
     # "huc12": [
     #     "050500030804"  # in WV
-    #     #     "030902030700"  # in base blueprint but missing SLR (Dry Tortugas)
+    # "030902030700"  # in base blueprint but missing SLR (Dry Tortugas)
     #     #     #     # "031002010205",  # in base blueprint but with SLR present
     #     #     #     # "210100070101",  # in Caribbean
     #     #     #     # "031101020903",  # Florida with inland marine indicators
     #     #     #     # "031102050805",  # Florida gulf coast
     # ],
-    "marine_blocks": [
-        "NG16-12-780",  # in FL Marine
-        #     # "NI18-07-6210",  # Atlantic coast
-        #     # "NG16-03-299",  # Gulf coast
-        #     # "NG17-10-6583",  # Florida keys, overlaps with protected areas
-    ],
+    # "marine_blocks": [
+    #     "NG16-12-780",  # in FL Marine
+    #     #     # "NI18-07-6210",  # Atlantic coast
+    #     #     # "NG16-03-299",  # Gulf coast
+    #     #     # "NG17-10-6583",  # Florida keys, overlaps with protected areas
+    # ],
 }
 
 

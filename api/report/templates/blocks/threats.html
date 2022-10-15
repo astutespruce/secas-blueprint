@@ -1,7 +1,7 @@
 <section>
 <h2 id="Threats">Threats</h2>
 
-{% if results.slr %}
+{% if results.slr and results.slr.depth %}
     {% include "blocks/slr.html" %}
 {% else %}
     {% include "blocks/no_slr.html" %}

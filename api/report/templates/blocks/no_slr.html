@@ -1,7 +1,11 @@
 <h3 id="SLR">Sea-level rise</h3>
 
 <p>
-    This area is not predicted to be impacted by up to ten feet of SLR.
+    {% if results.slr.na %}
+        Sea-level rise unlikely to be a threat (inland counties).
+    {% else %}
+        Sea-level rise data are not available for this area.
+    {% endif %}
 </p>
 
 <div class="spacer"></div>

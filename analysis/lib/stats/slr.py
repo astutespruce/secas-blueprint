@@ -9,6 +9,7 @@ import rasterio
 from analysis.constants import (
     M2_ACRES,
     SLR_DEPTH_BINS,
+    SLR_NODATA_VALUES,
     SLR_PROJ_COLUMNS,
     SLR_YEARS,
     SLR_PROJ_SCENARIOS,
@@ -24,7 +25,7 @@ from analysis.lib.stats.summary_units import read_unit_from_feather
 src_dir = Path("data/inputs/threats/slr")
 depth_filename = src_dir / "slr.tif"
 mask_filename = src_dir / "slr_mask.tif"
-extent_filename = src_dir / "extracted_slr_bounds.feather"
+# extent_filename = src_dir / "slr_data_extent.feather"
 proj_filename = src_dir / "noaa_1deg_cells.feather"
 results_filename = "data/results/huc12/slr.feather"
 
@@ -69,13 +70,15 @@ def extract_slr_by_mask_and_geometry(
                 "label": <label>,
                 "acres": <acres>,
                 "percent": <percent>
-            }, ... <for each inundation depth>],
+            }, ... <for each inundation depth and NODATA type>],
             "total_slr_acres": <acres within this dataset>,
-            "notinundated_acres" : <acres not inundated by 10ft >,
-            "notinundated_percent" : <percent not inundated by 10ft >,
             "projections": {
                 <scenario>: [<depth in 2020>, <depth in 2030>, ... <depth in 2100>]
             }
+        }
+        OR
+        {
+            "na": True <if only in inland areas>
         }
     """
     # prescreen to make sure data are present
@@ -83,31 +86,40 @@ def extract_slr_by_mask_and_geometry(
         if not detect_data_by_mask(src, prescreen_mask, prescreen_window):
             return None
 
+    bins = SLR_DEPTH_BINS + [v["value"] for v in SLR_NODATA_VALUES]
+
     slr_acres = (
         extract_count_in_geometry(
-            depth_filename, shape_mask, window, bins=SLR_DEPTH_BINS, boundless=True
+            depth_filename, shape_mask, window, bins=bins, boundless=True
         )
         * cellsize
     )
     total_slr_acres = slr_acres.sum()
 
-    # accumulate values
-    slr_acres = np.cumsum(slr_acres)
+    # accumulate values for 0-10ft
+    slr_acres[:11] = np.cumsum(slr_acres[:11])
+
+    # if the only value present is for inland areas where not applicable, show that message
+    if np.allclose(slr_acres[13], total_slr_acres):
+        return {"na": True}
 
     slr_results = [
         {
+            "value": i,
             "label": f"{i} {'foot' if i==1 else 'feet'}",
             "acres": acres,
             "percent": 100 * acres / rasterized_acres,
         }
-        for i, acres in enumerate(slr_acres)
+        for i, acres in enumerate(slr_acres[:11])
+    ] + [
+        {
+            **v,
+            "acres": slr_acres[v["value"]],
+            "percent": 100 * slr_acres[v["value"]] / rasterized_acres,
+        }
+        for v in SLR_NODATA_VALUES
+        if slr_acres[v["value"]] > 0
     ]
-
-    # since areas not inundated are NODATA, and SLR is theoretically available
-    # everywhere, use area not accounted for in inundated depth bins for this value
-    not_inundated_acres = rasterized_acres - outside_se_acres - total_slr_acres
-    if not_inundated_acres < 1e-6:
-        not_inundated_acres = 0
 
     # intersect with 1-degree pixels; there should always be data available if
     # there are SLR depth data
@@ -131,8 +143,6 @@ def extract_slr_by_mask_and_geometry(
     return {
         "depth": slr_results,
         "total_slr_acres": total_slr_acres,
-        "notinundated_acres": not_inundated_acres,
-        "notinundated_percent": 100 * not_inundated_acres / rasterized_acres,
         "projections": projections,
     }
 

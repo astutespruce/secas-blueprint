@@ -120,6 +120,11 @@ URBAN_LEGEND = [
 
 # depth in 1 foot increments from 0
 SLR_DEPTH_BINS = list(range(11))
+SLR_NODATA_VALUES = [
+    {"value": 11, "label": "Not projected to be inundated by up to 10 feet"},
+    {"value": 12, "label": "Sea-level rise data unavailable"},
+    {"value": 13, "label": "Sea-level rise unlikely to be a threat (inland counties)"},
+]
 
 SLR_YEARS = [2020, 2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100]
 SLR_PROJ_SCENARIOS = {
@@ -147,6 +152,15 @@ SLR_LEGEND = [
     {"label": "8", "color": "#47D4FC"},
     {"label": "9", "color": "#7DF5FD"},
     {"label": "10", "color": "#B3FEF7"},
+]
+
+SRL_NODATA_COLORS = [
+    # Not inundated to 10 ft
+    {"label": "11", "color": "#FFFFFF"},
+    # Sea-level rise data unavailable
+    {"label": "12", "color": "#880000"},
+    # Sea-level rise unlikely to be a threat (inland counties)
+    {"label": "13", "color": "#333333"},
 ]
 
 
