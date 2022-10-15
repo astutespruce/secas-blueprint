@@ -12,7 +12,7 @@ import rasterio
 from rasterio.features import rasterize
 from rasterio.windows import Window
 
-from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES
+from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES, SECAS_HUC2
 from analysis.lib.geometry import make_valid, to_dict
 from analysis.lib.raster import write_raster, add_overviews, get_window
 

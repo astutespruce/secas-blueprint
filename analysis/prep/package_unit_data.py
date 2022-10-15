@@ -193,7 +193,7 @@ blueprint = encode_values(
 
 
 # Base Blueprint
-print("Encoding Base Blueprint")
+print("Encoding Base Blueprint...")
 base_results = (
     pd.read_feather(results_dir / "base.feather")
     .set_index("id")
@@ -203,7 +203,7 @@ base = encode_base_blueprint(base_results)
 
 ### Caribbean
 # Dictionary encode <priority>:<percent>, only for priorities > 0
-print("Encoding Caribbean LCD")
+print("Encoding Caribbean LCD...")
 
 
 def encode_caribbean_priorities(row):
@@ -233,7 +233,7 @@ caribbean = (
 
 ### SLR Depth
 # delta encode percent * 10
-print("Encoding SLR values...")
+print("Encoding SLR depth and projections...")
 slr_results = (
     pd.read_feather(results_dir / "slr.feather")
     .set_index("id")
@@ -270,18 +270,18 @@ slr = pd.DataFrame(slr_depth).join(slr_proj)
 
 ### Urban
 # delta encode urban 2019 and future projections
-print("Encoding urban values...")
+print("Encoding urban...")
 cols = ["id", "urban_2019"] + [f"urban_proj_{year}" for year in URBAN_YEARS]
 urban_results = pd.read_feather(results_dir / "urban.feather", columns=cols).set_index(
     "id"
 )
-
 urban = delta_encode_values(
     urban_results, huc12.rasterized_acres.loc[urban_results.index], 1000
 ).rename("urban")
 
 ### Ownership / protection
 # Dictionary encode ownership and protection
+print("Encoding ownership / protection...")
 ownership_results = (
     pd.read_feather(results_dir / "ownership.feather")
     .set_index("id")
@@ -352,6 +352,7 @@ blueprint = encode_values(
 
 
 ### Base Blueprint
+print("Encoding Base Blueprint...")
 base_results = (
     pd.read_feather(results_dir / "base.feather")
     .set_index("id")
@@ -361,6 +362,7 @@ base = encode_base_blueprint(base_results)
 
 
 ### Florida Marine Blueprint
+print("Encoding Florida Marine Blueprint...")
 flm_results = (
     pd.read_feather(results_dir / "flm.feather")
     .set_index("id")
@@ -372,6 +374,8 @@ flm = encode_values(flm_results[cols], flm_results.rasterized_acres, 1000).renam
 
 ### Ownership / protection
 # Dictionary encode ownership and protection
+
+print("Encoding ownership / protection...")
 ownership_results = (
     pd.read_feather(results_dir / "ownership.feather")
     .set_index("id")
@@ -409,20 +413,18 @@ out = pd.concat(
 ).reset_index(drop=True)
 
 
-for col in [
-    "car",
-    "flm",
-    "ownership",
-    "protection",
-    "slr_depth",
-    "slr_proj",
-    "urban",
-] + base.columns.tolist():
-    marine[col] = marine[col].fillna("")
-
-
-# everything else is blank strings
-out = out.fillna("")
+for col in (
+    [
+        "car",
+        "flm",
+        "ownership",
+        "protection",
+        "urban",
+    ]
+    + base.columns.tolist()
+    + slr.columns.tolist()
+):
+    out[col] = out[col].fillna("")
 
 
 if DEBUG:
