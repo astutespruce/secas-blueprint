@@ -95,13 +95,22 @@ def extract_slr_by_mask_and_geometry(
         * cellsize
     )
     total_slr_acres = slr_acres.sum()
+    slr_nodata_acres = rasterized_acres - total_slr_acres
+    total_data_slr_acres = slr_acres[:12].sum()
+
+    # combine areas not modeled with SLR nodata areas
+    slr_acres[12] += slr_nodata_acres
+
+    # if all areas in the polygon have no SLR data, return None
+    if np.allclose(slr_acres[12], rasterized_acres):
+        return None
+
+    # if the only value present is for inland areas where not applicable, show that message
+    if np.allclose(slr_acres[13], rasterized_acres):
+        return {"na": True}
 
     # accumulate values for 0-10ft
     slr_acres[:11] = np.cumsum(slr_acres[:11])
-
-    # if the only value present is for inland areas where not applicable, show that message
-    if np.allclose(slr_acres[13], total_slr_acres):
-        return {"na": True}
 
     slr_results = [
         {

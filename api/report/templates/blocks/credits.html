@@ -15,6 +15,9 @@
 <p>
     {% if results.urban %}
         Urbanization data are derived from the FUTURES urban growth model.
+        Data provided by the
+        <a href="https://cnr.ncsu.edu/geospatial/">Center for Geospatial Analytics</a>,
+        NC State University.
         <br /><br />
     {% endif %}
 
@@ -27,7 +30,9 @@
     {% endif %}
 
     {% if results.ownership or results.protection %}
-        Land ownership and conservation status is derived from the <a href="https://www.usgs.gov/programs/gap-analysis-project/science/pad-us-data-download">Protected Areas Database of the United States</a> (PAD-US v3.0).
+        Land ownership and conservation status is derived from the
+        <a href="https://www.usgs.gov/programs/gap-analysis-project/science/pad-us-data-download">Protected Areas Database of the United States</a>
+        (PAD-US v3.0).
     {% endif %}
 </p>
 

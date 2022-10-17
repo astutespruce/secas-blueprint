@@ -2,7 +2,17 @@
     <h3 id="Urban">Urban growth</h3>
 
     <p>
-        TODO: description of FUTURES data
+        The FUTURES urban growth model predicts the likelihood that an area will
+        urbanize at every decade from 2020 to 2100. Developed areas from the
+        2019 National Land Cover Database serve as the baseline for current
+        urban areas. The model simulates landscape change based on demand for
+        development, local development suitability factors, and a random urban
+        patch-growing algorithm. It considers trends in population growth and
+        building footprints, environmental drivers like distance to floodplain,
+        slope, and available amenities, and even social factors like reluctance
+        to sell in certain areas. The probability of urbanization for each area
+        reflects how many times it urbanized out of 50 model runs.  Darker reds
+        indicate  higher probability of urbanization.
     </p>
 
     {% if maps.urban_2060 %}
@@ -45,7 +55,10 @@
 
     <div class="caption">
         Table {{table.counter}}: Extent of projected urbanization by decade{% if results.name %} within {{results.name}}{% if results.type %} {{results.type}}{% endif %}{% else %} in this area{% endif %}.
-        Values from the FUTURES urban growth model.
+        Values from the FUTURES urban growth model.  Values from the FUTURES model.
+        Data provided in June 2022 by the
+        <a href="https://cnr.ncsu.edu/geospatial/">Center for Geospatial Analytics</a>,
+        NC State University.
         2060 corresponds to the <a href="https://secassoutheast.org/our-goal">SECAS goal</a>: a 10% or greater improvement in the health, function, and connectivity of Southeastern ecosystems by 2060.
     </div>
 
