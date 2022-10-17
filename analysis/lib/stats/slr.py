@@ -10,6 +10,7 @@ from analysis.constants import (
     M2_ACRES,
     SLR_DEPTH_BINS,
     SLR_NODATA_VALUES,
+    SLR_NODATA_COLS,
     SLR_PROJ_COLUMNS,
     SLR_YEARS,
     SLR_PROJ_SCENARIOS,
@@ -22,10 +23,12 @@ from analysis.lib.raster import (
 from analysis.lib.stats.summary_units import read_unit_from_feather
 
 
+SLR_BINS = SLR_DEPTH_BINS + [v["value"] for v in SLR_NODATA_VALUES]
+
+
 src_dir = Path("data/inputs/threats/slr")
 depth_filename = src_dir / "slr.tif"
 mask_filename = src_dir / "slr_mask.tif"
-# extent_filename = src_dir / "slr_data_extent.feather"
 proj_filename = src_dir / "noaa_1deg_cells.feather"
 results_filename = "data/results/huc12/slr.feather"
 
@@ -80,23 +83,22 @@ def extract_slr_by_mask_and_geometry(
         {
             "na": True <if only in inland areas>
         }
+        OR
+        None if there is only NODATA / areas not modeled
     """
     # prescreen to make sure data are present
     with rasterio.open(mask_filename) as src:
         if not detect_data_by_mask(src, prescreen_mask, prescreen_window):
             return None
 
-    bins = SLR_DEPTH_BINS + [v["value"] for v in SLR_NODATA_VALUES]
-
     slr_acres = (
         extract_count_in_geometry(
-            depth_filename, shape_mask, window, bins=bins, boundless=True
+            depth_filename, shape_mask, window, bins=SLR_BINS, boundless=True
         )
         * cellsize
     )
     total_slr_acres = slr_acres.sum()
-    slr_nodata_acres = rasterized_acres - total_slr_acres
-    total_data_slr_acres = slr_acres[:12].sum()
+    slr_nodata_acres = rasterized_acres - outside_se_acres - total_slr_acres
 
     # combine areas not modeled with SLR nodata areas
     slr_acres[12] += slr_nodata_acres
@@ -176,12 +178,6 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
             "GeoDataFrame for summary must include value, rasterized_acres, outside_se columns"
         )
 
-    # prescreen to areas that overlap with SLR inundation depth extent
-    slr_extent = gp.read_feather(extent_filename, columns=[])
-    tree = pg.STRtree(df.geometry.values.data)
-    ix = tree.query_bulk(slr_extent.geometry.values.data, predicate="intersects")[1]
-    df = df.take(np.unique(ix))
-
     with rasterio.open(depth_filename) as value_dataset:
         cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
 
@@ -190,7 +186,7 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
                 df,
                 units_grid,
                 value_dataset,
-                bins=SLR_DEPTH_BINS,
+                bins=SLR_BINS,
                 progress_label="Summarizing SLR inundation depth",
             )
             * cellsize
@@ -198,29 +194,37 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
 
         total_slr_acres = slr_acres.sum(axis=1)
 
-        # accumulate values
-        slr_acres = np.cumsum(slr_acres, axis=1)
+        has_slr = slr_acres[:, :11].sum(axis=1) > 0
 
-    # since areas not inundated are NODATA, and SLR is theoretically available
-    # everywhere, use area not accounted for in inundated depth bins for this value
-    not_inundated_acres = df.rasterized_acres - df.outside_se - total_slr_acres
-    not_inundated_acres[not_inundated_acres < 1e-6] = 0
+        slr_nodata_acres = df.rasterized_acres - df.outside_se - total_slr_acres
+
+        # combine areas not modeled with SLR nodata areas
+        slr_acres[:, 12] += slr_nodata_acres
+
+        # accumulate values for bins 0-10
+        slr_acres[:, :11] = np.cumsum(slr_acres[:, :11], axis=1)
+
+    depth_cols = [f"depth_{v}" for v in SLR_DEPTH_BINS]
+    cols = depth_cols + SLR_NODATA_COLS
 
     slr = pd.DataFrame(
         slr_acres,
-        columns=[f"depth_{v}" for v in SLR_DEPTH_BINS],
+        columns=cols,
         index=df.index,
     )
-    slr["not_inundated"] = not_inundated_acres
+
+    # only calculate projections where there is data [:11]
+    ix = slr.loc[slr[depth_cols].sum(axis=1) > 0].index
+    subset = df.loc[ix]
 
     proj = gp.read_feather(proj_filename)
-    tree = pg.STRtree(df.geometry.values.data)
+    tree = pg.STRtree(subset.geometry.values.data)
     left, right = tree.query_bulk(proj.geometry.values.data, predicate="intersects")
 
     # for each unit, calculate the area-weighted mean
     tmp = pd.DataFrame(
         {
-            "geometry": df.geometry.values.data.take(right),
+            "geometry": subset.geometry.values.data.take(right),
             "proj": proj.index.values.take(left),
             "proj_geometry": proj.geometry.values.data.take(left),
         },
@@ -276,13 +280,30 @@ def get_slr_unit_results(results_dir, unit_id, rasterized_acres):
 
     unit = slr_results.iloc[0]
 
+    # if all areas in the polygon have no SLR data, return None
+    if np.allclose(unit.nodata, rasterized_acres):
+        return {}
+
+    # if the only value present is for inland areas where not applicable, show that message
+    if np.allclose(unit.not_applicable, rasterized_acres):
+        return {"na": True}
+
     depth = [
         {
+            "value": i,
             "label": f"{i} {'foot' if i==1 else 'feet'}",
             "acres": unit[f"depth_{i}"],
             "percent": 100 * unit[f"depth_{i}"] / rasterized_acres,
         }
         for i in SLR_DEPTH_BINS
+    ] + [
+        {
+            **v,
+            "acres": unit[col],
+            "percent": 100 * unit[col] / rasterized_acres,
+        }
+        for col, v in zip(SLR_NODATA_COLS, SLR_NODATA_VALUES)
+        if unit[col] > 0
     ]
 
     projections = {

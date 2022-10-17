@@ -361,7 +361,6 @@ bnd = gp.read_feather(
 df["geometry"] = pg.intersection(df.geometry.values.data, bnd)
 
 write_dataframe(df, tmp_dir / "slr_analysis_areas.fgb")
-df.to_feather(out_dir / "slr_analysis_areas.feather")
 
 data_extent = df.loc[df.group == "data_extent"].geometry.values.data[0]
 

@@ -125,6 +125,7 @@ SLR_NODATA_VALUES = [
     {"value": 12, "label": "Sea-level rise data unavailable"},
     {"value": 13, "label": "Sea-level rise unlikely to be a threat (inland counties)"},
 ]
+SLR_NODATA_COLS = ["not_inundated", "nodata", "not_applicable"]
 
 SLR_YEARS = [2020, 2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100]
 SLR_PROJ_SCENARIOS = {

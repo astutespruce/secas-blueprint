@@ -1,7 +1,7 @@
 <h3 id="SLR">Sea-level rise</h3>
 
 <p>
-    {% if results.slr.na %}
+    {% if results.slr and results.slr.na %}
         Sea-level rise unlikely to be a threat (inland counties).
     {% else %}
         Sea-level rise data are not available for this area.

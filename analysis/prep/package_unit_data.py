@@ -38,6 +38,7 @@ from analysis.constants import (
     SLR_DEPTH_BINS,
     SLR_PROJ_SCENARIOS,
     SLR_YEARS,
+    SLR_NODATA_COLS,
     URBAN_YEARS,
 )
 from analysis.lib.attribute_encoding import encode_values, delta_encode_values
@@ -232,7 +233,7 @@ caribbean = (
 ).rename("car")
 
 ### SLR Depth
-# delta encode percent * 10
+# delta encode percent * 10; dict encode nodata values
 print("Encoding SLR depth and projections...")
 slr_results = (
     pd.read_feather(results_dir / "slr.feather")
@@ -245,16 +246,20 @@ slr_depth = delta_encode_values(
     slr_results[depth_cols], huc12.rasterized_acres.loc[slr_results.index], 1000
 ).rename("slr_depth")
 
+slr_nodata = encode_values(
+    slr_results[SLR_NODATA_COLS], huc12.rasterized_acres.loc[slr_results.index], 1000
+).rename("slr_nodata")
 
 ### SLR scenario projections
 # delta encode feet * 10 (1 decimal place) by ascending scenario; scenarios
 # are comma-delimited
 proj_results = None
 # div is just so we can reuse delta encoding logic and divide everything by 1
-div = np.ones((len(slr_results),))
+slr_proj_results = slr_results.dropna()
+div = np.ones((len(slr_proj_results),))
 for scenario in SLR_PROJ_SCENARIOS:
     proj_cols = [f"{year}_{scenario}" for year in SLR_YEARS]
-    proj = delta_encode_values(slr_results[proj_cols], div, 10).rename(
+    proj = delta_encode_values(slr_proj_results[proj_cols], div, 10).rename(
         f"slr_proj_{scenario}"
     )
 
@@ -265,8 +270,7 @@ for scenario in SLR_PROJ_SCENARIOS:
 
 slr_proj = proj_results.apply(lambda row: ",".join(row), axis=1).rename("slr_proj")
 
-slr = pd.DataFrame(slr_depth).join(slr_proj)
-
+slr = pd.DataFrame(slr_depth).join(slr_nodata).join(slr_proj)
 
 ### Urban
 # delta encode urban 2019 and future projections
