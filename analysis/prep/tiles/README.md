@@ -2,6 +2,16 @@
 
 ## Vector tilesets
 
+The Southeast boundary, mask, summary units, state boundaries, and protected areas
+are converted to vector tiles for use in the frontend or for PDF maps.
+
+Summary units are first prepared for tiling using `analysis/prep/package_unit_data.py`,
+which creates a Feather file with encoded attributes for the Blueprint,
+Base Blueprint and indicators, other Blueprint inputs, sea-level rise, and
+urbanization.
+
+Vector tiles are then created using `analysis/prep/tiles/create_vector_tiles.py`.
+
 ## Raster tilesets
 
 Raster tiles for the Blueprint and data tiles are created using `rastertiler-rs`, which is built from source:

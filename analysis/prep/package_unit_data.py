@@ -1,6 +1,6 @@
 """
 Extract summary unit data created using tabulate_summary_units.py and
-postprocess to join into vector tiles.
+postprocess into structure needed for vector tiles.
 
 The following code compacts values in a few ways.  These were tested against
 versions of the vector tiles that retained individual integer columns, and the
@@ -17,19 +17,20 @@ into caret-delimited strings:
 Areas where there were no values present were converted to empty strings.  Areas
 where there was no change from the baseline just include the baseline.
 
-
 Values that could have multiple key:value entries (ownership, protection) are dictionary-encoded:
 FED:<fed_%>,LOC:<loc_%>,...
 """
 
 from pathlib import Path
 
+import geopandas as gp
 import numpy as np
 import pandas as pd
 import pyarrow as pa
 from pyarrow.csv import write_csv
 
 from analysis.constants import (
+    GEO_CRS,
     CORRIDORS,
     INPUTS,
     BLUEPRINT,
@@ -157,21 +158,26 @@ out_dir.mkdir(exist_ok=True, parents=True)
 results_dir = data_dir / "results/huc12"
 
 print("Reading HUC12 units...")
-huc12 = pd.read_feather(
-    data_dir / "inputs/summary_units" / "huc12.feather",
-    columns=[
-        "id",
-        "name",
-        "acres",
-        "rasterized_acres",
-        "outside_se",
-        "input_id",
-        "minx",
-        "miny",
-        "maxx",
-        "maxy",
-    ],
-).set_index("id")
+huc12 = (
+    gp.read_feather(
+        data_dir / "inputs/summary_units" / "huc12.feather",
+        columns=[
+            "id",
+            "geometry",
+            "name",
+            "acres",
+            "rasterized_acres",
+            "outside_se",
+            "input_id",
+            "minx",
+            "miny",
+            "maxx",
+            "maxy",
+        ],
+    )
+    .set_index("id")
+    .to_crs(GEO_CRS)
+)
 huc12["type"] = "subwatershed"
 
 center, lta_search_radius = get_lta_search_info(
@@ -306,7 +312,7 @@ protection = encode_ownership_protection(protection_results, "GAP_Sts").rename(
 
 
 huc12 = (
-    huc12[["name", "input_id"]]
+    huc12[["geometry", "name", "input_id"]]
     .join(huc12[["acres", "rasterized_acres", "outside_se"]].round().astype("uint"))
     .join(blueprint, how="left")
     .join(base, how="left")
@@ -326,17 +332,22 @@ results_dir = data_dir / "results/marine_blocks"
 
 print("--------------------------------")
 print("Reading marine_blocks...")
-marine = pd.read_feather(
-    data_dir / "inputs/summary_units/marine_blocks.feather",
-    columns=[
-        "id",
-        "name",
-        "acres",
-        "rasterized_acres",
-        "outside_se",
-        "input_id",
-    ],
-).set_index("id")
+marine = (
+    gp.read_feather(
+        data_dir / "inputs/summary_units/marine_blocks.feather",
+        columns=[
+            "id",
+            "geometry",
+            "name",
+            "acres",
+            "rasterized_acres",
+            "outside_se",
+            "input_id",
+        ],
+    )
+    .set_index("id")
+    .to_crs(GEO_CRS)
+)
 marine["type"] = "marine lease block"
 
 
@@ -399,7 +410,7 @@ protection = encode_ownership_protection(protection_results, "GAP_Sts").rename(
 )
 
 marine = (
-    marine[["name", "input_id"]]
+    marine[["geometry", "name", "input_id"]]
     .join(marine[["acres", "rasterized_acres", "outside_se"]].round().astype("uint"))
     .join(blueprint, how="left")
     .join(base, how="left")
@@ -431,11 +442,12 @@ for col in (
     out[col] = out[col].fillna("")
 
 
-if DEBUG:
-    out.to_feather("/tmp/tile_attributes.feather")
+out.to_feather(out_dir / "summary_units.feather")
 
 
-out = pa.Table.from_pandas(out)
+# if DEBUG:
+#     out.to_feather("/tmp/tile_attributes.feather")
 
 
-write_csv(out, out_dir / "unit_atts.csv")
+# out = pa.Table.from_pandas(out)
+# write_csv(out, out_dir / "unit_atts.csv")
