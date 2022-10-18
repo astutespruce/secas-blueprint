@@ -26,20 +26,16 @@ from pathlib import Path
 import geopandas as gp
 import numpy as np
 import pandas as pd
-import pyarrow as pa
-from pyarrow.csv import write_csv
 
 from analysis.constants import (
     GEO_CRS,
     CORRIDORS,
     INPUTS,
     BLUEPRINT,
-    DEBUG,
     INDICATORS,
     SLR_DEPTH_BINS,
     SLR_PROJ_SCENARIOS,
     SLR_YEARS,
-    SLR_NODATA_COLS,
     URBAN_YEARS,
 )
 from analysis.lib.attribute_encoding import encode_values, delta_encode_values
@@ -252,9 +248,6 @@ slr_depth = delta_encode_values(
     slr_results[depth_cols], huc12.rasterized_acres.loc[slr_results.index], 1000
 ).rename("slr_depth")
 
-slr_nodata = encode_values(
-    slr_results[SLR_NODATA_COLS], huc12.rasterized_acres.loc[slr_results.index], 1000
-).rename("slr_nodata")
 
 ### SLR scenario projections
 # delta encode feet * 10 (1 decimal place) by ascending scenario; scenarios
@@ -276,7 +269,7 @@ for scenario in SLR_PROJ_SCENARIOS:
 
 slr_proj = proj_results.apply(lambda row: ",".join(row), axis=1).rename("slr_proj")
 
-slr = pd.DataFrame(slr_depth).join(slr_nodata).join(slr_proj)
+slr = pd.DataFrame(slr_depth).join(slr_proj)
 
 ### Urban
 # delta encode urban 2019 and future projections
@@ -312,8 +305,8 @@ protection = encode_ownership_protection(protection_results, "GAP_Sts").rename(
 
 
 huc12 = (
-    huc12[["geometry", "name", "input_id"]]
-    .join(huc12[["acres", "rasterized_acres", "outside_se"]].round().astype("uint"))
+    huc12[["geometry", "name", "input_id", "type"]]
+    .join(huc12[["acres", "rasterized_acres", "outside_se"]].round().astype("int"))
     .join(blueprint, how="left")
     .join(base, how="left")
     .join(caribbean, how="left")
@@ -410,8 +403,8 @@ protection = encode_ownership_protection(protection_results, "GAP_Sts").rename(
 )
 
 marine = (
-    marine[["geometry", "name", "input_id"]]
-    .join(marine[["acres", "rasterized_acres", "outside_se"]].round().astype("uint"))
+    marine[["geometry", "name", "input_id", "type"]]
+    .join(marine[["acres", "rasterized_acres", "outside_se"]].round().astype("int"))
     .join(blueprint, how="left")
     .join(base, how="left")
     .join(flm, how="left")
@@ -443,11 +436,3 @@ for col in (
 
 
 out.to_feather(out_dir / "summary_units.feather")
-
-
-# if DEBUG:
-#     out.to_feather("/tmp/tile_attributes.feather")
-
-
-# out = pa.Table.from_pandas(out)
-# write_csv(out, out_dir / "unit_atts.csv")
