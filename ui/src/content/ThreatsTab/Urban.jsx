@@ -45,13 +45,13 @@ const Urban = ({ percents }) => (
     </Box>
 
     <Text sx={{ mt: '2rem', color: 'grey.7', fontSize: 1 }}>
-      Urban growth estimates derived from the{' '}
-      <OutboundLink to="http://www.basic.ncsu.edu/dsl/urb.html">
-        SLEUTH urbanization model
+      Urban growth estimates derived from the FUTURES model. Data provided by
+      the{' '}
+      <OutboundLink to="https://cnr.ncsu.edu/geospatial/">
+        Center for Geospatial Analytics
       </OutboundLink>
-      . Current (2009) urban based on developed landcover from the 2001 National
-      Landcover Database and areas of high road density from U.S. Census TIGER
-      Line data for 2000, 2006, 2008, and 2009.
+      , NC State University. Current (2019) urban based on developed landcover
+      from the 2019 National Landcover Database.
     </Text>
   </>
 )

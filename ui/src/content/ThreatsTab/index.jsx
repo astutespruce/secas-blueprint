@@ -8,7 +8,7 @@ import NeedHelp from 'content/NeedHelp'
 import SLR from './SLR'
 import Urban from './Urban'
 
-const ThreatsTab = ({ unitType, slr, urban }) => {
+const ThreatsTab = ({ unitType, slrDepth, urban }) => {
   if (unitType !== 'subwatershed') {
     return (
       <Box sx={{ py: '2rem', pl: '1rem', pr: '2rem' }}>
@@ -36,14 +36,7 @@ const ThreatsTab = ({ unitType, slr, urban }) => {
 
       <Box as="section">
         <Heading as="h3">Sea Level Rise</Heading>
-        {slr && slr.length > 0 ? (
-          <SLR percents={slr} />
-        ) : (
-          <Text sx={{ color: 'grey.7' }}>
-            This watershed is not impacted by up to 6 feet of projected sea
-            level rise.
-          </Text>
-        )}
+        <SLR depth={slrDepth} />
       </Box>
 
       <NeedHelp />
@@ -53,12 +46,12 @@ const ThreatsTab = ({ unitType, slr, urban }) => {
 
 ThreatsTab.propTypes = {
   unitType: PropTypes.string.isRequired,
-  slr: PropTypes.arrayOf(PropTypes.number),
+  slrDepth: PropTypes.arrayOf(PropTypes.number),
   urban: PropTypes.arrayOf(PropTypes.number),
 }
 
 ThreatsTab.defaultProps = {
-  slr: null,
+  slrDepth: null,
   urban: null,
 }
 

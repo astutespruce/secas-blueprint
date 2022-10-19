@@ -34,6 +34,7 @@ from analysis.constants import (
     BLUEPRINT,
     INDICATORS,
     SLR_DEPTH_BINS,
+    SLR_NODATA_COLS,
     SLR_PROJ_SCENARIOS,
     SLR_YEARS,
     URBAN_YEARS,
@@ -248,6 +249,9 @@ slr_depth = delta_encode_values(
     slr_results[depth_cols], huc12.rasterized_acres.loc[slr_results.index], 1000
 ).rename("slr_depth")
 
+slr_nodata = encode_values(
+    slr_results[SLR_NODATA_COLS], huc12.rasterized_acres.loc[slr_results.index], 1000
+).rename("slr_nodata")
 
 ### SLR scenario projections
 # delta encode feet * 10 (1 decimal place) by ascending scenario; scenarios
@@ -269,7 +273,7 @@ for scenario in SLR_PROJ_SCENARIOS:
 
 slr_proj = proj_results.apply(lambda row: ",".join(row), axis=1).rename("slr_proj")
 
-slr = pd.DataFrame(slr_depth).join(slr_proj)
+slr = pd.DataFrame(slr_depth).join(slr_nodata).join(slr_proj)
 
 ### Urban
 # delta encode urban 2019 and future projections

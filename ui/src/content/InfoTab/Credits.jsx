@@ -6,8 +6,8 @@ import { OutboundLink } from 'components/link'
 const Credits = () => (
   <Box as="section" sx={{ pb: '2rem' }}>
     <Text as="p" sx={{ fontSize: 1 }}>
-      <b>Citation:</b> Southeast Conservation Adaptation Strategy (SECAS). 2021.
-      Southeast Conservation Blueprint 2021.{' '}
+      <b>Citation:</b> Southeast Conservation Adaptation Strategy (SECAS). 2022.
+      Southeast Conservation Blueprint 2022.{' '}
       <OutboundLink to="http://secassoutheast.org/blueprint">
         http://secassoutheast.org/blueprint
       </OutboundLink>

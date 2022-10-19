@@ -8,9 +8,8 @@
     "bounds": [
       -1000334.18062565, 258944.14681537, 2201235.81937435, 2064044.14681537
     ],
-    "dataURL": "",
-    "infoURL": "",
-    "cpaURL": "",
+    "dataURL": "https://secas-fws.hub.arcgis.com/pages/blueprint",
+    "infoURL": "https://secas-fws.hub.arcgis.com/pages/blueprint",
     "filename": "base/base_blueprint.tif",
     "valueField": "base_blueprint",
     "valueLabel": "Base Blueprint 2022 Priority ",
@@ -74,7 +73,6 @@
     ],
     "dataURL": "",
     "infoURL": "",
-    "cpaURL": "https://flcpa.databasin.org/",
     "filename": "florida_marine/flm_blueprint.tif",
     "valueField": "flm_blueprint",
     "valueLabel": "Conservation Priority",
@@ -124,7 +122,6 @@
     ],
     "dataURL": "https://caribbeanlcc.databasin.org/galleries/ecb079d09f5a430fafc2d48d68bdf1b4",
     "infoURL": "https://caribbeanlcc.databasin.org/galleries/ecb079d09f5a430fafc2d48d68bdf1b4",
-    "cpaURL": "https://seregion.databasin.org/",
     "filename": "caribbean/caribbean_lcd.tif",
     "valueField": "carrank",
     "valueLabel": "Caribbean Priority Watershed Rank",

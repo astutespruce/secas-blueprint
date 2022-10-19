@@ -34,11 +34,10 @@ const TabContent = ({ tab, mapData }) => {
     blueprint,
     inputs,
     outsideSEPercent,
-    blueprint_total: blueprintAcres,
-    shape_mask: analysisAcres,
+    rasterizedAcres,
     indicators,
     ecosystems,
-    slr,
+    slrDepth,
     urban,
     ownership,
     protection,
@@ -66,13 +65,12 @@ const TabContent = ({ tab, mapData }) => {
           inputs={inputs}
           indicators={indicators}
           outsideSEPercent={outsideSEPercent}
-          blueprintAcres={blueprintAcres}
-          analysisAcres={analysisAcres}
+          rasterizedAcres={rasterizedAcres}
         />
       )
     }
     case 'selected-threats': {
-      return <ThreatsTab unitType={type} slr={slr} urban={urban} />
+      return <ThreatsTab unitType={type} slrDepth={slrDepth} urban={urban} />
     }
     case 'selected-partners': {
       return (

@@ -7,7 +7,7 @@ import { OutboundLink } from 'components/link'
 import { siteMetadata } from '../../../gatsby-config'
 
 const ErrorMessage = ({ message }) => (
-  <Container sx={{ py: '4rem' }}>
+  <Container sx={{ py: '4rem', px: '1rem' }}>
     <Box>
       <Heading as="h2" sx={{ mb: '1rem' }}>
         <ExclamationTriangle size="32px" style={{ marginRight: '.5rem' }} />

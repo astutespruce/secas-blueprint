@@ -62,28 +62,28 @@ function SEO({ description, meta, title }) {
           content: metaDescription,
         },
       ].concat(meta)}
-      link={[
-        { rel: 'icon', type: 'image/png', href: '/favicon.ico' },
-        { rel: 'icon', type: 'image/svg+xml', href: '/favicon-64x64.svg' },
-        {
-          rel: 'icon',
-          sizes: '16x16',
-          type: 'image/png',
-          href: '/favicon-16x16.png',
-        },
-        {
-          rel: 'icon',
-          sizes: '32x32',
-          type: 'image/png',
-          href: '/favicon-32x32.png',
-        },
-        {
-          rel: 'icon',
-          sizes: '64x64',
-          type: 'image/png',
-          href: '/favicon-64x64.png',
-        },
-      ]}
+      // link={[
+      //   { rel: 'icon', type: 'image/png', href: '/favicon.ico' },
+      //   { rel: 'icon', type: 'image/svg+xml', href: '/favicon-64x64.svg' },
+      //   {
+      //     rel: 'icon',
+      //     sizes: '16x16',
+      //     type: 'image/png',
+      //     href: '/favicon-16x16.png',
+      //   },
+      //   {
+      //     rel: 'icon',
+      //     sizes: '32x32',
+      //     type: 'image/png',
+      //     href: '/favicon-32x32.png',
+      //   },
+      //   {
+      //     rel: 'icon',
+      //     sizes: '64x64',
+      //     type: 'image/png',
+      //     href: '/favicon-64x64.png',
+      //   },
+      // ]}
     >
       {/* Have to set HTML height manually for mobile browsers */}
       <style>{`html {height: 100%; width: 100%; margin: 0;}`}</style>

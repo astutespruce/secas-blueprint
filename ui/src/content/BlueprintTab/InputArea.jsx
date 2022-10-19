@@ -71,15 +71,19 @@ const InputArea = ({
 
     <Text as="p" sx={{ mt: '1rem', fontSize: 1 }}>
       {description}{' '}
-      {infoURL === dataURL ? (
-        <OutboundLink to={infoURL}>Learn more and access data</OutboundLink>
-      ) : (
+      {infoURL || dataURL ? (
         <>
-          <OutboundLink to={infoURL}>Learn more</OutboundLink> or{' '}
-          <OutboundLink to={dataURL}>access data</OutboundLink>
+          {infoURL === dataURL ? (
+            <OutboundLink to={infoURL}>Learn more and access data</OutboundLink>
+          ) : (
+            <>
+              <OutboundLink to={infoURL}>Learn more</OutboundLink> or{' '}
+              <OutboundLink to={dataURL}>access data</OutboundLink>
+            </>
+          )}
+          .
         </>
-      )}
-      .{' '}
+      ) : null}{' '}
       {viewerURL ? (
         <>
           More detailed information for {label} indicators is available in the{' '}

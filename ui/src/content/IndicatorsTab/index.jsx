@@ -16,8 +16,7 @@ const IndicatorsTab = ({
   inputs: rawInputs,
   indicators: rawIndicators,
   outsideSEPercent,
-  analysisAcres,
-  blueprintAcres,
+  rasterizedAcres,
 }) => {
   const { selectedIndicator, setSelectedIndicator } = useMapData()
 
@@ -102,9 +101,10 @@ const IndicatorsTab = ({
     [setSelectedIndicator]
   )
 
-  const handleCloseIndicator = useCallback(() => setSelectedIndicator(null), [
-    setSelectedIndicator,
-  ])
+  const handleCloseIndicator = useCallback(
+    () => setSelectedIndicator(null),
+    [setSelectedIndicator]
+  )
 
   if (selectedInput === null) {
     return (
@@ -119,8 +119,7 @@ const IndicatorsTab = ({
       <IndicatorDetails
         type={type}
         outsideSEPercent={outsideSEPercent}
-        analysisAcres={analysisAcres}
-        blueprintAcres={blueprintAcres}
+        rasterizedAcres={rasterizedAcres}
         onClose={handleCloseIndicator}
         input={inputIndex[selectedIndicator.split(':')[0]]}
         {...indicatorsIndex[selectedIndicator]}
@@ -129,9 +128,7 @@ const IndicatorsTab = ({
   }
 
   if (selectedInput && inputIndex[selectedInput]) {
-    const { ecosystems, label: inputLabel, indicatorDescription } = inputIndex[
-      selectedInput
-    ]
+    const { ecosystems, label: inputLabel } = inputIndex[selectedInput]
 
     return (
       <>
@@ -144,12 +141,6 @@ const IndicatorsTab = ({
         <Box>
           {ecosystems && ecosystems.length > 0 ? (
             <>
-              {indicatorDescription ? (
-                <Box
-                  sx={{ pb: '1rem', px: '1rem', fontSize: 0, color: 'grey.8' }}
-                  dangerouslySetInnerHTML={{ __html: indicatorDescription }}
-                />
-              ) : null}
               {ecosystems.map((ecosystem) => (
                 <Ecosystem
                   key={ecosystem.id}
@@ -203,7 +194,7 @@ IndicatorsTab.propTypes = {
           id: PropTypes.string.isRequired,
           label: PropTypes.string.isRequired,
           description: PropTypes.string,
-          datasetID: PropTypes.string,
+          url: PropTypes.string,
           continuous: PropTypes.bool,
           domain: PropTypes.arrayOf(PropTypes.number),
           percent: PropTypes.arrayOf(PropTypes.number),
@@ -220,16 +211,14 @@ IndicatorsTab.propTypes = {
     })
   ),
   outsideSEPercent: PropTypes.number,
-  analysisAcres: PropTypes.number,
-  blueprintAcres: PropTypes.number,
+  rasterizedAcres: PropTypes.number,
 }
 
 IndicatorsTab.defaultProps = {
   inputs: [],
   indicators: {},
   outsideSEPercent: 0,
-  analysisAcres: 0,
-  blueprintAcres: 0,
+  rasterizedAcres: 0,
 }
 
 export default IndicatorsTab

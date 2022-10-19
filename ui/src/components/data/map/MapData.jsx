@@ -8,11 +8,9 @@ import { unpackFeatureData } from './features'
 const Context = createContext()
 
 export const Provider = ({ children }) => {
-  const { values: inputValues, inputs: inputInfo } = useInputAreas()
-  const {
-    ecosystems: ecosystemInfo,
-    indicators: indicatorInfo,
-  } = useIndicators()
+  const inputs = useInputAreas()
+  const { ecosystems: ecosystemInfo, indicators: indicatorInfo } =
+    useIndicators()
 
   const [{ mapMode, data, selectedIndicator }, setState] = useState({
     mapMode: 'unit', // TODO: pixel, once supported
@@ -34,12 +32,10 @@ export const Provider = ({ children }) => {
       // transform map data
       const newData = unpackFeatureData(
         rawData,
-        inputValues,
-        inputInfo,
+        inputs,
         ecosystemInfo,
         indicatorInfo
       )
-      console.log('transformed feature data', newData)
 
       // TODO: if a different input area than indicator, set it to null
 

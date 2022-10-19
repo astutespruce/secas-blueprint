@@ -1,3 +1,5 @@
+import camelCase from 'camelcase'
+
 import {
   applyFactor,
   parsePipeEncodedValues,
@@ -117,15 +119,13 @@ const extractIndicators = (
  * Unpack encoded attributes in feature data.
  * NOTE: indicators are returned by their index within their input (e.g., southatlantic), not id.
  * @param {Object} properties
- * @param {Object} inputValues - mapping of index to input ID
- * @param {Object} inputInfo - lookup of input area info by input area id
+ * @param {Object} inputs - lookup of input area info by input area id
  * @param {Object} ecosystemInfo - array of ecosystem info
  * @param {Object} indicatorValues - mapping of index in input to indicator object
  */
 export const unpackFeatureData = (
   properties,
-  inputValues,
-  inputInfo,
+  inputs,
   ecosystemInfo,
   indicatorInfo
 ) => {
@@ -133,8 +133,13 @@ export const unpackFeatureData = (
     'unpackFeatureData',
     properties ? properties.id : 'properties are empty'
   )
+  // FIXME: remove
+  console.log(properties)
+
   const values = Object.entries(properties)
-    .map(([key, value]) => {
+    .map(([rawKey, value]) => {
+      const key = camelCase(rawKey)
+
       if (!value || typeof value !== 'string') {
         return [key, value]
       }
@@ -143,9 +148,11 @@ export const unpackFeatureData = (
         return [key, null]
       }
 
-      if (key === 'name') {
+      if (key === 'name' || key === 'inputId') {
         return [key, value]
       }
+
+      // TODO: split comma-delimited packed fields
 
       if (value.indexOf('^') !== -1) {
         return [key, parseDeltaEncodedValues(value)]
@@ -164,129 +171,37 @@ export const unpackFeatureData = (
       return prev
     }, {})
 
-  // rescale specific things from percent * 10 back to percent
-  values.blueprint = values.blueprint ? applyFactor(values.blueprint, 0.1) : []
-  values.inputs = values.inputs ? applyFactor(values.inputs, 0.1) : []
-
   // calculate area outside SE, rounded to 0 in case it is very small
   values.outsideSEPercent = 100 - sum(values.blueprint)
   if (values.outsideSEPercent < 1) {
     values.outsideSEPercent = 0
   }
 
-  values.gulf_hypoxia = values.gulf_hypoxia
-    ? applyFactor(values.gulf_hypoxia, 0.1)
-    : []
+  values.promoteBase = values.inputId === 'base'
 
-  values.fl_blueprint = values.fl_blueprint
-    ? applyFactor(values.fl_blueprint, 0.1)
-    : []
-
-  values.flm_blueprint = values.flm_blueprint
-    ? applyFactor(values.flm_blueprint, 0.1)
-    : []
-
-  values.midse_blueprint = values.midse_blueprint
-    ? applyFactor(values.midse_blueprint, 0.1)
-    : []
-
-  values.nn_priority = values.nn_priority
-    ? applyFactor(values.nn_priority, 0.1)
-    : []
-
-  values.ns_priority = values.ns_priority
-    ? applyFactor(values.ns_priority, 0.1)
-    : []
-
-  values.okchatrank = values.okchatrank
-    ? applyFactor(values.okchatrank, 0.1)
-    : []
-
-  values.txchatrank = values.txchatrank
-    ? applyFactor(values.txchatrank, 0.1)
-    : []
-
-  values.sa_blueprint = values.sa_blueprint
-    ? applyFactor(values.sa_blueprint, 0.1)
-    : []
-
-  // Transform Caribbean so that it follows same structure
-  // it will be 100% of whichever rank it is assigned; this will be
-  // corrected when used based on the amount of overlap with this input area.
-  // Array has positions 0 ... 24 to match possible priority values.
-  const carPercent = Array.from(Array(25)).map(() => 0)
-  if (values.carrank !== null && values.carrank !== undefined) {
-    carPercent[values.carrank] = 100
-    values.carrank = carPercent
-  } else {
-    values.carrank = []
-  }
-
-  // flatten inputs
-  let hasInputOverlaps = false
-  const flatInputs = {}
-  values.inputs.forEach((percent, i) => {
-    if (percent === 0) {
-      // we need i to map to the correct inputId, so we can't filter 0 percents
-      // out in advance
-      return
-    }
-    const inputIds = inputValues[i].split(',')
-    if (inputIds.length > 1) {
-      hasInputOverlaps = true
-    }
-    inputIds.forEach((id) => {
-      if (!flatInputs[id]) {
-        flatInputs[id] = { id, percent }
-      } else {
-        flatInputs[id].percent += percent
-      }
-    })
+  // rescale scaled values from percent * 10 back to percent
+  const priorityColumns = ['blueprint', 'base', 'flm', 'slrDepth']
+  priorityColumns.forEach((c) => {
+    values[c] = values[c] ? applyFactor(values[c], 0.1) : []
   })
 
-  values.inputs = Object.values(flatInputs)
-    .map(({ id, percent }) => ({
-      id,
-      percent,
-      ...inputInfo[id],
-    }))
-    .sort(
-      sortByFuncMultiple([
-        { field: 'percent', ascending: false },
-        { field: 'label', ascending: true },
-      ])
-    )
-  values.hasInputOverlaps = hasInputOverlaps
+  // Transform Caribbean so that it follows same structure
+  // It is dict-encoded percent*10
+  // Array has positions 0 ... 24 to match possible priority values.
+  if (values.car) {
+    const car = Array.from(Array(25)).map(() => 0)
+    Object.entries(values.car).forEach(([index, percent]) => {
+      car[index] = percent / 10
+    })
+    values.car = car
+  } else {
+    values.car = []
+  }
 
   // extract indicators where available
   values.indicators = {}
-  if (values.fl_indicators) {
-    values.indicators.fl = extractIndicators(
-      values.fl_indicators || {},
-      ecosystemInfo,
-      indicatorInfo.fl.indicators,
-      values.type
-    )
-  }
 
-  if (values.flm_indicators) {
-    values.indicators.flm = extractIndicators(
-      values.flm_indicators || {},
-      ecosystemInfo,
-      indicatorInfo.flm.indicators,
-      values.type
-    )
-  }
-
-  if (values.nn_indicators) {
-    values.indicators.nn = extractIndicators(
-      values.nn_indicators || {},
-      ecosystemInfo,
-      indicatorInfo.nn.indicators,
-      values.type
-    )
-  }
-
+  // FIXME:
   if (values.sa_indicators) {
     values.indicators.sa = extractIndicators(
       values.sa_indicators || {},
@@ -296,6 +211,7 @@ export const unpackFeatureData = (
     )
   }
 
+  // FIXME:
   if (values.slr) {
     values.slr = applyFactor(values.slr, 0.1)
   }
@@ -317,8 +233,6 @@ export const unpackFeatureData = (
   }
 
   // rename specific fields for easier use later
-  values.blueprintAcres = values.blueprint_total
-  values.analysisAcres = values.shape_mask
   values.unitType = values.type
   values.unitAcres = values.acres
 
