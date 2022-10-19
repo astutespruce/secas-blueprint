@@ -24,10 +24,8 @@ export const useIndicators = () => {
             indicators {
               id # note: not jsonId here due to embedded structure
               label
-              datasetID
+              url
               description
-              domain
-              continuous
               goodThreshold
               values {
                 value
@@ -39,7 +37,6 @@ export const useIndicators = () => {
       }
     }
   `)
-
   return {
     ecosystems: extractNodes(ecosystems),
     indicators: indexBy(extractNodes(indicators), 'input'),

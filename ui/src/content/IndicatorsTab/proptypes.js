@@ -13,7 +13,6 @@ export const IndicatorPropType = {
   datasetID: PropTypes.string.isRequired,
   goodThreshold: PropTypes.number,
   pixelValue: PropTypes.number,
-  avg: PropTypes.number,
   total: PropTypes.number,
   domain: PropTypes.arrayOf(PropTypes.number).isRequired,
   values: PropTypes.arrayOf(

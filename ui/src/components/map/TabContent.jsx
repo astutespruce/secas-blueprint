@@ -31,18 +31,19 @@ const TabContent = ({ tab, mapData }) => {
 
   const {
     type,
+    inputId,
     blueprint,
-    inputs,
+    corridors,
     outsideSEPercent,
     rasterizedAcres,
     indicators,
     ecosystems,
-    slrDepth,
+    slr,
     urban,
     ownership,
     protection,
     protectedAreas,
-    counties,
+    ltaSearch,
   } = mapData
 
   switch (tab) {
@@ -51,7 +52,8 @@ const TabContent = ({ tab, mapData }) => {
         <BlueprintTab
           type={type}
           blueprint={blueprint}
-          inputs={inputs}
+          corridors={corridors}
+          inputId={inputId}
           outsideSEPercent={outsideSEPercent}
           ecosystems={ecosystems}
           {...mapData}
@@ -62,7 +64,7 @@ const TabContent = ({ tab, mapData }) => {
       return (
         <IndicatorsTab
           type={type}
-          inputs={inputs}
+          inputId={inputId}
           indicators={indicators}
           outsideSEPercent={outsideSEPercent}
           rasterizedAcres={rasterizedAcres}
@@ -70,7 +72,7 @@ const TabContent = ({ tab, mapData }) => {
       )
     }
     case 'selected-threats': {
-      return <ThreatsTab unitType={type} slrDepth={slrDepth} urban={urban} />
+      return <ThreatsTab unitType={type} slr={slr} urban={urban} />
     }
     case 'selected-partners': {
       return (
@@ -79,7 +81,7 @@ const TabContent = ({ tab, mapData }) => {
           ownership={ownership}
           protection={protection}
           protectedAreas={protectedAreas}
-          counties={counties}
+          ltaSearch={ltaSearch}
         />
       )
     }

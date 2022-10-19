@@ -3,11 +3,18 @@ import PropTypes from 'prop-types'
 
 import { Box, Heading, Text } from 'theme-ui'
 
-import { useBlueprintPriorities, useInputAreas } from 'components/data'
+import {
+  useBlueprintPriorities,
+  useCorridors,
+  useInputAreas,
+} from 'components/data'
 import { OutboundLink } from 'components/link'
 import NeedHelp from 'content/NeedHelp'
+import { sum } from 'util/data'
 
 import BlueprintChart from './BlueprintChart'
+import CorridorsChart from './CorridorsChart'
+import CorridorCategories from './CorridorCategories'
 import PriorityCategories from './PriorityCategories'
 import InputArea from './InputArea'
 
@@ -84,12 +91,13 @@ const getInputPriorities = ({
 
 const BlueprintTab = ({
   blueprint,
+  corridors,
   inputId,
   outsideSEPercent,
-  promoteBase,
   ...mapData
 }) => {
   const { all: allPriorities } = useBlueprintPriorities()
+  const corridorCategories = useCorridors()
   const inputInfo = useInputAreas()[inputId]
 
   // Note: incoming priorities are in descending order but percents
@@ -120,6 +128,27 @@ const BlueprintTab = ({
     }),
   }
 
+  let hasInland = false
+  let hasMarine = false
+  if (corridors && corridors.length) {
+    hasInland = sum(corridors.slice(0, 2)) > 0
+    hasMarine = sum(corridors.slice(2, 4)) > 0
+  }
+
+  const filterCorridors = ({ value }) => {
+    // always exclude not a hub / corridor
+    if (value === 4) {
+      return false
+    }
+    if (!hasInland && value <= 1) {
+      return false
+    }
+    if (!hasMarine && value > 1) {
+      return false
+    }
+    return true
+  }
+
   return (
     <Box sx={{ py: '2rem', pl: '1rem', pr: '2rem' }}>
       <Box as="section">
@@ -142,38 +171,64 @@ const BlueprintTab = ({
         ) : null}
       </Box>
 
-      {!promoteBase ? (
-        <>
-          <Box as="section">
-            <Text
-              sx={{
-                mt: '2rem',
-                bg: 'grey.1',
-                ml: '-1rem',
-                mr: '-2rem',
-                py: '1rem',
-                pl: '1rem',
-                pr: '2rem',
-              }}
-            >
-              <Heading as="h3">Blueprint Input</Heading>
-            </Text>
+      {inputId === 'base' ? (
+        <Box as="section">
+          <Text
+            sx={{
+              mt: '2rem',
+              bg: 'grey.1',
+              ml: '-1rem',
+              mr: '-2rem',
+              py: '1rem',
+              pl: '1rem',
+              pr: '2rem',
+            }}
+          >
+            <Heading as="h3">Hubs and Corridors</Heading>
+          </Text>
 
-            <Text sx={{ fontSize: 0, color: 'grey.7', mb: '2rem' }}>
-              See{' '}
-              <OutboundLink to="https://www.sciencebase.gov/catalog/file/get/62d5816fd34e87fffb2dda77?name=Southeast_Blueprint_2022_Development_Process.pdf">
-                Blueprint development process
-              </OutboundLink>{' '}
-              for more details about how individual Blueprint inputs were
-              integrated to create the final Blueprint value.{' '}
-            </Text>
+          <CorridorsChart
+            categories={corridorCategories}
+            corridors={corridors}
+            outsideSEPercent={outsideSEPercent}
+          />
 
-            <Box sx={{ mt: '1rem' }}>
-              <InputArea {...inputData} />
-            </Box>
+          {outsideSEPercent < 100 ? (
+            <CorridorCategories
+              categories={corridorCategories.filter(filterCorridors)}
+            />
+          ) : null}
+        </Box>
+      ) : (
+        <Box as="section">
+          <Text
+            sx={{
+              mt: '2rem',
+              bg: 'grey.1',
+              ml: '-1rem',
+              mr: '-2rem',
+              py: '1rem',
+              pl: '1rem',
+              pr: '2rem',
+            }}
+          >
+            <Heading as="h3">Blueprint Input</Heading>
+          </Text>
+
+          <Text sx={{ fontSize: 0, color: 'grey.7', mb: '2rem' }}>
+            See{' '}
+            <OutboundLink to="https://www.sciencebase.gov/catalog/file/get/62d5816fd34e87fffb2dda77?name=Southeast_Blueprint_2022_Development_Process.pdf">
+              Blueprint development process
+            </OutboundLink>{' '}
+            for more details about how individual Blueprint inputs were
+            integrated to create the final Blueprint value.{' '}
+          </Text>
+
+          <Box sx={{ mt: '1rem' }}>
+            <InputArea {...inputData} />
           </Box>
-        </>
-      ) : null}
+        </Box>
+      )}
 
       <NeedHelp />
     </Box>
@@ -181,16 +236,16 @@ const BlueprintTab = ({
 }
 
 BlueprintTab.propTypes = {
-  blueprint: PropTypes.arrayOf(PropTypes.number),
   inputId: PropTypes.string.isRequired,
+  blueprint: PropTypes.arrayOf(PropTypes.number),
+  corridors: PropTypes.arrayOf(PropTypes.number),
   outsideSEPercent: PropTypes.number,
-  promoteBase: PropTypes.bool,
 }
 
 BlueprintTab.defaultProps = {
   blueprint: [],
+  corridors: [],
   outsideSEPercent: 0,
-  promoteBase: false,
 }
 
 export default BlueprintTab

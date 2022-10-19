@@ -6,16 +6,25 @@ import { Box, Text } from 'theme-ui'
 import { OutboundLink } from 'components/link'
 import { LineChart } from 'components/chart'
 
+const SLR_NODATA = [
+  'This subwatershed is not projected to be inundated by up to 10 feet.',
+  'Sea-level rise data are not available for this subwatershed.',
+  'Sea-level rise is unlikely to be a threat (inland counties).',
+]
+
 // SLR levels are in feet above current mean sea level: 0...10
 
-const SLR = ({ depth }) => {
+const SLR = ({ depth, nodata }) => {
+  if (nodata && nodata.length) {
+    for (let i = 0; i < 3; i += 1) {
+      if (nodata[i] >= 99) {
+        return <Text sx={{ color: 'grey.7' }}>{SLR_NODATA[i]}</Text>
+      }
+    }
+  }
+
   if (!(depth && depth.length)) {
-    return (
-      <Text sx={{ color: 'grey.7' }}>
-        This watershed is not impacted by up to 10 feet of projected sea level
-        rise or SLR data are not available for this area.
-      </Text>
-    )
+    return <Text sx={{ color: 'grey.7' }}>{SLR_NODATA[1]}</Text>
   }
 
   return (
@@ -68,10 +77,12 @@ const SLR = ({ depth }) => {
 
 SLR.propTypes = {
   depth: PropTypes.arrayOf(PropTypes.number),
+  nodata: PropTypes.arrayOf(PropTypes.number),
 }
 
 SLR.defaultProps = {
   depth: null,
+  nodata: null,
 }
 
 export default SLR

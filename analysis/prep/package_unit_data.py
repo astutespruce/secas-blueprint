@@ -119,11 +119,7 @@ def encode_base_blueprint(df):
 
         indicator_acres = indicator_acres.loc[total_acres > 0]
 
-        # if only 0 values are present, ignore this indicator
-        if values[0]["value"] == 0:
-            indicator_acres = indicator_acres.loc[
-                indicator_acres[indicator_acres.columns[1:]].max(axis=1) > 0
-            ]
+        # NOTE: we always keep the indicator even if only 0 values are present
 
         if len(indicator_acres) == 0:
             continue
@@ -177,9 +173,19 @@ huc12 = (
 )
 huc12["type"] = "subwatershed"
 
+### Encode center / radius as x,y,radius(miles)
 center, lta_search_radius = get_lta_search_info(
     huc12[["minx", "miny", "maxx", "maxy"]].values
 )
+center = center.round(5)
+lta_search_df = pd.DataFrame(center, index=huc12.index, columns=["x", "y"]).astype(
+    "str"
+)
+lta_search_df["miles"] = lta_search_radius.astype("str")
+lta_search = lta_search_df.apply(lambda row: ",".join(row.values), axis=1).rename(
+    "lta_search"
+)
+
 
 ### Southeast Blueprint
 # convert integer percents * 10, and pack into pipe-delimited string
@@ -311,6 +317,7 @@ protection = encode_ownership_protection(protection_results, "GAP_Sts").rename(
 huc12 = (
     huc12[["geometry", "name", "input_id", "type"]]
     .join(huc12[["acres", "rasterized_acres", "outside_se"]].round().astype("int"))
+    .join(lta_search, how="left")
     .join(blueprint, how="left")
     .join(base, how="left")
     .join(caribbean, how="left")
@@ -427,6 +434,7 @@ out = pd.concat(
 
 for col in (
     [
+        "lta_search",
         "car",
         "flm",
         "ownership",

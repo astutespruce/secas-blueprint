@@ -1,14 +1,12 @@
 import React, { useState, useCallback, useContext, createContext } from 'react'
 import PropTypes from 'prop-types'
 
-import { useInputAreas } from 'components/data/InputAreas'
 import { useIndicators } from 'components/data/Indicators'
 import { unpackFeatureData } from './features'
 
 const Context = createContext()
 
 export const Provider = ({ children }) => {
-  const inputs = useInputAreas()
   const { ecosystems: ecosystemInfo, indicators: indicatorInfo } =
     useIndicators()
 
@@ -30,12 +28,7 @@ export const Provider = ({ children }) => {
       }
 
       // transform map data
-      const newData = unpackFeatureData(
-        rawData,
-        inputs,
-        ecosystemInfo,
-        indicatorInfo
-      )
+      const newData = unpackFeatureData(rawData, ecosystemInfo, indicatorInfo)
 
       // TODO: if a different input area than indicator, set it to null
 

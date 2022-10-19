@@ -6,7 +6,6 @@ import {
   parseDeltaEncodedValues,
   parseDictEncodedValues,
   indexBy,
-  sortByFuncMultiple,
   sum,
 } from 'util/data'
 
@@ -47,17 +46,16 @@ const extractIndicators = (
       const percents = present ? applyFactor(packedPercents[i], 0.1) : []
 
       // merge percent into values
-      const values = valuesInfo.map(({ value, ...valueInfo }) => ({
-        value,
-        ...valueInfo,
-        percent: present ? percents[value] : 0,
+      const values = valuesInfo.map((value, j) => ({
+        ...value,
+        percent: present ? percents[j] : 0,
       }))
 
       return {
         percent: percents,
         ...indicator,
         values,
-        total: sum(values.map(({ percent: p }) => p)),
+        total: Math.min(sum(percents), 100),
         ecosystem: ecosystemIndex[indicator.id.split(':')[1].split('_')[0]],
       }
     }
@@ -123,18 +121,11 @@ const extractIndicators = (
  * @param {Object} ecosystemInfo - array of ecosystem info
  * @param {Object} indicatorValues - mapping of index in input to indicator object
  */
-export const unpackFeatureData = (
-  properties,
-  inputs,
-  ecosystemInfo,
-  indicatorInfo
-) => {
+export const unpackFeatureData = (properties, ecosystemInfo, indicatorInfo) => {
   console.log(
     'unpackFeatureData',
     properties ? properties.id : 'properties are empty'
   )
-  // FIXME: remove
-  console.log(properties)
 
   const values = Object.entries(properties)
     .map(([rawKey, value]) => {
@@ -151,8 +142,6 @@ export const unpackFeatureData = (
       if (key === 'name' || key === 'inputId') {
         return [key, value]
       }
-
-      // TODO: split comma-delimited packed fields
 
       if (value.indexOf('^') !== -1) {
         return [key, parseDeltaEncodedValues(value)]
@@ -177,10 +166,16 @@ export const unpackFeatureData = (
     values.outsideSEPercent = 0
   }
 
-  values.promoteBase = values.inputId === 'base'
-
   // rescale scaled values from percent * 10 back to percent
-  const priorityColumns = ['blueprint', 'base', 'flm', 'slrDepth']
+  const priorityColumns = [
+    'blueprint',
+    'corridors',
+    'base',
+    'flm',
+    'slrDepth',
+    'slrNodata',
+    'urban',
+  ]
   priorityColumns.forEach((c) => {
     values[c] = values[c] ? applyFactor(values[c], 0.1) : []
   })
@@ -201,23 +196,13 @@ export const unpackFeatureData = (
   // extract indicators where available
   values.indicators = {}
 
-  // FIXME:
-  if (values.sa_indicators) {
-    values.indicators.sa = extractIndicators(
-      values.sa_indicators || {},
+  if (values.baseIndicators) {
+    values.indicators.base = extractIndicators(
+      values.baseIndicators || {},
       ecosystemInfo,
-      indicatorInfo.sa.indicators,
+      indicatorInfo.base.indicators,
       values.type
     )
-  }
-
-  // FIXME:
-  if (values.slr) {
-    values.slr = applyFactor(values.slr, 0.1)
-  }
-
-  if (values.urban) {
-    values.urban = applyFactor(values.urban, 0.1)
   }
 
   if (values.ownership) {
@@ -232,9 +217,20 @@ export const unpackFeatureData = (
     })
   }
 
+  if (values.ltaSearch) {
+    values.ltaSearch = values.ltaSearch.split(',').map((v) => parseFloat(v))
+  } else {
+    values.ltaSearch = null
+  }
+
   // rename specific fields for easier use later
   values.unitType = values.type
   values.unitAcres = values.acres
+
+  values.slr = {
+    depth: values.slrDepth || [],
+    nodata: values.slrNodata || [],
+  }
 
   return values
 }
