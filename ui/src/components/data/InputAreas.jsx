@@ -36,7 +36,7 @@ export const useInputAreas = () => {
   // set color for non-priority Caribbean values
   inputs.car.values = inputs.car.values.map(({ color, ...rest }) => ({
     ...rest,
-    color: '#ffebc2',
+    color: color || '#ffebc2',
   }))
 
   return inputs

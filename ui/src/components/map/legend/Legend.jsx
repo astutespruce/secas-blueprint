@@ -32,7 +32,7 @@ const Legend = ({ isVisible, onToggleVisibility }) => {
         bg: '#FFF',
         pointerEvents: 'auto',
         cursor: 'pointer',
-        bottom: ['40px', '40px', '24px'],
+        bottom: ['40px', '40px', '40px', '24px'],
         right: '10px',
         borderRadius: '0.25rem',
         boxShadow: '2px 2px 6px #333',

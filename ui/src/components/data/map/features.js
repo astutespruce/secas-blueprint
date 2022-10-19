@@ -122,10 +122,10 @@ const extractIndicators = (
  * @param {Object} indicatorValues - mapping of index in input to indicator object
  */
 export const unpackFeatureData = (properties, ecosystemInfo, indicatorInfo) => {
-  console.log(
-    'unpackFeatureData',
-    properties ? properties.id : 'properties are empty'
-  )
+  // console.log(
+  //   'unpackFeatureData',
+  //   properties ? properties.id : 'properties are empty'
+  // )
 
   const values = Object.entries(properties)
     .map(([rawKey, value]) => {
@@ -161,7 +161,7 @@ export const unpackFeatureData = (properties, ecosystemInfo, indicatorInfo) => {
     }, {})
 
   // calculate area outside SE, rounded to 0 in case it is very small
-  values.outsideSEPercent = 100 - sum(values.blueprint)
+  values.outsideSEPercent = (100 * values.outsideSe) / values.rasterizedAcres
   if (values.outsideSEPercent < 1) {
     values.outsideSEPercent = 0
   }

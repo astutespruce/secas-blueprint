@@ -194,8 +194,6 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
 
         total_slr_acres = slr_acres.sum(axis=1)
 
-        has_slr = slr_acres[:, :11].sum(axis=1) > 0
-
         slr_nodata_acres = df.rasterized_acres - df.outside_se - total_slr_acres
 
         # combine areas not modeled with SLR nodata areas
@@ -213,8 +211,8 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
         index=df.index,
     )
 
-    # only calculate projections where there is data [:11]
-    ix = slr.loc[slr[depth_cols].sum(axis=1) > 0].index
+    # only calculate projections where there is data [:12]
+    ix = slr.loc[slr[depth_cols + ["not_inundated"]].sum(axis=1) > 0].index.values
     subset = df.loc[ix]
 
     proj = gp.read_feather(proj_filename)
@@ -228,7 +226,7 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
             "proj": proj.index.values.take(left),
             "proj_geometry": proj.geometry.values.data.take(left),
         },
-        index=df.index.values.take(right),
+        index=subset.index.values.take(right),
     ).join(proj[SLR_PROJ_COLUMNS], on="proj")
 
     tmp["intersection_area"] = pg.area(

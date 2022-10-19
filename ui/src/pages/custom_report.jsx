@@ -22,8 +22,9 @@ const CustomReportPage = ({
         url: 'https://www.flickr.com/photos/usfwssoutheast/26871026541/',
       }}
       caption="Black Skimmers"
-      height="10rem"
-      maxHeight="10rem"
+      height="14rem"
+      maxHeight="14rem"
+      minHeight="14rem"
     />
 
     <UploadContainer />
