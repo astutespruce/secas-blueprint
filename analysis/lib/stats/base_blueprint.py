@@ -141,16 +141,20 @@ def extract_base_blueprint_by_mask(
         * cellsize
     )
 
-    # only keep the ones that are present
-    corridors = [
-        {
-            **e,
-            "acres": corridor_acres[i],
-            "percent": 100 * corridor_acres[i] / rasterized_acres,
-        }
-        for i, e in enumerate(pluck(CORRIDORS, ["label"]))
-        if corridor_acres[i]
-    ]
+    # if no hubs / corridors are present, return empty list; 4 is not hub / corridor
+    if corridor_acres[:4].max() > 0:
+        # only keep the ones that are present
+        corridors = [
+            {
+                **e,
+                "acres": corridor_acres[i],
+                "percent": 100 * corridor_acres[i] / rasterized_acres,
+            }
+            for i, e in enumerate(pluck(CORRIDORS, ["label"]))
+            if corridor_acres[i]
+        ]
+    else:
+        corridors = []
 
     ### for each indicator present, merge indicator info with acres
     indicators_present = detect_indicators_by_mask(
@@ -418,16 +422,20 @@ def get_base_blueprint_unit_results(results_dir, unit_id, rasterized_acres):
 
     corridor_cols = [c for c in base_results if c.startswith("corridors_")]
     corridor_acres = unit[corridor_cols].values
-    # only keep the ones that are present
-    corridors = [
-        {
-            **e,
-            "acres": corridor_acres[i],
-            "percent": 100 * corridor_acres[i] / rasterized_acres,
-        }
-        for i, e in enumerate(pluck(CORRIDORS, ["label"]))
-        if corridor_acres[i]
-    ]
+
+    if corridor_acres[:4].max() > 0:
+        # only keep the ones that are present
+        corridors = [
+            {
+                **e,
+                "acres": corridor_acres[i],
+                "percent": 100 * corridor_acres[i] / rasterized_acres,
+            }
+            for i, e in enumerate(pluck(CORRIDORS, ["label"]))
+            if corridor_acres[i]
+        ]
+    else:
+        corridors = []
 
     # only check areas of indicators actually present in summaries for unit type
     check_indicators = [

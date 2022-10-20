@@ -31,8 +31,7 @@ const SEO = ({ title: rawTitle }) => {
       <meta name="twitter:description" content={description} />
       <meta name="twitter:card" content="summary" />
       <meta name="twitter:creator" content={author} />
-      {/* TODO: add icons */}
-      {/* <link rel="icon" type="image/png" href="/favicon.ico" />
+      <link rel="icon" type="image/png" href="/favicon.ico" />
       <link rel="icon" type="image/svg+xml" href="/favicon-64x64.svg" />
       <link
         rel="icon"
@@ -51,7 +50,7 @@ const SEO = ({ title: rawTitle }) => {
         type="image/png"
         sizes="64x64"
         href="/favicon-64x64.png"
-      /> */}
+      />
 
       {/* Have to set HTML height manually for mobile browsers */}
       <style>{`html {height: 100%; width: 100%; margin: 0;}`}</style>

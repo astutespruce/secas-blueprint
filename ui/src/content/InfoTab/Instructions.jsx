@@ -112,9 +112,10 @@ const DesktopInstructions = () => (
       Subwatershed and marine lease block details:
     </Heading>
     <Paragraph sx={{ mt: '0.25rem' }}>
-      Choose <b>Summary data</b> from the button bar above the map. Click on any
-      subwatershed or marine lease block for details. You may need to zoom in
-      futher to select an area.
+      {/* TODO: */}
+      {/* Choose <b>Summary data</b> from the button bar above the map.  */}
+      Click on any subwatershed or marine lease block for details. You may need
+      to zoom in futher to select an area.
       <br />
       <br />
       Use the tabs in the sidebar to navigate the different types of summary
@@ -127,7 +128,8 @@ const DesktopInstructions = () => (
       <br />
       You can download a detailed PDF report of the Blueprint, underlying
       indicators, and landscape-level threats for your area of interest. Click
-      the &quot;Create summary report&quot; link below the area name.
+      the &quot;Export detailed maps and analysis&quot; link below the area
+      name.
       <br />
       <br />
       To unselect the area, click on the <CloseButton /> button in the upper

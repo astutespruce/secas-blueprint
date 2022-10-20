@@ -17,15 +17,16 @@ const Intro = () => (
         partner input, and information about on-the-ground conditions.
         <br />
         <br />
-        For more information visit the{' '}
+        For more information, visit the{' '}
         <OutboundLink to="https://secassoutheast.org/blueprint">
-          {' '}
           Blueprint webpage
-        </OutboundLink>{' '}
-        or view and download the Blueprint data and make maps on the{' '}
+        </OutboundLink>
+        . To view the Blueprint data and make maps, visit the{' '}
         <OutboundLink to="https://secas-fws.hub.arcgis.com/pages/blueprint">
           Blueprint page of the SECAS Atlas
         </OutboundLink>
+        . For more information, visit the or view and download the Blueprint
+        data and make maps on the
         <br />
         <br />
         The <b>Southeast Conservation Blueprint Explorer</b> summarizes the

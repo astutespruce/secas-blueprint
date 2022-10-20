@@ -21,5 +21,3 @@ correct; they are masked out in areas covered by protected areas within PAD-US.
 
 To get around this, we merged in NLCD 2019 prepared for use in this tool; see
 `source_data/nlcd/README.md`.
-
-# TODO: citation

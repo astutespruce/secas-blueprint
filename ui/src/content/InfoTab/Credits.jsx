@@ -4,13 +4,14 @@ import { Box, Text } from 'theme-ui'
 import { OutboundLink } from 'components/link'
 
 const Credits = () => (
-  <Box as="section" sx={{ pb: '2rem' }}>
+  <Box as="section">
     <Text as="p" sx={{ fontSize: 1 }}>
       <b>Citation:</b> Southeast Conservation Adaptation Strategy (SECAS). 2022.
       Southeast Conservation Blueprint 2022.{' '}
       <OutboundLink to="http://secassoutheast.org/blueprint">
         http://secassoutheast.org/blueprint
       </OutboundLink>
+      .
       <br />
       <br />
       This application was developed by{' '}

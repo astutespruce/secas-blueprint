@@ -117,6 +117,10 @@ def extract_urban_by_mask(
     urban_2060_acres = urban_results[5]["acres"]
     noturban_2100_acres = urban_acres[0]  # set to 2100 by last loop
 
+    # if nothing is urban or projected to urbanize by 2100, return None
+    if urban_acres[1:].max() == 0:
+        return None
+
     results = {
         "entries": urban_results,
         "total_urban_acres": total_urban_acres,
@@ -204,6 +208,10 @@ def summarize_urban_by_units_grid(df, units_grid, out_dir):
 
     urban["noturban_2100"] = urban_acres[:, 0]  # set to 2100 by last loop
     urban["outside_urban"] = outside_urban_acres
+
+    # if nothing is urban / projected to urbanize by 2100, return None
+    if urban_acres[:, 1:].max() == 0:
+        return None
 
     urban.reset_index().to_feather(out_dir / "urban.feather")
 

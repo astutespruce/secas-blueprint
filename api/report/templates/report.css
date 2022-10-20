@@ -10,6 +10,7 @@ body {
 @page {
   size: letter;
   margin: 1in 0.5in 0.5in;
+  font-family: 'Source Sans Pro', sans-serif;
 
   @top-left {
     content: '{{title}} {{subtitle}}';
@@ -24,9 +25,9 @@ body {
   }
 
   @bottom-right {
+    content: 'Page ' counter(page) ' of ' counter(pages);
     font-size: 10pt;
     color: #666;
-    content: 'Page ' counter(page) ' of ' counter(pages);
     text-align: right;
   }
 }
@@ -538,11 +539,7 @@ img.logo {
   line-height: 1;
 }
 
-.north-arrow-container > div:first-of-type {
-  margin-left: 0.25pt;
-}
-
 .north-arrow {
-  font-size: 1.5rem;
-  transform: rotate(-90deg);
+  width: 16px;
+  height: 29px;
 }
