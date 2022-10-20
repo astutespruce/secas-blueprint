@@ -16,7 +16,15 @@ const BoundModal = ({ anchorNode, children, title }) => {
 
   return (
     <>
-      <span onClick={handleOpen}>{anchorNode}</span>
+      <span
+        onClick={handleOpen}
+        onKeyPress={handleOpen}
+        role="button"
+        aria-label={`toggle button for ${title} popup`}
+        tabIndex="0"
+      >
+        {anchorNode}
+      </span>
 
       {isOpen ? (
         <Modal title={title} onClose={handleClose}>

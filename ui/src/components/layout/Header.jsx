@@ -1,5 +1,5 @@
 import React from 'react'
-import { Flex, Heading, Text } from 'theme-ui'
+import { Flex, Heading } from 'theme-ui'
 
 import { Link } from 'components/link'
 import { useMapData } from 'components/data'
@@ -40,6 +40,7 @@ const Header = () => {
           >
             <Link
               to="/"
+              tabIndex="0"
               sx={{
                 textDecoration: 'none !important',
                 display: 'block',

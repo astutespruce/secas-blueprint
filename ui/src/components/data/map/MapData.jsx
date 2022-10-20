@@ -38,6 +38,7 @@ export const Provider = ({ children }) => {
       }))
     },
     // intentionally ignores dependencies
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
     []
   )
 

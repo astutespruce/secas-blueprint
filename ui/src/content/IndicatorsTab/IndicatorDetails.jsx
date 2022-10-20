@@ -149,7 +149,7 @@ const IndicatorDetails = ({
 
         <Box sx={{ mt: '2rem' }}>
           To learn more and explore the GIS data,{' '}
-          <OutboundLink to="{{indicator.url}}">
+          <OutboundLink to={url}>
             view this indicator in the SECAS Atlas
           </OutboundLink>
           .

@@ -60,12 +60,10 @@ const Layout = ({ children, overflowY }) => {
 
 Layout.propTypes = {
   children: PropTypes.node.isRequired,
-  title: PropTypes.string,
   overflowY: PropTypes.string,
 }
 
 Layout.defaultProps = {
-  title: '',
   overflowY: 'auto',
 }
 

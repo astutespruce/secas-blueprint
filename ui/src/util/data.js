@@ -43,6 +43,7 @@ export const resolveKey = (item, key) => {
 export const groupBy = (data, groupField) =>
   data.reduce((prev, d) => {
     const key = resolveKey(d, groupField)
+    /* eslint-disable-next-line no-param-reassign */
     prev[key] = (prev[key] || []).concat([d])
     return prev
   }, {})

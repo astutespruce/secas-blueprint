@@ -118,15 +118,6 @@ module.exports = {
       background: 'none',
       color: 'grey.2',
     },
-    header: {
-      cursor: 'pointer',
-      border: '1px solid #FFF',
-      p: '0.25em 0.5em',
-      marginLeft: '1rem',
-      '&:hover': {
-        bg: '#335d80', // darkened primary
-      },
-    },
   },
   forms: {
     input: {
@@ -159,7 +150,7 @@ module.exports = {
   tabs: {
     default: {
       cursor: 'pointer',
-      color: 'grey.7',
+      color: 'grey.9',
       bg: 'grey.1',
       borderBottom: '1px solid',
       borderBottomColor: 'grey.7',

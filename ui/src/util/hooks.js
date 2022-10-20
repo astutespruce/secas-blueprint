@@ -32,6 +32,7 @@ const isSetEqual = (setA, setB) => {
  * @param {any} value
  */
 export const memoizedIsEqual = (value) => {
+  /* eslint-disable-next-line react-hooks/rules-of-hooks */
   const ref = useRef(null)
 
   if (value instanceof Set) {
@@ -74,19 +75,18 @@ export const useIsEqualLayoutEffect = (callback, dependencies) => {
  * @param {function} callback
  * @param {Array} dependencies
  */
-export const useIsEqualMemo = (callback, dependencies) => {
-  return useMemo(
-    callback,
-    dependencies.map((d) => memoizedIsEqual(d))
-  )
-}
 
-export const useIsEqualCallback = (callback, dependencies) => {
-  return useCallback(
+export const useIsEqualMemo = (callback, dependencies) =>
+  useMemo(
     callback,
     dependencies.map((d) => memoizedIsEqual(d))
   )
-}
+
+export const useIsEqualCallback = (callback, dependencies) =>
+  useCallback(
+    callback,
+    dependencies.map((d) => memoizedIsEqual(d))
+  )
 
 /**
  * Function that is triggered on mount of component in UI.  Useful for handling

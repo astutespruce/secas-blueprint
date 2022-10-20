@@ -4,13 +4,7 @@ import { Flex, Box, Text, Progress } from 'theme-ui'
 
 import { formatPercent } from 'util/format'
 
-const IndicatorPercentChart = ({
-  value,
-  label,
-  percent,
-  percentSuffix,
-  color,
-}) => (
+const IndicatorPercentChart = ({ label, percent, percentSuffix, color }) => (
   <Box sx={{ flex: '1 1 auto' }}>
     <Flex
       sx={{
@@ -29,7 +23,6 @@ const IndicatorPercentChart = ({
 )
 
 IndicatorPercentChart.propTypes = {
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]), // if null, is remainder value
   label: PropTypes.string.isRequired,
   percent: PropTypes.number.isRequired,
   percentSuffix: PropTypes.string,
@@ -37,7 +30,6 @@ IndicatorPercentChart.propTypes = {
 }
 
 IndicatorPercentChart.defaultProps = {
-  value: null,
   percentSuffix: '',
   color: 'grey.8',
 }
