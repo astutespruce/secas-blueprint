@@ -38,7 +38,7 @@ colormap = {
 
 start = time()
 
-bnd_dir = Path("data/boundaries")
+bnd_dir = Path("data/inputs/boundaries")
 src_dir = Path("source_data/urban")
 nlcd_dir = Path("data/inputs/nlcd")
 out_dir = Path("data/inputs/threats/urban")

@@ -72,11 +72,56 @@ def create_tileset(infilename, outfilename, minzoom, maxzoom, layer_id, col_type
     ret.check_returncode()
 
 
+### Create state tileset (all states)
+print(
+    "\n\n------------------------------------------------\nCreating state tiles\n------------------------------------------------\n"
+)
+df = read_dataframe(
+    "zip://source_data/boundaries/tl_2021_us_state.zip/tl_2021_us_state.shp",
+    columns=["STATEFP"],
+).to_crs(GEO_CRS)
+
+infilename = tmp_dir / "states.fgb"
+write_dataframe(df, infilename)
+
+create_tileset(
+    infilename,
+    out_dir / "states.mbtiles",
+    minzoom=0,
+    maxzoom=5,
+    layer_id="states",
+    col_types=get_col_types(df),
+)
+
+### Create ownership tiles
+print(
+    "\n\n------------------------------------------------\nCreating protected areas tiles\n------------------------------------------------\n"
+)
+df = gp.read_feather(
+    data_dir / "inputs/boundaries/ownership.feather",
+    columns=["geometry", "Own_Type", "GAP_Sts"],
+).to_crs(GEO_CRS)
+
+infilename = tmp_dir / "ownership.fgb"
+write_dataframe(df, infilename)
+
+create_tileset(
+    infilename,
+    out_dir / "se_ownership.mbtiles",
+    minzoom=0,
+    maxzoom=15,
+    layer_id="ownership",
+    col_types=get_col_types(df),
+)
+
+
+######### Create combined tileset for summary units, boundary, mask for frontend
 tilesets = []
 
-
 ### Prepare boundary and inverse mask
-print("Creating boundary and mask tiles")
+print(
+    "\n\n------------------------------------------------\nCreating boundary and mask tiles\n------------------------------------------------\n"
+)
 bnd_df = gp.read_feather(data_dir / "inputs/boundaries/se_boundary.feather").to_crs(
     GEO_CRS
 )
@@ -97,51 +142,6 @@ write_dataframe(gp.GeoDataFrame({"geometry": mask}, index=[0], crs=GEO_CRS), inf
 
 outfilename = tmp_dir / "se_mask.mbtiles"
 create_tileset(infilename, outfilename, minzoom=0, maxzoom=8, layer_id="mask")
-tilesets.append(outfilename)
-
-### Create state tileset (all states)
-print(
-    "\n\n------------------------------------------------\nCreating state tiles\n------------------------------------------------\n"
-)
-df = read_dataframe(
-    "source_data/boundaries/tl_2021_us_state/tl_2021_us_state.shp", columns=["STATEFP"]
-).to_crs(GEO_CRS)
-
-infilename = tmp_dir / "states.fgb"
-write_dataframe(df, infilename)
-
-outfilename = tmp_dir / "states.mbtiles"
-create_tileset(
-    infilename,
-    outfilename,
-    minzoom=0,
-    maxzoom=5,
-    layer_id="states",
-    col_types=get_col_types(df),
-)
-tilesets.append(outfilename)
-
-### Create ownership tiles
-print(
-    "\n\n------------------------------------------------\nCreating protected areas tiles\n------------------------------------------------\n"
-)
-df = gp.read_feather(
-    data_dir / "inputs/boundaries/ownership.feather",
-    columns=["geometry", "Own_Type", "GAP_Sts"],
-).to_crs(GEO_CRS)
-
-infilename = tmp_dir / "ownership.fgb"
-write_dataframe(df, infilename)
-
-outfilename = tmp_dir / "ownership.mbtiles"
-create_tileset(
-    infilename,
-    outfilename,
-    minzoom=0,
-    maxzoom=15,
-    layer_id="ownership",
-    col_types=get_col_types(df),
-)
 tilesets.append(outfilename)
 
 
@@ -167,7 +167,7 @@ tilesets.append(outfilename)
 
 ### Merge tiles
 print(
-    "\n\n------------------------------------------------\nMerging tilesets\n------------------------------------------------\n"
+    "\n\n------------------------------------------------\nMerging summary units, boundary, mask\n------------------------------------------------\n"
 )
 
 

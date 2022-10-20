@@ -18,7 +18,7 @@ NODATA = 255
 start = time()
 
 # use secas-blueprint boundaries
-bnd_dir = Path("data/boundaries")
+bnd_dir = Path("data/inputs/boundaries")
 src_dir = Path("source_data/nlcd")
 out_dir = Path("data/inputs/nlcd")
 tmp_dir = Path("/tmp")

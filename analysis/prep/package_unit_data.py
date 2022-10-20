@@ -259,27 +259,32 @@ slr_nodata = encode_values(
     slr_results[SLR_NODATA_COLS], huc12.rasterized_acres.loc[slr_results.index], 1000
 ).rename("slr_nodata")
 
-### SLR scenario projections
-# delta encode feet * 10 (1 decimal place) by ascending scenario; scenarios
-# are comma-delimited
-proj_results = None
-# div is just so we can reuse delta encoding logic and divide everything by 1
-slr_proj_results = slr_results.dropna()
-div = np.ones((len(slr_proj_results),))
-for scenario in SLR_PROJ_SCENARIOS:
-    proj_cols = [f"{year}_{scenario}" for year in SLR_YEARS]
-    proj = delta_encode_values(slr_proj_results[proj_cols], div, 10).rename(
-        f"slr_proj_{scenario}"
-    )
+# ### SLR scenario projections
+# # TODO: not currently used
+# # delta encode feet * 10 (1 decimal place) by ascending scenario; scenarios
+# # are comma-delimited
+# proj_results = None
+# # div is just so we can reuse delta encoding logic and divide everything by 1
+# slr_proj_results = slr_results.dropna()
+# div = np.ones((len(slr_proj_results),))
+# for scenario in SLR_PROJ_SCENARIOS:
+#     proj_cols = [f"{year}_{scenario}" for year in SLR_YEARS]
+#     proj = delta_encode_values(slr_proj_results[proj_cols], div, 10).rename(
+#         f"slr_proj_{scenario}"
+#     )
 
-    if proj_results is None:
-        proj_results = pd.DataFrame(proj)
-    else:
-        proj_results = proj_results.join(proj)
+#     if proj_results is None:
+#         proj_results = pd.DataFrame(proj)
+#     else:
+#         proj_results = proj_results.join(proj)
 
-slr_proj = proj_results.apply(lambda row: ",".join(row), axis=1).rename("slr_proj")
+# slr_proj = proj_results.apply(lambda row: ",".join(row), axis=1).rename("slr_proj")
 
-slr = pd.DataFrame(slr_depth).join(slr_nodata).join(slr_proj)
+# slr = pd.DataFrame(slr_depth).join(slr_nodata).join(slr_proj)
+
+
+slr = pd.DataFrame(slr_depth).join(slr_nodata)
+
 
 ### Urban
 # delta encode urban 2019 and future projections

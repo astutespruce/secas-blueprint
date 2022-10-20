@@ -150,7 +150,7 @@ with rasterio.open(src_dir / "blueprint/BaseBlueprintExtent2022.tif") as src:
         shapes, data.shape, transform=transform, dtype="uint8", fill=0, default_value=1
     )
 
-    outfilename = bnd_dir / "nonmarine_mask.tif"
+    outfilename = out_dir / "nonmarine_mask.tif"
     write_raster(
         outfilename,
         nonmarine_mask,

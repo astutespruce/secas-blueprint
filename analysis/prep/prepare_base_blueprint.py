@@ -218,7 +218,9 @@ for tif, indicator in indicators.items():
                 print("Clipping to inland mask")
 
                 if inland_mask is None:
-                    with rasterio.open(bnd_dir / "nonmarine_mask.tif") as mask_src:
+                    with rasterio.open(
+                        data_dir / "inputs/boundaries/nonmarine_mask.tif"
+                    ) as mask_src:
                         inland_mask = mask_src.read(1)
 
                 data = np.where(inland_mask == 1, data, NODATA)
