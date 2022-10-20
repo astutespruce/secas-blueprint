@@ -35,6 +35,7 @@ from api.settings import (
     API_TOKEN,
     API_SECRET,
     TEMP_DIR,
+    ENABLE_CORS,
     ALLOWED_ORIGINS,
     SENTRY_DSN,
 )
@@ -76,15 +77,13 @@ async def catch_exceptions_middleware(request: Request, call_next):
         return Response("Internal server error", status_code=500)
 
 
-# Enable CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["*"],
-)
+if ENABLE_CORS:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=ALLOWED_ORIGINS,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 
 def get_token(token: str = Security(APIKeyQuery(name="token", auto_error=True))):
