@@ -30,8 +30,10 @@ const Intro = () => (
         <br />
         The <b>Southeast Conservation Blueprint Explorer</b> summarizes the
         Blueprint priorities and supporting information within subwatersheds and
-        marine lease blocks as well as pixel-level details of what indicators
-        are driving the Blueprint priorities.
+        marine lease blocks. Pixel-level functionality coming soon!
+        {/* TODO: */}
+        {/* as well as pixel-level details of what indicators
+        are driving the Blueprint priorities. */}
       </p>
     </Box>
   </>

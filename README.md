@@ -1,7 +1,7 @@
 # SECAS Southeast Conservation Blueprint Explorer
 
 This application provides a simple user interface for exploring the
-[SECAS Southeast Conservation Blueprint](http://secassoutheast.org/blueprint.html).
+[SECAS Southeast Conservation Blueprint](http://secassoutheast.org/blueprint).
 
 This tool is available at
 [https://blueprint.geoplatform.gov/southeast/](https://blueprint.geoplatform.gov/southeast/).

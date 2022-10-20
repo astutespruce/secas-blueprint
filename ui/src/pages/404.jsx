@@ -5,7 +5,7 @@ import { Box, Flex, Heading } from 'theme-ui'
 import { convertToBgImage } from 'gbimage-bridge'
 import BackgroundImage from 'gatsby-background-image'
 
-import { Layout } from 'components/layout'
+import { Layout, SEO } from 'components/layout'
 import { hasWindow } from 'util/dom'
 
 const NotFoundPage = ({
@@ -21,7 +21,7 @@ const NotFoundPage = ({
   }
 
   return (
-    <Layout title="404: Not found">
+    <Layout>
       <BackgroundImage
         {...convertToBgImage(image)}
         style={{
@@ -81,3 +81,5 @@ NotFoundPage.propTypes = {
 }
 
 export default NotFoundPage
+
+export const Head = () => <SEO title="Not Found" />

@@ -45,7 +45,7 @@ const Footer = () => {
       }}
     >
       <Box sx={{ mr: '0.5em' }}>
-        <OutboundLink to="http://secassoutheast.org/blueprint.html">
+        <OutboundLink to="http://secassoutheast.org/blueprint">
           <Flex sx={{ alignItems: 'center', px: '0.5em' }}>
             <ExternalLinkAlt size="1em" style={{ marginRight: '0.5em' }} />
             <Text>Blueprint webpage</Text>
