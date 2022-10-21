@@ -4,6 +4,8 @@ require('dotenv').config({
 
 const theme = require('./src/theme')
 
+const rootPath = process.env.SITE_ROOT_PATH || `/`
+
 module.exports = {
   siteMetadata: {
     siteUrl: process.env.SITE_URL || `https://localhost`,
@@ -25,7 +27,7 @@ module.exports = {
     DEV_SSR: false, // appears to throw '"filePath" is not allowed to be empty' when true
     PARALLEL_SOURCING: process.env.NODE_ENV !== `production`, // uses a lot of memory on server
   },
-  pathPrefix: process.env.SITE_ROOT_PATH || `/`,
+  pathPrefix: rootPath,
   plugins: [
     {
       resolve: `gatsby-plugin-google-gtag`,
@@ -92,8 +94,10 @@ module.exports = {
     {
       resolve: 'gatsby-plugin-robots-txt',
       options: {
-        policy: [{ userAgent: '*', disallow: ['/services', '/api'] }],
+        host: process.env.SITE_URL || `https://localhost`,
+        policy: [{ userAgent: '*', disallow: ['/services', '*/api/*'] }],
       },
     },
+    `gatsby-plugin-sitemap`,
   ],
 }
