@@ -80,6 +80,7 @@
       "id": "base:freshwater_imperiledaquaticspecies",
       "filename": "ImperiledAquaticSpecies.tif",
       "label": "Imperiled aquatic species",
+      "captionLabel": "imperiled aquatic species",
       "values": [
         {
           "value": 0,
@@ -168,6 +169,7 @@
       "id": "base:freshwater_naturallandcoverinfloodplains",
       "filename": "NaturalLandcoverInFloodplains.tif",
       "label": "Natural landcover in floodplains",
+      "captionLabel": "natural landcover in floodplains",
       "values": [
         {
           "value": 1,
@@ -203,6 +205,7 @@
       "id": "base:freshwater_networkcomplexity",
       "filename": "NetworkComplexity.tif",
       "label": "Network complexity",
+      "captionLabel": "network complexity",
       "values": [
         {
           "value": 1,
@@ -248,6 +251,7 @@
       "id": "base:freshwater_permeablesurface",
       "filename": "PermeableSurface.tif",
       "label": "Permeable surface",
+      "captionLabel": "permeable surface",
       "values": [
         {
           "value": 1,
@@ -312,6 +316,7 @@
       "id": "base:land_equitableaccesstopotentialparks",
       "filename": "EquitableAccessToPotentialParks.tif",
       "label": "Equitable access to potential parks",
+      "captionLabel": "equitable access to potential parks",
       "values": [
         {
           "value": 1,
@@ -336,6 +341,7 @@
       "id": "base:land_firefrequency",
       "filename": "FireFrequency.tif",
       "label": "Fire frequency",
+      "captionLabel": "fire frequency",
       "values": [
         {
           "value": 0,
@@ -400,6 +406,7 @@
       "id": "base:land_greenwaysandtrails",
       "filename": "GreenwaysAndTrails.tif",
       "label": "Greenways & trails",
+      "captionLabel": "greenways & trails",
       "values": [
         {
           "value": 1,
@@ -445,6 +452,7 @@
       "id": "base:land_intacthabitatcores",
       "filename": "IntactHabitatCores.tif",
       "label": "Intact habitat cores",
+      "captionLabel": "intact habitat cores",
       "values": [
         {
           "value": 0,
@@ -475,6 +483,7 @@
       "id": "base:land_interiorsoutheastgrasslands",
       "filename": "InteriorSoutheastGrasslands.tif",
       "label": "Interior Southeast grasslands",
+      "captionLabel": "Interior Southeast grasslands",
       "values": [
         {
           "value": 0,
@@ -634,6 +643,7 @@
       "id": "base:land_playas",
       "filename": "Playas.tif",
       "label": "Playas",
+      "captionLabel": "playas",
       "values": [
         {
           "value": 1,
@@ -659,6 +669,7 @@
       "id": "base:land_resilientterrestrialsites",
       "filename": "ResilientTerrestrialSites.tif",
       "label": "Resilient terrestrial sites",
+      "captionLabel": "resilient terrestrial sites",
       "values": [
         {
           "value": 0,
@@ -792,6 +803,7 @@
       "id": "base:land_urbanparksize",
       "filename": "UrbanParkSize.tif",
       "label": "Urban park size",
+      "captionLabel": "urban park size",
       "values": [
         {
           "value": 1,
@@ -1018,6 +1030,7 @@
       "id": "base:marine_coastalshorelinecondition",
       "filename": "CoastalShorelineCondition.tif",
       "label": "Coastal shoreline condition",
+      "captionLabel": "coastal shoreline condition",
       "values": [
         {
           "value": 0,
@@ -1053,6 +1066,7 @@
       "id": "base:marine_estuarinecoastalcondition",
       "filename": "EstuarineCoastalCondition.tif",
       "label": "Estuarine coastal condition",
+      "captionLabel": "estuarine coastal condition",
       "values": [
         {
           "value": 1,
@@ -1088,6 +1102,7 @@
       "id": "base:marine_islands",
       "filename": "Islands.tif",
       "label": "Islands",
+      "captionLabel": "islands",
       "values": [
         {
           "value": 1,
@@ -1107,6 +1122,7 @@
       "id": "base:marine_resilientcoastalsites",
       "filename": "ResilientCoastalSites.tif",
       "label": "Resilient coastal sites",
+      "captionLabel": "resilient coastal sites",
       "values": [
         {
           "value": 1,
@@ -1151,6 +1167,7 @@
       "id": "base:marine_seagrasses",
       "filename": "Seagrasses.tif",
       "label": "Seagrasses",
+      "captionLabel": "seagrasses",
       "values": [
         {
           "value": 1,
@@ -1315,6 +1332,7 @@
       "id": "base:marine_stablecoastalwetlands",
       "filename": "StableCoastalWetlands.tif",
       "label": "Stable coastal wetlands",
+      "captionLabel": "stable coastal wetlands",
       "values": [
         {
           "value": 1,

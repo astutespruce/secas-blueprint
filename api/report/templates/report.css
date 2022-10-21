@@ -33,7 +33,7 @@ body {
 }
 
 @page :first {
-  margin-bottom: 2in;
+  margin-bottom: 200pt;
 
   @top-left {
     content: none;
@@ -523,8 +523,13 @@ img.logo {
   width: 64px;
 }
 
+.cover-logo {
+  width: 150px;
+  height: 178px;
+}
+
 .cover-footer {
-  margin-top: 18pt;
+  margin-top: 6pt;
   width: 100%;
 }
 
