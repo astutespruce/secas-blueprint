@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { withPrefix } from 'gatsby'
 
-import { siteMetadata } from '../../../gatsby-config'
+import { siteMetadata, pathPrefix } from '../../../gatsby-config'
 
 const { title: baseTitle, description, author } = siteMetadata
 
@@ -15,6 +15,9 @@ const fonts = [
 
 const SEO = ({ title: rawTitle }) => {
   const title = rawTitle ? `${rawTitle} | ${baseTitle}` : baseTitle
+
+  const prefix = pathPrefix ? `/${pathPrefix}` : ''
+
   return (
     <>
       <title>{title}</title>
@@ -31,25 +34,29 @@ const SEO = ({ title: rawTitle }) => {
       <meta name="twitter:description" content={description} />
       <meta name="twitter:card" content="summary" />
       <meta name="twitter:creator" content={author} />
-      <link rel="icon" type="image/png" href="/favicon.ico" />
-      <link rel="icon" type="image/svg+xml" href="/favicon-64x64.svg" />
+      <link rel="icon" type="image/png" href={`${prefix}/favicon.ico`} />
+      <link
+        rel="icon"
+        type="image/svg+xml"
+        href={`${prefix}/favicon-64x64.svg`}
+      />
       <link
         rel="icon"
         type="image/png"
         sizes="16x16"
-        href="/favicon-16x16.png"
+        href={`${prefix}/favicon-16x16.png`}
       />
       <link
         rel="icon"
         type="image/png"
         sizes="32x32"
-        href="/favicon-32x32.png"
+        href={`${prefix}/favicon-32x32.png`}
       />
       <link
         rel="icon"
         type="image/png"
         sizes="64x64"
-        href="/favicon-64x64.png"
+        href={`${prefix}/favicon-64x64.png`}
       />
 
       {/* Have to set HTML height manually for mobile browsers */}

@@ -7,7 +7,7 @@ const theme = require('./src/theme')
 module.exports = {
   siteMetadata: {
     siteUrl: process.env.SITE_URL || `https://localhost`,
-    title: `beta viewer Southeast Conservation Blueprint`,
+    title: `Southeast Conservation Blueprint Explorer`,
     description: `Provides user interface to explore the Southeast Conservation Blueprint and custom reports for user-defined areas of interest`,
     author: `Southeast Conservation Adaptation Strategy`,
     contactEmail: `hilary_morris@fws.gov`,
@@ -77,18 +77,18 @@ module.exports = {
     },
     `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,
-    // {
-    //   resolve: `gatsby-plugin-manifest`,
-    //   options: {
-    //     name: `Southeast Conservation Blueprint`,
-    //     short_name: `Southeast Conservation Blueprint`,
-    //     // icon: 'src/images/logo.svg',
-    //     start_url: `/`,
-    //     background_color: `#0892d0`,
-    //     theme_color: `#0892d0`,
-    //     display: `minimal-ui`,
-    //   },
-    // },
+    {
+      resolve: `gatsby-plugin-manifest`,
+      options: {
+        name: `Southeast Conservation Blueprint Explorer`,
+        short_name: `Southeast Blueprint Explorer`,
+        icon: 'src/images/logo.svg',
+        start_url: `/`,
+        background_color: `#4279A6`,
+        theme_color: `#4279A6`,
+        display: `minimal-ui`,
+      },
+    },
     {
       resolve: 'gatsby-plugin-robots-txt',
       options: {
