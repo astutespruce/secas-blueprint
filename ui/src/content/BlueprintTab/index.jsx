@@ -102,7 +102,14 @@ const BlueprintTab = ({
 
   // Note: incoming priorities are in descending order but percents
   // are stored in ascending order
-  const priorityCategories = allPriorities.slice().reverse()
+  const priorityCategories = allPriorities
+    .slice()
+    .reverse()
+    .map(({ color, ...rest }) => ({
+      ...rest,
+      // add transparency to match map
+      color: `${color}b3`,
+    }))
 
   // merge inputs with priority data
   let inputPercent = 100 - outsideSEPercent

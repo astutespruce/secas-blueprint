@@ -24,7 +24,8 @@ const LegendElement = ({
           height: '1em',
           borderRadius: '0.25em',
           mr: '0.25rem',
-          bg: color,
+          // set transparency to match map
+          bg: `${color}b3`,
           border: outlineWidth !== 0 ? `${outlineWidth}px solid` : 'none',
           borderColor: outlineColor,
         }}
