@@ -1,12 +1,12 @@
 import React from 'react'
-import { Box } from 'theme-ui'
+import { Box, Paragraph } from 'theme-ui'
 
 import { OutboundLink } from 'components/link'
 
 const Intro = () => (
   <>
     <Box as="section">
-      <p>
+      <Paragraph>
         The Southeast Conservation Blueprint is the primary product of the{' '}
         <OutboundLink to="https://secassoutheast.org/">
           Southeast Conservation Adaptation Strategy
@@ -34,7 +34,7 @@ const Intro = () => (
         {/* TODO: */}
         {/* as well as pixel-level details of what indicators
         are driving the Blueprint priorities. */}
-      </p>
+      </Paragraph>
     </Box>
   </>
 )

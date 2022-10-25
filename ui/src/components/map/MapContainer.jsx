@@ -7,7 +7,7 @@ import React, {
 } from 'react'
 import { Box, Flex, useThemeUI } from 'theme-ui'
 
-import { ClientOnly, useBreakpoints } from 'components/layout'
+import { useBreakpoints } from 'components/layout'
 import { useMapData } from 'components/data'
 import { Tabs as MobileTabs } from 'components/layout/mobile'
 import { SidebarHeader, Tabs as DesktopTabs } from 'components/layout/desktop'
@@ -181,9 +181,7 @@ const MapContainer = () => {
           </Box>
         </Flex>
 
-        <ClientOnly>
-          <Map />
-        </ClientOnly>
+        <Map />
       </Flex>
 
       {/* Mobile footer tabs */}

@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Text } from 'theme-ui'
+import { Paragraph } from 'theme-ui'
 
 import { formatPhone } from 'util/format'
 import BoundModal from './BoundModal'
@@ -11,7 +11,7 @@ const { contactEmail, contactPhone, title } = siteMetadata
 
 const ReportProblemModal = ({ children }) => (
   <BoundModal title="Report a Problem" anchorNode={children}>
-    <Text as="p">
+    <Paragraph>
       Did you encounter an error while using this application? Do you see a
       problem with the Blueprint priorities or indicator areas?
       <br />
@@ -30,7 +30,7 @@ const ReportProblemModal = ({ children }) => (
       <br />
       <b>call</b>{' '}
       <a href={`tel:${contactPhone}`}>{formatPhone(contactPhone)}</a>
-    </Text>
+    </Paragraph>
   </BoundModal>
 )
 

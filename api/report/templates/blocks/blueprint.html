@@ -39,15 +39,16 @@
 </section>
 
 <section>
-    <h2>Priority Categories</h2>
-    <h4>For a connected network of lands and waters</h4>
+    <h2 style="margin: 0;">Priority Categories</h2>
+    <h4 style="margin: 0;">For a connected network of lands and waters</h4>
+    <p>
+        In total, Blueprint priorities and priority connections cover roughly 50% of the Southeast Blueprint geography.
+    </p>
+
     <!-- omit not a priority -->
     {% for item in legends.blueprint[:-1] %}
         <h4>
             {{item.label}}
-            {% if 'priority' in item.label %}
-            for a connected network of lands and waters
-            {% endif %}
         </h4>
         <p>
             {{item.description}}
@@ -55,6 +56,8 @@
             This class covers roughly {{item.percent}}% of the Southeast Blueprint geography.
         </p>
     {% endfor %}
+
+
 
 <div class="spacer"></div>
 

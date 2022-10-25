@@ -10,6 +10,7 @@ import {
   Divider,
   Grid,
   Image,
+  Paragraph,
 } from 'theme-ui'
 import { FormProvider, useForm } from 'react-hook-form'
 
@@ -124,7 +125,7 @@ const UploadForm = ({ onFileChange, onCreateReport }) => {
               </Flex>
             </Box>
 
-            <Text as="p">
+            <Paragraph>
               Upload a shapefile or ESRI File Geodatabase Feature Class
               containing your area of interest to generate a detailed PDF report
               of the Blueprint, underlying indicators, and landscape-level
@@ -164,7 +165,7 @@ const UploadForm = ({ onFileChange, onCreateReport }) => {
                 <Text sx={linkCSS}>contact us</Text>
               </ContactModal>
               .
-            </Text>
+            </Paragraph>
           </Grid>
         </form>
       </FormProvider>
@@ -197,9 +198,7 @@ const UploadForm = ({ onFileChange, onCreateReport }) => {
           <Image src={Thumbnail4} />
           <Image src={Thumbnail5} />
         </Grid>
-        <Text as="p" sx={{ mt: '1rem' }}>
-          ...and much more!
-        </Text>
+        <Paragraph sx={{ mt: '1rem' }}>...and much more!</Paragraph>
       </Box>
     </>
   )

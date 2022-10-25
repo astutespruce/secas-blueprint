@@ -9,6 +9,7 @@ import {
   Link,
   Progress,
   Text,
+  Paragraph,
 } from 'theme-ui'
 import {
   Download,
@@ -163,12 +164,12 @@ const UploadContainer = () => {
                     display: 'inline',
                   }}
                 />
-                <Text as="p" sx={{ color: 'error', display: 'inline' }}>
+                <Paragraph sx={{ color: 'error', display: 'inline' }}>
                   Unfortunately, the server had an unexpected error creating
                   your report. It was able to create most of your report, but
                   some sections may be missing. The server says:
                   <br />
-                </Text>
+                </Paragraph>
 
                 <ul>
                   {errors.map((e) => (
@@ -176,17 +177,17 @@ const UploadContainer = () => {
                   ))}
                 </ul>
                 <br />
-                <Text as="p">
+                <Paragraph>
                   Please try again. If that does not work, please{' '}
                   <OutboundLink href={`mailto:${contactEmail}`}>
                     Contact Us
                   </OutboundLink>
                   .
-                </Text>
+                </Paragraph>
               </Text>
             ) : null}
 
-            <Text as="p">
+            <Paragraph>
               <br />
               <br />
               Your report should download automatically. You can also click the
@@ -197,7 +198,7 @@ const UploadContainer = () => {
                 <Download size="1.5em" style={{ marginRight: '0.5rem' }} />
                 Download report
               </Link>
-            </Text>
+            </Paragraph>
           </Text>
 
           <Divider />
