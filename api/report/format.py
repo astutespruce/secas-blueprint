@@ -42,13 +42,19 @@ def format_number(number):
 
 def format_percent(number):
     """Format percents for display.
-    uses whole numbers, clipped to [0, 100] range.
+    uses 1 decimal place (if needed), clipped to [0, 100] range.
     """
 
     if number == 0:
         return "0"
 
-    if number < 1:
-        return "<1"
+    if number < 0.1:
+        return "<0.1"
 
-    return f"{min(round(number), 100):.0f}"
+    nearest_int = round(number)
+
+    if abs(number * 10 - nearest_int * 10) < 1:
+        # less than 0.1 percent diff from whole number
+        return f"{min(nearest_int, 100):.0f}"
+
+    return f"{min(round(number, 1), 100):.1f}"
