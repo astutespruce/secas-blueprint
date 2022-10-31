@@ -51,10 +51,4 @@ def format_percent(number):
     if number < 0.1:
         return "<0.1"
 
-    nearest_int = round(number)
-
-    if abs(number * 10 - nearest_int * 10) < 1:
-        # less than 0.1 percent diff from whole number
-        return f"{min(nearest_int, 100):.0f}"
-
     return f"{min(round(number, 1), 100):.1f}"
