@@ -10,12 +10,9 @@ export const IndicatorPropType = {
     borderColor: PropTypes.string.isRequired,
   }).isRequired,
   description: PropTypes.string.isRequired,
-  datasetID: PropTypes.string.isRequired,
   goodThreshold: PropTypes.number,
   pixelValue: PropTypes.number,
-  avg: PropTypes.number,
   total: PropTypes.number,
-  domain: PropTypes.arrayOf(PropTypes.number).isRequired,
   values: PropTypes.arrayOf(
     PropTypes.shape({
       value: PropTypes.number.isRequired,

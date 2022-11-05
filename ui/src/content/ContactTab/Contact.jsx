@@ -1,9 +1,10 @@
 import React from 'react'
+import { Paragraph } from 'theme-ui'
 
 import { OutboundLink } from 'components/link'
 
 const Contact = () => (
-  <p>
+  <Paragraph>
     Do you have a question about the Blueprint? Would you like help using the
     Blueprint to support a proposal or inform a decision? Southeast Blueprint
     staff are here to support you! We really mean it. It is what we do!
@@ -15,7 +16,7 @@ const Contact = () => (
       for your state
     </OutboundLink>
     .
-  </p>
+  </Paragraph>
 )
 
 export default Contact

@@ -13,47 +13,56 @@
       <a href="#Blueprint" class="tocpagenr"></a>
     </li>
 
-    <!--<div class="divider"></div>
-     <li>
-      <a href="#Inputs" class="toctext">Blueprint Inputs</a>
-      <a href="#Inputs" class="tocpagenr"></a>
-      <ul>
-        {% for src in results.inputs %}
-        <li>
-          <a href="#{{src.id}}" class="toctext">{{src.label}}</a>
-          <a href="#{{src.id}}" class="tocpagenr"></a>
-          <ul>
-            <li>
-              <a href="#{{src.id}}IndicatorSummary" class="toctext">Indicator Summary</a>
-              <a href="#{{src.id}}IndicatorSummary" class="tocpagenr"></a>
-            </li>
-          </ul>
-        </li>
-        {% endfor %}
-      </ul>
-    </li> -->
 
-    {% for src in results.inputs %}
-    <div class="divider"></div>
-    <li>
-      <a href="#{{src.id}}" class="toctext">Blueprint Input: {{src.label}}</a>
-      <a href="#{{src.id}}" class="tocpagenr"></a>
+    {% if results.promote_base %}
+      <div class="divider"></div>
+      <li>
+        <a href="#Corridors" class="toctext">Hubs and Corridors</a>
+        <a href="#Corridors" class="tocpagenr"></a>
+      </li>
 
-      {% if src.ecosystems %}
-      <ul>
+      {% with src=results.inputs[0] %}
+        <div class="divider"></div>
         <li>
           <a href="#{{src.id}}IndicatorSummary" class="toctext">Indicator Summary</a>
           <a href="#{{src.id}}IndicatorSummary" class="tocpagenr"></a>
         </li>
-      </ul>
+      {% endwith %}
+
+    {% else %}
+
+      {% for src in results.inputs %}
+      <div class="divider"></div>
+      <li>
+        <a href="#{{src.id}}" class="toctext">Blueprint Input: {{src.label}}</a>
+        <a href="#{{src.id}}" class="tocpagenr"></a>
+
+        {% if src.id == "base" or src.ecosystems %}
+          <ul>
+            {% if src.id == "base" %}
+              <li>
+                <a href="#Corridors" class="toctext">Hubs and Corridors</a>
+                <a href="#Corridors" class="tocpagenr"></a>
+              </li>
+            {% endif %}
+
+            {% if src.ecosystems %}
+
+              <li>
+                <a href="#{{src.id}}IndicatorSummary" class="toctext">Indicator Summary</a>
+                <a href="#{{src.id}}IndicatorSummary" class="tocpagenr"></a>
+              </li>
+
+            {% endif %}
+          </ul>
+        {% endif %}
+      </li>
+      {% endfor %}
+
       {% endif %}
-    </li>
-    {% endfor %}
 
 
-
-
-    {% if not results.is_marine %}
+    {% if not results.exclude_threats %}
     <div class="divider"></div>
     <li>
       <a href="#Threats" class="toctext">Threats</a>
@@ -61,7 +70,7 @@
     </li>
     {% endif %}
 
-    {% if results.ownership or results.protection or results.counties %}
+    {% if results.ownership or results.protection %}
     <div class="divider"></div>
     <li>
       <a href="#Ownership" class="toctext">Ownership and Partners</a>

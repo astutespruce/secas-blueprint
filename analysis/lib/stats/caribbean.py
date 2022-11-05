@@ -1,186 +1,221 @@
 from pathlib import Path
 
-import geopandas as gp
+import numpy as np
 import pandas as pd
-import pygeos as pg
+import rasterio
 
-from analysis.constants import M2_ACRES
+from analysis.constants import INPUTS, M2_ACRES
+from analysis.lib.raster import (
+    extract_count_in_geometry,
+    summarize_raster_by_units_grid,
+    offset_window,
+)
+from analysis.lib.util import pluck
+from analysis.lib.stats.summary_units import read_unit_from_feather
 
-from analysis.lib.pygeos_util import intersection
-
+ID = "car"
 
 src_dir = Path("data/inputs/indicators/caribbean")
-caribbean_filename = src_dir / "caribbean.feather"
-
-out_dir = Path("data/results/huc12")
-results_filename = out_dir / "caribbean.feather"
-
-
-COLORS = {0: "#EEE", 1: "#807dba", 2: "#005a32"}
-
-LABELS = {0: "Not a priority", 1: "Medium priority", 2: "High priority"}
+caribbean_filename = src_dir / "caribbean_lcd.tif"
+mask_filename = src_dir / "caribbean_lcd_mask.tif"
 
 LEGEND = [
-    {"label": "Rank 1-8: high priority", "color": "#005a32"},
-    {"label": "Rank 9-12: medium priority", "color": "#807dba"},
+    {"label": "Rank 1-3: highest priority", "color": "#4D004B"},
+    {"label": "Rank 4-8: high priority", "color": "#843F98"},
+    {"label": "Rank 9-12: medium priority", "color": "#8C96C6"},
+    {"label": "Rank 13-24: not a priority", "color": "#FFFFFF"},
 ]
 
 
-def get_analysis_notes():
-    return """Note: areas are based on the polygon boundary of this area
-    compared to watershed boundaries rather than pixel-level analyses used
-    elsewhere in this report."""
+def extract_caribbean_by_mask(
+    shape_mask,
+    window,
+    origin,
+    cellsize,
+    rasterized_acres,
+    outside_se_acres,
+    **kwargs,
+):
+    """Calculate the area of each Caribbean LCD watershed rank based on shape_mask
 
-
-def get_rank_value(rank):
-    """Construct value entry (value, label, color, blueprint) for a Caribbean
-    priority watershed rank.
+    It is assumed shape_mask has already been prescreened to ensure overlap with
+    Caribbean LCD.
 
     Parameters
     ----------
-    rank : int [0...24]
+    shape_mask : 2d array
+        True outside shapes
+    window : rasterio.windows.Window
+        read window for Southeast standard origin
+    origin : list
+        [xmin, ymin] of origin of grid from which window is based
+    cellsize : float
+        pixel area in acres
+    rasterized_acres : float
+        rasterized area of shape mask
+    outside_se_acres : float
+        acres outside SE Blueprint
 
     Returns
     -------
     dict
-        {"value": <value>, "label": <label>, "color": <color>, "blueprint": <>}
-    """
-    blueprint = 0
-    if rank <= 8:
-        blueprint = 2
-    elif rank <= 12:
-        blueprint = 1
-
-    return {
-        "value": rank,
-        "label": f"{rank}: {LABELS[blueprint]}",
-        "color": COLORS[blueprint],
-        "blueprint": blueprint,
-    }
-
-
-def generate_values():
-    """Programmatically generate list of values, colors, labels for Caribbean
-    due to large number of values
-    """
-
-    return [get_rank_value(i) for i in range(0, 25)]
-
-
-def summarize_by_aoi(df, analysis_acres, total_acres):
-    """Calculate ranks and areas of overlap within Caribbean Priority Watersheds.
-
-    Parameters
-    ----------
-    df : GeoDataframe
-        area of interest
-    analysis_acres : float
-        area in acres of area of interest less any area outside SE Blueprint
-    total_acres : float
-        area in acres of area of interest
-
-        dict
         {
-            "priorities": [...],
-            "legend": [...],
-            "analysis_notes": <analysis_notes>
+            "priorities": <acres by priority category>,
+            "legend": <entries for legend>,
+            "total_acres": <total acres within input>,
+            "outside_input_acres": <acres outside this input but within SE>,
+            "outside_input_percent": <percent outside this input but within SE>,
         }
     """
 
-    car_df = gp.read_feather(caribbean_filename, columns=["geometry", "carrank"])
-    df = intersection(df, car_df)
-    df["acres"] = pg.area(df.geometry_right.values.data) * M2_ACRES
+    # adjust window to align with Caribbean
+    with rasterio.open(caribbean_filename) as src:
+        car_origin = [src.transform.c, src.transform.f]
+        read_window = offset_window(origin, car_origin, src.res[0], window)
 
-    # aggregate totals by rank
-    by_rank = (
-        df[["carrank", "acres"]]
-        .groupby(by="carrank")
-        .acres.sum()
-        .astype("float32")
-        .reset_index()
-        .sort_values(by="carrank")
+    max_value = INPUTS[ID]["values"][-1]["value"]
+
+    priority_acres = (
+        extract_count_in_geometry(
+            caribbean_filename,
+            shape_mask,
+            read_window,
+            np.arange(max_value + 1),
+            boundless=True,
+        )
+        * cellsize
     )
 
-    priorities = []
-    for ix, row in by_rank.iterrows():
-        value = get_rank_value(row.carrank)
-        value["acres"] = row.acres
-        value["percent"] = 100 * row.acres / analysis_acres
+    total_acres = priority_acres.sum()
+    outside_input_acres = rasterized_acres - outside_se_acres - total_acres
+    if outside_input_acres < 1e-6:
+        outside_input_acres = 0
 
-        priorities.append(value)
+    # only include priority ranks that are present
+    priorities = [
+        {
+            **e,
+            "acres": priority_acres[i],
+            "percent": 100 * priority_acres[i] / rasterized_acres,
+        }
+        for i, e in enumerate(
+            pluck(INPUTS[ID]["values"], ["blueprint", "value", "label"])
+        )
+        if priority_acres[i]
+    ]
 
-    # Note: input area remainder deliberately omitted, since all
-    # areas outside but close to this input are outside SE Blueprint
     return {
         "priorities": priorities,
         "legend": LEGEND,
-        "analysis_notes": get_analysis_notes(),
-        "analysis_acres": analysis_acres,
         "total_acres": total_acres,
+        "outside_input_acres": outside_input_acres,
+        "outside_input_percent": 100 * outside_input_acres / rasterized_acres,
     }
 
 
-def summarize_by_huc12(df):
-    """Calculate overlap of HUC12 summary units with HUC10 priority watersheds.
-
-    This uses the HUC10 component of the HUC12 index to do a basic join, and
-    returns those watersheds that are present in the Caribbean dataset.
+def summarize_caribbean_by_units_grid(df, units_grid, out_dir):
+    """Summarize by marine lease block
 
     Parameters
     ----------
     df : GeoDataFrame
-        summary units
+        must have a "value" column with same values as used for corresponding units
+        raster, and must have result of df.bounds joined in
+    units_grid : SummaryUnitGrid instance
+    out_dir : str
     """
 
-    print("Calculating overlap with Caribbean priority watersheds...")
+    if (
+        not len(df.columns.intersection({"value", "rasterized_acres", "outside_se"}))
+        == 3
+    ):
+        raise ValueError(
+            "GeoDataFrame for summary must include value, rasterized_acres, outside_se columns"
+        )
 
-    df = df.copy()
-    car_df = pd.read_feather(
-        caribbean_filename, columns=["HUC10", "carrank"]
-    ).set_index("HUC10")
+    with rasterio.open(caribbean_filename) as value_dataset:
+        cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
+        bins = range(0, INPUTS[ID]["values"][-1]["value"] + 1)
 
-    # extract HUC10 codes from HUC12 index
-    df["HUC10"] = df.index.str[:10]
+        priority_acres = (
+            summarize_raster_by_units_grid(
+                df,
+                units_grid,
+                value_dataset,
+                bins=bins,
+                progress_label="Summarizing Base Blueprint",
+            )
+            * cellsize
+        )
 
-    df = df.join(car_df, on="HUC10", how="inner")[["carrank"]].reset_index()
+    # remove 0 bin; priorities are 1-24
+    priority_acres = priority_acres[:, 1:]
 
-    df.to_feather(results_filename)
+    priorities = pd.DataFrame(
+        priority_acres,
+        columns=[f"priority_{v}" for v in bins[1:]],
+        index=df.index,
+    )
+    total_acres = priority_acres.sum(axis=1)
+    outside_input_acres = (
+        df.rasterized_acres.values - df.outside_se.values - total_acres
+    )
+    outside_input_acres[outside_input_acres < 1e-6] = 0
+    priorities["outside_input"] = outside_input_acres
+
+    priorities.reset_index().to_feather(out_dir / f"{ID}.feather")
 
 
-def get_huc12_results(id, analysis_acres, total_acres):
-    """Get results for Priority Watershed Rank for a given HUC12.
+def get_caribbean_unit_results(results_dir, unit_id, rasterized_acres):
+    """Get HUC12 results for unit_id
 
     Parameters
     ----------
-    id : str
-        HUC12 ID
-    analysis_acres : float
-        area of HUC12 summary unit less any area outside SE Blueprint
-    total_acres : float
-        area of HUC12 summary unit
+    results_dir : Path
+    unit_id : str
+    rasterized_acres : float
 
     Returns
     -------
-    dict
+     Returns
+    -------
+    dict (empty if no results for unit_id)
         {
-            "priorities": [...],
-            "legend": [...],
-            "analysis_notes": <analysis_notes>
+            "priorities": <acres by priority category>,
+            "legend": <entries for legend>,
+            "total_acres": <total acres within input>,
+            "outside_input_acres": <acres outside this input but within SE>,
+            "outside_input_percent": <percent outside this input but within SE>,
         }
     """
-    df = pd.read_feather(results_filename).set_index("id")
 
-    rank = df.loc[id].carrank if id in df.index else 0
-    value = get_rank_value(rank)
-    value["acres"] = analysis_acres
-    value["percent"] = 100 * analysis_acres / total_acres
+    car_results = read_unit_from_feather(results_dir / f"{ID}.feather", unit_id)
+    if len(car_results) == 0:
+        return {}
 
-    # Note: input area remainder deliberately omitted, since all
-    # areas outside but close to this input are outside SE Blueprint
+    unit = car_results.iloc[0]
+
+    values = pluck(INPUTS[ID]["values"], ["blueprint", "value", "label"])
+
+    cols = [f"priority_{v['value']}" for v in values]
+    priority_acres = unit[cols].values
+    total_acres = priority_acres.sum()
+
+    # only include priority ranks that are present
+    priorities = [
+        {
+            **e,
+            "acres": priority_acres[i],
+            "percent": 100 * priority_acres[i] / rasterized_acres,
+        }
+        for i, e in enumerate(values)
+        if priority_acres[i]
+    ]
+
     return {
-        "priorities": [value],
+        "priorities": priorities,
         "legend": LEGEND,
-        "analysis_notes": get_analysis_notes(),
-        "analysis_acres": analysis_acres,
         "total_acres": total_acres,
+        "outside_input_acres": unit.outside_input,
+        "outside_input_percent": 100 * unit.outside_input / rasterized_acres,
     }

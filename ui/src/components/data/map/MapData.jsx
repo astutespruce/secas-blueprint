@@ -1,18 +1,14 @@
 import React, { useState, useCallback, useContext, createContext } from 'react'
 import PropTypes from 'prop-types'
 
-import { useInputAreas } from 'components/data/InputAreas'
 import { useIndicators } from 'components/data/Indicators'
 import { unpackFeatureData } from './features'
 
 const Context = createContext()
 
 export const Provider = ({ children }) => {
-  const { values: inputValues, inputs: inputInfo } = useInputAreas()
-  const {
-    ecosystems: ecosystemInfo,
-    indicators: indicatorInfo,
-  } = useIndicators()
+  const { ecosystems: ecosystemInfo, indicators: indicatorInfo } =
+    useIndicators()
 
   const [{ mapMode, data, selectedIndicator }, setState] = useState({
     mapMode: 'unit', // TODO: pixel, once supported
@@ -32,14 +28,7 @@ export const Provider = ({ children }) => {
       }
 
       // transform map data
-      const newData = unpackFeatureData(
-        rawData,
-        inputValues,
-        inputInfo,
-        ecosystemInfo,
-        indicatorInfo
-      )
-      console.log('transformed feature data', newData)
+      const newData = unpackFeatureData(rawData, ecosystemInfo, indicatorInfo)
 
       // TODO: if a different input area than indicator, set it to null
 
@@ -49,6 +38,7 @@ export const Provider = ({ children }) => {
       }))
     },
     // intentionally ignores dependencies
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
     []
   )
 

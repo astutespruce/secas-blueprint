@@ -1,4 +1,5 @@
 import math
+import warnings
 
 import numpy as np
 from PIL import Image
@@ -13,6 +14,9 @@ from rasterio.warp import (
 )
 
 from analysis.constants import DATA_CRS, MAP_CRS, GEO_CRS
+
+# silence rasterio warnings not applicable here
+warnings.filterwarnings("ignore", message=".*Dataset has no geotransform.*")
 
 
 def hex_to_rgb(color):
@@ -214,7 +218,7 @@ def render_array(data, colors):
 
     for i, color in colors.items():
         r, g, b = hex_to_rgb(color)
-        a = 175
+        a = 175  # roughly 68% opacity
 
         rgba[data == i, :] = r, g, b, a
 

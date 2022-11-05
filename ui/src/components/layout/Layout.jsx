@@ -8,14 +8,12 @@ import { Provider as SearchProvider } from 'components/search'
 import { hasWindow, isUnsupported } from 'util/dom'
 import ErrorMessage from './ErrorMessage'
 import UnsupportedBrowser from './UnsupportedBrowser'
-import SEO from './SEO'
 import Header from './Header'
 import Footer from './Footer'
 import { BreakpointProvider } from './Breakpoints'
 import { fonts } from './fonts'
-import { siteMetadata } from '../../../gatsby-config'
 
-const Layout = ({ children, title, overflowY }) => {
+const Layout = ({ children, overflowY }) => {
   const { ErrorBoundary, didCatch } = useErrorBoundary({
     onDidCatch: (err, errInfo) => {
       // eslint-disable-next-line no-console
@@ -41,7 +39,6 @@ const Layout = ({ children, title, overflowY }) => {
             flexDirection: 'column',
           }}
         >
-          <SEO title={title || siteMetadata.title} />
           <Header />
           {isUnsupported ? (
             <UnsupportedBrowser />
@@ -63,12 +60,10 @@ const Layout = ({ children, title, overflowY }) => {
 
 Layout.propTypes = {
   children: PropTypes.node.isRequired,
-  title: PropTypes.string,
   overflowY: PropTypes.string,
 }
 
 Layout.defaultProps = {
-  title: '',
   overflowY: 'auto',
 }
 

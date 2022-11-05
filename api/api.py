@@ -1,8 +1,3 @@
-"""
-TODO:
-* validate max size (on nginx side)
-"""
-
 import logging
 from pathlib import Path
 from secrets import compare_digest
@@ -40,6 +35,7 @@ from api.settings import (
     API_TOKEN,
     API_SECRET,
     TEMP_DIR,
+    ENABLE_CORS,
     ALLOWED_ORIGINS,
     SENTRY_DSN,
 )
@@ -81,15 +77,13 @@ async def catch_exceptions_middleware(request: Request, call_next):
         return Response("Internal server error", status_code=500)
 
 
-# Enable CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["*"],
-)
+if ENABLE_CORS:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=ALLOWED_ORIGINS,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 
 def get_token(token: str = Security(APIKeyQuery(name="token", auto_error=True))):
@@ -139,7 +133,7 @@ def save_file(file: UploadFile) -> Path:
     return Path(name)
 
 
-def validate_file_type(file):
+def validate_content_type(file):
     if not (
         file.content_type
         in {
@@ -171,7 +165,7 @@ async def custom_report_endpoint(
     name: Optional[str] = Form(None),
     token: APIKey = Depends(get_token),
 ):
-    validate_file_type(file)
+    validate_content_type(file)
 
     filename = save_file(file)
     log.debug(f"upload saved to: {filename}")

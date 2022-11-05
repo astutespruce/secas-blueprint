@@ -8,7 +8,7 @@
     </head>
 
     <body>
-        {% set table = namespace(counter=1) %}
+        {% set table=namespace(counter=1) %}
 
         {% include "blocks/cover.html" %}
 
@@ -18,7 +18,7 @@
 
         {% include "blocks/blueprint.html" %}
 
-        {% if not results.is_marine %}
+        {% if not results.exclude_threats %}
           {% include "blocks/threats.html" %}
         {% endif %}
 

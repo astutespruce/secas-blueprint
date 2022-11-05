@@ -3,15 +3,18 @@
 
     <p>
         NOAA's sea-level rise (SLR) inundation models represent areas likely to
-        experience flooding at high tide under various SLR projections. These
-        models are not linked to a future timeframe. NOAA calculates the inundation footprint
-        at "mean higher high water", or the average highest daily tide. Darker
-        blue areas will experience flooding first, and at greater depth,
-        compared to lighter blue areas. Each projection also includes the areas
-        predicted to be inundated at lower levels of SLR. For example, at 4 ft
-        of SLR, the area predicted to experience inundation includes not only
-        areas covered by the 4 ft projection, but also the 3 ft, 2 ft, 1 ft, and
-        current projections.
+        experience flooding at high tide based on each foot of inundation depth
+        above current levels. These inundation depth models are not linked to a
+        future timeframe; see the projections below. NOAA calculates the
+        inundation depth at "mean higher high water", or the average highest
+        daily tide. The area covered by each inundation depth level includes
+        areas predicted to be inundated at lower levels. For example, areas
+        inundated by 4 ft of SLR also includes areas inundated by 3 ft, 2 ft, 1
+        ft, and current inundation levels.
+        <br />
+        <br />
+        To explore additional SLR information, please see NOAA's
+        <a href="https://coast.noaa.gov/slr/">Sea Level Rise Viewer</a>.
     </p>
 
     {% if maps.slr %}
@@ -31,15 +34,15 @@
             </div>
 
             <div class="legend flex-grow">
-                <h4>Flooding extent by projected sea-level rise</h4>
-                {% for item in legends.slr %}
-                    <div class="legend-element flex align-center no-margin">
-                        <div class="legend-patch" style="background: {{item.color}}"></div>
-                        <div class="legend-label">{{item.label}}</div>
-                    </div>
-                {% endfor %}
-                <!-- space is required or last label doesn't render -->
-                &nbsp;
+                <h4>Flooding extent by projected sea-level rise (ft)</h4>
+                <div class="flex">
+                    {% for item in legends.slr %}
+                        <div class="flex-grow" style="width: 100%;">
+                            <div style="background: {{item.color}}; opacity: 0.7; height: 14pt; border: 1px solid #aaa; border-bottom: 1px solid #aaa; border-right: 1px solid #aaa;{% if loop.index == 0 %}border-left; 1px solid #aaa;{% endif %}"></div>
+                            <div class="legend-label text-center">{{item.label}}</div>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
 
@@ -50,14 +53,13 @@
     {% endif %}
 </div>
 
-<div class="no-break">
-    <!-- TODO: SLR figure - construct SVG? -->
 
+<!-- Inundation depth table: -->
+
+<div class="no-break">
     <div class="caption">
         Table {{table.counter}}: Extent of flooding by projected average highest daily tide due to sea level rise{% if results.name %} within {{results.name}}{% if results.type %} {{results.type}}{% endif %}{% else %} in this area{% endif %}.
-        Values from the <a href="https://coast.noaa.gov/slrdata/">NOAA sea-level rise inundation data</a>.  Note: areas
-        are based on 15 meter pixels, unlike the 30 meter pixels used for the Blueprint and its inputs; this will cause
-        the total acreage to be different.
+        Values from the <a href="https://coast.noaa.gov/slrdata/">NOAA sea-level rise inundation data</a>.
     </div>
     {% set table.counter=table.counter+1 %}
 
@@ -70,39 +72,68 @@
             </tr>
         </thead>
         <tbody>
-            {% for acres in results['slr'] %}
-            <tr>
-                <td class="label">
-                    {% if loop.first %}
-                        &lt; {{loop.index}} foot
-                    {% elif loop.index == 2 %}
-                        {{loop.index - 1}} foot
-                    {% else %}
-                        {{loop.index - 1}} feet
-                    {% endif %}
-                </td>
-                <td class="acres">{{acres|format_number}}</td>
-                <td class="percent">{{(100 * acres / results.slr_acres)|format_percent}}%</td>
+            {% for entry in results.slr.depth %}
+                <tr {% if entry.value > 10 %}class="remainder-row"{% endif %}>
+                    <td class="label">{{entry.label}}</td>
+                    <td class="acres">{{entry.acres|format_number}}</td>
+                    <td class="percent">{{entry.percent|format_percent}}%</td>
+                </tr>
+            {% endfor %}
+
+            {% if results.outside_se_acres > 0 %}
+                <tr class="remainder-row">
+                    <td class="label">Outside Southeast Blueprint</td>
+                    <td class="acres">{{results.outside_se_acres|format_number}}</td>
+                    <td class="percent">{{results.outside_se_percent|format_percent}}%</td>
+                </tr>
+            {% endif %}
+
+            <tr class="total-row">
+                <td class="align-right">Total area</td>
+                <td class="acres">{{results.rasterized_acres|format_number}}</td>
+                <td class="percent">100%</td>
             </tr>
-        {% endfor %}
-
-
-        {% with remainder=results.slr_acres - results['slr'][-1] %}
-        {% if remainder > 0 %}
-            <tr class="remainder-row">
-                <td class="label">Not projected to be inundated by up to 6 feet</td>
-                <td class="acres">{{remainder|format_number}}</td>
-                <td class="percent">{{(100 * remainder / results.slr_acres)|format_percent}}%</td>
-            </tr>
-        {% endif %}
-        {% endwith %}
-
-        <tr class="total-row">
-            <td class="align-right">Total area</td>
-            <td class="acres">{{results.slr_acres|format_number}}</td>
-            <td class="percent">100%</td>
-        </tr>
         </tbody>
     </table>
+</div>
 
+<!-- Projection table: -->
+<div class="no-break">
+    <div class="caption">
+        Table {{table.counter}}: Projected sea level rise by decade{% if results.name %} within {{results.name}}{% if results.type %} {{results.type}}{% endif %}{% else %} in this area{% endif %}.
+        Values are based on area-weighted averages of decadal projections for
+        1-degree grid cells that overlap this area
+        based on <a href="https://oceanservice.noaa.gov/hazards/sealevelrise/sealevelrise-tech-report.html">NOAA's 2022 Sea Level Rise Report</a>.
+        2060 corresponds to the <a href="https://secassoutheast.org/our-goal">SECAS goal</a>: a 10% or greater improvement in the health, function, and connectivity of Southeastern ecosystems by 2060.
+    </div>
+    {% set table.counter=table.counter+1 %}
+
+    <table class="centered">
+        <thead>
+            <tr>
+                <th>SLR Scenario</th>
+                {% for year in range(2020, 2105, 10) %}
+                    <th {% if year == 2060 %}class="highlight-col"{% endif %}>{{year}} (ft)</th>
+                {% endfor %}
+
+            </tr>
+        </thead>
+        <tbody>
+
+        {% for scenario in results.slr.projections %}
+            <tr>
+                <td>{{scenario}}</td>
+                {% for value in  results.slr.projections[scenario] %}
+                    <td {% if loop.index == 5 %}class="highlight-col"{% endif %}>
+                        {% if value == 0 %}
+                            0
+                        {% else %}
+                            {{value|format_number}}
+                        {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </div>

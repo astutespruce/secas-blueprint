@@ -21,7 +21,7 @@ const activeCSS = {
 
 const PriorityCategories = ({ categories, value: currentValue }) => (
   <Box sx={{ fontSize: 1, pt: '0.5rem' }}>
-    {categories.map(({ value, label, color, description, description2 }) => (
+    {categories.map(({ value, percent, label, color, description }) => (
       <Box key={value} sx={value === currentValue ? activeCSS : defaultCSS}>
         <Flex
           sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}
@@ -53,7 +53,8 @@ const PriorityCategories = ({ categories, value: currentValue }) => (
         </Flex>
         {description ? (
           <Text sx={{ fontSize: 0, ml: '1.5rem' }}>
-            {description} {description2}
+            {description} This class covers {percent}% of the Southeast
+            Blueprint geography.
           </Text>
         ) : null}
       </Box>
@@ -67,8 +68,8 @@ PriorityCategories.propTypes = {
       value: PropTypes.number.isRequired,
       label: PropTypes.string.isRequired,
       color: PropTypes.string.isRequired,
+      percent: PropTypes.number.isRequired,
       description: PropTypes.string,
-      description2: PropTypes.string,
     })
   ).isRequired,
   value: PropTypes.number,

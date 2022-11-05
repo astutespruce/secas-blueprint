@@ -1,12 +1,3 @@
-const { darken } = require('@theme-ui/color')
-
-// SECAS Palette:
-// Dark blue from Blueprint (high): 08306b
-// Light blue from Blueprint (med): 4faeee
-// Gray-blue: 708ea6
-// Accent/call to action orange: f5933b
-// Accent green: 569031
-
 module.exports = {
   breakpoints: ['600px', '800px', '1600px'],
   colors: {
@@ -127,15 +118,6 @@ module.exports = {
       background: 'none',
       color: 'grey.2',
     },
-    header: {
-      cursor: 'pointer',
-      border: '1px solid #FFF',
-      p: '0.25em 0.5em',
-      marginLeft: '1rem',
-      '&:hover': {
-        bg: darken('primary', 0.05),
-      },
-    },
   },
   forms: {
     input: {
@@ -168,7 +150,7 @@ module.exports = {
   tabs: {
     default: {
       cursor: 'pointer',
-      color: 'grey.7',
+      color: 'grey.9',
       bg: 'grey.1',
       borderBottom: '1px solid',
       borderBottomColor: 'grey.7',
@@ -190,12 +172,12 @@ module.exports = {
     mobile: {
       cursor: 'pointer',
       color: 'grey.1',
-      bg: 'primary',
+      bg: '#4279A6', // primary color
     },
     mobileActive: {
       cursor: 'pointer',
       color: '#FFF',
-      bg: darken('primary', 0.05),
+      bg: '#335d80',
     },
   },
   styles: {

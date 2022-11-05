@@ -25,12 +25,14 @@ export const searchPlaces = (query) => {
         return Promise.reject(new Error(response.statusText))
       }
 
-      return response.json().catch((error) => {
-        return Promise.reject(new Error('Invalid JSON: ', error.message))
-      })
+      return response
+        .json()
+        .catch((error) =>
+          Promise.reject(new Error('Invalid JSON: ', error.message))
+        )
     })
-    .then(({ features = [] }) => {
-      return features.map(
+    .then(({ features = [] }) =>
+      features.map(
         ({
           id,
           center: [longitude, latitude],
@@ -66,11 +68,9 @@ export const searchPlaces = (query) => {
           }
         }
       )
-    })
+    )
 
-    .catch((error) => {
-      return Promise.reject(new Error(error.message))
-    })
+    .catch((error) => Promise.reject(new Error(error.message)))
 
   promise.cancel = () => {
     controller.abort()

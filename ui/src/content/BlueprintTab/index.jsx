@@ -3,11 +3,18 @@ import PropTypes from 'prop-types'
 
 import { Box, Heading, Text } from 'theme-ui'
 
-import { useBlueprintPriorities, useInputAreas } from 'components/data'
+import {
+  useBlueprintPriorities,
+  useCorridors,
+  useInputAreas,
+} from 'components/data'
 import { OutboundLink } from 'components/link'
 import NeedHelp from 'content/NeedHelp'
+import { sum } from 'util/data'
 
 import BlueprintChart from './BlueprintChart'
+import CorridorsChart from './CorridorsChart'
+import CorridorCategories from './CorridorCategories'
 import PriorityCategories from './PriorityCategories'
 import InputArea from './InputArea'
 
@@ -15,7 +22,7 @@ const getInputPriorities = ({
   values,
   domain,
   percents,
-  inputLabel,
+  label,
   totalPercent,
   outsideSEPercent,
 }) => {
@@ -66,7 +73,7 @@ const getInputPriorities = ({
       value: -1,
       percent: outsideInputPercent,
       color: '#fff7f3',
-      label: `Outside ${inputLabel} input area`,
+      label: `Outside ${label} input area`,
     })
   }
 
@@ -84,45 +91,78 @@ const getInputPriorities = ({
 
 const BlueprintTab = ({
   blueprint,
-  inputs,
+  corridors,
+  inputId,
   outsideSEPercent,
-  hasInputOverlaps,
   ...mapData
 }) => {
   const { all: allPriorities } = useBlueprintPriorities()
-  const { inputs: inputCategories } = useInputAreas()
+  const corridorCategories = useCorridors()
+  const inputInfo = useInputAreas()[inputId]
 
   // Note: incoming priorities are in descending order but percents
   // are stored in ascending order
-  const priorityCategories = allPriorities.slice().reverse()
+  const priorityCategories = allPriorities
+    .slice()
+    .reverse()
+    .map(({ color, ...rest }) => ({
+      ...rest,
+      // add transparency to match map
+      color: `${color}b3`,
+    }))
 
   // merge inputs with priority data
-  const inputPriorities = inputs.map(({ id, percent }) => {
-    const { valueField, values, domain, label, ...rest } = inputCategories[id]
-    const priorities = getInputPriorities({
-      values,
-      domain,
-      percents: valueField && mapData[valueField] ? mapData[valueField] : [],
-      totalPercent: percent,
-      inputLabel: label,
-      outsideSEPercent,
-    })
+  let inputPercent = 100 - outsideSEPercent
+  // round percent from >99 to 100
+  inputPercent = inputPercent > 99 ? 100 : inputPercent
 
-    return {
-      domain,
-      label,
-      // round percent from >99 to 100
-      percent: percent > 99 ? 100 : percent,
-      values: priorities,
-      ...rest,
+  const {
+    values: inputValues,
+    domain: inputDomain,
+    label: inputLabel,
+  } = inputInfo
+
+  const inputData = {
+    ...inputInfo,
+    percent: inputPercent,
+    values: getInputPriorities({
+      values: inputValues,
+      domain: inputDomain,
+      label: inputLabel,
+      totalPercent: inputPercent,
+      percents: mapData[inputId] ? mapData[inputId] : [],
+      outsideSEPercent,
+    }),
+  }
+
+  let hasInland = false
+  let hasMarine = false
+  if (corridors && corridors.length) {
+    hasInland = sum(corridors.slice(0, 2)) > 0
+    hasMarine = sum(corridors.slice(2, 4)) > 0
+  }
+
+  const filterCorridors = ({ value }) => {
+    // always exclude not a hub / corridor
+    if (value === 4) {
+      return false
     }
-  })
+    if (!hasInland && value <= 1) {
+      return false
+    }
+    if (!hasMarine && value > 1) {
+      return false
+    }
+    return true
+  }
 
   return (
     <Box sx={{ py: '2rem', pl: '1rem', pr: '2rem' }}>
       <Box as="section">
-        <Heading as="h3">Blueprint 2021 Priority</Heading>
-        <Text sx={{ color: 'grey.7' }}>for shared conservation action</Text>
+        <Heading as="h3">Blueprint 2022 Priority</Heading>
+        <Text sx={{ color: 'grey.7' }}>
+          for a connected network of lands and waters
+        </Text>
         <BlueprintChart
           categories={priorityCategories}
           blueprint={blueprint}
@@ -138,46 +178,64 @@ const BlueprintTab = ({
         ) : null}
       </Box>
 
-      {inputs.length > 0 ? (
-        <>
-          <Box as="section">
-            <Text
-              sx={{
-                mt: '2rem',
-                bg: 'grey.1',
-                ml: '-1rem',
-                mr: '-2rem',
-                py: '1rem',
-                pl: '1rem',
-                pr: '2rem',
-              }}
-            >
-              <Heading as="h3">Blueprint Inputs</Heading>
-            </Text>
+      {inputId === 'base' ? (
+        <Box as="section">
+          <Text
+            sx={{
+              mt: '2rem',
+              bg: 'grey.1',
+              ml: '-1rem',
+              mr: '-2rem',
+              py: '1rem',
+              pl: '1rem',
+              pr: '2rem',
+            }}
+          >
+            <Heading as="h3">Hubs and Corridors</Heading>
+          </Text>
 
-            <Text sx={{ fontSize: 0, color: 'grey.7', mb: '2rem' }}>
-              See{' '}
-              <OutboundLink to="https://www.sciencebase.gov/catalog/file/get/619524f2d34eb622f690539a?name=SE_Blueprint_2021_DevelopmentProcess.pdf">
-                Blueprint integration documentation
-              </OutboundLink>{' '}
-              for more details about how individual Blueprint inputs were
-              integrated to create the final Blueprint value.{' '}
-              {hasInputOverlaps ? (
-                <>
-                  Note: multiple Blueprint inputs overlap in some areas; this
-                  may affect the final Blueprint conservation value.
-                </>
-              ) : null}
-            </Text>
+          <CorridorsChart
+            categories={corridorCategories}
+            corridors={corridors}
+            outsideSEPercent={outsideSEPercent}
+          />
 
-            <Box sx={{ mt: '1rem' }}>
-              {inputPriorities.map((input) => (
-                <InputArea key={input.id} {...input} />
-              ))}
-            </Box>
+          {outsideSEPercent < 100 ? (
+            <CorridorCategories
+              categories={corridorCategories.filter(filterCorridors)}
+            />
+          ) : null}
+        </Box>
+      ) : (
+        <Box as="section">
+          <Text
+            sx={{
+              mt: '2rem',
+              bg: 'grey.1',
+              ml: '-1rem',
+              mr: '-2rem',
+              py: '1rem',
+              pl: '1rem',
+              pr: '2rem',
+            }}
+          >
+            <Heading as="h3">Blueprint Input</Heading>
+          </Text>
+
+          <Text sx={{ fontSize: 0, color: 'grey.7', mb: '2rem' }}>
+            See{' '}
+            <OutboundLink to="https://www.sciencebase.gov/catalog/file/get/62d5816fd34e87fffb2dda77?name=Southeast_Blueprint_2022_Development_Process.pdf">
+              Blueprint development process
+            </OutboundLink>{' '}
+            for more details about how individual Blueprint inputs were
+            integrated to create the final Blueprint value.{' '}
+          </Text>
+
+          <Box sx={{ mt: '1rem' }}>
+            <InputArea {...inputData} />
           </Box>
-        </>
-      ) : null}
+        </Box>
+      )}
 
       <NeedHelp />
     </Box>
@@ -185,22 +243,16 @@ const BlueprintTab = ({
 }
 
 BlueprintTab.propTypes = {
+  inputId: PropTypes.string.isRequired,
   blueprint: PropTypes.arrayOf(PropTypes.number),
-  inputs: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      percent: PropTypes.number.isRequired,
-    })
-  ),
+  corridors: PropTypes.arrayOf(PropTypes.number),
   outsideSEPercent: PropTypes.number,
-  hasInputOverlaps: PropTypes.bool,
 }
 
 BlueprintTab.defaultProps = {
   blueprint: [],
-  inputs: [],
+  corridors: [],
   outsideSEPercent: 0,
-  hasInputOverlaps: false,
 }
 
 export default BlueprintTab

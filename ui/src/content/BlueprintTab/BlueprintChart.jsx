@@ -40,24 +40,6 @@ const BlueprintChart = ({ categories, blueprint, outsideSEPercent }) => {
 
         <PieChartLegend elements={blueprintChartData} />
       </Flex>
-
-      {/* {outsideSEPercent < 100 ? (
-        <Text sx={{ mt: '1rem', fontSize: 1, color: 'grey.7' }}>
-          {blueprintChartData
-            .filter(({ description }) => description)
-            .map(({ label, description, description2 = '' }, i) => (
-              <React.Fragment key={label}>
-                {i > 0 ? (
-                  <>
-                    <br />
-                    <br />
-                  </>
-                ) : null}
-                {label}: {description} {description2}
-              </React.Fragment>
-            ))}
-        </Text>
-      ) : null} */}
     </>
   )
 }

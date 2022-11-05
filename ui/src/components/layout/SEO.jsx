@@ -1,106 +1,88 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Helmet from 'react-helmet'
-import { useStaticQuery, graphql } from 'gatsby'
+import { withPrefix } from 'gatsby'
 
-function SEO({ description, meta, title }) {
-  const { site } = useStaticQuery(
-    graphql`
-      query {
-        site {
-          siteMetadata {
-            title
-            description
-            author
-          }
-        }
-      }
-    `
-  )
+import { siteMetadata } from '../../../gatsby-config'
 
-  const metaDescription = description || site.siteMetadata.description
+const { title: baseTitle, description, author } = siteMetadata
+
+// preload fonts so there is no flash of unstyled fonts
+const fonts = [
+  'source-sans-pro-400.woff2',
+  'source-sans-pro-700.woff2',
+  'source-sans-pro-900.woff2',
+]
+
+const SEO = ({ title: rawTitle }) => {
+  const title = rawTitle ? `${rawTitle} | ${baseTitle}` : baseTitle
 
   return (
-    <Helmet
-      htmlAttributes={{
-        lang: 'en',
-        viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no',
-      }}
-      title={title}
-      titleTemplate={title ? `%s | ${site.siteMetadata.title}` : `%s`}
-      meta={[
-        {
-          name: `description`,
-          content: metaDescription,
-        },
-        {
-          property: `og:title`,
-          content: title,
-        },
-        {
-          property: `og:description`,
-          content: metaDescription,
-        },
-        {
-          property: `og:type`,
-          content: `website`,
-        },
-        {
-          name: `twitter:card`,
-          content: `summary`,
-        },
-        {
-          name: `twitter:creator`,
-          content: site.siteMetadata.author,
-        },
-        {
-          name: `twitter:title`,
-          content: title,
-        },
-        {
-          name: `twitter:description`,
-          content: metaDescription,
-        },
-      ].concat(meta)}
-      link={[
-        { rel: 'icon', type: 'image/png', href: '/favicon.ico' },
-        { rel: 'icon', type: 'image/svg+xml', href: '/favicon-64x64.svg' },
-        {
-          rel: 'icon',
-          sizes: '16x16',
-          type: 'image/png',
-          href: '/favicon-16x16.png',
-        },
-        {
-          rel: 'icon',
-          sizes: '32x32',
-          type: 'image/png',
-          href: '/favicon-32x32.png',
-        },
-        {
-          rel: 'icon',
-          sizes: '64x64',
-          type: 'image/png',
-          href: '/favicon-64x64.png',
-        },
-      ]}
-    >
+    <>
+      <title>{title}</title>
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, shrink-to-fit=no"
+      />
+      <meta name="lang" content="en" />
+      <meta name="description" content={description} />
+      <meta name="og:title" content={title} />
+      <meta name="og:description" content={description} />
+      <meta name="og:type" content="website" />
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:card" content="summary" />
+      <meta name="twitter:creator" content={author} />
+      <link rel="icon" type="image/png" href={withPrefix('/favicon.ico')} />
+      <link
+        rel="icon"
+        type="image/svg+xml"
+        href={withPrefix('/favicon-64x64.svg')}
+      />
+      <link
+        rel="icon"
+        type="image/png"
+        sizes="16x16"
+        href={withPrefix('/favicon-16x16.png')}
+      />
+      <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href={withPrefix('/favicon-32x32.png')}
+      />
+      <link
+        rel="icon"
+        type="image/png"
+        sizes="64x64"
+        href={withPrefix('/favicon-64x64.png')}
+      />
+
       {/* Have to set HTML height manually for mobile browsers */}
       <style>{`html {height: 100%; width: 100%; margin: 0;}`}</style>
-    </Helmet>
+
+      {/* preload fonts so there is no flash of unstyled fonts */}
+      {fonts.map((font) => {
+        const url = withPrefix(`/fonts/${font}`)
+        return (
+          <link
+            key={font}
+            as="font"
+            href={url}
+            rel="preload"
+            crossOrigin="anonymous"
+          />
+        )
+      })}
+    </>
   )
 }
 
 SEO.propTypes = {
-  description: PropTypes.string,
-  meta: PropTypes.arrayOf(PropTypes.object),
   title: PropTypes.string,
 }
 
 SEO.defaultProps = {
-  meta: [],
   title: null,
-  description: null,
 }
 
 export default SEO

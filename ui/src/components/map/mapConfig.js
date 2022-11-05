@@ -4,13 +4,6 @@ const { tileHost } = siteMetadata
 
 export const mapConfig = {
   bounds: [-106.66188036, 17.92676033, -65.22106481, 40.638801],
-  // DEBUG:
-  // bounds: [
-  //   -85.96775296217699,
-  //   31.967338917168803,
-  //   -84.88178705606839,
-  //   32.96031035539855,
-  // ],
   maxBounds: [-180, -80, 180, 80],
   minZoom: 0,
   maxZoom: 14,
@@ -24,7 +17,7 @@ export const sources = {
     minzoom: 0,
     maxzoom: 13,
     bounds: [-106.66188036, 17.92676033, -65.22106481, 40.638801],
-    tiles: [`${tileHost}/services/se_blueprint2021/tiles/{z}/{x}/{y}.png`],
+    tiles: [`${tileHost}/services/se_blueprint_2022/tiles/{z}/{x}/{y}.png`],
   },
   mapUnits: {
     type: 'vector',

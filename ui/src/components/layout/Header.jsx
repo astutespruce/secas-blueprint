@@ -1,5 +1,5 @@
 import React from 'react'
-import { Flex, Heading, Text } from 'theme-ui'
+import { Flex, Heading } from 'theme-ui'
 
 import { Link } from 'components/link'
 import { useMapData } from 'components/data'
@@ -40,6 +40,7 @@ const Header = () => {
           >
             <Link
               to="/"
+              tabIndex="0"
               sx={{
                 textDecoration: 'none !important',
                 display: 'block',
@@ -64,12 +65,6 @@ const Header = () => {
                     flex: '0 1 auto',
                   }}
                 >
-                  <Text
-                    as="span"
-                    sx={{ display: 'inline-block', fontSize: ['10px', 1, 2] }}
-                  >
-                    beta viewer
-                  </Text>{' '}
                   Southeast
                 </Heading>
                 <Heading
@@ -87,7 +82,7 @@ const Header = () => {
                     flexBasis: ['100%', 'unset'],
                   }}
                 >
-                  Conservation Blueprint
+                  Conservation Blueprint Explorer
                 </Heading>
               </Flex>
             </Link>

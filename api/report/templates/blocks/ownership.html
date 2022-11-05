@@ -61,7 +61,7 @@
 <div class="no-break">
     <div class="caption">
         Table {{table.counter}}: Extent of ownership class{% if results.name %} within {{results.name}}{% if results.type %} {{results.type}}{% endif %}{% else %} in this area{% endif %}.
-        Protected areas are derived from the derived from the <a href="https://www.sciencebase.gov/catalog/item/5f186a2082cef313ed843257">Protected Areas Database of the United States</a> (PAD-US v2.1).
+        Protected areas are derived from the <a href="https://www.usgs.gov/programs/gap-analysis-project/science/pad-us-data-download">Protected Areas Database of the United States</a> (PAD-US v3.0).
         Note: areas are based on the polygon boundary of this area compared to protected area polygons, rather than pixel-level analyses used elsewhere in this report.
     </div>
 
@@ -80,7 +80,7 @@
                 <tr>
                     <td class="label">{{entry.label}}</td>
                     <td class="acres">{{entry.acres|format_number}}</td>
-                    <td class="percent">{{(100 * entry.acres / results.acres)|format_percent}}%</td>
+                    <td class="percent">{{entry.percent|format_percent}}%</td>
                 </tr>
             {% endfor %}
 
@@ -156,7 +156,7 @@
 <div class="no-break">
     <div class="caption">
         Table {{table.counter}}: Extent of land protection status{% if results.name %} within {{results.name}}{% if results.type %} {{results.type}}{% endif %}{% else %} in this area{% endif %}.
-        Protected areas are derived from the derived from the <a href="https://www.sciencebase.gov/catalog/item/5f186a2082cef313ed843257">Protected Areas Database of the United States</a> (PAD-US v2.1).
+        Protected areas are derived from the <a href="https://www.usgs.gov/programs/gap-analysis-project/science/pad-us-data-download">Protected Areas Database of the United States</a> (PAD-US v3.0).
         Note: areas are based on the polygon boundary of this area compared to protected area polygons, rather than pixel-level analyses used elsewhere in this report.
     </div>
 
@@ -175,7 +175,7 @@
             <tr>
                 <td class="label">{{entry.label}}</td>
                 <td class="acres">{{entry.acres|format_number}}</td>
-                <td class="percent">{{(100 * entry.acres / results.acres)|format_percent}}%</td>
+                <td class="percent">{{entry.percent|format_percent}}%</td>
             </tr>
             {% endfor %}
 
@@ -213,7 +213,7 @@
     <ul>
         {% for entry in results.protected_areas %}
             <li>
-                {{entry.name}} ({{entry.owner}}; {{entry.acres|format_number}} acres)
+                {{entry.name}} ({{entry.owner}}{% if entry.owner %}; {% endif %}{{entry.acres|format_number}} acres)
             </li>
         {% endfor %}
 
@@ -227,20 +227,16 @@
 
 
 
-{% if results.counties %}
-<h4 id="LandTrusts">
-    Land Trusts (by county)
-</h4>
-<ul>
-    {% for county in results.counties %}
-        <li>
-            <a href="https://www.findalandtrust.org/counties/{{county.FIPS}}">
-                {{county.county}} County, {{county.state}}
-            </a>
-        </li>
-    {% endfor %}
-</ul>
+{% if  results.lta_search_radius%}
+    <h4 id="LandTrusts">
+        Nearby land trusts
+    </h4>
 
+    <p>
+    <a href="https://landtrustalliance.org/land-trusts/explore?nearby=false&location={{results.center[1]}}%2C{{results.center[0]}}&radius={{results.lta_search_radius*1609.34}}">Click here</a>
+    to search for land trusts within {{results.lta_search_radius}} miles
+    of this area on the Land Trust Alliance website.
+    </p>
 {% endif %}
 
 </section>

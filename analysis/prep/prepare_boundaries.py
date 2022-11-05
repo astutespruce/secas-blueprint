@@ -1,33 +1,33 @@
-import os
 from pathlib import Path
 import warnings
 
 import geopandas as gp
+import pandas as pd
 import pygeos as pg
 from pyogrio.geopandas import read_dataframe, write_dataframe
+import rasterio
+from rasterio.features import rasterize
+from rasterio import windows
 
-from analysis.constants import GEO_CRS, DATA_CRS
+from analysis.constants import DATA_CRS, SECAS_STATES, MASK_RESOLUTION, INPUTS
+from analysis.lib.geometry import dissolve, make_valid, to_dict_all, to_dict
+from analysis.lib.raster import write_raster, add_overviews, create_lowres_mask
 
-# suppress warnings abuot writing to feather
+# suppress warnings about writing to feather
 warnings.filterwarnings("ignore", message=".*initial implementation of Parquet.*")
 
 src_dir = Path("source_data")
 data_dir = Path("data")
+json_dir = Path("constants")
+bnd_dir = data_dir / "boundaries"  # used for processing but not as inputs
 out_dir = data_dir / "inputs/boundaries"  # used as inputs for other steps
-tile_dir = data_dir / "for_tiles"
 
-if not out_dir.exists():
-    os.makedirs(out_dir)
-
-if not tile_dir.exists():
-    os.makedirs(tile_dir)
+bnd_dir.mkdir(exist_ok=True, parents=True)
+out_dir.mkdir(exist_ok=True, parents=True)
 
 
-### Extract the boundary
-bnd_df = read_dataframe(
-    src_dir / "blueprint/SE_Blueprint_2021_Vectors.gdb",
-    layer="SECAS_Boundary_2021_20211117",
-)[["geometry"]]
+### Extract Blueprint boundary polygon
+bnd_df = read_dataframe(src_dir / "blueprint/SE_Blueprint_Extent.shp")[["geometry"]]
 # boundary has multiple geometries, union together and cleanup
 bnd_df = gp.GeoDataFrame(
     geometry=[pg.union_all(pg.make_valid(bnd_df.geometry.values.data))],
@@ -37,47 +37,178 @@ bnd_df = gp.GeoDataFrame(
 bnd_df.to_feather(out_dir / "se_boundary.feather")
 write_dataframe(bnd_df, data_dir / "boundaries/se_boundary.fgb")
 
-# create GeoJSON for tiling
-bnd_geo = bnd_df.to_crs(GEO_CRS)
-write_dataframe(bnd_geo, tile_dir / "se_boundary.geojson", driver="GeoJSONSeq")
 
-### Create mask by cutting SA bounds out of world bounds
-print("Creating mask...")
-world = pg.box(-180, -85, 180, 85)
-mask = pg.normalize(pg.difference(world, bnd_geo.geometry.values.data))
+### Extract Blueprint extent
+print("Extracting SE Blueprint extent")
+with rasterio.open(src_dir / "blueprint/SE_Blueprint_2022.tif") as src:
+    nodata = int(src.nodata)
+    data = src.read(1)
 
-write_dataframe(
-    gp.GeoDataFrame({"geometry": mask}, index=[0], crs=GEO_CRS),
-    tile_dir / "se_mask.geojson",
-    driver="GeoJSONSeq",
+    data[data != nodata] = 1
+
+    # uncomment to recalculate
+    # window = windows.get_data_window(data, nodata=nodata)
+    # print(window)
+
+    window = windows.Window(col_off=855, row_off=294, width=144065, height=71409)
+    transform = windows.transform(window, src.transform)
+
+    data = data[window.toslices()]
+    outfilename = bnd_dir / "se_blueprint_extent.tif"
+    write_raster(
+        outfilename,
+        data,
+        transform,
+        crs=src.crs,
+        nodata=nodata,
+    )
+
+    add_overviews(outfilename)
+
+
+### Extract input areas
+df = read_dataframe(src_dir / "blueprint/InputAreas.shp", columns=["gridcode"]).rename(
+    columns={"gridcode": "value"}
 )
 
-### Extract counties within SA bounds
-print("Extracting states and counties...")
+df["geometry"] = make_valid(df.geometry.values.data)
+df = dissolve(df, by="value")
+
+inputs = {e["value"]: e["id"] for e in INPUTS}
+df["id"] = df["value"].map(inputs)
+
+write_dataframe(df, bnd_dir / "input_areas.fgb")
+df.to_feather(out_dir / "input_areas.feather")
+
+# rasterize to match the blueprint
+# convert to pairs of GeoJSON , value
+df = pd.DataFrame(df[["geometry", "value"]].copy())
+df.geometry = df.geometry.values.data
+shapes = df.apply(lambda row: (to_dict(row.geometry), row.value), axis=1)
+
+print("Rasterizing inputs...")
+with rasterio.open(bnd_dir / "se_blueprint_extent.tif") as src:
+    data = rasterize(
+        shapes.values, src.shape, transform=src.transform, dtype="uint8", fill=255
+    )
+
+    outfilename = out_dir / "input_areas.tif"
+    write_raster(
+        outfilename,
+        data,
+        src.transform,
+        crs=src.crs,
+        nodata=255,
+    )
+
+    add_overviews(outfilename)
+
+    create_lowres_mask(
+        outfilename,
+        str(outfilename).replace(".tif", "_mask.tif"),
+        resolution=MASK_RESOLUTION,
+        ignore_zero=True,
+    )
+
+
+### Extract the Base Blueprint data extent and write to a new raster
+# NOTE: the data extent transform is exactly the same as the data extent transform
+# for full SE Blueprint (above)
+print("Extracting Base Blueprint extent")
+with rasterio.open(src_dir / "blueprint/BaseBlueprintExtent2022.tif") as src:
+    nodata = int(src.nodata)
+    data = src.read(1)
+
+    # uncomment to recalculate
+    window = windows.get_data_window(data, nodata=nodata)
+    print(window)
+
+    # window = windows.Window(col_off=855, row_off=806, width=106719, height=60170)
+    transform = windows.transform(window, src.transform)
+
+    data = data[window.toslices()]
+    outfilename = bnd_dir / "base_blueprint_extent.tif"
+    write_raster(
+        outfilename,
+        data,
+        transform,
+        crs=src.crs,
+        nodata=nodata,
+    )
+
+    add_overviews(outfilename)
+
+    ### Extract a non-marine mask aligned to the above
+    # Note: this is still within the total footprint of the above; it is not
+    # a smaller shape
+    df = read_dataframe(
+        src_dir / "base_blueprint/BaseBlueprintSubRgn.shp", columns=["SubRgn"]
+    )
+    df = df.loc[~df.SubRgn.str.contains("Marine")]
+    shapes = to_dict_all(df.geometry.values.data)
+    nonmarine_mask = rasterize(
+        shapes, data.shape, transform=transform, dtype="uint8", fill=0, default_value=1
+    )
+
+    outfilename = out_dir / "nonmarine_mask.tif"
+    write_raster(
+        outfilename,
+        nonmarine_mask,
+        transform=transform,
+        crs=src.crs,
+        nodata=0,
+    )
+
+    add_overviews(outfilename)
+
+
+### Extract SECAS states and counties
+# print("Extracting states and counties...")
+state_list = ",".join(f"'{state}'" for state in SECAS_STATES)
 states = (
     read_dataframe(
-        src_dir / "boundaries/tl_2019_us_state.shp",
-        read_geometry=False,
-        columns=["STATEFP", "NAME"],
+        src_dir / "boundaries/tl_2021_us_state.shp",
+        columns=["STATEFP", "STUSPS", "NAME"],
+        where=f""""STUSPS" in ({state_list})""",
     )
-    .rename(columns={"NAME": "state"})
-    .set_index("STATEFP")
+    .rename(columns={"NAME": "state", "STUSPS": "id"})
+    .to_crs(DATA_CRS)
 )
+write_dataframe(states, bnd_dir / "states.fgb")
+states.to_feather(out_dir / "states.feather")
 
+fips_list = ",".join(f"'{fips}'" for fips in states.STATEFP.unique())
 counties = (
     read_dataframe(
-        src_dir / "boundaries/tl_2019_us_county.shp",
+        src_dir / "boundaries/tl_2021_us_county.shp",
         columns=["STATEFP", "GEOID", "NAME", "geometry"],
+        where=f""""STATEFP" in ({fips_list})""",
     )
     .rename(columns={"GEOID": "FIPS", "NAME": "county"})
     .to_crs(DATA_CRS)
+    .join(states.set_index("STATEFP").drop(columns=["geometry"]), on="STATEFP")
+    .drop(columns=["STATEFP"])
+    .rename(columns={"id": "state_id"})
+)
+write_dataframe(counties, bnd_dir / "counties.fgb")
+counties.to_feather(out_dir / "counties.feather")
+
+
+### PARCAs (Amphibian & reptile aras)
+# already in EPSG:5070
+print("Processing PARCAs...")
+df = (
+    read_dataframe(
+        src_dir / "boundaries/SouthAtlanticPARCAs.gdb",
+        columns=["FID", "Name", "Description"],
+        force_2d=True,
+    )
+    .to_crs(DATA_CRS)
+    .rename(columns={"FID": "parca_id", "Name": "name", "Description": "description"})
+    .explode(ignore_index=True)
 )
 
-# select counties within the SA boundary
-tree = pg.STRtree(counties.geometry.values.data)
-ix = tree.query(bnd_df.geometry.values.data[0], predicate="intersects")
-counties = counties.iloc[ix].join(states, on="STATEFP").drop(columns=["STATEFP"])
+df["geometry"] = make_valid(df.geometry.values.data)
 
-
-# write_dataframe(counties, out_dir / "counties.gpkg")
-counties.to_feather(out_dir / "counties.feather")
+write_dataframe(df, bnd_dir / "parca.fgb")
+df.to_feather(out_dir / "parca.feather")

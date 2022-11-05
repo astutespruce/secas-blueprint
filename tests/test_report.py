@@ -1,24 +1,22 @@
 import asyncio
-from base64 import b64decode, b64encode
 import json
 import os
+from base64 import b64decode, b64encode
 from pathlib import Path
 from time import time
 
-import numpy as np
 import pygeos as pg
 from pyogrio.geopandas import read_dataframe
 
+from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES
+from analysis.lib.geometry import dissolve
 from api.report import create_report
 from api.report.map import render_maps
-from analysis.constants import BLUEPRINT, GEO_CRS, DATA_CRS, M2_ACRES
-from api.report.format import format_number
-from api.stats import SummaryUnits, CustomArea
-from analysis.lib.pygeos_util import to_crs
-
+from api.stats.custom_area import get_custom_area_results
+from api.stats.summary_units import get_summary_unit_results
 
 # if True, cache maps if not previously created, then reuse
-CACHE_MAPS = True
+CACHE_MAPS = False
 
 
 def write_cache(maps, scale, path):
@@ -53,6 +51,10 @@ def read_cache(path):
 
 ### Create reports for an AOI
 aois = [
+    {"name": "SLR test area", "path": "fl_slr_test"},
+    # {"name": "Test", "path": "030902030700"}
+    # {"name": "Yazoo Watershed, MS", "path": "YazooUse"},
+    # {"name": "Weyerhaeuser (Andrews)", "path": "Weyerhaeuser_Andrews"},
     # {"name": "Greenway Priority 123 Merge", "path": "Greenway_priority123_Merge_Diss"},
     # {"name": "South Carolina", "path": "SC_SECAS_states"},
     # {
@@ -67,6 +69,7 @@ aois = [
     # {"name": "Louisiana", "path": "LA_SECAS_states"},  # TODO: FIX this geometry
     # {"name": "Mississippi", "path": "MS_SECAS_states"},
     # {"name": "North Carolina", "path": "NC_SECAS_states"},
+    # {"name": "South Carolina", "path": "SC_SECAS_states"},
     # {"name": "Tennessee", "path": "TN_SECAS_states"},
     # {"name": "FL test", "path": "EvergladesHeadwaterComplex_APPTYPE_0"}
     # {"name": "Guild Tracts", "path": "GuildTracts"}
@@ -90,8 +93,8 @@ aois = [
     # {"name": "Cave Spring, VA area", "path": "CaveSpring"},
     # {"name": "South Atlantic Offshore", "path": "SAOffshore"},
     # {"name": "Florida Offshore", "path": "FLOffshore"},
+    # {"name": "Razor", "path": "Razor"},
 ]
-
 
 for aoi in aois:
     name = aoi["name"]
@@ -99,22 +102,19 @@ for aoi in aois:
     print(f"Creating report for {name}...")
 
     start = time()
-    df = read_dataframe(f"examples/{path}.shp", columns=[])
-    geometry = pg.make_valid(df.geometry.values.data)
+    df = read_dataframe(f"examples/{path}.shp", columns=[]).to_crs(DATA_CRS)
+    df["geometry"] = pg.make_valid(df.geometry.values.data)
+    df["group"] = 1
+    df = dissolve(df.explode(ignore_index=True), by="group")
 
-    # dissolve
-    geometry = np.asarray([pg.union_all(geometry)])
-
-    extent_area = (
-        pg.area(pg.box(*pg.total_bounds(to_crs(geometry, df.crs, DATA_CRS)))) * M2_ACRES
-    )
+    extent_area = pg.area(pg.box(*df.total_bounds)) * M2_ACRES
     print(
-        f"Area of extent: {extent_area:,.0f}",
+        f"Area of extent: {extent_area:,.0f} acres",
     )
 
     ### calculate results, data must be in DATA_CRS
     print("Calculating results...")
-    results = CustomArea(geometry, df.crs, name=name).get_results()
+    results = get_custom_area_results(df)
 
     if results is None:
         print(f"AOI: {path} does not overlap Blueprint")
@@ -133,10 +133,9 @@ for aoi in aois:
 
     if not maps:
         print("Rendering maps...")
-        geometry = to_crs(geometry, df.crs, GEO_CRS)
-        bounds = pg.total_bounds(geometry)
 
-        has_urban = "proj_urban" in results and results["proj_urban"][4] > 0
+        has_corridors = "corridors" in results
+        has_urban = "urban" in results
         has_slr = "slr" in results
         has_ownership = "ownership" in results
         has_protection = "protection" in results
@@ -147,11 +146,13 @@ for aoi in aois:
             for ecosystem in input_area.get("ecosystems", []):
                 indicators.extend([i["id"] for i in ecosystem["indicators"]])
 
+        geo_df = df.to_crs(GEO_CRS)
         task = render_maps(
-            bounds,
-            geometry=geometry[0],
+            geo_df.total_bounds,
+            geometry=geo_df.geometry.values.data[0],
             indicators=indicators,
             input_ids=results["input_ids"],
+            corridors=has_corridors,
             urban=has_urban,
             slr=has_slr,
             ownership=has_ownership,
@@ -168,58 +169,49 @@ for aoi in aois:
 
     results["scale"] = scale
 
-    pdf = create_report(maps=maps, results=results)
+    pdf = create_report(maps=maps, results=results, name=name)
 
     with open(out_dir / f"{path}_report.pdf", "wb") as out:
         out.write(pdf)
 
     print("Elapsed {:.2f}s".format(time() - start))
 
+############################################################
 
-### Create reports for summary units
+## Create reports for summary units
 ids = {
-    "huc12": [
-        #     #     #     #     # "111102050103"  # has no protected areas
-        "210100050503",  # PR
-        # "110702071001",  # at junction of gulf_hypoxia, okchat, midse
-        #     # "031501100102",  # has overlaps with MidSE, SA, and NatureScape
-        # "120100040301",  # at junction of txchat, midse
-        #     "031200030902",  # at overlap area between FL, MidSE, and SA
-        #     #     #     #     #     #     # "060200020506",  # in AppLCC area
-        #     #     # "050302030503",  # in Nature's Network area
-        #     #     # "030101010301",  # in Nature's Network  / South Atlantic overlap area
-        #     #     #     #     #     #     ##################
-        #     #     #     #     #     #     #     #     "130301020902", # far western edge
-        #     #     #     #     #     #     #     #     "031501060512",  # partial overlap with SA raster inputs
-        #     #     #     #     #     #     #     "031700080402"
-        # "030101030404",  # Nature's Network at edge of input area
-        # "031101020903",  # Florida with inland marine indicators
-        # "031102050805",  # Florida gulf coast
-    ],
+    # "huc12": [
+    #     "050500030804"  # in WV
+    # "030902030700"  # in base blueprint but missing SLR (Dry Tortugas)
+    #     #     #     # "031002010205",  # in base blueprint but with SLR present
+    #     #     #     # "210100070101",  # in Caribbean
+    #     #     #     # "031101020903",  # Florida with inland marine indicators
+    #     #     #     # "031102050805",  # Florida gulf coast
+    # ],
     # "marine_blocks": [
-    #     # "NI18-07-6210",  # Atlantic coast
-    #     #     # #     "NG16-03-299",  # Gulf coast
-    #     "NG17-10-6583"  # Florida keys, overlaps with protected areas
+    #     "NG16-12-780",  # in FL Marine
+    #     #     # "NI18-07-6210",  # Atlantic coast
+    #     #     # "NG16-03-299",  # Gulf coast
+    #     #     # "NG17-10-6583",  # Florida keys, overlaps with protected areas
     # ],
 }
 
 
-for summary_type in ids:
-    units = SummaryUnits(summary_type)
+for unit_type in ids:
+    for unit_id in ids[unit_type]:
+        print(f"Creating report for for {unit_id}...")
 
-    for id in ids[summary_type]:
-        print(f"Creating report for for {id}...")
-
-        out_dir = Path(f"/tmp/{id}")
+        out_dir = Path(f"/tmp/{unit_id}")
         cache_dir = out_dir / "maps"
 
         if not out_dir.exists():
             os.makedirs(out_dir)
 
         # Fetch results
-        results = units.get_results(id)
+        results = get_summary_unit_results(unit_type, unit_id)
 
-        has_urban = "proj_urban" in results and results["proj_urban"][4] > 0
+        has_corridors = "corridors" in results
+        has_urban = "urban" in results
         has_slr = "slr" in results
         has_ownership = "ownership" in results
         has_protection = "protection" in results
@@ -238,9 +230,10 @@ for summary_type in ids:
             print("Rendering maps...")
             task = render_maps(
                 results["bounds"],
-                summary_unit_id=id,
+                summary_unit_id=unit_id,
                 indicators=indicators,
                 input_ids=results["input_ids"],
+                corridors=has_corridors,
                 urban=has_urban,
                 slr=has_slr,
                 ownership=has_ownership,
@@ -256,7 +249,7 @@ for summary_type in ids:
 
         results["scale"] = scale
 
-        pdf = create_report(maps=maps, results=results)
+        pdf = create_report(maps=maps, results=results, name=results["name"])
 
-        with open(out_dir / f"{id}_report.pdf", "wb") as out:
+        with open(out_dir / f"{unit_id}_report.pdf", "wb") as out:
             out.write(pdf)

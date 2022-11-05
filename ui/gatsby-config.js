@@ -4,10 +4,12 @@ require('dotenv').config({
 
 const theme = require('./src/theme')
 
+const rootPath = process.env.SITE_ROOT_PATH || `/`
+
 module.exports = {
   siteMetadata: {
     siteUrl: process.env.SITE_URL || `https://localhost`,
-    title: `beta viewer Southeast Conservation Blueprint`,
+    title: `Southeast Conservation Blueprint Explorer`,
     description: `Provides user interface to explore the Southeast Conservation Blueprint and custom reports for user-defined areas of interest`,
     author: `Southeast Conservation Adaptation Strategy`,
     contactEmail: `hilary_morris@fws.gov`,
@@ -25,7 +27,7 @@ module.exports = {
     DEV_SSR: false, // appears to throw '"filePath" is not allowed to be empty' when true
     PARALLEL_SOURCING: process.env.NODE_ENV !== `production`, // uses a lot of memory on server
   },
-  pathPrefix: process.env.SITE_ROOT_PATH || `/`,
+  pathPrefix: rootPath,
   plugins: [
     {
       resolve: `gatsby-plugin-google-gtag`,
@@ -40,7 +42,6 @@ module.exports = {
         },
       },
     },
-    `gatsby-plugin-react-helmet`,
     {
       resolve: `gatsby-source-filesystem`,
       options: {
@@ -78,23 +79,25 @@ module.exports = {
     },
     `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,
-    // {
-    //   resolve: `gatsby-plugin-manifest`,
-    //   options: {
-    //     name: `Southeast Conservation Blueprint`,
-    //     short_name: `Southeast Conservation Blueprint`,
-    //     // icon: 'src/images/logo.svg',
-    //     start_url: `/`,
-    //     background_color: `#0892d0`,
-    //     theme_color: `#0892d0`,
-    //     display: `minimal-ui`,
-    //   },
-    // },
+    {
+      resolve: `gatsby-plugin-manifest`,
+      options: {
+        name: `Southeast Conservation Blueprint Explorer`,
+        short_name: `Southeast Blueprint Explorer`,
+        icon: 'src/images/logo.svg',
+        start_url: `/`,
+        background_color: `#4279A6`,
+        theme_color: `#4279A6`,
+        display: `minimal-ui`,
+      },
+    },
     {
       resolve: 'gatsby-plugin-robots-txt',
       options: {
-        policy: [{ userAgent: '*', disallow: ['/services', '/api'] }],
+        host: process.env.SITE_URL || `https://localhost`,
+        policy: [{ userAgent: '*', disallow: ['/services', '*/api/*'] }],
       },
     },
+    `gatsby-plugin-sitemap`,
   ],
 }

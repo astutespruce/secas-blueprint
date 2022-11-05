@@ -1,11 +1,5 @@
 <section>
-    <h2 id="{{src.id}}IndicatorSummary">{{src.label}} Indicator Summary</h2>
-
-    {% if src.indicatorDescription %}
-        <p>
-            {{src.indicatorDescription}}
-        </p>
-    {% endif %}
+    <h2 id="{{src.id}}IndicatorSummary">{% if not results.promote_base %}{{src.label}} {% endif %}Indicator Summary</h2>
 
     {% for ecosystem in ecosystems %}
         <div class="no-break">

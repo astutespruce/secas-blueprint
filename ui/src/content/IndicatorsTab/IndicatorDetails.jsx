@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Box, Flex, Text, Heading, Image } from 'theme-ui'
+import { Box, Paragraph, Flex, Text, Heading, Image } from 'theme-ui'
 import { Reply } from '@emotion-icons/fa-solid'
 
 import { OutboundLink } from 'components/link'
@@ -15,10 +15,9 @@ import { IndicatorPropType } from './proptypes'
 const IndicatorDetails = ({
   type,
   label,
-  input: { label: inputLabel, percent: inputPercent, cpaURL },
   ecosystem: { id: ecosystemId, label: ecosystemLabel, color, borderColor },
   description,
-  datasetID,
+  url,
   goodThreshold,
   values,
   outsideSEPercent,
@@ -37,21 +36,12 @@ const IndicatorDetails = ({
     }))
     .reverse()
 
-  const notEvaluatedPercent = inputPercent - totalIndicatorPercent
+  const notEvaluatedPercent = 100 - outsideSEPercent - totalIndicatorPercent
   if (notEvaluatedPercent >= 1) {
     percentTableValues.push({
       value: -1,
       label: 'Not evaluated for this indicator',
       percent: notEvaluatedPercent,
-    })
-  }
-
-  const outsideInputPercent = 100 - outsideSEPercent - inputPercent
-  if (outsideInputPercent >= 1) {
-    percentTableValues.push({
-      value: -2,
-      percent: outsideInputPercent,
-      label: `Outside ${inputLabel} input area`,
     })
   }
 
@@ -147,13 +137,9 @@ const IndicatorDetails = ({
           overflowY: 'auto',
         }}
       >
-        <Box sx={{ fontSize: 0, color: 'grey.8' }}>
-          Part of {inputLabel}.
-          <br />
-          <br />
-        </Box>
-
-        <Text as="p">{description}</Text>
+        <Paragraph sx={{ mt: '0.5rem', fontSize: 1, lineHeight: 1.3 }}>
+          {description}
+        </Paragraph>
 
         <IndicatorPercentTable
           type={type}
@@ -162,9 +148,11 @@ const IndicatorDetails = ({
         />
 
         <Box sx={{ mt: '2rem' }}>
-          <OutboundLink to={`${cpaURL}datasets/${datasetID}`}>
-            View this indicator in the Conservation Planning Atlas
+          To learn more and explore the GIS data,{' '}
+          <OutboundLink to={url}>
+            view this indicator in the SECAS Atlas
           </OutboundLink>
+          .
         </Box>
         <NeedHelp />
       </Box>

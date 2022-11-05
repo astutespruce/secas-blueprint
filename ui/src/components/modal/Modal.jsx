@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import PropTypes from 'prop-types'
 import { Box, Button, Flex, Heading } from 'theme-ui'
 import { TimesCircle } from '@emotion-icons/fa-regular'
+
+import { hasWindow } from 'util/dom'
 
 const absPostionCSS = {
   position: 'absolute',
@@ -17,6 +19,24 @@ const Modal = ({ children, title, width, onClose }) => {
     onClose()
   }
 
+  useEffect(() => {
+    const handleEscape = ({ key }) => {
+      if (key === 'Escape') {
+        onClose()
+      }
+    }
+
+    if (hasWindow) {
+      document.addEventListener('keydown', handleEscape)
+    }
+
+    return () => {
+      if (hasWindow) {
+        document.removeEventListener('keydown', handleEscape)
+      }
+    }
+  })
+
   return createPortal(
     <Flex
       sx={{
@@ -24,7 +44,6 @@ const Modal = ({ children, title, width, onClose }) => {
         zIndex: 10000,
         alignItems: 'center',
         justifyContent: 'center',
-
         overflow: 'auto',
       }}
     >
@@ -65,6 +84,7 @@ const Modal = ({ children, title, width, onClose }) => {
             <Button
               variant="close"
               onClick={handleClose}
+              tabIndex="-1"
               sx={{ flex: '0 0 auto', margin: '0' }}
             >
               <TimesCircle size="1.5em" />

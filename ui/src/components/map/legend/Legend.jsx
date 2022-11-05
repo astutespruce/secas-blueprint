@@ -32,7 +32,7 @@ const Legend = ({ isVisible, onToggleVisibility }) => {
         bg: '#FFF',
         pointerEvents: 'auto',
         cursor: 'pointer',
-        bottom: ['40px', '40px', '24px'],
+        bottom: ['40px', '40px', '40px', '24px'],
         right: '10px',
         borderRadius: '0.25rem',
         boxShadow: '2px 2px 6px #333',
@@ -43,14 +43,21 @@ const Legend = ({ isVisible, onToggleVisibility }) => {
       {isOpen ? (
         <Box
           sx={{
-            p: '1rem',
+            p: '0.5rem',
           }}
           title="Click to hide legend"
         >
           <Flex
             sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}
           >
-            <Text sx={{ flex: '1 1 auto', fontWeight: 'bold', mr: '0.5em' }}>
+            <Text
+              sx={{
+                flex: '1 1 auto',
+                fontWeight: 'bold',
+                mr: '0.5em',
+                fontSize: 1,
+              }}
+            >
               Blueprint Priority
             </Text>
             <Box
@@ -69,7 +76,7 @@ const Legend = ({ isVisible, onToggleVisibility }) => {
               {isVisible ? <Eye size="1em" /> : <EyeSlash size="1em" />}
             </Box>
           </Flex>
-          <Box sx={{ fontSize: 1 }}>
+          <Box sx={{ fontSize: 0, mt: '-0.5rem' }}>
             {categories.map((element) => (
               <Box
                 key={element.label}

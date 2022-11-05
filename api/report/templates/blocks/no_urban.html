@@ -1,7 +1,15 @@
 <h3 id="Urban">Urban growth</h3>
 
+{% if 'base' in results.input_ids %}
 <p>
     This area is not predicted to be impacted by projected urbanization up to 2100.
 </p>
+
+{% else %}
+<p>
+    Projected future urbanization data is not currently available for this area.
+</p>
+
+{% endif %}
 
 <div class="spacer"></div>

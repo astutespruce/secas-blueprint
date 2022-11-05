@@ -1,88 +1,32 @@
-import React, { useState, useCallback } from 'react'
+import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
-import { Box, Text } from 'theme-ui'
+import { Box, Paragraph } from 'theme-ui'
 
-import { OutboundLink } from 'components/link'
 import { useMapData } from 'components/data'
 import { indexBy, flatten } from 'util/data'
-import { useIsEqualLayoutEffect, useIsEqualEffect } from 'util/hooks'
+import { useIsEqualEffect } from 'util/hooks'
 
-import InputTabs from './InputTabs'
 import Ecosystem from './Ecosystem'
 import IndicatorDetails from './IndicatorDetails'
 
 const IndicatorsTab = ({
   type,
-  inputs: rawInputs,
-  indicators: rawIndicators,
+  inputId,
+  indicators: indicatorsByInput,
   outsideSEPercent,
-  analysisAcres,
-  blueprintAcres,
+  rasterizedAcres,
 }) => {
   const { selectedIndicator, setSelectedIndicator } = useMapData()
 
   // index indicators by ID for lookup on selection
   const indicatorsIndex = indexBy(
     flatten(
-      Object.values(rawIndicators).map(({ indicators }) =>
+      Object.values(indicatorsByInput).map(({ indicators }) =>
         Object.values(indicators)
       )
     ),
     'id'
   )
-
-  // merge ecosystems into input areas
-  const inputs = rawInputs.map(({ id, ...rest }) => ({
-    id,
-    ...rest,
-    ecosystems: rawIndicators[id] ? rawIndicators[id].ecosystems : [],
-  }))
-  const inputIndex = indexBy(inputs, 'id')
-
-  const [selectedInput, setSelectedInput] = useState(
-    rawInputs.length > 0 ? rawInputs[0].id : null
-  )
-
-  // const [selectedIndicator, setSelectedIndicator] = useState(null)
-
-  // update selected input for a new area
-  useIsEqualLayoutEffect(() => {
-    if (!inputIndex[selectedInput]) {
-      setSelectedInput(rawInputs.length > 0 ? rawInputs[0].id : null)
-    }
-  }, [inputIndex, rawInputs])
-
-  // // Update selected indicator for a new area
-  // useIsEqualLayoutEffect(() => {
-  //   if (selectedIndicator === null) {
-  //     return
-  //   }
-
-  //   if (indicatorsIndex[selectedIndicator.id]) {
-  //     // Update the selected indicator if still available in the new area
-  //     setSelectedIndicator({
-  //       ...indicatorsIndex[selectedIndicator.id],
-  //       input: inputIndex[selectedIndicator.id.split(':')[0]],
-  //     })
-  //   } else {
-  //     // reset selected indicator, it isn't present in this set
-  //     setSelectedIndicator(() => null)
-  //   }
-  // }, [rawIndicators])
-
-  // const handleSelectIndicator = useCallback(
-  //   (indicator) => {
-  //     // splice in input info
-  //     setSelectedIndicator(
-  //       indicator !== null
-  //         ? { ...indicator, input: inputIndex[indicator.id.split(':')[0]] }
-  //         : null
-  //     )
-  //   },
-  //   [inputIndex]
-  // )
-
-  // const handleCloseIndicator = useCallback(() => setSelectedIndicator(null), [])
 
   useIsEqualEffect(() => {
     if (!selectedIndicator) {
@@ -90,7 +34,7 @@ const IndicatorsTab = ({
     }
 
     if (!indicatorsIndex[selectedIndicator]) {
-      // reset selected indicator, it isn't present in this set (outside valid ecosystems or input area)
+      // reset selected indicator, it isn't present in this set (outside valid ecosystems)
       setSelectedIndicator(null)
     }
   }, [indicatorsIndex, selectedIndicator])
@@ -102,15 +46,24 @@ const IndicatorsTab = ({
     [setSelectedIndicator]
   )
 
-  const handleCloseIndicator = useCallback(() => setSelectedIndicator(null), [
-    setSelectedIndicator,
-  ])
+  const handleCloseIndicator = useCallback(
+    () => setSelectedIndicator(null),
+    [setSelectedIndicator]
+  )
 
-  if (selectedInput === null) {
+  if (inputId !== 'base') {
     return (
-      <Text sx={{ color: 'grey.8', textAlign: 'center' }}>
-        No Blueprint inputs present in this area.
-      </Text>
+      <Paragraph
+        sx={{
+          py: '2rem',
+          px: '1rem',
+          color: 'grey.7',
+          textAlign: 'center',
+          fontSize: 1,
+        }}
+      >
+        No information on Blueprint indicators is available for this area.
+      </Paragraph>
     )
   }
 
@@ -119,76 +72,35 @@ const IndicatorsTab = ({
       <IndicatorDetails
         type={type}
         outsideSEPercent={outsideSEPercent}
-        analysisAcres={analysisAcres}
-        blueprintAcres={blueprintAcres}
+        rasterizedAcres={rasterizedAcres}
         onClose={handleCloseIndicator}
-        input={inputIndex[selectedIndicator.split(':')[0]]}
         {...indicatorsIndex[selectedIndicator]}
       />
     )
   }
 
-  if (selectedInput && inputIndex[selectedInput]) {
-    const { ecosystems, label: inputLabel, indicatorDescription } = inputIndex[
-      selectedInput
-    ]
+  // Base Blueprint is only area that has indicators
+  const {
+    base: { ecosystems },
+  } = indicatorsByInput
 
-    return (
-      <>
-        <InputTabs
-          inputs={inputs}
-          selectedInput={selectedInput}
-          onSelectInput={setSelectedInput}
+  return (
+    <Box>
+      {ecosystems.map((ecosystem) => (
+        <Ecosystem
+          key={ecosystem.id}
+          type={type}
+          onSelectIndicator={handleSelectIndicator}
+          {...ecosystem}
         />
-
-        <Box>
-          {ecosystems && ecosystems.length > 0 ? (
-            <>
-              {indicatorDescription ? (
-                <Box
-                  sx={{ pb: '1rem', px: '1rem', fontSize: 0, color: 'grey.8' }}
-                  dangerouslySetInnerHTML={{ __html: indicatorDescription }}
-                />
-              ) : null}
-              {ecosystems.map((ecosystem) => (
-                <Ecosystem
-                  key={ecosystem.id}
-                  type={type}
-                  onSelectIndicator={handleSelectIndicator}
-                  {...ecosystem}
-                />
-              ))}
-            </>
-          ) : (
-            <Box sx={{ p: '1rem 2rem', color: 'grey.8' }}>
-              Indicator data are not available in this tool for {inputLabel}.
-              Additional underlying data for this Blueprint input may be
-              available{' '}
-              <OutboundLink to={inputIndex[selectedInput].dataURL}>
-                here
-              </OutboundLink>
-              .
-            </Box>
-          )}
-        </Box>
-      </>
-    )
-  }
-
-  // this is just to hold the space until rerender for a new selectedInput
-  return null
+      ))}
+    </Box>
+  )
 }
 
 IndicatorsTab.propTypes = {
   type: PropTypes.string.isRequired,
-
-  inputs: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      label: PropTypes.string.isRequired,
-      percent: PropTypes.number.isRequired,
-    })
-  ),
+  inputId: PropTypes.string.isRequired,
   indicators: PropTypes.objectOf(
     PropTypes.shape({
       ecosystems: PropTypes.arrayOf(
@@ -203,7 +115,7 @@ IndicatorsTab.propTypes = {
           id: PropTypes.string.isRequired,
           label: PropTypes.string.isRequired,
           description: PropTypes.string,
-          datasetID: PropTypes.string,
+          url: PropTypes.string,
           continuous: PropTypes.bool,
           domain: PropTypes.arrayOf(PropTypes.number),
           percent: PropTypes.arrayOf(PropTypes.number),
@@ -220,16 +132,13 @@ IndicatorsTab.propTypes = {
     })
   ),
   outsideSEPercent: PropTypes.number,
-  analysisAcres: PropTypes.number,
-  blueprintAcres: PropTypes.number,
+  rasterizedAcres: PropTypes.number,
 }
 
 IndicatorsTab.defaultProps = {
-  inputs: [],
   indicators: {},
   outsideSEPercent: 0,
-  analysisAcres: 0,
-  blueprintAcres: 0,
+  rasterizedAcres: 0,
 }
 
 export default IndicatorsTab

@@ -9,6 +9,7 @@ from jinja2 import Environment, FileSystemLoader
 from api.settings import SITE_URL
 from analysis.constants import (
     BLUEPRINT,
+    CORRIDORS,
     URBAN_LEGEND,
     SLR_LEGEND,
     OWNERSHIP,
@@ -54,13 +55,29 @@ template = env.get_template("report.html")
 css_template = env.get_template("report.css")
 
 
-def create_report(maps, results):
+def create_report(maps, results, name=None, area_type=None):
+    """Create PDF report with maps and results
+
+    Parameters
+    ----------
+    maps : dict
+    results : dict
+    name : str, optional (default: None)
+        name of area to show as report title / header
+    area_type : str, optional (default: None)
+        type of area, if applicable (e.g., subwatershed)
+
+    Returns
+    -------
+    bytes
+    """
+
     title = "Southeast Conservation Blueprint Summary"
     subtitle = ""
-    if "name" in results and results["name"] is not None:
-        subtitle = f"for {results['name']}"
-        if "type" in results:
-            subtitle += " " + results["type"]
+    if name is not None:
+        subtitle = f"for {name}"
+        if area_type is not None:
+            subtitle += " " + area_type
 
     ownership_acres = sum([e["acres"] for e in results.get("ownership", [])])
     protection_acres = sum([e["acres"] for e in results.get("protection", [])])
@@ -70,14 +87,11 @@ def create_report(maps, results):
         "blueprint": BLUEPRINT[::-1]
     }
 
+    if "corridors" in results:
+        legends["corridors"] = CORRIDORS
+
     if "urban" in results:
-        legends["urban"] = (
-            URBAN_LEGEND[1:3]
-            + URBAN_LEGEND[5:6]
-            + URBAN_LEGEND[8:9]
-            + URBAN_LEGEND[11:12]
-            + URBAN_LEGEND[-1:]
-        )
+        legends["urban"] = URBAN_LEGEND
 
     if "slr" in results:
         legends["slr"] = SLR_LEGEND
@@ -110,4 +124,7 @@ def create_report(maps, results):
     # with open("/tmp/test.html", "w") as out:
     #     out.write(template.render(**context))
 
+    # Can add variant="pdf/a-4b" to resolve issues viewing legend patches in
+    # some copies of Acrobat Pro; having enabled causes alert in Acrobat Reader
+    # / Pro about editing
     return HTML(BytesIO((template.render(**context)).encode())).write_pdf()

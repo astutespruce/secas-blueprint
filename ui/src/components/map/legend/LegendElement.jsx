@@ -12,7 +12,7 @@ const LegendElement = ({
 }) => (
   <Flex
     sx={{
-      alignItems: 'flex-start',
+      alignItems: 'center',
       lineHeight: 1,
     }}
   >
@@ -23,8 +23,9 @@ const LegendElement = ({
           width: '1.25em',
           height: '1em',
           borderRadius: '0.25em',
-          mr: '0.5rem',
-          bg: color,
+          mr: '0.25rem',
+          // set transparency to match map
+          bg: `${color}b3`,
           border: outlineWidth !== 0 ? `${outlineWidth}px solid` : 'none',
           borderColor: outlineColor,
         }}

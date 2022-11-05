@@ -12,13 +12,11 @@ from .summary_unit import get_summary_unit_map_image
 from .mercator import get_zoom, get_map_bounds, get_map_scale
 from .util import pad_bounds, get_center, png_bytes_to_base64, to_base64, merge_maps
 
-# input area specific map handlers
-from .caribbean import get_caribbean_map_image
-from .chat import get_chat_map_image
 
 from analysis.constants import (
     BLUEPRINT_COLORS,
-    URBAN_LEGEND,
+    CORRIDORS_COLORS,
+    URBAN_COLORS,
     SLR_LEGEND,
     INPUTS,
     INDICATOR_INDEX,
@@ -27,21 +25,21 @@ from api.settings import MAP_RENDER_THREADS
 
 
 WIDTH = 740
-HEIGHT = 440
+HEIGHT = 420
 PADDING = 5
 
 
 src_dir = Path("data/inputs")
-blueprint_filename = src_dir / "se_blueprint2021.tif"
-urban_filename = src_dir / "threats/urban/urban_2060.tif"
-slr_filename = src_dir / "threats/slr/slr.vrt"
+blueprint_filename = src_dir / "se_blueprint_2022.tif"
+urban_filename = src_dir / "threats/urban/urban_2060_binned.tif"
+slr_filename = src_dir / "threats/slr/slr.tif"
 inputs_dir = src_dir / "indicators"
+corridors_filename = inputs_dir / "base/corridors.tif"
 
 indicator_dirs = {
-    "sa": inputs_dir / "southatlantic",
-    "fl": inputs_dir / "florida",
-    "flm": inputs_dir / "florida_marine",
-    "nn": inputs_dir / "natures_network",
+    "base": inputs_dir / "base",
+    # TODO: enable when FL Marine Blueprint indicators available
+    # "flm": inputs_dir / "florida_marine",
 }
 
 
@@ -83,6 +81,7 @@ async def render_raster_maps(
     aoi_image,
     raster_input_ids,
     indicators,
+    corridors=False,
     urban=False,
     slr=False,
 ):
@@ -98,6 +97,8 @@ async def render_raster_maps(
     aoi_image : Image object
     raster_input_ids : list-like of IDs of Blueprint input rasters
     indicators : list-like of indicator IDs (not used yet)
+    corridors : bool (default False)
+        if True, will render corridors for Base Blueprint
     urban : bool (default False)
         if True, will render urban map
     slr : bool (default False)
@@ -120,9 +121,14 @@ async def render_raster_maps(
 
         # exclude 0 values
         colors = {
-            e["value"]: e["color"] for e in input_info["values"] if e["value"] != 0
+            e["value"]: e["color"]
+            for e in input_info["values"]
+            if e["value"] != 0 and e["color"] is not None
         }
         task_args.append((input_id, inputs_dir / input_info["filename"], colors))
+
+        if input_id == "base" and corridors:
+            task_args.append(("corridors", corridors_filename, CORRIDORS_COLORS))
 
     for id in indicators:
         indicator = INDICATOR_INDEX[id]
@@ -140,8 +146,7 @@ async def render_raster_maps(
         )
 
     if urban:
-        colors = {i: e["color"] for i, e in enumerate(URBAN_LEGEND) if e is not None}
-        task_args.append(("urban_2060", urban_filename, colors))
+        task_args.append(("urban_2060", urban_filename, URBAN_COLORS))
 
     if slr:
         colors = {i: e["color"] for i, e in enumerate(SLR_LEGEND)}
@@ -170,6 +175,7 @@ async def render_maps(
     summary_unit_id=None,
     input_ids=None,
     indicators=None,
+    corridors=False,
     urban=False,
     slr=False,
     ownership=False,
@@ -190,6 +196,8 @@ async def render_maps(
         If present, is a list of input area ids
     indicators : list-like, optional (default: None)
         If present, is a list of all indicator IDs to render.
+    corridors : bool, optional (default: False)
+        If True, Base Blueprint corridors will be rendered
     urban : bool, optional (default: False)
         If True, urban will be rendered.
     slr : bool, optional (default: False)
@@ -264,39 +272,7 @@ async def render_maps(
                 merge_maps([basemap_image, protection_image, aoi_image])
             )
 
-    if input_ids:
-        if "car" in input_ids:
-            car_image, error = get_caribbean_map_image(center, zoom, WIDTH, HEIGHT)
-            if error:
-                errors["car"] = error
-            else:
-                maps["car"] = to_base64(
-                    merge_maps([basemap_image, car_image, aoi_image])
-                )
-
-        if "okchat" in input_ids:
-            okchat_image, error = get_chat_map_image("ok", center, zoom, WIDTH, HEIGHT)
-            if error:
-                errors["okchat"] = error
-            else:
-                maps["okchat"] = to_base64(
-                    merge_maps([basemap_image, okchat_image, aoi_image])
-                )
-
-        if "txchat" in input_ids:
-            txchat_image, error = get_chat_map_image("tx", center, zoom, WIDTH, HEIGHT)
-            if error:
-                errors["txchat"] = error
-            else:
-                maps["txchat"] = to_base64(
-                    merge_maps([basemap_image, txchat_image, aoi_image])
-                )
-
-    raster_input_ids = (
-        [i for i in input_ids if i not in {"car", "okchat", "txchat"}]
-        if input_ids
-        else []
-    )
+    raster_input_ids = input_ids
 
     # Use background threads for rendering rasters
     raster_maps, raster_map_errors = await render_raster_maps(
@@ -306,6 +282,7 @@ async def render_maps(
         aoi_image,
         raster_input_ids,
         indicators or [],
+        corridors,
         urban,
         slr,
     )

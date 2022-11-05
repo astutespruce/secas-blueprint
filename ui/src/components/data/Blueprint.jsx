@@ -17,7 +17,6 @@ export const useBlueprintPriorities = () => {
             shortLabel
             percent
             description
-            description2: report_description
           }
         }
       }

@@ -14,17 +14,25 @@
 <h4>Data credits</h4>
 <p>
     {% if results.urban %}
-        Urbanization data are derived from the <a href="http://www.basic.ncsu.edu/dsl/urb.html">SLEUTH urban growth model</a>.
+        Urbanization data are derived from the FUTURES urban growth model.
+        Data provided by the
+        <a href="https://cnr.ncsu.edu/geospatial/">Center for Geospatial Analytics</a>,
+        NC State University (June 2022).
         <br /><br />
     {% endif %}
 
     {% if results.slr %}
-        Sea level rise data are derived from the National Oceanic and Atmospheric Administration's <a href="https://coast.noaa.gov/slrdata/">Sea Level Rise Data</a>.
+        Sea level rise data are derived from the National Oceanic and Atmospheric Administration's
+        <a href="https://coast.noaa.gov/slrdata/">Sea Level Rise Inundation Depth Data</a>
+        and the
+        <a href="https://oceanservice.noaa.gov/hazards/sealevelrise/sealevelrise-tech-report.html">2022 Sea Level Rise Technical Report</a>.
         <br /><br />
     {% endif %}
 
     {% if results.ownership or results.protection %}
-        Land ownership and conservation status is derived from the <a href="https://www.sciencebase.gov/catalog/item/5f186a2082cef313ed843257">Protected Areas Database of the United States</a> (PAD-US v2.1).
+        Land ownership and conservation status is derived from the
+        <a href="https://www.usgs.gov/programs/gap-analysis-project/science/pad-us-data-download">Protected Areas Database of the United States</a>
+        (PAD-US v3.0).
     {% endif %}
 </p>
 

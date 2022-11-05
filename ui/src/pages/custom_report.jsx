@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { graphql } from 'gatsby'
 
-import { Layout } from 'components/layout'
+import { Layout, SEO } from 'components/layout'
 import { HeaderImage } from 'components/image'
 import { UploadContainer } from 'components/report'
 
@@ -13,7 +13,7 @@ const CustomReportPage = ({
     },
   },
 }) => (
-  <Layout title="Create a Custom Blueprint Report">
+  <Layout>
     <HeaderImage
       title="Create a Custom Blueprint Report"
       image={headerImage}
@@ -22,8 +22,9 @@ const CustomReportPage = ({
         url: 'https://www.flickr.com/photos/usfwssoutheast/26871026541/',
       }}
       caption="Black Skimmers"
-      height="10rem"
-      maxHeight="10rem"
+      height="14rem"
+      maxHeight="14rem"
+      minHeight="14rem"
     />
 
     <UploadContainer />
@@ -51,3 +52,5 @@ CustomReportPage.propTypes = {
 }
 
 export default CustomReportPage
+
+export const Head = () => <SEO title="Create a Custom Blueprint Report" />

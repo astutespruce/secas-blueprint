@@ -43,6 +43,7 @@ export const resolveKey = (item, key) => {
 export const groupBy = (data, groupField) =>
   data.reduce((prev, d) => {
     const key = resolveKey(d, groupField)
+    /* eslint-disable-next-line no-param-reassign */
     prev[key] = (prev[key] || []).concat([d])
     return prev
   }, {})
@@ -64,15 +65,17 @@ export const extent = (values) => [Math.min(...values), Math.max(...values)]
  * @param {String} field - field to sort on
  * @param {bool} ascending
  */
-export const sortByFunc = (field, ascending = true) => (a, b) => {
-  if (a[field] < b[field]) {
-    return ascending ? -1 : 1
+export const sortByFunc =
+  (field, ascending = true) =>
+  (a, b) => {
+    if (a[field] < b[field]) {
+      return ascending ? -1 : 1
+    }
+    if (a[field] > b[field]) {
+      return ascending ? 1 : -1
+    }
+    return 0
   }
-  if (a[field] > b[field]) {
-    return ascending ? 1 : -1
-  }
-  return 0
-}
 
 /**
  * Recursively compare a to b using fields
@@ -173,11 +176,17 @@ export const parseDeltaEncodedValues = (text) => {
 export const parseDictEncodedValues = (text) => {
   if (!text) return null
 
+  // if any of the values are pipe encoded assume they all are
+  const alwaysArray = text.indexOf('|') !== -1
+
   return text
     .split(',')
     .map((d) => d.split(':'))
     .map(([k, v]) => {
-      if (v !== null && v !== undefined && v.indexOf('|') !== -1) {
+      if (
+        (v !== null && v !== undefined && v.indexOf('|') !== -1) ||
+        alwaysArray
+      ) {
         return [k, parsePipeEncodedValues(v)]
       }
 

@@ -18,6 +18,7 @@
             </div>
 
             <div class="legend">
+                <h4>Priorities for a connected network of lands and waters</h4>
                 <!-- omit not a priority -->
                 {% for item in legends.blueprint[:-1] %}
                     <div class="legend-element flex align-center">
@@ -38,31 +39,30 @@
 </section>
 
 <section>
-    <h2>Priority Categories</h2>
+    <h2 style="margin: 0;">Priority Categories</h2>
+    <h4 style="margin: 0;">For a connected network of lands and waters</h4>
+    <p>
+        In total, Blueprint priorities and priority connections cover roughly 50% of the Southeast Blueprint geography.
+    </p>
+
     <!-- omit not a priority -->
     {% for item in legends.blueprint[:-1] %}
         <h4>
             {{item.label}}
-            {% if 'priority' in item.label %}
-            for conservation action
-            {% endif %}
         </h4>
         <p>
             {{item.description}}
-            {{item.report_description}}
+
+            This class covers roughly {{item.percent}}% of the Southeast Blueprint geography.
         </p>
     {% endfor %}
+
+
 
 <div class="spacer"></div>
 
 {% with number=table.counter,label="Extent of each Blueprint priority category" %}
-{% if results.has_overlapping_inputs %}
-    {% with extra="Note: this area includes overlapping Blueprint inputs in some areas.  Values of a single Blueprint input may not directly correspond to final Blueprint values." %}
-        {% include "elements/table_caption.html" %}
-    {% endwith %}
-{% else %}
     {% include "elements/table_caption.html" %}
-{% endif %}
 {% endwith %}
 {% set table.counter=table.counter+1 %}
 
@@ -75,36 +75,48 @@
         </tr>
     </thead>
     <tbody>
-        <!-- sort blueprint from highest priority to lowest -->
-        {% with acres=results.blueprint[::-1] %}
-        {% for item in legends.blueprint %}
+        {% for item in results.blueprint %}
         <tr>
             <td class="label">{{item.label}}</td>
-            <td class="acres">{{acres[loop.index-1]|format_number}}</td>
-            <td class="percent">{{(100 * acres[loop.index-1] / results.analysis_acres)|format_percent}}%</td>
+            <td class="acres">{{item.acres|format_number}}</td>
+            <td class="percent">{{item.percent|format_percent}}%</td>
         </tr>
         {% endfor %}
-        {% endwith %}
 
-        {% if results.analysis_remainder > 0 %}
+        {% if results.outside_se_acres > 0 %}
             <tr class="remainder-row">
                 <td class="label">Outside Southeast Blueprint</td>
-                <td class="acres">{{results.analysis_remainder|format_number}}</td>
-                <td class="percent">{{(100 * results.analysis_remainder / results.analysis_acres)|format_percent}}%</td>
+                <td class="acres">{{results.outside_se_acres|format_number}}</td>
+                <td class="percent">{{results.outside_se_percent|format_percent}}%</td>
             </tr>
         {% endif %}
 
         <tr class="total-row">
             <td class="label align-right">Total area</td>
-            <td class="acres">{{results.analysis_acres|format_number}}</td>
+            <td class="acres">{{results.rasterized_acres|format_number}}</td>
             <td class="percent">100%</td>
         </tr>
     </tbody>
 </table>
 
+{% if results.promote_base %}
+    {% with src=results.inputs[0] %}
+        {% if "corridors" in results %}
+            {% include "blocks/corridors.html" %}
+        {% else %}
+            {% include "blocks/no_corridors.html" %}
+        {% endif %}
 
-{% for src in results.inputs %}
-    {% include "blocks/blueprint_input.html" %}
-{% endfor %}
+        {% with ecosystems=src.ecosystems %}
+            {% include "blocks/ecosystems.html" %}
+        {% endwith %}
+    {% endwith %}
+
+{% else %}
+    {% for src in results.inputs %}
+        {% include "blocks/blueprint_input.html" %}
+    {% endfor %}
+
+{% endif %}
 
 </section>

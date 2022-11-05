@@ -56,6 +56,5 @@ export const formatNumber = (number, decimals = null) => {
   return formatted
 }
 
-export const formatPhone = (phone) => {
-  return `(${phone.slice(0, 3)}) ${phone.slice(3, 6)}-${phone.slice(6)}`
-}
+export const formatPhone = (phone) =>
+  `(${phone.slice(0, 3)}) ${phone.slice(3, 6)}-${phone.slice(6)}`

@@ -14,11 +14,10 @@ export const isLocalDev = hasWindow && process.env.NODE_ENV === 'development'
  *
  * @param {Object} data
  */
-export const encodeParams = (obj) => {
-  return Object.keys(obj)
+export const encodeParams = (obj) =>
+  Object.keys(obj)
     .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(obj[key])}`)
     .join('&')
-}
 
 export const saveToStorage = (key, data) => {
   if (!hasWindow) return

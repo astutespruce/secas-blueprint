@@ -3,7 +3,7 @@ import React, { useCallback, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { useDropzone } from 'react-dropzone'
 import { useFormContext } from 'react-hook-form'
-import { Flex, Heading, Text } from 'theme-ui'
+import { Flex, Heading, Paragraph } from 'theme-ui'
 import { transparentize } from '@theme-ui/color'
 import { Download } from '@emotion-icons/fa-solid'
 
@@ -118,13 +118,13 @@ const DropZone = ({ name }) => {
         <Heading as="h3" sx={{ mb: '1rem' }}>
           Drop your zip file here
         </Heading>
-        <Text as="p" sx={{ color: 'grey.7', textAlign: 'center', fontSize: 1 }}>
+        <Paragraph sx={{ color: 'grey.7', textAlign: 'center', fontSize: 1 }}>
           Zip file must contain all associated files for a shapefile (at least
           .shp, .prj, .shx) or file geodatabase (.gdb).
           <br />
           <br />
           Max size: {MAXSIZE_MB} MB.
-        </Text>
+        </Paragraph>
       </Flex>
     </Flex>
   )

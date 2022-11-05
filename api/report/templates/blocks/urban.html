@@ -2,17 +2,15 @@
     <h3 id="Urban">Urban growth</h3>
 
     <p>
-        The SLEUTH urban growth model predicts the likelihood that an area will
-        urbanize at every decade from 2020 to 2100. Darker reds indicate higher
-        probability of urbanization. 2009 served as the baseline for current
-        urban areas. The 2009 urban extent combined developed areas from the
-        2001 National Landcover Database with areas of high road density from
-        U.S. Census TIGER Line data for 2000, 2006, 2008, and 2009. The model
-        used patterns of road network growth from 2000-2009 to predict what
-        future urbanization would look like if those trends continued. It
-        considered the influence of topography on ease of development and
-        excluded areas that are difficult or impossible to develop, like water
-        bodies, beaches, protected conservation lands, and most wetlands.
+        The FUTURES urban growth model predicts the likelihood that an area will
+        urbanize at every decade from 2020 to 2100. Developed areas from the
+        2019 National Landcover Database serve as the baseline for current urban
+        areas. The model simulates landscape change based on trends in
+        population growth, local development suitability factors, and an urban
+        patch-growing algorithm. It considers environmental drivers like
+        distance to floodplain, slope, and available infrastructure, and even
+        socio-economic status. The probability of urbanization for each area
+        reflects how many times it urbanized out of 50 model runs.
     </p>
 
     {% if maps.urban_2060 %}
@@ -34,15 +32,23 @@
             <div class="legend">
                 <h4>Probability of urbanization by 2060</h4>
                 {% for item in legends.urban %}
-                    <div class="legend-element flex align-center {{'no-margin' if loop.index > 2 else ''}}">
+                    <div class="legend-element flex align-center">
                         <div class="legend-patch" style="background: {{item.color}}"></div>
                         <div>{{item.label}}</div>
                     </div>
                 {% endfor %}
                 <!-- space is required or last label doesn't render -->
                 &nbsp;
+
             </div>
         </div>
+        <p>
+            <br />
+            {{results.urban.entries[0].percent|format_percent}}% of this
+            area is already urban in 2019, and an additional
+            {{(results.urban.entries[5].percent - results.urban.entries[0].percent)|format_percent}}%
+            has at least a moderate probability of urbanizing by 2060.
+        </p>
 
     {% else %}
         <div class="map-placeholder text-center">
@@ -55,8 +61,11 @@
 
     <div class="caption">
         Table {{table.counter}}: Extent of projected urbanization by decade{% if results.name %} within {{results.name}}{% if results.type %} {{results.type}}{% endif %}{% else %} in this area{% endif %}.
-        Values from the <a href="http://www.basic.ncsu.edu/dsl/urb.html">SLEUTH urban growth model</a>.  Note: areas are based on 60 meter pixels, unlike the 30 meter pixels used for the Blueprint and
-        its inputs; this will cause the total acreage to be different.
+        Values from the FUTURES urban growth model.
+        Data provided by the
+        <a href="https://cnr.ncsu.edu/geospatial/">Center for Geospatial Analytics</a>,
+        NC State University.
+        2060 corresponds to the <a href="https://secassoutheast.org/our-goal">SECAS goal</a>: a 10% or greater improvement in the health, function, and connectivity of Southeastern ecosystems by 2060.
     </div>
 
     {% set table.counter=table.counter+1 %}
@@ -70,35 +79,33 @@
             </tr>
         </thead>
         <tbody>
-            {% with acres=results.urban %}
-            <tr>
-                <td class="label">Urban in 2009</td>
-                <td class="percent">{{acres|format_number}}</td>
-                <td class="percent">{{(100 * acres / results.urban_acres)|format_percent}}%</td>
-            </tr>
-            {% endwith %}
-
-            {% for acres in results['proj_urban'] %}
-            <tr>
-                <td class="label">{{2020 + (10*(loop.index-1))}} projected extent</td>
-                <td class="percent">{{acres|format_number}}</td>
-                <td class="percent">{{(100 * acres / results.urban_acres)|format_percent}}%</td>
+            {% for entry in results.urban.entries %}
+            <tr {% if entry.year == 2060 %}class="highlight-row"{% endif %}>
+                <td class="label">{{entry.label}}</td>
+                <td class="percent">{{entry.acres|format_number}}</td>
+                <td class="percent">{{entry.percent|format_percent}}%</td>
             </tr>
         {% endfor %}
 
-        {% with remainder=results.urban_acres - results['proj_urban'][-1] %}
-        {% if remainder > 0 %}
+        {% if results.urban.noturban_2100_acres %}
             <tr class="remainder-row">
-                <td class="label">Not projected to urbanize by 2060</td>
-                <td class="acres">{{remainder|format_number}}</td>
-                <td class="percent">{{(100 * remainder / results.urban_acres)|format_percent}}%</td>
+                <td class="label">Not projected to urbanize by 2100</td>
+                <td class="acres">{{results.urban.noturban_2100_acres|format_number}}</td>
+                <td class="percent">{{results.urban.noturban_2100_percent|format_percent}}%</td>
             </tr>
         {% endif %}
-        {% endwith %}
+
+        {% if results.outside_se_acres > 0 %}
+            <tr class="remainder-row">
+                <td class="label">Outside Southeast Blueprint</td>
+                <td class="acres">{{results.outside_se_acres|format_number}}</td>
+                <td class="percent">{{results.outside_se_percent|format_percent}}%</td>
+            </tr>
+        {% endif %}
 
         <tr class="total-row">
             <td class="align-right">Total area</td>
-            <td class="acres">{{results.urban_acres|format_number}}</td>
+            <td class="acres">{{results.rasterized_acres|format_number}}</td>
             <td class="percent">100%</td>
         </tr>
 
@@ -106,10 +113,10 @@
     </table>
 </div>
 
-{% if results.urban and results['proj_urban'][4] > results.urban %}
+{% if results.urban.percent_increase_by_2060 %}
     <p class="no-break">
-    By 2060, urbanization is projected to increase
-        <b>{{(100*(results['proj_urban'][4] - results.urban) / results.urban)|format_number}}%</b>
-        over 2009 levels.
+    By 2060, the size of the urban footprint is projected to increase
+        <b>{{results.urban.percent_increase_by_2060|format_number}}%</b>
+        over 2019 levels.
     </p>
 {% endif %}

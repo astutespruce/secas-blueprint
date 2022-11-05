@@ -31,11 +31,11 @@ const TabContent = ({ tab, mapData }) => {
 
   const {
     type,
+    inputId,
     blueprint,
-    inputs,
+    corridors,
     outsideSEPercent,
-    blueprint_total: blueprintAcres,
-    shape_mask: analysisAcres,
+    rasterizedAcres,
     indicators,
     ecosystems,
     slr,
@@ -43,7 +43,7 @@ const TabContent = ({ tab, mapData }) => {
     ownership,
     protection,
     protectedAreas,
-    counties,
+    ltaSearch,
   } = mapData
 
   switch (tab) {
@@ -52,7 +52,8 @@ const TabContent = ({ tab, mapData }) => {
         <BlueprintTab
           type={type}
           blueprint={blueprint}
-          inputs={inputs}
+          corridors={corridors}
+          inputId={inputId}
           outsideSEPercent={outsideSEPercent}
           ecosystems={ecosystems}
           {...mapData}
@@ -63,11 +64,10 @@ const TabContent = ({ tab, mapData }) => {
       return (
         <IndicatorsTab
           type={type}
-          inputs={inputs}
+          inputId={inputId}
           indicators={indicators}
           outsideSEPercent={outsideSEPercent}
-          blueprintAcres={blueprintAcres}
-          analysisAcres={analysisAcres}
+          rasterizedAcres={rasterizedAcres}
         />
       )
     }
@@ -81,7 +81,7 @@ const TabContent = ({ tab, mapData }) => {
           ownership={ownership}
           protection={protection}
           protectedAreas={protectedAreas}
-          counties={counties}
+          ltaSearch={ltaSearch}
         />
       )
     }

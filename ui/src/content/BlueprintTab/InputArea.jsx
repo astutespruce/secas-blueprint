@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Box, Flex, Text } from 'theme-ui'
+import { Box, Flex, Text, Paragraph } from 'theme-ui'
 
 import { OutboundLink } from 'components/link'
 
@@ -69,24 +69,28 @@ const InputArea = ({
       valueCaption={valueCaption}
     />
 
-    <Text as="p" sx={{ mt: '1rem', fontSize: 1 }}>
+    <Paragraph sx={{ mt: '1rem', fontSize: 1 }}>
       {description}{' '}
-      {infoURL === dataURL ? (
-        <OutboundLink to={infoURL}>Learn more and access data</OutboundLink>
-      ) : (
+      {infoURL || dataURL ? (
         <>
-          <OutboundLink to={infoURL}>Learn more</OutboundLink> or{' '}
-          <OutboundLink to={dataURL}>access data</OutboundLink>
+          {infoURL === dataURL ? (
+            <OutboundLink to={infoURL}>Learn more and access data</OutboundLink>
+          ) : (
+            <>
+              <OutboundLink to={infoURL}>Learn more</OutboundLink> or{' '}
+              <OutboundLink to={dataURL}>access data</OutboundLink>
+            </>
+          )}
+          .
         </>
-      )}
-      .{' '}
+      ) : null}{' '}
       {viewerURL ? (
         <>
           More detailed information for {label} indicators is available in the{' '}
           <OutboundLink to={viewerURL}>{viewerName}</OutboundLink>.
         </>
       ) : null}
-    </Text>
+    </Paragraph>
   </Box>
 )
 

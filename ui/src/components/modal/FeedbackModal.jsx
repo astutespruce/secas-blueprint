@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Text } from 'theme-ui'
+import { Paragraph } from 'theme-ui'
 
 import { OutboundLink } from 'components/link'
 import BoundModal from './BoundModal'
@@ -10,7 +10,7 @@ const FeedbackModal = ({ children }) => (
     title="Give your feedback to Blueprint Staff"
     anchorNode={children}
   >
-    <Text as="p">
+    <Paragraph>
       The Blueprint and its inputs are regularly revised based on input from
       people like you. Have a suggestion on how to improve the priorities? Let
       us know! We also welcome feedback on how to improve the Southeast
@@ -24,7 +24,7 @@ const FeedbackModal = ({ children }) => (
         for your state
       </OutboundLink>
       .
-    </Text>
+    </Paragraph>
   </BoundModal>
 )
 

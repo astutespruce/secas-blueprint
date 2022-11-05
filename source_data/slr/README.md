@@ -1,26 +1,64 @@
 # SECAS Southeast Conservation Blueprint Sea Level Rise data
 
-NOTE: this is not aligned to the blueprint grid.
+## SLR inundation depth data
 
-Data were obtained from Amy Keister on 3/10/2020. She exported individual
-Geotiffs created from the source files created in her processing chain for
-mosiacking SLR data obtained from NOAA (https://coast.noaa.gov/slrdata/).
+The latest SLR data are downloaded on 7/31/2022 from
+[NOAA](https://coast.noaa.gov/slrdata/) as polygon extent of inundation per foot
+of depth between 0 and 10 feet.
 
-These are a series of GeoTIFF files
-for small areas along the coast, with varying footprints and resolution. To use
-here, we constructed a VRT using GDAL, and used a resolution of 15 meters for
-easier aggregation in results.
+Data are downloaded using `analysis/prep/download_slr.py`.
 
-Values are coded 0-6 for the amount of sea level rise that would impact a given
-area. Values are cumulative, so a value of 6 means that the area is also
-inundated by 1-5 feet.
+The latest SLR projections by decade and scenario at 1 degree grid cell
+resolution were downloaded on 8/24/2022 from
+[NOAA](https://oceanservice.noaa.gov/hazards/sealevelrise/sealevelrise-data.html).
 
-From within `data/threats/slr` directory:
+Data are prepared using `analysis/prep/prep_slr.py` and involves the following
+major steps:
 
-```
-gdalbuildvrt -overwrite -resolution user -tr 15 15 slr.vrt *.tif
-```
+### Rasterize SLR data
 
-To assist with checking if a given area of interest overlaps SLR data, the
-bounds of all SLR files are extracted to a dataset using
-`util/prepare_slr.py`.
+SLR data polygons are rasterized to 30 meter resolution using SE Bluprint
+standard projection (EPSG:5070) and snapped to the Blueprint grid so that
+everything aligns correctly.
+
+Small isolated polygons and holes less than half a pixel in area are removed.
+
+Values are coded 0 (already inundated) - 10 feet.
+
+Because SLR data covers a relatively small area but a very large extent, data
+are retained in their original chunks as delivered by NOAA, and compiled into
+a virtual raster table using GDAL.
+
+The final output file of this step is `data/inputs/threats/slr/slr.tif`.
+
+### Create 1-degree grid cells with projection data
+
+1-degree grid cells are extracted from the NOAA CSV downloaded above.
+
+Median projection values for 2020 through 2100 are added to the offset for 2000-2005
+as directed in the header of the CSV and converted to feet.
+
+The projection values are available for the following NOAA projections:
+
+- Low
+- Intermediate-Low
+- Intermediate
+- Intermediate-High
+- High
+
+Only those cells that intersect with areas where SLR data were available,
+according to the coarse-resolution (480m) mask of SLR data, are retained for
+analysis.
+
+These are ultimately intersected with a user's area of interest to calculate the
+area-weighted mean of medians (each grid cell is a median) for each NOAA
+scenario for each decade.
+
+## NOAA data extent and areas data unavailable
+
+Shapefiles of the NOAA data extent and areas not modeled were obtained directly from
+William Brooks at NOAA on 10/13/2022. These include:
+
+- data extent: extent of areas where NOAA processed data
+- areas not modeled: extent of areas within data extent where no modeled data are available
+- veil: inland counties not considered for SLR analysis
