@@ -11,6 +11,8 @@
     "@emotion/babel-plugin": "^11.2.0",
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.1.5",
+    "@floating-ui/react-dom": "^1.0.0",
+    "@floating-ui/react-dom-interactions": "^0.10.2",
     "@mapbox/geo-viewport": "^0.5.0",
     "@mdx-js/react": "^2.0.0",
     "@sentry/react": "^7.3.1",

@@ -70,6 +70,7 @@ module.exports = {
         },
       },
     },
+    `gatsby-plugin-emotion`,
     {
       resolve: `gatsby-plugin-theme-ui`,
       options: {
