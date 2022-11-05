@@ -196,6 +196,12 @@
     {% endif %}
 </div>
 
+<!-- special case for PARCAs: show specific area info -->
+{% if indicator.id=="base:land_saamphibianandreptileareas" and results["parca"] %}
+    {% include "blocks/parca_details.html" %}
+{% endif %}
+
+
 <p>
     To learn more and explore the GIS data,
     <a href="{{indicator.url}}">view this indicator in the SECAS Atlas</a>.

@@ -15,13 +15,14 @@ from analysis.lib.stats.core import (
 )
 from analysis.lib.stats.florida_marine import extract_florida_marine_by_mask
 from analysis.lib.stats.ownership import get_lta_search_info, get_ownership_for_aoi
+from analysis.lib.stats.parca import get_parcas_for_aoi
 from analysis.lib.stats.slr import extract_slr_by_mask_and_geometry
 from analysis.lib.stats.urban import extract_urban_by_mask
 from analysis.lib.util import subset_dict
 
 data_dir = Path("data/inputs")
-boundary_filename = data_dir / "boundaries/se_boundary.feather"
-ownership_filename = data_dir / "boundaries/ownership.feather"
+bnd_dir = data_dir / "boundaries"
+boundary_filename = bnd_dir / "se_boundary.feather"
 slr_bounds_filename = data_dir / "threats/slr/slr_bounds.feather"
 
 
@@ -97,10 +98,10 @@ def get_custom_area_results(df):
         if id == "base":
             base_results = extract_base_blueprint_by_mask(**config)
             input_area.update(base_results)
+            corridors = base_results.get("corridors", None)
 
             if input_info["promote_base"]:
                 blueprint = base_results["priorities"]
-                corridors = base_results.get("corridors", None)
 
         elif id == "car":
             input_area.update(extract_caribbean_by_mask(**config))
@@ -108,11 +109,14 @@ def get_custom_area_results(df):
         elif "flm":
             input_area.update(extract_florida_marine_by_mask(**config))
 
-    # urban not available for PR
+    # PARCAs and urban not available for PR
     if "base" in input_ids:
         urban = extract_urban_by_mask(**config)
+        parca = get_parcas_for_aoi(df)
+
     else:
         urban = None
+        parca = None
 
     # SLR not applicable to FL Marine
     if input_ids != ["flm"]:
@@ -144,6 +148,9 @@ def get_custom_area_results(df):
 
     if urban is not None:
         results["urban"] = urban
+
+    if parca is not None:
+        results["parca"] = parca
 
     if ownership_info is not None:
         results.update(ownership_info)

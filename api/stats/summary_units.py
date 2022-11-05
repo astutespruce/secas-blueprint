@@ -5,6 +5,7 @@ from analysis.lib.stats.base_blueprint import get_base_blueprint_unit_results
 from analysis.lib.stats.caribbean import get_caribbean_unit_results
 from analysis.lib.stats.florida_marine import get_florida_marine_unit_results
 from analysis.lib.stats.ownership import get_ownership_unit_results
+from analysis.lib.stats.parca import get_parca_results
 from analysis.lib.stats.urban import get_urban_unit_results
 from analysis.lib.stats.slr import get_slr_unit_results
 
@@ -34,6 +35,10 @@ def get_summary_unit_results(unit_type, unit_id):
     results.update(get_ownership_unit_results(results_dir, unit_id, unit.acres))
 
     if unit_type == "huc12":
+        parca_results = get_parca_results(results_dir, unit_id)
+        if parca_results:
+            results["parca"] = parca_results
+
         slr_results = get_slr_unit_results(results_dir, unit_id, unit.rasterized_acres)
         if slr_results:
             results["slr"] = slr_results

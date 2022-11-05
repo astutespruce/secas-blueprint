@@ -127,6 +127,9 @@ async def render_raster_maps(
         }
         task_args.append((input_id, inputs_dir / input_info["filename"], colors))
 
+        if input_id == "base" and corridors:
+            task_args.append(("corridors", corridors_filename, CORRIDORS_COLORS))
+
     for id in indicators:
         indicator = INDICATOR_INDEX[id]
         colors = {
@@ -141,9 +144,6 @@ async def render_raster_maps(
                 colors,
             )
         )
-
-    if input_id == "base" and corridors:
-        task_args.append(("corridors", corridors_filename, CORRIDORS_COLORS))
 
     if urban:
         task_args.append(("urban_2060", urban_filename, URBAN_COLORS))

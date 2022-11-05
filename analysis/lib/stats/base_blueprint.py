@@ -250,6 +250,7 @@ def extract_base_blueprint_by_mask(
         "outside_input_acres": outside_input_acres,
         "outside_input_percent": 100 * outside_input_acres / rasterized_acres,
     }
+
     if len(corridors):
         results["corridors"] = corridors
 

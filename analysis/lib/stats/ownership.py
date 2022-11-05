@@ -177,8 +177,7 @@ def get_ownership_unit_results(results_dir, unit_id, acres):
     ----------
     results_dir : Path
         path containing results
-    unit_id : _type_
-        _description_
+    unit_id : str
     acres : float
         acres of polygon summary unit boundary
 

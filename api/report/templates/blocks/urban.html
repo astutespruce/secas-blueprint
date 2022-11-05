@@ -39,8 +39,16 @@
                 {% endfor %}
                 <!-- space is required or last label doesn't render -->
                 &nbsp;
+
             </div>
         </div>
+        <p>
+            <br />
+            {{results.urban.entries[0].percent|format_percent}}% of this
+            area is already urban in 2019, and an additional
+            {{(results.urban.entries[5].percent - results.urban.entries[0].percent)|format_percent}}%
+            has at least a moderate probability of urbanizing by 2060.
+        </p>
 
     {% else %}
         <div class="map-placeholder text-center">
@@ -107,7 +115,7 @@
 
 {% if results.urban.percent_increase_by_2060 %}
     <p class="no-break">
-    By 2060, urbanization is projected to increase
+    By 2060, the size of the urban footprint is projected to increase
         <b>{{results.urban.percent_increase_by_2060|format_number}}%</b>
         over 2019 levels.
     </p>

@@ -192,3 +192,23 @@ counties = (
 )
 write_dataframe(counties, bnd_dir / "counties.fgb")
 counties.to_feather(out_dir / "counties.feather")
+
+
+### PARCAs (Amphibian & reptile aras)
+# already in EPSG:5070
+print("Processing PARCAs...")
+df = (
+    read_dataframe(
+        src_dir / "boundaries/SouthAtlanticPARCAs.gdb",
+        columns=["FID", "Name", "Description"],
+        force_2d=True,
+    )
+    .to_crs(DATA_CRS)
+    .rename(columns={"FID": "parca_id", "Name": "name", "Description": "description"})
+    .explode(ignore_index=True)
+)
+
+df["geometry"] = make_valid(df.geometry.values.data)
+
+write_dataframe(df, bnd_dir / "parca.fgb")
+df.to_feather(out_dir / "parca.feather")
