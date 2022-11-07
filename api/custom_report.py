@@ -77,6 +77,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
         raise DataError("area of interest does not overlap Southeast Blueprint")
 
     has_corridors = "corridors" in results
+    has_nlcd = "nlcd" in results
     has_urban = "urban" in results
     has_slr = "slr" in results
     has_ownership = "ownership" in results
@@ -100,6 +101,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
         input_ids=results["input_ids"],
         indicators=indicators,
         corridors=has_corridors,
+        nlcd=has_nlcd,
         urban=has_urban,
         slr=has_slr,
         ownership=has_ownership,

@@ -95,6 +95,14 @@
             </tr>
         {% endif %}
 
+        {% if results.urban.outside_urban_acres %}
+            <tr class="remainder-row">
+                <td class="label">Outside NLCD area</td>
+                <td class="acres">{{results.urban.outside_urban_acres|format_number}}</td>
+                <td class="percent">{{results.urban.outside_urban_percent|format_percent}}%</td>
+            </tr>
+        {% endif %}
+
         {% if results.outside_se_acres > 0 %}
             <tr class="remainder-row">
                 <td class="label">Outside Southeast Blueprint</td>

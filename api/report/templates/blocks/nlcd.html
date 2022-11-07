@@ -1,0 +1,148 @@
+
+<section>
+<div class="no-break">
+    <h2 id="NLCD">Land Cover Trends</h2>
+
+    <p>
+        The National Land Cover Database shows the amount of area in each major
+        land cover class for 2001, 2004, 2006, 2008, 2011, 2013, 2016, 2019.
+        Land cover classes include open water, perennial ice/snow, developed
+        (multiple intensities), barren land, deciduous forest, evergreen forest,
+        mixed forest, shrub/scrub, grassland/herbaceous, pasture/hay, cultivated
+        crops, woody wetlands, and emergent herbaceous wetlands.
+    </p>
+
+    {% if maps.nlcd_2019 %}
+        <div class="map-container">
+            <img src="data:image/png;base64,{{maps.nlcd_2019}}" alt="Map of land cover classes - 2019" class="map">
+
+            {% include "elements/north_arrow.html" %}
+        </div>
+
+        {% include "elements/map_footer.html" %}
+
+        <div class="flex map-footer">
+            <div class="map-locator-container">
+                {% if maps.locator %}
+                    <img src="data:image/png;base64,{{maps.locator}}" alt="Locator map" class="map-locator">
+                {% endif %}
+            </div>
+
+            <div class="legend">
+                <h4>Land cover class in 2019</h4>
+                <div class="flex">
+                    <div style="width: 200pt;">
+                        {% for i in range(8) %}
+                            {% with item=legends.nlcd[i] %}
+                            <div class="legend-element flex align-center">
+                                <div class="legend-patch" style="background: {{item.color}}"></div>
+                                <div>{{item.label}}</div>
+                            </div>
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
+                    <div>
+                        {% for i in range(8, 16) %}
+                            {% with item=legends.nlcd[i] %}
+                                <div class="legend-element flex align-center">
+                                    <div class="legend-patch" style="background: {{item.color}}"></div>
+                                    <div>{{item.label}}</div>
+                                </div>
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+        <div class="map-placeholder text-center">
+            map could not be created
+        </div>
+    {% endif %}
+</div>
+
+<div class="no-break page-landscape">
+
+    <div class="caption">
+        Table {{table.counter}}: Extent of land cover class by year {% if results.name %} within {{results.name}}{% if results.type %} {{results.type}}{% endif %}{% else %} in this area{% endif %}.
+        Values from the <a href="https://www.usgs.gov/centers/eros/science/national-land-cover-database">National Land Cover Database</a>.
+    </div>
+
+    {% set table.counter=table.counter+1 %}
+
+    <table class="centered">
+        <thead>
+            <tr>
+                <th class="label">Land cover class</th>
+                {% for year in results.nlcd.years %}
+                    <th class="nlcd">{{year}} acres</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <!-- each entry is a class that is present -->
+            {% for entry in results.nlcd.entries %}
+                <tr class="no-break">
+                    <td class="label">{{entry.label}}</td>
+
+                    {% for i in range(results.nlcd.years | length) %}
+                        <td class="nlcd">
+                            {{entry.acres[i]|format_number}}
+                            <br />
+                            <span class="nlcd-percent">
+                                ({{entry.percent[i]|format_percent}}%)
+                            </span>
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+
+            {% if results.nlcd.outside_nlcd_acres %}
+                <tr class="remainder-row">
+                    <td class="label">Outside NLCD area</td>
+
+                    {% for year in results.nlcd.years %}
+                        <td class="nlcd">
+                            {{results.nlcd.outside_nlcd_acres|format_number}}
+                            <br />
+                            <span class="nlcd-percent">
+                                ({{results.nlcd.outside_nlcd_percent|format_percent}}%)
+                            </span>
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endif %}
+
+            {% if results.outside_se_acres > 0 %}
+                <tr class="remainder-row">
+                    <td class="label">Outside Southeast Blueprint</td>
+                    {% for year in results.nlcd.years %}
+                    <td class="nlcd">
+                        {{results.outside_se_acres|format_number}}
+                        <br />
+                        <span class="nlcd-percent">
+                            ({{results.outside_se_percent|format_percent}}%)
+                        </span>
+                    </td>
+                    {% endfor %}
+                </tr>
+            {% endif %}
+
+            <tr class="total-row">
+                <td class="align-right">Total area</td>
+                {% for year in results.nlcd.years %}
+                    <td class="nlcd">
+                        {{results.rasterized_acres|format_number}}
+                        <br />
+                        <span class="nlcd-percent">
+                            (100%)
+                        </span>
+                    </td>
+                {% endfor %}
+            </tr>
+
+        </tbody>
+    </table>
+</div>
+</section>

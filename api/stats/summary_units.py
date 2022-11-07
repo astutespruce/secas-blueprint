@@ -4,6 +4,7 @@ from analysis.lib.stats.core import get_unit_core_results
 from analysis.lib.stats.base_blueprint import get_base_blueprint_unit_results
 from analysis.lib.stats.caribbean import get_caribbean_unit_results
 from analysis.lib.stats.florida_marine import get_florida_marine_unit_results
+from analysis.lib.stats.nlcd import get_nlcd_unit_results
 from analysis.lib.stats.ownership import get_ownership_unit_results
 from analysis.lib.stats.parca import get_parca_results
 from analysis.lib.stats.urban import get_urban_unit_results
@@ -50,6 +51,12 @@ def get_summary_unit_results(unit_type, unit_id):
             results["inputs"][0].update(base_blueprint_results)
             if "corridors" in base_blueprint_results:
                 results["corridors"] = base_blueprint_results["corridors"]
+
+            nlcd_results = get_nlcd_unit_results(
+                results_dir, unit_id, unit.rasterized_acres
+            )
+            if nlcd_results:
+                results["nlcd"] = nlcd_results
 
             urban_results = get_urban_unit_results(
                 results_dir, unit_id, unit.rasterized_acres

@@ -48,7 +48,8 @@ for aoi_name in aoi_names:
     bounds = pg.total_bounds(geometry)
 
     has_corridors = "corridors" in results
-    has_urban = "proj_urban" in results and results["proj_urban"][-1] > 0
+    has_urban = "urban" in results
+    has_nlcd = "nlcd" in results
     has_slr = "slr" in results
     has_ownership = "ownership" in results
     has_protection = "protection" in results
@@ -60,6 +61,7 @@ for aoi_name in aoi_names:
         geometry=geometry[0],
         input_ids=results["input_ids"],
         corridors=has_corridors,
+        nlcd=has_nlcd,
         urban=has_urban,
         slr=has_slr,
         ownership=has_ownership,
@@ -103,7 +105,8 @@ for summary_type in ids:
         results = units.get_results(id)
 
         has_corridors = "corridors" in results
-        has_urban = "proj_urban" in results and results["proj_urban"][1] > 0
+        has_nlcd = "nlcd" in results
+        has_urban = "urban" in results
         has_slr = "slr" in results
         has_ownership = "ownership" in results
         has_protection = "protection" in results
@@ -117,6 +120,7 @@ for summary_type in ids:
             summary_unit_id=id,
             input_ids=results["input_ids"],
             corridors=has_corridors,
+            nlcd=has_nlcd,
             urban=has_urban,
             slr=has_slr,
             ownership=has_ownership,

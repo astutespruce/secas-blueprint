@@ -14,6 +14,7 @@ from analysis.lib.stats.core import (
     get_shape_mask,
 )
 from analysis.lib.stats.florida_marine import extract_florida_marine_by_mask
+from analysis.lib.stats.nlcd import extract_nlcd_by_mask
 from analysis.lib.stats.ownership import get_lta_search_info, get_ownership_for_aoi
 from analysis.lib.stats.parca import get_parcas_for_aoi
 from analysis.lib.stats.slr import extract_slr_by_mask_and_geometry
@@ -109,12 +110,14 @@ def get_custom_area_results(df):
         elif "flm":
             input_area.update(extract_florida_marine_by_mask(**config))
 
-    # PARCAs and urban not available for PR
+    # PARCAs, urban, NLCD not available except in Base Blueprint extent
     if "base" in input_ids:
+        nlcd = extract_nlcd_by_mask(**config)
         urban = extract_urban_by_mask(**config)
         parca = get_parcas_for_aoi(df)
 
     else:
+        nlcd = None
         urban = None
         parca = None
 
@@ -145,6 +148,9 @@ def get_custom_area_results(df):
 
     if slr is not None:
         results["slr"] = slr
+
+    if nlcd is not None:
+        results["nlcd"] = nlcd
 
     if urban is not None:
         results["urban"] = urban

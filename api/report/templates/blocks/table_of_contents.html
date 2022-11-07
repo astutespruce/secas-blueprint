@@ -61,6 +61,14 @@
 
       {% endif %}
 
+    {% if results.nlcd %}
+    <div class="divider"></div>
+    <li>
+      <a href="#NLCD" class="toctext">Land Cover Trends</a>
+      <a href="#NLCD" class="tocpagenr"></a>
+    </li>
+    {% endif %}
+
 
     {% if not results.exclude_threats %}
     <div class="divider"></div>

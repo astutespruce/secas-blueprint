@@ -39,6 +39,7 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
 
     has_corridors = "corridors" in results
     has_urban = "urban" in results
+    has_nlcd = "nlcd" in results
     has_slr = "slr" in results
     has_ownership = "ownership" in results
     has_protection = "protection" in results
@@ -55,6 +56,7 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
         input_ids=results["input_ids"],
         indicators=indicators,
         corridors=has_corridors,
+        nlcd=has_nlcd,
         urban=has_urban,
         slr=has_slr,
         ownership=has_ownership,

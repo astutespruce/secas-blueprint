@@ -10,6 +10,7 @@ from api.settings import SITE_URL
 from analysis.constants import (
     BLUEPRINT,
     CORRIDORS,
+    NLCD_LEGEND,
     URBAN_LEGEND,
     SLR_LEGEND,
     OWNERSHIP,
@@ -89,6 +90,10 @@ def create_report(maps, results, name=None, area_type=None):
 
     if "corridors" in results:
         legends["corridors"] = CORRIDORS
+
+    if "nlcd" in results:
+        # TODO: limit to classes present
+        legends["nlcd"] = NLCD_LEGEND
 
     if "urban" in results:
         legends["urban"] = URBAN_LEGEND

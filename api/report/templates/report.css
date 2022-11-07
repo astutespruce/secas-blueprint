@@ -54,6 +54,15 @@ body {
   }
 }
 
+@page landscape {
+  size: letter landscape;
+  margin: 1in 0.25in 0.5in;
+}
+
+.page-landscape {
+  page: landscape;
+}
+
 footer {
   position: running(footer);
 }
@@ -190,6 +199,19 @@ table .align-right {
 table th.acres,
 table th.percent {
   width: 72pt;
+}
+
+table th.nlcd {
+  width: 60pt;
+}
+
+table td.nlcd {
+  line-height: 1.2;
+}
+
+table td .nlcd-percent {
+  font-size: 10pt;
+  color: #666;
 }
 
 table td.label {

@@ -51,7 +51,14 @@ def read_cache(path):
 
 ### Create reports for an AOI
 aois = [
-    {"name": "SLR test area", "path": "fl_slr_test"},
+    # {
+    #     "name": "SASMI MigSpace65 county boundary",
+    #     "path": "SASMI_MigSpace65_county_boundary",
+    # }
+    # {"name": "test", "path": "TestRect"},
+    # {"name": "Abe's Creek Parcel I", "path": "boundary_abes-creek-PI_2022"}
+    # {"name": "Abe's Creek Parcel II", "path": "boundary_abes-creek-PII_2022"}
+    # {"name": "SLR test area", "path": "fl_slr_test"},
     # {"name": "Test", "path": "030902030700"}
     # {"name": "Yazoo Watershed, MS", "path": "YazooUse"},
     # {"name": "Weyerhaeuser (Andrews)", "path": "Weyerhaeuser_Andrews"},
@@ -69,6 +76,7 @@ aois = [
     # {"name": "Louisiana", "path": "LA_SECAS_states"},  # TODO: FIX this geometry
     # {"name": "Mississippi", "path": "MS_SECAS_states"},
     # {"name": "North Carolina", "path": "NC_SECAS_states"},
+    # {"name": "Oklahoma", "path": "OK_SECAS_states"},
     # {"name": "South Carolina", "path": "SC_SECAS_states"},
     # {"name": "Tennessee", "path": "TN_SECAS_states"},
     # {"name": "FL test", "path": "EvergladesHeadwaterComplex_APPTYPE_0"}
@@ -135,6 +143,7 @@ for aoi in aois:
         print("Rendering maps...")
 
         has_corridors = "corridors" in results
+        has_nlcd = "nlcd" in results
         has_urban = "urban" in results
         has_slr = "slr" in results
         has_ownership = "ownership" in results
@@ -153,6 +162,7 @@ for aoi in aois:
             indicators=indicators,
             input_ids=results["input_ids"],
             corridors=has_corridors,
+            nlcd=has_nlcd,
             urban=has_urban,
             slr=has_slr,
             ownership=has_ownership,
@@ -180,20 +190,22 @@ for aoi in aois:
 
 ## Create reports for summary units
 ids = {
-    # "huc12": [
-    #     "050500030804"  # in WV
-    # "030902030700"  # in base blueprint but missing SLR (Dry Tortugas)
-    #     #     #     # "031002010205",  # in base blueprint but with SLR present
-    #     #     #     # "210100070101",  # in Caribbean
-    #     #     #     # "031101020903",  # Florida with inland marine indicators
-    #     #     #     # "031102050805",  # Florida gulf coast
-    # ],
-    # "marine_blocks": [
-    #     "NG16-12-780",  # in FL Marine
-    #     #     # "NI18-07-6210",  # Atlantic coast
-    #     #     # "NG16-03-299",  # Gulf coast
-    #     #     # "NG17-10-6583",  # Florida keys, overlaps with protected areas
-    # ],
+    "huc12": [
+        "020802080201"
+        # "050500030804",  # in WV
+        # "030902030700",  # in base blueprint but missing SLR (Dry Tortugas)
+        # "031002010205",  # in base blueprint but with SLR present
+        # "030902041000",  # has a mix of SLR nodata values
+        #     #     # "210100070101",  # in Caribbean
+        #     #     #     # "031101020903",  # Florida with inland marine indicators
+        #     #     #     # "031102050805",  # Florida gulf coast
+        # ],
+        # "marine_blocks": [
+        #     "NG16-12-780",  # in FL Marine
+        #     #     # "NI18-07-6210",  # Atlantic coast
+        #     #     # "NG16-03-299",  # Gulf coast
+        #     #     # "NG17-10-6583",  # Florida keys, overlaps with protected areas
+    ],
 }
 
 
@@ -211,6 +223,7 @@ for unit_type in ids:
         results = get_summary_unit_results(unit_type, unit_id)
 
         has_corridors = "corridors" in results
+        has_nlcd = "nlcd" in results
         has_urban = "urban" in results
         has_slr = "slr" in results
         has_ownership = "ownership" in results
@@ -234,6 +247,7 @@ for unit_type in ids:
                 indicators=indicators,
                 input_ids=results["input_ids"],
                 corridors=has_corridors,
+                nlcd=has_nlcd,
                 urban=has_urban,
                 slr=has_slr,
                 ownership=has_ownership,

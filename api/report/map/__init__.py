@@ -16,6 +16,7 @@ from .util import pad_bounds, get_center, png_bytes_to_base64, to_base64, merge_
 from analysis.constants import (
     BLUEPRINT_COLORS,
     CORRIDORS_COLORS,
+    NLCD_COLORS,
     URBAN_COLORS,
     SLR_LEGEND,
     INPUTS,
@@ -32,6 +33,7 @@ PADDING = 5
 src_dir = Path("data/inputs")
 blueprint_filename = src_dir / "se_blueprint_2022.tif"
 urban_filename = src_dir / "threats/urban/urban_2060_binned.tif"
+nlcd_filename = src_dir / "nlcd/landcover_2019.tif"
 slr_filename = src_dir / "threats/slr/slr.tif"
 inputs_dir = src_dir / "indicators"
 corridors_filename = inputs_dir / "base/corridors.tif"
@@ -82,6 +84,7 @@ async def render_raster_maps(
     raster_input_ids,
     indicators,
     corridors=False,
+    nlcd=False,
     urban=False,
     slr=False,
 ):
@@ -99,6 +102,8 @@ async def render_raster_maps(
     indicators : list-like of indicator IDs (not used yet)
     corridors : bool (default False)
         if True, will render corridors for Base Blueprint
+    nlcd : bool (default False)
+        if True, will render NLCD map
     urban : bool (default False)
         if True, will render urban map
     slr : bool (default False)
@@ -145,6 +150,9 @@ async def render_raster_maps(
             )
         )
 
+    if nlcd:
+        task_args.append(("nlcd_2019", nlcd_filename, NLCD_COLORS))
+
     if urban:
         task_args.append(("urban_2060", urban_filename, URBAN_COLORS))
 
@@ -176,6 +184,7 @@ async def render_maps(
     input_ids=None,
     indicators=None,
     corridors=False,
+    nlcd=False,
     urban=False,
     slr=False,
     ownership=False,
@@ -198,6 +207,8 @@ async def render_maps(
         If present, is a list of all indicator IDs to render.
     corridors : bool, optional (default: False)
         If True, Base Blueprint corridors will be rendered
+    nlcd : bool, optional (default: False)
+        If True, NLCD will be rendered.
     urban : bool, optional (default: False)
         If True, urban will be rendered.
     slr : bool, optional (default: False)
@@ -283,6 +294,7 @@ async def render_maps(
         raster_input_ids,
         indicators or [],
         corridors,
+        nlcd,
         urban,
         slr,
     )

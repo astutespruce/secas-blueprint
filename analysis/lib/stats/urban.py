@@ -87,12 +87,15 @@ def extract_urban_by_mask(
             )
             * cellsize
         )
-        total_urban_acres = urban_acres.sum()
-        outside_urban_acres = rasterized_acres - outside_se_acres - total_urban_acres
-        if outside_urban_acres < 1e-6:
-            outside_urban_acres = 0
 
         if year == 2020:
+            total_urban_acres = urban_acres.sum()
+            outside_urban_acres = (
+                rasterized_acres - outside_se_acres - total_urban_acres
+            )
+            if outside_urban_acres < 1e-6:
+                outside_urban_acres = 0
+
             # extract area already urban (in index 51)
             urban_results.append(
                 {

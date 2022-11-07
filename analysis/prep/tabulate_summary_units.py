@@ -9,6 +9,7 @@ from analysis.lib.stats.base_blueprint import summarize_base_blueprint_by_units_
 from analysis.lib.stats.caribbean import summarize_caribbean_by_units_grid
 from analysis.lib.stats.core import summarize_blueprint_by_units_grid
 from analysis.lib.stats.florida_marine import summarize_florida_marine_by_units_grid
+from analysis.lib.stats.nlcd import summarize_nlcd_by_units_grid
 from analysis.lib.stats.ownership import summarize_ownership_by_units
 from analysis.lib.stats.parca import summarize_parcas_by_units
 from analysis.lib.stats.slr import summarize_slr_by_units_grid
@@ -58,6 +59,11 @@ with rasterio.open(huc12_raster_filename) as units_dataset:
         units_df.loc[units_df.input_id == "car"], units_grid, out_dir
     )
 
+    # Summarize NLCD
+    summarize_nlcd_by_units_grid(
+        units_df.loc[units_df.input_id == "base"], units_grid, out_dir
+    )
+
     # Summarize parcas
     summarize_parcas_by_units(units_df, out_dir)
 
@@ -69,6 +75,7 @@ with rasterio.open(huc12_raster_filename) as units_dataset:
         units_df.loc[units_df.input_id == "base"], units_grid, out_dir
     )
 
+    # Summarize SLR
     summarize_slr_by_units_grid(units_df, units_grid, out_dir)
 
 print(f"Processed {len(units_df):,} zones in {(time() - start) / 60.0:.2f}m")

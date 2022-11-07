@@ -18,6 +18,10 @@
 
         {% include "blocks/blueprint.html" %}
 
+        {% if results.nlcd %}
+            {% include "blocks/nlcd.html" %}
+        {% endif %}
+
         {% if not results.exclude_threats %}
           {% include "blocks/threats.html" %}
         {% endif %}
