@@ -47,7 +47,6 @@
 </div>
 
 <div class="no-break">
-
     <div class="caption">
         Table {{table.counter}}: Indicator values for {{indicator.captionLabel or indicator.label}}{% if results.name %} within {{results.name}}{% if results.type %} {{results.type}}{% endif %}{% else %} in this area{% endif %}.
         {% if "goodThreshold" in indicator %}
@@ -200,7 +199,6 @@
 {% if indicator.id=="base:land_saamphibianandreptileareas" and results["parca"] %}
     {% include "blocks/parca_details.html" %}
 {% endif %}
-
 
 <p>
     To learn more and explore the GIS data,
