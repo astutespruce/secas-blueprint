@@ -3,12 +3,12 @@ import PropTypes from 'prop-types'
 
 import { Box, Text } from 'theme-ui'
 
-import { LineChart } from 'components/chart'
+import { ResponsiveChart, UrbanChart } from 'components/chart'
 import { OutboundLink } from 'components/link'
 
-// Actual urban in 2009, then projected from 2020 onward
-// shifted to 2010 for even scale
-const LEVELS = [2010, 2020, 2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100]
+const YEARS = [
+  2001, 2004, 2006, 2008, 2011, 2013, 2016, 2019, 2020, 2030, 2040, 2050, 2060,
+]
 
 const Urban = ({ percents }) => (
   <>
@@ -23,30 +23,24 @@ const Urban = ({ percents }) => (
           fontSize: 1,
           fill: 'grey.7',
         },
+        '& text.label': {
+          fontSize: 0,
+          fill: 'grey.7',
+        },
       }}
     >
-      <LineChart
-        data={percents.map((y, i) => ({ x: LEVELS[i], y }))}
-        fontSize={10}
-        yTicks={5}
-        xTicks={6}
-        xTickFormatter={(x) => x}
-        yLabel="Percent of area"
-        yLabelOffset={48}
-        xLabel="Decade"
-        xLabelOffset={40}
-        areaColor="#D90000"
-        areaOpacity={0.6}
-        pointColor="#D90000"
-        lineColor="#D90000"
-        lineWidth={2}
-        margin={{ left: 60, right: 10, top: 10, bottom: 50 }}
-      />
+      <ResponsiveChart>
+        <UrbanChart data={percents.map((y, i) => ({ x: YEARS[i], y }))} />
+      </ResponsiveChart>
     </Box>
 
     <Text sx={{ mt: '2rem', color: 'grey.7', fontSize: 1 }}>
-      Urban growth estimates derived from the FUTURES model. Data provided by
-      the{' '}
+      Past urban levels derived from the{' '}
+      <OutboundLink to="https://www.usgs.gov/centers/eros/science/national-land-cover-database">
+        National Land Cover Database
+      </OutboundLink>
+      . Future urban growth estimates derived from the FUTURES model. Data
+      provided by the{' '}
       <OutboundLink to="https://cnr.ncsu.edu/geospatial/">
         Center for Geospatial Analytics
       </OutboundLink>

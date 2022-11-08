@@ -164,6 +164,7 @@ SRL_NODATA_COLORS = [
     {"label": "13", "color": "#333333"},
 ]
 
+NLCD_YEARS = [2001, 2004, 2006, 2008, 2011, 2013, 2016, 2019]
 
 # Original codes
 NLCD_CODES = {

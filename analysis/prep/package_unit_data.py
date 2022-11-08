@@ -22,6 +22,7 @@ FED:<fed_%>,LOC:<loc_%>,...
 """
 
 from pathlib import Path
+from itertools import product
 
 import geopandas as gp
 import numpy as np
@@ -35,8 +36,8 @@ from analysis.constants import (
     INDICATORS,
     SLR_DEPTH_BINS,
     SLR_NODATA_COLS,
-    SLR_PROJ_SCENARIOS,
-    SLR_YEARS,
+    NLCD_INDEXES,
+    NLCD_YEARS,
     URBAN_YEARS,
 )
 from analysis.lib.attribute_encoding import encode_values, delta_encode_values
@@ -287,12 +288,27 @@ slr = pd.DataFrame(slr_depth).join(slr_nodata)
 
 
 ### Urban
-# delta encode urban 2019 and future projections
+# Combine NLCD 2001-2019 with future urban 2020-2060
 print("Encoding urban...")
-cols = ["id", "urban_2019"] + [f"urban_proj_{year}" for year in URBAN_YEARS]
+urban_indexes = [i for i in NLCD_INDEXES if "Developed" in NLCD_INDEXES[i]["label"]]
+cols = ["id"] + [f"{year}_{i}" for year, i in product(NLCD_YEARS, urban_indexes)]
+nlcd_results = pd.read_feather(results_dir / "nlcd.feather", columns=cols).set_index(
+    "id"
+)
+
+for year in NLCD_YEARS:
+    cols = [f"{year}_{i}" for i in urban_indexes]
+    nlcd_results[str(year)] = nlcd_results[cols].sum(axis=1)
+
+nlcd_results = nlcd_results[[str(year) for year in NLCD_YEARS]]
+
+cols = ["id"] + [f"urban_proj_{year}" for year in URBAN_YEARS[:5]]
 urban_results = pd.read_feather(results_dir / "urban.feather", columns=cols).set_index(
     "id"
 )
+
+urban_results = nlcd_results.join(urban_results).fillna(0)
+
 urban = delta_encode_values(
     urban_results, huc12.rasterized_acres.loc[urban_results.index], 1000
 ).rename("urban")

@@ -33,70 +33,81 @@ const Points = ({
 
   return (
     <g>
-      {points.map(({ x, y, yLabel }, i) => (
-        <g key={`${x}_${y}`}>
-          {activeIndex !== null && activeIndex === i ? (
-            <>
-              <line
-                x1={minX}
-                y1={y}
-                x2={x}
-                y2={y}
-                stroke={axisDropStroke}
-                strokeWidth={axisDropStrokeWidth}
-                strokeDasharray="2 4"
-              />
-              <circle r={3} cx={minX} cy={y} fill="#666" />
-              <line
-                x1={x}
-                y1={baseline}
-                x2={x}
-                y2={y}
-                stroke={axisDropStroke}
-                strokeWidth={axisDropStrokeWidth}
-                strokeDasharray="2 4"
-              />
-              <circle r={3} cx={x} cy={baseline} fill="#666" />
+      {/* render points in reverse order so that tooltips how up properly with increasing trend */}
+      {points
+        .slice()
+        .reverse()
+        .map(({ x, y, yLabel }, i) => (
+          <g key={`${x}_${y}`}>
+            <circle
+              r={radius}
+              cx={x}
+              cy={y}
+              fill={fill}
+              stroke={stroke}
+              strokeWidth={strokeWidth}
+            />
 
-              <rect
-                x={x - 24}
-                y={y - 32}
-                width={46}
-                height={24}
-                rx="6"
-                fill="#f5fafe"
-                stroke="#FFF"
-                strokeWidth={2}
-              />
-              <text x={x} y={y - 14} textAnchor="middle">
-                {yLabel}%
-              </text>
-            </>
-          ) : null}
+            {activeIndex !== null && activeIndex === i ? (
+              <>
+                <line
+                  x1={minX}
+                  y1={y}
+                  x2={x}
+                  y2={y}
+                  stroke={axisDropStroke}
+                  strokeWidth={axisDropStrokeWidth}
+                  strokeDasharray="2 4"
+                />
+                <circle r={3} cx={minX} cy={y} fill="#666" />
+                <line
+                  x1={x}
+                  y1={baseline}
+                  x2={x}
+                  y2={y}
+                  stroke={axisDropStroke}
+                  strokeWidth={axisDropStrokeWidth}
+                  strokeDasharray="2 4"
+                />
+                <circle r={3} cx={x} cy={baseline} fill="#666" />
+              </>
+            ) : null}
 
-          <circle
-            r={i === activeIndex ? radius * 2 : radius}
-            cx={x}
-            cy={y}
-            fill={fill}
-            stroke={stroke}
-            strokeWidth={strokeWidth}
-          />
+            <circle
+              key={`${x}_${y}`}
+              r={hoverRadius || radius * 2}
+              cx={x}
+              cy={y}
+              fill={
+                activeIndex !== null && activeIndex === i ? fill : 'transparent'
+              }
+              stroke="none"
+              style={{ cursor: 'pointer' }}
+              data-index={i}
+              onMouseEnter={handleMouseOver}
+              onMouseLeave={handleMouseOut}
+            />
 
-          <circle
-            key={`${x}_${y}`}
-            r={hoverRadius || radius * 2}
-            cx={x}
-            cy={y}
-            fill="transparent"
-            stroke="none"
-            style={{ cursor: 'pointer' }}
-            data-index={i}
-            onMouseEnter={handleMouseOver}
-            onMouseLeave={handleMouseOut}
-          />
-        </g>
-      ))}
+            {/* this has to be after everything else to be on top */}
+            {activeIndex !== null && activeIndex === i ? (
+              <>
+                <rect
+                  x={x - (yLabel.length * 10) / 2}
+                  y={y - 32}
+                  width={yLabel.length * 10}
+                  height={24}
+                  rx="6"
+                  fill="#f5fafe"
+                  stroke="#FFF"
+                  strokeWidth={2}
+                />
+                <text x={x} y={y - 14} textAnchor="middle">
+                  {yLabel}%
+                </text>
+              </>
+            ) : null}
+          </g>
+        ))}
     </g>
   )
 }
