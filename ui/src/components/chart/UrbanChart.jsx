@@ -48,7 +48,8 @@ const UrbanChart = ({ data, width, height }) => {
     .map((y) => ({ y: yScale(y), label: formatNumber(y) }))
 
   const leftPoints = points.slice(0, splitIndex)
-  const rightPoints = points.slice(splitIndex)
+  // start right points at 2019
+  const rightPoints = points.slice(splitIndex - 1)
 
   return (
     <svg
@@ -127,7 +128,7 @@ const UrbanChart = ({ data, width, height }) => {
 
         {/* render in reverse order so that tooltips show properly with increasing trends */}
         <Points
-          points={rightPoints}
+          points={rightPoints.slice(1)}
           radius={4}
           strokeWidth={0}
           fill={colors[1]}
