@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Check } from '@emotion-icons/fa-solid'
+// import { Check } from '@emotion-icons/fa-solid'
 import { Box, Flex, Text } from 'theme-ui'
 
 const defaultCSS = {
@@ -26,16 +26,26 @@ const PriorityCategories = ({ categories, value: currentValue }) => (
         <Flex
           sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}
         >
-          <Flex sx={{ alignItems: 'center', flex: '1 1 auto' }}>
-            <Box
-              sx={{
-                bg: color,
-                width: '1rem',
-                height: '1rem',
-                border: '1px solid #CCC',
-                mr: '0.5rem',
-              }}
-            />
+          <Box
+            sx={{
+              bg: color,
+              width: '1rem',
+              height: '2rem',
+              border: '1px solid #CCC',
+              borderRadius: '0.25em',
+              mr: '0.5rem',
+              flex: '0 0 auto',
+            }}
+          />
+
+          {/* TODO: pixel mode */}
+          {/* {value === currentValue ? (
+            <Box sx={{ flex: '0 0 auto' }}>
+              <Check size="1em" />
+            </Box>
+          ) : null} */}
+
+          <Box sx={{ flex: '1 1 auto' }}>
             <Box
               sx={{
                 fontWeight: 'bold',
@@ -44,19 +54,12 @@ const PriorityCategories = ({ categories, value: currentValue }) => (
             >
               {label}
             </Box>
-          </Flex>
-          {value === currentValue ? (
-            <Box sx={{ flex: '0 0 auto' }}>
-              <Check size="1em" />
-            </Box>
-          ) : null}
+            <Text sx={{ fontSize: 0 }}>
+              {description} This class covers {percent}% of the Southeast
+              Blueprint geography.
+            </Text>
+          </Box>
         </Flex>
-        {description ? (
-          <Text sx={{ fontSize: 0, ml: '1.5rem' }}>
-            {description} This class covers {percent}% of the Southeast
-            Blueprint geography.
-          </Text>
-        ) : null}
       </Box>
     ))}
   </Box>

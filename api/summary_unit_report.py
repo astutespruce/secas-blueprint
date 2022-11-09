@@ -82,7 +82,7 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
 
     results["scale"] = scale
 
-    pdf = create_report(maps=maps, results=results)
+    pdf = create_report(maps=maps, results=results, name=results["name"])
 
     await set_progress(ctx["redis"], ctx["job_id"], 95, "Nearly done", errors=errors)
 

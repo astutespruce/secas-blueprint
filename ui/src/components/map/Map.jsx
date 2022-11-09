@@ -219,7 +219,12 @@ const Map = () => {
     setIsBlueprintVisible((prevVisible) => {
       const newIsVisible = !prevVisible
       if (newIsVisible) {
-        map.setPaintProperty('blueprint', 'raster-opacity', 0.6)
+        map.setPaintProperty('blueprint', 'raster-opacity', {
+          stops: [
+            [10, 0.8],
+            [12, 0.6],
+          ],
+        })
       } else {
         map.setPaintProperty('blueprint', 'raster-opacity', 0)
       }

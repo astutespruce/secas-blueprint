@@ -13,7 +13,8 @@ const YEARS = [
 const Urban = ({ percents }) => (
   <>
     <Text sx={{ color: 'grey.7' }}>
-      Extent of current and projected urbanization within this subwatershed:
+      Extent of past, current, and projected urbanization within this
+      subwatershed:
     </Text>
 
     <Box
@@ -35,7 +36,8 @@ const Urban = ({ percents }) => (
     </Box>
 
     <Text sx={{ mt: '2rem', color: 'grey.7', fontSize: 1 }}>
-      Past urban levels derived from the{' '}
+      Past and current (2019) urban levels based on developed land cover classes
+      from the{' '}
       <OutboundLink to="https://www.usgs.gov/centers/eros/science/national-land-cover-database">
         National Land Cover Database
       </OutboundLink>
@@ -44,8 +46,7 @@ const Urban = ({ percents }) => (
       <OutboundLink to="https://cnr.ncsu.edu/geospatial/">
         Center for Geospatial Analytics
       </OutboundLink>
-      , NC State University. Current (2019) urban based on developed landcover
-      from the 2019 National Landcover Database.
+      , NC State University.
     </Text>
   </>
 )

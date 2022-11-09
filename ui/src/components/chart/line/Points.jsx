@@ -92,9 +92,9 @@ const Points = ({
             {activeIndex !== null && activeIndex === i ? (
               <>
                 <rect
-                  x={x - (yLabel.length * 10) / 2}
+                  x={x - Math.max(yLabel.length * 10, 44) / 2}
                   y={y - 32}
-                  width={yLabel.length * 10}
+                  width={Math.max(yLabel.length * 10, 44)}
                   height={24}
                   rx="6"
                   fill="#f5fafe"

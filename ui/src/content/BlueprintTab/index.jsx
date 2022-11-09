@@ -108,7 +108,7 @@ const BlueprintTab = ({
     .map(({ color, ...rest }) => ({
       ...rest,
       // add transparency to match map
-      color: `${color}b3`,
+      color: `${color}bf`,
     }))
 
   // merge inputs with priority data

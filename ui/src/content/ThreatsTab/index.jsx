@@ -28,7 +28,7 @@ const ThreatsTab = ({ unitType, slr, urban }) => {
   return (
     <Box sx={{ py: '2rem', pl: '1rem', pr: '2rem' }}>
       <Box as="section">
-        <Heading as="h3">Current and Projected Urbanization</Heading>
+        <Heading as="h3">Urbanization</Heading>
         {urban && urban.length > 0 ? (
           <Urban percents={urban} />
         ) : (
