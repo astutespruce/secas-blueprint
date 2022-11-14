@@ -101,7 +101,8 @@ def test_huc12_report(huc12_id):
 
 
 if __name__ == "__main__":
-    test_upload_file("examples/api/napoleonville.zip")
+    # test_upload_file("examples/api/napoleonville.zip")
+    test_upload_file("examples/api/test_base_flm.zip")
 
     # test_huc12_report("0")
 

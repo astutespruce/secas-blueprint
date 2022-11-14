@@ -1,5 +1,5 @@
 <section>
-    <h2 id="{{src.id}}IndicatorSummary">{% if not results.promote_base %}{{src.label}} {% endif %}Indicator Summary</h2>
+    <h2 id="IndicatorSummary">{% if (results.input|length) > 1 %}Base Blueprint: {% endif %}Indicator Summary</h2>
 
     {% for ecosystem in ecosystems %}
         <div class="no-break">

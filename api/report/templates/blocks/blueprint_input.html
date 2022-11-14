@@ -30,13 +30,7 @@
         {% endif %}
     </p>
 
-    {% if src.id == "base" and (100 * src.acres / results.rasterized_acres) >= 99 %}
-        <p>
-            The {{src.label}} has the same values as the Southeast Blueprint; see Blueprint Priorities map above.
-            <br /><br />
-        </p>
-
-    {% elif maps[src.id] %}
+    {% if maps[src.id] %}
         <div class="map-container">
             <img src="data:image/png;base64,{{maps[src.id]}}" alt="Blueprint input map for {{src.label}}" class="map">
 
@@ -70,8 +64,6 @@
                         <div class="legend-label">{{item.label}}</div>
                     </div>
                 {% endfor %}
-                <!-- space is required or last label doesn't render -->
-                &nbsp;
             </div>
             {% endif %}
         </div>

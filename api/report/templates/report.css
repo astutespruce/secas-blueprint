@@ -92,7 +92,8 @@ h1,
 h2,
 h3,
 h4,
-h5 {
+h5,
+.subtitle {
   font-family: Raleway, sans-serif;
 }
 
@@ -102,7 +103,7 @@ h1 {
   margin: 0;
 }
 
-h2 {
+h2, .subtitle {
   margin: 0 0 12pt 0;
 }
 
@@ -512,8 +513,7 @@ table td.highlight-col {
   border-radius: 32pt;
 }
 
-.indicator + .indicator,
-.ownership-section + .ownership-section {
+.indicator + .indicator {
   page-break-before: always;
 }
 

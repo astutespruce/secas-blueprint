@@ -15,6 +15,7 @@ from .util import pad_bounds, get_center, png_bytes_to_base64, to_base64, merge_
 
 from analysis.constants import (
     BLUEPRINT_COLORS,
+    INPUT_AREA_COLORS,
     CORRIDORS_COLORS,
     URBAN_COLORS,
     SLR_LEGEND,
@@ -31,6 +32,7 @@ PADDING = 5
 
 src_dir = Path("data/inputs")
 blueprint_filename = src_dir / "se_blueprint_2022.tif"
+input_areas_filename = src_dir / "boundaries/input_areas.tif"
 urban_filename = src_dir / "threats/urban/urban_2060_binned.tif"
 slr_filename = src_dir / "threats/slr/slr.tif"
 inputs_dir = src_dir / "indicators"
@@ -81,6 +83,7 @@ async def render_raster_maps(
     aoi_image,
     raster_input_ids,
     indicators,
+    input_areas=False,
     corridors=False,
     urban=False,
     slr=False,
@@ -96,7 +99,8 @@ async def render_raster_maps(
     basemap_image : Image object
     aoi_image : Image object
     raster_input_ids : list-like of IDs of Blueprint input rasters
-    indicators : list-like of indicator IDs (not used yet)
+    indicators : list-like of indicator IDs
+    input_areas : False
     corridors : bool (default False)
         if True, will render corridors for Base Blueprint
     urban : bool (default False)
@@ -127,9 +131,6 @@ async def render_raster_maps(
         }
         task_args.append((input_id, inputs_dir / input_info["filename"], colors))
 
-        if input_id == "base" and corridors:
-            task_args.append(("corridors", corridors_filename, CORRIDORS_COLORS))
-
     for id in indicators:
         indicator = INDICATOR_INDEX[id]
         colors = {
@@ -144,6 +145,12 @@ async def render_raster_maps(
                 colors,
             )
         )
+
+    if input_areas:
+        task_args.append(("input_areas", input_areas_filename, INPUT_AREA_COLORS))
+
+    if corridors:
+        task_args.append(("corridors", corridors_filename, CORRIDORS_COLORS))
 
     if urban:
         task_args.append(("urban_2060", urban_filename, URBAN_COLORS))
@@ -175,6 +182,7 @@ async def render_maps(
     summary_unit_id=None,
     input_ids=None,
     indicators=None,
+    input_areas=False,
     corridors=False,
     urban=False,
     slr=False,
@@ -196,6 +204,8 @@ async def render_maps(
         If present, is a list of input area ids
     indicators : list-like, optional (default: None)
         If present, is a list of all indicator IDs to render.
+    input_areas : bool, optional (default: False)
+        If True, will render map of Southeast Blueprint input areas
     corridors : bool, optional (default: False)
         If True, Base Blueprint corridors will be rendered
     urban : bool, optional (default: False)
@@ -282,6 +292,7 @@ async def render_maps(
         aoi_image,
         raster_input_ids,
         indicators or [],
+        input_areas,
         corridors,
         urban,
         slr,

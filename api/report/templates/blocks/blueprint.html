@@ -1,5 +1,5 @@
 <section>
-    <h2 id="Blueprint">Blueprint Priorities</h2>
+    <h2 id="Blueprint">Southeast Blueprint Priorities</h2>
 
     {% if maps.blueprint %}
         <div class="map-container">
@@ -26,8 +26,6 @@
                         <div class="legend-label">{{item.label}}</div>
                     </div>
                 {% endfor %}
-                <!-- space is required or last label doesn't render -->
-                &nbsp;
             </div>
         </div>
 
@@ -98,25 +96,4 @@
         </tr>
     </tbody>
 </table>
-
-{% if results.promote_base %}
-    {% with src=results.inputs[0] %}
-        {% if "corridors" in results %}
-            {% include "blocks/corridors.html" %}
-        {% else %}
-            {% include "blocks/no_corridors.html" %}
-        {% endif %}
-
-        {% with ecosystems=src.ecosystems %}
-            {% include "blocks/ecosystems.html" %}
-        {% endwith %}
-    {% endwith %}
-
-{% else %}
-    {% for src in results.inputs %}
-        {% include "blocks/blueprint_input.html" %}
-    {% endfor %}
-
-{% endif %}
-
 </section>

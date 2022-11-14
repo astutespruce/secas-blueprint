@@ -78,17 +78,15 @@ def get_custom_area_results(df):
         blueprint = extract_blueprint_by_mask(**config)
 
     # merge in main input info
-    inputs = sorted(
-        [
-            {
-                **INPUTS[id],
-                "acres": acres,
-            }
-            for id, acres in input_info["inputs"].items()
-        ],
-        key=lambda x: x["acres"],
-        reverse=True,
-    )
+    # NOTE: inputs are in order they are defined in inputs.json
+    inputs = [
+        {
+            **INPUTS[id],
+            "acres": acres,
+            "percent": 100 * acres / config["rasterized_acres"],
+        }
+        for id, acres in input_info["inputs"].items()
+    ]
 
     corridors = None
 

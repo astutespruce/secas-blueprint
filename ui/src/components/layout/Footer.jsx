@@ -44,6 +44,14 @@ const Footer = () => {
         },
       }}
     >
+      <Flex
+        sx={{ alignItems: 'center', px: '0.5em', mr: '0.5rem', fontSize: 0 }}
+      >
+        Version: Southeast Blueprint 2022
+      </Flex>
+
+      <Box sx={{ borderLeft: '1px solid #FFF', height: '1em' }} />
+
       <Box sx={{ mr: '0.5em' }}>
         <OutboundLink to="http://secassoutheast.org/blueprint" tabIndex="0">
           <Flex sx={{ alignItems: 'center', px: '0.5em' }}>

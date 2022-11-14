@@ -51,7 +51,13 @@ def read_cache(path):
 
 ### Create reports for an AOI
 aois = [
-    {"name": "SLR test area", "path": "fl_slr_test"},
+    # {
+    #     "name": "SASMI MigSpace65 county boundary",
+    #     "path": "SASMI_MigSpace65_county_boundary",
+    # }
+    # {"name": "test", "path": "TestRect"},
+    {"name": "test", "path": "test_base_flm"},
+    # {"name": "SLR test area", "path": "fl_slr_test"},
     # {"name": "Test", "path": "030902030700"}
     # {"name": "Yazoo Watershed, MS", "path": "YazooUse"},
     # {"name": "Weyerhaeuser (Andrews)", "path": "Weyerhaeuser_Andrews"},
@@ -134,12 +140,6 @@ for aoi in aois:
     if not maps:
         print("Rendering maps...")
 
-        has_corridors = "corridors" in results
-        has_urban = "urban" in results
-        has_slr = "slr" in results
-        has_ownership = "ownership" in results
-        has_protection = "protection" in results
-
         # compile indicator IDs across all inputs
         indicators = []
         for input_area in results["inputs"]:
@@ -152,11 +152,12 @@ for aoi in aois:
             geometry=geo_df.geometry.values.data[0],
             indicators=indicators,
             input_ids=results["input_ids"],
-            corridors=has_corridors,
-            urban=has_urban,
-            slr=has_slr,
-            ownership=has_ownership,
-            protection=has_protection,
+            input_areas=len(results["input_ids"]) > 1,
+            corridors="corridors" in results,
+            urban="urban" in results,
+            slr="slr" in results,
+            ownership="ownership" in results,
+            protection="protection" in results,
         )
 
         maps, scale, errors = asyncio.run(task)
@@ -210,12 +211,6 @@ for unit_type in ids:
         # Fetch results
         results = get_summary_unit_results(unit_type, unit_id)
 
-        has_corridors = "corridors" in results
-        has_urban = "urban" in results
-        has_slr = "slr" in results
-        has_ownership = "ownership" in results
-        has_protection = "protection" in results
-
         # compile indicator IDs across all inputs
         indicators = []
         for input_area in results["inputs"]:
@@ -233,11 +228,11 @@ for unit_type in ids:
                 summary_unit_id=unit_id,
                 indicators=indicators,
                 input_ids=results["input_ids"],
-                corridors=has_corridors,
-                urban=has_urban,
-                slr=has_slr,
-                ownership=has_ownership,
-                protection=has_protection,
+                corridors="corridors" in results,
+                urban="urban" in results,
+                slr="slr" in results,
+                ownership="ownership" in results,
+                protection="protection" in results,
             )
             maps, scale, errors = asyncio.run(task)
 
