@@ -76,12 +76,6 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
     if results is None:
         raise DataError("area of interest does not overlap Southeast Blueprint")
 
-    has_corridors = "corridors" in results
-    has_urban = "urban" in results
-    has_slr = "slr" in results
-    has_ownership = "ownership" in results
-    has_protection = "protection" in results
-
     # compile indicator IDs across all inputs
     indicators = []
     for input_area in results["inputs"]:
@@ -99,11 +93,12 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
         geometry=geo_df.geometry.values.data[0],
         input_ids=results["input_ids"],
         indicators=indicators,
-        corridors=has_corridors,
-        urban=has_urban,
-        slr=has_slr,
-        ownership=has_ownership,
-        protection=has_protection,
+        input_areas=len(results["input_ids"]) > 1,
+        corridors="corridors" in results,
+        urban="urban" in results,
+        slr="slr" in results,
+        ownership="ownership" in results,
+        protection="protection" in results,
     )
 
     if map_errors:

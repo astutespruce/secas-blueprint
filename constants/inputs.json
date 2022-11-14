@@ -2,6 +2,7 @@
   {
     "id": "base",
     "value": 1,
+    "color": "#843F98",
     "label": "Base Blueprint",
     "shortLabel": "Base Blueprint",
     "version": "2022",
@@ -65,6 +66,7 @@
   {
     "id": "flm",
     "value": 2,
+    "color": "#fdc086",
     "label": "Florida Marine Blueprint",
     "shortLabel": "Florida (marine)",
     "version": "2.0",
@@ -114,6 +116,7 @@
   {
     "id": "car",
     "value": 3,
+    "color": "#7fc97f",
     "label": "Caribbean Landscape Conservation Design",
     "shortLabel": "Caribbean",
     "version": "",

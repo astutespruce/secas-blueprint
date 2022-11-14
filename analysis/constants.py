@@ -59,6 +59,8 @@ BLUEPRINT_COLORS = {
 # EPSG:5070
 INPUTS = {e["id"]: e for e in json.loads(open(json_dir / "inputs.json").read())}
 
+INPUT_AREA_COLORS = {e["value"]: e["color"] for e in INPUTS.values()}
+
 CORRIDORS = json.loads(open(json_dir / "corridors.json").read())
 CORRIDORS_COLORS = {
     i: entry["color"]

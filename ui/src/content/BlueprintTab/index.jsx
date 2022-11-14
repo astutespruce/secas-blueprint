@@ -159,7 +159,7 @@ const BlueprintTab = ({
   return (
     <Box sx={{ py: '2rem', pl: '1rem', pr: '2rem' }}>
       <Box as="section">
-        <Heading as="h3">Blueprint 2022 Priority</Heading>
+        <Heading as="h3">Southeast Blueprint 2022 Priority</Heading>
         <Text sx={{ color: 'grey.7' }}>
           for a connected network of lands and waters
         </Text>
@@ -219,7 +219,7 @@ const BlueprintTab = ({
               pr: '2rem',
             }}
           >
-            <Heading as="h3">Blueprint Input</Heading>
+            <Heading as="h3">Southeast Blueprint Input</Heading>
           </Text>
 
           <Text sx={{ fontSize: 0, color: 'grey.7', mb: '2rem' }}>
