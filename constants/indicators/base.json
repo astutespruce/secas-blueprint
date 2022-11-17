@@ -865,7 +865,7 @@
           "color": "#6B0601"
         }
       ],
-      "description": "This indicator is an index of habitat suitability for five forested wetland bird species (Acadian flycatcher, Kentucky warbler, yellow-throated warbler, prothonotary warbler, red-shouldered hawk) within bottomland hardwood forests and riparian areas in the West Gulf Coastal Plain and Ouachitas Bird Conservation Region. It uses metrics like patch size, dispersal distance, distance to water, and more to assess the potential for habitat to support sustainable populations of these birds. This indicator originates from the Lower Mississippi Valley Joint Venture's West Gulf Coastal Plain and Ouachitas forested wetland decision support model.",
+      "description": "This indicator is an index of habitat suitability for five forested wetland bird species (Acadian flycatcher, Kentucky warbler, yellow-throated warbler, prothonotary warbler, red-shouldered hawk) within bottomland hardwood forests and riparian areas in the West Gulf Coastal Plain and Ouachitas Bird Conservation Region. It uses metrics like patch size, dispersal distance, distance to water, and more to assess the potential for habitat to support sustainable populations of these birds. This indicator originates from the Lower Mississippi Valley Joint Venture's forested wetland decision support model for the West Gulf Coastal Plain and Ouachitas region.",
       "url": "https://secas-fws.hub.arcgis.com/maps/2c1e3d975f7743fdbf9a12e5f1b419b6/about"
     },
     {
@@ -909,7 +909,7 @@
           "color": "#49006A"
         }
       ],
-      "description": "This indicator identifies areas with existing pine trees that, if managed for open condition, could support a population of three umbrella bird species (brown-headed nuthatch, Bachman's sparrow, red-cockaded woodpecker). It evaluates potential habitat based on each species' habitat needs and population dynamics, prioritizing opportunities to restore and manage habitat to benefit open pine birds. Final scores reflect both the selectiveness of the species and whether an area meets the habitat requirements through one large patch, or clusters of smaller patches in sufficiently close proximity for breeding pairs to disperse. This indicator updates the West Gulf Coastal Plain/Ouachita Joint Venture's open pine decision support model.",
+      "description": "This indicator identifies areas with existing pine trees that, if managed for open condition, could support a population of three umbrella bird species (brown-headed nuthatch, Bachman's sparrow, red-cockaded woodpecker). It evaluates potential habitat based on each species' habitat needs and population dynamics, prioritizing opportunities to restore and manage habitat to benefit open pine birds. Final scores reflect both the selectiveness of the species and whether an area meets the habitat requirements through one large patch, or clusters of smaller patches in sufficiently close proximity for breeding pairs to disperse. This indicator updates the Lower Mississippi Valley Joint Venture's open pine decision support model for the West Gulf Coastal Plain and Ouachitas region.",
       "url": "https://secas-fws.hub.arcgis.com/maps/d618416b80b34972bd0132086e08b02c/about"
     },
     {

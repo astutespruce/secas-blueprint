@@ -44,6 +44,7 @@ for state in SECAS_STATES:
         geometry=geo_df.geometry.values.data[0],
         indicators=indicators,
         input_ids=results["input_ids"],
+        input_areas=len(results["input_ids"]) > 1,
         corridors="corridors" in results,
         urban="urban" in results,
         slr="slr" in results,
