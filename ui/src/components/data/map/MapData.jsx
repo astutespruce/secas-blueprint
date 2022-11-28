@@ -11,7 +11,7 @@ export const Provider = ({ children }) => {
     useIndicators()
 
   const [{ mapMode, data, selectedIndicator }, setState] = useState({
-    mapMode: 'unit', // TODO: pixel, once supported
+    mapMode: 'pixel', // 'unit', // pixel or unit
     data: null,
     selectedIndicator: null,
   })
@@ -27,14 +27,9 @@ export const Provider = ({ children }) => {
         return
       }
 
-      // transform map data
-      const newData = unpackFeatureData(rawData, ecosystemInfo, indicatorInfo)
-
-      // TODO: if a different input area than indicator, set it to null
-
       setState((prevState) => ({
         ...prevState,
-        data: newData,
+        data: unpackFeatureData(rawData, ecosystemInfo, indicatorInfo),
       }))
     },
     // intentionally ignores dependencies

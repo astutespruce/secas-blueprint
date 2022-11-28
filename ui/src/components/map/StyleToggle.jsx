@@ -45,7 +45,7 @@ const styles = [
   },
 ]
 
-const StyleToggle = ({ map, sources, layers, isMobile }) => {
+const StyleToggle = ({ map, sources, layers, mapMode, isMobile }) => {
   const [index, setIndex] = useState(0)
   const styleRef = useRef(null)
 
@@ -60,6 +60,11 @@ const StyleToggle = ({ map, sources, layers, isMobile }) => {
       styleRef.current = map.getStyle()
 
       const updateStyle = () => {
+        const visibility = {
+          pixel: mapMode === 'pixel',
+          summary: mapMode !== 'pixel',
+        }
+
         map.setStyle(`mapbox://styles/mapbox/${styleID}`)
 
         map.once('style.load', () => {
@@ -102,6 +107,14 @@ const StyleToggle = ({ map, sources, layers, isMobile }) => {
                 layer.filter = prevLyr.filter
               }
             }
+
+            // set layer visibility for map mode
+            if (layer.mode) {
+              layer.layout = {
+                visibility: visibility[layer.mode] ? 'visible' : 'none',
+              }
+            }
+
             map.addLayer(layer, layer.before || null)
           })
         })
@@ -114,7 +127,7 @@ const StyleToggle = ({ map, sources, layers, isMobile }) => {
         map.once('idle', updateStyle)
       }
     },
-    [map, layers, sources]
+    [map, layers, mapMode, sources]
   )
 
   const handleToggle = () => {
@@ -150,6 +163,7 @@ StyleToggle.propTypes = {
       paint: PropTypes.object,
     })
   ).isRequired,
+  mapMode: PropTypes.string.isRequired,
   isMobile: PropTypes.bool,
 }
 

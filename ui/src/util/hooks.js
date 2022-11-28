@@ -7,6 +7,7 @@ import {
   useCallback,
 } from 'react'
 import { dequal as deepEqual } from 'dequal'
+import { useDebouncedCallback } from 'use-debounce'
 
 const isSetEqual = (setA, setB) => {
   if (setA === setB) {
@@ -99,4 +100,27 @@ export const useHasMounted = () => {
     setHasMounted(true)
   }, [])
   return hasMounted
+}
+
+// modeled off https://github.com/mapbox/mapbox-gl-js/blob/main/src/util/evented.js
+export const useEventHandler = (delay) => {
+  const onceCallback = useRef(null)
+
+  const once = (callback) => {
+    // previous listeners are ignored
+    onceCallback.current = callback
+  }
+
+  const handler = useDebouncedCallback(() => {
+    const { current: callback } = onceCallback
+    if (callback) {
+      callback()
+      onceCallback.current = null
+    }
+  }, delay)
+
+  return {
+    once,
+    handler,
+  }
 }

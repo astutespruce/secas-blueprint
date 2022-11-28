@@ -3,7 +3,13 @@ import { siteMetadata } from '../../../gatsby-config'
 const { tileHost } = siteMetadata
 
 export const mapConfig = {
-  bounds: [-106.66188036, 17.92676033, -65.22106481, 40.638801],
+  // bounds: [-106.66188036, 17.92676033, -65.22106481, 40.638801],
+
+  // FIXME: testing only
+  bounds: [
+    -87.58686134651452, 31.68431903585416, -87.03977058671965,
+    32.11874894652635,
+  ],
   maxBounds: [-180, -80, 180, 80],
   minZoom: 0,
   maxZoom: 14,
@@ -30,9 +36,6 @@ export const sources = {
   },
 }
 
-// layer in Mapbox Light that we want to come AFTER our layers here
-const beforeLayer = 'waterway-label'
-
 export const layers = [
   {
     id: 'blueprint',
@@ -48,10 +51,9 @@ export const layers = [
         ],
       },
     },
-    before: beforeLayer,
   },
   {
-    id: 'region-outline',
+    id: 'se-boundary-outline',
     source: 'mapUnits',
     'source-layer': 'boundary',
     maxzoom: 8,
@@ -65,7 +67,6 @@ export const layers = [
         ],
       },
     },
-    before: beforeLayer,
   },
 
   {
@@ -83,7 +84,6 @@ export const layers = [
         0,
       ],
     },
-    before: beforeLayer,
   },
   {
     id: 'unit-outline',
@@ -106,7 +106,6 @@ export const layers = [
         4,
       ],
     },
-    before: beforeLayer,
   },
   {
     id: 'unit-outline-highlight',
@@ -124,6 +123,5 @@ export const layers = [
         ],
       },
     },
-    before: beforeLayer,
   },
 ]

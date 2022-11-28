@@ -1,6 +1,6 @@
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useCallback, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
-import { Box, Text, Flex } from 'theme-ui'
+import { Box, Text, Flex, Button } from 'theme-ui'
 import { ExclamationTriangle } from '@emotion-icons/fa-solid'
 
 import { useMapData } from 'components/data'
@@ -38,7 +38,7 @@ const desktopCSS = {
 // this assumes zoom is for full extent
 const MapModeToggle = ({ map, isMobile }) => {
   const [zoom, setZoom] = useState(0)
-  const { data: mapData, mapMode } = useMapData()
+  const { data: mapData, mapMode, setMapMode } = useMapData()
 
   useEffect(() => {
     if (!map) {
@@ -61,15 +61,19 @@ const MapModeToggle = ({ map, isMobile }) => {
     }
   }, [map])
 
+  const handlePixelClick = useCallback(() => {
+    setMapMode('pixel')
+  }, [setMapMode])
+
+  const handleUnitClick = useCallback(() => {
+    setMapMode('unit')
+  }, [setMapMode])
+
   if (isMobile && mapData !== null) {
     return null
   }
 
-  const showZoomNote = zoom < 8
-
-  if (!showZoomNote) {
-    return null
-  }
+  const showZoomNote = zoom < 7
 
   return (
     <Box sx={isMobile ? mobileCSS : desktopCSS}>
@@ -83,15 +87,47 @@ const MapModeToggle = ({ map, isMobile }) => {
         <Flex
           sx={{
             alignItems: 'center',
-            ml: '1rem',
-            color: 'accent',
           }}
         >
-          <ExclamationTriangle size="16px" style={{ marginRight: '.5rem' }} />
-          <Text>
-            Zoom in to select {mapMode === 'pixel' ? 'a pixel' : 'an area'}
-          </Text>
+          <Text sx={{ mr: '0.5rem' }}>Show:</Text>
+          <Button
+            variant="group"
+            data-state={mapMode === 'pixel' ? 'active' : null}
+            onClick={handlePixelClick}
+          >
+            Pixel data
+          </Button>
+          <Button
+            variant="group"
+            data-state={mapMode === 'unit' ? 'active' : null}
+            onClick={handleUnitClick}
+          >
+            Summary data
+          </Button>
         </Flex>
+
+        {showZoomNote ? (
+          <Flex
+            sx={{
+              alignItems: 'center',
+              ml: '1rem',
+              color: 'accent',
+            }}
+          >
+            <ExclamationTriangle size="16px" style={{ marginRight: '.5rem' }} />
+            <Text>
+              Zoom in to select {mapMode === 'pixel' ? 'a pixel' : 'an area'}
+            </Text>
+          </Flex>
+        ) : null}
+
+        {!showZoomNote && mapMode === 'pixel' ? (
+          <Text
+            sx={{ fontSize: 0, textAlign: 'left', ml: '0.5rem', lineHeight: 1 }}
+          >
+            Pan the map behind the crosshairs <br /> to show details in sidebar
+          </Text>
+        ) : null}
       </Flex>
     </Box>
   )

@@ -97,6 +97,30 @@ module.exports = {
       color: 'grey.9',
       bg: 'grey.1',
     },
+    group: {
+      cursor: 'pointer',
+      bg: 'blue.2',
+      py: '0.25em',
+      px: '0.75em',
+      outline: 'none',
+      color: 'text',
+      '&[data-state="active"]': {
+        color: '#FFF',
+        bg: 'primary',
+      },
+      ':not([data-state="active"])': {
+        '&:hover': {
+          bg: 'blue.3',
+        },
+      },
+      '&:first-of-type': {
+        borderRadius: '0.5em 0 0 0.5em',
+      },
+      '&:not(:first-of-type)': {
+        borderRadius: '0 0.5em 0.5em 0',
+        borderLeft: '1px solid #FFF',
+      },
+    },
     close: {
       cursor: 'pointer',
       outline: 'none',
