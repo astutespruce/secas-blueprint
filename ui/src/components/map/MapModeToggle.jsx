@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState } from 'react'
+import React, { memo, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { Box, Text, Flex, Button } from 'theme-ui'
 import { ExclamationTriangle } from '@emotion-icons/fa-solid'
@@ -34,32 +34,8 @@ const desktopCSS = {
   borderRadius: '0 0 1em 1em',
 }
 
-// Note: zoom is not updated on initial render because map hasn't yet rendered,
-// this assumes zoom is for full extent
-const MapModeToggle = ({ map, isMobile }) => {
-  const [zoom, setZoom] = useState(0)
+const MapModeToggle = ({ belowMinZoom, isMobile }) => {
   const { data: mapData, mapMode, setMapMode } = useMapData()
-
-  useEffect(() => {
-    if (!map) {
-      return undefined
-    }
-
-    // set initial value
-    setZoom(map.getZoom())
-
-    const updateZoom = () => {
-      setZoom(map.getZoom())
-    }
-
-    map.on('zoomend', updateZoom)
-
-    return () => {
-      if (!map) return
-
-      map.off('zoomend', updateZoom)
-    }
-  }, [map])
 
   const handlePixelClick = useCallback(() => {
     setMapMode('pixel')
@@ -72,8 +48,6 @@ const MapModeToggle = ({ map, isMobile }) => {
   if (isMobile && mapData !== null) {
     return null
   }
-
-  const showZoomNote = zoom < 7
 
   return (
     <Box sx={isMobile ? mobileCSS : desktopCSS}>
@@ -106,7 +80,7 @@ const MapModeToggle = ({ map, isMobile }) => {
           </Button>
         </Flex>
 
-        {showZoomNote ? (
+        {belowMinZoom ? (
           <Flex
             sx={{
               alignItems: 'center',
@@ -121,7 +95,7 @@ const MapModeToggle = ({ map, isMobile }) => {
           </Flex>
         ) : null}
 
-        {!showZoomNote && mapMode === 'pixel' ? (
+        {!belowMinZoom && mapMode === 'pixel' ? (
           <Text
             sx={{ fontSize: 0, textAlign: 'left', ml: '0.5rem', lineHeight: 1 }}
           >
@@ -134,12 +108,12 @@ const MapModeToggle = ({ map, isMobile }) => {
 }
 
 MapModeToggle.propTypes = {
-  map: PropTypes.object,
+  belowMinZoom: PropTypes.bool,
   isMobile: PropTypes.bool,
 }
 
 MapModeToggle.defaultProps = {
-  map: null,
+  belowMinZoom: false,
   isMobile: false,
 }
 

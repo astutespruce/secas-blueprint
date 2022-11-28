@@ -1,9 +1,8 @@
-import { StackedPNGTileLayer, makeRGBAPalette } from './gl'
 import { siteMetadata } from '../../../gatsby-config'
 
 const { tileHost } = siteMetadata
 
-const pixelLayerSourceConfig = { tileSize: 512, minzoom: 7, maxzoom: 8 }
+const pixelLayerSourceConfig = { tileSize: 512, minzoom: 3, maxzoom: 14 }
 
 // Encoding values are set from `data/for_tiles/se_pixel_layers_<n>.json
 export const pixelLayers = [

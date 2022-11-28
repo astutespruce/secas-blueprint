@@ -60,37 +60,49 @@ const blueprintColors = [
   '#4D004B',
 ]
 
+const minPixelLayerZoom = 7 // minimum reasonable zoom for getting pixel data
+const minSummaryZoom = layers.filter(({ id }) => id === 'unit-outline')[0]
+  .minzoom
+
 const Map = () => {
   const mapNode = useRef(null)
   const mapRef = useRef(null)
+  const { data: mapData, mapMode, setData: setMapData } = useMapData()
+  const mapModeRef = useRef(mapMode)
   const [isLoaded, setIsLoaded] = useState(false)
   const [isBlueprintVisible, setIsBlueprintVisible] = useState(true)
+  const [currentZoom, setCurrentZoom] = useState(3)
+
   const highlightIDRef = useRef(null)
   const locationMarkerRef = useRef(null)
   const deckGLHandler = useEventHandler(100)
 
   const breakpoint = useBreakpoints()
   const isMobile = breakpoint === 0
-  const { data: mapData, mapMode, setData: setMapData } = useMapData()
-  const mapModeRef = useRef(mapMode)
+
   const { location } = useSearch()
 
   const getPixelData = useDebouncedCallback(() => {
     const { current: map } = mapRef
     if (!map) return
 
-    if (map.getZoom() < 7) {
+    if (currentZoom < minPixelLayerZoom && mapData !== null) {
       setMapData(null)
       return
     }
 
     const layer = map.getLayer('pixelLayers')
-    // not always defined at map load when events get called
-    if (!layer) {
+    // don't fetch data if layer is not yet available or is not visible
+    if (
+      !(
+        layer &&
+        layer.implementation &&
+        layer.implementation.props &&
+        layer.implementation.props.visible
+      )
+    ) {
       return
     }
-
-    console.group('getPixelData')
 
     const pixelData = extractPixelData(map, map.getCenter(), layer)
 
@@ -98,13 +110,11 @@ const Map = () => {
       // tile data not yet loaded for correct zoom, try again after next deckGL
       // render pass
       deckGLHandler.once(() => {
-        console.log('repeat after loaded')
         getPixelData()
       })
     } else {
       // TODO: setmapdata
-      console.log('got pixel data', pixelData)
-      console.groupEnd()
+      console.log('pixel data', pixelData)
     }
   }, 50)
 
@@ -190,6 +200,9 @@ const Map = () => {
 
           map.once('idle', getPixelData)
         }
+
+        // FIXME: is this needed?
+        setCurrentZoom(map.getZoom())
 
         // update state once to trigger other components to update with map object
         setIsLoaded(() => true)
@@ -295,11 +308,8 @@ const Map = () => {
       if (mapModeRef.current === 'pixel') {
         getPixelData()
       }
+      setCurrentZoom(map.getZoom())
     })
-
-    // FIXME: debug only
-    window.layerManager =
-      map.getLayer('pixelLayers').implementation.deck.layerManager
   }, [isLoaded, getPixelData, deckGLHandler.handler])
 
   // handler for changed mapMode
@@ -314,9 +324,12 @@ const Map = () => {
         return
       }
 
+      console.log('toggle map mode diff')
+
       // toggle layer visibility
       if (mapMode === 'pixel') {
-        if (map.getZoom() >= 7) {
+        // immediately try to retrieve pixel data if in pixel mode
+        if (map.getZoom() >= minPixelLayerZoom) {
           map.once('idle', getPixelData)
         }
 
@@ -394,15 +407,18 @@ const Map = () => {
 
     setIsBlueprintVisible((prevVisible) => {
       const newIsVisible = !prevVisible
-      if (newIsVisible) {
-        map.setPaintProperty('blueprint', 'raster-opacity', {
-          stops: [
-            [10, 0.8],
-            [12, 0.6],
-          ],
+      if (mapModeRef.current === 'pixel') {
+        map.getLayer('pixelLayers').implementation.setProps({
+          visible: newIsVisible,
+          filters: null,
+          data: { visible: newIsVisible },
         })
       } else {
-        map.setPaintProperty('blueprint', 'raster-opacity', 0)
+        map.setLayoutProperty(
+          'blueprint',
+          'visibility',
+          newIsVisible ? 'visible' : 'none'
+        )
       }
       return newIsVisible
     })
@@ -414,10 +430,11 @@ const Map = () => {
   }
 
   console.log(
-    'mapMode',
+    'rerender map component, mapMode:',
     mapMode,
-    mapRef.current,
-    mapRef.current ? mapRef.current.getZoom() : null
+    mapRef.current ? mapRef.current.getZoom() : null,
+    // isCrosshairsVisible
+    currentZoom
   )
 
   return (
@@ -434,9 +451,7 @@ const Map = () => {
     >
       <div ref={mapNode} style={{ width: '100%', height: '100%' }} />
 
-      {mapMode === 'pixel' &&
-      mapRef.current &&
-      mapRef.current.getZoom() >= 7 ? (
+      {mapMode === 'pixel' && currentZoom >= minPixelLayerZoom ? (
         <Box
           sx={{
             position: 'absolute',
@@ -482,7 +497,15 @@ const Map = () => {
         />
       ) : null}
 
-      <MapModeToggle map={mapRef.current} isMobile={isMobile} />
+      <MapModeToggle
+        map={mapRef.current}
+        isMobile={isMobile}
+        belowMinZoom={
+          mapMode === 'pixel'
+            ? currentZoom < minPixelLayerZoom
+            : currentZoom < minSummaryZoom
+        }
+      />
 
       <StyleToggle
         map={mapRef.current}

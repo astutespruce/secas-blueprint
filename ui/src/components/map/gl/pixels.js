@@ -23,12 +23,12 @@ export const readPixelToUint32 = (texture, offsetX, offsetY) => {
     sourceType: GL.UNSIGNED_BYTE,
   })
 
-  // decode to uint32, ignoring alpha value
+  // decode to uint32, ignoring alpha value, which will be 0 for NODATA / empty tiles or 255
   const [r, g, b] = pixel
 
   const value = (r << 16) | (g << 8) | b
 
-  console.debug('read pixel', pixel, '=>', value)
+  // console.debug('read pixel', [...pixel], '=>', value)
 
   return value
 }
@@ -109,7 +109,7 @@ export const extractPixelData = (map, point, layer) => {
     return null
   }
 
-  console.log('tile', tile)
+  // console.debug('tile', tile)
 
   // images are at tile.data.images
   const {
@@ -136,8 +136,6 @@ export const extractPixelData = (map, point, layer) => {
       return
     }
 
-    console.log('raw pixel value', i, pixelValue)
-
     encoding.forEach(({ id, offset, bits, valueShift = 0 }) => {
       let value = (pixelValue >> offset) & (2 ** bits - 1)
       if (value && valueShift) {
@@ -146,6 +144,8 @@ export const extractPixelData = (map, point, layer) => {
       data[id] = value
     })
   })
+
+  // if data.blueprint === 0, then pixel is is outside base blueprint area
 
   return data
 }

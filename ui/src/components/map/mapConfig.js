@@ -11,7 +11,7 @@ export const mapConfig = {
     32.11874894652635,
   ],
   maxBounds: [-180, -80, 180, 80],
-  minZoom: 0,
+  minZoom: 3,
   maxZoom: 14,
 }
 
@@ -20,14 +20,14 @@ export const sources = {
     type: 'raster',
     // tiles are at 512, but using 256 forces higher resolution
     tileSize: 256,
-    minzoom: 0,
-    maxzoom: 13,
+    minzoom: 3,
+    maxzoom: 14,
     bounds: [-106.66188036, 17.92676033, -65.22106481, 40.638801],
     tiles: [`${tileHost}/services/se_blueprint_2022/tiles/{z}/{x}/{y}.png`],
   },
   mapUnits: {
     type: 'vector',
-    minzoom: 0,
+    minzoom: 3,
     maxzoom: 14,
     bounds: [-106.66188036, 17.92676033, -65.22106481, 40.6388013],
     tiles: [`${tileHost}/services/se_map_units/tiles/{z}/{x}/{y}.pbf`],
@@ -41,7 +41,7 @@ export const layers = [
     id: 'blueprint',
     source: 'blueprint',
     type: 'raster',
-    minzoom: 0,
+    minzoom: 2,
     maxzoom: 21,
     paint: {
       'raster-opacity': {
