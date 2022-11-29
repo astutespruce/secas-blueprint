@@ -247,12 +247,6 @@ export const extractPixelData = (
   }
 
   if (data.urban === undefined || data.urban === null) {
-    console.log(
-      'foo',
-      data.blueprint,
-      data.indicators.base.ecosystems,
-      data.indicators.base.ecosystems.filter(({ id }) => id === 'marine')
-    )
     // if urban is not present but within Blueprint area and not in marine areas, then
     // set to 0
     data.urban =

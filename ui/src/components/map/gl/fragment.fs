@@ -21,6 +21,8 @@ uniform sampler2D indicator0;
 uniform sampler2D indicator1;
 uniform sampler2D indicator2;
 uniform sampler2D indicator3;
+uniform sampler2D indicator4;
+uniform sampler2D indicator5;
 
 // pairs of [minVal, maxVal] for each indicator; [-1, -1] indicates no filtering
 // for that indicator
@@ -69,11 +71,6 @@ bool withinRange(float valueRGB, float offset, float numBits, vec2 range) {
 
 
 void main(void) {
-  float valueRGB0 = rgbToInt32(texture2D(indicator0, vTexCoord).rgb * 255.0);
-  float valueRGB1 = rgbToInt32(texture2D(indicator1, vTexCoord).rgb * 255.0);
-  float valueRGB2 = rgbToInt32(texture2D(indicator2, vTexCoord).rgb * 255.0);
-  float valueRGB3 = rgbToInt32(texture2D(indicator3, vTexCoord).rgb * 255.0);
-
   // canRender is True where all filters are either not set or values are
   // within range
 
@@ -83,13 +80,17 @@ void main(void) {
 
   float valueRGB;
   if (renderLayerTextureIndex == 0) {
-    valueRGB = valueRGB0;
+    valueRGB = rgbToInt32(texture2D(indicator0, vTexCoord).rgb * 255.0);
   } else if (renderLayerTextureIndex == 1) {
-    valueRGB = valueRGB1;
+    valueRGB = rgbToInt32(texture2D(indicator1, vTexCoord).rgb * 255.0);
   } else if (renderLayerTextureIndex == 2) {
-    valueRGB = valueRGB2;
+    valueRGB = rgbToInt32(texture2D(indicator2, vTexCoord).rgb * 255.0);
   } else if (renderLayerTextureIndex == 3) {
-    valueRGB = valueRGB3;
+    valueRGB = rgbToInt32(texture2D(indicator3, vTexCoord).rgb * 255.0);
+  } else if (renderLayerTextureIndex == 4) {
+    valueRGB = rgbToInt32(texture2D(indicator4, vTexCoord).rgb * 255.0);
+  }else if (renderLayerTextureIndex == 5) {
+    valueRGB = rgbToInt32(texture2D(indicator5, vTexCoord).rgb * 255.0);
   }
   float renderValue = bitwise_and(rshift(valueRGB, renderLayerOffset),
                                   bitmask(renderLayerBits));
