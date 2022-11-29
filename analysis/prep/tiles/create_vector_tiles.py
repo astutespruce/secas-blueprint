@@ -99,7 +99,7 @@ print(
 )
 df = gp.read_feather(
     data_dir / "inputs/boundaries/ownership.feather",
-    columns=["geometry", "Own_Type", "GAP_Sts"],
+    columns=["geometry", "Own_Type", "GAP_Sts", "Loc_Nm", "Loc_Own"],
 ).to_crs(GEO_CRS)
 
 infilename = tmp_dir / "ownership.fgb"

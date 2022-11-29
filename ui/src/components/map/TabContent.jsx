@@ -95,7 +95,7 @@ const TabContent = ({ tab, mapData }) => {
       )
     }
     case 'selected-threats': {
-      return <ThreatsTab unitType={type} slr={slr} urban={urban} />
+      return <ThreatsTab type={type} slr={slr} urban={urban} />
     }
     case 'selected-partners': {
       return (

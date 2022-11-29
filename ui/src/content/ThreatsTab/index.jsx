@@ -8,8 +8,8 @@ import NeedHelp from 'content/NeedHelp'
 import SLR from './SLR'
 import Urban from './Urban'
 
-const ThreatsTab = ({ unitType, slr, urban }) => {
-  if (unitType !== 'subwatershed') {
+const ThreatsTab = ({ type, slr, urban }) => {
+  if (type !== 'pixel' && type !== 'subwatershed') {
     return (
       <Paragraph
         sx={{
@@ -51,7 +51,7 @@ const ThreatsTab = ({ unitType, slr, urban }) => {
 }
 
 ThreatsTab.propTypes = {
-  unitType: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
   slr: PropTypes.shape({
     depth: PropTypes.arrayOf(PropTypes.number),
     nodata: PropTypes.arrayOf(PropTypes.number),

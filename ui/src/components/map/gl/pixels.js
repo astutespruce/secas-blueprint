@@ -99,7 +99,6 @@ export const getTile = (map, screenPoint, layer) => {
 export const extractPixelData = (map, point, layer) => {
   const screenPoint = map.project(point)
 
-  // FIXME: this is no longer resolving a tile correctly
   const { tile, offsetX, offsetY } = getTile(map, screenPoint, layer)
 
   if (!(tile && tile.data && tile.data.images)) {
@@ -129,8 +128,6 @@ export const extractPixelData = (map, point, layer) => {
 
   const data = {}
 
-  console.log('layers', layers, pixelValues)
-
   // layers will be empty array if there are no tiles for any of the pixel layers
   layers.forEach(({ encoding }, i) => {
     const pixelValue = pixelValues[i]
@@ -151,17 +148,46 @@ export const extractPixelData = (map, point, layer) => {
   })
 
   // if data is empty, then pixel is is outside base blueprint area
-  if (Object.keys(data).length > 0) {
+  if (Object.keys(data).length === 0) {
     return {
-      inputId: 'base', // pixel data only available for SE Base Blueprint area
-      outsideSEPercent: 0,
-      ...data,
+      inputId: null,
     }
   }
 
-  // if data is BatteryEmpty, then pixel is is outside base blueprint area
+  // extract ownership info
+  const ownership = {}
+  const protection = {}
+  const protectedAreas = []
+  const ownershipFeatures = map.queryRenderedFeatures(screenPoint, {
+    layers: ['ownership'],
+  })
+
+  if (ownershipFeatures.length > 0) {
+    ownershipFeatures.forEach(
+      ({
+        properties: {
+          Loc_Own: owner,
+          GAP_Sts: gapStatus,
+          Loc_Nm: areaName,
+          Own_Type: orgType,
+        },
+      }) => {
+        // hardcode in percent
+        ownership[orgType] = 100
+        protection[gapStatus] = 100
+        protectedAreas.push({ name: areaName, owner })
+      }
+    )
+  }
+
+  console.log('ownershipFeatures', ownershipFeatures)
 
   return {
-    inputId: null,
+    inputId: 'base', // pixel data only available for SE Base Blueprint area
+    outsideSEPercent: 0,
+    ...data,
+    ownership,
+    protection,
+    protectedAreas,
   }
 }

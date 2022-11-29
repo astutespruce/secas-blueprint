@@ -34,14 +34,35 @@ export const sources = {
     // note: can use promoteId: 'id' to promote feature properties ID to feature ID
     promoteId: 'id',
   },
+  ownership: {
+    type: 'vector',
+    minzoom: 3,
+    maxzoom: 14,
+    bounds: [-86.470357, 27.546173, -70.816397, 38.932193],
+    tiles: [`${tileHost}/services/se_ownership/tiles/{z}/{x}/{y}.pbf`],
+  },
 }
 
 export const layers = [
+  // ownership is added with no fill in order to detect ownership types for pixel mode
+  {
+    id: 'ownership',
+    source: 'ownership',
+    'source-layer': 'ownership',
+    type: 'fill',
+    layout: {
+      visibility: 'none',
+    },
+    paint: {
+      'fill-color': '#FFF',
+      'fill-opacity': 0,
+    },
+  },
   {
     id: 'blueprint',
     source: 'blueprint',
     type: 'raster',
-    minzoom: 2,
+    minzoom: 3,
     maxzoom: 21,
     paint: {
       'raster-opacity': {
@@ -56,6 +77,7 @@ export const layers = [
     id: 'se-boundary-outline',
     source: 'mapUnits',
     'source-layer': 'boundary',
+    minzoom: 3,
     maxzoom: 21,
     type: 'line',
     paint: {

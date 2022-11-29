@@ -209,6 +209,8 @@ const Map = () => {
             data: { visible: true },
           })
 
+          map.setLayoutProperty('ownership', 'visibility', 'visible')
+
           map.once('idle', getPixelData)
         }
 
@@ -340,6 +342,7 @@ const Map = () => {
         // reset selected outline
         map.setFilter('unit-outline-highlight', ['==', 'id', Infinity])
 
+        map.setLayoutProperty('ownership', 'visibility', 'visible')
         map.getLayer('pixelLayers').implementation.setProps({
           visible: true,
           filters: null, // TODO: null
@@ -350,6 +353,7 @@ const Map = () => {
         map.setLayoutProperty('unit-fill', 'visibility', 'visible')
         map.setLayoutProperty('unit-outline', 'visibility', 'visible')
         map.setLayoutProperty('blueprint', 'visibility', 'visible')
+        map.setLayoutProperty('ownership', 'visibility', 'none')
 
         map.getLayer('pixelLayers').implementation.setProps({
           visible: false,
