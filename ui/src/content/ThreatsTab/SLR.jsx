@@ -3,28 +3,90 @@ import PropTypes from 'prop-types'
 
 import { Box, Text } from 'theme-ui'
 
+import { useSLR } from 'components/data'
 import { OutboundLink } from 'components/link'
 import { LineChart } from 'components/chart'
 
-const SLR_NODATA = [
-  'This subwatershed is not projected to be inundated by up to 10 feet.',
-  'Sea-level rise data are not available for this subwatershed.',
-  'Sea-level rise is unlikely to be a threat (inland counties).',
-]
+import SLRCategories from './SLRCategories'
 
-// SLR levels are in feet above current mean sea level: 0...10
+const DataSource = () => (
+  <Text sx={{ mt: '2rem', color: 'grey.7', fontSize: 1 }}>
+    Sea level rise estimates derived from the{' '}
+    <OutboundLink to="https://coast.noaa.gov/digitalcoast/data/slr.html">
+      NOAA sea-level rise inundation data
+    </OutboundLink>
+    . To explore additional SLR information, please see NOAA&apos;s{' '}
+    <OutboundLink to="https://coast.noaa.gov/slr/">
+      Sea Level Rise Viewer
+    </OutboundLink>
+    .
+  </Text>
+)
 
-const SLR = ({ depth, nodata }) => {
-  if (nodata && nodata.length) {
+// SLR depth levels are in feet above current mean sea level: 0...10
+const SLR = ({ type, depth, nodata }) => {
+  const { depth: depthCategories, nodata: nodataCategories } = useSLR()
+
+  if (type === 'pixel') {
+    if (nodata !== null) {
+      return (
+        <Box>
+          <Text sx={{ color: 'grey.7' }}>
+            {nodataCategories[nodata].label}.
+          </Text>
+          <DataSource />
+        </Box>
+      )
+    }
+    if (depth === null) {
+      return (
+        <Box>
+          <Text sx={{ color: 'grey.7' }}>{nodataCategories[1].label}.</Text>
+          <DataSource />
+        </Box>
+      )
+    }
+
+    if (depth === 0) {
+      return (
+        <Box>
+          <Text sx={{ color: 'grey.7' }}>This area is already inundated.</Text>
+          <DataSource />
+        </Box>
+      )
+    }
+
+    return (
+      <Box>
+        <Text sx={{ color: 'grey.7' }}>
+          Feet of sea level rise needed to inundate this area:
+        </Text>
+        <SLRCategories categories={depthCategories} value={depth} />
+        <DataSource />
+      </Box>
+    )
+  }
+
+  if (nodata && nodata.length > 0) {
     for (let i = 0; i < 3; i += 1) {
-      if (nodata[i] >= 99) {
-        return <Text sx={{ color: 'grey.7' }}>{SLR_NODATA[i]}</Text>
+      if ((type === 'pixel' && nodata === i) || nodata[i] >= 99) {
+        return (
+          <Box>
+            <Text sx={{ color: 'grey.7' }}>{nodataCategories[i].label}.</Text>
+            <DataSource />
+          </Box>
+        )
       }
     }
   }
 
-  if (!(depth && depth.length)) {
-    return <Text sx={{ color: 'grey.7' }}>{SLR_NODATA[1]}</Text>
+  if (!(depth && depth.length > 0)) {
+    return (
+      <Box>
+        <Text sx={{ color: 'grey.7' }}>{nodataCategories[1].label}.</Text>
+        <DataSource />
+      </Box>
+    )
   }
 
   return (
@@ -59,25 +121,21 @@ const SLR = ({ depth, nodata }) => {
           margin={{ left: 60, right: 10, top: 10, bottom: 50 }}
         />
       </Box>
-
-      <Text sx={{ mt: '2rem', color: 'grey.7', fontSize: 1 }}>
-        Sea level rise estimates derived from the{' '}
-        <OutboundLink to="https://coast.noaa.gov/digitalcoast/data/slr.html">
-          NOAA sea-level rise inundation data
-        </OutboundLink>
-        . To explore additional SLR information, please see NOAA&apos;s{' '}
-        <OutboundLink to="https://coast.noaa.gov/slr/">
-          Sea Level Rise Viewer
-        </OutboundLink>
-        .
-      </Text>
+      <DataSource />
     </>
   )
 }
 
 SLR.propTypes = {
-  depth: PropTypes.arrayOf(PropTypes.number),
-  nodata: PropTypes.arrayOf(PropTypes.number),
+  type: PropTypes.string.isRequired,
+  depth: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.number),
+    PropTypes.number,
+  ]),
+  nodata: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.number),
+    PropTypes.number,
+  ]),
 }
 
 SLR.defaultProps = {

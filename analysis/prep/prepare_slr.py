@@ -29,7 +29,7 @@ from analysis.constants import (
     SLR_YEARS,
     SLR_PROJ_COLUMNS,
     SLR_LEGEND,
-    SRL_NODATA_COLORS,
+    SLR_NODATA,
 )
 from analysis.lib.colors import hex_to_uint8
 from analysis.lib.raster import write_raster
@@ -126,8 +126,7 @@ start = time()
 
 
 colormap = {
-    int(e["label"]): hex_to_uint8(e["color"]) + (255,)
-    for e in SLR_LEGEND + SRL_NODATA_COLORS
+    int(e["value"]): hex_to_uint8(e["color"]) + (255,) for e in SLR_LEGEND + SLR_NODATA
 }
 
 

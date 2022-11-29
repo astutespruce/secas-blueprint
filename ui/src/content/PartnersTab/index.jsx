@@ -29,7 +29,7 @@ const PartnersTab = ({
       <Protection type={type} protection={protection} />
     </Box>
 
-    {protectedAreas && protectedAreas.length > 0 ? (
+    {type === 'pixel' && protectedAreas && protectedAreas.length > 0 ? (
       <>
         <Divider variant="styles.hr.light" sx={{ my: '3rem' }} />
 

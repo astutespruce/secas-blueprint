@@ -246,6 +246,26 @@ export const extractPixelData = (
     base: extractIndicators(data, ecosystemInfo, indicatorInfo.base.indicators),
   }
 
+  // extract SLR
+  if (data.slr !== undefined && data.slr !== null) {
+    if (data.slr <= 10) {
+      data.slr = {
+        depth: data.slr,
+        nodata: null,
+      }
+    } else {
+      data.slr = {
+        depth: null,
+        nodata: data.slr - 11,
+      }
+    }
+  } else {
+    data.slr = {
+      depth: null,
+      nodata: null,
+    }
+  }
+
   // extract ownership info
   const ownership = {}
   const protection = {}
@@ -279,5 +299,11 @@ export const extractPixelData = (
     ownership,
     protection,
     protectedAreas,
+    urban:
+      data.urban ||
+      (data.indicators.base.ecosystems &&
+        data.indicators.base.ecosystems.indexOf('marine') === -1)
+        ? 0
+        : null,
   }
 }

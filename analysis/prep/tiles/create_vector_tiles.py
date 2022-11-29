@@ -134,6 +134,7 @@ tilesets.append(outfilename)
 
 
 # Create mask by cutting SA bounds out of world bounds
+# NOTE: mask is only used in report
 world = pg.box(-180, -85, 180, 85)
 mask = pg.normalize(pg.difference(world, bnd_df.geometry.values.data[0]))
 
@@ -141,7 +142,7 @@ infilename = tmp_dir / "se_mask.fgb"
 write_dataframe(gp.GeoDataFrame({"geometry": mask}, index=[0], crs=GEO_CRS), infilename)
 
 outfilename = tmp_dir / "se_mask.mbtiles"
-create_tileset(infilename, outfilename, minzoom=0, maxzoom=14, layer_id="mask")
+create_tileset(infilename, outfilename, minzoom=0, maxzoom=8, layer_id="mask")
 tilesets.append(outfilename)
 
 

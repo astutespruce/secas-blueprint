@@ -10,7 +10,7 @@ from api.settings import SITE_URL
 from analysis.constants import (
     BLUEPRINT,
     CORRIDORS,
-    URBAN_LEGEND,
+    URBAN,
     SLR_LEGEND,
     OWNERSHIP,
     PROTECTION,
@@ -91,7 +91,7 @@ def create_report(maps, results, name=None, area_type=None):
         legends["corridors"] = CORRIDORS
 
     if "urban" in results:
-        legends["urban"] = URBAN_LEGEND
+        legends["urban"] = URBAN
 
     if "slr" in results:
         legends["slr"] = SLR_LEGEND

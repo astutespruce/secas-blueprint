@@ -1,0 +1,28 @@
+[
+  { "value": 0, "label": "0", "color": "#00094E" },
+  { "value": 1, "label": "1", "color": "#031386" },
+  { "value": 2, "label": "2", "color": "#0821BD" },
+  { "value": 3, "label": "3", "color": "#1136E0" },
+  { "value": 4, "label": "4", "color": "#1E50EE" },
+  { "value": 5, "label": "5", "color": "#2D6BFC" },
+  { "value": 6, "label": "6", "color": "#2D8CFC" },
+  { "value": 7, "label": "7", "color": "#2CADFC" },
+  { "value": 8, "label": "8", "color": "#47D4FC" },
+  { "value": 9, "label": "9", "color": "#7DF5FD" },
+  { "value": 10, "label": "10", "color": "#B3FEF7" },
+  {
+    "value": 11,
+    "label": "This area is not projected to be inundated by up to 10 feet",
+    "color": "#FFFFFF"
+  },
+  {
+    "value": 12,
+    "label": "Sea-level rise data are not available for this area",
+    "color": "#880000"
+  },
+  {
+    "value": 13,
+    "label": "Sea-level rise is unlikely to be a threat (inland counties)",
+    "color": "#333333"
+  }
+]

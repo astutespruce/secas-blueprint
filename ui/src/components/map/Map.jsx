@@ -127,7 +127,6 @@ const Map = () => {
       })
     }
 
-    console.log('pixel data', pixelData)
     setMapData({
       type: 'pixel',
       location: {
@@ -422,9 +421,9 @@ const Map = () => {
       const newIsVisible = !prevVisible
       if (mapModeRef.current === 'pixel') {
         map.getLayer('pixelLayers').implementation.setProps({
-          visible: newIsVisible,
-          filters: null,
-          data: { visible: newIsVisible },
+          // have to toggle opacity not visibility so that pixel-level identify
+          // still works
+          opacity: newIsVisible ? 0.7 : 0,
         })
       } else {
         map.setLayoutProperty(
