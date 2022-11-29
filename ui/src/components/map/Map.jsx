@@ -6,7 +6,6 @@ import React, { useEffect, useRef, useState, useCallback, memo } from 'react'
 import mapboxgl from '!mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { Box } from 'theme-ui'
-import { Crosshairs } from '@emotion-icons/fa-solid'
 import { MapboxLayer } from '@deck.gl/mapbox'
 import { useDebouncedCallback } from 'use-debounce'
 
@@ -16,6 +15,7 @@ import { useSearch } from 'components/search'
 import { hasWindow, isLocalDev } from 'util/dom'
 import { indexBy } from 'util/data'
 import { useIsEqualEffect, useEventHandler } from 'util/hooks'
+import CrosshairsIcon from 'images/CrosshairsIcon.svg'
 
 import { unpackFeatureData } from './features'
 import { createRenderTarget, extractPixelData, StackedPNGTileLayer } from './gl'
@@ -91,8 +91,10 @@ const Map = () => {
     const { current: map } = mapRef
     if (!map) return
 
-    if (currentZoom < minPixelLayerZoom && mapData !== null) {
-      setMapData(null)
+    if (currentZoom < minPixelLayerZoom) {
+      if (mapData !== null) {
+        setMapData(null)
+      }
       return
     }
 
@@ -205,7 +207,7 @@ const Map = () => {
 
         map.addLayer(new MapboxLayer(pixelLayerConfig), beforeLayer)
 
-        // FIXME: debug only
+        // TEMP: debug only
         if (mapMode === 'pixel') {
           map.setLayoutProperty('unit-fill', 'visibility', 'none')
           map.setLayoutProperty('unit-outline', 'visibility', 'none')
@@ -213,8 +215,7 @@ const Map = () => {
 
           map.getLayer('pixelLayers').implementation.setProps({
             visible: true,
-            filters: null, // TODO: null
-            // data prop is used to force deeper reloading of tiles
+            filters: null,
             data: { visible: true },
           })
 
@@ -549,29 +550,19 @@ const Map = () => {
             pointerEvents: 'none',
           }}
         >
-          <Box
-            sx={{
+          <img
+            src={CrosshairsIcon}
+            style={{
               position: 'absolute',
               zIndex: 2,
               left: 0,
               top: 0,
               bottom: 0,
               right: 0,
+              width: '32px',
+              height: '32px',
             }}
-          >
-            <Crosshairs size="32px" />
-          </Box>
-          <Box
-            sx={{
-              position: 'absolute',
-              zIndex: 1,
-              top: '1px',
-              left: '1px',
-              height: '30px',
-              width: '30px',
-              borderRadius: '2rem',
-              border: '8px solid #FFFFFFDD',
-            }}
+            alt="Crosshairs icon"
           />
         </Box>
       ) : null}

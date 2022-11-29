@@ -5,7 +5,7 @@ const Context = createContext()
 
 export const Provider = ({ children }) => {
   const [{ mapMode, data, selectedIndicator }, setState] = useState({
-    mapMode: 'pixel', // 'unit', // pixel or unit
+    mapMode: 'unit', // pixel or unit
     data: null,
     selectedIndicator: null,
   })

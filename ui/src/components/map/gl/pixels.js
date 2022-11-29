@@ -246,6 +246,27 @@ export const extractPixelData = (
     base: extractIndicators(data, ecosystemInfo, indicatorInfo.base.indicators),
   }
 
+  if (data.urban === undefined || data.urban === null) {
+    console.log(
+      'foo',
+      data.blueprint,
+      data.indicators.base.ecosystems,
+      data.indicators.base.ecosystems.filter(({ id }) => id === 'marine')
+    )
+    // if urban is not present but within Blueprint area and not in marine areas, then
+    // set to 0
+    data.urban =
+      data.blueprint !== undefined &&
+      data.blueprint !== null &&
+      data.indicators &&
+      data.indicators.base &&
+      data.indicators.base.ecosystems &&
+      data.indicators.base.ecosystems.filter(({ id }) => id === 'marine')
+        .length === 0
+        ? 0
+        : null
+  }
+
   // extract SLR
   if (data.slr !== undefined && data.slr !== null) {
     if (data.slr <= 10) {
@@ -299,11 +320,5 @@ export const extractPixelData = (
     ownership,
     protection,
     protectedAreas,
-    urban:
-      data.urban ||
-      (data.indicators.base.ecosystems &&
-        data.indicators.base.ecosystems.indexOf('marine') === -1)
-        ? 0
-        : null,
   }
 }

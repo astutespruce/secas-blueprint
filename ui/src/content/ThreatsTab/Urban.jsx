@@ -33,6 +33,18 @@ const Urban = ({ type, urban }) => {
   const urbanCategories = useUrban()
 
   if (type === 'pixel') {
+    if (urban === null) {
+      return (
+        <Box>
+          <Text sx={{ color: 'grey.7' }}>
+            Projected future urbanization data is not currently available for
+            this area.
+          </Text>
+          <DataSource />
+        </Box>
+      )
+    }
+
     // show urban classes with checkmarks
     return (
       <Box>
@@ -90,7 +102,11 @@ Urban.propTypes = {
   urban: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.number),
     PropTypes.number,
-  ]).isRequired,
+  ]),
+}
+
+Urban.defaultProps = {
+  urban: null,
 }
 
 export default Urban
