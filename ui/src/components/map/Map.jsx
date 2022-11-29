@@ -105,6 +105,8 @@ const Map = () => {
       return
     }
 
+    const { lng: longitude, lat: latitude } = map.getCenter()
+
     const pixelData = extractPixelData(map, map.getCenter(), layer)
 
     if (pixelData === null) {
@@ -113,10 +115,18 @@ const Map = () => {
       deckGLHandler.once(() => {
         getPixelData()
       })
-    } else {
-      // TODO: setmapdata
-      console.log('pixel data', pixelData)
     }
+
+    console.log('pixel data', pixelData)
+    setMapData({
+      type: 'pixel',
+      location: {
+        longitude,
+        latitude,
+      },
+      isLoading: pixelData === null,
+      ...(pixelData || {}),
+    })
   }, 50)
 
   useEffect(
@@ -496,14 +506,6 @@ const Map = () => {
   if (!hasWindow) {
     return null
   }
-
-  console.log(
-    'rerender map component, mapMode:',
-    mapMode,
-    mapRef.current ? mapRef.current.getZoom() : null,
-    // isCrosshairsVisible
-    currentZoom
-  )
 
   return (
     <Box

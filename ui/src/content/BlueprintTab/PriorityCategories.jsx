@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-// import { Check } from '@emotion-icons/fa-solid'
+import { Check } from '@emotion-icons/fa-solid'
 import { Box, Flex, Text } from 'theme-ui'
 
 const defaultCSS = {
@@ -38,13 +38,6 @@ const PriorityCategories = ({ categories, value: currentValue }) => (
             }}
           />
 
-          {/* TODO: pixel mode */}
-          {/* {value === currentValue ? (
-            <Box sx={{ flex: '0 0 auto' }}>
-              <Check size="1em" />
-            </Box>
-          ) : null} */}
-
           <Box sx={{ flex: '1 1 auto' }}>
             <Box
               sx={{
@@ -59,6 +52,11 @@ const PriorityCategories = ({ categories, value: currentValue }) => (
               Blueprint geography.
             </Text>
           </Box>
+          {value === currentValue ? (
+            <Box sx={{ flex: '0 0 auto' }}>
+              <Check size="1em" />
+            </Box>
+          ) : null}
         </Flex>
       </Box>
     ))}

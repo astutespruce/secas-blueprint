@@ -56,7 +56,7 @@ export const layers = [
     id: 'se-boundary-outline',
     source: 'mapUnits',
     'source-layer': 'boundary',
-    maxzoom: 8,
+    maxzoom: 21,
     type: 'line',
     paint: {
       'line-color': '#000',
@@ -73,7 +73,7 @@ export const layers = [
     id: 'unit-fill',
     source: 'mapUnits',
     'source-layer': 'units',
-    minzoom: 8,
+    minzoom: 21,
     type: 'fill',
     paint: {
       'fill-color': '#0892D0',

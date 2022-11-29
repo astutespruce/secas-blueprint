@@ -109,7 +109,7 @@ create_tileset(
     infilename,
     out_dir / "se_ownership.mbtiles",
     minzoom=0,
-    maxzoom=15,
+    maxzoom=14,
     layer_id="ownership",
     col_types=get_col_types(df),
 )
@@ -129,7 +129,7 @@ infilename = tmp_dir / "se_boundary.fgb"
 write_dataframe(bnd_df, infilename)
 
 outfilename = tmp_dir / "se_boundary.mbtiles"
-create_tileset(infilename, outfilename, minzoom=0, maxzoom=8, layer_id="boundary")
+create_tileset(infilename, outfilename, minzoom=2, maxzoom=14, layer_id="boundary")
 tilesets.append(outfilename)
 
 
@@ -141,7 +141,7 @@ infilename = tmp_dir / "se_mask.fgb"
 write_dataframe(gp.GeoDataFrame({"geometry": mask}, index=[0], crs=GEO_CRS), infilename)
 
 outfilename = tmp_dir / "se_mask.mbtiles"
-create_tileset(infilename, outfilename, minzoom=0, maxzoom=8, layer_id="mask")
+create_tileset(infilename, outfilename, minzoom=0, maxzoom=14, layer_id="mask")
 tilesets.append(outfilename)
 
 

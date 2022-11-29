@@ -27,9 +27,14 @@ export const Provider = ({ children }) => {
         return
       }
 
+      let newData = rawData
+      if (mapMode === 'unit') {
+        newData = unpackFeatureData(rawData, ecosystemInfo, indicatorInfo)
+      }
+
       setState((prevState) => ({
         ...prevState,
-        data: unpackFeatureData(rawData, ecosystemInfo, indicatorInfo),
+        data: newData,
       }))
     },
     // intentionally ignores dependencies

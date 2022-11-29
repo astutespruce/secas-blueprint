@@ -128,6 +128,10 @@ export const extractPixelData = (map, point, layer) => {
   } = layer
 
   const data = {}
+
+  console.log('layers', layers, pixelValues)
+
+  // layers will be empty array if there are no tiles for any of the pixel layers
   layers.forEach(({ encoding }, i) => {
     const pixelValue = pixelValues[i]
     if (pixelValue === 0) {
@@ -138,14 +142,26 @@ export const extractPixelData = (map, point, layer) => {
 
     encoding.forEach(({ id, offset, bits, valueShift = 0 }) => {
       let value = (pixelValue >> offset) & (2 ** bits - 1)
-      if (value && valueShift) {
+      // if value is 0, it is NODATA
+      if (value > 0) {
         value -= valueShift
+        data[id] = value
       }
-      data[id] = value
     })
   })
 
-  // if data.blueprint === 0, then pixel is is outside base blueprint area
+  // if data is empty, then pixel is is outside base blueprint area
+  if (Object.keys(data).length > 0) {
+    return {
+      inputId: 'base', // pixel data only available for SE Base Blueprint area
+      outsideSEPercent: 0,
+      ...data,
+    }
+  }
 
-  return data
+  // if data is BatteryEmpty, then pixel is is outside base blueprint area
+
+  return {
+    inputId: null,
+  }
 }

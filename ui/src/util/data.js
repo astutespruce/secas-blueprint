@@ -202,3 +202,6 @@ export const parseDictEncodedValues = (text) => {
       return prev
     }, {})
 }
+
+export const ifNull = (value, defaultValue) =>
+  value === null ? defaultValue : value
