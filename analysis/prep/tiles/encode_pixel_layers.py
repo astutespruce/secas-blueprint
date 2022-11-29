@@ -138,7 +138,7 @@ df[["group", "position", "offset", "bits", "value_shift"]].reset_index().to_feat
 for group in groups:
     with open(out_dir / f"se_pixel_layers_{group}.json", "w") as out:
         _ = out.write(
-            df.loc[df.group == group, ["position", "offset", "bits", "value_shift"]]
+            df.loc[df.group == group, ["offset", "bits", "value_shift"]]
             .rename(columns={"value_shift": "valueShift"})
             .reset_index()
             .to_json(orient="records")
