@@ -95,10 +95,12 @@ URBAN_YEARS = [2020, 2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100]
 
 # Classified Urban 2060
 # Note: for legend already urban is toward the top but it is value 4
-URBAN = {e["value"]: e for e in json.loads(open(json_dir / "urban.json").read())}
+URBAN = json.loads(open(json_dir / "urban.json").read())
 
 # 0 (not urbanized) is deliberately excluded from colors
-URBAN_COLORS = {i: URBAN[i] for i in range(1, 5)}
+URBAN_COLORS = {e["value"]: e["color"] for e in URBAN if e["value"] != 0}
+
+URBAN_LEGEND = URBAN
 
 # depth in 1 foot increments from 0
 SLR_DEPTH_BINS = list(range(11))
