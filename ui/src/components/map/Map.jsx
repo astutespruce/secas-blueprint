@@ -14,6 +14,7 @@ import { useMapData } from 'components/data'
 import { useBreakpoints } from 'components/layout'
 import { useSearch } from 'components/search'
 import { hasWindow, isLocalDev } from 'util/dom'
+import { indexBy } from 'util/data'
 import { useIsEqualEffect, useEventHandler } from 'util/hooks'
 
 import { createRenderTarget, extractPixelData, StackedPNGTileLayer } from './gl'
@@ -204,6 +205,24 @@ const Map = () => {
         // FIXME: is this needed?
         setCurrentZoom(map.getZoom())
 
+        // enable event listener for renderer
+        map.getLayer('pixelLayers').implementation.deck.setProps({
+          onAfterRender: deckGLHandler.handler,
+        })
+
+        map.on('move', () => {
+          if (mapModeRef.current === 'pixel') {
+            getPixelData()
+          }
+        })
+
+        map.on('zoomend', () => {
+          if (mapModeRef.current === 'pixel') {
+            getPixelData()
+          }
+          setCurrentZoom(map.getZoom())
+        })
+
         // update state once to trigger other components to update with map object
         setIsLoaded(() => true)
       })
@@ -285,33 +304,6 @@ const Map = () => {
     [isMobile, setMapData]
   )
 
-  // hook up pixel events after map load so that deckGLHandler is initialized
-  useEffect(() => {
-    if (!isLoaded) {
-      return
-    }
-
-    const { current: map } = mapRef
-
-    // enable event listener for renderer
-    map
-      .getLayer('pixelLayers')
-      .implementation.deck.setProps({ onAfterRender: deckGLHandler.handler })
-
-    map.on('move', () => {
-      if (mapModeRef.current === 'pixel') {
-        getPixelData()
-      }
-    })
-
-    map.on('zoomend', () => {
-      if (mapModeRef.current === 'pixel') {
-        getPixelData()
-      }
-      setCurrentZoom(map.getZoom())
-    })
-  }, [isLoaded, getPixelData, deckGLHandler.handler])
-
   // handler for changed mapMode
   useEffect(
     () => {
@@ -323,8 +315,6 @@ const Map = () => {
       if (!map.isStyleLoaded()) {
         return
       }
-
-      console.log('toggle map mode diff')
 
       // toggle layer visibility
       if (mapMode === 'pixel') {
@@ -424,6 +414,84 @@ const Map = () => {
     })
   }, [])
 
+  const handleBasemapChange = useCallback(
+    (styleID) => {
+      const { current: map } = mapRef
+
+      if (!isLoaded) {
+        return
+      }
+
+      const updateStyle = () => {
+        const {
+          style: {
+            _layers: {
+              pixelLayers: { implementation: pixelLayer },
+            },
+          },
+        } = map
+
+        map.setStyle(`mapbox://styles/mapbox/${styleID}`)
+
+        map.once('style.load', () => {
+          const {
+            sources: styleSources,
+            layers: styleLayers,
+            metadata: { 'mapbox:origin': curStyleId },
+          } = map.getStyle()
+          const layerIndex = indexBy(styleLayers, 'id')
+
+          if (curStyleId === 'satellite-streets-v11') {
+            // make satellite a bit more washed out
+            map.setPaintProperty('background', 'background-color', '#FFF')
+            map.setPaintProperty('satellite', 'raster-opacity', 0.75)
+          }
+
+          // add sources back
+          Object.entries(sources).forEach(([id, source]) => {
+            // make sure we're not trying to reload the same style, which already has these
+            if (!styleSources[id]) {
+              map.addSource(id, source)
+            }
+          })
+
+          // add regular layers and reapply filters / visibility
+          layers.forEach((l) => {
+            // make sure we're not trying to reload the same layers
+            if (layerIndex[l.id]) {
+              return
+            }
+
+            const layer = { ...l }
+
+            if (mapMode === 'pixel') {
+              if (l.id === 'blueprint' || l.id.startsWith('unit-')) {
+                layer.layout = {
+                  visibility: 'none',
+                }
+              }
+            } else if (l.id === 'unit-outline-highlight' && mapData !== null) {
+              // re-highlight selected layer
+              layer.filter = ['==', 'id', mapData.id]
+            }
+
+            map.addLayer(layer, beforeLayer)
+          })
+
+          map.addLayer(pixelLayer, beforeLayer)
+        })
+      }
+
+      // wait for previous to finish loading, if necessary
+      if (map.isStyleLoaded()) {
+        updateStyle()
+      } else {
+        map.once('idle', updateStyle)
+      }
+    },
+    [isLoaded, mapData, mapMode]
+  )
+
   // if there is no window, we cannot render this component
   if (!hasWindow) {
     return null
@@ -507,13 +575,7 @@ const Map = () => {
         }
       />
 
-      <StyleToggle
-        map={mapRef.current}
-        sources={sources}
-        layers={layers}
-        mapMode={mapMode}
-        isMobile={isMobile}
-      />
+      <StyleToggle isMobile={isMobile} onStyleChange={handleBasemapChange} />
     </Box>
   )
 }
