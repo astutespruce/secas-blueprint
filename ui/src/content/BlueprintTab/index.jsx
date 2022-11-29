@@ -10,7 +10,7 @@ import {
 } from 'components/data'
 import { OutboundLink } from 'components/link'
 import NeedHelp from 'content/NeedHelp'
-import { sum } from 'util/data'
+import { ifNull, sum } from 'util/data'
 
 import BlueprintChart from './BlueprintChart'
 import CorridorsChart from './CorridorsChart'
@@ -90,6 +90,7 @@ const getInputPriorities = ({
 }
 
 const BlueprintTab = ({
+  type,
   blueprint,
   corridors,
   inputId,
@@ -137,12 +138,45 @@ const BlueprintTab = ({
 
   let hasInland = false
   let hasMarine = false
-  if (corridors && corridors.length) {
-    hasInland = sum(corridors.slice(0, 2)) > 0
-    hasMarine = sum(corridors.slice(2, 4)) > 0
+  if (corridors !== null) {
+    if (type === 'pixel') {
+      hasInland = corridors <= 1
+      hasMarine = corridors > 1 && corridors < 4
+    } else if (corridors.length > 0) {
+      hasInland = sum(corridors.slice(0, 2)) > 0
+      hasMarine = sum(corridors.slice(2, 4)) > 0
+    }
+  }
+
+  let hasInlandPixelEcosystems = false
+  let hasMarinePixelEcosystems = false
+  if (type === 'pixel') {
+    Object.keys(mapData).forEach((key) => {
+      if (
+        (key.startsWith('base:land_') || key.startsWith('base:freshwater_')) &&
+        mapData[key] !== null
+      ) {
+        hasInlandPixelEcosystems = true
+      } else if (key.startsWith('base:marine_') && mapData[key] !== null) {
+        hasMarinePixelEcosystems = true
+      }
+    })
   }
 
   const filterCorridors = ({ value }) => {
+    if (type === 'pixel') {
+      if (value === 4) {
+        return true
+      }
+      if (!(hasInland || hasInlandPixelEcosystems) && value <= 1) {
+        return false
+      }
+      if (!(hasMarine || hasMarinePixelEcosystems) && value > 1) {
+        return false
+      }
+      return true
+    }
+
     // always exclude not a hub / corridor
     if (value === 4) {
       return false
@@ -163,17 +197,20 @@ const BlueprintTab = ({
         <Text sx={{ color: 'grey.7' }}>
           for a connected network of lands and waters
         </Text>
-        <BlueprintChart
-          categories={priorityCategories}
-          blueprint={blueprint}
-          outsideSEPercent={outsideSEPercent}
-        />
+        {type !== 'pixel' ? (
+          <BlueprintChart
+            categories={priorityCategories}
+            blueprint={blueprint}
+            outsideSEPercent={outsideSEPercent}
+          />
+        ) : null}
         {outsideSEPercent < 100 ? (
           <PriorityCategories
             categories={priorityCategories
               .slice()
               .reverse()
-              .filter(({ value }) => value > 0)}
+              .filter(({ value }) => (type === 'pixel' ? true : value > 0))}
+            value={type === 'pixel' ? blueprint : null}
           />
         ) : null}
       </Box>
@@ -194,15 +231,18 @@ const BlueprintTab = ({
             <Heading as="h3">Hubs and Corridors</Heading>
           </Text>
 
-          <CorridorsChart
-            categories={corridorCategories}
-            corridors={corridors}
-            outsideSEPercent={outsideSEPercent}
-          />
+          {type !== 'pixel' ? (
+            <CorridorsChart
+              categories={corridorCategories}
+              corridors={corridors}
+              outsideSEPercent={outsideSEPercent}
+            />
+          ) : null}
 
           {outsideSEPercent < 100 ? (
             <CorridorCategories
               categories={corridorCategories.filter(filterCorridors)}
+              value={type === 'pixel' ? ifNull(corridors, 4) : null}
             />
           ) : null}
         </Box>
@@ -243,13 +283,21 @@ const BlueprintTab = ({
 }
 
 BlueprintTab.propTypes = {
-  inputId: PropTypes.string.isRequired,
-  blueprint: PropTypes.arrayOf(PropTypes.number),
-  corridors: PropTypes.arrayOf(PropTypes.number),
+  type: PropTypes.string.isRequired,
+  inputId: PropTypes.string,
+  blueprint: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.number),
+    PropTypes.number,
+  ]),
+  corridors: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.number),
+    PropTypes.number,
+  ]),
   outsideSEPercent: PropTypes.number,
 }
 
 BlueprintTab.defaultProps = {
+  inputId: null, // null if outside output data
   blueprint: [],
   corridors: [],
   outsideSEPercent: 0,

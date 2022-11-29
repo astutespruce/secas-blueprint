@@ -24,6 +24,7 @@
     "camelcase": "^7.0.0",
     "d3-scale": "^4.0.2",
     "d3-shape": "^3.0.1",
+    "deck.gl": "8.7",
     "dequal": "^2.0.2",
     "dotenv": "^16.0.0",
     "eslint-plugin-jsx-a11y": "^6.6.1",
@@ -53,6 +54,7 @@
     "react-query": "^3.33.7",
     "stream-browserify": "^3.0.0",
     "theme-ui": "^0.15.3",
+    "use-debounce": "^8.0.4",
     "use-error-boundary": "^2.0.4",
     "util": "^0.12.4"
   },

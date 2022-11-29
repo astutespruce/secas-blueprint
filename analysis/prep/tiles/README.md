@@ -37,4 +37,29 @@ This takes about 3 hours for zooms 2-14.
 
 ### Indicator data tiles
 
-The indicators are encoded for data tiles using `analysis/prep/tiles/encode_data_tiles.py`.
+The data tiles approach generally consists of:
+
+- each layer takes up a known number of bits to represent its full range of values
+- 0 is set as NODATA for all layers; any layers that have a valid value of 0 are shifted up to 1..n
+- layers are grouped such that no group requires more than 24 bits (for RGB PNG); these are selected manually in part to group layers with similar extents together
+- each layer is assigned a particular bit range within its group
+- each layer in the group is read from its data source, and bit-shifted to the correct position, then combined with other layers in the group
+- the group is output as an encoded GeoTIFF
+- the GeoTIFF is encoded to RGB PNG image tiles
+- each tile is decoded in the user interface and values are bit-masked and shifted to extract the original values for each layer
+
+The indicators are encoded for data tiles using `analysis/prep/tiles/encode_pixel_layers.py`.
+
+This creates an encoded GeoTIFF for each group of layers.
+
+These layers are then converted into PNG tiles using `rastertiler-rs`:
+
+```bash
+../rastertiler-rs/target/release/rastertiler data/for_tiles/se_pixel_layers_<n>.tif tiles/se_pixel_layers_<n>.mbtiles -s 512 -Z 5 -z 14
+```
+
+(where `n` refers to group index 0..n)
+
+Note: tiles are generated at 512px size to match the standard tile size in the
+user interface (smaller tile sizes are fetched at the next higher zoom, which
+leads to many more requests).

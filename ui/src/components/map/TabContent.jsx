@@ -1,5 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { Box, Flex, Text } from 'theme-ui'
+import { ExclamationTriangle } from '@emotion-icons/fa-solid'
+
 import {
   InfoTab,
   ContactTab,
@@ -31,6 +34,7 @@ const TabContent = ({ tab, mapData }) => {
 
   const {
     type,
+    isLoading,
     inputId,
     blueprint,
     corridors,
@@ -45,6 +49,25 @@ const TabContent = ({ tab, mapData }) => {
     protectedAreas,
     ltaSearch,
   } = mapData
+
+  if (isLoading) {
+    return <Box sx={{ textAlign: 'center', mt: '1rem' }}>Loading...</Box>
+  }
+
+  if (inputId === null) {
+    return (
+      <Flex sx={{ py: '2rem', pl: '1rem', pr: '2rem', alignItems: 'center' }}>
+        <Box sx={{ flex: '0 0 auto', mr: '1rem', color: 'orange' }}>
+          <ExclamationTriangle size="2em" />
+        </Box>
+        <Text sx={{ color: 'grey.8', flex: '1 1 auto' }}>
+          Area is outside Southeast Base Blueprint data extent.
+          <br />
+          No pixel-level details are available for this area.
+        </Text>
+      </Flex>
+    )
+  }
 
   switch (tab) {
     case 'selected-priorities': {
@@ -72,7 +95,7 @@ const TabContent = ({ tab, mapData }) => {
       )
     }
     case 'selected-threats': {
-      return <ThreatsTab unitType={type} slr={slr} urban={urban} />
+      return <ThreatsTab type={type} slr={slr} urban={urban} />
     }
     case 'selected-partners': {
       return (

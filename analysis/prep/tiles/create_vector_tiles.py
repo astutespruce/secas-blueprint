@@ -99,7 +99,7 @@ print(
 )
 df = gp.read_feather(
     data_dir / "inputs/boundaries/ownership.feather",
-    columns=["geometry", "Own_Type", "GAP_Sts"],
+    columns=["geometry", "Own_Type", "GAP_Sts", "Loc_Nm", "Loc_Own"],
 ).to_crs(GEO_CRS)
 
 infilename = tmp_dir / "ownership.fgb"
@@ -109,7 +109,7 @@ create_tileset(
     infilename,
     out_dir / "se_ownership.mbtiles",
     minzoom=0,
-    maxzoom=15,
+    maxzoom=14,
     layer_id="ownership",
     col_types=get_col_types(df),
 )
@@ -129,11 +129,12 @@ infilename = tmp_dir / "se_boundary.fgb"
 write_dataframe(bnd_df, infilename)
 
 outfilename = tmp_dir / "se_boundary.mbtiles"
-create_tileset(infilename, outfilename, minzoom=0, maxzoom=8, layer_id="boundary")
+create_tileset(infilename, outfilename, minzoom=2, maxzoom=14, layer_id="boundary")
 tilesets.append(outfilename)
 
 
 # Create mask by cutting SA bounds out of world bounds
+# NOTE: mask is only used in report
 world = pg.box(-180, -85, 180, 85)
 mask = pg.normalize(pg.difference(world, bnd_df.geometry.values.data[0]))
 

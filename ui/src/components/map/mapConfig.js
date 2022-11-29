@@ -4,8 +4,14 @@ const { tileHost } = siteMetadata
 
 export const mapConfig = {
   bounds: [-106.66188036, 17.92676033, -65.22106481, 40.638801],
+
+  // TEMP: testing only
+  // bounds: [
+  //   -82.60386551952661, 30.279148227225917, -81.30046782109937,
+  //   31.25495730451503,
+  // ],
   maxBounds: [-180, -80, 180, 80],
-  minZoom: 0,
+  minZoom: 3,
   maxZoom: 14,
 }
 
@@ -14,31 +20,49 @@ export const sources = {
     type: 'raster',
     // tiles are at 512, but using 256 forces higher resolution
     tileSize: 256,
-    minzoom: 0,
-    maxzoom: 13,
+    minzoom: 3,
+    maxzoom: 14,
     bounds: [-106.66188036, 17.92676033, -65.22106481, 40.638801],
     tiles: [`${tileHost}/services/se_blueprint_2022/tiles/{z}/{x}/{y}.png`],
   },
   mapUnits: {
     type: 'vector',
-    minzoom: 0,
+    minzoom: 3,
     maxzoom: 14,
     bounds: [-106.66188036, 17.92676033, -65.22106481, 40.6388013],
     tiles: [`${tileHost}/services/se_map_units/tiles/{z}/{x}/{y}.pbf`],
     // note: can use promoteId: 'id' to promote feature properties ID to feature ID
     promoteId: 'id',
   },
+  ownership: {
+    type: 'vector',
+    minzoom: 3,
+    maxzoom: 14,
+    bounds: [-86.470357, 27.546173, -70.816397, 38.932193],
+    tiles: [`${tileHost}/services/se_ownership/tiles/{z}/{x}/{y}.pbf`],
+  },
 }
 
-// layer in Mapbox Light that we want to come AFTER our layers here
-const beforeLayer = 'waterway-label'
-
 export const layers = [
+  // ownership is added with no fill in order to detect ownership types for pixel mode
+  {
+    id: 'ownership',
+    source: 'ownership',
+    'source-layer': 'ownership',
+    type: 'fill',
+    layout: {
+      visibility: 'none',
+    },
+    paint: {
+      'fill-color': '#FFF',
+      'fill-opacity': 0,
+    },
+  },
   {
     id: 'blueprint',
     source: 'blueprint',
     type: 'raster',
-    minzoom: 0,
+    minzoom: 3,
     maxzoom: 21,
     paint: {
       'raster-opacity': {
@@ -48,13 +72,13 @@ export const layers = [
         ],
       },
     },
-    before: beforeLayer,
   },
   {
-    id: 'region-outline',
+    id: 'se-boundary-outline',
     source: 'mapUnits',
     'source-layer': 'boundary',
-    maxzoom: 8,
+    minzoom: 3,
+    maxzoom: 21,
     type: 'line',
     paint: {
       'line-color': '#000',
@@ -65,7 +89,6 @@ export const layers = [
         ],
       },
     },
-    before: beforeLayer,
   },
 
   {
@@ -83,7 +106,6 @@ export const layers = [
         0,
       ],
     },
-    before: beforeLayer,
   },
   {
     id: 'unit-outline',
@@ -106,7 +128,6 @@ export const layers = [
         4,
       ],
     },
-    before: beforeLayer,
   },
   {
     id: 'unit-outline-highlight',
@@ -124,6 +145,5 @@ export const layers = [
         ],
       },
     },
-    before: beforeLayer,
   },
 ]

@@ -9,19 +9,42 @@ import NeedHelp from 'content/NeedHelp'
 import Ownership from './Ownership'
 import Protection from './Protection'
 
-const PartnersTab = ({ ownership, protection, ltaSearch }) => (
+const PartnersTab = ({
+  type,
+  ownership,
+  protection,
+  ltaSearch,
+  protectedAreas,
+}) => (
   <Box sx={{ py: '2rem', pl: '1rem', pr: '2rem' }}>
     <Box as="section">
       <Heading as="h3">Conserved Areas Ownership</Heading>
-      <Ownership ownership={ownership} />
+      <Ownership type={type} ownership={ownership} />
     </Box>
 
     <Divider variant="styles.hr.light" sx={{ my: '3rem' }} />
 
     <Box as="section">
       <Heading as="h3">Protection Status</Heading>
-      <Protection protection={protection} />
+      <Protection type={type} protection={protection} />
     </Box>
+
+    {type === 'pixel' && protectedAreas && protectedAreas.length > 0 ? (
+      <>
+        <Divider variant="styles.hr.light" sx={{ my: '3rem' }} />
+
+        <Box as="section">
+          <Heading as="h3">Protected Areas</Heading>
+          <Box as="ul" sx={{ mt: '0.5rem' }}>
+            {protectedAreas.map(({ name, owner }, i) => (
+              <li key={`${name}_${owner}_${i}`}>
+                {name || 'Name unknown'} ({owner || 'unknown owner'})
+              </li>
+            ))}
+          </Box>
+        </Box>
+      </>
+    ) : null}
 
     {ltaSearch && ltaSearch.length ? (
       <>
@@ -50,15 +73,23 @@ const PartnersTab = ({ ownership, protection, ltaSearch }) => (
 )
 
 PartnersTab.propTypes = {
+  type: PropTypes.string.isRequired,
   ownership: PropTypes.objectOf(PropTypes.number),
   protection: PropTypes.objectOf(PropTypes.number),
   ltaSearch: PropTypes.arrayOf(PropTypes.number),
+  protectedAreas: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string,
+      owner: PropTypes.string,
+    })
+  ),
 }
 
 PartnersTab.defaultProps = {
   ownership: null,
   protection: null,
   ltaSearch: null,
+  protectedAreas: null, // only present in pixel mode
 }
 
 export default PartnersTab

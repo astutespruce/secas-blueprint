@@ -45,82 +45,13 @@ const styles = [
   },
 ]
 
-const StyleToggle = ({ map, sources, layers, isMobile }) => {
+const StyleToggle = ({ isMobile, onStyleChange }) => {
   const [index, setIndex] = useState(0)
-  const styleRef = useRef(null)
-
-  const handleBasemapChange = useCallback(
-    (styleID) => {
-      if (!map) {
-        return
-      }
-
-      // save as a ref since this might be called several times in series,
-      // and we want to make sure we grab the latest
-      styleRef.current = map.getStyle()
-
-      const updateStyle = () => {
-        map.setStyle(`mapbox://styles/mapbox/${styleID}`)
-
-        map.once('style.load', () => {
-          const {
-            sources: styleSources,
-            layers: styleLayers,
-            metadata: { 'mapbox:origin': curStyleId },
-          } = map.getStyle()
-          const layerIndex = indexBy(styleLayers, 'id')
-
-          if (curStyleId === 'satellite-streets-v11') {
-            // make satellite a bit more washed out
-            map.setPaintProperty('background', 'background-color', '#FFF')
-            map.setPaintProperty('satellite', 'raster-opacity', 0.75)
-          }
-
-          // add sources back
-          Object.entries(sources).forEach(([id, source]) => {
-            // make sure we're not trying to reload the same style, which already has these
-            if (!styleSources[id]) {
-              map.addSource(id, source)
-            }
-          })
-
-          // add layers and reapply filters
-          layers.forEach((l) => {
-            // make sure we're not trying to reload the same layers
-            if (layerIndex[l.id]) {
-              return
-            }
-
-            const layer = { ...l }
-
-            if (l.id === 'unit-outline-highlight') {
-              const [prevLyr] = styleRef.current.layers.filter(
-                ({ id }) => id === 'unit-outline-highlight'
-              )
-
-              if (prevLyr) {
-                layer.filter = prevLyr.filter
-              }
-            }
-            map.addLayer(layer, layer.before || null)
-          })
-        })
-      }
-
-      // wait for previous to finish loading, if necessary
-      if (map.isStyleLoaded()) {
-        updateStyle()
-      } else {
-        map.once('idle', updateStyle)
-      }
-    },
-    [map, layers, sources]
-  )
 
   const handleToggle = () => {
     setIndex((prevIndex) => {
       const nextIndex = prevIndex === 0 ? 1 : 0
-      handleBasemapChange(styles[nextIndex].id)
+      onStyleChange(styles[nextIndex].id)
       return nextIndex
     })
   }
@@ -140,21 +71,11 @@ const StyleToggle = ({ map, sources, layers, isMobile }) => {
 }
 
 StyleToggle.propTypes = {
-  map: PropTypes.object,
-  sources: PropTypes.objectOf(
-    PropTypes.shape({ type: PropTypes.string.isRequired })
-  ).isRequired,
-  layers: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      paint: PropTypes.object,
-    })
-  ).isRequired,
+  onStyleChange: PropTypes.func.isRequired,
   isMobile: PropTypes.bool,
 }
 
 StyleToggle.defaultProps = {
-  map: null,
   isMobile: false,
 }
 

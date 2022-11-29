@@ -93,32 +93,14 @@ PROTECTION = {
 URBAN_YEARS = [2020, 2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100]
 
 
-# values are # out of 50 runs, and 51 = currently urban in 2019 NLCD
-# 0 (not urbanized) is deliberately excluded from colors
-URBAN_COLORS = {
-    1: "#F3C6A8",  # moderate
-    2: "#DA6C51",  # high
-    3: "#C40A0A",  # very high
-    4: "#696969",  # already urban
-}
+# Classified Urban 2060
+# Note: for legend already urban is toward the top but it is value 4
+URBAN = json.loads(open(json_dir / "urban.json").read())
 
-# Note: for legend already urban is toward the top but it is value 3
-URBAN_LEGEND = [
-    {"label": "Urban in 2019", "color": "#696969"},
-    {"label": "Not likely to urbanize", "color": None},
-    {
-        "label": "Moderate likelihood of urbanization (2 - 25% probability)",
-        "color": "#F3C6A8",
-    },
-    {
-        "label": "High likelihood of urbanization (25 - 50% probability)",
-        "color": "#DA6C51",
-    },
-    {
-        "label": "Very high likelihood of urbanization (>50% probability)",
-        "color": "#C40A0A",
-    },
-]
+# 0 (not urbanized) is deliberately excluded from colors
+URBAN_COLORS = {e["value"]: e["color"] for e in URBAN if e["value"] != 0}
+
+URBAN_LEGEND = URBAN
 
 # depth in 1 foot increments from 0
 SLR_DEPTH_BINS = list(range(11))
@@ -142,29 +124,10 @@ SLR_PROJ_COLUMNS = [
     for decade, scenario in product(SLR_YEARS, SLR_PROJ_SCENARIOS)
 ]
 
+SLR = json.loads(open(json_dir / "slr.json").read())
+SLR_LEGEND = SLR[:11]
+SLR_NODATA = SLR[11:]
 
-SLR_LEGEND = [
-    {"label": "0", "color": "#00094E"},
-    {"label": "1", "color": "#031386"},
-    {"label": "2", "color": "#0821BD"},
-    {"label": "3", "color": "#1136E0"},
-    {"label": "4", "color": "#1E50EE"},
-    {"label": "5", "color": "#2D6BFC"},
-    {"label": "6", "color": "#2D8CFC"},
-    {"label": "7", "color": "#2CADFC"},
-    {"label": "8", "color": "#47D4FC"},
-    {"label": "9", "color": "#7DF5FD"},
-    {"label": "10", "color": "#B3FEF7"},
-]
-
-SRL_NODATA_COLORS = [
-    # Not inundated to 10 ft
-    {"label": "11", "color": "#FFFFFF"},
-    # Sea-level rise data unavailable
-    {"label": "12", "color": "#880000"},
-    # Sea-level rise unlikely to be a threat (inland counties)
-    {"label": "13", "color": "#333333"},
-]
 
 NLCD_YEARS = [2001, 2004, 2006, 2008, 2011, 2013, 2016, 2019]
 

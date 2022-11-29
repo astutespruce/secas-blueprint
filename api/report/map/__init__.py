@@ -156,7 +156,7 @@ async def render_raster_maps(
         task_args.append(("urban_2060", urban_filename, URBAN_COLORS))
 
     if slr:
-        colors = {i: e["color"] for i, e in enumerate(SLR_LEGEND)}
+        colors = {e["value"]: e["color"] for i, e in enumerate(SLR_LEGEND)}
         task_args.append(("slr", slr_filename, colors))
 
     # NOTE: have to have handle on pending or task loop gets closed too soon
