@@ -10,13 +10,14 @@ import { Crosshairs } from '@emotion-icons/fa-solid'
 import { MapboxLayer } from '@deck.gl/mapbox'
 import { useDebouncedCallback } from 'use-debounce'
 
-import { useMapData } from 'components/data'
+import { useMapData, useIndicators } from 'components/data'
 import { useBreakpoints } from 'components/layout'
 import { useSearch } from 'components/search'
 import { hasWindow, isLocalDev } from 'util/dom'
 import { indexBy } from 'util/data'
 import { useIsEqualEffect, useEventHandler } from 'util/hooks'
 
+import { unpackFeatureData } from './features'
 import { createRenderTarget, extractPixelData, StackedPNGTileLayer } from './gl'
 import { mapConfig as config, sources, layers } from './mapConfig'
 import { pixelLayers, pixelLayerIndex } from './pixelLayers'
@@ -70,6 +71,9 @@ const Map = () => {
   const mapRef = useRef(null)
   const { data: mapData, mapMode, setData: setMapData } = useMapData()
   const mapModeRef = useRef(mapMode)
+  const { ecosystems: ecosystemInfo, indicators: indicatorInfo } =
+    useIndicators()
+
   const [isLoaded, setIsLoaded] = useState(false)
   const [isBlueprintVisible, setIsBlueprintVisible] = useState(true)
   const [currentZoom, setCurrentZoom] = useState(3)
@@ -107,7 +111,13 @@ const Map = () => {
 
     const { lng: longitude, lat: latitude } = map.getCenter()
 
-    const pixelData = extractPixelData(map, map.getCenter(), layer)
+    const pixelData = extractPixelData(
+      map,
+      map.getCenter(),
+      layer,
+      ecosystemInfo,
+      indicatorInfo
+    )
 
     if (pixelData === null) {
       // tile data not yet loaded for correct zoom, try again after next deckGL
@@ -214,7 +224,6 @@ const Map = () => {
           map.once('idle', getPixelData)
         }
 
-        // FIXME: is this needed?
         setCurrentZoom(map.getZoom())
 
         // enable event listener for renderer
@@ -257,7 +266,7 @@ const Map = () => {
         // highlight selected
         map.setFilter('unit-outline-highlight', ['==', 'id', properties.id])
 
-        setMapData(features[0].properties)
+        setMapData(unpackFeatureData(properties, ecosystemInfo, indicatorInfo))
         if (isMobile) {
           map.resize()
         }
@@ -479,7 +488,11 @@ const Map = () => {
             const layer = { ...l }
 
             if (mapMode === 'pixel') {
-              if (l.id === 'blueprint' || l.id.startsWith('unit-')) {
+              if (
+                l.id === 'blueprint' ||
+                l.id === 'unit-fill' ||
+                l.id === 'unit-outline'
+              ) {
                 layer.layout = {
                   visibility: 'none',
                 }

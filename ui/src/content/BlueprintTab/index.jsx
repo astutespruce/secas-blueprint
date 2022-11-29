@@ -161,13 +161,6 @@ const BlueprintTab = ({
         hasMarinePixelEcosystems = true
       }
     })
-
-    console.log(
-      'hasInland',
-      hasInlandPixelEcosystems,
-      'hasMarine',
-      hasMarinePixelEcosystems
-    )
   }
 
   const filterCorridors = ({ value }) => {

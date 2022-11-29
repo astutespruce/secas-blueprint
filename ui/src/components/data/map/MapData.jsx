@@ -1,15 +1,9 @@
 import React, { useState, useCallback, useContext, createContext } from 'react'
 import PropTypes from 'prop-types'
 
-import { useIndicators } from 'components/data/Indicators'
-import { unpackFeatureData } from './features'
-
 const Context = createContext()
 
 export const Provider = ({ children }) => {
-  const { ecosystems: ecosystemInfo, indicators: indicatorInfo } =
-    useIndicators()
-
   const [{ mapMode, data, selectedIndicator }, setState] = useState({
     mapMode: 'pixel', // 'unit', // pixel or unit
     data: null,
@@ -17,19 +11,14 @@ export const Provider = ({ children }) => {
   })
 
   const setData = useCallback(
-    (rawData) => {
-      if (rawData === null) {
+    (newData) => {
+      if (newData === null) {
         setState((prevState) => ({
           ...prevState,
           data: null,
           selectedIndicator: null,
         }))
         return
-      }
-
-      let newData = rawData
-      if (mapMode === 'unit') {
-        newData = unpackFeatureData(rawData, ecosystemInfo, indicatorInfo)
       }
 
       setState((prevState) => ({

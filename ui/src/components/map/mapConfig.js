@@ -95,7 +95,7 @@ export const layers = [
     id: 'unit-fill',
     source: 'mapUnits',
     'source-layer': 'units',
-    minzoom: 21,
+    minzoom: 8,
     type: 'fill',
     paint: {
       'fill-color': '#0892D0',

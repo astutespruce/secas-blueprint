@@ -3,6 +3,8 @@
 import { readPixelsToArray } from '@luma.gl/core'
 import GL from '@luma.gl/constants'
 
+import { indexBy } from 'util/data'
+
 const TILE_SIZE = 512
 
 /**
@@ -96,7 +98,92 @@ export const getTile = (map, screenPoint, layer) => {
   }
 }
 
-export const extractPixelData = (map, point, layer) => {
+const extractIndicators = (data, ecosystemInfo, indicatorInfo) => {
+  const ecosystemIndex = indexBy(ecosystemInfo, 'id')
+
+  let hasInland = false
+  let hasMarine = false
+
+  let indicators = indicatorInfo.map(
+    ({ id, values: valuesInfo, ...indicator }) => {
+      const present = data[id] !== undefined && data[id] !== null
+
+      if (present) {
+        if (id.startsWith('base:land_') || id.startsWith('base:freshwater_')) {
+          hasInland = true
+        } else {
+          hasMarine = true
+        }
+      }
+
+      const values = valuesInfo.map(({ value, ...rest }) => ({
+        ...rest,
+        value,
+        percent: data[id] === value ? 100 : 0,
+      }))
+
+      return {
+        ...indicator,
+        id,
+        values,
+        total: present ? 100 : 0,
+        ecosystem: ecosystemIndex[id.split(':')[1].split('_')[0]],
+      }
+    }
+  )
+
+  if (!hasInland) {
+    indicators = indicators.filter(({ id }) => id.search('marine_') !== -1)
+  } else if (!hasMarine) {
+    // has no marine, likely inland, don't show any marine indicators
+    indicators = indicators.filter(({ id }) => id.search('marine_') === -1)
+  }
+
+  indicators = indexBy(indicators, 'id')
+
+  // aggregate these up by ecosystems for ecosystems that are present
+  const ecosystemsPresent = new Set(
+    Object.keys(indicators).map((id) => id.split(':')[1].split('_')[0])
+  )
+
+  const ecosystems = ecosystemInfo
+    .filter(({ id }) => ecosystemsPresent.has(id))
+    .map(
+      ({
+        id: ecosystemId,
+        label,
+        color,
+        borderColor,
+        indicators: ecosystemIndicators,
+        ...rest
+      }) => {
+        const indicatorsPresent = ecosystemIndicators.filter(
+          (indicatorId) => indicators[indicatorId]
+        )
+
+        return {
+          ...rest,
+          id: ecosystemId,
+          label,
+          color,
+          borderColor,
+          indicators: indicatorsPresent.map((indicatorId) => ({
+            ...indicators[indicatorId],
+          })),
+        }
+      }
+    )
+
+  return { ecosystems, indicators }
+}
+
+export const extractPixelData = (
+  map,
+  point,
+  layer,
+  ecosystemInfo,
+  indicatorInfo
+) => {
   const screenPoint = map.project(point)
 
   const { tile, offsetX, offsetY } = getTile(map, screenPoint, layer)
@@ -154,6 +241,11 @@ export const extractPixelData = (map, point, layer) => {
     }
   }
 
+  // unpack indicators and ecosystems
+  data.indicators = {
+    base: extractIndicators(data, ecosystemInfo, indicatorInfo.base.indicators),
+  }
+
   // extract ownership info
   const ownership = {}
   const protection = {}
@@ -179,8 +271,6 @@ export const extractPixelData = (map, point, layer) => {
       }
     )
   }
-
-  console.log('ownershipFeatures', ownershipFeatures)
 
   return {
     inputId: 'base', // pixel data only available for SE Base Blueprint area
