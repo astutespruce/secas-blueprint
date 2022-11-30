@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { Box, Paragraph, Flex, Text, Heading, Image } from 'theme-ui'
 import { Reply } from '@emotion-icons/fa-solid'
 
-import { OutboundLink } from 'components/link'
+import { useMapData } from 'components/data/map/MapData'
+import { OutboundLink, PseudoLink } from 'components/link'
 import { formatPercent } from 'util/format'
 import NeedHelp from 'content/NeedHelp'
 import { sum } from 'util/data'
@@ -14,6 +15,7 @@ import { IndicatorPropType } from './proptypes'
 
 const IndicatorDetails = ({
   type,
+  id,
   label,
   ecosystem: { id: ecosystemId, label: ecosystemLabel, color, borderColor },
   description,
@@ -23,6 +25,30 @@ const IndicatorDetails = ({
   outsideSEPercent,
   onClose,
 }) => {
+  const { renderLayer, setRenderLayer } = useMapData()
+
+  const handleSetRenderLayer = useCallback(
+    () => {
+      setRenderLayer({
+        id,
+        label,
+        colors: values.map(({ color: valueColor }) => valueColor),
+        categories: values
+          .filter(({ color: valueColor }) => valueColor !== null)
+          .reverse(),
+      })
+    },
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+    []
+  )
+  const handleUnsetRenderLayer = useCallback(
+    () => {
+      setRenderLayer(null)
+    },
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+    []
+  )
+
   // eslint-disable-next-line global-require,import/no-dynamic-require
   const icon = require(`images/${ecosystemId}.svg`).default
 
@@ -137,7 +163,26 @@ const IndicatorDetails = ({
           overflowY: 'auto',
         }}
       >
-        <Paragraph sx={{ mt: '0.5rem', fontSize: 1, lineHeight: 1.3 }}>
+        {type === 'pixel' ? (
+          <Flex sx={{ justifyContent: 'flex-end', mt: '0.25rem' }}>
+            {renderLayer && renderLayer.id === id ? (
+              <PseudoLink onClick={handleUnsetRenderLayer} sx={{ fontSize: 0 }}>
+                hide map layer
+              </PseudoLink>
+            ) : (
+              <PseudoLink onClick={handleSetRenderLayer} sx={{ fontSize: 0 }}>
+                show on map
+              </PseudoLink>
+            )}
+          </Flex>
+        ) : null}
+        <Paragraph
+          sx={{
+            mt: type === 'pixel' ? '0.25rem' : '0.5rem',
+            fontSize: 1,
+            lineHeight: 1.3,
+          }}
+        >
           {description}
         </Paragraph>
 

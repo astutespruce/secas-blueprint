@@ -72,7 +72,13 @@ const minSummaryZoom = layers.filter(({ id }) => id === 'unit-outline')[0]
 const Map = () => {
   const mapNode = useRef(null)
   const mapRef = useRef(null)
-  const { data: mapData, mapMode, setData: setMapData } = useMapData()
+  const {
+    data: mapData,
+    mapMode,
+    setData: setMapData,
+    renderLayer,
+    setRenderLayer,
+  } = useMapData()
   const mapModeRef = useRef(mapMode)
   const { all: blueprintInfo, categories: blueprintCategories } =
     useBlueprintPriorities()
@@ -90,17 +96,11 @@ const Map = () => {
   const [isLoaded, setIsLoaded] = useState(false)
   const [isRenderLayerVisible, setisRenderLayerVisible] = useState(true)
   const [currentZoom, setCurrentZoom] = useState(3)
-  const [{ legend, legendTitle }, setLegend] = useState({
-    legend: blueprintCategories,
-  })
-
   const highlightIDRef = useRef(null)
   const locationMarkerRef = useRef(null)
   const deckGLHandler = useEventHandler(100)
-
   const breakpoint = useBreakpoints()
   const isMobile = breakpoint === 0
-
   const { location } = useSearch()
 
   const getPixelData = useDebouncedCallback(() => {
@@ -220,14 +220,8 @@ const Map = () => {
           map.addLayer(layer, beforeLayer)
         })
 
-        // create config for layer that is rendered after applying filters
-        const renderTarget = createRenderTarget(
-          map.painter.context.gl,
-          pixelLayerIndex.blueprint,
-          blueprintColors
-        )
-
         // add DeckGL pixel layer
+        // by default, renders the blueprint
         const pixelLayerConfig = {
           id: 'pixelLayers',
           type: StackedPNGTileLayer,
@@ -236,51 +230,40 @@ const Map = () => {
           filters: null,
           visible: false,
           layers: pixelLayers,
-          renderTarget,
+          renderTarget: createRenderTarget(
+            map.painter.context.gl,
+            pixelLayerIndex.blueprint,
+            blueprintColors
+          ),
         }
 
         map.addLayer(new MapboxLayer(pixelLayerConfig), beforeLayer)
 
-        // FIXME: debug only
-        window.indicatorInfo = indicatorInfo
-        window.renderIndicator = (id) => {
-          if (id === null) {
-            // reset to Blueprint
-            map.getLayer('pixelLayers').implementation.setProps({
-              renderTarget: createRenderTarget(
-                map.painter.context.gl,
-                pixelLayerIndex.blueprint,
-                blueprintColors
-              ),
-            })
-            setLegend({ legend: blueprintCategories })
-            return
-          }
-          const [indicator] = indicatorInfo.base.indicators.filter(
-            ({ id: indicatorId }) => indicatorId === id
-          )
-          if (!indicator) {
-            return
-          }
-          const colors = indicator.values.map(({ color }) => color)
-          console.log('indicator', indicator, colors)
-          const newRenderTarget = createRenderTarget(
-            map.painter.context.gl,
-            pixelLayerIndex[id],
-            colors
-          )
-          map
-            .getLayer('pixelLayers')
-            .implementation.setProps({ renderTarget: newRenderTarget })
-          setLegend({
-            legend: indicator.values
-              .filter(({ color }) => color !== null)
-              .reverse(),
-            legendTitle: indicator.label,
-          })
-        }
-
         // TEMP: debug only
+        // window.renderIndicator = (id) => {
+        //   if (id === null) {
+        //     // reset to Blueprint
+        //     setRenderLayer(null)
+        //     return
+        //   }
+        //   const [indicator] = indicatorInfo.base.indicators.filter(
+        //     ({ id: indicatorId }) => indicatorId === id
+        //   )
+        //   if (!indicator) {
+        //     return
+        //   }
+        //   const colors = indicator.values.map(({ color }) => color)
+        //   setRenderLayer({
+        //     id: indicator.id,
+        //     label: indicator.label,
+        //     colors,
+        //     categories: indicator.values
+        //       .filter(({ color }) => color !== null)
+        //       .reverse(),
+        //   })
+        // }
+
+        // For testing pixel mode if map is created that way
         if (mapMode === 'pixel') {
           map.setLayoutProperty('unit-fill', 'visibility', 'none')
           map.setLayoutProperty('unit-outline', 'visibility', 'none')
@@ -465,6 +448,25 @@ const Map = () => {
     }
   }, [mapData, isLoaded])
 
+  // handler to update rendered layer
+  useIsEqualEffect(() => {
+    if (!isLoaded) return
+    const { current: map } = mapRef
+
+    const { id, colors } = renderLayer || {
+      id: 'blueprint',
+      colors: blueprintColors,
+    }
+
+    map.getLayer('pixelLayers').implementation.setProps({
+      renderTarget: createRenderTarget(
+        map.painter.context.gl,
+        pixelLayerIndex[id],
+        colors
+      ),
+    })
+  }, [renderLayer])
+
   // handler for setting location
   useIsEqualEffect(() => {
     if (!isLoaded) return
@@ -642,8 +644,12 @@ const Map = () => {
 
       {!isMobile ? (
         <Legend
-          title={legendTitle}
-          categories={legend}
+          title={
+            renderLayer === null ? 'Blueprint Priority' : renderLayer.label
+          }
+          categories={
+            renderLayer === null ? blueprintCategories : renderLayer.categories
+          }
           isVisible={isRenderLayerVisible}
           onToggleVisibility={handleToggleRenderLayerVisible}
         />

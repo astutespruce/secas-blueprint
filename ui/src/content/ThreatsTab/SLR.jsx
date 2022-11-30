@@ -7,8 +7,6 @@ import { useSLR } from 'components/data'
 import { OutboundLink } from 'components/link'
 import { LineChart } from 'components/chart'
 
-import SLRCategories from './SLRCategories'
-
 const DataSource = () => (
   <Text sx={{ mt: '2rem', color: 'grey.7', fontSize: 1 }}>
     Sea level rise estimates derived from the{' '}
@@ -25,15 +23,13 @@ const DataSource = () => (
 
 // SLR depth levels are in feet above current mean sea level: 0...10
 const SLR = ({ type, depth, nodata }) => {
-  const { depth: depthCategories, nodata: nodataCategories } = useSLR()
+  const { nodata: nodataCategories } = useSLR()
 
   if (type === 'pixel') {
     if (nodata !== null) {
       return (
         <Box>
-          <Text sx={{ color: 'grey.7' }}>
-            {nodataCategories[nodata].label}.
-          </Text>
+          <Text>{nodataCategories[nodata].label}.</Text>
           <DataSource />
         </Box>
       )

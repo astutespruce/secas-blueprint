@@ -13,6 +13,7 @@ export const useUrban = () => {
           node {
             value
             label
+            color
           }
         }
       }

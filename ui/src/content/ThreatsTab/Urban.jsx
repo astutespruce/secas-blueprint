@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-
-import { Box, Text } from 'theme-ui'
+import { Box, Flex, Text } from 'theme-ui'
 
 import { useUrban } from 'components/data'
 import { ResponsiveChart, UrbanChart } from 'components/chart'
@@ -48,10 +47,13 @@ const Urban = ({ type, urban }) => {
     // show urban classes with checkmarks
     return (
       <Box>
-        <Text sx={{ color: 'grey.7' }}>
-          Probability of urbanization by 2060:
-        </Text>
+        <Flex sx={{ justifyContent: 'space-between' }}>
+          <Text sx={{ color: 'grey.7' }}>
+            Probability of urbanization by 2060:
+          </Text>
+        </Flex>
         <UrbanCategories categories={urbanCategories} value={urban} />
+
         <DataSource />
       </Box>
     )

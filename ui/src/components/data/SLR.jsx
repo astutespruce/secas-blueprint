@@ -13,6 +13,7 @@ export const useSLR = () => {
           node {
             value
             label
+            color
           }
         }
       }

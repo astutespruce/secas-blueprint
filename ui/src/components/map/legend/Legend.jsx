@@ -96,7 +96,7 @@ const Legend = ({ title, categories, isVisible, onToggleVisibility }) => {
 }
 
 Legend.propTypes = {
-  title: PropTypes.string,
+  title: PropTypes.string.isRequired,
   categories: PropTypes.arrayOf(
     PropTypes.shape({
       value: PropTypes.number.isRequired,
@@ -109,7 +109,6 @@ Legend.propTypes = {
 }
 
 Legend.defaultProps = {
-  title: 'Blueprint Priority',
   isVisible: true,
 }
 

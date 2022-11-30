@@ -10,11 +10,13 @@ import PropTypes from 'prop-types'
 const Context = createContext()
 
 export const Provider = ({ children }) => {
-  const [{ mapMode, data, selectedIndicator }, setState] = useState({
-    mapMode: 'unit', // pixel or unit
-    data: null,
-    selectedIndicator: null,
-  })
+  const [{ mapMode, data, selectedIndicator, renderLayer }, setState] =
+    useState({
+      mapMode: 'unit', // pixel or unit
+      data: null,
+      selectedIndicator: null,
+      renderLayer: null,
+    })
 
   const setData = useCallback(
     (newData) => {
@@ -45,6 +47,8 @@ export const Provider = ({ children }) => {
     setState(() => ({
       mapMode: mode,
       data: null,
+      selectedIndicator: null,
+      renderLayer: null,
     }))
   }, [])
 
@@ -52,6 +56,17 @@ export const Provider = ({ children }) => {
     setState((prevState) => ({
       ...prevState,
       selectedIndicator: newSelectedIndicator,
+      renderLayer: null,
+    }))
+  }, [])
+
+  // renderLayer is null or an object: {id, label, colors, categories}
+  // id is  the id in pixelLayers.js encoding for that layer
+  // pass null to reset to Blueprint
+  const setRenderLayer = useCallback((newRenderLayer) => {
+    setState((prevState) => ({
+      ...prevState,
+      renderLayer: newRenderLayer,
     }))
   }, [])
 
@@ -64,10 +79,12 @@ export const Provider = ({ children }) => {
       setMapMode,
       selectedIndicator,
       setSelectedIndicator,
+      renderLayer,
+      setRenderLayer,
     }),
     // other deps do not change
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
-    [data, mapMode, selectedIndicator]
+    [data, mapMode, selectedIndicator, renderLayer]
   )
 
   return <Context.Provider value={providerValue}>{children}</Context.Provider>

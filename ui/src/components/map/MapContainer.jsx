@@ -37,6 +37,7 @@ const MapContainer = () => {
 
   const {
     data: mapData,
+    selectedIndicator,
     isLoading: isDataLoading,
     unsetData: unsetMapData,
     mapMode,
