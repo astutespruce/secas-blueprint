@@ -305,8 +305,7 @@ const Map = () => {
       })
 
       map.on('click', ({ lngLat: point }) => {
-        console.log('click handler', mapMode)
-        if (mapMode === 'pixel') {
+        if (mapModeRef.current === 'pixel') {
           return
         }
 
