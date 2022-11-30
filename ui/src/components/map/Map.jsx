@@ -305,6 +305,11 @@ const Map = () => {
       })
 
       map.on('click', ({ lngLat: point }) => {
+        console.log('click handler', mapMode)
+        if (mapMode === 'pixel') {
+          return
+        }
+
         const features = map.queryRenderedFeatures(map.project(point), {
           layers: ['unit-fill'],
         })
