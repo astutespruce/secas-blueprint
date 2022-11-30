@@ -1,9 +1,10 @@
 {
   "presets": [
+    "@babel/preset-react",
     [
       "babel-preset-gatsby",
       {
-        "targets": "defaults"
+        "targets": "defaults, not ie 11"
       }
     ]
   ],

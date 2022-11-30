@@ -104,7 +104,9 @@ const pollJob = async (jobId, onProgress) => {
       failedRequests += 1
 
       // sleep and try again
-      await new Promise((r) => setTimeout(r, pollInterval))
+      await new Promise((r) => {
+        setTimeout(r, pollInterval)
+      })
       time += pollInterval
       /* eslint-disable-next-line no-continue */
       continue
@@ -138,7 +140,9 @@ const pollJob = async (jobId, onProgress) => {
     }
 
     // sleep
-    await new Promise((r) => setTimeout(r, pollInterval))
+    await new Promise((r) => {
+      setTimeout(r, pollInterval)
+    })
     time += pollInterval
   }
 

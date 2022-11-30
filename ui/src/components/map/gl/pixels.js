@@ -189,7 +189,7 @@ export const extractPixelData = (
   const { tile, offsetX, offsetY } = getTile(map, screenPoint, layer)
 
   if (!(tile && tile.data && tile.data.images)) {
-    console.debug('no tile available')
+    // console.debug('no tile available')
     // Note: this is a special case because it happens while map is still loading
     // and tileset claims it is loaded, but for the wrong zoom levels
     return null

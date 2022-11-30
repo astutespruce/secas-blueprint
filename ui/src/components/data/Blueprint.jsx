@@ -8,7 +8,7 @@ import { extractNodes } from 'util/graphql'
 export const useBlueprintPriorities = () => {
   const query = useStaticQuery(graphql`
     query {
-      allBlueprintJson(sort: { fields: value, order: DESC }) {
+      allBlueprintJson(sort: { value: DESC }) {
         edges {
           node {
             value

@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import { Box, Text, Divider, Heading, Paragraph } from 'theme-ui'
+import { Box, Divider, Heading, Paragraph } from 'theme-ui'
 
 import NeedHelp from 'content/NeedHelp'
 

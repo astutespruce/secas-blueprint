@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useCallback } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useMemo,
+  useCallback,
+} from 'react'
 import PropTypes from 'prop-types'
 import { useQuery } from 'react-query'
 
@@ -20,11 +26,14 @@ export const Provider = ({ children }) => {
     setState((prevState) => ({ ...prevState, location: newLocation }))
   }, [])
 
-  return (
-    <Context.Provider value={{ query, setQuery, location, setLocation }}>
-      {children}
-    </Context.Provider>
+  const providerValue = useMemo(
+    () => ({ query, setQuery, location, setLocation }),
+    // other deps do not change
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+    [query, location]
   )
+
+  return <Context.Provider value={providerValue}>{children}</Context.Provider>
 }
 
 Provider.propTypes = {

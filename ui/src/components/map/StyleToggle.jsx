@@ -1,8 +1,6 @@
-import React, { useState, useCallback, useRef, memo } from 'react'
+import React, { useState, memo } from 'react'
 import PropTypes from 'prop-types'
 import { Box, Image } from 'theme-ui'
-
-import { indexBy } from 'util/data'
 
 import LightIcon from 'images/light-v9.jpg'
 import SatelliteIcon from 'images/satellite-streets-v11.jpg'

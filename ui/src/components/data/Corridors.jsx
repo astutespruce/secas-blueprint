@@ -8,7 +8,7 @@ import { extractNodes } from 'util/graphql'
 export const useCorridors = () => {
   const { corridors: rawCorridors } = useStaticQuery(graphql`
     query {
-      corridors: allCorridorsJson(sort: { fields: value, order: ASC }) {
+      corridors: allCorridorsJson(sort: { value: ASC }) {
         edges {
           node {
             value

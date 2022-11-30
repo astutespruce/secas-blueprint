@@ -37,6 +37,7 @@ const PartnersTab = ({
           <Heading as="h3">Protected Areas</Heading>
           <Box as="ul" sx={{ mt: '0.5rem' }}>
             {protectedAreas.map(({ name, owner }, i) => (
+              /* eslint-disable-next-line react/no-array-index-key */
               <li key={`${name}_${owner}_${i}`}>
                 {name || 'Name unknown'} ({owner || 'unknown owner'})
               </li>
