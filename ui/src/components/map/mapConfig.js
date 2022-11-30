@@ -63,7 +63,7 @@ export const layers = [
     source: 'blueprint',
     type: 'raster',
     minzoom: 3,
-    maxzoom: 21,
+    maxzoom: 14,
     paint: {
       'raster-opacity': {
         stops: [
@@ -78,7 +78,7 @@ export const layers = [
     source: 'mapUnits',
     'source-layer': 'boundary',
     minzoom: 3,
-    maxzoom: 21,
+    maxzoom: 14,
     type: 'line',
     paint: {
       'line-color': '#000',
