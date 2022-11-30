@@ -55,7 +55,11 @@ const SLR = ({ type, depth, nodata }) => {
     return (
       <Box>
         <Text>
-          This area will be inundated at <b>{depth} feet</b> of sea-level rise.
+          This area will be inundated at{' '}
+          <b>
+            {depth} {depth === 1 ? 'foot' : 'feet'}
+          </b>{' '}
+          of sea-level rise.
         </Text>
         <DataSource />
       </Box>

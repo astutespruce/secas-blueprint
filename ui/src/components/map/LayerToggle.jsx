@@ -85,7 +85,7 @@ const LayerToggle = () => {
         ({ id: groupId, label: groupLabel, indicators: groupIndicators }) => {
           const group = {
             id: groupId,
-            label: groupLabel,
+            label: `${groupLabel} indicators`,
             layers: groupIndicators.map((id) => {
               const { label, values } = indicatorsIndex[id]
               return {
