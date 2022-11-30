@@ -34,6 +34,7 @@ import { createRenderTarget, extractPixelData, StackedPNGTileLayer } from './gl'
 import { mapConfig as config, sources, layers } from './mapConfig'
 import { pixelLayers, pixelLayerIndex } from './pixelLayers'
 import { Legend } from './legend'
+import LayerToggle from './LayerToggle'
 import MapModeToggle from './MapModeToggle'
 import StyleToggle from './StyleToggle'
 import { getCenterAndZoom } from './viewport'
@@ -77,7 +78,6 @@ const Map = () => {
     mapMode,
     setData: setMapData,
     renderLayer,
-    setRenderLayer,
   } = useMapData()
   const mapModeRef = useRef(mapMode)
   const { all: blueprintInfo, categories: blueprintCategories } =
@@ -643,16 +643,21 @@ const Map = () => {
       ) : null}
 
       {!isMobile ? (
-        <Legend
-          title={
-            renderLayer === null ? 'Blueprint Priority' : renderLayer.label
-          }
-          categories={
-            renderLayer === null ? blueprintCategories : renderLayer.categories
-          }
-          isVisible={isRenderLayerVisible}
-          onToggleVisibility={handleToggleRenderLayerVisible}
-        />
+        <>
+          <Legend
+            title={
+              renderLayer === null ? 'Blueprint priority' : renderLayer.label
+            }
+            categories={
+              renderLayer === null
+                ? blueprintCategories
+                : renderLayer.categories
+            }
+            isVisible={isRenderLayerVisible}
+            onToggleVisibility={handleToggleRenderLayerVisible}
+          />
+          {mapMode === 'pixel' ? <LayerToggle onChange={() => {}} /> : null}
+        </>
       ) : null}
 
       <MapModeToggle

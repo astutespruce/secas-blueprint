@@ -255,8 +255,10 @@ export const extractPixelData = (
       data.indicators &&
       data.indicators.base &&
       data.indicators.base.ecosystems &&
-      data.indicators.base.ecosystems.filter(({ id }) => id === 'marine')
-        .length === 0
+      (data.indicators.base.ecosystems.filter(({ id }) => id === 'land')
+        .length > 0 ||
+        data.indicators.base.ecosystems.filter(({ id }) => id === 'freshwater')
+          .length > 0)
         ? 0
         : null
   }

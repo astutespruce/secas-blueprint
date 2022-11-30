@@ -56,7 +56,6 @@ export const Provider = ({ children }) => {
     setState((prevState) => ({
       ...prevState,
       selectedIndicator: newSelectedIndicator,
-      renderLayer: null,
     }))
   }, [])
 
