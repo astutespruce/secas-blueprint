@@ -30,6 +30,7 @@ export const useIndicators = () => {
               values {
                 value
                 label
+                color
               }
             }
           }

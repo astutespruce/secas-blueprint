@@ -12,7 +12,7 @@ const LegendElement = ({
 }) => (
   <Flex
     sx={{
-      alignItems: 'center',
+      alignItems: 'top',
       lineHeight: 1,
     }}
   >

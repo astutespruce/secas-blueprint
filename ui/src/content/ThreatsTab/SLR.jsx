@@ -50,7 +50,7 @@ const SLR = ({ type, depth, nodata }) => {
     if (depth === 0) {
       return (
         <Box>
-          <Text sx={{ color: 'grey.7' }}>This area is already inundated.</Text>
+          <Text>This area is already inundated.</Text>
           <DataSource />
         </Box>
       )
@@ -58,10 +58,9 @@ const SLR = ({ type, depth, nodata }) => {
 
     return (
       <Box>
-        <Text sx={{ color: 'grey.7' }}>
-          Feet of sea level rise needed to inundate this area:
+        <Text>
+          This area will be inundated at <b>{depth} feet</b> of sea-level rise.
         </Text>
-        <SLRCategories categories={depthCategories} value={depth} />
         <DataSource />
       </Box>
     )

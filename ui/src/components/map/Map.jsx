@@ -1,6 +1,14 @@
 // @refresh reset
+/* eslint-disable no-underscore-dangle */
 
-import React, { useEffect, useRef, useState, useCallback, memo } from 'react'
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  useMemo,
+  memo,
+} from 'react'
 // exclude Mapbox GL from babel transpilation per https://docs.mapbox.com/mapbox-gl-js/guides/migrate-to-v2/
 /* eslint-disable-next-line */
 import mapboxgl from '!mapbox-gl'
@@ -9,7 +17,11 @@ import { Box } from 'theme-ui'
 import { MapboxLayer } from '@deck.gl/mapbox'
 import { useDebouncedCallback } from 'use-debounce'
 
-import { useMapData, useIndicators } from 'components/data'
+import {
+  useBlueprintPriorities,
+  useMapData,
+  useIndicators,
+} from 'components/data'
 import { useBreakpoints } from 'components/layout'
 import { useSearch } from 'components/search'
 import { hasWindow, isLocalDev } from 'util/dom'
@@ -53,15 +65,6 @@ const mapWidgetCSS = {
 // layer in Mapbox Light that we want to come AFTER our layers here
 const beforeLayer = 'waterway-label'
 
-// manually extracted from 'constants/blueprint.json
-const blueprintColors = [
-  null, // '#ffebc2', // original 0 value (not a priority)
-  '#6C6C6C',
-  '#8C96C6',
-  '#843F98',
-  '#4D004B',
-]
-
 const minPixelLayerZoom = 7 // minimum reasonable zoom for getting pixel data
 const minSummaryZoom = layers.filter(({ id }) => id === 'unit-outline')[0]
   .minzoom
@@ -71,12 +74,25 @@ const Map = () => {
   const mapRef = useRef(null)
   const { data: mapData, mapMode, setData: setMapData } = useMapData()
   const mapModeRef = useRef(mapMode)
+  const { all: blueprintInfo, categories: blueprintCategories } =
+    useBlueprintPriorities()
+  const blueprintColors = useMemo(
+    () =>
+      blueprintInfo
+        .map(({ color, value }) => (value === 0 ? null : color))
+        .reverse(),
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+    []
+  )
   const { ecosystems: ecosystemInfo, indicators: indicatorInfo } =
     useIndicators()
 
   const [isLoaded, setIsLoaded] = useState(false)
-  const [isBlueprintVisible, setIsBlueprintVisible] = useState(true)
+  const [isRenderLayerVisible, setisRenderLayerVisible] = useState(true)
   const [currentZoom, setCurrentZoom] = useState(3)
+  const [{ legend, legendTitle }, setLegend] = useState({
+    legend: blueprintCategories,
+  })
 
   const highlightIDRef = useRef(null)
   const locationMarkerRef = useRef(null)
@@ -112,6 +128,24 @@ const Map = () => {
     }
 
     const { lng: longitude, lat: latitude } = map.getCenter()
+
+    // If ownership isn't loaded yet, schedule a callback once tiles are loaded
+    if (
+      !(
+        map.style._otherSourceCaches.ownership &&
+        map.style._otherSourceCaches.ownership.loaded()
+      )
+    ) {
+      setMapData({
+        type: 'pixel',
+        location: {
+          longitude,
+          latitude,
+        },
+        isLoading: true,
+      })
+      map.once('idle', getPixelData)
+    }
 
     const pixelData = extractPixelData(
       map,
@@ -206,6 +240,45 @@ const Map = () => {
         }
 
         map.addLayer(new MapboxLayer(pixelLayerConfig), beforeLayer)
+
+        // FIXME: debug only
+        window.indicatorInfo = indicatorInfo
+        window.renderIndicator = (id) => {
+          if (id === null) {
+            // reset to Blueprint
+            map.getLayer('pixelLayers').implementation.setProps({
+              renderTarget: createRenderTarget(
+                map.painter.context.gl,
+                pixelLayerIndex.blueprint,
+                blueprintColors
+              ),
+            })
+            setLegend({ legend: blueprintCategories })
+            return
+          }
+          const [indicator] = indicatorInfo.base.indicators.filter(
+            ({ id: indicatorId }) => indicatorId === id
+          )
+          if (!indicator) {
+            return
+          }
+          const colors = indicator.values.map(({ color }) => color)
+          console.log('indicator', indicator, colors)
+          const newRenderTarget = createRenderTarget(
+            map.painter.context.gl,
+            pixelLayerIndex[id],
+            colors
+          )
+          map
+            .getLayer('pixelLayers')
+            .implementation.setProps({ renderTarget: newRenderTarget })
+          setLegend({
+            legend: indicator.values
+              .filter(({ color }) => color !== null)
+              .reverse(),
+            legendTitle: indicator.label,
+          })
+        }
 
         // TEMP: debug only
         if (mapMode === 'pixel') {
@@ -354,7 +427,7 @@ const Map = () => {
         map.setLayoutProperty('ownership', 'visibility', 'visible')
         map.getLayer('pixelLayers').implementation.setProps({
           visible: true,
-          filters: null, // TODO: null
+          filters: null,
           // data prop is used to force deeper reloading of tiles
           data: { visible: true },
         })
@@ -414,11 +487,11 @@ const Map = () => {
     }
   }, [location, isLoaded])
 
-  const handleToggleBlueprintVisibile = useCallback(() => {
+  const handleToggleRenderLayerVisible = useCallback(() => {
     const { current: map } = mapRef
     if (!map) return
 
-    setIsBlueprintVisible((prevVisible) => {
+    setisRenderLayerVisible((prevVisible) => {
       const newIsVisible = !prevVisible
       if (mapModeRef.current === 'pixel') {
         map.getLayer('pixelLayers').implementation.setProps({
@@ -569,8 +642,10 @@ const Map = () => {
 
       {!isMobile ? (
         <Legend
-          isVisible={isBlueprintVisible}
-          onToggleVisibility={handleToggleBlueprintVisibile}
+          title={legendTitle}
+          categories={legend}
+          isVisible={isRenderLayerVisible}
+          onToggleVisibility={handleToggleRenderLayerVisible}
         />
       ) : null}
 

@@ -3,10 +3,9 @@ import PropTypes from 'prop-types'
 import { Eye, EyeSlash } from '@emotion-icons/fa-solid'
 import { Box, Flex, Text } from 'theme-ui'
 
-import { useBlueprintPriorities } from 'components/data'
 import LegendElement from './LegendElement'
 
-const Legend = ({ isVisible, onToggleVisibility }) => {
+const Legend = ({ title, categories, isVisible, onToggleVisibility }) => {
   const [isOpen, setIsOpen] = useState(true)
 
   const handleClick = useCallback(() => {
@@ -21,8 +20,6 @@ const Legend = ({ isVisible, onToggleVisibility }) => {
     },
     [onToggleVisibility]
   )
-
-  const { categories } = useBlueprintPriorities()
 
   return (
     <Box
@@ -43,7 +40,8 @@ const Legend = ({ isVisible, onToggleVisibility }) => {
       {isOpen ? (
         <Box
           sx={{
-            p: '0.5rem',
+            pt: '0.5rem',
+            px: '0.5rem',
           }}
           title="Click to hide legend"
         >
@@ -56,9 +54,10 @@ const Legend = ({ isVisible, onToggleVisibility }) => {
                 fontWeight: 'bold',
                 mr: '0.5em',
                 fontSize: 1,
+                lineHeight: 1.1,
               }}
             >
-              Blueprint Priority
+              {title}
             </Text>
             <Box
               sx={{
@@ -76,12 +75,12 @@ const Legend = ({ isVisible, onToggleVisibility }) => {
               {isVisible ? <Eye size="1em" /> : <EyeSlash size="1em" />}
             </Box>
           </Flex>
-          <Box sx={{ fontSize: 0, mt: '-0.5rem' }}>
+          <Box sx={{ fontSize: 0, mt: '0.5em' }}>
             {categories.map((element) => (
               <Box
                 key={element.label}
                 sx={{
-                  mt: '0.5rem',
+                  mb: '0.5rem',
                 }}
               >
                 <LegendElement {...element} />
@@ -97,11 +96,20 @@ const Legend = ({ isVisible, onToggleVisibility }) => {
 }
 
 Legend.propTypes = {
+  title: PropTypes.string,
+  categories: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.number.isRequired,
+      color: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+    })
+  ).isRequired,
   isVisible: PropTypes.bool,
   onToggleVisibility: PropTypes.func.isRequired,
 }
 
 Legend.defaultProps = {
+  title: 'Blueprint Priority',
   isVisible: true,
 }
 
