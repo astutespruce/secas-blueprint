@@ -28,15 +28,6 @@ exports.onCreateWebpackConfig = ({ actions, stage, loaders, plugins }) => {
         Buffer: ['buffer', 'Buffer'],
       }),
     ],
-    module: {
-      rules: [
-        {
-          test: /\.(glsl|vs|fs|vert|frag)$/,
-          exclude: /node_modules/,
-          use: ['raw-loader'],
-        },
-      ],
-    },
   }
 
   // when building HTML, window is not defined, so mapbox-gl causes the build to blow up

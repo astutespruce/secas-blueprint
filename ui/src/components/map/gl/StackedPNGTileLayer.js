@@ -6,9 +6,13 @@ import GL from '@luma.gl/constants'
 
 import { sum } from 'util/data'
 
+// have to use the raw loader to load shaders
+/* eslint-disable-next-line */
+import vertexShader from 'raw-loader!./vertex.vs'
+/* eslint-disable-next-line */
+import fragmentShader from 'raw-loader!./fragment.fs'
+
 import StackedPNGLayer from './StackedPNGLayer'
-import vertexShader from './vertex.vs'
-import fragmentShader from './fragment.fs'
 
 /**
  * Fetch a tile image asynchronously and load into a GL texture
