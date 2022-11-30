@@ -89,7 +89,7 @@ export const getTile = (map, screenPoint, layer) => {
 
   // tileset.selectedTiles  contain all tiles at current zoom level
   const [tile] = tileset.selectedTiles.filter(
-    ({ z, x, y }) => z === searchZ && x === searchX && y === searchY
+    ({ index: { z, x, y } }) => z === searchZ && x === searchX && y === searchY
   )
   return {
     tile: tile || null,
@@ -189,13 +189,13 @@ export const extractPixelData = (
   const { tile, offsetX, offsetY } = getTile(map, screenPoint, layer)
 
   if (!(tile && tile.data && tile.data.images)) {
-    // console.debug('no tile available')
+    console.debug('no tile available')
     // Note: this is a special case because it happens while map is still loading
     // and tileset claims it is loaded, but for the wrong zoom levels
     return null
   }
 
-  // console.debug('tile', tile)
+  console.debug('tile', tile)
 
   // images are at tile.data.images
   const {

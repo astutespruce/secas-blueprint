@@ -20,7 +20,7 @@
     "camelcase": "^7.0.0",
     "d3-scale": "^4.0.2",
     "d3-shape": "^3.0.1",
-    "deck.gl": "^8.7.12",
+    "deck.gl": "^8.8.20",
     "dequal": "^2.0.2",
     "dotenv": "^16.0.0",
     "eslint-plugin-jsx-a11y": "^6.6.1",
