@@ -98,7 +98,7 @@ const Map = () => {
   const [currentZoom, setCurrentZoom] = useState(3)
   const highlightIDRef = useRef(null)
   const locationMarkerRef = useRef(null)
-  const deckGLHandler = useEventHandler(100)
+  const deckGLHandler = useEventHandler(50)
   const breakpoint = useBreakpoints()
   const isMobile = breakpoint === 0
   const { location } = useSearch()
@@ -172,7 +172,7 @@ const Map = () => {
       isLoading: pixelData === null,
       ...(pixelData || {}),
     })
-  }, 50)
+  }, 10)
 
   useEffect(
     () => {
@@ -289,6 +289,7 @@ const Map = () => {
 
         map.on('move', () => {
           if (mapModeRef.current === 'pixel') {
+            console.log('move event fired')
             getPixelData()
           }
         })

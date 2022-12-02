@@ -3,7 +3,8 @@ import PropTypes from 'prop-types'
 import { Box } from 'theme-ui'
 
 import EcosystemHeader from './EcosystemHeader'
-import Indicator from './Indicator'
+import IndicatorListItem from './IndicatorListItem'
+import PixelIndicatorListItem from './PixelIndicatorListItem'
 import { EcosystemPropType } from './proptypes'
 
 const Ecosystem = ({
@@ -14,38 +15,42 @@ const Ecosystem = ({
   borderColor,
   indicators,
   onSelectIndicator,
-}) => (
-  <Box
-    sx={{
-      width: '100%',
-      flex: '1 0 auto',
-      '&:not(:first-of-type)': {
-        '&>div:first-of-type': {
-          borderTop: '1px solid',
-          borderTopColor: borderColor,
-        },
-      },
-    }}
-  >
-    <EcosystemHeader
-      id={id}
-      label={label}
-      color={color}
-      borderColor={borderColor}
-    />
+}) => {
+  const ListItem = type === 'pixel' ? PixelIndicatorListItem : IndicatorListItem
 
-    <Box>
-      {indicators.map((indicator) => (
-        <Indicator
-          key={indicator.id}
-          type={type}
-          indicator={indicator}
-          onSelect={onSelectIndicator}
-        />
-      ))}
+  return (
+    <Box
+      sx={{
+        width: '100%',
+        flex: '1 0 auto',
+        '&:not(:first-of-type)': {
+          '&>div:first-of-type': {
+            borderTop: '1px solid',
+            borderTopColor: borderColor,
+          },
+        },
+      }}
+    >
+      <EcosystemHeader
+        id={id}
+        label={label}
+        color={color}
+        borderColor={borderColor}
+      />
+
+      <Box>
+        {indicators.map((indicator) => (
+          <ListItem
+            key={indicator.id}
+            type={type}
+            indicator={indicator}
+            onSelect={onSelectIndicator}
+          />
+        ))}
+      </Box>
     </Box>
-  </Box>
-)
+  )
+}
 
 Ecosystem.propTypes = {
   type: PropTypes.string.isRequired,
