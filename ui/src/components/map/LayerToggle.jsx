@@ -104,8 +104,6 @@ const LayerToggle = () => {
         }
       )
 
-      console.log(groups)
-
       return {
         renderLayerGroups: groups,
         renderLayersIndex: indexBy(layers, 'id'),

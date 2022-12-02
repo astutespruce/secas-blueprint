@@ -289,7 +289,6 @@ const Map = () => {
 
         map.on('move', () => {
           if (mapModeRef.current === 'pixel') {
-            console.log('move event fired')
             getPixelData()
           }
         })
@@ -575,6 +574,11 @@ const Map = () => {
               ) {
                 layer.layout = {
                   visibility: 'none',
+                }
+              }
+              if (l.id === 'ownership') {
+                layer.layout = {
+                  visibility: 'visible',
                 }
               }
             } else if (l.id === 'unit-outline-highlight' && mapData !== null) {
