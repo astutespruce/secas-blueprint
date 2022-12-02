@@ -19,23 +19,24 @@ STYLE = json.dumps(
     {
         "version": 8,
         "sources": {
-            "ownership": {
+            "features": {
                 "type": "vector",
-                "url": f"mbtiles://{TILE_DIR}/se_ownership.mbtiles",
-                "tileSize": 256,
+                "url": f"mbtiles://{TILE_DIR}/se_other_features.mbtiles",
+                "minzoom": 5,
+                "maxzoom": 14,
             }
         },
         "layers": [
             {
                 "id": "fill",
-                "source": "ownership",
+                "source": "features",
                 "source-layer": "ownership",
                 "type": "fill",
                 "paint": {"fill-opacity": 0.7, "fill-color": color_expr},
             },
             {
                 "id": "outline",
-                "source": "ownership",
+                "source": "features",
                 "source-layer": "ownership",
                 "type": "line",
                 "paint": {

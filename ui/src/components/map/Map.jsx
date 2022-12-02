@@ -276,6 +276,7 @@ const Map = () => {
           })
 
           map.setLayoutProperty('ownership', 'visibility', 'visible')
+          map.setLayoutProperty('subregions', 'visibility', 'visible')
 
           map.once('idle', getPixelData)
         }
@@ -412,6 +413,7 @@ const Map = () => {
         map.setFilter('unit-outline-highlight', ['==', 'id', Infinity])
 
         map.setLayoutProperty('ownership', 'visibility', 'visible')
+        map.setLayoutProperty('subregions', 'visibility', 'visible')
         map.getLayer('pixelLayers').implementation.setProps({
           visible: true,
           filters: null,
@@ -423,6 +425,7 @@ const Map = () => {
         map.setLayoutProperty('unit-outline', 'visibility', 'visible')
         map.setLayoutProperty('blueprint', 'visibility', 'visible')
         map.setLayoutProperty('ownership', 'visibility', 'none')
+        map.setLayoutProperty('subregions', 'visibility', 'none')
 
         map.getLayer('pixelLayers').implementation.setProps({
           visible: false,
@@ -576,7 +579,7 @@ const Map = () => {
                   visibility: 'none',
                 }
               }
-              if (l.id === 'ownership') {
+              if (l.id === 'ownership' || l.id === 'subregions') {
                 layer.layout = {
                   visibility: 'visible',
                 }

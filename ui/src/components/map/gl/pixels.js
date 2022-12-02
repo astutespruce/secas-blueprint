@@ -98,7 +98,7 @@ export const getTile = (map, screenPoint, layer) => {
   }
 }
 
-const extractIndicators = (data, ecosystemInfo, indicatorInfo) => {
+const extractIndicators = (data, subregion, ecosystemInfo, indicatorInfo) => {
   const ecosystemIndex = indexBy(ecosystemInfo, 'id')
 
   let hasInland = false
@@ -137,6 +137,13 @@ const extractIndicators = (data, ecosystemInfo, indicatorInfo) => {
   } else if (!hasMarine) {
     // has no marine, likely inland, don't show any marine indicators
     indicators = indicators.filter(({ id }) => id.search('marine_') === -1)
+  }
+
+  // filter for subregions that can contain a given indicator
+  if (subregion) {
+    indicators = indicators.filter(({ subregions }) =>
+      subregions ? subregions.indexOf(subregion) !== -1 : true
+    )
   }
 
   indicators = indexBy(indicators, 'id')
@@ -241,9 +248,23 @@ export const extractPixelData = (
     }
   }
 
+  // extract info from feature data
+  const features = map.queryRenderedFeatures(screenPoint, {
+    layers: ['ownership', 'subregions'],
+  })
+
+  const [{ properties: { subregion } } = { properties: {} }] = features.filter(
+    ({ layer: { id } }) => id === 'subregions'
+  )
+
   // unpack indicators and ecosystems
   data.indicators = {
-    base: extractIndicators(data, ecosystemInfo, indicatorInfo.base.indicators),
+    base: extractIndicators(
+      data,
+      subregion,
+      ecosystemInfo,
+      indicatorInfo.base.indicators
+    ),
   }
 
   if (data.urban === undefined || data.urban === null) {
@@ -287,10 +308,9 @@ export const extractPixelData = (
   const ownership = {}
   const protection = {}
   const protectedAreas = []
-  const ownershipFeatures = map.queryRenderedFeatures(screenPoint, {
-    layers: ['ownership'],
-  })
-
+  const ownershipFeatures = features.filter(
+    ({ layer: { id } }) => id === 'ownership'
+  )
   if (ownershipFeatures.length > 0) {
     ownershipFeatures.forEach(
       ({
@@ -311,6 +331,7 @@ export const extractPixelData = (
 
   return {
     inputId: 'base', // pixel data only available for SE Base Blueprint area
+    subregion,
     outsideSEPercent: 0,
     ...data,
     ownership,

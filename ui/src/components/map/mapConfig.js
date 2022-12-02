@@ -34,22 +34,39 @@ export const sources = {
     // note: can use promoteId: 'id' to promote feature properties ID to feature ID
     promoteId: 'id',
   },
-  ownership: {
+  pixelFeatures: {
     type: 'vector',
     minzoom: 3,
     maxzoom: 14,
-    bounds: [-86.470357, 27.546173, -70.816397, 38.932193],
-    tiles: [`${tileHost}/services/se_ownership/tiles/{z}/{x}/{y}.pbf`],
+    bounds: [-106.655273, 17.769612, -65.214844, 40.647304],
+    tiles: [`${tileHost}/services/se_other_features/tiles/{z}/{x}/{y}.pbf`],
   },
 }
 
 export const layers = [
-  // ownership is added with no fill in order to detect ownership types for pixel mode
+  // ownership and subregions is added with no fill in order to detect features in pixel mode
   {
     id: 'ownership',
-    source: 'ownership',
+    source: 'pixelFeatures',
     'source-layer': 'ownership',
     type: 'fill',
+    minzoom: 5,
+    maxzoom: 14,
+    layout: {
+      visibility: 'none',
+    },
+    paint: {
+      'fill-color': '#FFF',
+      'fill-opacity': 0,
+    },
+  },
+  {
+    id: 'subregions',
+    source: 'pixelFeatures',
+    'source-layer': 'subregions',
+    type: 'fill',
+    minzoom: 3,
+    maxzoom: 14,
     layout: {
       visibility: 'none',
     },

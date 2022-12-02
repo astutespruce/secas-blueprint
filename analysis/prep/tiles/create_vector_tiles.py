@@ -93,10 +93,13 @@ create_tileset(
     col_types=get_col_types(df),
 )
 
-### Create ownership tiles
+### Create ownership and subregion tiles
 print(
-    "\n\n------------------------------------------------\nCreating protected areas tiles\n------------------------------------------------\n"
+    "\n\n------------------------------------------------\nCreating protected areas and subregion tiles\n------------------------------------------------\n"
 )
+
+tilesets = []
+
 df = gp.read_feather(
     data_dir / "inputs/boundaries/ownership.feather",
     columns=["geometry", "Own_Type", "GAP_Sts", "Loc_Nm", "Loc_Own"],
@@ -105,14 +108,41 @@ df = gp.read_feather(
 infilename = tmp_dir / "ownership.fgb"
 write_dataframe(df, infilename)
 
+outfilename = tmp_dir / "se_ownership.mbtiles"
+tilesets.append(outfilename)
 create_tileset(
     infilename,
-    out_dir / "se_ownership.mbtiles",
-    minzoom=0,
+    outfilename,
+    minzoom=5,
     maxzoom=14,
     layer_id="ownership",
     col_types=get_col_types(df),
 )
+
+
+df = gp.read_feather(
+    data_dir / "boundaries/base_subregions.feather",
+).to_crs(GEO_CRS)
+
+infilename = tmp_dir / "subregions.fgb"
+write_dataframe(df, infilename)
+
+outfilename = tmp_dir / "se_subregions.mbtiles"
+tilesets.append(outfilename)
+create_tileset(
+    infilename,
+    outfilename,
+    minzoom=2,
+    maxzoom=14,
+    layer_id="subregions",
+    col_types=get_col_types(df),
+)
+
+outfilename = out_dir / "se_other_features.mbtiles"
+ret = subprocess.run(
+    [tile_join, "-f", "-pg"] + ["-o", f"{str(outfilename)}"] + tilesets
+)
+ret.check_returncode()
 
 
 ######### Create combined tileset for summary units, boundary, mask for frontend

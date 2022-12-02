@@ -212,3 +212,12 @@ df["geometry"] = make_valid(df.geometry.values.data)
 
 write_dataframe(df, bnd_dir / "parca.fgb")
 df.to_feather(out_dir / "parca.feather")
+
+
+### Extract subregions that define where to expect certain indicators
+df = read_dataframe(
+    src_dir / "base_blueprint/BaseBlueprintSubRgn.shp", columns=["SubRgn"]
+).rename(columns={"SubRgn": "subregion"})
+
+df.to_feather(bnd_dir / "base_subregions.feather")
+write_dataframe(df, bnd_dir / "base_subregions.fgb")
