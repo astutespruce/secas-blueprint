@@ -60,6 +60,7 @@ const SidebarHeader = ({ type, id, name, location, acres, onClose }) => {
           ) : null}
         </Box>
 
+        {/* {type !== 'pixel' ? ( */}
         <Button
           variant="close"
           onClick={onClose}
@@ -67,6 +68,7 @@ const SidebarHeader = ({ type, id, name, location, acres, onClose }) => {
         >
           <TimesCircle size="1.5em" />
         </Button>
+        {/* ) : null} */}
       </Flex>
 
       {type !== 'pixel' ? (

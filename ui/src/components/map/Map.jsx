@@ -448,7 +448,7 @@ const Map = () => {
     const { current: map } = mapRef
 
     // sometimes map is not fully loaded on hot reload
-    if (!map.loaded()) return
+    if (!map.loaded() || mapModeRef.current === 'pixel') return
 
     if (mapData === null) {
       map.setFilter('unit-outline-highlight', ['==', 'id', Infinity])

@@ -116,7 +116,8 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
                   lineHeight: 1,
                 }}
               >
-                Select a summary unit to show <br /> details in sidebar
+                Select a subwatershed or marine <br />
+                lease block to show details in sidebar
               </Text>
             )}
           </>

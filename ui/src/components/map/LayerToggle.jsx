@@ -58,7 +58,9 @@ const LayerToggle = () => {
             .concat(slrNodataCategories)
             .map(({ label, ...rest }, i) => ({
               ...rest,
-              label: i === 1 ? `${label} foot` : `${label} feet`,
+              label:
+                /* eslint-disable-next-line no-nested-ternary */
+                i === 1 ? `${label} foot` : i <= 10 ? `${label} feet` : label,
               outlineWidth: 1,
               outlineColor: 'grey.5',
             })),
