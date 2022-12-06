@@ -55,7 +55,7 @@ const SLR = ({ type, depth, nodata }) => {
     return (
       <Box>
         <Text>
-          This area will be inundated at{' '}
+          This area is projected to be inundated at{' '}
           <b>
             {depth} {depth === 1 ? 'foot' : 'feet'}
           </b>{' '}

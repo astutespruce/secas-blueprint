@@ -5,7 +5,13 @@ import { Box, Flex, Text } from 'theme-ui'
 
 import LegendElement from './LegendElement'
 
-const Legend = ({ title, categories, isVisible, onToggleVisibility }) => {
+const Legend = ({
+  title,
+  subtitle,
+  categories,
+  isVisible,
+  onToggleVisibility,
+}) => {
   const [isOpen, setIsOpen] = useState(true)
 
   const handleClick = useCallback(() => {
@@ -59,6 +65,13 @@ const Legend = ({ title, categories, isVisible, onToggleVisibility }) => {
               }}
             >
               {title}
+              {subtitle ? (
+                <Text
+                  sx={{ fontWeight: 'normal', fontSize: 0, color: 'grey.7' }}
+                >
+                  {subtitle}
+                </Text>
+              ) : null}
             </Text>
             <Box
               sx={{
@@ -98,6 +111,7 @@ const Legend = ({ title, categories, isVisible, onToggleVisibility }) => {
 
 Legend.propTypes = {
   title: PropTypes.string.isRequired,
+  subtitle: PropTypes.string,
   categories: PropTypes.arrayOf(
     PropTypes.shape({
       value: PropTypes.number.isRequired,
@@ -110,6 +124,7 @@ Legend.propTypes = {
 }
 
 Legend.defaultProps = {
+  subtitle: null,
   isVisible: true,
 }
 

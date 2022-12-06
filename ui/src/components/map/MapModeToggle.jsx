@@ -93,15 +93,34 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
               Zoom in to select {mapMode === 'pixel' ? 'a pixel' : 'an area'}
             </Text>
           </Flex>
-        ) : null}
-
-        {!belowMinZoom && mapMode === 'pixel' ? (
-          <Text
-            sx={{ fontSize: 0, textAlign: 'left', ml: '0.5rem', lineHeight: 1 }}
-          >
-            Pan the map behind the crosshairs <br /> to show details in sidebar
-          </Text>
-        ) : null}
+        ) : (
+          <>
+            {mapMode === 'pixel' ? (
+              <Text
+                sx={{
+                  fontSize: 0,
+                  textAlign: 'left',
+                  ml: '0.5rem',
+                  lineHeight: 1,
+                }}
+              >
+                Pan the map behind the crosshairs <br /> to show details in
+                sidebar
+              </Text>
+            ) : (
+              <Text
+                sx={{
+                  fontSize: 0,
+                  textAlign: 'left',
+                  ml: '0.5rem',
+                  lineHeight: 1,
+                }}
+              >
+                Select a summary unit to show <br /> details in sidebar
+              </Text>
+            )}
+          </>
+        )}
       </Flex>
     </Box>
   )

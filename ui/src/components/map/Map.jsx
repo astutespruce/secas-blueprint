@@ -660,6 +660,11 @@ const Map = () => {
             title={
               renderLayer === null ? 'Blueprint priority' : renderLayer.label
             }
+            subtitle={
+              renderLayer === null
+                ? 'for a connected network of lands and waters'
+                : null
+            }
             categories={
               renderLayer === null
                 ? blueprintCategories

@@ -56,16 +56,23 @@ const TabContent = ({ tab, mapData }) => {
 
   if (inputId === null) {
     return (
-      <Flex sx={{ py: '2rem', pl: '1rem', pr: '2rem', alignItems: 'center' }}>
-        <Box sx={{ flex: '0 0 auto', mr: '1rem', color: 'orange' }}>
-          <ExclamationTriangle size="2em" />
-        </Box>
-        <Text sx={{ color: 'grey.8', flex: '1 1 auto' }}>
-          Area is outside Southeast Base Blueprint data extent.
+      <>
+        <Flex sx={{ py: '2rem', pl: '1rem', pr: '2rem', alignItems: 'center' }}>
+          <Box sx={{ flex: '0 0 auto', mr: '1rem', color: 'orange' }}>
+            <ExclamationTriangle size="2em" />
+          </Box>
+          <Text sx={{ color: 'grey.8', flex: '1 1 auto' }}>
+            <b>No pixel-level details are available for this area.</b>
+          </Text>
+        </Flex>
+        <Text sx={{ pl: '1rem', pr: '2rem' }}>
+          It falls outside the 15 states of the Southeast where the Blueprint
+          uses consistent methods and indicators.
           <br />
-          No pixel-level details are available for this area.
+          <br />
+          Switch to summary mode to learn more about this area.
         </Text>
-      </Flex>
+      </>
     )
   }
 
