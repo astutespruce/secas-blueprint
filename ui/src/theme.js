@@ -86,16 +86,25 @@ module.exports = {
   buttons: {
     primary: {
       cursor: 'pointer',
+      fontFamily: 'body',
+      fontSize: '18px',
+      userSelect: 'none',
     },
     disabled: {
       cursor: 'not-allowed',
       color: 'grey.7',
       bg: 'blue.1',
+      fontFamily: 'body',
+      fontSize: '18px',
+      userSelect: 'none',
     },
     secondary: {
       cursor: 'pointer',
       color: 'grey.9',
       bg: 'grey.1',
+      fontFamily: 'body',
+      fontSize: '18px',
+      userSelect: 'none',
     },
     group: {
       cursor: 'pointer',
@@ -104,6 +113,8 @@ module.exports = {
       px: '0.75em',
       outline: 'none',
       color: 'text',
+      fontFamily: 'body',
+      userSelect: 'none',
       '&[data-state="active"]': {
         color: '#FFF',
         bg: 'primary',

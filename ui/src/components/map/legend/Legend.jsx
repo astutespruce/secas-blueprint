@@ -34,6 +34,7 @@ const Legend = ({ title, categories, isVisible, onToggleVisibility }) => {
         borderRadius: '0.25rem',
         boxShadow: '2px 2px 6px #333',
         maxWidth: '200px',
+        userSelect: 'none',
       }}
       onClick={handleClick}
     >
