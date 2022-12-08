@@ -44,7 +44,7 @@
             <br />
             {{results.urban.entries[0].percent|format_percent}}% of this
             area is already urban in 2019, and an additional
-            {{(results.urban.entries[5].percent - results.urban.entries[0].percent)|format_percent}}%
+            {{results.urban.nonzero_urban_2060_percent|format_percent}}%
             has at least a moderate probability of urbanizing by 2060.
         </p>
 

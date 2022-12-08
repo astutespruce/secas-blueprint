@@ -68,7 +68,7 @@ def extract_urban_by_mask(
             "outside_urban_percent": <percent outside this dataset but within SE>,
             "noturban_2100_acres": <acres not urbanized by 2100>,
             "noturban_2100_percent": <percent not urbanized by 2100>,
-            "percent_increase_by_2060": <percent of (2060-2019) / 2019>
+            "nonzero_urban_2060_percent": <percent of area urbanized at any probability not already urbanized in 2019>
         }
     """
     # prescreen to make sure data are present
@@ -94,13 +94,18 @@ def extract_urban_by_mask(
 
         if year == 2020:
             # extract area already urban (in index 51)
+            already_urban_acres = urban_acres[51]
             urban_results.append(
                 {
                     "label": "Urban in 2019",
-                    "acres": urban_acres[51],
-                    "percent": 100 * urban_acres[51] / rasterized_acres,
+                    "acres": already_urban_acres,
+                    "percent": 100 * already_urban_acres / rasterized_acres,
                 }
             )
+        elif year == 2060:
+            # amount of additional urbanization by 2060 for any probability
+            # is the sum of area in all pixels >0  and not already urban
+            nonzero_urban_2060_acres = urban_acres[1:51].sum()
 
         # total urbanization is sum of acres by probability bin * probability
         projected_acres = (urban_acres * PROBABILITIES).sum()
@@ -113,8 +118,6 @@ def extract_urban_by_mask(
             }
         )
 
-    already_urban_acres = urban_results[0]["acres"]
-    urban_2060_acres = urban_results[5]["acres"]
     noturban_2100_acres = urban_acres[0]  # set to 2100 by last loop
 
     # if nothing is urban or projected to urbanize by 2100, return None
@@ -126,11 +129,7 @@ def extract_urban_by_mask(
         "total_urban_acres": total_urban_acres,
         "outside_urban_acres": outside_urban_acres,
         "outside_urban_percent": 100 * outside_urban_acres / rasterized_acres,
-        "percent_increase_by_2060": 100
-        * (urban_2060_acres - already_urban_acres)
-        / already_urban_acres
-        if already_urban_acres
-        else 0,
+        "nonzero_urban_2060_percent": 100 * nonzero_urban_2060_acres / rasterized_acres,
         "noturban_2100_acres": noturban_2100_acres,
         "noturban_2100_percent": 100 * noturban_2100_acres / rasterized_acres,
     }
@@ -203,9 +202,15 @@ def summarize_urban_by_units_grid(df, units_grid, out_dir):
                 * cellsize
             )
 
+            if year == 2060:
+                # amount of additional urbanization by 2060 for any probability
+                # is the sum of area in all pixels >0  and not already urban
+                nonzero_urban_2060_acres = urban_acres[:, 1:51].sum(axis=1)
+
             # total urbanization is sum of acres by probability bin * probability
             urban[f"urban_proj_{year}"] = (urban_acres * PROBABILITIES).sum(axis=1)
 
+    urban["nonzero_urban_2060"] = nonzero_urban_2060_acres
     urban["noturban_2100"] = urban_acres[:, 0]  # set to 2100 by last loop
     urban["outside_urban"] = outside_urban_acres
 
@@ -238,7 +243,7 @@ def get_urban_unit_results(results_dir, unit_id, rasterized_acres):
             "outside_urban_percent": <percent outside this dataset but within SE>,
             "noturban_2100_acres": <acres not urbanized by 2100>,
             "noturban_2100_percent": <percent not urbanized by 2100>,
-            "percent_increase_by_2060": <percent of (2060-2019) / 2019>
+            "nonzero_urban_2060_percent": <percent of area urbanized at any probability not already urbanized in 2019>
         }
     """
     urban_results = read_unit_from_feather(results_dir / "urban.feather", unit_id)
@@ -268,9 +273,5 @@ def get_urban_unit_results(results_dir, unit_id, rasterized_acres):
         "outside_urban_percent": 100 * unit.outside_urban / rasterized_acres,
         "noturban_2100_acres": unit.noturban_2100,
         "noturban_2100_percent": 100 * unit.noturban_2100 / rasterized_acres,
-        "percent_increase_by_2060": 100
-        * (unit.urban_proj_2060 - unit.urban_2019)
-        / unit.urban_2019
-        if unit.urban_2019
-        else 0,
+        "nonzero_urban_2060_percent": 100 * unit.nonzero_urban_2060 / rasterized_acres,
     }
