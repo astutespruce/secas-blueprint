@@ -41,7 +41,7 @@ import { getCenterAndZoom } from './viewport'
 
 import { siteMetadata } from '../../../gatsby-config'
 
-const { mapboxToken } = siteMetadata
+const { mapboxToken, hidePixelLayerToggle } = siteMetadata
 
 if (!mapboxToken) {
   // eslint-disable-next-line no-console
@@ -673,7 +673,9 @@ const Map = () => {
             isVisible={isRenderLayerVisible}
             onToggleVisibility={handleToggleRenderLayerVisible}
           />
-          {mapMode === 'pixel' ? <LayerToggle onChange={() => {}} /> : null}
+          {mapMode === 'pixel' && !hidePixelLayerToggle ? (
+            <LayerToggle onChange={() => {}} />
+          ) : null}
         </>
       ) : null}
 

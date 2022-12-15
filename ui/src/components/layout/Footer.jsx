@@ -31,9 +31,9 @@ const Footer = () => {
   return (
     <Flex
       sx={{
-        alignItems: 'baseline',
+        alignItems: 'center',
         justifyContent: 'space-between',
-        fontSize: 1,
+        fontSize: [0, 0, 0, 1],
         lineHeight: 1,
         px: '0.5em',
         py: '0.25em',
@@ -45,12 +45,21 @@ const Footer = () => {
       }}
     >
       <Flex
-        sx={{ alignItems: 'center', px: '0.5em', mr: '0.5rem', fontSize: 0 }}
+        sx={{
+          alignItems: 'center',
+          px: '0.5em',
+          mr: '0.5rem',
+        }}
       >
         Version: Southeast Blueprint 2022
       </Flex>
 
-      <Box sx={{ borderLeft: '1px solid #FFF', height: '1em' }} />
+      <Box
+        sx={{
+          borderLeft: '1px solid #FFF',
+          height: '1em',
+        }}
+      />
 
       <Box sx={{ mr: '0.5em' }}>
         <OutboundLink to="http://secassoutheast.org/blueprint" tabIndex="0">
@@ -110,11 +119,21 @@ const Footer = () => {
         sx={{
           borderLeft: '1px solid #FFF',
           height: '1em',
+          display: ['none', 'none', 'block'],
         }}
       />
 
-      <Text sx={{ fontSize: 0, ml: '0.5em' }}>
-        Created by U.S. Fish and Wildlife Service and{' '}
+      <Text
+        sx={{
+          fontSize: ['8px', '8px', '10px', 0],
+          textAlign: 'right',
+          ml: '0.5em',
+          display: ['none', 'none', 'block'],
+        }}
+      >
+        Created by U.S. Fish and Wildlife Service
+        <br />
+        and{' '}
         <OutboundLink to="https://astutespruce.com">Astute Spruce</OutboundLink>
       </Text>
     </Flex>
