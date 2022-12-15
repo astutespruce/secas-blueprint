@@ -679,17 +679,25 @@ const Map = () => {
         </>
       ) : null}
 
-      <MapModeToggle
-        map={mapRef.current}
-        isMobile={isMobile}
-        belowMinZoom={
-          mapMode === 'pixel'
-            ? currentZoom < minPixelLayerZoom
-            : currentZoom < minSummaryZoom
-        }
-      />
+      {/* Only show widgets after loading to prevent map from getting out of sync */}
+      {isLoaded ? (
+        <>
+          <MapModeToggle
+            map={mapRef.current}
+            isMobile={isMobile}
+            belowMinZoom={
+              mapMode === 'pixel'
+                ? currentZoom < minPixelLayerZoom
+                : currentZoom < minSummaryZoom
+            }
+          />
 
-      <StyleToggle isMobile={isMobile} onStyleChange={handleBasemapChange} />
+          <StyleToggle
+            isMobile={isMobile}
+            onStyleChange={handleBasemapChange}
+          />
+        </>
+      ) : null}
     </Box>
   )
 }
