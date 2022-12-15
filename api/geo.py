@@ -1,6 +1,6 @@
 import logging
 
-import pyogrio as pio
+from pyogrio import list_layers, read_info
 
 
 log = logging.getLogger(__name__)
@@ -43,6 +43,7 @@ def get_dataset(zip):
     - There must be only one data source (.shp or .gdb) in the zip file.
     - There must be only one data layer in that data source.
     - The data source must contain the required files (.prj for shapefile; .dbf is not used so not required)
+    - The dataset must contain at least one feature
 
     Parameters
     ----------
@@ -83,7 +84,8 @@ def get_dataset(zip):
             raise ValueError("zip file must include .shp, .prj, and .shx files")
 
     # Validate that dataset is a polygon and has only a single layer
-    layers = pio.list_layers(f"/vsizip/{zip.fp.name}/{filename}")
+    dataset = f"/vsizip/{zip.fp.name}/{filename}"
+    layers = list_layers(dataset)
 
     if layers.shape[0] > 1:
         log.error(f"Upload data source contains multiple data layers\n{layers}")
@@ -92,5 +94,11 @@ def get_dataset(zip):
     if "Polygon" not in layers[0, 1]:
         log.error(f"Upload data source is not a polygon: {layers[0,1]}")
         raise ValueError("data source must be a Polygon type")
+
+    # Validate that that layer has at least one feature
+    num_features = read_info(dataset, layers[0, 0])["features"]
+    if num_features == 0:
+        log.error(f"Upload data source does not contain any features")
+        raise ValueError("data source must contain at least one feature")
 
     return filename, layers[0, 0]
