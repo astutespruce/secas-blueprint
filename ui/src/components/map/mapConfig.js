@@ -51,7 +51,6 @@ export const layers = [
     'source-layer': 'ownership',
     type: 'fill',
     minzoom: 5,
-    maxzoom: 14,
     layout: {
       visibility: 'none',
     },
@@ -66,7 +65,6 @@ export const layers = [
     'source-layer': 'subregions',
     type: 'fill',
     minzoom: 3,
-    maxzoom: 14,
     layout: {
       visibility: 'none',
     },
@@ -80,7 +78,6 @@ export const layers = [
     source: 'blueprint',
     type: 'raster',
     minzoom: 3,
-    maxzoom: 14,
     paint: {
       'raster-opacity': {
         stops: [
