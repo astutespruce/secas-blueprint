@@ -618,8 +618,11 @@ const Map = () => {
   return (
     <Box
       sx={{
-        width: '100%',
-        height: '100%',
+        // width: '100%',
+        // height: '100%',
+        // FIXME:
+        width: '512px',
+        height: '512px',
         flex: '1 1 auto',
         position: 'relative',
 
@@ -627,7 +630,9 @@ const Map = () => {
         ...mapWidgetCSS,
       }}
     >
-      <div ref={mapNode} style={{ width: '100%', height: '100%' }} />
+      {/* <div ref={mapNode} style={{ width: '100%', height: '100%' }} /> */}
+      {/* FIXME: */}
+      <div ref={mapNode} style={{ width: '512px', height: '512px' }} />
 
       {mapMode === 'pixel' && currentZoom >= minPixelLayerZoom ? (
         <Box

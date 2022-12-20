@@ -71,7 +71,7 @@ class StackedPNGLayer extends BitmapLayer {
       })
       .draw()
 
-    if (this.id === 'pixelLayers-142-201-9') {
+    if (this.id === 'pixelLayers-71-101-8') {
       // console.log('try to render to framebuffer', this.context.gl)
       const framebuffer = new Framebuffer(this.context.gl, {
         // width: 512,
