@@ -123,6 +123,7 @@ const LayerToggle = () => {
         setRenderLayer(renderLayersIndex[id])
       }
     },
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
     [renderLayersIndex]
   )
 

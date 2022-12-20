@@ -654,34 +654,36 @@ const Map = () => {
         </Box>
       ) : null}
 
-      {!isMobile ? (
-        <>
-          <Legend
-            title={
-              renderLayer === null ? 'Blueprint priority' : renderLayer.label
-            }
-            subtitle={
-              renderLayer === null
-                ? 'for a connected network of lands and waters'
-                : null
-            }
-            categories={
-              renderLayer === null
-                ? blueprintCategories
-                : renderLayer.categories
-            }
-            isVisible={isRenderLayerVisible}
-            onToggleVisibility={handleToggleRenderLayerVisible}
-          />
-          {mapMode === 'pixel' && !hidePixelLayerToggle ? (
-            <LayerToggle onChange={() => {}} />
-          ) : null}
-        </>
-      ) : null}
-
       {/* Only show widgets after loading to prevent map from getting out of sync */}
       {isLoaded ? (
         <>
+          {!isMobile ? (
+            <>
+              <Legend
+                title={
+                  renderLayer === null
+                    ? 'Blueprint priority'
+                    : renderLayer.label
+                }
+                subtitle={
+                  renderLayer === null
+                    ? 'for a connected network of lands and waters'
+                    : null
+                }
+                categories={
+                  renderLayer === null
+                    ? blueprintCategories
+                    : renderLayer.categories
+                }
+                isVisible={isRenderLayerVisible}
+                onToggleVisibility={handleToggleRenderLayerVisible}
+              />
+              {mapMode === 'pixel' && !hidePixelLayerToggle ? (
+                <LayerToggle />
+              ) : null}
+            </>
+          ) : null}
+
           <MapModeToggle
             map={mapRef.current}
             isMobile={isMobile}

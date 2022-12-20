@@ -1,4 +1,4 @@
-#define SHADER_NAME stackedpng-vertex-shader
+#define SHADER_NAME stackedpng_vertex_shader
 
 attribute vec2 texCoords;
 attribute vec3 positions;
@@ -16,7 +16,8 @@ void main(void) {
   geometry.uv = texCoords;
   geometry.pickingColor = pickingColor;
 
-  gl_Position = project_position_to_clipspace(positions, positions64Low, vec3(0.0), geometry.position);
+  gl_Position = project_position_to_clipspace(positions, positions64Low,
+                                              vec3(0.0), geometry.position);
   DECKGL_FILTER_GL_POSITION(gl_Position, geometry);
 
   vTexCoord = texCoords;

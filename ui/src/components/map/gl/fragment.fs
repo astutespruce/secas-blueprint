@@ -1,4 +1,4 @@
-#define SHADER_NAME stackedpng-fragment-shader
+#define SHADER_NAME stackedpng_fragment_shader
 
 #ifdef GL_FRAGMENT_PRECISION_HIGH
 precision highp float;
@@ -29,12 +29,13 @@ uniform sampler2D indicator5;
 // count is filled from JS since this can't be dynamic in the shader
 uniform vec2 ranges[<NUM_INDICATORS>];
 
-
 // return 32-bit integer(ish)
 float rgbToInt32(vec3 v) {
   // equivalent of (r << 16) + (g << 8) + b
   return (v.r * 65536.) + (v.g * 256.) + v.b;
 }
+
+bool isOdd(float v) { return (v - (floor(v * 0.5) * 2.0)) > 0.5; }
 
 // bitwise and (32 bit) adapted from:
 // https://gist.github.com/EliCDavis/f35a9e4afb8e1c9ae94cce8f3c2c9b9a
@@ -42,11 +43,14 @@ float bitwise_and(float v1, float v2) {
   float byte_val = 1.0;
   float result = 0.0;
 
+  // iterate over each bit, stop when either bit is 0
   for (int i = 0; i < 32; i++) {
     if (v1 == 0.0 || v2 == 0.0) {
       return result;
     }
-    float both_bytes_1 = min(mod(v1, 2.0), mod(v2, 2.0));
+
+    float both_bytes_1 = isOdd(v1) && isOdd(v2) ? 1.0 : 0.0;
+
     result += both_bytes_1 * byte_val;
     v1 = floor(v1 / 2.0);
     v2 = floor(v2 / 2.0);
@@ -68,14 +72,12 @@ bool withinRange(float valueRGB, float offset, float numBits, vec2 range) {
   return (value >= range[0] && value <= range[1]);
 }
 
-
-
 void main(void) {
   // canRender is True where all filters are either not set or values are
   // within range
 
   // <FILTER_EXPR>
-  // FIXME:
+  // FIXME: this will instead come from filter expr
   bool canRender = true;
 
   float valueRGB;
@@ -89,14 +91,14 @@ void main(void) {
     valueRGB = rgbToInt32(texture2D(indicator3, vTexCoord).rgb * 255.0);
   } else if (renderLayerTextureIndex == 4) {
     valueRGB = rgbToInt32(texture2D(indicator4, vTexCoord).rgb * 255.0);
-  }else if (renderLayerTextureIndex == 5) {
+  } else if (renderLayerTextureIndex == 5) {
     valueRGB = rgbToInt32(texture2D(indicator5, vTexCoord).rgb * 255.0);
   }
   float renderValue = bitwise_and(rshift(valueRGB, renderLayerOffset),
                                   bitmask(renderLayerBits));
 
-
-  vec4 color = texture2D(renderLayerPalette, vec2(renderValue / renderLayerPaletteSize , 0.5));
+  vec4 color = texture2D(renderLayerPalette,
+                         vec2(renderValue / renderLayerPaletteSize, 0.5));
 
   color.a = color.a * opacity;
 
