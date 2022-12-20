@@ -199,6 +199,9 @@ const Map = () => {
       mapRef.current = map
       window.map = map // for easier debugging and querying via console
 
+      // FIXME: debug only
+      map.showTileBoundaries = true
+
       if (!isMobile) {
         map.addControl(new mapboxgl.NavigationControl(), 'top-right')
       }
@@ -226,7 +229,8 @@ const Map = () => {
           id: 'pixelLayers',
           type: StackedPNGTileLayer,
           refinementStrategy: 'no-overlap',
-          opacity: 0.7,
+          // opacity: 0.7,
+          opacity: 1.0,
           filters: null,
           visible: false,
           layers: pixelLayers,
