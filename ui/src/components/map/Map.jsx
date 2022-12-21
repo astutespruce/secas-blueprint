@@ -199,9 +199,6 @@ const Map = () => {
       mapRef.current = map
       window.map = map // for easier debugging and querying via console
 
-      // FIXME: debug only
-      map.showTileBoundaries = true
-
       if (!isMobile) {
         map.addControl(new mapboxgl.NavigationControl(), 'top-right')
       }
@@ -618,11 +615,8 @@ const Map = () => {
   return (
     <Box
       sx={{
-        // width: '100%',
-        // height: '100%',
-        // FIXME:
-        width: '512px',
-        height: '512px',
+        width: '100%',
+        height: '100%',
         flex: '1 1 auto',
         position: 'relative',
 
@@ -630,9 +624,7 @@ const Map = () => {
         ...mapWidgetCSS,
       }}
     >
-      {/* <div ref={mapNode} style={{ width: '100%', height: '100%' }} /> */}
-      {/* FIXME: */}
-      <div ref={mapNode} style={{ width: '512px', height: '512px' }} />
+      <div ref={mapNode} style={{ width: '100%', height: '100%' }} />
 
       {mapMode === 'pixel' && currentZoom >= minPixelLayerZoom ? (
         <Box

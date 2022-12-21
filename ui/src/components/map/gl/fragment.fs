@@ -97,17 +97,16 @@ void main(void) {
   float renderValue = bitwise_and(rshift(valueRGB, renderLayerOffset),
                                   bitmask(renderLayerBits));
 
-  vec4 color = vec4(renderValue / 255.0, 0., 0., 1.);
+  // subtracting 0.1 from layer palette size is required to get this to work
+  // properly on multiple graphics cards
+  vec4 color =
+      texture2D(renderLayerPalette,
+                vec2(renderValue / (renderLayerPaletteSize - 0.1), 0.5));
 
-  // FIXME: re-enable
-  // vec4 color = texture2D(renderLayerPalette,
-  //                        vec2(renderValue / renderLayerPaletteSize, 0.5));
-
-  // color.a = color.a * opacity;
-
-  // if (!canRender) {
-  //   color.a = 0.0;
-  // }
+  color.a = color.a * opacity;
+  if (!canRender) {
+    color.a = 0.0;
+  }
 
   gl_FragColor = color;
 }
