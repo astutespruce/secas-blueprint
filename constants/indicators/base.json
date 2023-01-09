@@ -53,7 +53,7 @@
         }
       ],
       "description": "This indicator measures the condition of migratory fish habitat along the Atlantic coast within each catchment, using metrics of water quality, aquatic connectivity, habitat fragmentation, flow alteration, and more. Areas of excellent fish habitat are already in good condition and face few threats; restoration opportunity areas are doing well in some respects, but restoration projects could significantly improve them; degraded areas of opportunity face many challenges, and restoration projects are unlikely to increase available fish habitat unless particularly large in scope and scale. This indicator originates from the Atlantic Coast Fish Habitat Partnership's fish habitat conservation area mapping and prioritization project.",
-      "url": "https://secas-fws.hub.arcgis.com/maps/4377bc1e3f0e4dfba14a456b292fed06/about",
+      "url": "https://secas-fws.hub.arcgis.com/maps/fws::atlantic-migratory-fish-habitat-southeast-blueprint-indicator/about",
       "goodThreshold": 7,
       "subregions": ["Piedmont", "Atlantic Coastal Plain"]
     },
@@ -875,7 +875,7 @@
           "color": "#4B076E"
         }
       ],
-      "description": "This cultural resource indicator measures the size of parks larger than 5 acres in the urban environment. Protected natural areas in urban environments provide urban residents a nearby place to connect with nature, and offer refugia for some species. This indicator complements the equitable access to potential parks indicator by capturing the value of existing parks.",
+      "description": "This cultural resource indicator measures the size of parks larger than 5 acres in the urban environment. Protected natural areas in urban environments provide urban residents a nearby place to connect with nature, and offer refugia for some species. This indicator complements the equitable access to potential parks indicator by capturing the value of existing parks.  It originates from the U.S. Geological Survey’s Protected Areas Database and 2019 National Land Cover Database percent developed impervious layer.",
       "url": "https://secas-fws.hub.arcgis.com/maps/2de0d381b86e479b89816922083331f7/about"
     },
     {
