@@ -5,6 +5,7 @@ class StackedPNGLayer extends BitmapLayer {
   draw({ uniforms }) {
     const { model } = this.state
     const { bounds, images, opacity, filterRanges, renderTarget } = this.props
+
     if (
       !model ||
       !images ||

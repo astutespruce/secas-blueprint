@@ -205,3 +205,14 @@ export const parseDictEncodedValues = (text) => {
 
 export const ifNull = (value, defaultValue) =>
   value === null ? defaultValue : value
+
+/**
+ * Count number of entries for each value
+ * @param {Array} a - array of values
+ * @returns Object - {key:count, ...}
+ */
+export const histogram = (a) =>
+  a.reduce(
+    (prev, cur) => Object.assign(prev, { [cur]: (prev[cur] || 0) + 1 }),
+    {}
+  )

@@ -72,6 +72,10 @@ const getFilterRanges = (encodingSchemes, filterRanges) => {
   return ranges
 }
 
+/**
+ * StackedPNGTileLayer provides a tile-loading interface that wraps
+ * StackedPNGLayer instances (one per tile).
+ */
 export default class StackedPNGTileLayer extends TileLayer {
   initializeState() {
     super.initializeState()

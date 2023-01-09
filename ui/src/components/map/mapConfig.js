@@ -4,12 +4,6 @@ const { tileHost } = siteMetadata
 
 export const mapConfig = {
   bounds: [-106.66188036, 17.92676033, -65.22106481, 40.638801],
-
-  // TEMP: testing only
-  // bounds: [
-  //   -82.60386551952661, 30.279148227225917, -81.30046782109937,
-  //   31.25495730451503,
-  // ],
   maxBounds: [-180, -80, 180, 80],
   minZoom: 3,
   maxZoom: 14,

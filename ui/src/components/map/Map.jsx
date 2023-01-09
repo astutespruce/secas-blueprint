@@ -227,6 +227,7 @@ const Map = () => {
           type: StackedPNGTileLayer,
           refinementStrategy: 'no-overlap',
           opacity: 0.7,
+          // opacity: 1.0,
           filters: null,
           visible: false,
           layers: pixelLayers,
