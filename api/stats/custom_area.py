@@ -2,7 +2,7 @@ from pathlib import Path
 
 import geopandas as gp
 import numpy as np
-import pygeos as pg
+import shapely
 
 from analysis.constants import DATA_CRS, GEO_CRS, INPUTS, M2_ACRES
 from analysis.lib.geometry import to_dict, to_crs
@@ -38,12 +38,14 @@ def get_custom_area_results(df):
             f"DataFrame for custom area had more rows than expected: {len(df)}"
         )
 
-    geometry = df.geometry.values.data[0]
-    polygon_acres = pg.area(geometry) * M2_ACRES
+    geometry = df.geometry.values[0]
+    polygon_acres = shapely.area(geometry) * M2_ACRES
     shapes = [to_dict(geometry)]
-    bounds = pg.bounds(geometry)
+    bounds = shapely.bounds(geometry)
 
-    geo_bounds = pg.bounds(to_crs(np.array([pg.box(*bounds)]), DATA_CRS, GEO_CRS))
+    geo_bounds = shapely.bounds(
+        to_crs(np.array([shapely.box(*bounds)]), DATA_CRS, GEO_CRS)
+    )
 
     center, lta_search_radius = get_lta_search_info(geo_bounds)
     center = center[0]
@@ -52,7 +54,7 @@ def get_custom_area_results(df):
     # if area of interest does not intersect SE region boundary,
     # there will be no results
     se_bnd = gp.read_feather(boundary_filename)
-    if not pg.intersects(geometry, se_bnd.geometry.values.data).max():
+    if not shapely.intersects(geometry, se_bnd.geometry.values).max():
         return None
 
     config = get_shape_mask(shapes, bounds)

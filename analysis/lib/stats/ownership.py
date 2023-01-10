@@ -3,7 +3,7 @@ from pathlib import Path
 import geopandas as gp
 import numpy as np
 import pandas as pd
-import pygeos as pg
+import shapely
 
 from analysis.constants import (
     M2_ACRES,
@@ -58,7 +58,7 @@ def get_ownership_for_aoi(df, total_acres):
     if df is None:
         return None
 
-    df["acres"] = pg.area(df.geometry_right.values.data) * M2_ACRES
+    df["acres"] = shapely.area(df.geometry_right.values.data) * M2_ACRES
     df = df.loc[df.acres > 0].copy()
 
     if not len(df):
@@ -143,7 +143,7 @@ def summarize_ownership_by_units(df, out_dir):
     if df is None:
         return
 
-    df["acres"] = pg.area(df.geometry_right.values) * M2_ACRES
+    df["acres"] = shapely.area(df.geometry_right.values) * M2_ACRES
 
     # drop areas that touch but have no overlap
     df = df.loc[df.acres > 0].copy()
@@ -255,13 +255,16 @@ def get_lta_search_info(bounds):
     ndarray of shape (n, 2), ndarray of shape (n,)
         centers in long, lat and search distance in miles
     """
-    boxes = to_crs(pg.box(*bounds.T), GEO_CRS, DATA_CRS)
+    boxes = to_crs(shapely.box(*bounds.T), GEO_CRS, DATA_CRS)
     centers = np.dstack(
         [(bounds[:, 0] + bounds[:, 2]) / 2, (bounds[:, 1] + bounds[:, 3]) / 2]
     )[0]
 
     extent_radius = (
-        pg.distance(pg.get_point(pg.get_exterior_ring(boxes), 0), pg.centroid(boxes))
+        shapely.distance(
+            shapely.get_point(shapely.get_exterior_ring(boxes), 0),
+            shapely.centroid(boxes),
+        )
         * M_MILES
     )
 

@@ -1,9 +1,8 @@
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
-import pygeos as pg
 import rasterio
+import shapely
 
 from analysis.constants import (
     BLUEPRINT,

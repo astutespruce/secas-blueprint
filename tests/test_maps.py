@@ -5,12 +5,12 @@ import json
 
 import asyncio
 import numpy as np
-import pygeos as pg
 from pyogrio.geopandas import read_dataframe
+import shapely
 
 from analysis.constants import BLUEPRINT_COLORS, DATA_CRS, MAP_CRS, GEO_CRS, DATA_CRS
 
-from analysis.lib.pygeos_util import to_crs, to_dict
+from analysis.lib.geometry import to_crs
 from api.report.map import render_maps
 from api.stats import SummaryUnits, CustomArea
 
@@ -33,10 +33,10 @@ for aoi_name in aoi_names:
         os.makedirs(out_dir)
 
     df = read_dataframe(f"examples/{aoi_name}.shp")
-    geometry = pg.make_valid(df.geometry.values.data)
+    geometry = shapely.make_valid(df.geometry.values)
 
     # dissolve
-    geometry = np.asarray([pg.union_all(geometry)])
+    geometry = np.asarray([shapely.union_all(geometry)])
 
     print("Calculating results...")
     results = CustomArea(geometry, df.crs, name="Test").get_results()
@@ -45,7 +45,7 @@ for aoi_name in aoi_names:
 
     ### Convert to WGS84 for mapping
     geometry = to_crs(geometry, df.crs, GEO_CRS)
-    bounds = pg.total_bounds(geometry)
+    bounds = shapely.total_bounds(geometry)
 
     has_corridors = "corridors" in results
     has_urban = "proj_urban" in results and results["proj_urban"][-1] > 0

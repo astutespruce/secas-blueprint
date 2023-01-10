@@ -1,4 +1,5 @@
 module.exports = {
+  // TODO: add another breakpoint, maybe 1200px?
   breakpoints: ['600px', '800px', '1600px'],
   colors: {
     text: '#333',

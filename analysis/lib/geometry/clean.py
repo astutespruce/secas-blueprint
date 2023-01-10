@@ -1,4 +1,4 @@
-import pygeos as pg
+import shapely
 
 
 def make_valid(geometries):
@@ -6,17 +6,17 @@ def make_valid(geometries):
 
     Parameters
     ----------
-    geometries : ndarray of pygeos geometries
+    geometries : ndarray of shapely geometries
 
     Returns
     -------
-    ndarray of pygeos geometries
+    ndarray of shapely geometries
     """
 
-    ix = ~pg.is_valid(geometries)
+    ix = ~shapely.is_valid(geometries)
     if ix.sum():
         geometries = geometries.copy()
         print(f"Repairing {ix.sum()} geometries")
-        geometries[ix] = pg.make_valid(geometries[ix])
+        geometries[ix] = shapely.make_valid(geometries[ix])
 
     return geometries

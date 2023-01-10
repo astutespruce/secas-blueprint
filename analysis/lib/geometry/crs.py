@@ -1,6 +1,6 @@
 import numpy as np
-import pygeos as pg
 from pyproj.transformer import Transformer
+import shapely
 
 
 def to_crs(geometries, src_crs, target_crs):
@@ -8,7 +8,7 @@ def to_crs(geometries, src_crs, target_crs):
 
     Parameters
     ----------
-    geometries : ndarray of pygeos geometries
+    geometries : ndarray of shapely geometries
     src_crs : CRS or params to create it
     target_crs : CRS or params to create it
     """
@@ -17,7 +17,7 @@ def to_crs(geometries, src_crs, target_crs):
         return geometries.copy()
 
     transformer = Transformer.from_crs(src_crs, target_crs, always_xy=True)
-    coords = pg.get_coordinates(geometries)
+    coords = shapely.get_coordinates(geometries)
     new_coords = transformer.transform(coords[:, 0], coords[:, 1])
-    result = pg.set_coordinates(geometries.copy(), np.array(new_coords).T)
+    result = shapely.set_coordinates(geometries.copy(), np.array(new_coords).T)
     return result

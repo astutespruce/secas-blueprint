@@ -1,8 +1,8 @@
 from copy import deepcopy
 import json
 
-import pygeos as pg
 from pymgl import Map
+import shapely
 
 from api.settings import MAPBOX_ACCESS_TOKEN, TILE_DIR
 from analysis.lib.geometry import to_dict
@@ -82,7 +82,7 @@ def get_locator_map_image(longitude, latitude, bounds, geometry=None):
         longitude of area of interest marker
     bounds : list-like of xmin, ymin, xmax, ymax
         bounds of geometry to locate on map
-    geometry : pygeos.Geometry, optional (default: None)
+    geometry : shapely.Geometry, optional (default: None)
         If present, will be used to render the area of interest if the bounds
         are very large.
 
@@ -101,7 +101,7 @@ def get_locator_map_image(longitude, latitude, bounds, geometry=None):
     # NOTE: some multipart features cover large extent and small area, so these
     # drop out if we do not use area threshold.
     if xmax - ymax >= 0.5 or ymax - ymin >= 0.5:
-        if geometry and pg.area(geometry) > 0.1:
+        if geometry and shapely.area(geometry) > 0.1:
             geometry = to_dict(geometry)
 
         else:

@@ -36,7 +36,7 @@ for state in SECAS_STATES:
     geo_df = df.to_crs(GEO_CRS)
     task = render_maps(
         geo_df.total_bounds,
-        geometry=geo_df.geometry.values.data[0],
+        geometry=geo_df.geometry.values[0],
         indicators=indicators,
         input_ids=results["input_ids"],
         input_areas=len(results["input_ids"]) > 1,

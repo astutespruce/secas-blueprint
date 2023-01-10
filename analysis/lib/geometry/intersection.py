@@ -1,7 +1,5 @@
 import geopandas as gp
-import numpy as np
-import pandas as pd
-import pygeos as pg
+import shapely
 
 
 def intersection(left, right, grid_size=0):
@@ -28,8 +26,8 @@ def intersection(left, right, grid_size=0):
         None if there are no intersections
     """
 
-    tree = pg.STRtree(right.geometry.values.data)
-    ix = tree.query_bulk(left.geometry.values.data, predicate="intersects")
+    tree = shapely.STRtree(right.geometry.values)
+    ix = tree.query(left.geometry.values, predicate="intersects")
 
     if len(ix[0]) == 0:
         return None
@@ -37,23 +35,23 @@ def intersection(left, right, grid_size=0):
     # copy original geometries; they will be clipped below if needed
     intersects = gp.GeoDataFrame(
         {
-            "geometry": left.geometry.values.data.take(ix[0]),
+            "geometry": left.geometry.values.take(ix[0]),
             "index_right": right.index.values.take(ix[1]),
-            "geometry_right": right.geometry.values.data.take(ix[1]),
+            "geometry_right": right.geometry.values.take(ix[1]),
         },
         index=left.index.take(ix[0]),
         crs=left.crs,
     )
 
-    pg.prepare(intersects.geometry.values.data)
-    contains = pg.contains_properly(
-        intersects.geometry.values.data, intersects.geometry_right.values
+    shapely.prepare(intersects.geometry.values)
+    contains = shapely.contains_properly(
+        intersects.geometry.values, intersects.geometry_right.values
     )
 
     # clip any that are not fully contained
     tmp = intersects[~contains]
-    intersects.loc[~contains, "geometry_right"] = pg.intersection(
-        tmp.geometry.values.data, tmp.geometry_right.values, grid_size=grid_size
+    intersects.loc[~contains, "geometry_right"] = shapely.intersection(
+        tmp.geometry.values, tmp.geometry_right.values, grid_size=grid_size
     )
 
     return left.join(intersects.drop(columns=["geometry"]), how="inner").join(

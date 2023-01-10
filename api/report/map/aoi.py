@@ -26,7 +26,7 @@ def get_aoi_map_image(geometry, center, zoom, width, height):
 
     Parameters
     ----------
-    geometry : pygeos Geometry object (singular)
+    geometry : shapely Geometry object (singular)
     center : [longitude, latitude]
     zoom : float
     width : int

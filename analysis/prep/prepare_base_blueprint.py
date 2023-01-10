@@ -267,13 +267,13 @@ if not outfilename.exists():
         print("Rasterizing hubs...")
         # rasterize hubs to match inland
         inland_hubs_data = rasterize(
-            to_dict_all(inland_hubs.geometry.values.data),
+            to_dict_all(inland_hubs.geometry.values),
             src.shape,
             transform=src.transform,
             dtype="uint8",
         )
         marine_hubs_data = rasterize(
-            to_dict_all(marine_hubs.geometry.values.data),
+            to_dict_all(marine_hubs.geometry.values),
             src.shape,
             transform=src.transform,
             dtype="uint8",

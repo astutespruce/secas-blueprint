@@ -2,8 +2,8 @@ from pathlib import Path
 import warnings
 
 import geopandas as gp
-import pygeos as pg
 from pyogrio import read_dataframe, write_dataframe
+import shapely
 
 from analysis.constants import SECAS_STATES
 from analysis.lib.geometry import make_valid
@@ -53,16 +53,16 @@ df = df.loc[(df.Category != "Proclamation") | (df.Des_Tp == "MIL")].reset_index(
 )
 
 
-tree = pg.STRtree(df.geometry.values.data)
-ix = tree.query(bnd_df.geometry.values.data[0], predicate="intersects")
+tree = shapely.STRtree(df.geometry.values)
+ix = tree.query(bnd_df.geometry.values[0], predicate="intersects")
 df = df.iloc[ix].copy()
 
 print("making valid and exploding parts...")
-df["geometry"] = make_valid(df.geometry.values.data)
+df["geometry"] = make_valid(df.geometry.values)
 df = df.explode(ignore_index=True)
 
 # there may be some geometry errors after cleaning up above, keep only polys
-df = df.loc[pg.get_type_id(df.geometry.values.data) == 3].reset_index(drop=True)
+df = df.loc[shapely.get_type_id(df.geometry.values) == 3].reset_index(drop=True)
 
 
 print("Writing files")

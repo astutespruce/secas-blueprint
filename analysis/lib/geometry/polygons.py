@@ -1,6 +1,6 @@
 import numpy as np
-import pygeos as pg
 import pandas as pd
+import shapely
 
 
 def drop_all_holes(geometries):
@@ -8,20 +8,20 @@ def drop_all_holes(geometries):
 
     Parameters
     ----------
-    geometries : ndarray of pygeos geometries
+    geometries : ndarray of shapely geometries
 
     Returns
     -------
-    ndarray of pygeos geometries
+    ndarray of shapely geometries
     """
-    parts, index = pg.get_parts(geometries, return_index=True)
-    parts = pg.polygons(pg.get_exterior_ring(parts))
+    parts, index = shapely.get_parts(geometries, return_index=True)
+    parts = shapely.polygons(shapely.get_exterior_ring(parts))
 
     return (
         pd.DataFrame({"geometry": parts}, index=index)
         .groupby(level=0)
         .geometry.apply(np.array)
-        .apply(lambda g: pg.multipolygons(g) if len(g) > 1 else g[0])
+        .apply(lambda g: shapely.multipolygons(g) if len(g) > 1 else g[0])
         .values
     )
 
@@ -31,14 +31,14 @@ def get_holes(geometries):
 
     Parameters
     ----------
-    geometries : ndarray of pygeos geometries
+    geometries : ndarray of shapely geometries
 
     Returns
     -------
     tuple of ndarray of geomtries, original index
     """
-    parts, index = pg.get_parts(geometries, return_index=True)
-    num_rings = pg.get_num_interior_rings(parts)
+    parts, index = shapely.get_parts(geometries, return_index=True)
+    num_rings = shapely.get_num_interior_rings(parts)
 
     ix = num_rings > 0
     index = np.arange(len(parts))[ix]
@@ -48,7 +48,9 @@ def get_holes(geometries):
 
     for i in index:
         holes.extend(
-            pg.get_interior_ring(parts[i], range(pg.get_num_interior_rings(parts[i])))
+            shapely.get_interior_ring(
+                parts[i], range(shapely.get_num_interior_rings(parts[i]))
+            )
         )
 
-    return pg.polygons(holes), out_index
+    return shapely.polygons(holes), out_index

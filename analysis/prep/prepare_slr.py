@@ -10,7 +10,6 @@ from rasterio.features import geometry_mask, dataset_features, rasterize
 from rasterio.windows import Window
 import pandas as pd
 import numpy as np
-import pygeos as pg
 import geopandas as gp
 from pyarrow.csv import read_csv, ReadOptions
 from pyogrio import (
@@ -21,6 +20,7 @@ from pyogrio import (
     read_bounds,
     read_info,
 )
+import shapely
 
 
 from analysis.constants import (
@@ -79,7 +79,7 @@ def rasterize_depth_polygons(gdb, layer, width, height, transform):
         .to_crs(DATA_CRS)
     )
 
-    area = pg.area(df.geometry.values.data)
+    area = shapely.area(df.geometry.values)
     total_area = area.sum()
 
     # Drop any polygons that are too small
@@ -94,7 +94,7 @@ def rasterize_depth_polygons(gdb, layer, width, height, transform):
     # Write outer rings of polygons and then holes separately because this is
     # faster, though less precise (some holes may rasterize over the edge of the
     # original rings, yielding bays)
-    polygons = drop_all_holes(df.geometry.values.data)
+    polygons = drop_all_holes(df.geometry.values)
     fill_mask = geometry_mask(
         to_dict_all(polygons),
         out_shape=(height, width),
@@ -102,8 +102,8 @@ def rasterize_depth_polygons(gdb, layer, width, height, transform):
         invert=True,
     )
 
-    holes = get_holes(df.geometry.values.data)[0]
-    ix = pg.area(holes) >= MIN_AREA
+    holes = get_holes(df.geometry.values)[0]
+    ix = shapely.area(holes) >= MIN_AREA
     holes_mask = geometry_mask(
         to_dict_all(holes[ix]), out_shape=(height, width), transform=transform
     )
@@ -167,7 +167,7 @@ for gdb in sorted(src_dir.glob("*slr_data_dist/*.gdb")):
         # WARNING: CRS is not consistent across the suite
         crs = read_info(gdb, layer)["crs"]
         bounds = (
-            gp.GeoDataFrame(geometry=pg.box(*read_bounds(gdb, layer)[1]), crs=crs)
+            gp.GeoDataFrame(geometry=shapely.box(*read_bounds(gdb, layer)[1]), crs=crs)
             .to_crs(DATA_CRS)
             .total_bounds
         )
@@ -224,9 +224,9 @@ files = list(tmp_dir.glob("*.tif"))
 bounds = []
 for filename in files:
     with rasterio.open(filename) as src:
-        bounds.append(pg.box(*src.bounds))
+        bounds.append(shapely.box(*src.bounds))
 
-geometry = pg.union_all(bounds)
+geometry = shapely.union_all(bounds)
 write_dataframe(
     gp.GeoDataFrame(geometry=[geometry], crs=DATA_CRS), bnd_dir / "slr_data_bounds.fgb"
 )
@@ -257,20 +257,20 @@ data_extent_df = read_dataframe(
     src_dir / "SLRViewer_DataExtent.shp", columns=[]
 ).to_crs(DATA_CRS)
 data_extent_df["group"] = "data_extent"
-data_extent_df["geometry"] = make_valid(data_extent_df.geometry.values.data)
+data_extent_df["geometry"] = make_valid(data_extent_df.geometry.values)
 
 not_modeled_df = read_dataframe(
     src_dir / "NOAA_SLR_Viewer_NoDataAreas.shp", columns=[]
 ).to_crs(DATA_CRS)
 not_modeled_df["group"] = "not_modeled"
-not_modeled_df["geometry"] = make_valid(not_modeled_df.geometry.values.data)
+not_modeled_df["geometry"] = make_valid(not_modeled_df.geometry.values)
 
 # veil is inland counties where SLR isn't applicable
 not_applicable_df = read_dataframe(src_dir / "SLRViewer_Veil.shp", columns=[]).to_crs(
     DATA_CRS
 )
 not_applicable_df["group"] = "not_applicable"
-not_applicable_df["geometry"] = make_valid(not_applicable_df.geometry.values.data)
+not_applicable_df["geometry"] = make_valid(not_applicable_df.geometry.values)
 
 df = pd.concat([data_extent_df, not_modeled_df, not_applicable_df], ignore_index=True)
 df = dissolve(df.explode(ignore_index=True), by="group")
@@ -279,7 +279,7 @@ df = dissolve(df.explode(ignore_index=True), by="group")
 # rasterize these stacked in the following decreasing precedence: not modeled(12), data extent(11), veil(13)
 analysis_areas = np.zeros(shape=extent_raster.shape, dtype="uint8")
 rasterize(
-    to_dict_all(not_applicable_df.geometry.values.data),
+    to_dict_all(not_applicable_df.geometry.values),
     extent_raster.shape,
     transform=extent_raster.transform,
     dtype="uint8",
@@ -288,7 +288,7 @@ rasterize(
 )
 
 rasterize(
-    to_dict_all(data_extent_df.geometry.values.data),
+    to_dict_all(data_extent_df.geometry.values),
     extent_raster.shape,
     transform=extent_raster.transform,
     dtype="uint8",
@@ -297,7 +297,7 @@ rasterize(
 )
 
 rasterize(
-    to_dict_all(not_modeled_df.geometry.values.data),
+    to_dict_all(not_modeled_df.geometry.values),
     extent_raster.shape,
     transform=extent_raster.transform,
     dtype="uint8",
@@ -356,12 +356,12 @@ create_lowres_mask(
 ### Clip SLR analysis areas to the Blueprint extent
 bnd = gp.read_feather(
     data_dir / "inputs/boundaries/se_boundary.feather"
-).geometry.values.data[0]
-df["geometry"] = pg.intersection(df.geometry.values.data, bnd)
+).geometry.values[0]
+df["geometry"] = shapely.intersection(df.geometry.values, bnd)
 
 write_dataframe(df, tmp_dir / "slr_analysis_areas.fgb")
 
-data_extent = df.loc[df.group == "data_extent"].geometry.values.data[0]
+data_extent = df.loc[df.group == "data_extent"].geometry.values[0]
 
 ### Create 1-degree grid cell dataset from NOAA CSV
 print("Extracting NOAA SLR projections at 1-degree cell level")
@@ -467,15 +467,17 @@ df = (
 )
 
 
-cells = pg.box(*np.array([df.Long - 0.5, df.Lat - 0.5, df.Long + 0.5, df.Lat + 0.5]))
+cells = shapely.box(
+    *np.array([df.Long - 0.5, df.Lat - 0.5, df.Long + 0.5, df.Lat + 0.5])
+)
 
 df = gp.GeoDataFrame(
     df.drop(columns=["Lat", "Long"]), geometry=cells, crs="EPSG:4326"
 ).to_crs(DATA_CRS)
 
 # only keep those that intersect the SLR data extent
-tree = pg.STRtree(df.geometry.values.data)
-ix = np.unique(tree.query_bulk(data_extent, predicate="intersects")[1])
+tree = shapely.STRtree(df.geometry.values)
+ix = np.unique(tree.query(data_extent, predicate="intersects")[1])
 df = df.take(ix).reset_index(drop=True)
 
 

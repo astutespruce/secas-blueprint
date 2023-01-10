@@ -4,7 +4,7 @@ import logging
 import tempfile
 
 from pyogrio import read_dataframe
-import pygeos as pg
+import shapely
 
 from api.errors import DataError
 from api.report.map import render_maps
@@ -54,12 +54,12 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
     path = f"/vsizip/{zip_filename}/{dataset}"
 
     df = read_dataframe(path, layer=layer, columns=[]).to_crs(DATA_CRS)
-    df["geometry"] = pg.make_valid(df.geometry.values.data)
+    df["geometry"] = shapely.make_valid(df.geometry.values)
     df["group"] = 1
     df = dissolve(df.explode(ignore_index=True), by="group")
 
     # estimate area
-    extent_area = pg.area(pg.box(*df.total_bounds)) * M2_ACRES
+    extent_area = shapely.area(shapely.box(*df.total_bounds)) * M2_ACRES
     if extent_area >= CUSTOM_REPORT_MAX_ACRES:
         raise DataError(
             f"The bounding box of your area of interest is too large ({extent_area:,.0f} acres), it must be < {CUSTOM_REPORT_MAX_ACRES:,.0f} acres."
@@ -90,7 +90,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
     geo_df = df.to_crs(GEO_CRS)
     maps, scale, map_errors = await render_maps(
         geo_df.total_bounds,
-        geometry=geo_df.geometry.values.data[0],
+        geometry=geo_df.geometry.values[0],
         input_ids=results["input_ids"],
         indicators=indicators,
         input_areas=len(results["input_ids"]) > 1,

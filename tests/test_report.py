@@ -5,8 +5,8 @@ from base64 import b64decode, b64encode
 from pathlib import Path
 from time import time
 
-import pygeos as pg
 from pyogrio.geopandas import read_dataframe
+import shapely
 
 from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES
 from analysis.lib.geometry import dissolve
@@ -114,11 +114,11 @@ for aoi in aois:
 
     start = time()
     df = read_dataframe(f"examples/{path}.shp", columns=[]).to_crs(DATA_CRS)
-    df["geometry"] = pg.make_valid(df.geometry.values.data)
+    df["geometry"] = shapely.make_valid(df.geometry.values)
     df["group"] = 1
     df = dissolve(df.explode(ignore_index=True), by="group")
 
-    extent_area = pg.area(pg.box(*df.total_bounds)) * M2_ACRES
+    extent_area = shapely.area(shapely.box(*df.total_bounds)) * M2_ACRES
     print(
         f"Area of extent: {extent_area:,.0f} acres",
     )
@@ -154,7 +154,7 @@ for aoi in aois:
         geo_df = df.to_crs(GEO_CRS)
         task = render_maps(
             geo_df.total_bounds,
-            geometry=geo_df.geometry.values.data[0],
+            geometry=geo_df.geometry.values[0],
             indicators=indicators,
             input_ids=results["input_ids"],
             input_areas=len(results["input_ids"]) > 1,

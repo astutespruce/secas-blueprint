@@ -34,7 +34,7 @@ mask, transform, window = get_input_area_mask(ID)
 
 print("Rasterizing...")
 df = pd.DataFrame(df)
-df["geometry"] = df.geometry.values.data
+df["geometry"] = df.geometry.values
 shapes = df.apply(lambda row: (to_dict(row.geometry), row.carrank), axis=1)
 data = rasterize(
     shapes,

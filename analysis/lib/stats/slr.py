@@ -1,10 +1,10 @@
 from pathlib import Path
 
+import geopandas as gp
 import numpy as np
 import pandas as pd
-import pygeos as pg
-import geopandas as gp
 import rasterio
+import shapely
 
 from analysis.constants import (
     M2_ACRES,
@@ -63,7 +63,7 @@ def extract_slr_by_mask_and_geometry(
         rasterized area of shape mask
     outside_se_acres : float
         acres outside SE Blueprint
-    geometry : pygeos geometry
+    geometry : shapely geometry
 
     Returns
     -------
@@ -135,11 +135,11 @@ def extract_slr_by_mask_and_geometry(
     # intersect with 1-degree pixels; there should always be data available if
     # there are SLR depth data
     df = gp.read_feather(proj_filename)
-    tree = pg.STRtree(df.geometry.values.data)
+    tree = shapely.STRtree(df.geometry.values)
     df = df.iloc[tree.query(geometry, predicate="intersects")].copy()
 
     # calculate area-weighted means
-    intersection_area = pg.area(pg.intersection(df.geometry.values.data, geometry))
+    intersection_area = shapely.area(shapely.intersection(df.geometry.values, geometry))
     area_factor = intersection_area / intersection_area.sum()
 
     projections = df[SLR_PROJ_COLUMNS].multiply(area_factor, axis=0).sum().round(2)
@@ -216,21 +216,21 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
     subset = df.loc[ix]
 
     proj = gp.read_feather(proj_filename)
-    tree = pg.STRtree(subset.geometry.values.data)
-    left, right = tree.query_bulk(proj.geometry.values.data, predicate="intersects")
+    tree = shapely.STRtree(subset.geometry.values)
+    left, right = tree.query(proj.geometry.values, predicate="intersects")
 
     # for each unit, calculate the area-weighted mean
     tmp = pd.DataFrame(
         {
-            "geometry": subset.geometry.values.data.take(right),
+            "geometry": subset.geometry.values.take(right),
             "proj": proj.index.values.take(left),
-            "proj_geometry": proj.geometry.values.data.take(left),
+            "proj_geometry": proj.geometry.values.take(left),
         },
         index=subset.index.values.take(right),
     ).join(proj[SLR_PROJ_COLUMNS], on="proj")
 
-    tmp["intersection_area"] = pg.area(
-        pg.intersection(tmp.geometry.values.data, tmp.proj_geometry.values)
+    tmp["intersection_area"] = shapely.area(
+        shapely.intersection(tmp.geometry.values, tmp.proj_geometry.values)
     )
     tmp = tmp.join(
         tmp.groupby(level=0).intersection_area.sum().rename("total_intersection_area")

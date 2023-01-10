@@ -7,7 +7,7 @@ import pandas as pd
 import rasterio
 from rasterio.windows import get_data_window
 import geopandas as gp
-import pygeos as pg
+import shapely
 
 
 from analysis.constants import INDICATORS, CORRIDORS
@@ -149,12 +149,12 @@ for group in groups:
 # everything else will be filled with 0
 print("Calculating overlapping windows")
 bnd_df = gp.read_feather(bnd_filename)
-bnd = bnd_df.loc[bnd_df.id == "base"].geometry.values.data[0]
+bnd = bnd_df.loc[bnd_df.id == "base"].geometry.values[0]
 blueprint = rasterio.open(blueprint_filename)
 windows = np.array([w for _, w in blueprint.block_windows(1)])
 bounds = np.array([blueprint.window_bounds(w) for w in windows]).T
-bounds = pg.box(*bounds)
-tree = pg.STRtree(bounds)
+bounds = shapely.box(*bounds)
+tree = shapely.STRtree(bounds)
 ix = tree.query(bnd, predicate="intersects")
 ix.sort()
 windows = windows[ix]

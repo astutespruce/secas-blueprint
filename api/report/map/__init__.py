@@ -196,7 +196,7 @@ async def render_maps(
     ----------
     bounds : list-like of [xmin, ymin, xmax, ymax]
         bounds of area of interest, will be used to derive map bounds.
-    geometry : pygeos.Geometry, optional (default: None)
+    geometry : shapely.Geometry, optional (default: None)
         If present, will be used to render the area of interest
     summary_unit_id : [type], optional (default: None)
         If present, will be used to identify the selected summary unit

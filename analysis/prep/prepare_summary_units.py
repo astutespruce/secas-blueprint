@@ -6,11 +6,10 @@ from progress.bar import Bar
 import geopandas as gp
 import pandas as pd
 from pyogrio import read_dataframe, write_dataframe
-import pygeos as pg
 import numpy as np
 import rasterio
 from rasterio.features import rasterize
-from rasterio.windows import Window
+import shapely
 
 from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES, SECAS_HUC2
 from analysis.lib.geometry import make_valid, to_dict
@@ -30,7 +29,7 @@ if not analysis_dir.exists():
     os.makedirs(analysis_dir)
 
 bnd_df = gp.read_feather(data_dir / "inputs/boundaries/se_boundary.feather")
-bnd = bnd_df.geometry.values.data[0]
+bnd = bnd_df.geometry.values[0]
 
 input_areas = gp.read_feather(data_dir / "inputs/boundaries/input_areas.feather")
 
@@ -59,26 +58,26 @@ huc12 = merged.reset_index(drop=True)
 
 # select HUC12s within the SE states
 print("Selecting HUC12s in region...")
-tree = pg.STRtree(huc12.geometry.values.data)
+tree = shapely.STRtree(huc12.geometry.values)
 ix = tree.query(bnd, predicate="intersects")
 huc12 = huc12.iloc[ix].copy().reset_index(drop=True)
 
 # make sure data are valid
-huc12["geometry"] = make_valid(huc12.geometry.values.data)
+huc12["geometry"] = make_valid(huc12.geometry.values)
 
 # calculate area
-huc12["acres"] = pg.area(huc12.geometry.values.data) * M2_ACRES
+huc12["acres"] = shapely.area(huc12.geometry.values) * M2_ACRES
 
 # for those that touch the edge of the region, drop any that are not >= 50% in
 # raster input area.
-tree = pg.STRtree(huc12.geometry.values.data)
+tree = shapely.STRtree(huc12.geometry.values)
 ix = tree.query(bnd, predicate="contains")
 
 edge_df = huc12.loc[~huc12.id.isin(huc12.iloc[ix].id)].copy()
 edge_df["overlap"] = (
     100
-    * pg.area(pg.intersection(edge_df.geometry.values.data, bnd))
-    / pg.area(edge_df.geometry.values.data)
+    * shapely.area(shapely.intersection(edge_df.geometry.values, bnd))
+    / shapely.area(edge_df.geometry.values)
 )
 
 drop_ids = edge_df.loc[edge_df.overlap < 50].id
@@ -99,7 +98,7 @@ huc12["value"] = np.arange(1, len(huc12) + 1).astype("uint16")
 # rasterize for summary unit analysis, use full extent
 print("Rasterizing geometries")
 tmp = pd.DataFrame(huc12[["id", "value", "geometry"]].join(huc12.bounds))
-tmp["geometry"] = tmp.geometry.values.data
+tmp["geometry"] = tmp.geometry.values
 
 with rasterio.open(input_area_filename) as src:
     input_areas_data = src.read(1)
@@ -174,14 +173,14 @@ grouped = marine.groupby("id")
 # save as DataFrame instead of GeoDataFrame for easier processing
 marine = pd.DataFrame(
     grouped.geometry.apply(lambda g: g.values.data).apply(
-        lambda g: pg.union_all(g) if len(g) > 1 else g[0]
+        lambda g: shapely.union_all(g) if len(g) > 1 else g[0]
     )
 ).join(grouped.name.first())
 
 # coerce all to MultiPolygons
-ix = pg.get_type_id(marine.geometry.values) == 3
+ix = shapely.get_type_id(marine.geometry.values) == 3
 marine.loc[ix, "geometry"] = marine.loc[ix].geometry.apply(
-    lambda g: pg.multipolygons([g])
+    lambda g: shapely.multipolygons([g])
 )
 
 marine = (
@@ -193,26 +192,26 @@ marine = (
 
 # select out those within the SE boundary
 print("Selecting Marine blocks in region...")
-tree = pg.STRtree(marine.geometry.values.data)
+tree = shapely.STRtree(marine.geometry.values)
 ix = tree.query(bnd, predicate="intersects")
 marine = marine.iloc[ix].copy().reset_index(drop=True)
 
-marine["geometry"] = pg.make_valid(marine.geometry.values.data)
+marine["geometry"] = shapely.make_valid(marine.geometry.values)
 
-marine["acres"] = pg.area(marine.geometry.values.data) * M2_ACRES
+marine["acres"] = shapely.area(marine.geometry.values) * M2_ACRES
 
 # only keep those that are larger than 100 acres (arbitrary); others are slivers
 marine = marine.loc[marine.acres > 100].dropna()
 
 # only keep those that are >= 50% within region
-tree = pg.STRtree(marine.geometry.values.data)
+tree = shapely.STRtree(marine.geometry.values)
 ix = tree.query(bnd, predicate="contains")
 
 edge_df = marine.loc[~marine.id.isin(marine.iloc[ix].id)].copy()
 edge_df["overlap"] = (
     100
-    * pg.area(pg.intersection(edge_df.geometry.values.data, bnd))
-    / pg.area(edge_df.geometry.values.data)
+    * shapely.area(shapely.intersection(edge_df.geometry.values, bnd))
+    / shapely.area(edge_df.geometry.values)
 )
 
 drop_ids = edge_df.loc[edge_df.overlap < 50].id
@@ -226,14 +225,14 @@ marine_wgs84 = marine.to_crs(GEO_CRS)
 marine = marine.join(marine_wgs84.bounds)
 
 # boundary between base blueprint and FL marine is at border of marine blocks
-tree = pg.STRtree(marine.geometry.values.data)
-left, right = tree.query_bulk(input_areas.geometry.values.data, predicate="intersects")
+tree = shapely.STRtree(marine.geometry.values)
+left, right = tree.query(input_areas.geometry.values, predicate="intersects")
 
 tmp = pd.DataFrame(
     {
         "input_id": input_areas.id.values.take(left),
-        "input_area": input_areas.geometry.values.data.take(left),
-        "block": marine.geometry.values.data.take(right),
+        "input_area": input_areas.geometry.values.take(left),
+        "block": marine.geometry.values.take(right),
         "block_id": marine.id.values.take(right),
     }
 )
@@ -243,9 +242,9 @@ ids = count[count > 1].index
 ix = tmp.block_id.isin(ids)
 
 # use centroids to determine which side
-tmp.loc[ix, "center"] = pg.centroid(tmp.loc[ix].block.values)
-pg.prepare(tmp.input_area.values)
-tmp.loc[ix, "contains"] = pg.contains(tmp.loc[ix].input_area, tmp.loc[ix].center)
+tmp.loc[ix, "center"] = shapely.centroid(tmp.loc[ix].block.values)
+shapely.prepare(tmp.input_area.values)
+tmp.loc[ix, "contains"] = shapely.contains(tmp.loc[ix].input_area, tmp.loc[ix].center)
 tmp.contains = tmp.contains.fillna(True)
 
 tmp = tmp.loc[tmp.contains, ["input_id", "block_id"]].set_index("block_id")
@@ -256,7 +255,7 @@ marine["value"] = np.arange(1, len(marine) + 1).astype("uint16")
 # rasterize for summary unit analysis, use full extent
 print("Rasterizing geometries")
 tmp = pd.DataFrame(marine[["id", "value", "geometry"]].join(marine.bounds))
-tmp["geometry"] = tmp.geometry.values.data
+tmp["geometry"] = tmp.geometry.values
 
 with rasterio.open(input_area_filename) as src:
     input_areas_data = src.read(1)

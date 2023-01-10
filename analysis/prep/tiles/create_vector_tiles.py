@@ -2,8 +2,8 @@ from pathlib import Path
 import subprocess
 
 import geopandas as gp
-import pygeos as pg
 from pyogrio import read_dataframe, write_dataframe
+import shapely
 
 from analysis.constants import GEO_CRS
 
@@ -165,8 +165,8 @@ tilesets.append(outfilename)
 
 # Create mask by cutting SA bounds out of world bounds
 # NOTE: mask is only used in report
-world = pg.box(-180, -85, 180, 85)
-mask = pg.normalize(pg.difference(world, bnd_df.geometry.values.data[0]))
+world = shapely.box(-180, -85, 180, 85)
+mask = shapely.normalize(shapely.difference(world, bnd_df.geometry.values[0]))
 
 infilename = tmp_dir / "se_mask.fgb"
 write_dataframe(gp.GeoDataFrame({"geometry": mask}, index=[0], crs=GEO_CRS), infilename)

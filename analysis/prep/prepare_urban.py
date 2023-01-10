@@ -5,10 +5,10 @@ from time import time
 from progress.bar import Bar
 import numpy as np
 import rasterio
-import pygeos as pg
 from rasterio.enums import Resampling
 from rasterio.vrt import WarpedVRT
 from rasterio.windows import Window
+import shapely
 
 from analysis.constants import MASK_RESOLUTION, URBAN_YEARS, DATA_CRS, URBAN_COLORS
 from analysis.lib.colors import interpolate_colormap, hex_to_uint8
@@ -47,7 +47,7 @@ tmp_dir = Path("/tmp")
 out_dir.mkdir(parents=True, exist_ok=True)
 
 bnd_raster = rasterio.open(bnd_dir / "nonmarine_mask.tif")
-bnd = pg.box(*bnd_raster.bounds)
+bnd = shapely.box(*bnd_raster.bounds)
 
 
 # Read NLCD 2019 prepared using analysis/prep/prepare_nlcd.py
@@ -61,7 +61,7 @@ with rasterio.open(nlcd_dir / "landcover_2019.tif") as src:
 ### Find the overlapping window for the SE Blueprint extent
 # NOTE: the urban layers are basically in same projection but use NAD83 instead of WGS84
 with rasterio.open(src_dir / "probability_SSP2_2020.tif") as src:
-    window = src.window(*pg.total_bounds(bnd))
+    window = src.window(*shapely.total_bounds(bnd))
     window_floored = window.round_offsets(op="floor", pixel_precision=3)
     w = math.ceil(window.width + window.col_off - window_floored.col_off)
     h = math.ceil(window.height + window.row_off - window_floored.row_off)

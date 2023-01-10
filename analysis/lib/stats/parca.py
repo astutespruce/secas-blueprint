@@ -3,7 +3,7 @@ from pathlib import Path
 import geopandas as gp
 import numpy as np
 import pandas as pd
-import pygeos as pg
+import shapely
 
 from analysis.constants import (
     M2_ACRES,
@@ -36,11 +36,11 @@ def get_parcas_for_aoi(df):
 
     """
     parca_df = gp.read_feather(parca_filename).set_index("parca_id")
-    tree = pg.STRtree(parca_df.geometry.values.data)
+    tree = shapely.STRtree(parca_df.geometry.values)
 
     ix = np.unique(
         parca_df.index.values.take(
-            tree.query_bulk(df.geometry.values.data, predicate="intersects")[1]
+            tree.query(df.geometry.values, predicate="intersects")[1]
         )
     )
 
@@ -71,8 +71,8 @@ def summarize_parcas_by_units(df, out_dir):
     parca_df = gp.read_feather(parca_filename).set_index("parca_id")
 
     # since PARCAs occur in just one area, use them as the left side of the query
-    tree = pg.STRtree(df.geometry.values.data)
-    right, left = tree.query_bulk(parca_df.geometry.values.data, predicate="intersects")
+    tree = shapely.STRtree(df.geometry.values)
+    right, left = tree.query(parca_df.geometry.values, predicate="intersects")
 
     # PARCA dataset has multiple polygons per PARCA boundary, group them back together
     index_name = df.index.name

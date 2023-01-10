@@ -3,11 +3,11 @@ import warnings
 
 import geopandas as gp
 import pandas as pd
-import pygeos as pg
 from pyogrio.geopandas import read_dataframe, write_dataframe
 import rasterio
 from rasterio.features import rasterize
 from rasterio import windows
+import shapely
 
 from analysis.constants import DATA_CRS, SECAS_STATES, MASK_RESOLUTION, INPUTS
 from analysis.lib.geometry import dissolve, make_valid, to_dict_all, to_dict
@@ -30,7 +30,7 @@ out_dir.mkdir(exist_ok=True, parents=True)
 bnd_df = read_dataframe(src_dir / "blueprint/SE_Blueprint_Extent.shp")[["geometry"]]
 # boundary has multiple geometries, union together and cleanup
 bnd_df = gp.GeoDataFrame(
-    geometry=[pg.union_all(pg.make_valid(bnd_df.geometry.values.data))],
+    geometry=[shapely.union_all(shapely.make_valid(bnd_df.geometry.values))],
     index=[0],
     crs=bnd_df.crs,
 )
@@ -71,7 +71,7 @@ df = read_dataframe(src_dir / "blueprint/InputAreas.shp", columns=["gridcode"]).
     columns={"gridcode": "value"}
 )
 
-df["geometry"] = make_valid(df.geometry.values.data)
+df["geometry"] = make_valid(df.geometry.values)
 df = dissolve(df, by="value")
 
 inputs = {e["value"]: e["id"] for e in INPUTS}
@@ -83,7 +83,7 @@ df.to_feather(out_dir / "input_areas.feather")
 # rasterize to match the blueprint
 # convert to pairs of GeoJSON , value
 df = pd.DataFrame(df[["geometry", "value"]].copy())
-df.geometry = df.geometry.values.data
+df.geometry = df.geometry.values
 shapes = df.apply(lambda row: (to_dict(row.geometry), row.value), axis=1)
 
 print("Rasterizing inputs...")
@@ -145,7 +145,7 @@ with rasterio.open(src_dir / "blueprint/BaseBlueprintExtent2022.tif") as src:
         src_dir / "base_blueprint/BaseBlueprintSubRgn.shp", columns=["SubRgn"]
     )
     df = df.loc[~df.SubRgn.str.contains("Marine")]
-    shapes = to_dict_all(df.geometry.values.data)
+    shapes = to_dict_all(df.geometry.values)
     nonmarine_mask = rasterize(
         shapes, data.shape, transform=transform, dtype="uint8", fill=0, default_value=1
     )
@@ -208,7 +208,7 @@ df = (
     .explode(ignore_index=True)
 )
 
-df["geometry"] = make_valid(df.geometry.values.data)
+df["geometry"] = make_valid(df.geometry.values)
 
 write_dataframe(df, bnd_dir / "parca.fgb")
 df.to_feather(out_dir / "parca.feather")
