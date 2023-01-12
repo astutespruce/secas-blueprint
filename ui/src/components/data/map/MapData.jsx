@@ -44,11 +44,11 @@ export const Provider = ({ children }) => {
   }, [setData])
 
   const setMapMode = useCallback((mode) => {
-    setState(() => ({
+    setState(({ renderLayer: prevRenderLayer }) => ({
       mapMode: mode,
       data: null,
       selectedIndicator: null,
-      renderLayer: null,
+      renderLayer: prevRenderLayer,
     }))
   }, [])
 

@@ -95,6 +95,7 @@ const Map = () => {
 
   const [isLoaded, setIsLoaded] = useState(false)
   const [isRenderLayerVisible, setisRenderLayerVisible] = useState(true)
+  const isRenderLayerVisibleRef = useRef(true) // ref is used in mapMode useEffect
   const [currentZoom, setCurrentZoom] = useState(3)
   const highlightIDRef = useRef(null)
   const locationMarkerRef = useRef(null)
@@ -399,6 +400,8 @@ const Map = () => {
         return
       }
 
+      const isVisible = isRenderLayerVisibleRef.current
+
       // toggle layer visibility
       if (mapMode === 'pixel') {
         // immediately try to retrieve pixel data if in pixel mode
@@ -418,13 +421,19 @@ const Map = () => {
         map.getLayer('pixelLayers').implementation.setProps({
           visible: true,
           filters: null,
+          // have to use opacity to hide so that pixel mode still works when hidden
+          opacity: isVisible ? 0.7 : 0,
           // data prop is used to force deeper reloading of tiles
           data: { visible: true },
         })
       } else {
         map.setLayoutProperty('unit-fill', 'visibility', 'visible')
         map.setLayoutProperty('unit-outline', 'visibility', 'visible')
-        map.setLayoutProperty('blueprint', 'visibility', 'visible')
+        map.setLayoutProperty(
+          'blueprint',
+          'visibility',
+          isVisible ? 'visible' : 'none'
+        )
         map.setLayoutProperty('ownership', 'visibility', 'none')
         map.setLayoutProperty('subregions', 'visibility', 'none')
 
@@ -503,6 +512,7 @@ const Map = () => {
 
     setisRenderLayerVisible((prevVisible) => {
       const newIsVisible = !prevVisible
+      isRenderLayerVisibleRef.current = newIsVisible
       if (mapModeRef.current === 'pixel') {
         map.getLayer('pixelLayers').implementation.setProps({
           // have to toggle opacity not visibility so that pixel-level identify
@@ -662,17 +672,17 @@ const Map = () => {
             <>
               <Legend
                 title={
-                  renderLayer === null
+                  mapMode === 'unit' || renderLayer === null
                     ? 'Blueprint priority'
                     : renderLayer.label
                 }
                 subtitle={
-                  renderLayer === null
+                  mapMode === 'unit' || renderLayer === null
                     ? 'for a connected network of lands and waters'
                     : null
                 }
                 categories={
-                  renderLayer === null
+                  mapMode === 'unit' || renderLayer === null
                     ? blueprintCategories
                     : renderLayer.categories
                 }
