@@ -4,17 +4,18 @@ from pathlib import Path
 import json
 
 import asyncio
-import numpy as np
 from pyogrio.geopandas import read_dataframe
 import shapely
 
-from analysis.constants import BLUEPRINT_COLORS, DATA_CRS, MAP_CRS, GEO_CRS, DATA_CRS
+from analysis.constants import DATA_CRS, GEO_CRS, DATA_CRS
 
-from analysis.lib.geometry import to_crs
+
+from analysis.lib.geometry import dissolve
 from api.report.map import render_maps
-from api.stats import SummaryUnits, CustomArea
+from api.stats.custom_area import get_custom_area_results
+from api.stats.summary_units import get_summary_unit_results
 
-aoi_names = []
+aoi_names = ["OCMU_SRS_StudyArea"]
 # aoi_names = ["caledonia"]
 # aoi_names = ["caledonia"]
 # aoi_names = ["Fort_Mill_townlimits"]
@@ -32,38 +33,33 @@ for aoi_name in aoi_names:
     if not out_dir.exists():
         os.makedirs(out_dir)
 
-    df = read_dataframe(f"examples/{aoi_name}.shp")
-    geometry = shapely.make_valid(df.geometry.values)
-
-    # dissolve
-    geometry = np.asarray([shapely.union_all(geometry)])
+    path = aoi_name
+    df = read_dataframe(f"examples/{path}.shp", columns=[]).to_crs(DATA_CRS)
+    df["geometry"] = shapely.make_valid(df.geometry.values)
+    df["group"] = 1
+    df = dissolve(df.explode(ignore_index=True), by="group")
 
     print("Calculating results...")
-    results = CustomArea(geometry, df.crs, name="Test").get_results()
-    # FIXME:
-    # results = {"indicators": []}
-
-    ### Convert to WGS84 for mapping
-    geometry = to_crs(geometry, df.crs, GEO_CRS)
-    bounds = shapely.total_bounds(geometry)
-
-    has_corridors = "corridors" in results
-    has_urban = "proj_urban" in results and results["proj_urban"][-1] > 0
-    has_slr = "slr" in results
-    has_ownership = "ownership" in results
-    has_protection = "protection" in results
+    results = get_custom_area_results(df)
+    # compile indicator IDs across all inputs
+    indicators = []
+    for input_area in results["inputs"]:
+        for ecosystem in input_area.get("ecosystems", []):
+            indicators.extend([i["id"] for i in ecosystem["indicators"]])
 
     print("Creating maps...")
-
+    geo_df = df.to_crs(GEO_CRS)
     task = render_maps(
-        bounds,
-        geometry=geometry[0],
+        geo_df.total_bounds,
+        geometry=geo_df.geometry.values[0],
+        indicators=indicators,
         input_ids=results["input_ids"],
-        corridors=has_corridors,
-        urban=has_urban,
-        slr=has_slr,
-        ownership=has_ownership,
-        protection=has_protection,
+        input_areas=len(results["input_ids"]) > 1,
+        corridors="corridors" in results,
+        urban="urban" in results,
+        slr="slr" in results,
+        ownership="ownership" in results,
+        protection="protection" in results,
     )
 
     maps, scale, errors = asyncio.run(task)
@@ -83,49 +79,48 @@ for aoi_name in aoi_names:
 ### Write maps for a summary unit
 
 ids = {
-    "huc12": [
-        # "210100050503"  # PR
-        "110702071001"  # at junction of gulf_hypoxia, okchat, midse
-        "031200030902"  # at overlap area between FL, MidSE, and SA
-        # "060200020506"  # in AppLCC area
-        # "030101010301"  # in Nature's Network  / South Atlantic overlap area
-    ],
-    "marine_blocks": ["NI18-07-6210"],
+    # "huc12": [
+    # "210100050503"  # PR
+    # "110702071001"  # at junction of gulf_hypoxia, okchat, midse
+    # "031200030902"  # at overlap area between FL, MidSE, and SA
+    # "060200020506"  # in AppLCC area
+    # "030101010301"  # in Nature's Network  / South Atlantic overlap area
+    # ],
+    # "marine_blocks": ["NI18-07-6210"],
 }
 
 
 for summary_type in ids:
-    units = SummaryUnits(summary_type)
 
     for id in ids[summary_type]:
         print(f"Making maps for {id}...")
 
-        results = units.get_results(id)
+        results = get_summary_unit_results(summary_type, id)
 
-        has_corridors = "corridors" in results
-        has_urban = "proj_urban" in results and results["proj_urban"][1] > 0
-        has_slr = "slr" in results
-        has_ownership = "ownership" in results
-        has_protection = "protection" in results
+        # compile indicator IDs across all inputs
+        indicators = []
+        for input_area in results["inputs"]:
+            for ecosystem in input_area.get("ecosystems", []):
+                indicators.extend([i["id"] for i in ecosystem["indicators"]])
 
         out_dir = Path(f"/tmp/{id}/maps")
         if not out_dir.exists():
             os.makedirs(out_dir)
 
+        print("Rendering maps...")
         task = render_maps(
             results["bounds"],
             summary_unit_id=id,
+            indicators=indicators,
             input_ids=results["input_ids"],
-            corridors=has_corridors,
-            urban=has_urban,
-            slr=has_slr,
-            ownership=has_ownership,
-            protection=has_protection,
+            corridors="corridors" in results,
+            urban="urban" in results,
+            slr="slr" in results,
+            ownership="ownership" in results,
+            protection="protection" in results,
         )
-
         maps, scale, errors = asyncio.run(task)
 
-        print("Rendered maps:", maps.keys())
         if errors:
             print("Errors", errors)
 

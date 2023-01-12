@@ -100,25 +100,13 @@ def get_locator_map_image(longitude, latitude, bounds, geometry=None):
     # and has big enough area then render geometry or a box instead of a point
     # NOTE: some multipart features cover large extent and small area, so these
     # drop out if we do not use area threshold.
-    if xmax - ymax >= 0.5 or ymax - ymin >= 0.5:
+
+    if xmax - xmin >= 0.5 or ymax - ymin >= 0.5:
         if geometry and shapely.area(geometry) > 0.1:
             geometry = to_dict(geometry)
 
         else:
-            geometry = (
-                {
-                    "type": "Polygon",
-                    "coordinates": [
-                        [
-                            [xmin, ymin],
-                            [xmin, ymax],
-                            [xmax, ymax],
-                            [xmax, ymin],
-                            [xmin, ymin],
-                        ]
-                    ],
-                },
-            )
+            geometry = to_dict(shapely.envelope(geometry))
 
         style["sources"]["feature"] = {"type": "geojson", "data": geometry}
 

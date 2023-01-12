@@ -14,10 +14,9 @@ const ContactModal = ({ children }) => (
       staff are here to support you! We really mean it. It is what we do!
       <br />
       <br />
-      Please reach out to the user support contact{' '}
+      Please reach out to{' '}
       <OutboundLink to="http://secassoutheast.org/staff">
-        {' '}
-        for your state
+        Blueprint user support staff
       </OutboundLink>
       .
     </Paragraph>

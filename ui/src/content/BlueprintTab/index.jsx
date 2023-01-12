@@ -206,10 +206,7 @@ const BlueprintTab = ({
         ) : null}
         {outsideSEPercent < 100 ? (
           <PriorityCategories
-            categories={priorityCategories
-              .slice()
-              .reverse()
-              .filter(({ value }) => (type === 'pixel' ? true : value > 0))}
+            categories={priorityCategories.slice().reverse()}
             value={type === 'pixel' ? blueprint : null}
           />
         ) : null}

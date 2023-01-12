@@ -7,7 +7,7 @@ import BoundModal from './BoundModal'
 
 import { siteMetadata } from '../../../gatsby-config'
 
-const { contactEmail, contactPhone, title } = siteMetadata
+const { contactEmail, title } = siteMetadata
 
 const ReportProblemModal = ({ children }) => (
   <BoundModal title="Report a Problem" anchorNode={children}>
@@ -27,9 +27,6 @@ const ReportProblemModal = ({ children }) => (
       >
         {contactEmail}
       </a>
-      <br />
-      <b>call</b>{' '}
-      <a href={`tel:${contactPhone}`}>{formatPhone(contactPhone)}</a>
     </Paragraph>
   </BoundModal>
 )
