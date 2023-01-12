@@ -3,6 +3,7 @@
 import logging
 import tempfile
 
+import numpy as np
 from pyogrio import read_dataframe
 import shapely
 
@@ -54,16 +55,36 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
     path = f"/vsizip/{zip_filename}/{dataset}"
 
     df = read_dataframe(path, layer=layer, columns=[]).to_crs(DATA_CRS)
-    df["geometry"] = shapely.make_valid(df.geometry.values)
-    df["group"] = 1
-    df = dissolve(df.explode(ignore_index=True), by="group")
 
-    # estimate area
+    # estimate area and reject if too big
     extent_area = shapely.area(shapely.box(*df.total_bounds)) * M2_ACRES
     if extent_area >= CUSTOM_REPORT_MAX_ACRES:
         raise DataError(
             f"The bounding box of your area of interest is too large ({extent_area:,.0f} acres), it must be < {CUSTOM_REPORT_MAX_ACRES:,.0f} acres."
         )
+
+    df["geometry"] = shapely.make_valid(df.geometry.values)
+
+    # check for non-polygon results of making valid and strip them out
+    geom_types = np.unique(shapely.get_type_id(df.geometry.values))
+    if set(geom_types) - {3, 6}:
+        df = df.explode(ignore_index=True)
+        df = df.loc[shapely.get_type_id(df.geometry.values) == 3].copy()
+        print("Found non-polygon geometries; stripping them out")
+
+        if len(df) == 0:
+            raise ValueError(
+                "No valid area boundaries available for analysis after making geometries valid.  This means that one or more of your features has an invalid geometry.  Please clean up your data and try again."
+            )
+
+    if len(df) > 1:
+        try:
+            df["group"] = 1
+            df = dissolve(df.explode(ignore_index=True), by="group")
+        except:
+            raise DataError(
+                "Could not dissolve features together for analysis.  Please make sure all features have valid geometries and are of the same type."
+            )
 
     await set_progress(
         ctx["redis"], ctx["job_id"], 10, "Calculating results (this might take a while)"
