@@ -102,11 +102,13 @@ def get_locator_map_image(longitude, latitude, bounds, geometry=None):
     # drop out if we do not use area threshold.
 
     if xmax - xmin >= 0.5 or ymax - ymin >= 0.5:
-        if geometry and shapely.area(geometry) > 0.1:
-            geometry = to_dict(geometry)
-
+        if geometry:
+            if shapely.area(geometry) > 0.1:
+                geometry = to_dict(geometry)
+            else:
+                geometry = to_dict(shapely.envelope(geometry))
         else:
-            geometry = to_dict(shapely.envelope(geometry))
+            geometry = to_dict(shapely.box(xmin, ymin, xmax, ymax))
 
         style["sources"]["feature"] = {"type": "geojson", "data": geometry}
 
