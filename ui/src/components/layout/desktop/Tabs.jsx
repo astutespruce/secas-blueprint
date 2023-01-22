@@ -4,8 +4,13 @@ import { Box } from 'theme-ui'
 
 import { Tabs as BaseTabs } from 'components/tabs'
 
-const tabs = [
+const defaultTabs = [
   { id: 'info', label: 'Info' },
+  { id: 'find', label: 'Find Location' },
+]
+
+const filterTabs = [
+  { id: 'filter', label: 'Pixel filters' },
   { id: 'find', label: 'Find Location' },
 ]
 
@@ -16,20 +21,31 @@ const unitTabs = [
   { id: 'selected-partners', label: 'Partners' },
 ]
 
-const Tabs = ({ tab, hasMapData, onChange }) => (
-  <Box>
-    <BaseTabs
-      tabs={hasMapData ? unitTabs : tabs}
-      activeTab={tab}
-      activeVariant="tabs.active"
-      variant="tabs.default"
-      onChange={onChange}
-    />
-  </Box>
-)
+const Tabs = ({ tab, mapMode, hasMapData, onChange }) => {
+  let tabs = defaultTabs
+
+  if (mapMode === 'filter') {
+    tabs = filterTabs
+  } else if (hasMapData) {
+    tabs = unitTabs
+  }
+
+  return (
+    <Box>
+      <BaseTabs
+        tabs={tabs}
+        activeTab={tab}
+        activeVariant="tabs.active"
+        variant="tabs.default"
+        onChange={onChange}
+      />
+    </Box>
+  )
+}
 
 Tabs.propTypes = {
   tab: PropTypes.string.isRequired,
+  mapMode: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   hasMapData: PropTypes.bool,
 }

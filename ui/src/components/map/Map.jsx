@@ -266,7 +266,7 @@ const Map = () => {
         // }
 
         // For testing pixel mode if map is created that way
-        if (mapMode === 'pixel') {
+        if (mapMode === 'pixel' || mapMode === 'filter') {
           map.setLayoutProperty('unit-fill', 'visibility', 'none')
           map.setLayoutProperty('unit-outline', 'visibility', 'none')
           map.setLayoutProperty('blueprint', 'visibility', 'none')
@@ -403,10 +403,28 @@ const Map = () => {
       const isVisible = isRenderLayerVisibleRef.current
 
       // toggle layer visibility
-      if (mapMode === 'pixel') {
-        // immediately try to retrieve pixel data if in pixel mode
-        if (map.getZoom() >= minPixelLayerZoom) {
-          map.once('idle', getPixelData)
+      if (mapMode === 'unit') {
+        map.setLayoutProperty('unit-fill', 'visibility', 'visible')
+        map.setLayoutProperty('unit-outline', 'visibility', 'visible')
+        map.setLayoutProperty(
+          'blueprint',
+          'visibility',
+          isVisible ? 'visible' : 'none'
+        )
+        map.setLayoutProperty('ownership', 'visibility', 'none')
+        map.setLayoutProperty('subregions', 'visibility', 'none')
+
+        map.getLayer('pixelLayers').implementation.setProps({
+          visible: false,
+          filters: null,
+          data: { visible: false },
+        })
+      } else {
+        if (mapMode === 'pixel') {
+          // immediately try to retrieve pixel data if in pixel mode
+          if (map.getZoom() >= minPixelLayerZoom) {
+            map.once('idle', getPixelData)
+          }
         }
 
         map.setLayoutProperty('unit-fill', 'visibility', 'none')
@@ -426,24 +444,6 @@ const Map = () => {
           // data prop is used to force deeper reloading of tiles
           data: { visible: true },
         })
-      } else {
-        map.setLayoutProperty('unit-fill', 'visibility', 'visible')
-        map.setLayoutProperty('unit-outline', 'visibility', 'visible')
-        map.setLayoutProperty(
-          'blueprint',
-          'visibility',
-          isVisible ? 'visible' : 'none'
-        )
-        map.setLayoutProperty('ownership', 'visibility', 'none')
-        map.setLayoutProperty('subregions', 'visibility', 'none')
-
-        map.getLayer('pixelLayers').implementation.setProps({
-          visible: false,
-          filters: null,
-          data: { visible: false },
-        })
-
-        // TODO: set filtersRef to null
       }
     },
 
@@ -689,7 +689,7 @@ const Map = () => {
                 isVisible={isRenderLayerVisible}
                 onToggleVisibility={handleToggleRenderLayerVisible}
               />
-              {mapMode === 'pixel' && !hidePixelLayerToggle ? (
+              {mapMode !== 'unit' && !hidePixelLayerToggle ? (
                 <LayerToggle />
               ) : null}
             </>

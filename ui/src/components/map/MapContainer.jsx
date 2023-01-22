@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useLayoutEffect,
 } from 'react'
-import { Box, Flex, useThemeUI } from 'theme-ui'
+import { Box, Flex } from 'theme-ui'
 
 import { useBreakpoints } from 'components/layout'
 import { useMapData } from 'components/data'
@@ -13,12 +13,27 @@ import { Tabs as MobileTabs } from 'components/layout/mobile'
 import { SidebarHeader, Tabs as DesktopTabs } from 'components/layout/desktop'
 
 import { useSearch } from 'components/search'
-import { hasWindow } from 'util/dom'
 
 import Map from './Map'
 import TabContent from './TabContent'
 
+const sidebarCSS = {
+  height: '100%',
+  bg: '#FFF',
+  flexGrow: 1,
+  flexShrink: 0,
+  flexBasis: ['100%', '320px', '468px', '600px'],
+  maxWidth: ['100%', '320px', '468px', '600px'],
+  flexDirection: 'column',
+  overflowX: 'hidden',
+  overflowY: 'hidden',
+  borderRightColor: 'grey.3',
+  borderRightWidth: ['0px', '1px'],
+  borderRightStyle: 'solid',
+}
+
 const mobileSidebarCSS = {
+  ...sidebarCSS,
   position: 'absolute',
   zIndex: 10000,
   left: 0,
@@ -28,10 +43,6 @@ const mobileSidebarCSS = {
 }
 
 const MapContainer = () => {
-  const {
-    theme: { layout },
-  } = useThemeUI()
-
   const breakpoint = useBreakpoints()
   const isMobile = breakpoint === 0
 
@@ -51,6 +62,7 @@ const MapContainer = () => {
   // without those changing as tab is changed
   const tabRef = useRef(isMobile ? 'map' : 'info')
   const hasMapDataRef = useRef(false)
+  const mapModeRef = useRef(mapMode)
 
   const [{ tab }, setState] = useState({
     tab: isMobile ? 'map' : 'info',
@@ -73,21 +85,36 @@ const MapContainer = () => {
   }, [mapData])
 
   useLayoutEffect(() => {
-    // If selected unit changed from null to unit, or unit to null,
-    // we need to update the tabs.
-
-    // if no change in selected unit status, return
-    if (hasMapDataRef.current === (mapData !== null)) {
-      return
-    }
-
     let nextTab = tab
-    if (mapData === null) {
-      nextTab = tab === 'mobile-selected-map' || isMobile ? 'map' : 'info'
-    } else if (tab === 'map') {
-      nextTab = 'mobile-selected-map'
-    } else if (!tab.startsWith('selected-')) {
-      nextTab = 'selected-priorities'
+
+    if (mapMode !== mapModeRef.current) {
+      mapModeRef.current = mapMode
+
+      // if compatible mapMode, keep showing find
+      if (tab === 'find' && (mapMode === 'filter' || mapMode === 'unit')) {
+        return
+      }
+
+      if (mapMode === 'filter') {
+        nextTab = 'filter'
+      } else {
+        nextTab = 'info'
+        // if in pixel mode, map needs to load pixel data before showing
+        // data in sidebar; default to info tab
+      }
+    } else {
+      // if no change in available data, return
+      if (hasMapDataRef.current === (mapData !== null)) {
+        return
+      }
+
+      if (mapData === null) {
+        nextTab = tab === 'mobile-selected-map' || isMobile ? 'map' : 'info'
+      } else if (tab === 'map') {
+        nextTab = 'mobile-selected-map'
+      } else if (!tab.startsWith('selected-')) {
+        nextTab = 'selected-priorities'
+      }
     }
 
     if (nextTab !== tab) {
@@ -96,7 +123,7 @@ const MapContainer = () => {
       // scroll content to top
       contentNode.current.scrollTop = 0
     }
-  }, [mapData, tab, isMobile, handleTabChange])
+  }, [mapMode, mapData, tab, isMobile, handleTabChange])
 
   useEffect(() => {
     // handle window resize from mobile to desktop, so that we show content again
@@ -116,11 +143,66 @@ const MapContainer = () => {
     }
   }, [isMobile, location, handleTabChange])
 
-  const sidebarCSS = isMobile ? mobileSidebarCSS : {}
+  if (isMobile) {
+    return (
+      <Flex
+        sx={{
+          height: '100%',
+          flex: '1 1 auto',
+          flexDirection: 'column',
+        }}
+      >
+        <Flex
+          sx={{
+            height: '100%',
+            flex: '1 1 auto',
+            overflowY: 'hidden',
+            position: 'relative',
+          }}
+        >
+          <Flex
+            sx={{
+              display:
+                tab === 'mobile-selected-map' ? 'none !important' : 'flex',
+              ...mobileSidebarCSS,
+            }}
+          >
+            <Box
+              ref={contentNode}
+              sx={{
+                height: '100%',
+                overflowY: 'auto',
+              }}
+            >
+              <TabContent
+                tab={tab}
+                mapData={mapData}
+                isLoading={isDataLoading}
+              />
+            </Box>
+          </Flex>
 
-  // Force exit here when building gatsby, otherwise
-  // the wrong layout gets built
-  if (!hasWindow) return null
+          <Map />
+        </Flex>
+
+        <Box
+          sx={{
+            flex: '0 0 auto',
+            borderTop: '1px solid',
+            borderTopColor: 'grey.9',
+          }}
+        >
+          <MobileTabs
+            tab={tab}
+            mode={mapMode}
+            hasMapData={mapData !== null && !isDataLoading}
+            isLoading={isDataLoading}
+            onChange={handleTabChange}
+          />
+        </Box>
+      </Flex>
+    )
+  }
 
   return (
     <Flex
@@ -140,40 +222,22 @@ const MapContainer = () => {
       >
         <Flex
           sx={{
-            display:
-              tab === 'map' || tab === 'mobile-selected-map'
-                ? 'none !important'
-                : 'flex',
-
-            height: '100%',
-            bg: '#FFF',
-            flexGrow: 1,
-            flexShrink: 0,
-            flexBasis: layout.sidebar.width,
-            maxWidth: layout.sidebar.width,
-            flexDirection: 'column',
-            overflowX: 'hidden',
-            overflowY: 'hidden',
-            borderRightColor: layout.sidebar.borderRightColor,
-            borderRightWidth: layout.sidebar.borderRightWidth,
-            borderRightStyle: 'solid',
+            display: tab === 'map' ? 'none !important' : 'flex',
             ...sidebarCSS,
           }}
         >
-          {!isMobile && (
-            <Box sx={{ flex: '0 0 auto' }}>
-              {mapData !== null && (
-                <SidebarHeader {...mapData} onClose={unsetMapData} />
-              )}
+          <Box sx={{ flex: '0 0 auto' }}>
+            {mapData !== null && (
+              <SidebarHeader {...mapData} onClose={unsetMapData} />
+            )}
 
-              <DesktopTabs
-                tab={tab}
-                hasMapData={mapData !== null}
-                mode={mapMode}
-                onChange={handleTabChange}
-              />
-            </Box>
-          )}
+            <DesktopTabs
+              tab={tab}
+              mapMode={mapMode}
+              hasMapData={mapData !== null}
+              onChange={handleTabChange}
+            />
+          </Box>
 
           <Box
             ref={contentNode}
@@ -188,25 +252,6 @@ const MapContainer = () => {
 
         <Map />
       </Flex>
-
-      {/* Mobile footer tabs */}
-      {isMobile && (
-        <Box
-          sx={{
-            flex: '0 0 auto',
-            borderTop: '1px solid',
-            borderTopColor: 'grey.9',
-          }}
-        >
-          <MobileTabs
-            tab={tab}
-            mode={mapMode}
-            hasMapData={mapData !== null && !isDataLoading}
-            isLoading={isDataLoading}
-            onChange={handleTabChange}
-          />
-        </Box>
-      )}
     </Flex>
   )
 }

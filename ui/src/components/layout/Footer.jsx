@@ -61,7 +61,7 @@ const Footer = () => {
         }}
       />
 
-      <Box sx={{ mr: '0.5em' }}>
+      <Box sx={{ mx: '0.5em', flex: '0 0 auto' }}>
         <OutboundLink to="http://secassoutheast.org/blueprint" tabIndex="0">
           <Flex sx={{ alignItems: 'center', px: '0.5em' }}>
             <ExternalLinkAlt size="1em" style={{ marginRight: '0.5em' }} />
@@ -70,9 +70,11 @@ const Footer = () => {
         </OutboundLink>
       </Box>
 
-      <Box sx={{ borderLeft: '1px solid #FFF', height: '1em' }} />
+      <Box
+        sx={{ flex: '0 0 auto', borderLeft: '1px solid #FFF', height: '1em' }}
+      />
 
-      <Box>
+      <Box sx={{ mx: '0.5em', flex: '0 0 auto' }}>
         <ContactModal tabIndex="0">
           <Flex sx={{ alignItems: 'center', px: '0.5em' }}>
             <Envelope size="1em" style={{ marginRight: '0.5em' }} />
@@ -84,12 +86,19 @@ const Footer = () => {
       <Box
         sx={{
           display: ['none', 'none', 'unset'],
+          flex: '0 0 auto',
           borderLeft: '1px solid #FFF',
           height: '1em',
         }}
       />
 
-      <Box sx={{ display: ['none', 'none', 'unset'] }}>
+      <Box
+        sx={{
+          mx: '0.5em',
+          display: ['none', 'none', 'unset'],
+          flex: '0 0 auto',
+        }}
+      >
         <ReportProblemModal>
           <Flex sx={{ alignItems: 'center', px: '0.5em' }}>
             <ExclamationCircle size="1em" style={{ marginRight: '0.5em' }} />
@@ -101,12 +110,15 @@ const Footer = () => {
       <Box
         sx={{
           display: ['none', 'none', 'none', 'unset'],
+          flex: '0 0 auto',
           borderLeft: '1px solid #FFF',
           height: '1em',
         }}
       />
 
-      <Box sx={{ display: ['none', 'none', 'none', 'unset'] }}>
+      <Box
+        sx={{ display: ['none', 'none', 'none', 'unset'], flex: '0 0 auto' }}
+      >
         <FeedbackModal>
           <Flex sx={{ alignItems: 'center', px: '0.5em' }}>
             <Comments size="1em" style={{ marginRight: '0.5em' }} />
@@ -117,6 +129,7 @@ const Footer = () => {
 
       <Box
         sx={{
+          flex: '0 0 auto',
           borderLeft: '1px solid #FFF',
           height: '1em',
           display: ['none', 'none', 'block'],
@@ -125,15 +138,14 @@ const Footer = () => {
 
       <Text
         sx={{
-          fontSize: ['8px', '8px', '10px', 0],
+          flex: '1 1 auto',
+          fontSize: 0,
           textAlign: 'right',
           ml: '0.5em',
           display: ['none', 'none', 'block'],
         }}
       >
-        Created by U.S. Fish and Wildlife Service
-        <br />
-        and{' '}
+        Created by U.S. Fish and Wildlife Service and{' '}
         <OutboundLink to="https://astutespruce.com">Astute Spruce</OutboundLink>
       </Text>
     </Flex>

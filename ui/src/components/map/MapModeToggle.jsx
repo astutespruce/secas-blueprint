@@ -37,6 +37,10 @@ const desktopCSS = {
 const MapModeToggle = ({ belowMinZoom, isMobile }) => {
   const { data: mapData, mapMode, setMapMode } = useMapData()
 
+  const handleFilterClick = useCallback(() => {
+    setMapMode('filter')
+  }, [setMapMode])
+
   const handlePixelClick = useCallback(() => {
     setMapMode('pixel')
   }, [setMapMode])
@@ -64,13 +68,7 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
           }}
         >
           <Text sx={{ mr: '0.5rem' }}>Show:</Text>
-          <Button
-            variant="group"
-            data-state={mapMode === 'pixel' ? 'active' : null}
-            onClick={handlePixelClick}
-          >
-            Pixel data
-          </Button>
+
           <Button
             variant="group"
             data-state={mapMode === 'unit' ? 'active' : null}
@@ -78,9 +76,28 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
           >
             Summary data
           </Button>
+
+          <Button
+            variant="group"
+            data-state={mapMode === 'pixel' ? 'active' : null}
+            onClick={handlePixelClick}
+          >
+            Pixel data
+          </Button>
+
+          {/* Filter mode is not available for mobile */}
+          {!isMobile ? (
+            <Button
+              variant="group"
+              data-state={mapMode === 'filter' ? 'active' : null}
+              onClick={handleFilterClick}
+            >
+              Pixel filters
+            </Button>
+          ) : null}
         </Flex>
 
-        {belowMinZoom ? (
+        {(mapMode === 'unit' || mapMode === 'pixel') && belowMinZoom ? (
           <Flex
             sx={{
               alignItems: 'center',
@@ -107,7 +124,9 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
                 Pan the map behind the crosshairs <br /> to show details in
                 sidebar
               </Text>
-            ) : (
+            ) : null}
+
+            {mapMode === 'unit' ? (
               <Text
                 sx={{
                   fontSize: 0,
@@ -119,7 +138,7 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
                 Select a subwatershed or marine <br />
                 lease block to show details in sidebar
               </Text>
-            )}
+            ) : null}
           </>
         )}
       </Flex>

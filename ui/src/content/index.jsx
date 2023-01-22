@@ -1,5 +1,5 @@
 import InfoTab from './InfoTab'
-import ContactTab from './ContactTab'
+import FiltersTab from './FiltersTab'
 import FindLocationTab from './FindLocationTab'
 import BlueprintTab from './BlueprintTab'
 import IndicatorsTab from './IndicatorsTab'
@@ -8,7 +8,7 @@ import PartnersTab from './PartnersTab'
 
 export {
   InfoTab,
-  ContactTab,
+  FiltersTab,
   FindLocationTab,
   BlueprintTab,
   IndicatorsTab,

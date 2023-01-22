@@ -51,11 +51,6 @@ module.exports = {
     container: {
       maxWidth: '960px',
     },
-    sidebar: {
-      width: ['100%', '320px', '468px', '600px'],
-      borderRightWidth: ['0px', '1px'],
-      borderRightColor: 'grey.3',
-    },
   },
   text: {
     default: {
@@ -116,6 +111,7 @@ module.exports = {
       color: 'text',
       fontFamily: 'body',
       userSelect: 'none',
+      borderRadius: '0 0 0 0',
       '&[data-state="active"]': {
         color: '#FFF',
         bg: 'primary',
@@ -129,8 +125,10 @@ module.exports = {
         borderRadius: '0.5em 0 0 0.5em',
       },
       '&:not(:first-of-type)': {
-        borderRadius: '0 0.5em 0.5em 0',
         borderLeft: '1px solid #FFF',
+      },
+      '&:last-of-type': {
+        borderRadius: '0 0.5em 0.5em 0',
       },
     },
     close: {
