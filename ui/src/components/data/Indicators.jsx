@@ -32,6 +32,7 @@ export const useIndicators = () => {
                 label
                 color
               }
+              presenceLabel
               subregions
             }
           }

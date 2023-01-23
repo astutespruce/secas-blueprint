@@ -7,15 +7,36 @@ import React, {
 } from 'react'
 import PropTypes from 'prop-types'
 
+import { useIndicators } from 'components/data/Indicators'
+
 const Context = createContext()
 
 export const Provider = ({ children }) => {
-  const [{ mapMode, data, selectedIndicator, renderLayer }, setState] =
+  const {
+    indicators: {
+      // base is only input with indicators
+      base: { indicators },
+    },
+  } = useIndicators()
+
+  const [{ mapMode, data, selectedIndicator, renderLayer, filters }, setState] =
     useState({
       mapMode: 'unit', // filter, pixel, or unit
       data: null,
       selectedIndicator: null,
       renderLayer: null,
+      filters: indicators.reduce(
+        (prev, { id, values }) => ({
+          ...prev,
+          [id]: {
+            enabled: false,
+            // set to full range by default, so there is no change when filter
+            // is first enabled
+            range: [values[0].value, values[values.length - 1].value],
+          },
+        }),
+        {}
+      ),
     })
 
   const setData = useCallback(
@@ -44,11 +65,11 @@ export const Provider = ({ children }) => {
   }, [setData])
 
   const setMapMode = useCallback((mode) => {
-    setState(({ renderLayer: prevRenderLayer }) => ({
+    setState((prevState) => ({
+      ...prevState,
       mapMode: mode,
       data: null,
       selectedIndicator: null,
-      renderLayer: prevRenderLayer,
     }))
   }, [])
 
@@ -69,6 +90,19 @@ export const Provider = ({ children }) => {
     }))
   }, [])
 
+  const setFilters = useCallback(({ id, enabled, range }) => {
+    setState(({ filters: prevFilters, ...prevState }) => ({
+      ...prevState,
+      filters: {
+        ...prevFilters,
+        [id]: {
+          enabled,
+          range,
+        },
+      },
+    }))
+  }, [])
+
   const providerValue = useMemo(
     () => ({
       data,
@@ -80,10 +114,12 @@ export const Provider = ({ children }) => {
       setSelectedIndicator,
       renderLayer,
       setRenderLayer,
+      filters,
+      setFilters,
     }),
     // other deps do not change
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
-    [data, mapMode, selectedIndicator, renderLayer]
+    [data, mapMode, selectedIndicator, renderLayer, filters]
   )
 
   return <Context.Provider value={providerValue}>{children}</Context.Provider>

@@ -12,6 +12,7 @@ import vertexShader from 'raw-loader!./vertex.vs'
 /* eslint-disable-next-line */
 import fragmentShader from 'raw-loader!./fragment.fs'
 
+import { getFilterExpr, getFilterRanges } from './filters'
 import StackedPNGLayer from './StackedPNGLayer'
 
 /**
@@ -43,36 +44,6 @@ const fetchImage = async (gl, url) => {
 }
 
 /**
- * Construct uniform of vec2 values of [minVal, maxVal] for each indicator.
- * maxVal is set to -1 to ignore this indicator when filtering.
- * @param {Array} encodingSchemes - array of encoding config
- * @param {Object} filterRanges - key:[minVal, maxVal] for filters
- */
-const getFilterRanges = (encodingSchemes, filterRanges) => {
-  const ranges = []
-
-  encodingSchemes.forEach((layers) => {
-    layers.forEach(({ id, valueShift }) => {
-      let range = filterRanges[id]
-      if (range) {
-        if (range.length) {
-          if (valueShift) {
-            range = [range[0] + 1, range[1] + 1]
-          }
-        } else {
-          // filter based on ABSENCE (nodata)
-          range = [0, 0]
-        }
-      } else {
-        range = [-1, -1]
-      }
-      ranges.push(...range)
-    })
-  })
-  return ranges
-}
-
-/**
  * StackedPNGTileLayer provides a tile-loading interface that wraps
  * StackedPNGLayer instances (one per tile).
  */
@@ -89,10 +60,12 @@ export default class StackedPNGTileLayer extends TileLayer {
       isLoaded: false,
       shaders: {
         vs: vertexShader,
-        fs: fragmentShader.replace(
-          '<NUM_INDICATORS>',
-          sum(encodingSchemes.map((e) => e.length)).toString()
-        ),
+        fs: fragmentShader
+          .replace(
+            '<NUM_INDICATORS>',
+            sum(encodingSchemes.map((e) => e.length)).toString()
+          )
+          .replace('// <FILTER_EXPR>', getFilterExpr(encodingSchemes)),
       },
     })
   }

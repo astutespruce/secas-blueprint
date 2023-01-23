@@ -111,35 +111,35 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
             </Text>
           </Flex>
         ) : (
-          <>
-            {mapMode === 'pixel' ? (
-              <Text
-                sx={{
-                  fontSize: 0,
-                  textAlign: 'left',
-                  ml: '0.5rem',
-                  lineHeight: 1,
-                }}
-              >
-                Pan the map behind the crosshairs <br /> to show details in
-                sidebar
-              </Text>
-            ) : null}
-
+          <Text
+            sx={{
+              fontSize: 0,
+              textAlign: 'left',
+              ml: '0.5rem',
+              lineHeight: 1,
+            }}
+          >
             {mapMode === 'unit' ? (
-              <Text
-                sx={{
-                  fontSize: 0,
-                  textAlign: 'left',
-                  ml: '0.5rem',
-                  lineHeight: 1,
-                }}
-              >
+              <>
                 Select a subwatershed or marine <br />
                 lease block to show details in sidebar
-              </Text>
+              </>
             ) : null}
-          </>
+
+            {mapMode === 'pixel' ? (
+              <>
+                Pan the map behind the crosshairs <br /> to show details in
+                sidebar
+              </>
+            ) : null}
+
+            {mapMode === 'filter' ? (
+              <>
+                Select one or more indicators to filter <br /> and adjust the
+                range to update the map
+              </>
+            ) : null}
+          </Text>
         )}
       </Flex>
     </Box>
