@@ -1,7 +1,8 @@
-import React, { useMemo, useCallback, useRef } from 'react'
+import React, { useCallback, useRef } from 'react'
 import PropTypes from 'prop-types'
-import { Box, Checkbox, Label, Text } from 'theme-ui'
+import { Box, Checkbox, Flex, Label, Text } from 'theme-ui'
 
+import { InfoTooltip } from 'components/tooltip'
 import { indexBy } from 'util/data'
 
 import RangeSlider from './RangeSlider'
@@ -9,7 +10,7 @@ import RangeSlider from './RangeSlider'
 const IndicatorFilter = ({
   id,
   label,
-  // description, // TODO: tooltip
+  description, // TODO: tooltip
   values,
   presenceLabel,
   enabled,
@@ -19,8 +20,36 @@ const IndicatorFilter = ({
 }) => {
   const checkboxRef = useRef(null)
 
-  const valueIndex = useMemo(() => indexBy(values, 'value'), [values])
   const hasRange = values[values.length - 1].value > values[0].value
+  const valueIndex = indexBy(values, 'value')
+
+  const tooltipContent = (
+    <Box sx={{ fontSize: 0 }}>
+      <Text sx={{ mb: 0, fontSize: 1, fontWeight: 'bold' }}>{label}</Text>
+      <Text sx={{ mb: '0.5rem' }}>{description}</Text>
+      <b>Values:</b>
+      <br />
+      {hasRange ? (
+        <Box
+          as="ul"
+          sx={{
+            m: 0,
+            lineHeight: 1.2,
+            fontSize: 0,
+            '& li+li': {
+              mt: '0.25em',
+            },
+          }}
+        >
+          {values.map(({ value, label: valueLabel }) => (
+            <li key={value}>{valueLabel}</li>
+          ))}
+        </Box>
+      ) : (
+        `${presenceLabel} (presence-only indicator)`
+      )}
+    </Box>
+  )
 
   // retain existing range when toggling enabled
   const toggleEnabled = useCallback(() => {
@@ -42,7 +71,8 @@ const IndicatorFilter = ({
   return (
     <Box
       sx={{
-        px: '1rem',
+        pl: '1rem',
+        pr: '0.5rem',
         py: '0.25rem',
         '&:not(:first-of-type)': {
           borderTop: '2px solid',
@@ -51,28 +81,53 @@ const IndicatorFilter = ({
       }}
     >
       <Box>
-        <Label
-          sx={{
-            fontSize: 1,
-            fontWeight: enabled ? 'bold' : 'normal',
-            lineHeight: 1.5,
-          }}
-        >
-          <Checkbox
-            ref={checkboxRef}
-            readOnly={false}
-            checked={enabled}
-            onChange={toggleEnabled}
+        <Flex sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <Label
             sx={{
-              cursor: 'pointer',
-              mr: '0.25em',
-              width: '1.5em',
-              height: '1.5em',
+              flex: '1 1 auto',
+              fontSize: 1,
+              fontWeight: enabled ? 'bold' : 'normal',
+              lineHeight: 1.5,
             }}
-          />
+          >
+            <Checkbox
+              ref={checkboxRef}
+              readOnly={false}
+              checked={enabled}
+              onChange={toggleEnabled}
+              sx={{
+                cursor: 'pointer',
+                mr: '0.25em',
+                width: '1.5em',
+                height: '1.5em',
+              }}
+            />
 
-          {label}
-        </Label>
+            {label}
+          </Label>
+
+          <InfoTooltip content={tooltipContent} direction="right">
+            <Flex
+              sx={{
+                flex: '0 0 auto',
+                ml: '0.5em',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '1.5em',
+                width: '1.5em',
+                borderRadius: '2em',
+                border: '1px solid',
+                borderColor: 'grey.3',
+                '&:hover': {
+                  bg: 'grey.1',
+                  borderColor: 'grey.4',
+                },
+              }}
+            >
+              i
+            </Flex>
+          </InfoTooltip>
+        </Flex>
 
         {enabled ? (
           <Box sx={{ ml: '1.75rem', mr: '1rem' }}>
@@ -108,7 +163,7 @@ const IndicatorFilter = ({
 IndicatorFilter.propTypes = {
   id: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
-  // description: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
   values: PropTypes.arrayOf(
     PropTypes.shape({
       value: PropTypes.number.isRequired,
