@@ -156,7 +156,7 @@ const InfoTooltip = ({ content, direction, maxWidth }) => {
 }
 
 InfoTooltip.propTypes = {
-  content: PropTypes.string.isRequired,
+  content: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
   direction: PropTypes.string,
   maxWidth: PropTypes.string,
 }

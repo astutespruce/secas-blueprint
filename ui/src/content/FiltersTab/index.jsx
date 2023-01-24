@@ -33,9 +33,6 @@ const FiltersTab = () => {
     []
   )
 
-  // console.log('ecosystems', ecosystems, filters)
-  console.log('rerender filters tab', filters)
-
   return (
     // TODO: header help text?
     <Flex
