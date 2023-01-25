@@ -1,11 +1,21 @@
-import React, { useState, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { Flex } from 'theme-ui'
 
-import { useIndicators, useMapData } from 'components/data'
+import {
+  useBlueprintPriorities,
+  useCorridors,
+  useIndicators,
+  useMapData,
+  useSLR,
+  useUrban,
+} from 'components/data'
 import { indexBy } from 'util/data'
-import Ecosystem from './Ecosystem'
+import FilterGroup from './FilterGroup'
 
 const FiltersTab = () => {
+  const { all: blueprint } = useBlueprintPriorities()
+  const corridors = useCorridors()
+
   const {
     ecosystems: rawEcosystems,
     indicators: {
@@ -14,18 +24,70 @@ const FiltersTab = () => {
     },
   } = useIndicators()
 
+  const { depth, nodata: slrNodata } = useSLR()
+  const urban = useUrban()
+
   const { filters, setFilters } = useMapData()
 
   // nest indicators under ecosystems
-  const ecosystems = useMemo(
+  const { priorities, threats, ecosystems } = useMemo(
     () => {
       const indicators = indexBy(rawIndicators, 'id')
-      return rawEcosystems.map(
-        ({ indicators: ecosystemIndicators, ...ecosystem }) => ({
-          ...ecosystem,
-          indicators: ecosystemIndicators.map((id) => indicators[id]),
-        })
-      )
+
+      return {
+        priorities: [
+          {
+            id: 'blueprint',
+            label: 'Blueprint priority',
+            values: blueprint
+              .slice()
+              .reverse()
+              .map(({ label, description, ...rest }) => ({
+                ...rest,
+                label: `${label}: ${description
+                  .slice(0, 1)
+                  .toLowerCase()}${description.slice(1)}`,
+              })),
+          },
+          {
+            id: 'corridors',
+            label: 'Hubs and corridors',
+            values: corridors,
+            description:
+              'The Blueprint uses a least-cost path connectivity analysis to identify corridors that link hubs across the shortest distance possible, while also routing through as much Blueprint priority as possible.',
+          },
+        ],
+        threats: [
+          {
+            id: 'urban',
+            label: 'Probability of urbanization by 2060',
+            values: urban
+              .slice()
+              // values are not in order and need to be sorted in ascending order
+              .sort(({ value: a }, { value: b }) => (a > b ? 1 : -1)),
+            description:
+              'Past and current (2019) urban levels based on developed land cover classes from the National Land Cover Database. Future urban growth estimates derived from the FUTURES model. Data provided by the Center for Geospatial Analytics, NC State University.',
+          },
+          {
+            id: 'slr',
+            label: 'Flooding extent by projected sea-level rise',
+            values: depth
+              .map(({ label, ...rest }) => ({
+                ...rest,
+                label: `${label} feet`,
+              }))
+              .concat(slrNodata),
+            description:
+              'Sea level rise estimates derived from the NOAA sea-level rise inundation data',
+          },
+        ],
+        ecosystems: rawEcosystems.map(
+          ({ indicators: ecosystemIndicators, ...ecosystem }) => ({
+            ...ecosystem,
+            indicators: ecosystemIndicators.map((id) => indicators[id]),
+          })
+        ),
+      }
     },
 
     // intentionally omitting dependencies; nothing changes after mount
@@ -44,10 +106,29 @@ const FiltersTab = () => {
         position: 'relative', // prevents layout scroll issue on page
       }}
     >
+      <FilterGroup
+        id="priorities"
+        label="Priorities"
+        color="#FFF"
+        borderColor="#FFF"
+        entries={priorities}
+        filters={filters}
+        onChange={setFilters}
+      />
+      <FilterGroup
+        id="threats"
+        label="Threats"
+        color="#ffffe9"
+        borderColor="#fffcc2"
+        entries={threats}
+        filters={filters}
+        onChange={setFilters}
+      />
       {ecosystems.map((ecosystem) => (
-        <Ecosystem
+        <FilterGroup
           key={ecosystem.id}
           {...ecosystem}
+          entries={ecosystem.indicators}
           filters={filters}
           onChange={setFilters}
         />

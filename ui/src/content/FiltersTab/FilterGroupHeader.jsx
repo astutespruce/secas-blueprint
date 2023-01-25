@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Box, Flex, Heading, Image, Text } from 'theme-ui'
 
-const EcosystemHeader = ({ id, filterCount, label, color, borderColor }) => {
+const FilterGroupHeader = ({ id, filterCount, label, color, borderColor }) => {
   // eslint-disable-next-line global-require, import/no-dynamic-require
   const icon = require(`images/${id}.svg`).default
 
@@ -22,8 +22,8 @@ const EcosystemHeader = ({ id, filterCount, label, color, borderColor }) => {
           <Image
             src={icon}
             sx={{
-              width: '1.75em',
-              height: '1.75em',
+              width: '2em',
+              height: '2em',
               mr: '0.5em',
               bg: '#FFF',
               borderRadius: '2.5em',
@@ -42,7 +42,7 @@ const EcosystemHeader = ({ id, filterCount, label, color, borderColor }) => {
   )
 }
 
-EcosystemHeader.propTypes = {
+FilterGroupHeader.propTypes = {
   id: PropTypes.string.isRequired,
   filterCount: PropTypes.number,
   label: PropTypes.string.isRequired,
@@ -50,8 +50,8 @@ EcosystemHeader.propTypes = {
   borderColor: PropTypes.string.isRequired,
 }
 
-EcosystemHeader.defaultProps = {
+FilterGroupHeader.defaultProps = {
   filterCount: 0,
 }
 
-export default EcosystemHeader
+export default FilterGroupHeader

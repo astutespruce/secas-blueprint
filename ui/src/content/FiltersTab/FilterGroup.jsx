@@ -2,15 +2,15 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Box } from 'theme-ui'
 
-import EcosystemHeader from './EcosystemHeader'
-import IndicatorFilter from './IndicatorFilter'
+import FilterGroupHeader from './FilterGroupHeader'
+import Filter from './Filter'
 
-const Ecosystem = ({
+const FilterGroup = ({
   id,
   label,
   color,
   borderColor,
-  indicators,
+  entries,
   filters,
   onChange,
 }) => {
@@ -34,7 +34,7 @@ const Ecosystem = ({
         },
       }}
     >
-      <EcosystemHeader
+      <FilterGroupHeader
         id={id}
         filterCount={filterCount}
         label={label}
@@ -42,12 +42,12 @@ const Ecosystem = ({
         borderColor={borderColor}
       />
 
-      <Box sx={{ pb: '2rem' }}>
-        {indicators.map((indicator) => (
-          <IndicatorFilter
-            key={indicator.id}
-            {...indicator}
-            {...filters[indicator.id]}
+      <Box sx={{ mb: '1rem' }}>
+        {entries.map((entry) => (
+          <Filter
+            key={entry.id}
+            {...entry}
+            {...filters[entry.id]}
             onChange={onChange}
           />
         ))}
@@ -56,12 +56,12 @@ const Ecosystem = ({
   )
 }
 
-Ecosystem.propTypes = {
+FilterGroup.propTypes = {
   id: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   color: PropTypes.string.isRequired,
   borderColor: PropTypes.string.isRequired,
-  indicators: PropTypes.arrayOf(
+  entries: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
       label: PropTypes.string.isRequired,
@@ -84,8 +84,8 @@ Ecosystem.propTypes = {
   onChange: PropTypes.func,
 }
 
-Ecosystem.defaultProps = {
+FilterGroup.defaultProps = {
   onChange: () => {},
 }
 
-export default Ecosystem
+export default FilterGroup

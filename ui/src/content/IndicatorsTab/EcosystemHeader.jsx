@@ -23,8 +23,8 @@ const EcosystemHeader = ({ id, label, color, borderColor }) => {
         <Image
           src={icon}
           sx={{
-            width: '2.5em',
-            height: '2.5em',
+            width: '2em',
+            height: '2em',
             mr: '0.5em',
             bg: '#FFF',
             borderRadius: '2.5em',

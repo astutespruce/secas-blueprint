@@ -8,10 +8,14 @@ import React, {
 import PropTypes from 'prop-types'
 
 import { useIndicators } from 'components/data/Indicators'
+import { useBlueprintPriorities } from 'components/data/Blueprint'
+import { useCorridors } from 'components/data/Corridors'
 
 const Context = createContext()
 
 export const Provider = ({ children }) => {
+  const { all: blueprint } = useBlueprintPriorities()
+  const corridors = useCorridors()
   const {
     indicators: {
       // base is only input with indicators
@@ -20,12 +24,8 @@ export const Provider = ({ children }) => {
   } = useIndicators()
 
   const [{ mapMode, data, selectedIndicator, renderLayer, filters }, setState] =
-    useState({
-      mapMode: 'unit', // filter, pixel, or unit
-      data: null,
-      selectedIndicator: null,
-      renderLayer: null,
-      filters: indicators.reduce(
+    useState(() => {
+      const initFilters = indicators.reduce(
         (prev, { id, values }) => ({
           ...prev,
           [id]: {
@@ -36,7 +36,37 @@ export const Provider = ({ children }) => {
           },
         }),
         {}
-      ),
+      )
+
+      initFilters.blueprint = {
+        enabled: false,
+        // values are in reverse order
+        range: [blueprint[blueprint.length - 1].value, blueprint[0].value],
+      }
+      initFilters.corridors = {
+        enabled: false,
+        range: [corridors[0].value, corridors[corridors.length - 1].value],
+      }
+
+      initFilters.urban = {
+        enabled: false,
+        // hardcoded values because values are not in incremental order
+        range: [0, 4],
+      }
+
+      initFilters.slr = {
+        enabled: false,
+        // hardcoded values to capture depth + nodata
+        range: [0, 13],
+      }
+
+      return {
+        mapMode: 'filter', // FIXME: 'unit', // filter, pixel, or unit
+        data: null,
+        selectedIndicator: null,
+        renderLayer: null,
+        filters: initFilters,
+      }
     })
 
   const setData = useCallback(

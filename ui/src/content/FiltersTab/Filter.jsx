@@ -7,10 +7,10 @@ import { indexBy } from 'util/data'
 
 import RangeSlider from './RangeSlider'
 
-const IndicatorFilter = ({
+const Filter = ({
   id,
   label,
-  description, // TODO: tooltip
+  description,
   values,
   presenceLabel,
   enabled,
@@ -23,10 +23,23 @@ const IndicatorFilter = ({
   const hasRange = values[values.length - 1].value > values[0].value
   const valueIndex = indexBy(values, 'value')
 
+  let summaryLabel = null
+  if (hasRange) {
+    if (range[1] > range[0]) {
+      summaryLabel = `Showing: ${valueIndex[range[0]].label} to ${
+        valueIndex[range[1]].label
+      }`
+    } else {
+      summaryLabel = `Showing: ${valueIndex[range[0]].label}`
+    }
+  } else {
+    summaryLabel = `Showing: ${presenceLabel} (presence-only indicator)`
+  }
+
   const tooltipContent = (
     <Box sx={{ fontSize: 0 }}>
       <Text sx={{ mb: 0, fontSize: 1, fontWeight: 'bold' }}>{label}</Text>
-      <Text sx={{ mb: '0.5rem' }}>{description}</Text>
+      {description ? <Text sx={{ mb: '0.5rem' }}>{description}</Text> : null}
       <b>Values:</b>
       <br />
       {hasRange ? (
@@ -147,11 +160,7 @@ const IndicatorFilter = ({
                 pb: '0.5rem',
               }}
             >
-              {hasRange
-                ? `Showing: ${valueIndex[range[0]].label} to ${
-                    valueIndex[range[1]].label
-                  }`
-                : `Showing: ${presenceLabel}`}
+              {summaryLabel}
             </Text>
           </Box>
         ) : null}
@@ -160,10 +169,10 @@ const IndicatorFilter = ({
   )
 }
 
-IndicatorFilter.propTypes = {
+Filter.propTypes = {
   id: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
+  description: PropTypes.string,
   values: PropTypes.arrayOf(
     PropTypes.shape({
       value: PropTypes.number.isRequired,
@@ -177,11 +186,12 @@ IndicatorFilter.propTypes = {
   onChange: PropTypes.func,
 }
 
-IndicatorFilter.defaultProps = {
+Filter.defaultProps = {
+  description: null,
   enabled: false,
   goodThreshold: null,
   presenceLabel: null,
   onChange: () => {},
 }
 
-export default IndicatorFilter
+export default Filter

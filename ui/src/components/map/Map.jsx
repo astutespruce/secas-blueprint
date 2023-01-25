@@ -487,8 +487,6 @@ const Map = () => {
     if (!isLoaded) return
     const { current: map } = mapRef
 
-    console.log('incoming filters', filters)
-
     // let activeFilters = null
 
     // if (filters !== null && filters)
@@ -498,7 +496,6 @@ const Map = () => {
         (prev, [id, { range }]) => Object.assign(prev, { [id]: range }),
         {}
       )
-    console.log('enabledFilters', activeFilters)
 
     filtersRef.current = activeFilters
 
