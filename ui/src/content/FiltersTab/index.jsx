@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { Flex } from 'theme-ui'
+import { Button, Flex } from 'theme-ui'
 
 import {
   useBlueprintPriorities,
@@ -97,43 +97,45 @@ const FiltersTab = () => {
 
   return (
     // TODO: header help text?
-    <Flex
-      sx={{
-        flexDirection: 'column',
-        overflowY: 'auto',
-        flex: '1 1 auto',
-        height: '100%',
-        position: 'relative', // prevents layout scroll issue on page
-      }}
-    >
-      <FilterGroup
-        id="priorities"
-        label="Priorities"
-        color="#FFF"
-        borderColor="#FFF"
-        entries={priorities}
-        filters={filters}
-        onChange={setFilters}
-      />
-      <FilterGroup
-        id="threats"
-        label="Threats"
-        color="#ffffe9"
-        borderColor="#fffcc2"
-        entries={threats}
-        filters={filters}
-        onChange={setFilters}
-      />
-      {ecosystems.map((ecosystem) => (
+    <>
+      <Flex
+        sx={{
+          flexDirection: 'column',
+          overflowY: 'auto',
+          flex: '1 1 auto',
+          height: '100%',
+          position: 'relative', // prevents layout scroll issue on page
+        }}
+      >
         <FilterGroup
-          key={ecosystem.id}
-          {...ecosystem}
-          entries={ecosystem.indicators}
+          id="priorities"
+          label="Priorities"
+          color="#FFF"
+          borderColor="#FFF"
+          entries={priorities}
           filters={filters}
           onChange={setFilters}
         />
-      ))}
-    </Flex>
+        <FilterGroup
+          id="threats"
+          label="Threats"
+          color="#ffffe9"
+          borderColor="#fffcc2"
+          entries={threats}
+          filters={filters}
+          onChange={setFilters}
+        />
+        {ecosystems.map((ecosystem) => (
+          <FilterGroup
+            key={ecosystem.id}
+            {...ecosystem}
+            entries={ecosystem.indicators}
+            filters={filters}
+            onChange={setFilters}
+          />
+        ))}
+      </Flex>
+    </>
   )
 }
 

@@ -61,7 +61,7 @@ export const Provider = ({ children }) => {
       }
 
       return {
-        mapMode: 'filter', // FIXME: 'unit', // filter, pixel, or unit
+        mapMode: 'unit', // filter, pixel, or unit
         data: null,
         selectedIndicator: null,
         renderLayer: null,
@@ -85,7 +85,18 @@ export const Provider = ({ children }) => {
         data: newData,
       }))
     },
-    // intentionally ignores dependencies
+    // intentionally ignores dependencies, doesn't change after mount
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+    []
+  )
+
+  const filterRanges = useMemo(
+    () =>
+      Object.entries(filters).reduce(
+        (prev, [id, { range }]) => ({ ...prev, [id]: range }),
+        {}
+      ),
+    // intentionally ignores dependencies, doesn't change after mount
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
     []
   )
@@ -133,6 +144,24 @@ export const Provider = ({ children }) => {
     }))
   }, [])
 
+  const resetFilters = useCallback(
+    () => {
+      setState(({ filters: prevFilters, ...prevState }) => ({
+        ...prevState,
+        filters: Object.keys(prevFilters).reduce(
+          (prev, id) => ({
+            ...prev,
+            [id]: { enabled: false, range: filterRanges[id] },
+          }),
+          {}
+        ),
+      }))
+    },
+    // intentionally ignores dependencies, doesn't change after mount
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+    []
+  )
+
   const providerValue = useMemo(
     () => ({
       data,
@@ -146,6 +175,7 @@ export const Provider = ({ children }) => {
       setRenderLayer,
       filters,
       setFilters,
+      resetFilters,
     }),
     // other deps do not change
     /* eslint-disable-next-line react-hooks/exhaustive-deps */

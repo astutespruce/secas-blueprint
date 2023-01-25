@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useLayoutEffect,
 } from 'react'
-import { Box, Flex } from 'theme-ui'
+import { Box, Button, Flex } from 'theme-ui'
 
 import { useBreakpoints } from 'components/layout'
 import { useMapData } from 'components/data'
@@ -51,10 +51,11 @@ const MapContainer = () => {
     isLoading: isDataLoading,
     unsetData: unsetMapData,
     mapMode,
+    filters,
+    resetFilters,
   } = useMapData()
 
   const { location } = useSearch()
-
   const contentNode = useRef(null)
 
   // keep refs so we can compare state changes to previous state to reset tabs, etc
@@ -67,6 +68,9 @@ const MapContainer = () => {
   const [{ tab }, setState] = useState({
     tab: isMobile ? 'map' : 'info',
   })
+
+  const hasFilters =
+    Object.values(filters).filter(({ enabled }) => enabled).length > 0
 
   const handleTabChange = useCallback((newTab) => {
     tabRef.current = newTab
@@ -248,6 +252,22 @@ const MapContainer = () => {
           >
             <TabContent tab={tab} mapData={mapData} isLoading={isDataLoading} />
           </Box>
+          {mapMode === 'filter' && hasFilters ? (
+            <Flex
+              sx={{
+                flex: '0 0 auto',
+                py: '0.5rem',
+                borderTop: '1px solid',
+                borderTopColor: 'grey.3',
+                bg: 'grey.1',
+                justifyContent: 'center',
+              }}
+            >
+              <Button onClick={resetFilters} sx={{ fontSize: 0, py: '0.2em' }}>
+                reset all filters
+              </Button>
+            </Flex>
+          ) : null}
         </Flex>
 
         <Map />
