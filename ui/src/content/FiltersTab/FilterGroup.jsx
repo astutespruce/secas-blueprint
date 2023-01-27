@@ -13,48 +13,46 @@ const FilterGroup = ({
   entries,
   filters,
   onChange,
-}) => {
-  const filterCount = filters
-    ? Object.entries(filters).filter(
-        ([indicatorId, { enabled }]) =>
-          indicatorId.search(`:${id}_`) !== -1 && enabled
-      ).length
-    : 0
+}) => (
+  // const filterCount = filters
+  //   ? Object.entries(filters).filter(
+  //       ([indicatorId, { enabled }]) =>
+  //         indicatorId.search(`:${id}_`) !== -1 && enabled
+  //     ).length
+  //   : 0
 
-  return (
-    <Box
-      sx={{
-        width: '100%',
-        flex: '0 0 auto',
-        '&:not(:first-of-type)': {
-          '&>div:first-of-type': {
-            borderTop: '1px solid',
-            borderTopColor: borderColor,
-          },
+  <Box
+    sx={{
+      width: '100%',
+      flex: '0 0 auto',
+      '&:not(:first-of-type)': {
+        '&>div:first-of-type': {
+          borderTop: '1px solid',
+          borderTopColor: borderColor,
         },
-      }}
-    >
-      <FilterGroupHeader
-        id={id}
-        filterCount={filterCount}
-        label={label}
-        color={color}
-        borderColor={borderColor}
-      />
+      },
+    }}
+  >
+    <FilterGroupHeader
+      id={id}
+      // filterCount={filterCount}
+      label={label}
+      color={color}
+      borderColor={borderColor}
+    />
 
-      <Box sx={{ mb: '1rem' }}>
-        {entries.map((entry) => (
-          <Filter
-            key={entry.id}
-            {...entry}
-            {...filters[entry.id]}
-            onChange={onChange}
-          />
-        ))}
-      </Box>
+    <Box sx={{ mb: '1rem' }}>
+      {entries.map((entry) => (
+        <Filter
+          key={entry.id}
+          {...entry}
+          {...filters[entry.id]}
+          onChange={onChange}
+        />
+      ))}
     </Box>
-  )
-}
+  </Box>
+)
 
 FilterGroup.propTypes = {
   id: PropTypes.string.isRequired,

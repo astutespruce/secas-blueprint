@@ -7,6 +7,7 @@ import {
   InfoTab,
   FiltersTab,
   FindLocationTab,
+  ContactTab,
   BlueprintTab,
   IndicatorsTab,
   ThreatsTab,
@@ -24,6 +25,9 @@ const TabContent = ({ tab, mapData }) => {
       }
       case 'find': {
         return <FindLocationTab />
+      }
+      case 'contact': {
+        return <ContactTab />
       }
       default: {
         // includes 'map

@@ -5,7 +5,8 @@ import React, {
   useEffect,
   useLayoutEffect,
 } from 'react'
-import { Box, Button, Flex } from 'theme-ui'
+import { Box, Button, Flex, Heading, Text } from 'theme-ui'
+import { SlidersH, TimesCircle } from '@emotion-icons/fa-solid'
 
 import { useBreakpoints } from 'components/layout'
 import { useMapData } from 'components/data'
@@ -69,8 +70,9 @@ const MapContainer = () => {
     tab: isMobile ? 'map' : 'info',
   })
 
-  const hasFilters =
-    Object.values(filters).filter(({ enabled }) => enabled).length > 0
+  const numFilters = Object.values(filters).filter(
+    ({ enabled }) => enabled
+  ).length
 
   const handleTabChange = useCallback((newTab) => {
     tabRef.current = newTab
@@ -167,7 +169,9 @@ const MapContainer = () => {
           <Flex
             sx={{
               display:
-                tab === 'mobile-selected-map' ? 'none !important' : 'flex',
+                tab === 'map' || tab === 'mobile-selected-map'
+                  ? 'none !important'
+                  : 'flex',
               ...mobileSidebarCSS,
             }}
           >
@@ -230,44 +234,102 @@ const MapContainer = () => {
             ...sidebarCSS,
           }}
         >
-          <Box sx={{ flex: '0 0 auto' }}>
-            {mapData !== null && (
-              <SidebarHeader {...mapData} onClose={unsetMapData} />
-            )}
+          {mapMode === 'filter' ? (
+            <>
+              <Flex
+                sx={{
+                  flex: '0 0 auto',
+                  justifyContent: 'space-between',
+                  pt: '1rem',
+                  pb: '0.5rem',
+                  px: '0.5rem',
+                  borderBottom: '1px solid',
+                  borderBottomColor: 'grey.3',
+                }}
+              >
+                <Flex sx={{ alignItems: 'center' }}>
+                  <Box sx={{ mr: '0.5rem' }}>
+                    <SlidersH size="1.5rem" />
+                  </Box>
+                  <Heading as="h3">Pixel filters</Heading>
+                </Flex>
+                <Flex
+                  sx={{
+                    justifyContent: 'flex-end',
+                    alignItems: 'center',
 
-            <DesktopTabs
-              tab={tab}
-              mapMode={mapMode}
-              hasMapData={mapData !== null}
-              onChange={handleTabChange}
-            />
-          </Box>
+                    visibility: numFilters > 0 ? 'visible' : 'hidden',
+                  }}
+                >
+                  <Button
+                    onClick={resetFilters}
+                    sx={{
+                      fontSize: 0,
+                      py: '0.2em',
+                      bg: 'accent',
+                      px: '0.5rem',
+                    }}
+                  >
+                    <Flex sx={{ alignItems: 'center' }}>
+                      <Box sx={{ mr: '0.25em' }}>
+                        <TimesCircle size="1em" />
+                      </Box>
+                      <Text>
+                        reset {numFilters} filter{numFilters > 1 ? 's' : ''}
+                      </Text>
+                    </Flex>
+                  </Button>
+                </Flex>
+              </Flex>
 
-          <Box
-            ref={contentNode}
-            sx={{
-              height: '100%',
-              overflowY: 'auto',
-            }}
-          >
-            <TabContent tab={tab} mapData={mapData} isLoading={isDataLoading} />
-          </Box>
-          {mapMode === 'filter' && hasFilters ? (
-            <Flex
-              sx={{
-                flex: '0 0 auto',
-                py: '0.5rem',
-                borderTop: '1px solid',
-                borderTopColor: 'grey.3',
-                bg: 'grey.1',
-                justifyContent: 'center',
-              }}
-            >
-              <Button onClick={resetFilters} sx={{ fontSize: 0, py: '0.2em' }}>
-                reset all filters
-              </Button>
-            </Flex>
-          ) : null}
+              <Box
+                ref={contentNode}
+                sx={{
+                  height: '100%',
+                  overflowY: 'auto',
+                }}
+              >
+                <TabContent
+                  tab={tab}
+                  mapData={mapData}
+                  isLoading={isDataLoading}
+                />
+              </Box>
+            </>
+          ) : (
+            <>
+              <Box sx={{ flex: '0 0 auto' }}>
+                {mapData !== null && (
+                  <SidebarHeader
+                    {...mapData}
+                    showClose={mapMode !== 'pixel'}
+                    onClose={unsetMapData}
+                  />
+                )}
+
+                <DesktopTabs
+                  tab={tab}
+                  mapMode={mapMode}
+                  hasMapData={mapData !== null}
+                  onChange={handleTabChange}
+                />
+              </Box>
+
+              <Box
+                ref={contentNode}
+                sx={{
+                  height: '100%',
+                  overflowY: 'auto',
+                }}
+              >
+                <TabContent
+                  tab={tab}
+                  mapData={mapData}
+                  isLoading={isDataLoading}
+                />
+              </Box>
+            </>
+          )}
         </Flex>
 
         <Map />

@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react'
-import { Button, Flex } from 'theme-ui'
+import { Box, Button, Flex, Heading, Text } from 'theme-ui'
+import { SlidersH, TimesCircle } from '@emotion-icons/fa-solid'
 
 import {
   useBlueprintPriorities,
@@ -27,7 +28,10 @@ const FiltersTab = () => {
   const { depth, nodata: slrNodata } = useSLR()
   const urban = useUrban()
 
-  const { filters, setFilters } = useMapData()
+  const { filters, setFilters, resetFilters } = useMapData()
+  const numFilters = Object.values(filters).filter(
+    ({ enabled }) => enabled
+  ).length
 
   // nest indicators under ecosystems
   const { priorities, threats, ecosystems } = useMemo(
@@ -39,15 +43,7 @@ const FiltersTab = () => {
           {
             id: 'blueprint',
             label: 'Blueprint priority',
-            values: blueprint
-              .slice()
-              .reverse()
-              .map(({ label, description, ...rest }) => ({
-                ...rest,
-                label: `${label}: ${description
-                  .slice(0, 1)
-                  .toLowerCase()}${description.slice(1)}`,
-              })),
+            values: blueprint.slice().reverse().slice(1, blueprint.length),
           },
           {
             id: 'corridors',
@@ -95,6 +91,8 @@ const FiltersTab = () => {
     []
   )
 
+  console.log('blueprint', blueprint)
+
   return (
     // TODO: header help text?
     <>
@@ -107,6 +105,45 @@ const FiltersTab = () => {
           position: 'relative', // prevents layout scroll issue on page
         }}
       >
+        {/* <Flex
+          sx={{
+            flex: '0 0 auto',
+            justifyContent: 'space-between',
+            pt: '1rem',
+            pb: '0.5rem',
+            px: '0.5rem',
+            borderBottom: '1px solid',
+            borderBottomColor: 'grey.1',
+          }}
+        >
+          <Flex sx={{ alignItems: 'center' }}>
+            <Box sx={{ mr: '0.5rem' }}>
+              <SlidersH size="1.5rem" />
+            </Box>
+            <Heading as="h3">Pixel filters</Heading>
+          </Flex>
+          <Flex
+            sx={{
+              justifyContent: 'flex-end',
+              alignItems: 'center',
+
+              visibility: numFilters > 0 ? 'visible' : 'hidden',
+            }}
+          >
+            <Button
+              onClick={resetFilters}
+              sx={{ fontSize: 0, py: '0.2em', bg: 'accent', px: '0.5rem' }}
+            >
+              <Flex sx={{ alignItems: 'center' }}>
+                <Box sx={{ mr: '0.25em' }}>
+                  <TimesCircle size="1em" />
+                </Box>
+                <Text>reset {numFilters} filter{numFilters > 1 ? 's' : ''}</Text>
+              </Flex>
+            </Button>
+          </Flex>
+        </Flex> */}
+
         <FilterGroup
           id="priorities"
           label="Priorities"

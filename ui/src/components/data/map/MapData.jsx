@@ -30,9 +30,10 @@ export const Provider = ({ children }) => {
           ...prev,
           [id]: {
             enabled: false,
-            // set to full range by default, so there is no change when filter
-            // is first enabled
-            range: [values[0].value, values[values.length - 1].value],
+            range: [
+              values[0].color === null ? values[1].value : values[0].value,
+              values[values.length - 1].value,
+            ],
           },
         }),
         {}
@@ -40,8 +41,8 @@ export const Provider = ({ children }) => {
 
       initFilters.blueprint = {
         enabled: false,
-        // values are in reverse order
-        range: [blueprint[blueprint.length - 1].value, blueprint[0].value],
+        // skip not a priority class
+        range: [1, 4],
       }
       initFilters.corridors = {
         enabled: false,

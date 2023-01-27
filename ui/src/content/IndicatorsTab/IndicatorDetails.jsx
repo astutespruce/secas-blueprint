@@ -1,10 +1,9 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { Box, Paragraph, Flex, Text, Heading, Image } from 'theme-ui'
 import { Reply } from '@emotion-icons/fa-solid'
 
-import { useMapData } from 'components/data/map/MapData'
-import { OutboundLink, PseudoLink } from 'components/link'
+import { OutboundLink } from 'components/link'
 import { formatPercent } from 'util/format'
 import NeedHelp from 'content/NeedHelp'
 import { sum } from 'util/data'
@@ -22,6 +21,7 @@ const IndicatorDetails = ({
   url,
   goodThreshold,
   values,
+  valueLabel,
   outsideSEPercent,
   onClose,
 }) => {
@@ -148,6 +148,12 @@ const IndicatorDetails = ({
         >
           {description}
         </Paragraph>
+
+        {valueLabel ? (
+          <Text sx={{ mt: '1rem', mb: '-1.5rem', fontWeight: 'bold' }}>
+            {valueLabel}:
+          </Text>
+        ) : null}
 
         <IndicatorPercentTable
           type={type}

@@ -14,7 +14,6 @@ const FilterGroupHeader = ({ id, filterCount, label, color, borderColor }) => {
         px: '1rem',
         borderBottom: '1px solid',
         borderBottomColor: borderColor,
-        cursor: 'pointer',
       }}
     >
       <Flex sx={{ alignItems: 'center', justifyContent: 'space-between' }}>

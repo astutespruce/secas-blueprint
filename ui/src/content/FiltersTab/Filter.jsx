@@ -12,6 +12,7 @@ const Filter = ({
   label,
   description,
   values,
+  valueLabel,
   presenceLabel,
   enabled,
   range,
@@ -40,7 +41,7 @@ const Filter = ({
     <Box sx={{ fontSize: 0 }}>
       <Text sx={{ mb: 0, fontSize: 1, fontWeight: 'bold' }}>{label}</Text>
       {description ? <Text sx={{ mb: '0.5rem' }}>{description}</Text> : null}
-      <b>Values:</b>
+      <b>{valueLabel || 'Values'}:</b>
       <br />
       {hasRange ? (
         <Box
@@ -54,9 +55,14 @@ const Filter = ({
             },
           }}
         >
-          {values.map(({ value, label: valueLabel }) => (
-            <li key={value}>{valueLabel}</li>
-          ))}
+          {values.map(
+            ({ value, label: valueLabel, description: valueDescription }) => (
+              <li key={value}>
+                {valueLabel}
+                {valueDescription ? `: ${valueDescription}` : null}
+              </li>
+            )
+          )}
         </Box>
       ) : (
         `${presenceLabel} (presence-only indicator)`
@@ -144,6 +150,9 @@ const Filter = ({
 
         {enabled ? (
           <Box sx={{ ml: '1.75rem', mr: '1rem' }}>
+            {valueLabel ? (
+              <Text sx={{ fontSize: 0, color: 'grey.8' }}>{valueLabel}</Text>
+            ) : null}
             {hasRange ? (
               <RangeSlider
                 values={values}
@@ -180,6 +189,7 @@ Filter.propTypes = {
     })
   ).isRequired,
   goodThreshold: PropTypes.number,
+  valueLabel: PropTypes.string,
   presenceLabel: PropTypes.string,
   range: PropTypes.arrayOf(PropTypes.number).isRequired,
   enabled: PropTypes.bool,
@@ -190,6 +200,7 @@ Filter.defaultProps = {
   description: null,
   enabled: false,
   goodThreshold: null,
+  valueLabel: null,
   presenceLabel: null,
   onChange: () => {},
 }

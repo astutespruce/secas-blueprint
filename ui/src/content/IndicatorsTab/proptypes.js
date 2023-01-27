@@ -20,6 +20,7 @@ export const IndicatorPropType = {
       percent: PropTypes.number.isRequired,
     })
   ).isRequired,
+  valueLabel: PropTypes.string,
 }
 
 export const EcosystemPropType = {

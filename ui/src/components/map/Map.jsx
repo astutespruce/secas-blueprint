@@ -644,6 +644,8 @@ const Map = () => {
     belowMinZoom = currentZoom < minSummaryZoom
   }
 
+  console.log('renderLayer', renderLayer)
+
   return (
     <Box
       sx={{
@@ -701,7 +703,7 @@ const Map = () => {
                 subtitle={
                   mapMode === 'unit' || renderLayer === null
                     ? 'for a connected network of lands and waters'
-                    : null
+                    : renderLayer.valueLabel
                 }
                 categories={
                   mapMode === 'unit' || renderLayer === null

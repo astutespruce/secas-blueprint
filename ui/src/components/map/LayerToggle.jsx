@@ -89,7 +89,7 @@ const LayerToggle = () => {
             id: groupId,
             label: `${groupLabel} indicators`,
             layers: groupIndicators.map((id) => {
-              const { label, values } = indicatorsIndex[id]
+              const { label, values, valueLabel } = indicatorsIndex[id]
               return {
                 id,
                 label,
@@ -97,6 +97,7 @@ const LayerToggle = () => {
                 categories: values
                   .filter(({ color }) => color !== null)
                   .reverse(),
+                valueLabel,
               }
             }),
           }
