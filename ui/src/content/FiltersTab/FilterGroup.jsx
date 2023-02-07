@@ -14,13 +14,6 @@ const FilterGroup = ({
   filters,
   onChange,
 }) => (
-  // const filterCount = filters
-  //   ? Object.entries(filters).filter(
-  //       ([indicatorId, { enabled }]) =>
-  //         indicatorId.search(`:${id}_`) !== -1 && enabled
-  //     ).length
-  //   : 0
-
   <Box
     sx={{
       width: '100%',
@@ -35,7 +28,6 @@ const FilterGroup = ({
   >
     <FilterGroupHeader
       id={id}
-      // filterCount={filterCount}
       label={label}
       color={color}
       borderColor={borderColor}
@@ -44,7 +36,7 @@ const FilterGroup = ({
     <Box sx={{ mb: '1rem' }}>
       {entries.map((entry) => (
         <Filter
-          key={entry.id}
+          key={entry.label}
           {...entry}
           {...filters[entry.id]}
           onChange={onChange}

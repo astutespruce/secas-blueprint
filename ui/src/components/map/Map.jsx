@@ -644,8 +644,6 @@ const Map = () => {
     belowMinZoom = currentZoom < minSummaryZoom
   }
 
-  console.log('renderLayer', renderLayer)
-
   return (
     <Box
       sx={{

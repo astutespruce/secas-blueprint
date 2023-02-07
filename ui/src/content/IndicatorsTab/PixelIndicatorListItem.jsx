@@ -9,7 +9,7 @@ import IndicatorPixelValueChart from './IndicatorPixelValueChart'
 import { IndicatorPropType } from './proptypes'
 
 const PixelIndicatorListItem = ({ indicator, onSelect }) => {
-  const { label, values, goodThreshold } = indicator
+  const { label, values, valueLabel, goodThreshold } = indicator
 
   const breakpoint = useBreakpoints()
   const isMobile = breakpoint === 0
@@ -58,6 +58,7 @@ const PixelIndicatorListItem = ({ indicator, onSelect }) => {
       <IndicatorPixelValueChart
         present={present}
         values={values}
+        valueLabel={valueLabel}
         goodThreshold={goodThreshold}
       />
 
