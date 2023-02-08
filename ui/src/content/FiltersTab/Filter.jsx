@@ -28,9 +28,9 @@ const Filter = ({
   if (hasRange) {
     if (range[1] > range[0]) {
       summaryLabel = (
-        <>
-          <Text>Showing:</Text>
-          <Box sx={{ ml: '1rem' }}>
+        <Flex>
+          <Text sx={{ flex: '0 0 auto' }}>Showing:</Text>
+          <Box sx={{ flex: '1 1 auto', ml: '1rem', textAlign: 'center' }}>
             <Text>&quot;{valueIndex[range[0]].label}&quot;</Text>
             <Text sx={{ my: '0.1rem' }}>
               <b>to</b>
@@ -40,7 +40,7 @@ const Filter = ({
               {valueIndex[range[1]].label}&quot;
             </Text>
           </Box>
-        </>
+        </Flex>
       )
     } else {
       summaryLabel = `Showing: "${valueIndex[range[0]].label}"`

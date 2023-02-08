@@ -553,52 +553,52 @@
       "values": [
         {
           "value": 1,
-          "label": "Lowest priority (score 0-10)",
+          "label": "Score 0-10 (lowest priority)",
           "color": "#FDFEC0"
         },
         {
           "value": 2,
-          "label": "(score >10-20)",
+          "label": "Score >10-20",
           "color": "#FFD396"
         },
         {
           "value": 3,
-          "label": "(score >20-30)",
+          "label": "Score >20-30",
           "color": "#FFA973"
         },
         {
           "value": 4,
-          "label": "(score >30-40)",
+          "label": "Score >30-40",
           "color": "#FB7D5E"
         },
         {
           "value": 5,
-          "label": "(score >40-50)",
+          "label": "Score >40-50",
           "color": "#EA5562"
         },
         {
           "value": 6,
-          "label": "(score >50-60)",
+          "label": "Score >50-60",
           "color": "#C93E73"
         },
         {
           "value": 7,
-          "label": "(score >60-70)",
+          "label": "Score >60-70",
           "color": "#A3317F"
         },
         {
           "value": 8,
-          "label": "(score >70-80)",
+          "label": "Score >70-80",
           "color": "#7E2482"
         },
         {
           "value": 9,
-          "label": "(score >80-90)",
+          "label": "Score >80-90",
           "color": "#5A167F"
         },
         {
           "value": 10,
-          "label": "Highest priority (score >90-100)",
+          "label": "Score >90-100 (highest priority)",
           "color": "#331068"
         }
       ],
