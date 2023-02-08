@@ -17,12 +17,12 @@
   },
   {
     "value": 12,
-    "label": "Sea-level rise data are not available for this area",
-    "color": "#880000"
+    "label": "Sea-level rise is unlikely to be a threat (inland counties)",
+    "color": "#333333"
   },
   {
     "value": 13,
-    "label": "Sea-level rise is unlikely to be a threat (inland counties)",
-    "color": "#333333"
+    "label": "Sea-level rise data are not available for this area",
+    "color": "#880000"
   }
 ]

@@ -295,12 +295,12 @@ if not outfilename.exists():
         marine_data = vrt.read()[0]
 
         # consolidate all values into a single raster, writing hubs over corridors
-        # 4 = not a hub or corridor, but within data extent
-        data = np.ones(shape=src.shape, dtype="uint8") * np.uint8(4)
+        # 0 = not a hub or corridor, but within data extent
+        data = np.zeros(shape=src.shape, dtype="uint8")
         data[inland_data == 1] = 1
         data[marine_data == 1] = 3
-        data[inland_hubs_data == 1] = 0
-        data[marine_hubs_data == 1] = 2
+        data[inland_hubs_data == 1] = 2
+        data[marine_hubs_data == 1] = 4
 
         # stamp back in nodata from Blueprint extent
         extent_data = src.read(1)
@@ -325,3 +325,30 @@ if not outfilename.exists():
 
         with rasterio.open(outfilename, "r+") as src:
             src.write_colormap(1, colormap)
+
+    # save inland and marine hubs / corridors to different files for pixel-level rendering
+    inland_corridors = np.zeros(shape=src.shape, dtype="uint8")
+    inland_corridors[inland_data == 1] = 1
+    inland_corridors[inland_hubs_data == 1] = 2
+    inland_corridors[extent_data == np.uint8(src.nodata)] = 255
+
+    write_raster(
+        data_dir / "for_tiles/inland_corridors.tif",
+        inland_corridors,
+        src.transform,
+        crs=src.crs,
+        nodata=NODATA,
+    )
+
+    marine_corridors = np.zeros(shape=src.shape, dtype="uint8")
+    marine_corridors[marine_data == 1] = 1
+    marine_corridors[marine_hubs_data == 1] = 2
+    marine_corridors[extent_data == np.uint8(src.nodata)] = 255
+
+    write_raster(
+        data_dir / "for_tiles/marine_corridors.tif",
+        marine_corridors,
+        src.transform,
+        crs=src.crs,
+        nodata=NODATA,
+    )

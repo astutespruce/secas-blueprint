@@ -9,12 +9,12 @@ import {
   useSLR,
   useUrban,
 } from 'components/data'
-import { indexBy } from 'util/data'
+import { indexBy, sortByFunc } from 'util/data'
 import FilterGroup from './FilterGroup'
 
 const FiltersTab = () => {
   const { all: blueprint } = useBlueprintPriorities()
-  const corridors = useCorridors()
+  const { inlandCorridors, marineCorridors } = useCorridors()
 
   const {
     ecosystems: rawEcosystems,
@@ -39,12 +39,22 @@ const FiltersTab = () => {
           {
             id: 'blueprint',
             label: 'Blueprint priority',
-            values: blueprint.slice().reverse().slice(1, blueprint.length),
+            values: blueprint
+              .slice()
+              .sort(sortByFunc('value'))
+              .slice(1, blueprint.length),
           },
           {
-            id: 'corridors',
-            label: 'Hubs and corridors',
-            values: corridors,
+            id: 'inland_corridors',
+            label: 'Inland hubs and corridors',
+            values: inlandCorridors,
+            description:
+              'The Blueprint uses a least-cost path connectivity analysis to identify corridors that link hubs across the shortest distance possible, while also routing through as much Blueprint priority as possible.',
+          },
+          {
+            id: 'marine_corridors',
+            label: 'Marine hubs and corridors',
+            values: marineCorridors,
             description:
               'The Blueprint uses a least-cost path connectivity analysis to identify corridors that link hubs across the shortest distance possible, while also routing through as much Blueprint priority as possible.',
           },
@@ -56,7 +66,7 @@ const FiltersTab = () => {
             values: urban
               .slice()
               // values are not in order and need to be sorted in ascending order
-              .sort(({ value: a }, { value: b }) => (a > b ? 1 : -1)),
+              .sort(sortByFunc('value')),
             description:
               'Past and current (2019) urban levels based on developed land cover classes from the National Land Cover Database. Future urban growth estimates derived from the FUTURES model. Data provided by the Center for Geospatial Analytics, NC State University.',
           },
@@ -99,10 +109,10 @@ const FiltersTab = () => {
         }}
       >
         <FilterGroup
-          id="priorities"
+          id="blueprint"
           label="Priorities"
-          color="#FFF"
-          borderColor="#FFF"
+          color="#4d004b0d"
+          borderColor="#4d004b2b"
           entries={priorities}
           filters={filters}
           onChange={setFilters}
@@ -111,7 +121,7 @@ const FiltersTab = () => {
           id="threats"
           label="Threats"
           color="#ffffe9"
-          borderColor="#fffcc2"
+          borderColor="grey.1"
           entries={threats}
           filters={filters}
           onChange={setFilters}

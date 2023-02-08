@@ -8,14 +8,10 @@ import React, {
 import PropTypes from 'prop-types'
 
 import { useIndicators } from 'components/data/Indicators'
-import { useBlueprintPriorities } from 'components/data/Blueprint'
-import { useCorridors } from 'components/data/Corridors'
 
 const Context = createContext()
 
 export const Provider = ({ children }) => {
-  const { all: blueprint } = useBlueprintPriorities()
-  const corridors = useCorridors()
   const {
     indicators: {
       // base is only input with indicators
@@ -44,15 +40,19 @@ export const Provider = ({ children }) => {
         // skip not a priority class
         range: [1, 4],
       }
-      initFilters.corridors = {
+
+      initFilters.inland_corridors = {
         enabled: false,
-        range: [corridors[0].value, corridors[corridors.length - 1].value],
+        range: [1, 2],
+      }
+      initFilters.marine_corridors = {
+        enabled: false,
+        range: [1, 2],
       }
 
       initFilters.urban = {
         enabled: false,
-        // hardcoded values because values are not in incremental order
-        range: [0, 4],
+        range: [1, 5],
       }
 
       initFilters.slr = {

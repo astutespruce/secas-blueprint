@@ -94,22 +94,19 @@ URBAN_YEARS = [2020, 2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100]
 
 
 # Classified Urban 2060
-# Note: for legend already urban is toward the top but it is value 4
+# NOTE: value 5 is not urbanized
 URBAN = json.loads(open(json_dir / "urban.json").read())
-
-# 0 (not urbanized) is deliberately excluded from colors
-URBAN_COLORS = {e["value"]: e["color"] for e in URBAN if e["value"] != 0}
-
+URBAN_COLORS = {e["value"]: e["color"] for e in URBAN if not e["color"] is None}
 URBAN_LEGEND = URBAN
 
 # depth in 1 foot increments from 0
 SLR_DEPTH_BINS = list(range(11))
 SLR_NODATA_VALUES = [
     {"value": 11, "label": "Not projected to be inundated by up to 10 feet"},
-    {"value": 12, "label": "Sea-level rise data unavailable"},
-    {"value": 13, "label": "Sea-level rise unlikely to be a threat (inland counties)"},
+    {"value": 12, "label": "Sea-level rise unlikely to be a threat (inland counties)"},
+    {"value": 13, "label": "Sea-level rise data unavailable"},
 ]
-SLR_NODATA_COLS = ["not_inundated", "nodata", "not_applicable"]
+SLR_NODATA_COLS = ["not_inundated", "not_applicable", "nodata"]
 
 SLR_YEARS = [2020, 2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100]
 SLR_PROJ_SCENARIOS = {

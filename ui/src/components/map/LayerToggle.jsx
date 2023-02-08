@@ -10,11 +10,11 @@ import {
   useUrban,
 } from 'components/data'
 import { BoundModal } from 'components/modal'
-import { indexBy } from 'util/data'
+import { indexBy, sortByFunc } from 'util/data'
 
 const LayerToggle = () => {
   const { renderLayer, setRenderLayer } = useMapData()
-  const corridors = useCorridors()
+  const { inlandCorridors, marineCorridors } = useCorridors()
   const { ecosystems, indicators } = useIndicators()
   const urbanCategories = useUrban()
   const { depth: depthCategories, nodata: slrNodataCategories } = useSLR()
@@ -26,13 +26,22 @@ const LayerToggle = () => {
           id: 'blueprint',
           label: 'Blueprint priority',
         },
+        // TODO: sort values differently so legend is better?
         {
-          id: 'corridors',
-          label: 'Hubs and corridors',
-          colors: corridors.map(({ color, value }) =>
-            value === 4 ? null : color
-          ),
-          categories: corridors.filter(({ value }) => value !== 4),
+          id: 'inland_corridors',
+          label: 'Inland hubs and corridors',
+          colors: inlandCorridors.map(({ color }) => color),
+          categories: inlandCorridors
+            .filter(({ value }) => value !== 0)
+            .reverse(),
+        },
+        {
+          id: 'marine_corridors',
+          label: 'Marine hubs and corridors',
+          colors: marineCorridors.map(({ color }) => color),
+          categories: marineCorridors
+            .filter(({ value }) => value !== 0)
+            .reverse(),
         },
       ]
 
@@ -40,12 +49,7 @@ const LayerToggle = () => {
         {
           id: 'urban',
           label: 'Probability of urbanization by 2060',
-          colors: urbanCategories
-            .slice()
-            .sort(({ value: leftValue }, { value: rightValue }) =>
-              leftValue < rightValue ? -1 : 1
-            )
-            .map(({ color }) => color),
+          colors: urbanCategories.map(({ color }) => color),
           categories: urbanCategories.filter(({ color }) => color !== null),
         },
         {
@@ -66,6 +70,7 @@ const LayerToggle = () => {
             })),
         },
       ]
+
       const layers = coreLayers.concat(threatLayers)
 
       const groups = [

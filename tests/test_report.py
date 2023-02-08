@@ -187,18 +187,20 @@ for aoi in aois:
 ## Create reports for summary units
 ids = {
     "huc12": [
-        # "050500030804"  # in WV
-        # "030902030700"  # in base blueprint but missing SLR (Dry Tortugas)
-        "031002010205",  # in base blueprint but with SLR present
-        #     #     #     # "210100070101",  # in Caribbean
-        #     #     #     # "031101020903",  # Florida with inland marine indicators
-        #     #     #     # "031102050805",  # Florida gulf coast
+        #     # "050500030804"  # in WV
+        #     # "030902030700"  # in base blueprint but missing SLR (Dry Tortugas)
+        #     # "031002010205",  # in base blueprint but with SLR present
+        #     #     #     #     # "210100070101",  # in Caribbean
+        #     # "031101020903",  # Florida with inland marine indicators
+        #     #     #     #     # "031102050805",  # Florida gulf coast
+        #     # "030902061101"  # area with SLR not modeled
+        "030102051002"  # area with both marine and inland hubs / corridors
     ],
     # "marine_blocks": [
-    #     "NG16-12-780",  # in FL Marine
-    #     #     # "NI18-07-6210",  # Atlantic coast
-    #     #     # "NG16-03-299",  # Gulf coast
-    #     #     # "NG17-10-6583",  # Florida keys, overlaps with protected areas
+    #     #     "NG16-12-780",  # in FL Marine
+    #     "NI18-07-6210",  # Atlantic coast
+    #     #     #     # "NG16-03-299",  # Gulf coast
+    #     #     #     # "NG17-10-6583",  # Florida keys, overlaps with protected areas
     # ],
 }
 

@@ -153,7 +153,13 @@ async def render_raster_maps(
         task_args.append(("corridors", corridors_filename, CORRIDORS_COLORS))
 
     if urban:
-        task_args.append(("urban_2060", urban_filename, URBAN_COLORS))
+        task_args.append(
+            (
+                "urban_2060",
+                urban_filename,
+                URBAN_COLORS,
+            )
+        )
 
     if slr:
         colors = {e["value"]: e["color"] for i, e in enumerate(SLR_LEGEND)}

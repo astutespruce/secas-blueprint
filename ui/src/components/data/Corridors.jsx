@@ -1,5 +1,6 @@
 import { graphql, useStaticQuery } from 'gatsby'
 
+import { sortByFunc } from 'util/data'
 import { extractNodes } from 'util/graphql'
 
 /**
@@ -8,7 +9,7 @@ import { extractNodes } from 'util/graphql'
 export const useCorridors = () => {
   const { corridors: rawCorridors } = useStaticQuery(graphql`
     query {
-      corridors: allCorridorsJson(sort: { value: ASC }) {
+      corridors: allCorridorsJson(sort: { order: ASC }) {
         edges {
           node {
             value
@@ -23,8 +24,22 @@ export const useCorridors = () => {
 
   const corridors = extractNodes(rawCorridors)
 
-  // set color for not a hub / corridor
-  corridors[4].color = '#ffebc2'
+  const tmp = corridors.slice().sort(sortByFunc('value'))
+  const inlandCorridors = tmp
+    .slice(0, 3)
+    .map(({ value, ...rest }, i) => ({ value: i, ...rest }))
+  const marineCorridors = tmp
+    .slice(0, 1)
+    .concat(tmp.slice(3, 5))
+    .map(({ value, ...rest }, i) => ({ value: i, ...rest }))
 
-  return corridors
+  // set color for not a hub / corridor
+  // NOTE: this is value 0, but in index 4
+  corridors[4] = { ...corridors[4], color: '#ffebc2' }
+
+  return {
+    corridors,
+    inlandCorridors,
+    marineCorridors,
+  }
 }

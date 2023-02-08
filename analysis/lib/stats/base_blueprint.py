@@ -141,8 +141,9 @@ def extract_base_blueprint_by_mask(
         * cellsize
     )
 
-    # if no hubs / corridors are present, return empty list; 4 is not hub / corridor
-    if corridor_acres[:4].max() > 0:
+    # if no hubs / corridors are present, return empty list;
+    # 0 is not hub / corridor
+    if corridor_acres[1:].max() > 0:
         # only keep the ones that are present
         corridors = [
             {
@@ -150,9 +151,11 @@ def extract_base_blueprint_by_mask(
                 "acres": corridor_acres[i],
                 "percent": 100 * corridor_acres[i] / rasterized_acres,
             }
-            for i, e in enumerate(pluck(CORRIDORS, ["label"]))
+            for i, e in enumerate(pluck(CORRIDORS, ["label", "order"]))
             if corridor_acres[i]
         ]
+
+        corridors = sorted(corridors, key=lambda x: x["order"])
     else:
         corridors = []
 
@@ -424,7 +427,8 @@ def get_base_blueprint_unit_results(results_dir, unit_id, rasterized_acres):
     corridor_cols = [c for c in base_results if c.startswith("corridors_")]
     corridor_acres = unit[corridor_cols].values
 
-    if corridor_acres[:4].max() > 0:
+    # ignore 0 (not a hub / corridor)
+    if corridor_acres[1:].max() > 0:
         # only keep the ones that are present
         corridors = [
             {
@@ -432,9 +436,11 @@ def get_base_blueprint_unit_results(results_dir, unit_id, rasterized_acres):
                 "acres": corridor_acres[i],
                 "percent": 100 * corridor_acres[i] / rasterized_acres,
             }
-            for i, e in enumerate(pluck(CORRIDORS, ["label"]))
+            for i, e in enumerate(pluck(CORRIDORS, ["label", "order"]))
             if corridor_acres[i]
         ]
+
+        corridors = sorted(corridors, key=lambda x: x["order"])
     else:
         corridors = []
 
