@@ -663,7 +663,6 @@ const Map = () => {
             }
 
             if (l.id.startsWith('slr-not-modeled')) {
-              console.log('adding', l.id, showSLRNodata ? 'visible' : 'none')
               layer.layout = {
                 visibility: showSLRNodata ? 'visible' : 'none',
               }
