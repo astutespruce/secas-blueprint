@@ -662,6 +662,13 @@ const Map = () => {
               layer.filter = ['==', 'id', mapData.id]
             }
 
+            if (l.id.startsWith('slr-not-modeled')) {
+              console.log('adding', l.id, showSLRNodata ? 'visible' : 'none')
+              layer.layout = {
+                visibility: showSLRNodata ? 'visible' : 'none',
+              }
+            }
+
             map.addLayer(layer, beforeLayer)
           })
 
@@ -676,7 +683,7 @@ const Map = () => {
         map.once('idle', updateStyle)
       }
     },
-    [isLoaded, mapData, mapMode]
+    [isLoaded, mapData, mapMode, showSLRNodata]
   )
 
   let belowMinZoom = false
