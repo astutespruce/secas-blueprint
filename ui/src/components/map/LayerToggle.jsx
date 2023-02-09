@@ -26,7 +26,6 @@ const LayerToggle = () => {
           id: 'blueprint',
           label: 'Blueprint priority',
         },
-        // TODO: sort values differently so legend is better?
         {
           id: 'inland_corridors',
           label: 'Inland hubs and corridors',
@@ -59,7 +58,7 @@ const LayerToggle = () => {
             .concat(slrNodataCategories)
             .map(({ color }) => color),
           categories: depthCategories
-            .concat(slrNodataCategories)
+            .concat(slrNodataCategories.filter(({ value }) => value !== 13))
             .map(({ label, ...rest }, i) => ({
               ...rest,
               label:

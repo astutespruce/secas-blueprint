@@ -21,6 +21,7 @@ import {
   useBlueprintPriorities,
   useMapData,
   useIndicators,
+  useSLR,
 } from 'components/data'
 import { useBreakpoints } from 'components/layout'
 import { useSearch } from 'components/search'
@@ -36,6 +37,7 @@ import { pixelLayers, pixelLayerIndex } from './pixelLayers'
 import { Legend } from './legend'
 import LayerToggle from './LayerToggle'
 import MapModeToggle from './MapModeToggle'
+import { crosshatch } from './patterns'
 import StyleToggle from './StyleToggle'
 import { getCenterAndZoom } from './viewport'
 
@@ -93,6 +95,8 @@ const Map = () => {
   )
   const { ecosystems: ecosystemInfo, indicators: indicatorInfo } =
     useIndicators()
+  const { nodata: slrNodataValues } = useSLR()
+  const slrNodata = slrNodataValues[slrNodataValues.length - 1]
 
   const [isLoaded, setIsLoaded] = useState(false)
   const [isRenderLayerVisible, setisRenderLayerVisible] = useState(true)
@@ -105,6 +109,11 @@ const Map = () => {
   const breakpoint = useBreakpoints()
   const isMobile = breakpoint === 0
   const { location } = useSearch()
+
+  const showSLRNodata =
+    mapMode !== 'unit' &&
+    ((renderLayer && renderLayer.id === 'slr') ||
+      (filters && filters.slr && filters.slr.enabled))
 
   const getPixelData = useDebouncedCallback(() => {
     // need to break out of pending events if the mode is different
@@ -217,14 +226,16 @@ const Map = () => {
           map.resize()
         }
 
+        // add crosshatch image
+        const img = new Image(crosshatch.width, crosshatch.height)
+        img.onload = () => {
+          map.addImage(crosshatch.id, img, crosshatch.options)
+        }
+        img.src = crosshatch.src
+
         // add sources
         Object.entries(sources).forEach(([id, source]) => {
           map.addSource(id, source)
-        })
-
-        // add normal mapbox layers// add layers
-        layers.forEach((layer) => {
-          map.addLayer(layer, beforeLayer)
         })
 
         // add DeckGL pixel layer
@@ -243,8 +254,15 @@ const Map = () => {
             blueprintColors
           ),
         }
-
         map.addLayer(new MapboxLayer(pixelLayerConfig), beforeLayer)
+
+        // add normal mapbox layers// add layers
+        layers.forEach((layer) => {
+          map.addLayer(
+            layer,
+            layer.id.startsWith('slr-not-modeled') ? undefined : beforeLayer
+          )
+        })
 
         // if map is initialized in pixel or filter mode
         if (mapMode === 'pixel' || mapMode === 'filter') {
@@ -408,6 +426,8 @@ const Map = () => {
           data: { visible: false },
         })
       } else {
+        const activeFilters = filtersRef.current
+
         if (mapMode === 'pixel') {
           // enable pixel layer event listener
           pixelLayer.deck.setProps({
@@ -436,7 +456,7 @@ const Map = () => {
         map.setLayoutProperty('subregions', 'visibility', 'visible')
         pixelLayer.setProps({
           visible: true,
-          filters: filtersRef.current,
+          filters: activeFilters,
           // have to use opacity to hide so that pixel mode still works when hidden
           opacity: isVisible ? 0.7 : 0,
           // data prop is used to force deeper reloading of tiles
@@ -487,9 +507,6 @@ const Map = () => {
     if (!isLoaded) return
     const { current: map } = mapRef
 
-    // let activeFilters = null
-
-    // if (filters !== null && filters)
     const activeFilters = Object.entries(filters)
       .filter(([_, { enabled }]) => enabled)
       .reduce(
@@ -525,6 +542,24 @@ const Map = () => {
       locationMarkerRef.current = null
     }
   }, [location, isLoaded])
+
+  // handler for changed showSLRNodata
+  useEffect(() => {
+    if (!isLoaded) return
+    const { current: map } = mapRef
+
+    if (showSLRNodata) {
+      map.setLayoutProperty(
+        'slr-not-modeled-crosshatch',
+        'visibility',
+        'visible'
+      )
+      map.setLayoutProperty('slr-not-modeled-outline', 'visibility', 'visible')
+    } else {
+      map.setLayoutProperty('slr-not-modeled-crosshatch', 'visibility', 'none')
+      map.setLayoutProperty('slr-not-modeled-outline', 'visibility', 'none')
+    }
+  }, [showSLRNodata, isLoaded])
 
   const handleToggleRenderLayerVisible = useCallback(() => {
     const { current: map } = mapRef
@@ -583,6 +618,13 @@ const Map = () => {
             map.setPaintProperty('satellite', 'raster-opacity', 0.75)
           }
 
+          // add crosshatch image back
+          const img = new Image(crosshatch.width, crosshatch.height)
+          img.onload = () => {
+            map.addImage(crosshatch.id, img, crosshatch.options)
+          }
+          img.src = crosshatch.src
+
           // add sources back
           Object.entries(sources).forEach(([id, source]) => {
             // make sure we're not trying to reload the same style, which already has these
@@ -600,7 +642,7 @@ const Map = () => {
 
             const layer = { ...l }
 
-            if (mapMode === 'pixel') {
+            if (mapMode !== 'unit') {
               if (
                 l.id === 'blueprint' ||
                 l.id === 'unit-fill' ||
@@ -642,6 +684,33 @@ const Map = () => {
     belowMinZoom = currentZoom < minPixelLayerZoom
   } else if (mapMode === 'unit') {
     belowMinZoom = currentZoom < minSummaryZoom
+  }
+
+  let legendProps = null
+  if (mapMode === 'unit' || renderLayer === null) {
+    legendProps = {
+      title: 'Blueprint priority',
+      subtitle: 'for a connected network of lands and waters',
+      categories: blueprintCategories,
+    }
+  } else {
+    legendProps = {
+      title: renderLayer.label,
+      subtitle: renderLayer.valueLabel,
+      categories: renderLayer.categories,
+    }
+  }
+  if (showSLRNodata) {
+    legendProps.categories = legendProps.categories.concat([
+      {
+        value: 99,
+        label: slrNodata.label,
+        color: '#FFF',
+        pattern: crosshatch,
+        outlineWidth: 1,
+        outlineColor: '#000000',
+      },
+    ])
   }
 
   return (
@@ -693,21 +762,7 @@ const Map = () => {
           {!isMobile ? (
             <>
               <Legend
-                title={
-                  mapMode === 'unit' || renderLayer === null
-                    ? 'Blueprint priority'
-                    : renderLayer.label
-                }
-                subtitle={
-                  mapMode === 'unit' || renderLayer === null
-                    ? 'for a connected network of lands and waters'
-                    : renderLayer.valueLabel
-                }
-                categories={
-                  mapMode === 'unit' || renderLayer === null
-                    ? blueprintCategories
-                    : renderLayer.categories
-                }
+                {...legendProps}
                 isVisible={isRenderLayerVisible}
                 onToggleVisibility={handleToggleRenderLayerVisible}
               />
