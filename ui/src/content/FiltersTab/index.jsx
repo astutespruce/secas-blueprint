@@ -120,8 +120,8 @@ const FiltersTab = () => {
         <FilterGroup
           id="threats"
           label="Threats"
-          color="#ffffe9"
-          borderColor="grey.1"
+          color="#f3c6a830"
+          borderColor="#f3c6a891"
           entries={threats}
           filters={filters}
           onChange={setFilters}
