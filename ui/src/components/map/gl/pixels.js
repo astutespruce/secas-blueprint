@@ -267,14 +267,6 @@ export const extractPixelData = (
     ),
   }
 
-  // aggregate inland and marine corridors back together
-  let corridors = 0
-  if (data.inland_corridors > 0) {
-    corridors = data.inland_corridors
-  } else if (data.marine_corridors > 0) {
-    corridors = data.marine_corridors + 2
-  }
-
   if (data.urban === undefined || data.urban === null) {
     // if urban is not present but within Blueprint area and not in marine areas, then
     // set to 0
@@ -342,7 +334,6 @@ export const extractPixelData = (
     subregion,
     outsideSEPercent: 0,
     ...data,
-    corridors,
     ownership,
     protection,
     protectedAreas,

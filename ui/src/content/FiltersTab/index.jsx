@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useCallback } from 'react'
 import { Flex } from 'theme-ui'
 
 import {
@@ -14,7 +14,7 @@ import FilterGroup from './FilterGroup'
 
 const FiltersTab = () => {
   const { all: blueprint } = useBlueprintPriorities()
-  const { inlandCorridors, marineCorridors } = useCorridors()
+  const corridors = useCorridors()
 
   const {
     ecosystems: rawEcosystems,
@@ -45,16 +45,25 @@ const FiltersTab = () => {
               .slice(1, blueprint.length),
           },
           {
-            id: 'inland_corridors',
-            label: 'Inland hubs and corridors',
-            values: inlandCorridors,
-            description:
-              'The Blueprint uses a least-cost path connectivity analysis to identify corridors that link hubs across the shortest distance possible, while also routing through as much Blueprint priority as possible.',
-          },
-          {
-            id: 'marine_corridors',
-            label: 'Marine hubs and corridors',
-            values: marineCorridors,
+            id: 'corridors',
+            label: 'Hubs and corridors',
+            // IMPORTANT: values are a custom range that are unpacked to correct
+            // values in handlePriorityFilters below; only endpoints of range
+            // are used
+            values: [
+              {
+                value: 1,
+                label: 'Corridors',
+                description:
+                  'inland corridors connect inland hubs; marine and estuarine corridors connect marine hubs within broad marine mammal movement areas.',
+              },
+              {
+                value: 2,
+                label: 'Hubs',
+                description:
+                  'inland hubs are large patches (~5,000+ acres) of highest priority Blueprint areas and/or protected lands; marine and estuarine hubs are large estuaries and large patches (~5,000+ acres) of highest priority Blueprint areas.',
+              },
+            ],
             description:
               'The Blueprint uses a least-cost path connectivity analysis to identify corridors that link hubs across the shortest distance possible, while also routing through as much Blueprint priority as possible.',
           },
@@ -97,6 +106,47 @@ const FiltersTab = () => {
     []
   )
 
+  const handlePriorityFilters = useCallback(
+    ({ id, enabled, range }) => {
+      if (id === 'corridors' && enabled) {
+        // custom handler to unpack the values used for the range for filtering
+        // to the underying pixel range
+
+        let expandedRange = null
+        if (range[1] === 1) {
+          // if only showing corridors, show inland & marine
+          expandedRange = [1, 2]
+        } else if (range[0] === 2) {
+          // if only showing hubs, show inland & marine
+          expandedRange = [3, 4]
+        } else {
+          // otherwise show full value range
+          expandedRange = [1, 4]
+        }
+
+        setFilters({ id, enabled, range: expandedRange })
+      } else {
+        setFilters({ id, enabled, range })
+      }
+    },
+    // intentionally omitting dependencies; nothing changes after mount
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+    []
+  )
+
+  // re-pack corridor full range to [1,2] range used by slider
+  const { blueprint: blueprintFilter, corridors: corridorsFilter } = filters
+  const priorityFilterState = {
+    blueprint: blueprintFilter,
+    corridors: {
+      enabled: corridorsFilter.enabled,
+      range: [
+        corridorsFilter.range[0] === 3 ? 2 : 1,
+        corridorsFilter.range[1] === 2 ? 1 : 2,
+      ],
+    },
+  }
+
   return (
     <>
       <Flex
@@ -114,8 +164,8 @@ const FiltersTab = () => {
           color="#4d004b0d"
           borderColor="#4d004b2b"
           entries={priorities}
-          filters={filters}
-          onChange={setFilters}
+          filters={priorityFilterState}
+          onChange={handlePriorityFilters}
         />
         <FilterGroup
           id="threats"

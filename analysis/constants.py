@@ -63,8 +63,8 @@ INPUT_AREA_COLORS = {e["value"]: e["color"] for e in INPUTS.values()}
 
 CORRIDORS = json.loads(open(json_dir / "corridors.json").read())
 CORRIDORS_COLORS = {
-    i: entry["color"]
-    for i, entry in enumerate(CORRIDORS)
+    entry["value"]: entry["color"]
+    for entry in CORRIDORS
     if entry.get("color", None) is not None
 }
 ECOSYSTEMS = json.loads(open(json_dir / "ecosystems.json").read())

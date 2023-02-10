@@ -98,7 +98,7 @@ const BlueprintTab = ({
   ...mapData
 }) => {
   const { all: allPriorities } = useBlueprintPriorities()
-  const { corridors: corridorCategories } = useCorridors()
+  const corridorCategories = useCorridors()
   const inputInfo = useInputAreas()[inputId]
 
   // Note: incoming priorities are in descending order but percents
@@ -231,7 +231,13 @@ const BlueprintTab = ({
 
           {type !== 'pixel' ? (
             <CorridorsChart
-              categories={corridorCategories}
+              categories={corridorCategories.map(
+                ({ value, color, ...rest }) => ({
+                  ...rest,
+                  value,
+                  color: value === 0 ? '#ffebc2' : color,
+                })
+              )}
               // sort corridor values to match categories
               corridors={corridorCategories
                 .map(({ value, sort }) => ({ value: corridors[value], sort }))

@@ -29,7 +29,6 @@ src_dir = Path("data/inputs/indicators/base")
 base_blueprint_filename = src_dir / "base_blueprint.tif"
 mask_filename = src_dir / "base_blueprint_mask.tif"
 corridors_filename = src_dir / "corridors.tif"
-corridors_mask_filename = src_dir / "corridors_mask.tif"
 
 
 def detect_indicators_by_mask(mask, window, indicators):

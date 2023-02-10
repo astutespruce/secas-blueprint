@@ -19,8 +19,7 @@ out_dir = Path("data/for_tiles")
 
 # NOTE: all tiles are limited to extent of base blueprint (indicators not available elsewhere)
 blueprint_filename = indicators_dir / "base_blueprint.tif"
-inland_corridors_filename = out_dir / "inland_corridors.tif"
-marine_corridors_filename = out_dir / "marine_corridors.tif"
+corridors_filename = indicators_dir / "corridors.tif"
 urban_filename = data_dir / "threats/urban/urban_2060_binned.tif"
 slr_filename = data_dir / "threats/slr/slr.tif"
 bnd_filename = data_dir / "boundaries/input_areas.feather"
@@ -59,20 +58,12 @@ core = pd.DataFrame(
             "min_value": 0,
             "max_value": 4,
         },
-        # Corridors are split into inland and marine for pixel mode
         {
             "ecosystem": "",
-            "id": "inland_corridors",
-            "filename": inland_corridors_filename,
+            "id": "corridors",
+            "filename": corridors_filename,
             "min_value": 0,
-            "max_value": 2,
-        },
-        {
-            "ecosystem": "",
-            "id": "marine_corridors",
-            "filename": marine_corridors_filename,
-            "min_value": 0,
-            "max_value": 2,
+            "max_value": 4,
         },
         {
             "ecosystem": "threat",

@@ -41,13 +41,9 @@ export const Provider = ({ children }) => {
         range: [1, 4],
       }
 
-      initFilters.inland_corridors = {
+      initFilters.corridors = {
         enabled: false,
-        range: [1, 2],
-      }
-      initFilters.marine_corridors = {
-        enabled: false,
-        range: [1, 2],
+        range: [1, 4],
       }
 
       initFilters.urban = {

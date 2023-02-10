@@ -14,7 +14,7 @@ import { indexBy, sortByFunc } from 'util/data'
 
 const LayerToggle = () => {
   const { renderLayer, setRenderLayer } = useMapData()
-  const { inlandCorridors, marineCorridors } = useCorridors()
+  const corridors = useCorridors()
   const { ecosystems, indicators } = useIndicators()
   const urbanCategories = useUrban()
   const { depth: depthCategories, nodata: slrNodataCategories } = useSLR()
@@ -27,20 +27,13 @@ const LayerToggle = () => {
           label: 'Blueprint priority',
         },
         {
-          id: 'inland_corridors',
-          label: 'Inland hubs and corridors',
-          colors: inlandCorridors.map(({ color }) => color),
-          categories: inlandCorridors
-            .filter(({ value }) => value !== 0)
-            .reverse(),
-        },
-        {
-          id: 'marine_corridors',
-          label: 'Marine hubs and corridors',
-          colors: marineCorridors.map(({ color }) => color),
-          categories: marineCorridors
-            .filter(({ value }) => value !== 0)
-            .reverse(),
+          id: 'corridors',
+          label: 'Hubs and corridors',
+          colors: corridors
+            .slice()
+            .sort(sortByFunc('value'))
+            .map(({ color }) => color),
+          categories: corridors.filter(({ value }) => value > 0),
         },
       ]
 

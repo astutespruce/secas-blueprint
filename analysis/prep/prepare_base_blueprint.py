@@ -280,7 +280,7 @@ if not outfilename.exists():
         )
 
         # Inland corridors are at 30m snapped to blueprint extent
-        inland_data = inland.read(1, window=data_window)
+        inland_corridors_data = inland.read(1, window=data_window)
 
         # Marine corridors are at 90m
         print("Reading and warping marine corridors...")
@@ -292,15 +292,17 @@ if not outfilename.exists():
             transform=src.transform,
             resampling=Resampling.nearest,
         )
-        marine_data = vrt.read()[0]
+        marine_corridors_data = vrt.read()[0]
 
         # consolidate all values into a single raster, writing hubs over corridors
+        # see values in corridors.json
         # 0 = not a hub or corridor, but within data extent
+        # NOTE: per guidance from Amy K., always stack inland on top of marine
         data = np.zeros(shape=src.shape, dtype="uint8")
-        data[inland_data == 1] = 1
-        data[marine_data == 1] = 3
-        data[inland_hubs_data == 1] = 2
+        data[marine_corridors_data == 1] = 2
         data[marine_hubs_data == 1] = 4
+        data[inland_corridors_data == 1] = 1
+        data[inland_hubs_data == 1] = 3
 
         # stamp back in nodata from Blueprint extent
         extent_data = src.read(1)
@@ -325,30 +327,3 @@ if not outfilename.exists():
 
         with rasterio.open(outfilename, "r+") as src:
             src.write_colormap(1, colormap)
-
-    # save inland and marine hubs / corridors to different files for pixel-level rendering
-    inland_corridors = np.zeros(shape=src.shape, dtype="uint8")
-    inland_corridors[inland_data == 1] = 1
-    inland_corridors[inland_hubs_data == 1] = 2
-    inland_corridors[extent_data == np.uint8(src.nodata)] = 255
-
-    write_raster(
-        data_dir / "for_tiles/inland_corridors.tif",
-        inland_corridors,
-        src.transform,
-        crs=src.crs,
-        nodata=NODATA,
-    )
-
-    marine_corridors = np.zeros(shape=src.shape, dtype="uint8")
-    marine_corridors[marine_data == 1] = 1
-    marine_corridors[marine_hubs_data == 1] = 2
-    marine_corridors[extent_data == np.uint8(src.nodata)] = 255
-
-    write_raster(
-        data_dir / "for_tiles/marine_corridors.tif",
-        marine_corridors,
-        src.transform,
-        crs=src.crs,
-        nodata=NODATA,
-    )
