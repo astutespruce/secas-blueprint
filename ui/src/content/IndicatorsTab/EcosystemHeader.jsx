@@ -31,7 +31,7 @@ const EcosystemHeader = ({ id, label, color, borderColor }) => {
           }}
         />
 
-        <Heading as="h4">{label}</Heading>
+        <Heading as="h4">{label} indicators</Heading>
       </Flex>
     </Flex>
   )

@@ -180,6 +180,7 @@ const FiltersTab = () => {
           <FilterGroup
             key={ecosystem.id}
             {...ecosystem}
+            label={`${ecosystem.label} indicators`}
             entries={ecosystem.indicators}
             filters={filters}
             onChange={setFilters}
