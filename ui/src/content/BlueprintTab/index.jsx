@@ -10,7 +10,7 @@ import {
 } from 'components/data'
 import { OutboundLink } from 'components/link'
 import NeedHelp from 'content/NeedHelp'
-import { ifNull, sum } from 'util/data'
+import { ifNull, sortByFunc, sum } from 'util/data'
 
 import BlueprintChart from './BlueprintChart'
 import CorridorsChart from './CorridorsChart'
@@ -140,11 +140,12 @@ const BlueprintTab = ({
   let hasMarine = false
   if (corridors !== null) {
     if (type === 'pixel') {
-      hasInland = corridors <= 1
-      hasMarine = corridors > 1 && corridors < 4
+      // FIXME:
+      hasInland = corridors === 1 || corridors === 2
+      hasMarine = corridors === 3 || corridors === 4
     } else if (corridors.length > 0) {
-      hasInland = sum(corridors.slice(0, 2)) > 0
-      hasMarine = sum(corridors.slice(2, 4)) > 0
+      hasInland = sum(corridors.slice(1, 3)) > 0
+      hasMarine = sum(corridors.slice(3, 5)) > 0
     }
   }
 
@@ -165,26 +166,26 @@ const BlueprintTab = ({
 
   const filterCorridors = ({ value }) => {
     if (type === 'pixel') {
-      if (value === 4) {
+      if (value === 0) {
         return true
       }
-      if (!(hasInland || hasInlandPixelEcosystems) && value <= 1) {
+      if (!(hasInland || hasInlandPixelEcosystems) && value <= 2) {
         return false
       }
-      if (!(hasMarine || hasMarinePixelEcosystems) && value > 1) {
+      if (!(hasMarine || hasMarinePixelEcosystems) && value > 2) {
         return false
       }
       return true
     }
 
     // always exclude not a hub / corridor
-    if (value === 4) {
+    if (value === 0) {
       return false
     }
-    if (!hasInland && value <= 1) {
+    if (!hasInland && value <= 2) {
       return false
     }
-    if (!hasMarine && value > 1) {
+    if (!hasMarine && value > 2) {
       return false
     }
     return true
@@ -230,8 +231,18 @@ const BlueprintTab = ({
 
           {type !== 'pixel' ? (
             <CorridorsChart
-              categories={corridorCategories}
-              corridors={corridors}
+              categories={corridorCategories.map(
+                ({ value, color, ...rest }) => ({
+                  ...rest,
+                  value,
+                  color: value === 0 ? '#ffebc2' : color,
+                })
+              )}
+              // sort corridor values to match categories
+              corridors={corridorCategories
+                .map(({ value, sort }) => ({ value: corridors[value], sort }))
+                .sort(sortByFunc('sort'))
+                .map(({ value }) => value)}
               outsideSEPercent={outsideSEPercent}
             />
           ) : null}
@@ -239,7 +250,7 @@ const BlueprintTab = ({
           {outsideSEPercent < 100 ? (
             <CorridorCategories
               categories={corridorCategories.filter(filterCorridors)}
-              value={type === 'pixel' ? ifNull(corridors, 4) : null}
+              value={type === 'pixel' ? ifNull(corridors, 0) : null}
             />
           ) : null}
         </Box>

@@ -88,7 +88,9 @@ def create_report(maps, results, name=None, area_type=None):
     }
 
     if "corridors" in results:
-        legends["corridors"] = CORRIDORS
+        # custom ordering to put inland first
+        # legends["corridors"] = CORRIDORS[2:0:-1] + CORRIDORS[4:2:-1] + CORRIDORS[:1]
+        legends["corridors"] = sorted(CORRIDORS, key=lambda x: x["order"])
 
     if "urban" in results:
         legends["urban"] = URBAN_LEGEND

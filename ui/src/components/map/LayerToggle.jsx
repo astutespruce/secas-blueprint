@@ -10,7 +10,7 @@ import {
   useUrban,
 } from 'components/data'
 import { BoundModal } from 'components/modal'
-import { indexBy } from 'util/data'
+import { indexBy, sortByFunc } from 'util/data'
 
 const LayerToggle = () => {
   const { renderLayer, setRenderLayer } = useMapData()
@@ -29,10 +29,11 @@ const LayerToggle = () => {
         {
           id: 'corridors',
           label: 'Hubs and corridors',
-          colors: corridors.map(({ color, value }) =>
-            value === 4 ? null : color
-          ),
-          categories: corridors.filter(({ value }) => value !== 4),
+          colors: corridors
+            .slice()
+            .sort(sortByFunc('value'))
+            .map(({ color }) => color),
+          categories: corridors.filter(({ value }) => value > 0),
         },
       ]
 
@@ -40,12 +41,7 @@ const LayerToggle = () => {
         {
           id: 'urban',
           label: 'Probability of urbanization by 2060',
-          colors: urbanCategories
-            .slice()
-            .sort(({ value: leftValue }, { value: rightValue }) =>
-              leftValue < rightValue ? -1 : 1
-            )
-            .map(({ color }) => color),
+          colors: urbanCategories.map(({ color }) => color),
           categories: urbanCategories.filter(({ color }) => color !== null),
         },
         {
@@ -55,7 +51,7 @@ const LayerToggle = () => {
             .concat(slrNodataCategories)
             .map(({ color }) => color),
           categories: depthCategories
-            .concat(slrNodataCategories)
+            .concat(slrNodataCategories.filter(({ value }) => value !== 13))
             .map(({ label, ...rest }, i) => ({
               ...rest,
               label:
@@ -66,6 +62,7 @@ const LayerToggle = () => {
             })),
         },
       ]
+
       const layers = coreLayers.concat(threatLayers)
 
       const groups = [
@@ -89,7 +86,7 @@ const LayerToggle = () => {
             id: groupId,
             label: `${groupLabel} indicators`,
             layers: groupIndicators.map((id) => {
-              const { label, values } = indicatorsIndex[id]
+              const { label, values, valueLabel } = indicatorsIndex[id]
               return {
                 id,
                 label,
@@ -97,6 +94,7 @@ const LayerToggle = () => {
                 categories: values
                   .filter(({ color }) => color !== null)
                   .reverse(),
+                valueLabel,
               }
             }),
           }

@@ -553,52 +553,52 @@
       "values": [
         {
           "value": 1,
-          "label": "Lowest priority (score 0-10)",
+          "label": "Score 0-10 (lowest priority)",
           "color": "#FDFEC0"
         },
         {
           "value": 2,
-          "label": "(score >10-20)",
+          "label": "Score >10-20",
           "color": "#FFD396"
         },
         {
           "value": 3,
-          "label": "(score >20-30)",
+          "label": "Score >20-30",
           "color": "#FFA973"
         },
         {
           "value": 4,
-          "label": "(score >30-40)",
+          "label": "Score >30-40",
           "color": "#FB7D5E"
         },
         {
           "value": 5,
-          "label": "(score >40-50)",
+          "label": "Score >40-50",
           "color": "#EA5562"
         },
         {
           "value": 6,
-          "label": "(score >50-60)",
+          "label": "Score >50-60",
           "color": "#C93E73"
         },
         {
           "value": 7,
-          "label": "(score >60-70)",
+          "label": "Score >60-70",
           "color": "#A3317F"
         },
         {
           "value": 8,
-          "label": "(score >70-80)",
+          "label": "Score >70-80",
           "color": "#7E2482"
         },
         {
           "value": 9,
-          "label": "(score >80-90)",
+          "label": "Score >80-90",
           "color": "#5A167F"
         },
         {
           "value": 10,
-          "label": "Highest priority (score >90-100)",
+          "label": "Score >90-100 (highest priority)",
           "color": "#331068"
         }
       ],
@@ -1253,6 +1253,7 @@
           "color": "#AFB42B"
         }
       ],
+      "presenceLabel": "Seagrass extent",
       "description": "This indicator represents the presence of seagrass in the Atlantic Ocean and Gulf of Mexico. Seagrasses provide food and habitat for a range of marine and estuarine wildlife, including fish, sea turtles, shrimp, crabs, oysters, and more. They also produce oxygen, filter water, control erosion, and buffer storms. Seagrasses serve as an important indicator of the overall health of coastal ecosystems because they are sensitive to water quality and require sufficiently clear water for sunlight to penetrate. This indicator originates from the National Oceanic and Atmospheric Administration's Marine Cadastre.",
       "url": "https://secas-fws.hub.arcgis.com/maps/e699390f4f5d4433b4e24d8b63049e6d/about",
       "subregions": [
@@ -1414,6 +1415,7 @@
           "color": "#546327"
         }
       ],
+      "presenceLabel": "Maritime forest extent",
       "description": "This indicator depicts maritime forest currently present in the South Atlantic. Since maritime forest has been substantially reduced from its historic extent, protecting the remaining acreage of existing maritime forest is important. This indicator originates from Landfire Existing Vegetation Type data.",
       "url": "https://secas-fws.hub.arcgis.com/maps/7efdd58004fb42f3ace28e2f304323ec/about",
       "subregions": ["Atlantic Coastal Plain", "East Gulf Coastal Plain"]
@@ -1430,6 +1432,7 @@
           "color": "#10CBCB"
         }
       ],
+      "presenceLabel": "Stable coastal wetland extent",
       "description": "This indicator uses remote sensing to calculate the unvegetated-vegetated ratio of tidal wetlands, which compares how much of a wetland is not covered by plants (e.g., sediment, rocks, open water) to how much is covered by plants. This ratio, and how it changes over time, is a good surrogate for salt marsh degradation processes like sediment loss and conversion to open water. It helps differentiate between stable marshes that are more resilient, and declining marshes that are more vulnerable to threats like sea-level rise, erosion, and coastal development. This indicator originates from a U.S. Geological Survey project on an unvegetated to vegetated ratio for coastal wetlands.",
       "url": "https://secas-fws.hub.arcgis.com/maps/bc0bc1770c904c33bca16d8857b93d2a/about",
       "goodThreshold": 1,

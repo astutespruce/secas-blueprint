@@ -13,7 +13,7 @@ export const pixelLayers = [
     encoding: [
       { id: 'blueprint', offset: 0, bits: 3, valueShift: 1 },
       { id: 'corridors', offset: 3, bits: 3, valueShift: 1 },
-      { id: 'urban', offset: 6, bits: 3, valueShift: 1 },
+      { id: 'urban', offset: 6, bits: 3, valueShift: 0 },
       { id: 'slr', offset: 9, bits: 4, valueShift: 1 },
       {
         id: 'base:freshwater_imperiledaquaticspecies',

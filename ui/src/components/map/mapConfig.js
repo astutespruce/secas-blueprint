@@ -1,3 +1,4 @@
+import { crosshatch } from './patterns'
 import { siteMetadata } from '../../../gatsby-config'
 
 const { tileHost } = siteMetadata
@@ -152,6 +153,34 @@ export const layers = [
           [12, 6],
         ],
       },
+    },
+  },
+  {
+    id: 'slr-not-modeled-crosshatch',
+    source: 'pixelFeatures',
+    'source-layer': 'slr_not_modeled',
+    minzoom: 3,
+    maxzoom: 14,
+    type: 'fill',
+    layout: {
+      visibility: 'none',
+    },
+    paint: {
+      'fill-pattern': crosshatch.id,
+    },
+  },
+  {
+    id: 'slr-not-modeled-outline',
+    source: 'pixelFeatures',
+    'source-layer': 'slr_not_modeled',
+    minzoom: 3,
+    maxzoom: 14,
+    type: 'line',
+    layout: {
+      visibility: 'none',
+    },
+    paint: {
+      'line-width': 1,
     },
   },
 ]

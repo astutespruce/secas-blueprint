@@ -6,6 +6,7 @@ import { Box, Text } from 'theme-ui'
 import { useSLR } from 'components/data'
 import { OutboundLink } from 'components/link'
 import { LineChart } from 'components/chart'
+import { formatPercent } from 'util/format'
 
 const DataSource = () => (
   <Text sx={{ mt: '2rem', color: 'grey.7', fontSize: 1 }}>
@@ -37,7 +38,7 @@ const SLR = ({ type, depth, nodata }) => {
     if (depth === null) {
       return (
         <Box>
-          <Text sx={{ color: 'grey.7' }}>{nodataCategories[1].label}.</Text>
+          <Text sx={{ color: 'grey.7' }}>{nodataCategories[2].label}.</Text>
           <DataSource />
         </Box>
       )
@@ -66,8 +67,10 @@ const SLR = ({ type, depth, nodata }) => {
     )
   }
 
+  const nodataItems = []
   if (nodata && nodata.length > 0) {
     for (let i = 0; i < 3; i += 1) {
+      // if pixel mode or mostly a single type of nodata, return just that
       if ((type === 'pixel' && nodata === i) || nodata[i] >= 99) {
         return (
           <Box>
@@ -76,13 +79,22 @@ const SLR = ({ type, depth, nodata }) => {
           </Box>
         )
       }
+      if (nodata[i] > 1) {
+        nodataItems.push(
+          `${nodataCategories[i].label
+            .toLowerCase()
+            .replace(/this area is/g, '')
+            .replace(/for this area/g, '')
+            .trim()} (${formatPercent(nodata[i])}% of area)`
+        )
+      }
     }
   }
 
   if (!(depth && depth.length > 0)) {
     return (
       <Box>
-        <Text sx={{ color: 'grey.7' }}>{nodataCategories[1].label}.</Text>
+        <Text sx={{ color: 'grey.7' }}>{nodataCategories[2].label}.</Text>
         <DataSource />
       </Box>
     )
@@ -120,6 +132,12 @@ const SLR = ({ type, depth, nodata }) => {
           margin={{ left: 60, right: 10, top: 10, bottom: 50 }}
         />
       </Box>
+      {nodataItems.length > 0 ? (
+        <Text sx={{ mt: '2rem', color: 'grey.7', fontSize: 1 }}>
+          This subwatershed has additional areas not included in the chart
+          above: {nodataItems.join(', ')}.
+        </Text>
+      ) : null}
       <DataSource />
     </>
   )

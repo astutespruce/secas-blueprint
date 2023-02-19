@@ -73,26 +73,34 @@ bool withinRange(float valueRGB, float offset, float numBits, vec2 range) {
 }
 
 void main(void) {
+  float valueRGB0 = rgbToInt32(texture2D(indicator0, vTexCoord).rgb * 255.0);
+  float valueRGB1 = rgbToInt32(texture2D(indicator1, vTexCoord).rgb * 255.0);
+  float valueRGB2 = rgbToInt32(texture2D(indicator2, vTexCoord).rgb * 255.0);
+  float valueRGB3 = rgbToInt32(texture2D(indicator3, vTexCoord).rgb * 255.0);
+  float valueRGB4 = rgbToInt32(texture2D(indicator4, vTexCoord).rgb * 255.0);
+  float valueRGB5 = rgbToInt32(texture2D(indicator5, vTexCoord).rgb * 255.0);
+
   // canRender is True where all filters are either not set or values are
   // within range
 
+  // replaced dynamically from JS; sets canRender
   // <FILTER_EXPR>
-  // FIXME: this will instead come from filter expr
-  bool canRender = true;
+
+  // bool canRender = true;
 
   float valueRGB;
   if (renderLayerTextureIndex == 0) {
-    valueRGB = rgbToInt32(texture2D(indicator0, vTexCoord).rgb * 255.0);
+    valueRGB = valueRGB0;
   } else if (renderLayerTextureIndex == 1) {
-    valueRGB = rgbToInt32(texture2D(indicator1, vTexCoord).rgb * 255.0);
+    valueRGB = valueRGB1;
   } else if (renderLayerTextureIndex == 2) {
-    valueRGB = rgbToInt32(texture2D(indicator2, vTexCoord).rgb * 255.0);
+    valueRGB = valueRGB2;
   } else if (renderLayerTextureIndex == 3) {
-    valueRGB = rgbToInt32(texture2D(indicator3, vTexCoord).rgb * 255.0);
+    valueRGB = valueRGB3;
   } else if (renderLayerTextureIndex == 4) {
-    valueRGB = rgbToInt32(texture2D(indicator4, vTexCoord).rgb * 255.0);
+    valueRGB = valueRGB4;
   } else if (renderLayerTextureIndex == 5) {
-    valueRGB = rgbToInt32(texture2D(indicator5, vTexCoord).rgb * 255.0);
+    valueRGB = valueRGB5;
   }
   float renderValue = bitwise_and(rshift(valueRGB, renderLayerOffset),
                                   bitmask(renderLayerBits));

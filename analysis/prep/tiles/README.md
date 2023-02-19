@@ -55,7 +55,7 @@ This creates an encoded GeoTIFF for each group of layers.
 These layers are then converted into PNG tiles using `rastertiler-rs`:
 
 ```bash
-../rastertiler-rs/target/release/rastertiler data/for_tiles/se_pixel_layers_<n>.tif tiles/se_pixel_layers_<n>.mbtiles -s 512 -Z 5 -z 14
+../rastertiler-rs/target/release/rastertiler data/for_tiles/se_pixel_layers_<n>.tif tiles/se_pixel_layers_<n>.mbtiles -s 512 -Z 3 -z 14
 ```
 
 (where `n` refers to group index 0..n)

@@ -17,10 +17,6 @@ from analysis.lib.raster import add_overviews, create_lowres_mask, write_raster
 CHUNK_SIZE = 500  # number of rows to read at a time
 NODATA = 255
 
-# NOTE: bins are in counts of runs projected to urbanize
-# bins are 0: 0, 1: >0 to 0.25, 2: > 0.25 to 0.5, 3: >0.5, 4: already urban
-BINS = [0, 0.9999, 12.5, 25]
-
 
 # Create color ramp for outputs
 
@@ -29,10 +25,10 @@ colormap = {
     **{
         i + 1: hex_to_uint8(color) + (255,)
         for i, color in enumerate(
-            interpolate_colormap({1: URBAN_COLORS[1], 50: URBAN_COLORS[3]})
+            interpolate_colormap({1: URBAN_COLORS[4], 50: URBAN_COLORS[2]})
         )
     },
-    51: hex_to_uint8(URBAN_COLORS[4]),
+    51: hex_to_uint8(URBAN_COLORS[1]),
 }
 
 
@@ -174,16 +170,23 @@ if not outfilename.exists():
 
 ### Reclassify 2060 into bins for report and tiles
 print("Reclassifying 2060 for mapping")
-
-colormap = {k: hex_to_uint8(color) + (255,) for k, color in URBAN_COLORS.items()}
-colormap[0] = (255, 255, 255, 0)
+colormap = {
+    k: hex_to_uint8(color) + (255,) if color is not None else (255, 255, 255, 0)
+    for k, color in URBAN_COLORS.items()
+}
 
 with rasterio.open(out_dir / "urban_2060.tif") as src:
     data = src.read(1)
 
-    binned = np.digitize(data, BINS, right=True).astype("uint8") - np.uint8(1)
-    binned[data == 51] = len(BINS)
-    binned[data == NODATA] = NODATA
+    # NOTE: bins are out of 50, so these are 1/2 values
+    # bins are 1: already urban, 2: >50%, 3: >25% to 50%, 4: >0 to 25%, 5: not urban (data==0 inside Blueprint extent)
+    binned = np.empty_like(data)
+    binned[data == 0] = 5  # not urban
+    binned[(data > 0) & (data <= 12.5)] = 4  # moderate (>0-25%)
+    binned[(data > 12.5) & (data <= 25)] = 3  # high (>25-50%)
+    binned[data > 25] = 2  # very high (>50%)
+    binned[data == 51] = 1  # already urban
+    binned[data == 255] = 0  # outside SE
 
     outfilename = out_dir / "urban_2060_binned.tif"
     write_raster(
@@ -191,7 +194,7 @@ with rasterio.open(out_dir / "urban_2060.tif") as src:
         binned,
         transform=src.transform,
         crs=src.crs,
-        nodata=NODATA,
+        nodata=0,
     )
 
     with rasterio.open(outfilename, "r+") as out:
@@ -201,3 +204,18 @@ with rasterio.open(out_dir / "urban_2060.tif") as src:
 
 
 print(f"All done in {time()-start:.2f}s")
+
+# prev was
+#  BINS = [0, 0.9999, 12.5, 25] + 1
+# 0: 0, 1: >0 to 0.125, 2: > 0.125 to 0.25, 3: >0.25, 4: already urban
+# 0,  346926511,   13613714,    4130676,  224396210,
+# 0,  0-0.125: 346926511,   13613714,    4130676,  224396210,
+
+# >>> np.bincount(binned.flat)
+# array([3844310825,   13146293,  346926511, 2216898601])
+
+# >>> np.bincount(binned2.flat, minlength=4)
+# array([3843843404,   13613714,  346926511,          0, 2216898601])
+
+# bins are 1: already urban, 2: >0.25, 3: > 0.125 to 0.25, 4: > 0 to 0.125, 5: 0
+BINS = [25, 12.5, 0.9999, 0]

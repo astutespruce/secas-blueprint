@@ -100,15 +100,18 @@ def extract_slr_by_mask_and_geometry(
     total_slr_acres = slr_acres.sum()
     slr_nodata_acres = rasterized_acres - outside_se_acres - total_slr_acres
 
+    if slr_nodata_acres < 1e-6:
+        slr_nodata_acres = 0
+
     # combine areas not modeled with SLR nodata areas
-    slr_acres[12] += slr_nodata_acres
+    slr_acres[13] += slr_nodata_acres
 
     # if all areas in the polygon have no SLR data, return None
-    if np.allclose(slr_acres[12], rasterized_acres):
+    if np.allclose(slr_acres[13], rasterized_acres):
         return None
 
     # if the only value present is for inland areas where not applicable, show that message
-    if np.allclose(slr_acres[13], rasterized_acres):
+    if np.allclose(slr_acres[12], rasterized_acres):
         return {"na": True}
 
     # accumulate values for 0-10ft
@@ -196,8 +199,10 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
 
         slr_nodata_acres = df.rasterized_acres - df.outside_se - total_slr_acres
 
+        slr_nodata_acres[slr_nodata_acres < 1e-6] = 0
+
         # combine areas not modeled with SLR nodata areas
-        slr_acres[:, 12] += slr_nodata_acres
+        slr_acres[:, 13] += slr_nodata_acres
 
         # accumulate values for bins 0-10
         slr_acres[:, :11] = np.cumsum(slr_acres[:, :11], axis=1)
@@ -212,6 +217,7 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
     )
 
     # only calculate projections where there is data [:12]
+    # (exclude not modeled / inland counties)
     ix = slr.loc[slr[depth_cols + ["not_inundated"]].sum(axis=1) > 0].index.values
     subset = df.loc[ix]
 

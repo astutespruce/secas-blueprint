@@ -1,3 +1,4 @@
+/* eslint-disable default-case */
 import React, { useState, useRef } from 'react'
 import PropTypes from 'prop-types'
 import {
@@ -11,6 +12,7 @@ import {
   useFocus,
   useRole,
   useDismiss,
+  FloatingPortal,
 } from '@floating-ui/react-dom-interactions'
 import { Box, Flex } from 'theme-ui'
 
@@ -23,19 +25,8 @@ const arrowBaseCSS = {
   transform: 'rotate(45deg)',
 }
 
-const bottomArrowCSS = {
-  ...arrowBaseCSS,
-  top: '0.375rem',
-}
-
-const topArrowCSS = {
-  ...arrowBaseCSS,
-  bottom: '0.375rem',
-}
-
-const InfoTooltip = ({ content }) => {
-  // FIXME:
-  const [open, setOpen] = useState(true)
+const InfoTooltip = ({ content, direction, maxWidth }) => {
+  const [open, setOpen] = useState(false)
   const arrowRef = useRef(null)
   const {
     context,
@@ -45,9 +36,13 @@ const InfoTooltip = ({ content }) => {
     floating,
     strategy,
     placement,
-    middlewareData: { arrow: { x: arrowX } = {}, shift: { x: shiftX } = {} },
+    middlewareData: {
+      arrow: { x: arrowX, y: arrowY } = {},
+      shift: { x: shiftX, y: shiftY } = {},
+    },
   } = useFloating({
-    placement: 'top',
+    strategy: 'absolute',
+    placement: direction,
     open,
     onOpenChange: setOpen,
     whileElementsMounted: autoUpdate,
@@ -60,6 +55,43 @@ const InfoTooltip = ({ content }) => {
     useDismiss(context),
   ])
 
+  let arrowCSS = null
+
+  switch (placement) {
+    case 'top': {
+      arrowCSS = {
+        ...arrowBaseCSS,
+        bottom: '0.375rem',
+        left: `${arrowX - (shiftX || 0)}px`,
+      }
+      break
+    }
+    case 'bottom': {
+      arrowCSS = {
+        ...arrowBaseCSS,
+        top: '0.375rem',
+        left: `${arrowX - (shiftX || 0)}px`,
+      }
+      break
+    }
+    case 'left': {
+      arrowCSS = {
+        ...arrowBaseCSS,
+        right: '0.375rem',
+        top: `${arrowY - (shiftY || 0)}px`,
+      }
+      break
+    }
+    case 'right': {
+      arrowCSS = {
+        ...arrowBaseCSS,
+        left: '0.375rem',
+        top: `${arrowY - (shiftY || 0)}px`,
+      }
+      break
+    }
+  }
+
   return (
     <>
       <Flex
@@ -70,71 +102,68 @@ const InfoTooltip = ({ content }) => {
           ml: '0.5em',
           justifyContent: 'center',
           alignItems: 'center',
-          height: '1em',
-          width: '1em',
+          height: '1.25em',
+          width: '1.25em',
           borderRadius: '2em',
           border: '1px solid',
           borderColor: 'grey.3',
-          cursor: 'default',
+          cursor: 'pointer',
+          color: 'grey.7',
           '&:hover': {
-            bg: 'grey.1',
+            bg: 'grey.2',
             borderColor: 'grey.4',
           },
         }}
       >
-        i
+        ?
       </Flex>
-      {open && (
-        <Box
-          ref={floating}
-          {...getFloatingProps()}
-          sx={{
-            position: strategy,
-            top: y ?? 0,
-            left: x ?? 0,
-            p: '0.75rem',
-            zIndex: 10000,
-          }}
-        >
+      <FloatingPortal>
+        {open && (
           <Box
+            ref={floating}
+            {...getFloatingProps()}
             sx={{
-              position: 'relative',
-              zIndex: 2,
-              bg: '#FFF',
-              p: '0.5em',
-              borderRadius: '0.5em',
-              boxShadow: '1px 1px 3px #333',
-              border: '1px solid',
-              borderColor: 'grey.3',
-              overflow: 'hidden',
-              maxWidth: '28rem',
-              fontSize: 1,
+              position: strategy,
+              top: y ?? 0,
+              left: x ?? 0,
+              p: '0.75rem',
+              zIndex: 10000,
             }}
           >
-            {content}
+            <Box
+              sx={{
+                position: 'relative',
+                zIndex: 2,
+                bg: '#FFF',
+                p: '0.5em',
+                borderRadius: '0.5em',
+                boxShadow: '1px 1px 3px #333',
+                border: '1px solid',
+                borderColor: 'grey.3',
+                overflow: 'hidden',
+                maxWidth,
+                fontSize: 1,
+              }}
+            >
+              {content}
+            </Box>
+            <Box ref={arrowRef} sx={arrowCSS} />
           </Box>
-          <Box
-            ref={arrowRef}
-            sx={
-              placement === 'top'
-                ? {
-                    ...topArrowCSS,
-                    left: `${arrowX - (shiftX || 0)}px`,
-                  }
-                : {
-                    ...bottomArrowCSS,
-                    left: `${arrowX - (shiftX || 0)}px`,
-                  }
-            }
-          />
-        </Box>
-      )}
+        )}
+      </FloatingPortal>
     </>
   )
 }
 
 InfoTooltip.propTypes = {
-  content: PropTypes.string.isRequired,
+  content: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
+  direction: PropTypes.string,
+  maxWidth: PropTypes.string,
+}
+
+InfoTooltip.defaultProps = {
+  direction: 'right',
+  maxWidth: '28rem',
 }
 
 export default InfoTooltip

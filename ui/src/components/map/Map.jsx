@@ -21,6 +21,7 @@ import {
   useBlueprintPriorities,
   useMapData,
   useIndicators,
+  useSLR,
 } from 'components/data'
 import { useBreakpoints } from 'components/layout'
 import { useSearch } from 'components/search'
@@ -36,6 +37,7 @@ import { pixelLayers, pixelLayerIndex } from './pixelLayers'
 import { Legend } from './legend'
 import LayerToggle from './LayerToggle'
 import MapModeToggle from './MapModeToggle'
+import { crosshatch } from './patterns'
 import StyleToggle from './StyleToggle'
 import { getCenterAndZoom } from './viewport'
 
@@ -78,6 +80,7 @@ const Map = () => {
     mapMode,
     setData: setMapData,
     renderLayer,
+    filters,
   } = useMapData()
   const mapModeRef = useRef(mapMode)
   const { all: blueprintInfo, categories: blueprintCategories } =
@@ -92,10 +95,13 @@ const Map = () => {
   )
   const { ecosystems: ecosystemInfo, indicators: indicatorInfo } =
     useIndicators()
+  const { nodata: slrNodataValues } = useSLR()
+  const slrNodata = slrNodataValues[slrNodataValues.length - 1]
 
   const [isLoaded, setIsLoaded] = useState(false)
   const [isRenderLayerVisible, setisRenderLayerVisible] = useState(true)
   const isRenderLayerVisibleRef = useRef(true) // ref is used in mapMode useEffect
+  const filtersRef = useRef(null)
   const [currentZoom, setCurrentZoom] = useState(3)
   const highlightIDRef = useRef(null)
   const locationMarkerRef = useRef(null)
@@ -104,7 +110,16 @@ const Map = () => {
   const isMobile = breakpoint === 0
   const { location } = useSearch()
 
+  const showSLRNodata =
+    mapMode !== 'unit' &&
+    ((renderLayer && renderLayer.id === 'slr') ||
+      (filters && filters.slr && filters.slr.enabled))
+
   const getPixelData = useDebouncedCallback(() => {
+    // need to break out of pending events if the mode is different
+    if (mapModeRef.current !== 'pixel') {
+      return
+    }
     const { current: map } = mapRef
     if (!map) return
 
@@ -211,14 +226,16 @@ const Map = () => {
           map.resize()
         }
 
+        // add crosshatch image
+        const img = new Image(crosshatch.width, crosshatch.height)
+        img.onload = () => {
+          map.addImage(crosshatch.id, img, crosshatch.options)
+        }
+        img.src = crosshatch.src
+
         // add sources
         Object.entries(sources).forEach(([id, source]) => {
           map.addSource(id, source)
-        })
-
-        // add normal mapbox layers// add layers
-        layers.forEach((layer) => {
-          map.addLayer(layer, beforeLayer)
         })
 
         // add DeckGL pixel layer
@@ -228,7 +245,6 @@ const Map = () => {
           type: StackedPNGTileLayer,
           refinementStrategy: 'no-overlap',
           opacity: 0.7,
-          // opacity: 1.0,
           filters: null,
           visible: false,
           layers: pixelLayers,
@@ -238,35 +254,18 @@ const Map = () => {
             blueprintColors
           ),
         }
-
         map.addLayer(new MapboxLayer(pixelLayerConfig), beforeLayer)
 
-        // TEMP: debug only
-        // window.renderIndicator = (id) => {
-        //   if (id === null) {
-        //     // reset to Blueprint
-        //     setRenderLayer(null)
-        //     return
-        //   }
-        //   const [indicator] = indicatorInfo.base.indicators.filter(
-        //     ({ id: indicatorId }) => indicatorId === id
-        //   )
-        //   if (!indicator) {
-        //     return
-        //   }
-        //   const colors = indicator.values.map(({ color }) => color)
-        //   setRenderLayer({
-        //     id: indicator.id,
-        //     label: indicator.label,
-        //     colors,
-        //     categories: indicator.values
-        //       .filter(({ color }) => color !== null)
-        //       .reverse(),
-        //   })
-        // }
+        // add normal mapbox layers// add layers
+        layers.forEach((layer) => {
+          map.addLayer(
+            layer,
+            layer.id.startsWith('slr-not-modeled') ? undefined : beforeLayer
+          )
+        })
 
-        // For testing pixel mode if map is created that way
-        if (mapMode === 'pixel') {
+        // if map is initialized in pixel or filter mode
+        if (mapMode === 'pixel' || mapMode === 'filter') {
           map.setLayoutProperty('unit-fill', 'visibility', 'none')
           map.setLayoutProperty('unit-outline', 'visibility', 'none')
           map.setLayoutProperty('blueprint', 'visibility', 'none')
@@ -283,12 +282,14 @@ const Map = () => {
           map.once('idle', getPixelData)
         }
 
-        setCurrentZoom(map.getZoom())
-
         // enable event listener for renderer
-        map.getLayer('pixelLayers').implementation.deck.setProps({
-          onAfterRender: deckGLHandler.handler,
-        })
+        if (mapMode === 'pixel') {
+          map.getLayer('pixelLayers').implementation.deck.setProps({
+            onAfterRender: deckGLHandler.handler,
+          })
+        }
+
+        setCurrentZoom(map.getZoom())
 
         map.on('move', () => {
           if (mapModeRef.current === 'pixel') {
@@ -401,12 +402,47 @@ const Map = () => {
       }
 
       const isVisible = isRenderLayerVisibleRef.current
+      const pixelLayer = map.getLayer('pixelLayers').implementation
 
       // toggle layer visibility
-      if (mapMode === 'pixel') {
-        // immediately try to retrieve pixel data if in pixel mode
-        if (map.getZoom() >= minPixelLayerZoom) {
-          map.once('idle', getPixelData)
+      if (mapMode === 'unit') {
+        map.setLayoutProperty('unit-fill', 'visibility', 'visible')
+        map.setLayoutProperty('unit-outline', 'visibility', 'visible')
+        map.setLayoutProperty(
+          'blueprint',
+          'visibility',
+          isVisible ? 'visible' : 'none'
+        )
+        map.setLayoutProperty('ownership', 'visibility', 'none')
+        map.setLayoutProperty('subregions', 'visibility', 'none')
+
+        // disable pixel layer event listener
+        pixelLayer.deck.setProps({
+          onAfterRender: () => {}, // no-op
+        })
+        pixelLayer.setProps({
+          visible: false,
+          filters: null,
+          data: { visible: false },
+        })
+      } else {
+        const activeFilters = filtersRef.current
+
+        if (mapMode === 'pixel') {
+          // enable pixel layer event listener
+          pixelLayer.deck.setProps({
+            onAfterRender: deckGLHandler.handler,
+          })
+
+          // immediately try to retrieve pixel data if in pixel mode
+          if (map.getZoom() >= minPixelLayerZoom) {
+            map.once('idle', getPixelData)
+          }
+        } else {
+          // disable pixel layer event listener
+          pixelLayer.deck.setProps({
+            onAfterRender: () => {}, // no-op
+          })
         }
 
         map.setLayoutProperty('unit-fill', 'visibility', 'none')
@@ -418,32 +454,14 @@ const Map = () => {
 
         map.setLayoutProperty('ownership', 'visibility', 'visible')
         map.setLayoutProperty('subregions', 'visibility', 'visible')
-        map.getLayer('pixelLayers').implementation.setProps({
+        pixelLayer.setProps({
           visible: true,
-          filters: null,
+          filters: activeFilters,
           // have to use opacity to hide so that pixel mode still works when hidden
           opacity: isVisible ? 0.7 : 0,
           // data prop is used to force deeper reloading of tiles
           data: { visible: true },
         })
-      } else {
-        map.setLayoutProperty('unit-fill', 'visibility', 'visible')
-        map.setLayoutProperty('unit-outline', 'visibility', 'visible')
-        map.setLayoutProperty(
-          'blueprint',
-          'visibility',
-          isVisible ? 'visible' : 'none'
-        )
-        map.setLayoutProperty('ownership', 'visibility', 'none')
-        map.setLayoutProperty('subregions', 'visibility', 'none')
-
-        map.getLayer('pixelLayers').implementation.setProps({
-          visible: false,
-          filters: null,
-          data: { visible: false },
-        })
-
-        // TODO: set filtersRef to null
       }
     },
 
@@ -484,6 +502,25 @@ const Map = () => {
     })
   }, [renderLayer])
 
+  // handler to update filters
+  useIsEqualEffect(() => {
+    if (!isLoaded) return
+    const { current: map } = mapRef
+
+    const activeFilters = Object.entries(filters)
+      .filter(([_, { enabled }]) => enabled)
+      .reduce(
+        (prev, [id, { range }]) => Object.assign(prev, { [id]: range }),
+        {}
+      )
+
+    filtersRef.current = activeFilters
+
+    map.getLayer('pixelLayers').implementation.setProps({
+      filters: activeFilters,
+    })
+  }, [filters])
+
   // handler for setting location
   useIsEqualEffect(() => {
     if (!isLoaded) return
@@ -506,6 +543,24 @@ const Map = () => {
     }
   }, [location, isLoaded])
 
+  // handler for changed showSLRNodata
+  useEffect(() => {
+    if (!isLoaded) return
+    const { current: map } = mapRef
+
+    if (showSLRNodata) {
+      map.setLayoutProperty(
+        'slr-not-modeled-crosshatch',
+        'visibility',
+        'visible'
+      )
+      map.setLayoutProperty('slr-not-modeled-outline', 'visibility', 'visible')
+    } else {
+      map.setLayoutProperty('slr-not-modeled-crosshatch', 'visibility', 'none')
+      map.setLayoutProperty('slr-not-modeled-outline', 'visibility', 'none')
+    }
+  }, [showSLRNodata, isLoaded])
+
   const handleToggleRenderLayerVisible = useCallback(() => {
     const { current: map } = mapRef
     if (!map) return
@@ -513,18 +568,18 @@ const Map = () => {
     setisRenderLayerVisible((prevVisible) => {
       const newIsVisible = !prevVisible
       isRenderLayerVisibleRef.current = newIsVisible
-      if (mapModeRef.current === 'pixel') {
-        map.getLayer('pixelLayers').implementation.setProps({
-          // have to toggle opacity not visibility so that pixel-level identify
-          // still works
-          opacity: newIsVisible ? 0.7 : 0,
-        })
-      } else {
+      if (mapModeRef.current === 'unit') {
         map.setLayoutProperty(
           'blueprint',
           'visibility',
           newIsVisible ? 'visible' : 'none'
         )
+      } else {
+        map.getLayer('pixelLayers').implementation.setProps({
+          // have to toggle opacity not visibility so that pixel-level identify
+          // still works
+          opacity: newIsVisible ? 0.7 : 0,
+        })
       }
       return newIsVisible
     })
@@ -563,6 +618,13 @@ const Map = () => {
             map.setPaintProperty('satellite', 'raster-opacity', 0.75)
           }
 
+          // add crosshatch image back
+          const img = new Image(crosshatch.width, crosshatch.height)
+          img.onload = () => {
+            map.addImage(crosshatch.id, img, crosshatch.options)
+          }
+          img.src = crosshatch.src
+
           // add sources back
           Object.entries(sources).forEach(([id, source]) => {
             // make sure we're not trying to reload the same style, which already has these
@@ -580,7 +642,7 @@ const Map = () => {
 
             const layer = { ...l }
 
-            if (mapMode === 'pixel') {
+            if (mapMode !== 'unit') {
               if (
                 l.id === 'blueprint' ||
                 l.id === 'unit-fill' ||
@@ -600,6 +662,12 @@ const Map = () => {
               layer.filter = ['==', 'id', mapData.id]
             }
 
+            if (l.id.startsWith('slr-not-modeled')) {
+              layer.layout = {
+                visibility: showSLRNodata ? 'visible' : 'none',
+              }
+            }
+
             map.addLayer(layer, beforeLayer)
           })
 
@@ -614,12 +682,41 @@ const Map = () => {
         map.once('idle', updateStyle)
       }
     },
-    [isLoaded, mapData, mapMode]
+    [isLoaded, mapData, mapMode, showSLRNodata]
   )
 
-  // if there is no window, we cannot render this component
-  if (!hasWindow) {
-    return null
+  let belowMinZoom = false
+  if (mapMode === 'pixel') {
+    belowMinZoom = currentZoom < minPixelLayerZoom
+  } else if (mapMode === 'unit') {
+    belowMinZoom = currentZoom < minSummaryZoom
+  }
+
+  let legendProps = null
+  if (mapMode === 'unit' || renderLayer === null) {
+    legendProps = {
+      title: 'Blueprint priority',
+      subtitle: 'for a connected network of lands and waters',
+      categories: blueprintCategories,
+    }
+  } else {
+    legendProps = {
+      title: renderLayer.label,
+      subtitle: renderLayer.valueLabel,
+      categories: renderLayer.categories,
+    }
+  }
+  if (showSLRNodata) {
+    legendProps.categories = legendProps.categories.concat([
+      {
+        value: 99,
+        label: slrNodata.label,
+        color: '#FFF',
+        pattern: crosshatch,
+        outlineWidth: 1,
+        outlineColor: '#000000',
+      },
+    ])
   }
 
   return (
@@ -671,25 +768,11 @@ const Map = () => {
           {!isMobile ? (
             <>
               <Legend
-                title={
-                  mapMode === 'unit' || renderLayer === null
-                    ? 'Blueprint priority'
-                    : renderLayer.label
-                }
-                subtitle={
-                  mapMode === 'unit' || renderLayer === null
-                    ? 'for a connected network of lands and waters'
-                    : null
-                }
-                categories={
-                  mapMode === 'unit' || renderLayer === null
-                    ? blueprintCategories
-                    : renderLayer.categories
-                }
+                {...legendProps}
                 isVisible={isRenderLayerVisible}
                 onToggleVisibility={handleToggleRenderLayerVisible}
               />
-              {mapMode === 'pixel' && !hidePixelLayerToggle ? (
+              {mapMode !== 'unit' && !hidePixelLayerToggle ? (
                 <LayerToggle />
               ) : null}
             </>
@@ -698,11 +781,7 @@ const Map = () => {
           <MapModeToggle
             map={mapRef.current}
             isMobile={isMobile}
-            belowMinZoom={
-              mapMode === 'pixel'
-                ? currentZoom < minPixelLayerZoom
-                : currentZoom < minSummaryZoom
-            }
+            belowMinZoom={belowMinZoom}
           />
 
           <StyleToggle

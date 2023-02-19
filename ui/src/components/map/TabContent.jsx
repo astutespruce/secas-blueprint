@@ -5,8 +5,9 @@ import { ExclamationTriangle } from '@emotion-icons/fa-solid'
 
 import {
   InfoTab,
-  ContactTab,
+  FiltersTab,
   FindLocationTab,
+  ContactTab,
   BlueprintTab,
   IndicatorsTab,
   ThreatsTab,
@@ -18,6 +19,9 @@ const TabContent = ({ tab, mapData }) => {
     switch (tab) {
       case 'info': {
         return <InfoTab />
+      }
+      case 'filter': {
+        return <FiltersTab />
       }
       case 'find': {
         return <FindLocationTab />

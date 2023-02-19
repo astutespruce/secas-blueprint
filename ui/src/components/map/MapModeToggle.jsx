@@ -37,6 +37,10 @@ const desktopCSS = {
 const MapModeToggle = ({ belowMinZoom, isMobile }) => {
   const { data: mapData, mapMode, setMapMode } = useMapData()
 
+  const handleFilterClick = useCallback(() => {
+    setMapMode('filter')
+  }, [setMapMode])
+
   const handlePixelClick = useCallback(() => {
     setMapMode('pixel')
   }, [setMapMode])
@@ -64,13 +68,7 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
           }}
         >
           <Text sx={{ mr: '0.5rem' }}>Show:</Text>
-          <Button
-            variant="group"
-            data-state={mapMode === 'pixel' ? 'active' : null}
-            onClick={handlePixelClick}
-          >
-            Pixel data
-          </Button>
+
           <Button
             variant="group"
             data-state={mapMode === 'unit' ? 'active' : null}
@@ -78,9 +76,28 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
           >
             Summary data
           </Button>
+
+          <Button
+            variant="group"
+            data-state={mapMode === 'pixel' ? 'active' : null}
+            onClick={handlePixelClick}
+          >
+            Pixel data
+          </Button>
+
+          {/* Filter mode is not available for mobile */}
+          {!isMobile ? (
+            <Button
+              variant="group"
+              data-state={mapMode === 'filter' ? 'active' : null}
+              onClick={handleFilterClick}
+            >
+              Pixel filters
+            </Button>
+          ) : null}
         </Flex>
 
-        {belowMinZoom ? (
+        {(mapMode === 'unit' || mapMode === 'pixel') && belowMinZoom ? (
           <Flex
             sx={{
               alignItems: 'center',
@@ -94,33 +111,35 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
             </Text>
           </Flex>
         ) : (
-          <>
-            {mapMode === 'pixel' ? (
-              <Text
-                sx={{
-                  fontSize: 0,
-                  textAlign: 'left',
-                  ml: '0.5rem',
-                  lineHeight: 1,
-                }}
-              >
-                Pan the map behind the crosshairs <br /> to show details in
-                sidebar
-              </Text>
-            ) : (
-              <Text
-                sx={{
-                  fontSize: 0,
-                  textAlign: 'left',
-                  ml: '0.5rem',
-                  lineHeight: 1,
-                }}
-              >
+          <Text
+            sx={{
+              fontSize: 0,
+              textAlign: 'left',
+              ml: '0.5rem',
+              lineHeight: 1,
+            }}
+          >
+            {mapMode === 'unit' ? (
+              <>
                 Select a subwatershed or marine <br />
                 lease block to show details in sidebar
-              </Text>
-            )}
-          </>
+              </>
+            ) : null}
+
+            {mapMode === 'pixel' ? (
+              <>
+                Pan the map behind the crosshairs <br /> to show details in
+                sidebar
+              </>
+            ) : null}
+
+            {mapMode === 'filter' ? (
+              <>
+                Select one or more indicators to filter <br /> and adjust the
+                range to update the map
+              </>
+            ) : null}
+          </Text>
         )}
       </Flex>
     </Box>

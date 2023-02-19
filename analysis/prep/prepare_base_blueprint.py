@@ -280,7 +280,7 @@ if not outfilename.exists():
         )
 
         # Inland corridors are at 30m snapped to blueprint extent
-        inland_data = inland.read(1, window=data_window)
+        inland_corridors_data = inland.read(1, window=data_window)
 
         # Marine corridors are at 90m
         print("Reading and warping marine corridors...")
@@ -292,15 +292,17 @@ if not outfilename.exists():
             transform=src.transform,
             resampling=Resampling.nearest,
         )
-        marine_data = vrt.read()[0]
+        marine_corridors_data = vrt.read()[0]
 
         # consolidate all values into a single raster, writing hubs over corridors
-        # 4 = not a hub or corridor, but within data extent
-        data = np.ones(shape=src.shape, dtype="uint8") * np.uint8(4)
-        data[inland_data == 1] = 1
-        data[marine_data == 1] = 3
-        data[inland_hubs_data == 1] = 0
-        data[marine_hubs_data == 1] = 2
+        # see values in corridors.json
+        # 0 = not a hub or corridor, but within data extent
+        # NOTE: per guidance from Amy K., always stack inland on top of marine
+        data = np.zeros(shape=src.shape, dtype="uint8")
+        data[marine_corridors_data == 1] = 2
+        data[marine_hubs_data == 1] = 4
+        data[inland_corridors_data == 1] = 1
+        data[inland_hubs_data == 1] = 3
 
         # stamp back in nodata from Blueprint extent
         extent_data = src.read(1)

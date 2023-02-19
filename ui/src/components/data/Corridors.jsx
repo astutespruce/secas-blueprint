@@ -8,7 +8,7 @@ import { extractNodes } from 'util/graphql'
 export const useCorridors = () => {
   const { corridors: rawCorridors } = useStaticQuery(graphql`
     query {
-      corridors: allCorridorsJson(sort: { value: ASC }) {
+      corridors: allCorridorsJson(sort: { order: ASC }) {
         edges {
           node {
             value
@@ -21,10 +21,5 @@ export const useCorridors = () => {
     }
   `)
 
-  const corridors = extractNodes(rawCorridors)
-
-  // set color for not a hub / corridor
-  corridors[4].color = '#ffebc2'
-
-  return corridors
+  return extractNodes(rawCorridors)
 }

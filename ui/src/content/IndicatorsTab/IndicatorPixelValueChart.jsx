@@ -24,11 +24,29 @@ const currentPatchCSS = {
   bg: 'grey.6',
 }
 
-const IndicatorPixelValueChart = ({ present, values, goodThreshold }) => {
+const IndicatorPixelValueChart = ({
+  present,
+  values,
+  valueLabel,
+  goodThreshold,
+}) => {
   const [currentValue] = values.filter(({ percent }) => percent === 100)
 
   return (
     <Box sx={{ mt: goodThreshold ? '1.5rem' : '0.25rem' }}>
+      {present && valueLabel ? (
+        <Text
+          sx={{
+            fontSize: 0,
+            color: 'grey.7',
+            mt: '-0.25rem',
+            mb: '0.5rem',
+            lineHeight: 1.2,
+          }}
+        >
+          {valueLabel}
+        </Text>
+      ) : null}
       <Flex sx={{ alignItems: 'center', opacity: present ? 1 : 0.25 }}>
         <Text sx={labelCSS}>Low</Text>
         <Flex
@@ -67,7 +85,7 @@ const IndicatorPixelValueChart = ({ present, values, goodThreshold }) => {
                       position: 'absolute',
                       left: '50%',
                       top: '0.8rem',
-                      ml: '-0.25rem',
+                      ml: '-0.5rem',
                       borderBottom: '0.6rem solid',
                       borderBottomColor: 'grey.9',
                       borderLeft: '0.5rem solid transparent',
@@ -83,7 +101,15 @@ const IndicatorPixelValueChart = ({ present, values, goodThreshold }) => {
       </Flex>
 
       <Text sx={{ color: 'grey.7', fontSize: 0, mt: '1rem' }}>
-        Value: {present ? currentValue.label : 'Not present'}
+        Value:{' '}
+        {present
+          ? currentValue.label
+          : // <>
+            //   {valueLabel
+            //     ? `${valueLabel}: ${currentValue.label.toLowerCase()}`
+            //     : currentValue.label}
+            // </>
+            'Not present'}
       </Text>
     </Box>
   )
@@ -98,10 +124,12 @@ IndicatorPixelValueChart.propTypes = {
       percent: PropTypes.number.isRequired, // will be either 0 (absent) or 100 (present)
     })
   ).isRequired,
+  valueLabel: PropTypes.string,
   goodThreshold: PropTypes.number,
 }
 
 IndicatorPixelValueChart.defaultProps = {
+  valueLabel: null,
   present: false,
   goodThreshold: null,
 }

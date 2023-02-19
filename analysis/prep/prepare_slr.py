@@ -275,15 +275,14 @@ not_applicable_df["geometry"] = make_valid(not_applicable_df.geometry.values)
 df = pd.concat([data_extent_df, not_modeled_df, not_applicable_df], ignore_index=True)
 df = dissolve(df.explode(ignore_index=True), by="group")
 
-
-# rasterize these stacked in the following decreasing precedence: not modeled(12), data extent(11), veil(13)
+# rasterize these stacked in the following decreasing precedence: not modeled(13), data extent(11), veil(12)
 analysis_areas = np.zeros(shape=extent_raster.shape, dtype="uint8")
 rasterize(
     to_dict_all(not_applicable_df.geometry.values),
     extent_raster.shape,
     transform=extent_raster.transform,
     dtype="uint8",
-    default_value=13,
+    default_value=12,
     out=analysis_areas,
 )
 
@@ -301,7 +300,7 @@ rasterize(
     extent_raster.shape,
     transform=extent_raster.transform,
     dtype="uint8",
-    default_value=12,
+    default_value=13,
     out=analysis_areas,
 )
 
@@ -360,6 +359,11 @@ bnd = gp.read_feather(
 df["geometry"] = shapely.intersection(df.geometry.values, bnd)
 
 write_dataframe(df, tmp_dir / "slr_analysis_areas.fgb")
+
+# write areas not modeled for tiles
+df.loc[df.group == "not_modeled"].to_feather(
+    data_dir / "for_tiles/slr_not_modeled.feather"
+)
 
 data_extent = df.loc[df.group == "data_extent"].geometry.values[0]
 

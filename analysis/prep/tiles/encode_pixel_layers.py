@@ -69,8 +69,8 @@ core = pd.DataFrame(
             "ecosystem": "threat",
             "id": "urban",
             "filename": urban_filename,
-            "min_value": 0,
-            "max_value": 4,
+            "min_value": 1,
+            "max_value": 5,
         },
         {
             "ecosystem": "threat",

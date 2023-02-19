@@ -9,31 +9,44 @@ const LegendElement = ({
   color,
   outlineColor,
   outlineWidth,
-}) => (
-  <Flex
-    sx={{
-      alignItems: 'top',
-      lineHeight: 1,
-    }}
-  >
-    {type === 'fill' && (
-      <Box
-        sx={{
-          flex: '0 0 auto',
-          width: '1.25em',
-          height: '1em',
-          borderRadius: '0.25em',
-          mr: '0.25rem',
-          // set transparency to match map
-          bg: `${color}bf`,
-          border: outlineWidth !== 0 ? `${outlineWidth}px solid` : 'none',
-          borderColor: outlineColor,
-        }}
-      />
-    )}
-    <Text>{shortLabel || label}</Text>
-  </Flex>
-)
+  pattern,
+}) => {
+  let backgroundImageCSS = {}
+  if (type === 'fill' && pattern) {
+    backgroundImageCSS = {
+      backgroundImage: `url(${pattern.src})`,
+      backgroundRepeat: 'repeat',
+      backgroundSize: `${pattern.width / 2}px`,
+    }
+  }
+
+  return (
+    <Flex
+      sx={{
+        alignItems: 'top',
+        lineHeight: 1,
+      }}
+    >
+      {type === 'fill' && (
+        <Box
+          sx={{
+            flex: '0 0 auto',
+            width: '1.25em',
+            height: '1em',
+            borderRadius: '0.25em',
+            mr: '0.25rem',
+            // set transparency to match map
+            backgroundColor: `${color}bf`,
+            border: outlineWidth !== 0 ? `${outlineWidth}px solid` : 'none',
+            borderColor: outlineColor,
+            ...backgroundImageCSS,
+          }}
+        />
+      )}
+      <Text>{shortLabel || label}</Text>
+    </Flex>
+  )
+}
 
 LegendElement.propTypes = {
   label: PropTypes.string.isRequired,
@@ -42,6 +55,10 @@ LegendElement.propTypes = {
   color: PropTypes.oneOfType([PropTypes.string, PropTypes.func]).isRequired,
   outlineColor: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
   outlineWidth: PropTypes.number,
+  pattern: PropTypes.shape({
+    src: PropTypes.string.isRequired,
+    width: PropTypes.number.isRequired,
+  }),
 }
 
 LegendElement.defaultProps = {
@@ -49,6 +66,7 @@ LegendElement.defaultProps = {
   type: 'fill',
   outlineColor: null,
   outlineWidth: 0,
+  pattern: null,
 }
 
 export default memo(LegendElement, () => true)

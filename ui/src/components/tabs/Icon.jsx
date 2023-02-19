@@ -14,6 +14,7 @@ import {
   Envelope,
   ExclamationCircle,
   ChartPie,
+  Tasks,
   SlidersH,
   UserFriends,
 } from '@emotion-icons/fa-solid'
@@ -27,6 +28,9 @@ const Icon = ({ name, ...props }) => {
     case 'unit-map': {
       return <Map {...props} />
     }
+    case 'filter': {
+      return <SlidersH {...props} />
+    }
     case 'find': {
       return <SearchLocation {...props} />
     }
@@ -37,7 +41,7 @@ const Icon = ({ name, ...props }) => {
       return <ChartPie {...props} />
     }
     case 'selected-indicators': {
-      return <SlidersH {...props} />
+      return <Tasks {...props} />
     }
     case 'selected-threats': {
       return <ExclamationCircle {...props} />
