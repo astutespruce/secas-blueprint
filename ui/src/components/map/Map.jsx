@@ -467,7 +467,7 @@ const Map = () => {
 
     // intentionally omitting getPixelData; it is static
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
-    [isLoaded, mapMode]
+    [isLoaded, mapMode, showSLRNodata]
   )
 
   // handler for changed mapData
@@ -548,17 +548,19 @@ const Map = () => {
     if (!isLoaded) return
     const { current: map } = mapRef
 
-    if (showSLRNodata) {
-      map.setLayoutProperty(
-        'slr-not-modeled-crosshatch',
-        'visibility',
-        'visible'
-      )
-      map.setLayoutProperty('slr-not-modeled-outline', 'visibility', 'visible')
-    } else {
-      map.setLayoutProperty('slr-not-modeled-crosshatch', 'visibility', 'none')
-      map.setLayoutProperty('slr-not-modeled-outline', 'visibility', 'none')
-    }
+    const slrVisibility =
+      isRenderLayerVisibleRef.current && showSLRNodata ? 'visible' : 'none'
+
+    map.setLayoutProperty(
+      'slr-not-modeled-crosshatch',
+      'visibility',
+      slrVisibility
+    )
+    map.setLayoutProperty(
+      'slr-not-modeled-outline',
+      'visibility',
+      slrVisibility
+    )
   }, [showSLRNodata, isLoaded])
 
   const handleToggleRenderLayerVisible = useCallback(() => {
@@ -580,10 +582,23 @@ const Map = () => {
           // still works
           opacity: newIsVisible ? 0.7 : 0,
         })
+
+        const slrVisibility = showSLRNodata && newIsVisible ? 'visible' : 'none'
+
+        map.setLayoutProperty(
+          'slr-not-modeled-outline',
+          'visibility',
+          slrVisibility
+        )
+        map.setLayoutProperty(
+          'slr-not-modeled-crosshatch',
+          'visibility',
+          slrVisibility
+        )
       }
       return newIsVisible
     })
-  }, [])
+  }, [showSLRNodata])
 
   const handleBasemapChange = useCallback(
     (styleID) => {

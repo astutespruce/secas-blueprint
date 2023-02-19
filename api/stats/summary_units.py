@@ -64,7 +64,16 @@ def get_summary_unit_results(unit_type, unit_id):
 
     else:
         results["exclude_threats"] = True
-        if unit.input_id == "flm":
+
+        if unit.input_id == "base":
+            base_blueprint_results = get_base_blueprint_unit_results(
+                results_dir, unit_id, unit.rasterized_acres
+            )
+            results["inputs"][0].update(base_blueprint_results)
+            if "corridors" in base_blueprint_results:
+                results["corridors"] = base_blueprint_results["corridors"]
+
+        elif unit.input_id == "flm":
             results["inputs"][0].update(
                 get_florida_marine_unit_results(
                     results_dir, unit_id, unit.rasterized_acres
