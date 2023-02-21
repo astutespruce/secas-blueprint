@@ -13,7 +13,7 @@ import React, {
 /* eslint-disable-next-line */
 import mapboxgl from '!mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
-import { Box } from 'theme-ui'
+import { Box, Flex, Spinner } from 'theme-ui'
 import { MapboxLayer } from '@deck.gl/mapbox'
 import { useDebouncedCallback } from 'use-debounce'
 
@@ -105,6 +105,8 @@ const Map = () => {
   const [currentZoom, setCurrentZoom] = useState(3)
   const highlightIDRef = useRef(null)
   const locationMarkerRef = useRef(null)
+  const [mapIsDrawing, setMapIsDrawing] = useState(false)
+  const mapIsDrawingRef = useRef(false)
   const deckGLHandler = useEventHandler(50)
   const breakpoint = useBreakpoints()
   const isMobile = breakpoint === 0
@@ -114,6 +116,12 @@ const Map = () => {
     mapMode !== 'unit' &&
     ((renderLayer && renderLayer.id === 'slr') ||
       (filters && filters.slr && filters.slr.enabled))
+
+  const updateMapIsDrawing = useDebouncedCallback(() => {
+    if (mapIsDrawingRef.current) {
+      setMapIsDrawing(true)
+    }
+  }, 50)
 
   const getPixelData = useDebouncedCallback(() => {
     // need to break out of pending events if the mode is different
@@ -256,6 +264,11 @@ const Map = () => {
         }
         map.addLayer(new MapboxLayer(pixelLayerConfig), beforeLayer)
 
+        map.once('idle', () => {
+          // update state once to trigger other components to update with map object
+          setIsLoaded(() => true)
+        })
+
         // add normal mapbox layers// add layers
         layers.forEach((layer) => {
           map.addLayer(
@@ -297,15 +310,22 @@ const Map = () => {
           }
         })
 
+        map.on('moveend', () => {
+          mapIsDrawingRef.current = true
+          updateMapIsDrawing()
+        })
+
         map.on('zoomend', () => {
           if (mapModeRef.current === 'pixel') {
             getPixelData()
           }
           setCurrentZoom(map.getZoom())
         })
+      })
 
-        // update state once to trigger other components to update with map object
-        setIsLoaded(() => true)
+      map.on('idle', () => {
+        mapIsDrawingRef.current = false
+        setMapIsDrawing(false)
       })
 
       map.on('click', ({ lngLat: point }) => {
@@ -397,72 +417,87 @@ const Map = () => {
       if (!isLoaded) return
       const { current: map } = mapRef
 
-      if (!map.isStyleLoaded()) {
-        return
-      }
+      // use a callback to actually update the layers, since may style may still
+      // be loading
+      const updateVisibleLayers = () => {
+        mapIsDrawingRef.current = true
+        updateMapIsDrawing()
 
-      const isVisible = isRenderLayerVisibleRef.current
-      const pixelLayer = map.getLayer('pixelLayers').implementation
+        const isVisible = isRenderLayerVisibleRef.current
+        const pixelLayer = map.getLayer('pixelLayers').implementation
 
-      // toggle layer visibility
-      if (mapMode === 'unit') {
-        map.setLayoutProperty('unit-fill', 'visibility', 'visible')
-        map.setLayoutProperty('unit-outline', 'visibility', 'visible')
-        map.setLayoutProperty(
-          'blueprint',
-          'visibility',
-          isVisible ? 'visible' : 'none'
-        )
-        map.setLayoutProperty('ownership', 'visibility', 'none')
-        map.setLayoutProperty('subregions', 'visibility', 'none')
+        // toggle layer visibility
+        if (mapMode === 'unit') {
+          map.setLayoutProperty('unit-fill', 'visibility', 'visible')
+          map.setLayoutProperty('unit-outline', 'visibility', 'visible')
+          map.setLayoutProperty(
+            'blueprint',
+            'visibility',
+            isVisible ? 'visible' : 'none'
+          )
+          map.setLayoutProperty('ownership', 'visibility', 'none')
+          map.setLayoutProperty('subregions', 'visibility', 'none')
 
-        // disable pixel layer event listener
-        pixelLayer.deck.setProps({
-          onAfterRender: () => {}, // no-op
-        })
-        pixelLayer.setProps({
-          visible: false,
-          filters: null,
-          data: { visible: false },
-        })
-      } else {
-        const activeFilters = filtersRef.current
-
-        if (mapMode === 'pixel') {
-          // enable pixel layer event listener
-          pixelLayer.deck.setProps({
-            onAfterRender: deckGLHandler.handler,
-          })
-
-          // immediately try to retrieve pixel data if in pixel mode
-          if (map.getZoom() >= minPixelLayerZoom) {
-            map.once('idle', getPixelData)
-          }
-        } else {
           // disable pixel layer event listener
           pixelLayer.deck.setProps({
             onAfterRender: () => {}, // no-op
           })
+          pixelLayer.setProps({
+            visible: false,
+            filters: null,
+            data: { visible: false },
+          })
+        } else {
+          const activeFilters = filtersRef.current
+          if (mapMode === 'pixel') {
+            // enable pixel layer event listener
+            pixelLayer.deck.setProps({
+              onAfterRender: deckGLHandler.handler,
+            })
+
+            // immediately try to retrieve pixel data if in pixel mode
+            if (map.getZoom() >= minPixelLayerZoom) {
+              map.once('idle', getPixelData)
+            }
+          } else {
+            // disable pixel layer event listener
+            pixelLayer.deck.setProps({
+              onAfterRender: () => {}, // no-op
+            })
+          }
+
+          map.setLayoutProperty('unit-fill', 'visibility', 'none')
+          map.setLayoutProperty('unit-outline', 'visibility', 'none')
+          map.setLayoutProperty('blueprint', 'visibility', 'none')
+
+          // reset selected outline
+          map.setFilter('unit-outline-highlight', ['==', 'id', Infinity])
+
+          map.setLayoutProperty('ownership', 'visibility', 'visible')
+          map.setLayoutProperty('subregions', 'visibility', 'visible')
+          pixelLayer.setProps({
+            visible: true,
+            filters: activeFilters,
+            // have to use opacity to hide so that pixel mode still works when hidden
+            opacity: isVisible ? 0.7 : 0,
+            // data prop is used to force deeper reloading of tiles
+            data: { visible: true },
+          })
         }
-
-        map.setLayoutProperty('unit-fill', 'visibility', 'none')
-        map.setLayoutProperty('unit-outline', 'visibility', 'none')
-        map.setLayoutProperty('blueprint', 'visibility', 'none')
-
-        // reset selected outline
-        map.setFilter('unit-outline-highlight', ['==', 'id', Infinity])
-
-        map.setLayoutProperty('ownership', 'visibility', 'visible')
-        map.setLayoutProperty('subregions', 'visibility', 'visible')
-        pixelLayer.setProps({
-          visible: true,
-          filters: activeFilters,
-          // have to use opacity to hide so that pixel mode still works when hidden
-          opacity: isVisible ? 0.7 : 0,
-          // data prop is used to force deeper reloading of tiles
-          data: { visible: true },
-        })
       }
+
+      if (!map.isStyleLoaded()) {
+        map.once('idle', updateVisibleLayers)
+
+        // stop any transitions underway
+        map.stop()
+
+        return
+      }
+      // stop any transitions underway
+      map.stop()
+
+      updateVisibleLayers()
     },
 
     // intentionally omitting getPixelData; it is static
@@ -747,6 +782,23 @@ const Map = () => {
       }}
     >
       <div ref={mapNode} style={{ width: '100%', height: '100%' }} />
+
+      {mapIsDrawing ? (
+        <Flex
+          sx={{
+            position: 'absolute',
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            bg: 'rgba(255, 255, 255, .5)',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Spinner duration={750} />
+        </Flex>
+      ) : null}
 
       {mapMode === 'pixel' && currentZoom >= minPixelLayerZoom ? (
         <Box
