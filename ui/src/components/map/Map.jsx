@@ -121,7 +121,7 @@ const Map = () => {
     if (mapIsDrawingRef.current) {
       setMapIsDrawing(true)
     }
-  }, 50)
+  }, 200)
 
   const getPixelData = useDebouncedCallback(() => {
     // need to break out of pending events if the mode is different
