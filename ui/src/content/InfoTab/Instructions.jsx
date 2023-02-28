@@ -1,6 +1,7 @@
 import React from 'react'
 import { Box, Heading, Paragraph } from 'theme-ui'
 import { TimesCircle } from '@emotion-icons/fa-regular'
+import { LayerGroup } from '@emotion-icons/fa-solid'
 
 import { useBreakpoints } from 'components/layout'
 import { OutboundLink } from 'components/link'
@@ -31,8 +32,9 @@ const MobileInstructions = () => (
       information available.
       <br />
       <br />
-      On the Indicators tab, you can see the average value for each indicator
-      present in that area. Click on an indicator for more information about it.
+      On the indicators tab, you can see which indicators are present in that
+      area. Click on an indicator for more information and to see the range of
+      values that occur there.
       <br />
       <br />
       To unselect the area, click on the <CloseButton /> button in the top bar.
@@ -92,8 +94,9 @@ const DesktopInstructions = () => (
       information available.
       <br />
       <br />
-      On the Indicators tab, you can see the average value for each indicator
-      present in that area. Click on an indicator for more information about it.
+      On the indicators tab, you can see which indicators are present in that
+      area. Click on an indicator for more information and to see the range of
+      values that occur there.
       <br />
       <br />
       You can download a detailed PDF report of the Blueprint, underlying
@@ -134,10 +137,48 @@ const DesktopInstructions = () => (
         Blueprint page of the SECAS Atlas
       </OutboundLink>
       .
+    </Paragraph>
+
+    <Heading as="h4" sx={{ mt: '2rem' }}>
+      Pixel-level filtering:
+    </Heading>
+    <Paragraph sx={{ mt: '0.25rem' }}>
+      Pixel filters allow you to show areas in the map that fall within a range
+      of values for one or more map layers, including the Blueprint and
+      indicators.
       <br />
       <br />
-      To unselect the pixel, click on the <CloseButton /> button in the upper
-      right of the sidebar.
+      Choose <b>Pixel filters</b> from the button bar above the map. Click on
+      the checkbox for a given map layer to enable that layer for filtering the
+      map. Use the range slider to select the range of values that you want to
+      display on the map. You may need to zoom in on the map to see areas that
+      meet your filters.
+      <br />
+      <br />
+      You can select more than one map layer. The filters are evaluating using
+      AND logic, which means that in order for a pixel to display on the map,
+      every map layer that you enable must fall within the range of values you
+      have selected. If you use filters for map layers that do not co-occur at
+      the same location, such as South Atlantic marine mammals and Great Plains
+      perennial grasslands, nothing will display on the map.
+      <br />
+      <br />
+      Pixel filters are more resource intensive, and may take a few moments to
+      display within your browser, especially as you pan or zoom the map.
+    </Paragraph>
+
+    <Heading as="h4" sx={{ mt: '2rem' }}>
+      To display different map layers:
+    </Heading>
+    <Paragraph sx={{ mt: '0.25rem' }}>
+      You can display map layers other than the Blueprint. Choose{' '}
+      <b>Pixel data</b> or <b>Pixel filters</b> from the button bar above the
+      map, and then click on the
+      <Box sx={{ display: 'inline', mx: '0.5rem' }}>
+        <LayerGroup size="1em" />
+      </Box>
+      button in the upper right of the map to display the list of available map
+      layers.
     </Paragraph>
 
     <Heading as="h4" sx={{ mt: '2rem' }}>
