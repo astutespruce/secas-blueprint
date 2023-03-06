@@ -143,28 +143,28 @@ const DesktopInstructions = () => (
       Pixel-level filtering:
     </Heading>
     <Paragraph sx={{ mt: '0.25rem' }}>
-      Pixel filters allow you to show areas in the map that fall within a range
-      of values for one or more map layers, including the Blueprint and
-      indicators.
+      Pixel filters can help you find the part of the Blueprint that aligns with
+      your mission, interests, or specific question. Use the filters to show
+      areas on the map that fall within a range of values for one or more
+      layers, including the Blueprint, hubs and corridors, underlying
+      indicators, and threats.
       <br />
       <br />
-      Choose <b>Pixel filters</b> from the button bar above the map. Click on
-      the checkbox for a given map layer to enable that layer for filtering the
-      map. Use the range slider to select the range of values that you want to
-      display on the map. You may need to zoom in on the map to see areas that
-      meet your filters.
+      Choose <b>Pixel filters</b> from the button bar above the map. Click the
+      checkbox for a given layer to enable it for filtering the map. Use the
+      range slider to select the range of values that you want to display. You
+      may need to zoom in on the map to see areas that meet your filters.
       <br />
       <br />
-      You can select more than one map layer. The filters are evaluating using
-      AND logic, which means that in order for a pixel to display on the map,
-      every map layer that you enable must fall within the range of values you
-      have selected. If you use filters for map layers that do not co-occur at
-      the same location, such as South Atlantic marine mammals and Great Plains
-      perennial grasslands, nothing will display on the map.
+      You can select more than one layer. The filters are evaluated using AND
+      logic, which means that in order for a pixel to display on the map, it
+      must meet all the selected criteria. If you filter by layers that do not
+      co-occur at the same location, such as South Atlantic marine mammals and
+      Great Plains perennial grasslands, nothing will display on the map.
       <br />
       <br />
-      Pixel filters are more resource intensive, and may take a few moments to
-      display within your browser, especially as you pan or zoom the map.
+      Pixel filters may take a few moments to display within your browser,
+      especially as you pan or zoom the map.
     </Paragraph>
 
     <Heading as="h4" sx={{ mt: '2rem' }}>
