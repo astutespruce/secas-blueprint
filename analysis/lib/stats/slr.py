@@ -111,7 +111,10 @@ def extract_slr_by_mask_and_geometry(
         return None
 
     # if the only value present is for inland areas where not applicable, show that message
-    if np.allclose(slr_acres[12], rasterized_acres):
+    # also, if it is a mix of inland areas and nodata, just default to NA as well
+    if np.allclose(slr_acres[12], rasterized_acres) or (
+        (slr_acres[12] > 0) and slr_acres[:11].sum() == 0
+    ):
         return {"na": True}
 
     # accumulate values for 0-10ft
@@ -278,7 +281,7 @@ def get_slr_unit_results(results_dir, unit_id, rasterized_acres):
             }
         }
     """
-    slr_results = read_unit_from_feather(results_dir / "slr.feather", unit_id)
+    slr_results = read_unit_from_feather(results_filename, unit_id)
     if len(slr_results) == 0:
         return {}
 
@@ -289,7 +292,10 @@ def get_slr_unit_results(results_dir, unit_id, rasterized_acres):
         return {}
 
     # if the only value present is for inland areas where not applicable, show that message
-    if np.allclose(unit.not_applicable, rasterized_acres):
+    # also, if it is a mix of inland areas and nodata, just default to NA as well
+    if np.allclose(unit.not_applicable, rasterized_acres) or (
+        unit.not_applicable > 0 and sum(unit[f"depth_{i}"] for i in SLR_DEPTH_BINS) == 0
+    ):
         return {"na": True}
 
     depth = [
