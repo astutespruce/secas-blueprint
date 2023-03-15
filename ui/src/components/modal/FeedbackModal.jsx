@@ -18,10 +18,9 @@ const FeedbackModal = ({ children }) => (
       respond to your comments&mdash;we promise.
       <br />
       <br />
-      Please reach out to the user support contact{' '}
+      Please reach out to{' '}
       <OutboundLink to="http://secassoutheast.org/staff">
-        {' '}
-        for your state
+        Blueprint user support staff
       </OutboundLink>
       .
     </Paragraph>
