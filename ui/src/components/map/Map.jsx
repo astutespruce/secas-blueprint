@@ -707,9 +707,16 @@ const Map = () => {
                   visibility: 'visible',
                 }
               }
-            } else if (l.id === 'unit-outline-highlight' && mapData !== null) {
-              // re-highlight selected layer
-              layer.filter = ['==', 'id', mapData.id]
+            } else {
+              if (l.id === 'blueprint' && !isRenderLayerVisibleRef.current) {
+                layer.layout = {
+                  visibility: 'none',
+                }
+              }
+              if (l.id === 'unit-outline-highlight' && mapData !== null) {
+                // re-highlight selected layer
+                layer.filter = ['==', 'id', mapData.id]
+              }
             }
 
             if (l.id.startsWith('slr-not-modeled')) {

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Heading, Paragraph } from 'theme-ui'
+import { Box, Heading, Paragraph, Text } from 'theme-ui'
 import { TimesCircle } from '@emotion-icons/fa-regular'
 import { LayerGroup } from '@emotion-icons/fa-solid'
 
@@ -170,7 +170,7 @@ const DesktopInstructions = () => (
     <Heading as="h4" sx={{ mt: '2rem' }}>
       To display different map layers:
     </Heading>
-    <Paragraph sx={{ mt: '0.25rem' }}>
+    <Text sx={{ mt: '0.25rem', fontSize: 2, color: 'grey.9' }}>
       You can display map layers other than the Blueprint. Choose{' '}
       <b>Pixel data</b> or <b>Pixel filters</b> from the button bar above the
       map, and then click on the
@@ -179,7 +179,7 @@ const DesktopInstructions = () => (
       </Box>
       button in the upper right of the map to display the list of available map
       layers.
-    </Paragraph>
+    </Text>
 
     <Heading as="h4" sx={{ mt: '2rem' }}>
       To create a custom report for a specific area of interest:
