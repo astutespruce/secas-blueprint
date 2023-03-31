@@ -9,7 +9,7 @@
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.1.5",
     "@floating-ui/react-dom": "^1.0.0",
-    "@floating-ui/react-dom-interactions": "^0.12.0",
+    "@floating-ui/react-dom-interactions": "^0.13.3",
     "@mapbox/geo-viewport": "^0.5.0",
     "@mdx-js/react": "^2.0.0",
     "@sentry/react": "^7.3.1",
@@ -71,9 +71,9 @@
     "eslint-plugin-react": "^7.23.1",
     "eslint-plugin-react-hooks": "^4.2.0",
     "prettier": "^2.2.1",
-    "stylelint": "^14.1.0",
-    "stylelint-config-recommended": "^9.0.0",
-    "stylelint-config-standard": "^29.0.0"
+    "stylelint": "^15.3.0",
+    "stylelint-config-recommended": "^11.0.0",
+    "stylelint-config-standard": "^31.0.0"
   },
   "keywords": [
     "gatsby"
