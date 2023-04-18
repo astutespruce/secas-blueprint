@@ -103,7 +103,8 @@ h1 {
   margin: 0;
 }
 
-h2, .subtitle {
+h2,
+.subtitle {
   margin: 0 0 12pt 0;
 }
 
@@ -480,7 +481,7 @@ table td.highlight-col {
   font-family: Raleway, sans-serif;
   margin-top: -20pt;
   margin-bottom: 12pt;
-  padding: 6pt 12pt;
+  padding: 6pt 6pt 4pt 6pt;
   border-bottom: 1px solid;
   border-top: 1px solid;
   line-height: 1.2;
@@ -489,6 +490,7 @@ table td.highlight-col {
 .ecosystem-header h2,
 .indicator-header h2 {
   margin-bottom: 0;
+  font-size: 24px;
 }
 
 .ecosystem-header h3,

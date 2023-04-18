@@ -1,5 +1,3 @@
-import json
-
 from PIL import Image
 from pymgl import Map
 
