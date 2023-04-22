@@ -158,7 +158,8 @@ const Results = ({
             cursor: 'pointer',
             borderBottom: '1px solid',
             borderBottomColor: 'grey.1',
-            py: '0.75rem',
+            // py: '0.75rem',
+            py: '0.25rem',
             pl: '1rem',
             pr: '1.5rem',
             '&:hover': {
@@ -170,7 +171,7 @@ const Results = ({
           <Box sx={{ pointerEvents: 'none' }}>
             <Text>{name}</Text>
             {address ? (
-              <Text sx={{ fontSize: [0, 1], color: 'grey.7' }}>{address}</Text>
+              <Text sx={{ fontSize: [0], color: 'grey.7' }}>{address}</Text>
             ) : null}
           </Box>
         </Box>

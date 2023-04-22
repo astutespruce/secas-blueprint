@@ -31,6 +31,7 @@ import { useIsEqualEffect, useEventHandler } from 'util/hooks'
 import CrosshairsIcon from 'images/CrosshairsIcon.svg'
 
 import { unpackFeatureData } from './features'
+import FindLocation from './FindLocation'
 import { createRenderTarget, extractPixelData, StackedPNGTileLayer } from './gl'
 import { mapConfig as config, sources, layers } from './mapConfig'
 import { pixelLayers, pixelLayerIndex } from './pixelLayers'
@@ -849,6 +850,8 @@ const Map = () => {
               {mapMode !== 'unit' && !hidePixelLayerToggle ? (
                 <LayerToggle />
               ) : null}
+
+              <FindLocation />
             </>
           ) : null}
 

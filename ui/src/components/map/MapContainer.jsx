@@ -298,22 +298,24 @@ const MapContainer = () => {
             </>
           ) : (
             <>
-              <Box sx={{ flex: '0 0 auto' }}>
-                {mapData !== null && (
-                  <SidebarHeader
-                    {...mapData}
-                    showClose={mapMode !== 'pixel'}
-                    onClose={unsetMapData}
-                  />
-                )}
+              {tab !== 'info' ? (
+                <Box sx={{ flex: '0 0 auto' }}>
+                  {mapData !== null && (
+                    <SidebarHeader
+                      {...mapData}
+                      showClose={mapMode !== 'pixel'}
+                      onClose={unsetMapData}
+                    />
+                  )}
 
-                <DesktopTabs
-                  tab={tab}
-                  mapMode={mapMode}
-                  hasMapData={mapData !== null}
-                  onChange={handleTabChange}
-                />
-              </Box>
+                  <DesktopTabs
+                    tab={tab}
+                    mapMode={mapMode}
+                    hasMapData={mapData !== null}
+                    onChange={handleTabChange}
+                  />
+                </Box>
+              ) : null}
 
               <Box
                 ref={contentNode}

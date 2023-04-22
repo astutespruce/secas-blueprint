@@ -13,9 +13,10 @@ import { searchPlaces, getPlace } from './mapbox'
 const Context = createContext()
 
 export const Provider = ({ children }) => {
-  const [{ query, selectedId }, setState] = useState({
+  const [{ query, selectedId, location }, setState] = useState({
     query: '',
     selectedId: null,
+    location: null,
   })
 
   const setQuery = useCallback((newQuery) => {
@@ -35,16 +36,27 @@ export const Provider = ({ children }) => {
     }))
   }, [])
 
+  const setLocation = useCallback((newLocation) => {
+    setState((prevState) => ({
+      ...prevState,
+      location: newLocation,
+      selectedId: null,
+      query: null,
+    }))
+  }, [])
+
   const providerValue = useMemo(
     () => ({
       query,
       setQuery,
       selectedId,
       setSelectedId,
+      location,
+      setLocation,
     }),
     // other deps do not change
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
-    [query, selectedId]
+    [query, location, selectedId]
   )
 
   return <Context.Provider value={providerValue}>{children}</Context.Provider>
@@ -115,8 +127,6 @@ const useRetriveItemDetails = (selectedId) => {
     console.error('ERROR retrieving result from search API ', error)
   }
 
-  console.log('retrieved location', location)
-
   return {
     isLoading,
     error,
@@ -125,21 +135,24 @@ const useRetriveItemDetails = (selectedId) => {
 }
 
 export const useSearch = () => {
-  const { query, setQuery, selectedId, setSelectedId } = useContext(Context)
+  const { query, setQuery, selectedId, setSelectedId, location, setLocation } =
+    useContext(Context)
 
   const {
     isLoading: suggestionLoading,
     error: suggestionError,
     results,
   } = useSearchSuggestions(query)
-  const { location, error: retrieveError } = useRetriveItemDetails(selectedId)
+  const { location: searchLocation, error: retrieveError } =
+    useRetriveItemDetails(selectedId)
 
   return {
     query,
     setQuery,
     selectedId,
     setSelectedId,
-    location,
+    location: searchLocation || location,
+    setLocation,
     isLoading: suggestionLoading,
     error: suggestionError || retrieveError,
     results,

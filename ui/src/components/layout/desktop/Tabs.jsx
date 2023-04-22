@@ -6,7 +6,7 @@ import { Tabs as BaseTabs } from 'components/tabs'
 
 const defaultTabs = [
   { id: 'info', label: 'Info' },
-  { id: 'find', label: 'Find Location' },
+  // { id: 'find', label: 'Find Location' },
 ]
 
 const filterTabs = [

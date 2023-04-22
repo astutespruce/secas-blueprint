@@ -20,12 +20,6 @@ const Search = () => {
 
   const handleKeyDown = useCallback(
     ({ key }) => {
-      // escape clears everything
-      if (key === 'Escape') {
-        setQuery('')
-        return
-      }
-
       if (!(results && results.length > 0)) {
         return
       }

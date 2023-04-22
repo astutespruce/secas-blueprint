@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react'
 import PropTypes from 'prop-types'
-import { Search, TimesCircle } from '@emotion-icons/fa-solid'
+import { Search, Times } from '@emotion-icons/fa-solid'
 import { Box, Flex, Input } from 'theme-ui'
 
 const SearchField = ({ value, onChange }) => {
@@ -36,16 +36,23 @@ const SearchField = ({ value, onChange }) => {
   }, [value])
 
   return (
-    <Box sx={{ py: '0.5rem', px: '1rem', bg: 'grey.1' }}>
+    <Box
+      sx={{
+        py: '0.5rem',
+        px: '1rem',
+      }}
+    >
       <Flex
         sx={{
-          bg: '#FFF',
+          border: '1px solid',
+          borderColor: 'grey.1',
           px: '0.5rem',
           borderRadius: '0.5rem',
           color: value === '' ? 'grey.4' : 'grey.9',
           alignItems: 'center',
           '&:focus, &:focus-within': {
             color: 'grey.9',
+            borderColor: 'grey.9',
           },
         }}
       >
@@ -74,7 +81,7 @@ const SearchField = ({ value, onChange }) => {
               },
             }}
           >
-            <TimesCircle
+            <Times
               size="1.25em"
               style={{
                 flex: '0 0 auto',
