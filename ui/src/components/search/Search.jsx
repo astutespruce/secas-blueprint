@@ -11,8 +11,8 @@ const Search = () => {
   const {
     query,
     setQuery,
-    location,
-    setLocation,
+    selectedId,
+    setSelectedId,
     isLoading,
     error,
     results,
@@ -66,8 +66,8 @@ const Search = () => {
           index={index}
           isLoading={isLoading}
           error={error}
-          location={location}
-          onSetLocation={setLocation}
+          selectedId={selectedId}
+          setSelectedId={setSelectedId}
         />
       ) : null}
     </Box>

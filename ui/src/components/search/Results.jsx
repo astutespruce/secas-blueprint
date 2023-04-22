@@ -22,8 +22,8 @@ const Results = ({
   index,
   isLoading,
   error,
-  location,
-  onSetLocation,
+  selectedId,
+  setSelectedId,
 }) => {
   const listNode = useRef(null)
 
@@ -39,18 +39,12 @@ const Results = ({
     }
   }, [index])
 
-  const handleSetLocation = useCallback(
+  const handleSelectId = useCallback(
     (nextIndex) => {
-      const { id, name, longitude, latitude } = results[nextIndex]
-
-      onSetLocation({
-        id,
-        name,
-        longitude,
-        latitude,
-      })
+      const { id } = results[nextIndex]
+      setSelectedId(id)
     },
-    [results, onSetLocation]
+    [results, setSelectedId]
   )
 
   const handleClick = useCallback(
@@ -60,10 +54,10 @@ const Results = ({
       },
     }) => {
       if (nextIndex !== undefined) {
-        handleSetLocation(nextIndex)
+        handleSelectId(nextIndex)
       }
     },
-    [handleSetLocation]
+    [handleSelectId]
   )
 
   const handleKeyDown = useCallback(
@@ -74,10 +68,10 @@ const Results = ({
       },
     }) => {
       if (key === 'Enter' && nextIndex !== undefined) {
-        handleSetLocation(nextIndex)
+        handleSelectId(nextIndex)
       }
     },
-    [handleSetLocation]
+    [handleSelectId]
   )
 
   if (error) {
@@ -170,7 +164,7 @@ const Results = ({
             '&:hover': {
               bg: 'grey.0',
             },
-            ...(location && id === location.id ? highlightCSS : {}),
+            ...(id === selectedId ? highlightCSS : {}),
           }}
         >
           <Box sx={{ pointerEvents: 'none' }}>
@@ -189,8 +183,6 @@ Results.propTypes = {
   results: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
-      latitude: PropTypes.number.isRequired,
-      longitude: PropTypes.number.isRequired,
       name: PropTypes.string.isRequired,
       address: PropTypes.string,
     })
@@ -198,13 +190,8 @@ Results.propTypes = {
   index: PropTypes.number,
   isLoading: PropTypes.bool,
   error: PropTypes.object,
-  location: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    latitude: PropTypes.number.isRequired,
-    longitude: PropTypes.number.isRequired,
-    name: PropTypes.string,
-  }),
-  onSetLocation: PropTypes.func.isRequired,
+  selectedId: PropTypes.string,
+  setSelectedId: PropTypes.func.isRequired,
 }
 
 Results.defaultProps = {
@@ -212,7 +199,7 @@ Results.defaultProps = {
   isLoading: false,
   error: null,
   results: [],
-  location: null,
+  selectedId: null,
 }
 
 export default Results

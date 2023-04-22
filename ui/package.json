@@ -52,7 +52,8 @@
     "theme-ui": "^0.15.3",
     "use-debounce": "^9.0.2",
     "use-error-boundary": "^2.0.4",
-    "util": "^0.12.4"
+    "util": "^0.12.4",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.5",
