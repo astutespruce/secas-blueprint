@@ -180,7 +180,7 @@ const LayerToggle = () => {
                 <Box
                   sx={{
                     mr: '0.5rem',
-                    color: isActiveLayer(id) ? 'inherit' : 'grey.6',
+                    color: isActiveLayer(id) ? 'inherit' : 'grey.8',
                   }}
                 >
                   {isActiveLayer(id) ? (

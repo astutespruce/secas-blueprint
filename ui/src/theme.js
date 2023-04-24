@@ -11,6 +11,7 @@ module.exports = {
     ok: '#569031',
     grey: {
       // based on primary
+      // NOTE: values less than 8 do not meet contrast ratio guidelines for text
       0: '#f9f9fa',
       1: '#eceeef',
       2: '#dee1e4',
@@ -88,7 +89,7 @@ module.exports = {
     },
     disabled: {
       cursor: 'not-allowed',
-      color: 'grey.7',
+      color: 'grey.8',
       bg: 'blue.1',
       fontFamily: 'body',
       fontSize: '18px',

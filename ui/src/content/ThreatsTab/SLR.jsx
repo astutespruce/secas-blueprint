@@ -9,7 +9,7 @@ import { LineChart } from 'components/chart'
 import { formatPercent } from 'util/format'
 
 const DataSource = () => (
-  <Text sx={{ mt: '2rem', color: 'grey.7', fontSize: 1 }}>
+  <Text sx={{ mt: '2rem', color: 'grey.8', fontSize: 1 }}>
     Sea level rise estimates derived from the{' '}
     <OutboundLink to="https://coast.noaa.gov/digitalcoast/data/slr.html">
       NOAA sea-level rise inundation data
@@ -38,7 +38,7 @@ const SLR = ({ type, depth, nodata }) => {
     if (depth === null) {
       return (
         <Box>
-          <Text sx={{ color: 'grey.7' }}>{nodataCategories[2].label}.</Text>
+          <Text sx={{ color: 'grey.8' }}>{nodataCategories[2].label}.</Text>
           <DataSource />
         </Box>
       )
@@ -74,7 +74,7 @@ const SLR = ({ type, depth, nodata }) => {
       if ((type === 'pixel' && nodata === i) || nodata[i] >= 99) {
         return (
           <Box>
-            <Text sx={{ color: 'grey.7' }}>{nodataCategories[i].label}.</Text>
+            <Text sx={{ color: 'grey.8' }}>{nodataCategories[i].label}.</Text>
             <DataSource />
           </Box>
         )
@@ -94,7 +94,7 @@ const SLR = ({ type, depth, nodata }) => {
   if (!(depth && depth.length > 0)) {
     return (
       <Box>
-        <Text sx={{ color: 'grey.7' }}>{nodataCategories[2].label}.</Text>
+        <Text sx={{ color: 'grey.8' }}>{nodataCategories[2].label}.</Text>
         <DataSource />
       </Box>
     )
@@ -102,7 +102,7 @@ const SLR = ({ type, depth, nodata }) => {
 
   return (
     <>
-      <Text sx={{ color: 'grey.7' }}>
+      <Text sx={{ color: 'grey.8' }}>
         Extent of flooding by projected sea level rise within this subwatershed:
       </Text>
 
@@ -133,7 +133,7 @@ const SLR = ({ type, depth, nodata }) => {
         />
       </Box>
       {nodataItems.length > 0 ? (
-        <Text sx={{ mt: '2rem', color: 'grey.7', fontSize: 1 }}>
+        <Text sx={{ mt: '2rem', color: 'grey.8', fontSize: 1 }}>
           This subwatershed has additional areas not included in the chart
           above: {nodataItems.join(', ')}.
         </Text>

@@ -12,7 +12,7 @@ const baseCSS = {
   pb: '0.5em',
   px: '1em',
   bg: '#FFF',
-  color: 'grey.7',
+  color: 'grey.8',
   boxShadow: '0 2px 6px #666',
 }
 

@@ -5,6 +5,7 @@ import {
   Button,
   Flex,
   Heading,
+  Label,
   Input,
   Text,
   Divider,
@@ -66,14 +67,21 @@ const UploadForm = ({ onFileChange, onCreateReport }) => {
         <form onSubmit={methods.handleSubmit(handleSubmit)}>
           <Grid columns={[0, 2]} gap={5} sx={{ mt: '2rem' }}>
             <Box>
-              <Heading as="h3" sx={{ mb: '0.5rem' }}>
-                Area Name (optional):
-              </Heading>
-              <Input
-                type="text"
-                name="areaName"
-                {...register('areaName', { required: false })}
-              />
+              <Box>
+                <Label
+                  htmlFor="areaName"
+                  sx={{ mb: '0.5rem', fontWeight: 'bold', fontSize: [3, 4] }}
+                >
+                  Area Name (optional):
+                </Label>
+                <Input
+                  type="text"
+                  id="areaName"
+                  name="areaName"
+                  tabIndex={0}
+                  {...register('areaName', { required: false })}
+                />
+              </Box>
 
               <Flex
                 sx={{
@@ -84,20 +92,22 @@ const UploadForm = ({ onFileChange, onCreateReport }) => {
                 }}
               >
                 <div>
-                  <Heading
-                    as="h3"
+                  <Label
+                    htmlFor="file"
                     sx={{
                       mb: 0,
+                      fontWeight: 'bold',
+                      fontSize: [3, 4],
                     }}
                   >
                     Choose Area of Interest:
-                  </Heading>
+                  </Label>
                   <div>{file && <Text>{file.name}</Text>}</div>
                 </div>
               </Flex>
 
               <Box sx={{ display: file ? 'none' : 'block' }}>
-                <DropZone name="file" />
+                <DropZone name="file" id="file" />
               </Box>
 
               <Divider />
@@ -192,11 +202,11 @@ const UploadForm = ({ onFileChange, onCreateReport }) => {
             },
           }}
         >
-          <Image src={Thumbnail1} />
-          <Image src={Thumbnail2} />
-          <Image src={Thumbnail3} />
-          <Image src={Thumbnail4} />
-          <Image src={Thumbnail5} />
+          <Image src={Thumbnail1} alt="Tool report example screenshot 1" />
+          <Image src={Thumbnail2} alt="Tool report example screenshot 2" />
+          <Image src={Thumbnail3} alt="Tool report example screenshot 3" />
+          <Image src={Thumbnail4} alt="Tool report example screenshot 4" />
+          <Image src={Thumbnail5} alt="Tool report example screenshot 5" />
         </Grid>
         <Paragraph sx={{ mt: '1rem' }}>...and much more!</Paragraph>
       </Box>

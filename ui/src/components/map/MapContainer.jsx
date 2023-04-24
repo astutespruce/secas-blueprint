@@ -266,7 +266,7 @@ const MapContainer = () => {
                     sx={{
                       fontSize: 0,
                       py: '0.2em',
-                      bg: 'accent',
+                      bg: 'primary',
                       px: '0.5rem',
                     }}
                   >

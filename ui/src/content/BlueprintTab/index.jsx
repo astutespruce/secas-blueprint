@@ -195,7 +195,7 @@ const BlueprintTab = ({
     <Box sx={{ py: '2rem', pl: '1rem', pr: '2rem' }}>
       <Box as="section">
         <Heading as="h3">Southeast Blueprint 2022 Priority</Heading>
-        <Text sx={{ color: 'grey.7' }}>
+        <Text sx={{ color: 'grey.9' }}>
           for a connected network of lands and waters
         </Text>
         {type !== 'pixel' ? (
@@ -270,7 +270,7 @@ const BlueprintTab = ({
             <Heading as="h3">Southeast Blueprint Input</Heading>
           </Text>
 
-          <Text sx={{ fontSize: 0, color: 'grey.7', mb: '2rem' }}>
+          <Text sx={{ fontSize: 0, color: 'grey.8', mb: '2rem' }}>
             See{' '}
             <OutboundLink to="https://www.sciencebase.gov/catalog/file/get/62d5816fd34e87fffb2dda77?name=Southeast_Blueprint_2022_Development_Process.pdf">
               Blueprint development process
