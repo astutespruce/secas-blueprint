@@ -146,7 +146,7 @@ const Results = ({
   }
 
   return (
-    <Box ref={listNode}>
+    <Box ref={listNode} className="search-results">
       {results.map(({ id, name, address }, i) => (
         <Box
           key={id}
@@ -158,7 +158,6 @@ const Results = ({
             cursor: 'pointer',
             borderBottom: '1px solid',
             borderBottomColor: 'grey.1',
-            // py: '0.75rem',
             py: '0.25rem',
             pl: '1rem',
             pr: '1.5rem',

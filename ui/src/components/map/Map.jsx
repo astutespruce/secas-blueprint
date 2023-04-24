@@ -564,7 +564,7 @@ const Map = () => {
     if (location !== null) {
       const { current: map } = mapRef
       const { latitude, longitude } = location
-      map.flyTo({ center: [longitude, latitude], zoom: 12 })
+      map.jumpTo({ center: [longitude, latitude], zoom: 12 })
 
       if (locationMarkerRef.current === null) {
         locationMarkerRef.current = new mapboxgl.Marker()

@@ -43,7 +43,7 @@ const Search = () => {
         setIndex(() => nextIndex)
       }
     },
-    [results, index, setQuery]
+    [results, index]
   )
 
   useEffect(() => {

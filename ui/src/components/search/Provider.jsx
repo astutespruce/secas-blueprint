@@ -45,6 +45,15 @@ export const Provider = ({ children }) => {
     }))
   }, [])
 
+  const reset = useCallback(() => {
+    setState((prevState) => ({
+      ...prevState,
+      query: '',
+      selectedId: null,
+      location: null,
+    }))
+  }, [])
+
   const providerValue = useMemo(
     () => ({
       query,
@@ -53,8 +62,9 @@ export const Provider = ({ children }) => {
       setSelectedId,
       location,
       setLocation,
+      reset,
     }),
-    // other deps do not change
+    // callbacks do not change
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
     [query, location, selectedId]
   )
@@ -135,8 +145,15 @@ const useRetriveItemDetails = (selectedId) => {
 }
 
 export const useSearch = () => {
-  const { query, setQuery, selectedId, setSelectedId, location, setLocation } =
-    useContext(Context)
+  const {
+    query,
+    setQuery,
+    selectedId,
+    setSelectedId,
+    location,
+    setLocation,
+    reset,
+  } = useContext(Context)
 
   const {
     isLoading: suggestionLoading,
@@ -147,6 +164,7 @@ export const useSearch = () => {
     useRetriveItemDetails(selectedId)
 
   return {
+    reset,
     query,
     setQuery,
     selectedId,

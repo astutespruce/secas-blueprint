@@ -48,6 +48,7 @@ const Tabs = ({ tabs, activeTab, variant, activeVariant, onChange }) => {
             flex: '1 0 auto',
             p: '0.5em',
             height: '100%',
+            userSelect: 'none',
           }}
         >
           <Box>

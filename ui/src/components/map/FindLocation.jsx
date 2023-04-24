@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import {
   LocationArrow,
   SearchLocation,
@@ -9,7 +9,7 @@ import { Box, Button, Grid, Input, Flex, Spinner, Text } from 'theme-ui'
 
 import { Search, useSearch } from 'components/search'
 import { Tabs } from 'components/tabs'
-import { hasGeolocation } from 'util/dom'
+import { hasGeolocation, hasWindow } from 'util/dom'
 
 const navigatorOptions = {
   enableHighAccuracy: false,
@@ -32,7 +32,7 @@ const controlCSS = {
 
 const inputCSS = {
   flex: '0 0 auto',
-  width: '132px',
+  width: '136px',
   fontSize: 0,
   borderRadius: '0.25rem',
   outline: 'none',
@@ -59,7 +59,7 @@ const FindLocation = () => {
     { isOpen, isPending, tab, lat, lon, isLatValid, isLonValid },
     setState,
   ] = useState({
-    isOpen: true, // FIXME: false,
+    isOpen: false,
     isPending: false,
     tab: 'find',
     lat: '',
@@ -68,7 +68,55 @@ const FindLocation = () => {
     isLonValid: true,
   })
 
-  const { setLocation } = useSearch()
+  const { setLocation, reset: resetSearch } = useSearch()
+
+  const handleShow = useCallback((e) => {
+    e.stopPropagation()
+
+    setState((prevState) => ({
+      ...prevState,
+      isOpen: true,
+    }))
+  }, [])
+
+  const handleHide = useCallback(() => {
+    setState((prevState) => ({
+      ...prevState,
+      isOpen: false,
+    }))
+  }, [])
+
+  // add event listener to the window
+  useEffect(() => {
+    const handleEscape = ({ key }) => {
+      if (key === 'Escape') {
+        if (!isOpen) {
+          return
+        }
+
+        resetSearch()
+        setState(() => ({
+          tab: 'find',
+          lat: '',
+          lon: '',
+          isLatValid: true,
+          isLonValid: true,
+          isPending: false,
+          isOpen: false,
+        }))
+      }
+    }
+
+    if (hasWindow) {
+      document.addEventListener('keydown', handleEscape)
+    }
+
+    return () => {
+      if (hasWindow) {
+        document.removeEventListener('keydown', handleEscape)
+      }
+    }
+  }, [isOpen, resetSearch])
 
   const handleLatitudeChange = ({ target: { value } }) => {
     setState((prevState) => ({
@@ -105,13 +153,6 @@ const FindLocation = () => {
 
     setLocation(null)
   }
-
-  const handleToggle = useCallback(() => {
-    setState((prevState) => ({
-      ...prevState,
-      isOpen: !prevState.isOpen,
-    }))
-  }, [])
 
   const handleGetMyLocation = useCallback(() => {
     setState((prevState) => ({
@@ -158,25 +199,6 @@ const FindLocation = () => {
     [handleSetLocation, isLatValid, isLonValid]
   )
 
-  const handleKeyDown = useCallback(
-    ({ key }) => {
-      // escape clears everything
-      if (key === 'Escape') {
-        setLocation(null)
-        setState(() => ({
-          tab: 'find',
-          lat: '',
-          lon: '',
-          isLatValid: true,
-          isLonValid: true,
-          isPending: false,
-          isOpen: false,
-        }))
-      }
-    },
-    [setLocation]
-  )
-
   const button = (
     <Box
       sx={{
@@ -190,7 +212,7 @@ const FindLocation = () => {
           bg: '#F2F2F2',
         },
       }}
-      onClick={handleToggle}
+      onClick={handleShow}
       title="Find place on map"
     >
       <SearchLocation size="1em" />
@@ -205,21 +227,34 @@ const FindLocation = () => {
 
   return (
     <>
+      <Box
+        sx={{
+          position: 'absolute',
+          zIndex: 20000,
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+          bg: 'rgba(0,0,0,.5)',
+        }}
+        onClick={handleHide}
+      />
+
       {button}
 
       <Box
-        onKeyDown={handleKeyDown}
         sx={{
           ...controlCSS,
-          zIndex: 20000,
+          zIndex: 20001,
           top: '65px',
-          left: '10px',
+          left: '12px',
           border: '1px solid #AAA',
-          boxShadow: '1px 1px 8px #333',
+          boxShadow: '2px 2px 6px #333',
           overflow: 'hidden',
+          userSelect: 'none',
         }}
       >
-        <Flex sx={{ alignItems: 'center', gap: '1rem', mb: '1rem' }}>
+        <Flex sx={{ alignItems: 'center', gap: '1rem', mb: '0.5rem' }}>
           <Text
             sx={{
               ml: '0.5em',
@@ -234,7 +269,7 @@ const FindLocation = () => {
 
           <Button
             variant="close"
-            onClick={handleToggle}
+            onClick={handleHide}
             tabIndex="-1"
             sx={{ flex: '0 0 auto', margin: 0, p: 0, fontSize: '0.8rem' }}
           >
@@ -255,17 +290,20 @@ const FindLocation = () => {
         {tab === 'find' ? (
           <Box
             sx={{
-              width: '334px',
+              maxWidth: '334px',
+              width: '320px',
               mx: '-7px',
               mb: '-6px',
-              //   minHeight: '100px',
               pt: '0.25rem',
+              '& .search-results': {
+                maxWidth: '320px',
+              },
             }}
           >
             <Search />
           </Box>
         ) : (
-          <Box sx={{ width: '320px' }}>
+          <Box sx={{ maxWidth: '318px' }}>
             {isPending ? (
               <Flex
                 sx={{
@@ -292,8 +330,10 @@ const FindLocation = () => {
                       type="number"
                       onChange={handleLatitudeChange}
                       onKeyDown={handleLatLongKeyDown}
+                      autoFocus
                       value={lat}
                       variant={isLatValid ? null : 'input-invalid'}
+                      tabIndex={0}
                       sx={{
                         ...(!isLatValid ? invalidInputCSS : inputCSS),
                       }}
@@ -306,6 +346,7 @@ const FindLocation = () => {
                       onKeyDown={handleLatLongKeyDown}
                       value={lon}
                       variant={isLonValid ? null : 'input-invalid'}
+                      tabIndex={0}
                       sx={{
                         ...(!isLonValid ? invalidInputCSS : inputCSS),
                       }}
