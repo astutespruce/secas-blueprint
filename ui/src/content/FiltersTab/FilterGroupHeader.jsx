@@ -20,6 +20,7 @@ const FilterGroupHeader = ({ id, filterCount, label, color, borderColor }) => {
         <Flex sx={{ alignItems: 'center' }}>
           <Image
             src={icon}
+            alt=""
             sx={{
               width: '2em',
               height: '2em',

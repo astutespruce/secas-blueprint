@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/tabindex-no-positive */
+
 import React from 'react'
 import { Box, Paragraph } from 'theme-ui'
 
@@ -8,7 +10,7 @@ const Intro = () => (
     <Box as="section">
       <Paragraph>
         The Southeast Conservation Blueprint is the primary product of the{' '}
-        <OutboundLink to="https://secassoutheast.org/">
+        <OutboundLink to="https://secassoutheast.org/" tabIndex={1}>
           Southeast Conservation Adaptation Strategy
         </OutboundLink>{' '}
         (SECAS). It is a living, spatial plan to achieve the SECAS vision of a
@@ -18,11 +20,14 @@ const Intro = () => (
         <br />
         <br />
         For more information, visit the{' '}
-        <OutboundLink to="https://secassoutheast.org/blueprint">
+        <OutboundLink to="https://secassoutheast.org/blueprint" tabIndex={1}>
           Blueprint webpage
         </OutboundLink>
         . To view the Blueprint data and make maps, visit the{' '}
-        <OutboundLink to="https://secas-fws.hub.arcgis.com/pages/blueprint">
+        <OutboundLink
+          to="https://secas-fws.hub.arcgis.com/pages/blueprint"
+          tabIndex={1}
+        >
           Blueprint page of the SECAS Atlas
         </OutboundLink>
         .

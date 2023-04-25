@@ -47,7 +47,7 @@ const PixelIndicatorListItem = ({ indicator, onSelect }) => {
     >
       <Text
         sx={{
-          color: present ? 'primary' : 'grey.7',
+          color: present ? 'primary' : 'grey.8',
           fontSize: 2,
           fontWeight: present ? 'bold' : 'unset',
         }}

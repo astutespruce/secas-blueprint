@@ -9,18 +9,26 @@ const Credits = ({ author, url, caption }) => (
     sx={{
       fontSize: 'smaller',
       textAlign: 'right',
-      color: 'grey.6',
+      color: 'grey.8',
       pb: '0.25rem',
       px: '0.5rem',
       a: {
-        color: 'grey.6',
+        color: 'grey.8',
         textDecoration: 'none',
       },
     }}
   >
     {caption ? `${caption} | ` : null}
     Photo:&nbsp;
-    {url ? <OutboundLink to={url}>{author}</OutboundLink> : author}
+    {url ? (
+      // deliberately set high tab index on this, it is not important
+      /* eslint-disable-next-line jsx-a11y/tabindex-no-positive */
+      <OutboundLink to={url} tabIndex={100}>
+        {author}
+      </OutboundLink>
+    ) : (
+      author
+    )}
   </Box>
 )
 

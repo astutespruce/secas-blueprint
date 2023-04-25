@@ -115,8 +115,6 @@ const useRetriveItemDetails = (selectedId) => {
     console.error('ERROR retrieving result from search API ', error)
   }
 
-  console.log('retrieved location', location)
-
   return {
     isLoading,
     error,

@@ -23,7 +23,7 @@ const UrbanCategories = ({ categories, value: currentValue }) => (
         <Text
           sx={{
             flex: '1 1 auto',
-            color: value === currentValue ? 'text' : 'grey.6',
+            color: value === currentValue ? 'text' : 'grey.8',
             fontWeight: value === currentValue ? 'bold' : 'normal',
           }}
         >

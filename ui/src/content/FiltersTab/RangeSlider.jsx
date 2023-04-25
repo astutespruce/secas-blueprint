@@ -19,12 +19,7 @@ const thumbStyle = {
   },
 }
 
-const RangeSlider = ({
-  values,
-  range: [initMin, initMax],
-  goodThreshold,
-  onChange,
-}) => {
+const RangeSlider = ({ values, range: [initMin, initMax], onChange }) => {
   const { domain, intervals } = useMemo(
     () => {
       const valueRange = [values[0].value, values[values.length - 1].value]
@@ -165,12 +160,10 @@ RangeSlider.propTypes = {
     })
   ).isRequired,
   range: PropTypes.arrayOf(PropTypes.number).isRequired,
-  goodThreshold: PropTypes.number,
   onChange: PropTypes.func,
 }
 
 RangeSlider.defaultProps = {
-  goodThreshold: null,
   onChange: () => {},
 }
 

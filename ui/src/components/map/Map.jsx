@@ -57,9 +57,6 @@ const mapWidgetCSS = {
   '.mapboxgl-ctrl-zoom-in, .mapboxgl-ctrl-zoom-out, .mapboxgl-ctrl-compass': {
     display: ['none', 'inherit'],
   },
-  '.mapboxgl-canvas': {
-    outline: 'none',
-  },
   '.mapboxgl-ctrl-attrib.mapboxgl-compact': {
     minHeight: '24px',
   },
@@ -783,8 +780,6 @@ const Map = () => {
         height: '100%',
         flex: '1 1 auto',
         position: 'relative',
-
-        outline: 'none',
         ...mapWidgetCSS,
       }}
     >

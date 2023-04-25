@@ -23,7 +23,7 @@ const IndicatorListItem = ({ indicator, onSelect }) => {
           justifyContent: 'space-between',
           px: '1rem',
           py: '0.25rem',
-          color: 'grey.7',
+          color: 'grey.8',
           cursor: 'default',
           '&:not(:first-of-type)': {
             borderTop: '2px solid',

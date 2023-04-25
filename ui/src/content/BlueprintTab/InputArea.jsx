@@ -54,7 +54,7 @@ const InputArea = ({
         sx={{
           flex: '0 0 auto',
           fontSize: 0,
-          color: 'grey.7',
+          color: 'grey.8',
           textAlign: 'right',
           lineHeight: 1,
         }}

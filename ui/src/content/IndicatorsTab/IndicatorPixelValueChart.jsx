@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Box, Flex, Text } from 'theme-ui'
 
 const labelCSS = {
-  color: 'grey.6',
+  color: 'grey.8',
   fontSize: 0,
   flex: '0 0 auto',
 }
@@ -21,7 +21,7 @@ const patchCSS = {
 
 const currentPatchCSS = {
   ...patchCSS,
-  bg: 'grey.6',
+  bg: 'grey.8',
 }
 
 const IndicatorPixelValueChart = ({
@@ -38,7 +38,7 @@ const IndicatorPixelValueChart = ({
         <Text
           sx={{
             fontSize: 0,
-            color: 'grey.7',
+            color: 'grey.8',
             mt: '-0.25rem',
             mb: '0.5rem',
             lineHeight: 1.2,
@@ -70,7 +70,6 @@ const IndicatorPixelValueChart = ({
                       position: 'absolute',
                       width: '94px',
                       top: '-1.2rem',
-                      color: 'grey.6',
                       fontSize: '10px',
                       borderLeft: '1px dashed',
                       borderLeftColor: 'grey.6',
@@ -100,7 +99,7 @@ const IndicatorPixelValueChart = ({
         <Text sx={labelCSS}>High</Text>
       </Flex>
 
-      <Text sx={{ color: 'grey.7', fontSize: 0, mt: '1rem' }}>
+      <Text sx={{ color: 'grey.8', fontSize: 0, mt: '1rem' }}>
         Value:{' '}
         {present
           ? currentValue.label

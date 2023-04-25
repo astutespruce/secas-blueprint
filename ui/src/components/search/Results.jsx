@@ -78,7 +78,7 @@ const Results = ({
     return (
       <Box
         sx={{
-          color: 'grey.7',
+          color: 'grey.8',
           pl: '1rem',
           pr: '1.5rem',
           py: '2rem',
@@ -111,7 +111,7 @@ const Results = ({
         sx={{
           alignItems: 'center',
           justifyContent: 'center',
-          color: 'grey.7',
+          color: 'grey.8',
           px: '1rem',
           py: '2rem',
         }}
@@ -135,7 +135,7 @@ const Results = ({
         sx={{
           alignItems: 'center',
           justifyContent: 'center',
-          color: 'grey.7',
+          color: 'grey.8',
           px: '1rem',
           py: '2rem',
         }}
@@ -170,7 +170,7 @@ const Results = ({
           <Box sx={{ pointerEvents: 'none' }}>
             <Text>{name}</Text>
             {address ? (
-              <Text sx={{ fontSize: [0, 1], color: 'grey.7' }}>{address}</Text>
+              <Text sx={{ fontSize: [0, 1], color: 'grey.8' }}>{address}</Text>
             ) : null}
           </Box>
         </Box>

@@ -67,7 +67,7 @@ const Legend = ({
               {title}
               {subtitle ? (
                 <Text
-                  sx={{ fontWeight: 'normal', fontSize: 0, color: 'grey.7' }}
+                  sx={{ fontWeight: 'normal', fontSize: 0, color: 'grey.8' }}
                 >
                   {subtitle}
                 </Text>

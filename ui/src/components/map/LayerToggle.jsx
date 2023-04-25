@@ -135,8 +135,10 @@ const LayerToggle = () => {
   return (
     <BoundModal
       title="Choose map layer to show on map"
+      tabIndex={0}
       anchorNode={
         <Flex
+          className="map-button"
           sx={{
             alignItems: 'center',
             justifyContent: 'center',
@@ -180,7 +182,7 @@ const LayerToggle = () => {
                 <Box
                   sx={{
                     mr: '0.5rem',
-                    color: isActiveLayer(id) ? 'inherit' : 'grey.6',
+                    color: isActiveLayer(id) ? 'inherit' : 'grey.8',
                   }}
                 >
                   {isActiveLayer(id) ? (

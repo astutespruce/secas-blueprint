@@ -14,7 +14,7 @@ const IndicatorPercentChart = ({ label, percent, percentSuffix, color }) => (
       }}
     >
       <Text sx={{ flex: '1 1 auto' }}>{label}</Text>
-      <Text sx={{ color: 'grey.6', flex: '0 0 auto', ml: '1em' }}>
+      <Text sx={{ color: 'grey.8', flex: '0 0 auto', ml: '1em' }}>
         {formatPercent(percent)}% {percentSuffix}
       </Text>
     </Flex>
