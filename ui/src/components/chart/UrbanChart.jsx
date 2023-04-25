@@ -41,7 +41,10 @@ const UrbanChart = ({ data, width, height }) => {
     yLabel: `${x}: ${formatNumber(y)}`,
   }))
 
-  const xAxisTicks = xScale.ticks(6).map((x) => ({ x: xScale(x), label: x }))
+  // only show every other tick
+  const xAxisTicks = xScale
+    .ticks(6)
+    .map((x, i) => ({ x: xScale(x), label: i % 2 === 0 ? x : '' }))
 
   const yAxisTicks = yScale
     .ticks(5)

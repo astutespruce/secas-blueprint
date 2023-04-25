@@ -9,7 +9,7 @@ import { DownloadModal } from 'components/report'
 import { formatNumber } from 'util/format'
 
 const SidebarHeader = ({ type, id, name, location, acres, onClose }) => {
-  const { mapMode, filters, resetFilters } = useMapData()
+  const { filters, resetFilters } = useMapData()
   const numFilters = Object.values(filters).filter(
     ({ enabled }) => enabled
   ).length

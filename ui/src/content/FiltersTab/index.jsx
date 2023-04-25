@@ -3,7 +3,6 @@ import { Flex } from 'theme-ui'
 
 import {
   useBlueprintPriorities,
-  useCorridors,
   useIndicators,
   useMapData,
   useSLR,
@@ -14,7 +13,6 @@ import FilterGroup from './FilterGroup'
 
 const FiltersTab = () => {
   const { all: blueprint } = useBlueprintPriorities()
-  const corridors = useCorridors()
 
   const {
     ecosystems: rawEcosystems,

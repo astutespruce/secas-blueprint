@@ -84,7 +84,7 @@ const Modal = ({ children, title, width, onClose }) => {
             <Button
               variant="close"
               onClick={handleClose}
-              tabIndex="-1"
+              tabIndex={0}
               sx={{ flex: '0 0 auto', margin: '0' }}
             >
               <TimesCircle size="1.5em" />

@@ -1,5 +1,5 @@
 from base64 import b64encode
-from datetime import date
+from datetime import date, datetime, timezone
 from io import BytesIO
 from pathlib import Path
 
@@ -106,6 +106,8 @@ def create_report(maps, results, name=None, area_type=None):
 
     context = {
         "date": date.today().strftime("%m/%d/%Y"),
+        # write date in ISO format for embedding in PDF metadata
+        "create_date": datetime.now(timezone.utc).isoformat(),
         "title": title,
         "subtitle": subtitle,
         "url": SITE_URL,
@@ -129,4 +131,6 @@ def create_report(maps, results, name=None, area_type=None):
     # Can add variant="pdf/a-4b" to resolve issues viewing legend patches in
     # some copies of Acrobat Pro; having enabled causes alert in Acrobat Reader
     # / Pro about editing
-    return HTML(BytesIO((template.render(**context)).encode())).write_pdf()
+    return HTML(BytesIO((template.render(**context)).encode())).write_pdf(
+        variant="pdf/ua-1",  # note: will be pdf_variant in Weasyprint 59
+    )

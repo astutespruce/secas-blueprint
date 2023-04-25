@@ -108,7 +108,6 @@ module.exports = {
       bg: 'blue.2',
       py: '0.25em',
       px: '0.75em',
-      outline: 'none',
       color: 'text',
       fontFamily: 'body',
       userSelect: 'none',
@@ -134,14 +133,12 @@ module.exports = {
     },
     close: {
       cursor: 'pointer',
-      outline: 'none',
       background: 'none',
       color: 'grey.5',
       '&:hover': { color: 'grey.9' },
     },
     alertClose: {
       cursor: 'pointer',
-      outline: 'none',
       background: 'none',
       border: '1px solid',
       borderRadius: '1rem',
