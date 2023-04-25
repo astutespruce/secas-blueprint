@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/tabindex-no-positive */
-
 import React from 'react'
 import { Box, Flex, Paragraph, Image } from 'theme-ui'
 
@@ -20,7 +18,7 @@ const Credits = () => (
         <Paragraph sx={{ fontSize: 1, pl: '1rem' }}>
           <b>Citation:</b> Southeast Conservation Adaptation Strategy (SECAS).
           2022. Southeast Conservation Blueprint 2022.{' '}
-          <OutboundLink to="http://secassoutheast.org/blueprint" tabIndex={1}>
+          <OutboundLink to="http://secassoutheast.org/blueprint">
             http://secassoutheast.org/blueprint
           </OutboundLink>
           .
@@ -29,11 +27,11 @@ const Credits = () => (
     </Flex>
     <Paragraph sx={{ fontSize: 1, pt: '1rem' }}>
       This application was developed by{' '}
-      <OutboundLink to="https://astutespruce.com" tabIndex={1}>
+      <OutboundLink to="https://astutespruce.com">
         Astute Spruce, LLC
       </OutboundLink>{' '}
       in partnership with the U.S. Fish and Wildlife Service under the{' '}
-      <OutboundLink to="http://secassoutheast.org/" tabIndex={1}>
+      <OutboundLink to="http://secassoutheast.org/">
         Southeast Conservation Adaptation Strategy
       </OutboundLink>
       .

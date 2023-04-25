@@ -1,7 +1,7 @@
 import React, { memo, useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { Eye, EyeSlash } from '@emotion-icons/fa-solid'
-import { Box, Flex, Text } from 'theme-ui'
+import { Box, Button, Flex, Text } from 'theme-ui'
 
 import LegendElement from './LegendElement'
 
@@ -16,6 +16,12 @@ const Legend = ({
 
   const handleClick = useCallback(() => {
     setIsOpen((prevIsOpen) => !prevIsOpen)
+  }, [])
+
+  const handleKeyDown = useCallback(({ target: { role }, key }) => {
+    if (key === 'Enter' && role === 'button') {
+      setIsOpen((prevIsOpen) => !prevIsOpen)
+    }
   }, [])
 
   const handleToggleVisibility = useCallback(
@@ -43,6 +49,9 @@ const Legend = ({
         userSelect: 'none',
       }}
       onClick={handleClick}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
     >
       {isOpen ? (
         <Box
@@ -73,21 +82,26 @@ const Legend = ({
                 </Text>
               ) : null}
             </Text>
-            <Box
+            <Button
               sx={{
                 flex: '0 0 auto',
                 bg: 'grey.0',
+                color: 'text',
                 border: '1px solid',
                 borderColor: 'grey.7',
                 borderRadius: '0.25em',
                 padding: '0.25em',
                 lineHeight: 1,
+                '&:hover': {
+                  bg: 'grey.1',
+                },
               }}
               title={`Click to ${isVisible ? 'hide' : 'show'}`}
               onClick={handleToggleVisibility}
+              tabIndex={0}
             >
               {isVisible ? <Eye size="1em" /> : <EyeSlash size="1em" />}
-            </Box>
+            </Button>
           </Flex>
           <Box sx={{ fontSize: 0, mt: '0.5em' }}>
             {categories.map((element) => (

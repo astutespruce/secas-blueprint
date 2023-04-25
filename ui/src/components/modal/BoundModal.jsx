@@ -1,12 +1,10 @@
-/* eslint-disable jsx-a11y/tabindex-no-positive */
-
 import React, { useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { Box } from 'theme-ui'
 
 import Modal from './Modal'
 
-const BoundModal = ({ anchorNode, children, title, tabIndex }) => {
+const BoundModal = ({ anchorNode, children, title }) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const handleOpen = useCallback(() => {
@@ -26,11 +24,12 @@ const BoundModal = ({ anchorNode, children, title, tabIndex }) => {
         role="button"
         aria-label={`toggle button for ${title} popup`}
         sx={{
+          // allow focus for LayerToggle
           '&:focus .map-button': {
             boxShadow: '0 0 2px 2px #0096ff',
           },
         }}
-        tabIndex={tabIndex}
+        tabIndex={0}
       >
         {anchorNode}
       </Box>
@@ -48,11 +47,6 @@ BoundModal.propTypes = {
   title: PropTypes.string.isRequired,
   anchorNode: PropTypes.node.isRequired,
   children: PropTypes.node.isRequired,
-  tabIndex: PropTypes.number,
-}
-
-BoundModal.defaultProps = {
-  tabIndex: 0,
 }
 
 export default BoundModal

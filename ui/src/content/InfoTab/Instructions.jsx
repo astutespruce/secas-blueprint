@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/tabindex-no-positive */
-
 import React from 'react'
 import { Box, Heading, Paragraph, Text } from 'theme-ui'
 import { TimesCircle } from '@emotion-icons/fa-regular'
@@ -135,10 +133,7 @@ const DesktopInstructions = () => (
       exactly match the Blueprint and indicator data for that specific ground
       location, especially in areas of high variability in the data. To view and
       / or download more precise spatial data, please visit the{' '}
-      <OutboundLink
-        to="https://secas-fws.hub.arcgis.com/pages/blueprint"
-        tabIndex={1}
-      >
+      <OutboundLink to="https://secas-fws.hub.arcgis.com/pages/blueprint">
         Blueprint page of the SECAS Atlas
       </OutboundLink>
       .

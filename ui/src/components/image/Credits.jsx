@@ -20,15 +20,7 @@ const Credits = ({ author, url, caption }) => (
   >
     {caption ? `${caption} | ` : null}
     Photo:&nbsp;
-    {url ? (
-      // deliberately set high tab index on this, it is not important
-      /* eslint-disable-next-line jsx-a11y/tabindex-no-positive */
-      <OutboundLink to={url} tabIndex={100}>
-        {author}
-      </OutboundLink>
-    ) : (
-      author
-    )}
+    {url ? <OutboundLink to={url}>{author}</OutboundLink> : author}
   </Box>
 )
 

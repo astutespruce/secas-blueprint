@@ -783,7 +783,23 @@ const Map = () => {
         ...mapWidgetCSS,
       }}
     >
-      <div ref={mapNode} style={{ width: '100%', height: '100%' }} />
+      <Box
+        ref={mapNode}
+        sx={{
+          width: '100%',
+          height: '100%',
+          '& canvas': {
+            // borderLeft: '2px solid transparent',
+            borderLeftColor: 'grey.3',
+            borderLeftWidth: ['0px', '2px'],
+            borderLeftStyle: 'solid',
+            '&:focus-visible': {
+              // borderLeftColor: 'blue',
+              borderLeftColor: 'blue !important',
+            },
+          },
+        }}
+      />
 
       {mapIsDrawing ? (
         <Flex

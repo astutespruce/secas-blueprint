@@ -28,9 +28,9 @@ const sidebarCSS = {
   flexDirection: 'column',
   overflowX: 'hidden',
   overflowY: 'hidden',
-  borderRightColor: 'grey.3',
-  borderRightWidth: ['0px', '1px'],
-  borderRightStyle: 'solid',
+  // borderRightColor: 'grey.3',
+  // borderRightWidth: ['0px', '1px'],
+  // borderRightStyle: 'solid',
 }
 
 const mobileSidebarCSS = {

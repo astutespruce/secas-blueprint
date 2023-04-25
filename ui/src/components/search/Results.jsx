@@ -151,7 +151,7 @@ const Results = ({
         <Box
           key={id}
           data-index={i}
-          tabIndex="0"
+          tabIndex={0}
           onKeyDown={handleKeyDown}
           onClick={handleClick}
           sx={{

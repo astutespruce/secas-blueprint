@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/tabindex-no-positive */
-
 import React from 'react'
 import { Box, Flex, Text } from 'theme-ui'
 import {
@@ -64,7 +62,7 @@ const Footer = () => {
       />
 
       <Box sx={{ mx: '0.5em', flex: '0 0 auto' }}>
-        <OutboundLink to="http://secassoutheast.org/blueprint" tabIndex={1}>
+        <OutboundLink to="http://secassoutheast.org/blueprint">
           <Flex sx={{ alignItems: 'center', px: '0.5em' }}>
             <ExternalLinkAlt size="1em" style={{ marginRight: '0.5em' }} />
             <Text>Blueprint webpage</Text>
@@ -77,7 +75,7 @@ const Footer = () => {
       />
 
       <Box sx={{ mx: '0.5em', flex: '0 0 auto' }}>
-        <ContactModal tabIndex="0">
+        <ContactModal>
           <Flex sx={{ alignItems: 'center', px: '0.5em' }}>
             <Envelope size="1em" style={{ marginRight: '0.5em' }} />
             <Text sx={modalLinkCSS}>Contact Us</Text>
@@ -148,9 +146,7 @@ const Footer = () => {
         }}
       >
         Created by U.S. Fish and Wildlife Service and{' '}
-        <OutboundLink to="https://astutespruce.com" tabIndex={1}>
-          Astute Spruce
-        </OutboundLink>
+        <OutboundLink to="https://astutespruce.com">Astute Spruce</OutboundLink>
       </Text>
     </Flex>
   )

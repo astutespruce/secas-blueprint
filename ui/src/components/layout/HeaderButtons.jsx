@@ -8,7 +8,7 @@ import { Link } from 'components/link'
 const HeaderButtons = () => (
   <Flex sx={{ alignItems: 'center', flex: '0 0 auto' }}>
     <Box sx={{ ml: '1rem' }}>
-      <Link tabIndex="0" to="/custom_report">
+      <Link to="/custom_report">
         <Box
           sx={{
             fontWeight: 700,

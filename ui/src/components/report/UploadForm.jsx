@@ -78,7 +78,7 @@ const UploadForm = ({ onFileChange, onCreateReport }) => {
                   type="text"
                   id="areaName"
                   name="areaName"
-                  tabIndex={0}
+                  // tabIndex={0}
                   {...register('areaName', { required: false })}
                 />
               </Box>
