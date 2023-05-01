@@ -52,7 +52,7 @@ const SidebarHeader = ({ type, id, name, location, acres, onClose }) => {
               >
                 <Button
                   onClick={resetFilters}
-                  sx={{ fontSize: 0, py: '0.2em', bg: 'accent', px: '0.5rem' }}
+                  sx={{ fontSize: 0, py: '0.2em', bg: 'primary', px: '0.5rem' }}
                 >
                   <Flex sx={{ alignItems: 'center' }}>
                     <Box sx={{ mr: '0.25em' }}>
