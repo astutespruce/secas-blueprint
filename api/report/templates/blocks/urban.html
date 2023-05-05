@@ -30,7 +30,7 @@
             </div>
 
             <div class="legend">
-                <h4>Probability of urbanization by 2060</h4>
+                <div class="legend-header">Probability of urbanization by 2060</div>
                 {% for item in legends.urban %}
                     <div class="legend-element flex align-center">
                         <div class="legend-patch" style="background: {{item.color}}"></div>
@@ -71,9 +71,9 @@
     <table class="centered">
         <thead>
             <tr>
-                <th class="label">Decade</th>
-                <th class="acres">Acres</th>
-                <th class="percent">Percent of Area</th>
+                <th class="label" scope="col">Decade</th>
+                <th class="acres" scope="col">Acres</th>
+                <th class="percent" scope="col">Percent of Area</th>
             </tr>
         </thead>
         <tbody>

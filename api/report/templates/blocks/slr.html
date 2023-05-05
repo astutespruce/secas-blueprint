@@ -34,7 +34,7 @@
             </div>
 
             <div class="legend flex-grow">
-                <h4>Flooding extent by projected sea-level rise (ft)</h4>
+                <div class="legend-header">Flooding extent by projected sea-level rise (ft)</div>
                 <div class="flex">
                     {% for item in legends.slr %}
                         <div class="flex-grow" style="width: 100%;">
@@ -66,9 +66,9 @@
     <table class="centered">
         <thead>
             <tr>
-                <th class="label">Feet of sea-level rise</th>
-                <th class="acres">Acres</th>
-                <th class="percent">Percent of Area</th>
+                <th class="label" scope="col">Feet of sea-level rise</th>
+                <th class="acres" scope="col">Acres</th>
+                <th class="percent" scope="col">Percent of Area</th>
             </tr>
         </thead>
         <tbody>
@@ -113,7 +113,7 @@
             <tr>
                 <th>SLR Scenario</th>
                 {% for year in range(2020, 2105, 10) %}
-                    <th {% if year == 2060 %}class="highlight-col"{% endif %}>{{year}} (ft)</th>
+                    <th scope="col" {% if year == 2060 %}class="highlight-col"{% endif %}>{{year}} (ft)</th>
                 {% endfor %}
 
             </tr>

@@ -18,7 +18,7 @@
             </div>
 
             <div class="legend">
-                <h4>Priorities for a connected network of lands and waters</h4>
+                <div class="legend-header">Priorities for a connected network of lands and waters</div>
                 <!-- omit not a priority -->
                 {% for item in legends.blueprint[:-1] %}
                     <div class="legend-element flex align-center">
@@ -37,17 +37,15 @@
 </section>
 
 <section>
-    <h2 style="margin: 0;">Priority Categories</h2>
-    <h4 style="margin: 0;">For a connected network of lands and waters</h4>
+    <div style="font-size: 1.5rem; font-weight: bold;">Priority Categories</div>
+    <div style="font-weight: bold;">For a connected network of lands and waters</div>
     <p>
         In total, Blueprint priorities and priority connections cover roughly 50% of the Southeast Blueprint geography.
     </p>
 
     <!-- omit not a priority -->
     {% for item in legends.blueprint[:-1] %}
-        <h4>
-            {{item.label}}
-        </h4>
+        <div style="font-size: 1.1rem; font-weight: bold;">{{item.label}}</div>
         <p>
             {{item.description}}
 
@@ -67,9 +65,9 @@
 <table class="centered">
     <thead>
         <tr>
-            <th class="label">Priority Category</th>
-            <th class="acres">Acres</th>
-            <th class="percent">Percent of Area</th>
+            <th class="label" scope="col">Priority Category</th>
+            <th class="acres" scope="col">Acres</th>
+            <th class="percent" scope="col">Percent of Area</th>
         </tr>
     </thead>
     <tbody>

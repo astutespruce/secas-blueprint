@@ -23,7 +23,7 @@
                 </div>
 
                 <div class="legend">
-                    <h4>Southeast Blueprint Input Areas</h4>
+                    <div class="legend-header">Southeast Blueprint Input Areas</div>
                     {% for item in results.inputs %}
                         <div class="legend-element flex align-center">
                             <div class="legend-patch" style="background: {{item.color}}"></div>
@@ -49,9 +49,9 @@
         <table class="centered">
             <thead>
                 <tr>
-                    <th class="label">Southeast Blueprint Input Area</th>
-                    <th class="acres">Acres</th>
-                    <th class="percent">Percent of Area</th>
+                    <th class="label" scope="col">Southeast Blueprint Input Area</th>
+                    <th class="acres" scope="col">Acres</th>
+                    <th class="percent" scope="col">Percent of Area</th>
                 </tr>
             </thead>
             <tbody>

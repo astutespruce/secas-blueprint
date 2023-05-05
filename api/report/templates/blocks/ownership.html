@@ -4,7 +4,7 @@
 
 <div class="ownership-section">
 <div class="no-break">
-    <h4 id="LandOwnership">Conserved lands ownership</h4>
+    <h3 id="LandOwnership">Conserved lands ownership</h3>
 
     {% if results.ownership %}
         {% if maps.ownership %}
@@ -67,9 +67,9 @@
     <table class="centered">
         <thead>
             <tr>
-                <th class="label">Ownership</th>
-                <th class="acres">Acres</th>
-                <th class="percent">Percent of Area</th>
+                <th class="label" scope="col">Ownership</th>
+                <th class="acres" scope="col">Acres</th>
+                <th class="percent" scope="col">Percent of Area</th>
             </tr>
         </thead>
         <tbody>
@@ -112,7 +112,7 @@
 
 <div class="ownership-section">
 <div class="no-break">
-    <h4 id="Protection">Land protection status</h4>
+    <h3 id="Protection">Land protection status</h3>
 
     {% if results.protection %}
         {% if maps.protection %}
@@ -161,9 +161,9 @@
     <table class="centered">
         <thead>
             <tr>
-                <th class="label">Land Protection Status</th>
-                <th class="acres">Acres</th>
-                <th class="percent">Percent of Area</th>
+                <th class="label" scope="col">Land Protection Status</th>
+                <th class="acres" scope="col">Acres</th>
+                <th class="percent" scope="col">Percent of Area</th>
             </tr>
         </thead>
         <tbody>
@@ -204,7 +204,7 @@
 </div>
 
 {% if results.num_protected_areas %}
-    <h4 id="ProtectedAreas">Protected Areas</h4>
+    <h3 id="ProtectedAreas">Protected Areas</h3>
 
     <ul>
         {% for entry in results.protected_areas %}
@@ -221,17 +221,13 @@
     </ul>
 {% endif %}
 
-
-
 {% if  results.lta_search_radius%}
-    <h4 id="LandTrusts">
-        Nearby land trusts
-    </h4>
+    <h3 id="LandTrusts">Nearby land trusts</h3>
 
     <p>
-    <a href="https://landtrustalliance.org/land-trusts/explore?nearby=false&location={{results.center[1]}}%2C{{results.center[0]}}&radius={{results.lta_search_radius*1609.34}}">Click here</a>
-    to search for land trusts within {{results.lta_search_radius}} miles
-    of this area on the Land Trust Alliance website.
+        <a href="https://landtrustalliance.org/land-trusts/explore?nearby=false&location={{results.center[1]}}%2C{{results.center[0]}}&radius={{results.lta_search_radius*1609.34}}">Click here</a>
+        to search for land trusts within {{results.lta_search_radius}} miles
+        of this area on the Land Trust Alliance website.
     </p>
 {% endif %}
 
