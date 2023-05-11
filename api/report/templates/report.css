@@ -80,12 +80,17 @@ footer {
   margin: 0.15rem 0;
 }
 
-#TableOfContents .tocpagenr {
-  float: right;
-}
-
 #TableOfContents .tocpagenr::after {
   content: target-counter(attr(href), page);
+}
+
+#TableOfContents li {
+  display: flex;
+  justify-content: space-between;
+}
+
+#TableOfContents a {
+  cursor: pointer;
 }
 
 h1,

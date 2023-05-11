@@ -3,26 +3,26 @@
 
   <ol>
     <li>
-      <a href="#About" class="toctext">About the Southeast Blueprint</a>
-      <a href="#About" class="tocpagenr"></a>
+        <a href="#About">About the Southeast Blueprint</a>
+        <a href="#About" class="tocpagenr"></a>
     </li>
 
     <div class="divider"></div>
     <li>
-      <a href="#Blueprint" class="toctext">Southeast Blueprint Priorities</a>
+      <a href="#Blueprint">Southeast Blueprint Priorities</a>
       <a href="#Blueprint" class="tocpagenr"></a>
     </li>
 
     {% if results.promote_base %}
       <div class="divider"></div>
       <li>
-        <a href="#Corridors" class="toctext">Hubs and Corridors</a>
+        <a href="#Corridors">Hubs and Corridors</a>
         <a href="#Corridors" class="tocpagenr"></a>
       </li>
 
       <div class="divider"></div>
       <li>
-        <a href="#IndicatorSummary" class="toctext">Indicator Summary</a>
+        <a href="#IndicatorSummary">Indicator Summary</a>
         <a href="#IndicatorSummary" class="tocpagenr"></a>
       </li>
 
@@ -31,7 +31,7 @@
       {% if (results.inputs|length) > 1 %}
         <div class="divider"></div>
         <li>
-          <a href="#InputAreas" class="toctext">Southeast Blueprint Input Areas</a>
+          <a href="#InputAreas">Southeast Blueprint Input Areas</a>
           <a href="#InputAreas" class="tocpagenr"></a>
         </li>
       {% endif %}
@@ -41,20 +41,20 @@
         {% if src.id == "base" %}
           <div class="divider"></div>
           <li>
-            <a href="#Corridors" class="toctext">Base Blueprint: Hubs and Corridors</a>
+            <a href="#Corridors">Base Blueprint: Hubs and Corridors</a>
             <a href="#Corridors" class="tocpagenr"></a>
           </li>
 
           <div class="divider"></div>
           <li>
-            <a href="#IndicatorSummary" class="toctext">Base Blueprint: Indicator Summary</a>
+            <a href="#IndicatorSummary">Base Blueprint: Indicator Summary</a>
             <a href="#IndicatorSummary" class="tocpagenr"></a>
           </li>
 
         {% else %}
           <div class="divider"></div>
           <li>
-            <a href="#{{src.id}}" class="toctext">{{src.label}}</a>
+            <a href="#{{src.id}}">{{src.label}}</a>
             <a href="#{{src.id}}" class="tocpagenr"></a>
           </li>
         {% endif %}
@@ -65,7 +65,7 @@
     {% if not results.exclude_threats %}
       <div class="divider"></div>
       <li>
-        <a href="#Threats" class="toctext">Threats</a>
+        <a href="#Threats">Threats</a>
         <a href="#Threats" class="tocpagenr"></a>
       </li>
     {% endif %}
@@ -73,14 +73,14 @@
     {% if results.ownership or results.protection %}
       <div class="divider"></div>
       <li>
-        <a href="#Ownership" class="toctext">Ownership and Partners</a>
+        <a href="#Ownership">Ownership and Partners</a>
         <a href="#Ownership" class="tocpagenr"></a>
       </li>
     {% endif %}
 
     <div class="divider"></div>
     <li>
-      <a href="#Credits" class="toctext">Credits</a>
+      <a href="#Credits">Credits</a>
       <a href="#Credits" class="tocpagenr"></a>
     </li>
   </ol>

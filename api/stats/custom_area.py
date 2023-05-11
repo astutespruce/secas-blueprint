@@ -59,7 +59,7 @@ def get_custom_area_results(df):
 
     config = get_shape_mask(shapes, bounds)
 
-    # there was an intersection but no data once rasterized
+    # there was an intersection but no data once rasterized (e.g., slivers)
     if config["rasterized_acres"] == 0:
         return None
 

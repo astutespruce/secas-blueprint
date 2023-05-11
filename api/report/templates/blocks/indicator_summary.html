@@ -19,7 +19,9 @@
                     {% for indicator in ecosystem.indicator_summary %}
                         <tr>
                         {% if indicator.present %}
-                            <td class="label"><a href="#{{indicator.id}}">{{indicator.label}}</a></td>
+                            <td class="label">
+                                <a href="#{{indicator.id}}">{{indicator.label}}</a>
+                            </td>
                             <td>&check;</td>
                         {% else %}
                             <td class="label indicator-absent">{{indicator.label}}</td>
