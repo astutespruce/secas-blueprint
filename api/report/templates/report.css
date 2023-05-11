@@ -81,7 +81,7 @@ footer {
 }
 
 #TableOfContents .tocpagenr::after {
-  content: target-counter(attr(href), page);
+  content: target-counter(attr(target), page);
 }
 
 #TableOfContents li {
