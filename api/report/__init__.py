@@ -3,6 +3,7 @@ from datetime import date, datetime, timezone
 from io import BytesIO
 from pathlib import Path
 
+import weasyprint
 from weasyprint import HTML
 from jinja2 import Environment, FileSystemLoader
 
@@ -131,6 +132,12 @@ def create_report(maps, results, name=None, area_type=None):
     # Can add variant="pdf/a-4b" to resolve issues viewing legend patches in
     # some copies of Acrobat Pro; having enabled causes alert in Acrobat Reader
     # / Pro about editing
-    return HTML(BytesIO((template.render(**context)).encode())).write_pdf(
-        variant="pdf/ua-1",  # note: will be pdf_variant in Weasyprint 59
-    )
+    kwargs = {}
+
+    # TODO: enable pdf/ua once accessibility features have been fixed in Weasyprint
+    # if weasyprint.__version__.startswith("59."):
+    #     kwargs["pdf_variant"] = "pdf/ua-1"
+    # else:
+    #     kwargs["variant"] = "pdf/ua-1"
+
+    return HTML(BytesIO((template.render(**context)).encode())).write_pdf(**kwargs)
