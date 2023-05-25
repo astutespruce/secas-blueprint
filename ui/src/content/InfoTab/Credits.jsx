@@ -6,7 +6,7 @@ import SECASLogo from 'images/SECAS-logo-bw.svg'
 
 const Credits = () => (
   <Box as="section">
-    <Flex>
+    <Flex sx={{ flexWrap: 'wrap', gap: '1rem' }}>
       <Box sx={{ flex: '0 0 auto' }}>
         <Image
           src={SECASLogo}
@@ -14,8 +14,8 @@ const Credits = () => (
           alt="SECAS logo"
         />
       </Box>
-      <Box sx={{ flex: '1 1 auto' }}>
-        <Paragraph sx={{ fontSize: 1, pl: '1rem' }}>
+      <Box sx={{ flex: '1 1 auto', width: ['100%', '264px'] }}>
+        <Paragraph sx={{ fontSize: 1 }}>
           <b>Citation:</b> Southeast Conservation Adaptation Strategy (SECAS).
           2022. Southeast Conservation Blueprint 2022.{' '}
           <OutboundLink to="http://secassoutheast.org/blueprint">

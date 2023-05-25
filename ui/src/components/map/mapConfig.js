@@ -4,7 +4,10 @@ import { siteMetadata } from '../../../gatsby-config'
 const { tileHost } = siteMetadata
 
 export const mapConfig = {
-  bounds: [-106.66188036, 17.92676033, -65.22106481, 40.638801],
+  bounds: [
+    -106.64569513153471, 17.636123947586636, -64.51380002048602,
+    40.63868991990464,
+  ],
   maxBounds: [-180, -80, 180, 80],
   minZoom: 3,
   maxZoom: 14,

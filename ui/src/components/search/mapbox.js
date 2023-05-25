@@ -22,7 +22,7 @@ if (!sessionToken) {
 export const searchPlaces = (query) => {
   const controller = new AbortController()
 
-  const url = `${apiURL}/suggest?language=en&country=US&bbox=${bounds.toString()}&types=${types.toString()}&limit=${numResults}&access_token=${mapboxToken}&session_token=${sessionToken}&q=${encodeURI(
+  const url = `${apiURL}/suggest?language=en&bbox=${bounds.toString()}&types=${types.toString()}&limit=${numResults}&access_token=${mapboxToken}&session_token=${sessionToken}&q=${encodeURI(
     query
   )}`
 
@@ -51,14 +51,17 @@ export const searchPlaces = (query) => {
           address: rawAddress,
           full_address: fullAddress,
           place_formatted: placeFormatted,
-        }) => ({
-          id,
-          name: altName || name,
-          address:
-            rawAddress === fullAddress && !!placeFormatted
-              ? `${fullAddress}, ${placeFormatted}`
-              : fullAddress,
-        })
+        }) => {
+          let address = fullAddress || placeFormatted
+          if (placeFormatted && rawAddress && rawAddress === fullAddress) {
+            address = `${fullAddress}, ${placeFormatted}`
+          }
+          return {
+            id,
+            name: altName || name,
+            address,
+          }
+        }
       )
     )
 
