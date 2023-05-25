@@ -101,8 +101,7 @@ const DesktopInstructions = () => (
       <br />
       You can download a detailed PDF report of the Blueprint, underlying
       indicators, and landscape-level threats for your area of interest. Click
-      the &quot;Export detailed maps and analysis&quot; link below the area
-      name.
+      the <b>Export detailed maps and analysis</b> link below the area name.
       <br />
       <br />
       To unselect the area, click on the <CloseButton /> button in the upper
