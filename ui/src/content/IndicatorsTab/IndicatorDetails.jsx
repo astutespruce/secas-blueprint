@@ -14,7 +14,6 @@ import { IndicatorPropType } from './proptypes'
 
 const IndicatorDetails = ({
   type,
-  id,
   label,
   ecosystem: { id: ecosystemId, label: ecosystemLabel, color, borderColor },
   description,

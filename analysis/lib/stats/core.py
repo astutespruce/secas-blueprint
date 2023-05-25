@@ -2,14 +2,12 @@ from pathlib import Path
 
 import pandas as pd
 import rasterio
-import shapely
 
 from analysis.constants import (
     BLUEPRINT,
     INPUTS,
     M2_ACRES,
 )
-from analysis.lib.geometry import to_crs
 from analysis.lib.raster import (
     boundless_raster_geometry_mask,
     extract_count_in_geometry,

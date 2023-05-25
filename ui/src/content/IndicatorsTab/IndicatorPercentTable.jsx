@@ -125,7 +125,7 @@ const IndicatorPercentTable = ({ type, values, goodThreshold }) => {
         </Flex>
       ))}
 
-      <Box sx={{ mt: '1.5rem', color: 'grey.7', fontSize: 0 }}>
+      <Box sx={{ mt: '1.5rem', color: 'grey.8', fontSize: 0 }}>
         <Flex sx={{ justifyContent: 'center', alignItems: 'center' }}>
           <ArrowUp />
           <Text sx={{ width: '14em', ml: '0.1em' }}>

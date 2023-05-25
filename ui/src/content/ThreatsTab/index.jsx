@@ -14,7 +14,7 @@ const ThreatsTab = ({ type, slr, urban }) => {
         sx={{
           py: '2rem',
           px: '1rem',
-          color: 'grey.7',
+          color: 'grey.8',
           textAlign: 'center',
           fontSize: 1,
         }}

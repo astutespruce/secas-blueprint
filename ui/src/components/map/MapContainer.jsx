@@ -28,9 +28,9 @@ const sidebarCSS = {
   flexDirection: 'column',
   overflowX: 'hidden',
   overflowY: 'hidden',
-  borderRightColor: 'grey.3',
-  borderRightWidth: ['0px', '1px'],
-  borderRightStyle: 'solid',
+  // borderRightColor: 'grey.3',
+  // borderRightWidth: ['0px', '1px'],
+  // borderRightStyle: 'solid',
 }
 
 const mobileSidebarCSS = {
@@ -266,7 +266,7 @@ const MapContainer = () => {
                     sx={{
                       fontSize: 0,
                       py: '0.2em',
-                      bg: 'accent',
+                      bg: 'primary',
                       px: '0.5rem',
                     }}
                   >

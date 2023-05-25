@@ -25,12 +25,12 @@ const PercentBarChart = ({ label, percent, color, ...props }) => (
         sx={{
           flex: '1 1 auto',
           mr: '1em',
-          color: percent > 0 ? 'inherit' : 'grey.6',
+          color: percent > 0 ? 'inherit' : 'grey.8',
         }}
       >
         {label}
       </Text>
-      <Text sx={{ color: 'grey.7', flex: '0 0 auto', fontSize: 0 }}>
+      <Text sx={{ color: 'grey.8', flex: '0 0 auto', fontSize: 0 }}>
         {formatPercent(percent)}% of area
       </Text>
     </Flex>

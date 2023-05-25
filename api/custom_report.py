@@ -95,7 +95,9 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
     results = get_custom_area_results(df)
 
     if results is None:
-        raise DataError("area of interest does not overlap Southeast Blueprint")
+        raise DataError(
+            "area of interest does not overlap Southeast Blueprint or area of interest did not overlap with the center of at least one 30m pixel in the Southeast Blueprint"
+        )
 
     # compile indicator IDs across all inputs
     indicators = []
@@ -117,7 +119,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
         input_areas=len(results["input_ids"]) > 1,
         corridors="corridors" in results,
         urban="urban" in results,
-        slr="slr" in results,
+        slr="slr" in results and results["slr"].get("na", False) is not True,
         ownership="ownership" in results,
         protection="protection" in results,
     )

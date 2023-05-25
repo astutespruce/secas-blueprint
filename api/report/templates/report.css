@@ -80,12 +80,17 @@ footer {
   margin: 0.15rem 0;
 }
 
-#TableOfContents .tocpagenr {
-  float: right;
+#TableOfContents .tocpagenr::after {
+  content: target-counter(attr(target), page);
 }
 
-#TableOfContents .tocpagenr::after {
-  content: target-counter(attr(href), page);
+#TableOfContents li {
+  display: flex;
+  justify-content: space-between;
+}
+
+#TableOfContents a {
+  cursor: pointer;
 }
 
 h1,
@@ -279,7 +284,7 @@ table td.highlight-col {
 .box {
   padding: 10pt;
   margin-bottom: 12pt;
-  background: #708ea6;
+  background: #5c7a92;
   color: #ffffff;
 }
 
@@ -425,7 +430,7 @@ table td.highlight-col {
 }
 
 .light {
-  color: #999;
+  color: #767676;
 }
 
 .legend {
@@ -434,8 +439,8 @@ table td.highlight-col {
   font-size: 10pt;
 }
 
-.legend h4 {
-  margin-top: 0;
+.legend header {
+  margin-bottom: 2pt;
 }
 
 .legend-patch {
@@ -454,6 +459,8 @@ table td.highlight-col {
 
 .legend-header {
   margin-bottom: 4pt;
+  font-weight: bold;
+  font-size: 1rem;
 }
 
 .legend-element + .legend-element {

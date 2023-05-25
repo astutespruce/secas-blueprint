@@ -3,27 +3,43 @@
 
   <ol>
     <li>
-      <a href="#About" class="toctext">About the Southeast Blueprint</a>
-      <a href="#About" class="tocpagenr"></a>
+        <a href="#About">
+          <div>About the Southeast Blueprint</div>
+        </a>
+        <a href="#About">
+          <div target="#About" class="tocpagenr"></div>
+        </a>
     </li>
 
     <div class="divider"></div>
     <li>
-      <a href="#Blueprint" class="toctext">Southeast Blueprint Priorities</a>
-      <a href="#Blueprint" class="tocpagenr"></a>
+      <a href="#Blueprint">
+        <div>Southeast Blueprint Priorities</div>
+      </a>
+      <a href="#Blueprint">
+        <div target="#Blueprint" class="tocpagenr"></div>
+      </a>
     </li>
 
     {% if results.promote_base %}
       <div class="divider"></div>
       <li>
-        <a href="#Corridors" class="toctext">Hubs and Corridors</a>
-        <a href="#Corridors" class="tocpagenr"></a>
+        <a href="#Corridors">
+          <div>Hubs and Corridors</div>
+        </a>
+        <a href="#Corridors">
+          <div target="#Corridors" class="tocpagenr"></div>
+        </a>
       </li>
 
       <div class="divider"></div>
       <li>
-        <a href="#IndicatorSummary" class="toctext">Indicator Summary</a>
-        <a href="#IndicatorSummary" class="tocpagenr"></a>
+        <a href="#IndicatorSummary">
+          <div>Indicator Summary</div>
+        </a>
+        <a href="#IndicatorSummary">
+          <div target="#IndicatorSummary" class="tocpagenr"></div>
+        </a>
       </li>
 
     {% else %}
@@ -31,8 +47,12 @@
       {% if (results.inputs|length) > 1 %}
         <div class="divider"></div>
         <li>
-          <a href="#InputAreas" class="toctext">Southeast Blueprint Input Areas</a>
-          <a href="#InputAreas" class="tocpagenr"></a>
+          <a href="#InputAreas">
+            <div>Southeast Blueprint Input Areas</div>
+          </a>
+          <a href="#InputAreas">
+            <div target="#InputAreas" class="tocpagenr"></div>
+          </a>
         </li>
       {% endif %}
 
@@ -41,21 +61,33 @@
         {% if src.id == "base" %}
           <div class="divider"></div>
           <li>
-            <a href="#Corridors" class="toctext">Base Blueprint: Hubs and Corridors</a>
-            <a href="#Corridors" class="tocpagenr"></a>
+            <a href="#Corridors">
+              <div>Base Blueprint: Hubs and Corridors</div>
+            </a>
+            <a href="#Corridors">
+              <div target="#Corridors" class="tocpagenr"></div>
+            </a>
           </li>
 
           <div class="divider"></div>
           <li>
-            <a href="#IndicatorSummary" class="toctext">Base Blueprint: Indicator Summary</a>
-            <a href="#IndicatorSummary" class="tocpagenr"></a>
+            <a href="#IndicatorSummary">
+              <div>Base Blueprint: Indicator Summary</div>
+            </a>
+            <a href="#IndicatorSummary">
+              <div target="#IndicatorSummary" class="tocpagenr"></div>
+            </a>
           </li>
 
         {% else %}
           <div class="divider"></div>
           <li>
-            <a href="#{{src.id}}" class="toctext">{{src.label}}</a>
-            <a href="#{{src.id}}" class="tocpagenr"></a>
+            <a href="#{{src.id}}">
+              <div>{{src.label}}</div>
+            </a>
+            <a href="#{{src.id}}">
+              <div target="#{{src.id}}" class="tocpagenr"></div>
+            </a>
           </li>
         {% endif %}
       {% endfor %}
@@ -65,23 +97,35 @@
     {% if not results.exclude_threats %}
       <div class="divider"></div>
       <li>
-        <a href="#Threats" class="toctext">Threats</a>
-        <a href="#Threats" class="tocpagenr"></a>
+        <a href="#Threats">
+          <div>Threats</div>
+        </a>
+        <a href="#Threats">
+          <div target="#Threats" class="tocpagenr"></div>
+        </a>
       </li>
     {% endif %}
 
     {% if results.ownership or results.protection %}
       <div class="divider"></div>
       <li>
-        <a href="#Ownership" class="toctext">Ownership and Partners</a>
-        <a href="#Ownership" class="tocpagenr"></a>
+        <a href="#Ownership">
+          <div>Ownership and Partners</div>
+        </a>
+        <a href="#Ownership">
+          <div target="#Ownership" class="tocpagenr"></div>
+        </a>
       </li>
     {% endif %}
 
     <div class="divider"></div>
     <li>
-      <a href="#Credits" class="toctext">Credits</a>
-      <a href="#Credits" class="tocpagenr"></a>
+      <a href="#Credits">
+        <div>Credits</div>
+      </a>
+      <a href="#Credits">
+        <div target="#Credits" class="tocpagenr"></div>
+      </a>
     </li>
   </ol>
 </div>

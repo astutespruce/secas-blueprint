@@ -19,7 +19,7 @@ const CloseButton = () => (
 
 const MobileInstructions = () => (
   <>
-    <Heading as="h4" sx={{ mt: '2rem' }}>
+    <Heading as="h3" sx={{ mt: '2rem', fontSize: [2, 3] }}>
       Subwatershed and marine lease block details:
     </Heading>
     <Paragraph sx={{ mt: '0.25rem' }}>
@@ -40,7 +40,7 @@ const MobileInstructions = () => (
       To unselect the area, click on the <CloseButton /> button in the top bar.
     </Paragraph>
 
-    <Heading as="h4" sx={{ mt: '2rem' }}>
+    <Heading as="h3" sx={{ mt: '2rem', fontSize: [2, 3] }}>
       Pixel-level details:
     </Heading>
     <Paragraph sx={{ mt: '0.25rem' }}>
@@ -68,7 +68,7 @@ const MobileInstructions = () => (
       To unselect the pixel, click on the <CloseButton /> button in top bar.
     </Paragraph>
 
-    <Heading as="h4" sx={{ mt: '2rem' }}>
+    <Heading as="h3" sx={{ mt: '2rem', fontSize: [2, 3] }}>
       To find a specific area:
     </Heading>
     <Paragraph sx={{ mt: '0.25rem' }}>
@@ -81,7 +81,7 @@ const MobileInstructions = () => (
 
 const DesktopInstructions = () => (
   <>
-    <Heading as="h4" sx={{ mt: '1rem' }}>
+    <Heading as="h3" sx={{ mt: '1rem', fontSize: [2, 3] }}>
       Subwatershed and marine lease block details:
     </Heading>
     <Paragraph sx={{ mt: '0.25rem' }}>
@@ -101,15 +101,14 @@ const DesktopInstructions = () => (
       <br />
       You can download a detailed PDF report of the Blueprint, underlying
       indicators, and landscape-level threats for your area of interest. Click
-      the &quot;Export detailed maps and analysis&quot; link below the area
-      name.
+      the <b>Export detailed maps and analysis</b> link below the area name.
       <br />
       <br />
       To unselect the area, click on the <CloseButton /> button in the upper
       right of the sidebar.
     </Paragraph>
 
-    <Heading as="h4" sx={{ mt: '2rem' }}>
+    <Heading as="h3" sx={{ mt: '2rem', fontSize: [2, 3] }}>
       Pixel-level details:
     </Heading>
     <Paragraph sx={{ mt: '0.25rem' }}>
@@ -139,7 +138,7 @@ const DesktopInstructions = () => (
       .
     </Paragraph>
 
-    <Heading as="h4" sx={{ mt: '2rem' }}>
+    <Heading as="h3" sx={{ mt: '2rem', fontSize: [2, 3] }}>
       Pixel-level filtering:
     </Heading>
     <Paragraph sx={{ mt: '0.25rem' }}>
@@ -167,7 +166,7 @@ const DesktopInstructions = () => (
       especially as you pan or zoom the map.
     </Paragraph>
 
-    <Heading as="h4" sx={{ mt: '2rem' }}>
+    <Heading as="h3" sx={{ mt: '2rem', fontSize: [2, 3] }}>
       To display different map layers:
     </Heading>
     <Text sx={{ mt: '0.25rem', fontSize: 2, color: 'grey.9' }}>
@@ -181,7 +180,7 @@ const DesktopInstructions = () => (
       layers.
     </Text>
 
-    <Heading as="h4" sx={{ mt: '2rem' }}>
+    <Heading as="h3" sx={{ mt: '2rem', fontSize: [2, 3] }}>
       To create a custom report for a specific area of interest:
     </Heading>
     <Paragraph sx={{ mt: '0.25rem' }}>
@@ -191,7 +190,7 @@ const DesktopInstructions = () => (
       threats for this summary area.
     </Paragraph>
 
-    <Heading as="h4" sx={{ mt: '2rem' }}>
+    <Heading as="h3" sx={{ mt: '2rem', fontSize: [2, 3] }}>
       To find a specific area:
     </Heading>
     <Paragraph sx={{ mt: '0.25rem' }}>
@@ -208,7 +207,7 @@ const Instructions = () => {
 
   return (
     <Box as="section" sx={{ mt: '2rem' }}>
-      <Heading as="h1" sx={{ mb: '0.5rem', fontSize: [4, 5] }}>
+      <Heading as="h2" sx={{ mb: '0.5rem', fontSize: [4, 5] }}>
         How To Use This Viewer
       </Heading>
 

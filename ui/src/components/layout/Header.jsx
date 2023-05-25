@@ -40,7 +40,6 @@ const Header = () => {
           >
             <Link
               to="/"
-              tabIndex="0"
               sx={{
                 textDecoration: 'none !important',
                 display: 'block',

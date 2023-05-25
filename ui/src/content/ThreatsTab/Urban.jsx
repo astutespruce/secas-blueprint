@@ -13,7 +13,7 @@ const YEARS = [
 ]
 
 const DataSource = () => (
-  <Text sx={{ mt: '2rem', color: 'grey.7', fontSize: 1 }}>
+  <Text sx={{ mt: '2rem', color: 'grey.8', fontSize: 1 }}>
     Past and current (2019) urban levels based on developed land cover classes
     from the{' '}
     <OutboundLink to="https://www.usgs.gov/centers/eros/science/national-land-cover-database">
@@ -35,7 +35,7 @@ const Urban = ({ type, urban }) => {
     if (urban === null) {
       return (
         <Box>
-          <Text sx={{ color: 'grey.7' }}>
+          <Text sx={{ color: 'grey.8' }}>
             Projected future urbanization data is not currently available for
             this area.
           </Text>
@@ -48,7 +48,7 @@ const Urban = ({ type, urban }) => {
     return (
       <Box>
         <Flex sx={{ justifyContent: 'space-between' }}>
-          <Text sx={{ color: 'grey.7' }}>
+          <Text sx={{ color: 'grey.8' }}>
             Probability of urbanization by 2060:
           </Text>
         </Flex>
@@ -62,7 +62,7 @@ const Urban = ({ type, urban }) => {
   if (!(urban && urban.length)) {
     return (
       <Box>
-        <Text sx={{ color: 'grey.7' }}>
+        <Text sx={{ color: 'grey.8' }}>
           This watershed is not impacted by projected urbanization up to 2100.
         </Text>
         <DataSource />
@@ -72,7 +72,7 @@ const Urban = ({ type, urban }) => {
 
   return (
     <>
-      <Text sx={{ color: 'grey.7' }}>
+      <Text sx={{ color: 'grey.8' }}>
         Extent of past, current, and projected urbanization within this
         subwatershed:
       </Text>

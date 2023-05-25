@@ -11,15 +11,19 @@
             <table class="centered">
                 <thead>
                     <tr>
-                        <th class="label" style="width: 100%;">Indicator</th>
-                        <th class="" style="max-width: 100px;">Present</th>
+                        <th class="label" style="width: 100%;" scope="col">Indicator</th>
+                        <th class="" style="max-width: 100px;" scope="col">Present</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for indicator in ecosystem.indicator_summary %}
                         <tr>
                         {% if indicator.present %}
-                            <td class="label"><a href="#{{indicator.id}}">{{indicator.label}}</a></td>
+                            <td class="label">
+                                <a href="#{{indicator.id}}">
+                                    <div>{{indicator.label}}</div>
+                                </a>
+                            </td>
                             <td>&check;</td>
                         {% else %}
                             <td class="label indicator-absent">{{indicator.label}}</td>

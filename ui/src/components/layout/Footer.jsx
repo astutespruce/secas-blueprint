@@ -62,7 +62,7 @@ const Footer = () => {
       />
 
       <Box sx={{ mx: '0.5em', flex: '0 0 auto' }}>
-        <OutboundLink to="http://secassoutheast.org/blueprint" tabIndex="0">
+        <OutboundLink to="http://secassoutheast.org/blueprint">
           <Flex sx={{ alignItems: 'center', px: '0.5em' }}>
             <ExternalLinkAlt size="1em" style={{ marginRight: '0.5em' }} />
             <Text>Blueprint webpage</Text>
@@ -75,7 +75,7 @@ const Footer = () => {
       />
 
       <Box sx={{ mx: '0.5em', flex: '0 0 auto' }}>
-        <ContactModal tabIndex="0">
+        <ContactModal>
           <Flex sx={{ alignItems: 'center', px: '0.5em' }}>
             <Envelope size="1em" style={{ marginRight: '0.5em' }} />
             <Text sx={modalLinkCSS}>Contact Us</Text>

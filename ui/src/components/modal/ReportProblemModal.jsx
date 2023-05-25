@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Paragraph } from 'theme-ui'
 
-import { formatPhone } from 'util/format'
 import BoundModal from './BoundModal'
 
 import { siteMetadata } from '../../../gatsby-config'

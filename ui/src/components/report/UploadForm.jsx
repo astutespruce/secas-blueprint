@@ -5,6 +5,7 @@ import {
   Button,
   Flex,
   Heading,
+  Label,
   Input,
   Text,
   Divider,
@@ -66,14 +67,20 @@ const UploadForm = ({ onFileChange, onCreateReport }) => {
         <form onSubmit={methods.handleSubmit(handleSubmit)}>
           <Grid columns={[0, 2]} gap={5} sx={{ mt: '2rem' }}>
             <Box>
-              <Heading as="h3" sx={{ mb: '0.5rem' }}>
-                Area Name (optional):
-              </Heading>
-              <Input
-                type="text"
-                name="areaName"
-                {...register('areaName', { required: false })}
-              />
+              <Box>
+                <Label
+                  htmlFor="areaName"
+                  sx={{ mb: '0.5rem', fontWeight: 'bold', fontSize: [3, 4] }}
+                >
+                  Area Name (optional):
+                </Label>
+                <Input
+                  type="text"
+                  id="areaName"
+                  name="areaName"
+                  {...register('areaName', { required: false })}
+                />
+              </Box>
 
               <Flex
                 sx={{
@@ -84,22 +91,36 @@ const UploadForm = ({ onFileChange, onCreateReport }) => {
                 }}
               >
                 <div>
-                  <Heading
-                    as="h3"
+                  <Label
+                    htmlFor="file"
                     sx={{
                       mb: 0,
+                      fontWeight: 'bold',
+                      fontSize: [3, 4],
                     }}
                   >
                     Choose Area of Interest:
-                  </Heading>
+                  </Label>
                   <div>{file && <Text>{file.name}</Text>}</div>
                 </div>
               </Flex>
 
               <Box sx={{ display: file ? 'none' : 'block' }}>
-                <DropZone name="file" />
+                <DropZone name="file" id="file" />
               </Box>
 
+              <Box
+                sx={{ fontSize: 0, color: 'grey.8', px: '1rem', mt: '0.5rem' }}
+              >
+                Note: your files must be in a zip file, and can include only one
+                shapefile or Feature Class, and must represent a relatively
+                small area (full extent must be less than 5 million acres). For
+                help analyzing larger areas, please{' '}
+                <ContactModal>
+                  <Text sx={linkCSS}>contact us</Text>
+                </ContactModal>
+                .
+              </Box>
               <Divider />
               <Flex
                 sx={{
@@ -151,20 +172,18 @@ const UploadForm = ({ onFileChange, onCreateReport }) => {
               particular application!
               <br />
               <br />
+              We are working on resolving some technical challenges to make
+              these these automatically generated reports more accessible to
+              people with disabilities. In the meantime, to request an
+              accessible PDF or other assistance, please contact Hilary Morris
+              at{' '}
+              <a href="mailto:hilary_morris@fws.gov">hilary_morris@fws.gov</a>.
+              <br />
+              <br />
               You can help us improve the Blueprint and this report by helping
               us understand your use case: we use this information to provide
               statistics about how the Blueprint is being used and to prioritize
               improvements.
-              <br />
-              <br />
-              Note: your files must be in a zip file, and can include only one
-              shapefile or Feature Class, and must represent a relatively small
-              area (full extent must be less than 5 million acres). For help
-              analyzing larger areas, please{' '}
-              <ContactModal>
-                <Text sx={linkCSS}>contact us</Text>
-              </ContactModal>
-              .
             </Paragraph>
           </Grid>
         </form>
@@ -192,11 +211,11 @@ const UploadForm = ({ onFileChange, onCreateReport }) => {
             },
           }}
         >
-          <Image src={Thumbnail1} />
-          <Image src={Thumbnail2} />
-          <Image src={Thumbnail3} />
-          <Image src={Thumbnail4} />
-          <Image src={Thumbnail5} />
+          <Image src={Thumbnail1} alt="Tool report example screenshot 1" />
+          <Image src={Thumbnail2} alt="Tool report example screenshot 2" />
+          <Image src={Thumbnail3} alt="Tool report example screenshot 3" />
+          <Image src={Thumbnail4} alt="Tool report example screenshot 4" />
+          <Image src={Thumbnail5} alt="Tool report example screenshot 5" />
         </Grid>
         <Paragraph sx={{ mt: '1rem' }}>...and much more!</Paragraph>
       </Box>

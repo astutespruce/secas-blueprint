@@ -7,6 +7,7 @@ import {
   Flex,
   Link,
   Button,
+  Paragraph,
   Progress,
   Text,
 } from 'theme-ui'
@@ -228,12 +229,24 @@ const DownloadModal = ({ id, type, onClose }) => {
     )
   } else {
     content = (
-      <Text sx={{ p: '1rem' }}>
-        Create and download a Blueprint summary report for this area. This
-        detailed report includes maps and analysis of the Blueprint priorities
-        and each indicator present in this area, as well as potential threats
-        and information about land ownership and partners.
-      </Text>
+      <Box sx={{ p: '1rem' }}>
+        <Paragraph>
+          Create and download a Blueprint summary report for this area. This
+          detailed report includes maps and analysis of the Blueprint priorities
+          and each indicator present in this area, as well as potential threats
+          and information about land ownership and partners.
+        </Paragraph>
+        <Text sx={{ mt: '1rem' }}>
+          Note: we have made every possible effort to ensure that the
+          information provided in this viewer is accessible to people with
+          disabilities. If you cannot fully access the information, please reach
+          out to{' '}
+          <OutboundLink to="http://secassoutheast.org/staff">
+            Blueprint user support staff
+          </OutboundLink>{' '}
+          so that we can provide the information in an alternate format.
+        </Text>
+      </Box>
     )
   }
 

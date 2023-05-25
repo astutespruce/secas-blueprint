@@ -58,9 +58,6 @@ const mapWidgetCSS = {
   '.mapboxgl-ctrl-zoom-in, .mapboxgl-ctrl-zoom-out, .mapboxgl-ctrl-compass': {
     display: ['none', 'inherit'],
   },
-  '.mapboxgl-canvas': {
-    outline: 'none',
-  },
   '.mapboxgl-ctrl-attrib.mapboxgl-compact': {
     minHeight: '24px',
   },
@@ -784,12 +781,26 @@ const Map = () => {
         height: '100%',
         flex: '1 1 auto',
         position: 'relative',
-
-        outline: 'none',
         ...mapWidgetCSS,
       }}
     >
-      <div ref={mapNode} style={{ width: '100%', height: '100%' }} />
+      <Box
+        ref={mapNode}
+        sx={{
+          width: '100%',
+          height: '100%',
+          '& canvas': {
+            // borderLeft: '2px solid transparent',
+            borderLeftColor: 'grey.3',
+            borderLeftWidth: ['0px', '2px'],
+            borderLeftStyle: 'solid',
+            '&:focus-visible': {
+              // borderLeftColor: 'blue',
+              borderLeftColor: 'blue !important',
+            },
+          },
+        }}
+      />
 
       {mapIsDrawing ? (
         <Flex

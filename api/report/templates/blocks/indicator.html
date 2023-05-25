@@ -25,7 +25,7 @@
 
             <div class="legend">
                 {% if indicator.valueLabel %}
-                    <h4>{{indicator.valueLabel}}</h4>
+                <div class="legend-header">{{indicator.valueLabel}}</div>
                 {% endif %}
                 {% for entry in indicator["values"] %}
                     <div class="legend-element flex {% if (indicator["values"]|length) >5 %}narrow-margin{% endif %}">
@@ -59,11 +59,11 @@
         <table class="centered">
             <thead>
                 <tr>
-                    <th class="level"></th>
-                    <th class="label">Indicator Values{% if indicator.valueLabel %}: {{indicator.valueLabel}}{% endif %}</th>
-                    <th class="acres">Acres</th>
-                    <th class="percent">Percent of Area</th>
-                    <th class="threshold"></th>
+                    <th class="level" scope="col"></th>
+                    <th class="label" scope="col">Indicator Values{% if indicator.valueLabel %}: {{indicator.valueLabel}}{% endif %}</th>
+                    <th class="acres" scope="col">Acres</th>
+                    <th class="percent" scope="col">Percent of Area</th>
+                    <th class="threshold" scope="col"></th>
                 </tr>
             </thead>
             <tbody>
@@ -133,10 +133,10 @@
         <table class="centered">
             <thead>
                 <tr>
-                    <th class="level"></th>
-                    <th class="label">Indicator Values{% if indicator.valueLabel %}: {{indicator.valueLabel}}{% endif %}</th>
-                    <th class="acres">Acres</th>
-                    <th class="percent">Percent of Area</th>
+                    <th class="level" scope="col"></th>
+                    <th class="label" scope="col">Indicator Values{% if indicator.valueLabel %}: {{indicator.valueLabel}}{% endif %}</th>
+                    <th class="acres" scope="col">Acres</th>
+                    <th class="percent" scope="col">Percent of Area</th>
                 </tr>
             </thead>
             <tbody>

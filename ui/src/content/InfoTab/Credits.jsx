@@ -8,7 +8,11 @@ const Credits = () => (
   <Box as="section">
     <Flex>
       <Box sx={{ flex: '0 0 auto' }}>
-        <Image src={SECASLogo} sx={{ width: '120px' }} />
+        <Image
+          src={SECASLogo}
+          sx={{ width: '120px', height: '142px' }}
+          alt="SECAS logo"
+        />
       </Box>
       <Box sx={{ flex: '1 1 auto' }}>
         <Paragraph sx={{ fontSize: 1, pl: '1rem' }}>

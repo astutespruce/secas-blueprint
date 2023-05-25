@@ -7,7 +7,7 @@ import { ContactModal } from 'components/modal'
 const NeedHelp = () => (
   <Box
     sx={{
-      color: 'grey.7',
+      color: 'grey.9',
       fontSize: 1,
       mt: '2rem',
       pt: '2rem',

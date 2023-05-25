@@ -51,7 +51,7 @@ const Protection = ({ type, protection }) => {
             <Text
               sx={{
                 flex: '1 1 auto',
-                color: percent > 0 ? 'text' : 'grey.6',
+                color: percent > 0 ? 'text' : 'grey.8',
                 fontWeight: percent > 0 ? 'bold' : 'normal',
               }}
             >
@@ -78,7 +78,7 @@ const Protection = ({ type, protection }) => {
         />
       ))}
 
-      <Text sx={{ color: 'grey.7', fontSize: 1 }}>
+      <Text sx={{ color: 'grey.8', fontSize: 1 }}>
         {total > 100 ? (
           <>
             Note: due to overlapping protected areas compiled from multiple

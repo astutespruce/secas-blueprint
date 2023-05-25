@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
+import { Box } from 'theme-ui'
 
 import Modal from './Modal'
 
@@ -16,15 +17,22 @@ const BoundModal = ({ anchorNode, children, title }) => {
 
   return (
     <>
-      <span
+      <Box
+        as="span"
         onClick={handleOpen}
         onKeyPress={handleOpen}
         role="button"
         aria-label={`toggle button for ${title} popup`}
-        tabIndex="0"
+        sx={{
+          // allow focus for LayerToggle
+          '&:focus .map-button': {
+            boxShadow: '0 0 2px 2px #0096ff',
+          },
+        }}
+        tabIndex={0}
       >
         {anchorNode}
-      </span>
+      </Box>
 
       {isOpen ? (
         <Modal title={title} onClose={handleClose}>

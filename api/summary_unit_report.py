@@ -37,12 +37,6 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
         ctx["redis"], ctx["job_id"], 50, "Creating maps (this might take a while)"
     )
 
-    has_corridors = "corridors" in results
-    has_urban = "urban" in results
-    has_slr = "slr" in results
-    has_ownership = "ownership" in results
-    has_protection = "protection" in results
-
     # compile indicator IDs across all inputs
     indicators = []
     for input_area in results["inputs"]:
@@ -54,11 +48,11 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
         summary_unit_id=unit_id,
         input_ids=results["input_ids"],
         indicators=indicators,
-        corridors=has_corridors,
-        urban=has_urban,
-        slr=has_slr,
-        ownership=has_ownership,
-        protection=has_protection,
+        corridors="corridors" in results,
+        urban="urban" in results,
+        slr="slr" in results and results["slr"].get("na", False) is not True,
+        ownership="ownership" in results,
+        protection="protection" in results,
     )
 
     if map_errors:

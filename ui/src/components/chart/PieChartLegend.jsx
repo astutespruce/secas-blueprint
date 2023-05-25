@@ -11,7 +11,7 @@ const PieChartLegend = ({ elements, title, subtitle, sx }) => (
         {title ? <Text>{title}</Text> : null}
 
         {subtitle ? (
-          <Text sx={{ fontSize: 0, color: 'grey.7' }}>{subtitle}</Text>
+          <Text sx={{ fontSize: 0, color: 'grey.8' }}>{subtitle}</Text>
         ) : null}
       </Text>
     ) : null}
@@ -39,7 +39,7 @@ const PieChartLegend = ({ elements, title, subtitle, sx }) => (
         />
         <Flex sx={{ flexWrap: 'wrap' }}>
           <Text sx={{ mr: '0.5em' }}>{label}</Text>
-          <Text sx={{ color: 'grey.6', flex: '0 0 auto' }}>
+          <Text sx={{ color: 'grey.8', flex: '0 0 auto' }}>
             ({formatPercent(value)}%)
           </Text>
         </Flex>
