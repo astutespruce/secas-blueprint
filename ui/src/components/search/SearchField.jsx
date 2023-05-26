@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Search, Times } from '@emotion-icons/fa-solid'
 import { Box, Flex, Input } from 'theme-ui'
 
-const SearchField = ({ value, onChange }) => {
+const SearchField = ({ value, onChange, onFocus }) => {
   const [internalValue, setInternalValue] = useState('')
   const timeoutRef = useRef(null)
 
@@ -36,13 +36,9 @@ const SearchField = ({ value, onChange }) => {
   }, [value])
 
   return (
-    <Box
-      sx={{
-        py: '0.5rem',
-        px: '1rem',
-      }}
-    >
+    <Box className="search-field-container">
       <Flex
+        className="search-field"
         sx={{
           border: '1px solid',
           borderColor: 'grey.1',
@@ -68,9 +64,10 @@ const SearchField = ({ value, onChange }) => {
               color: 'grey.4',
             },
           }}
-          placeholder="Enter a location name"
+          placeholder="Find a place by name / address"
           value={internalValue}
           onChange={handleChange}
+          onFocus={onFocus}
         />
         {value !== '' && (
           <Box
@@ -100,10 +97,12 @@ const SearchField = ({ value, onChange }) => {
 SearchField.propTypes = {
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
+  onFocus: PropTypes.func,
 }
 
 SearchField.defaultProps = {
   value: '',
+  onFocus: () => {},
 }
 
 export default SearchField

@@ -5,7 +5,7 @@ import { useSearch } from './Provider'
 import SearchField from './SearchField'
 import Results from './Results'
 
-const Search = () => {
+const Search = (props) => {
   const [index, setIndex] = useState(null)
 
   const {
@@ -52,7 +52,7 @@ const Search = () => {
 
   return (
     <Box onKeyDown={handleKeyDown}>
-      <SearchField value={query} onChange={setQuery} />
+      <SearchField value={query} onChange={setQuery} {...props} />
 
       {query && query.length >= 3 ? (
         <Results

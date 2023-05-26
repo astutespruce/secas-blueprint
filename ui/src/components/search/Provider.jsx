@@ -41,7 +41,7 @@ export const Provider = ({ children }) => {
       ...prevState,
       location: newLocation,
       selectedId: null,
-      query: null,
+      query: '',
     }))
   }, [])
 

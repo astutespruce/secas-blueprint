@@ -1,7 +1,6 @@
 import React, { memo, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { Box, Text, Flex, Button } from 'theme-ui'
-import { ExclamationTriangle } from '@emotion-icons/fa-solid'
 
 import { useMapData } from 'components/data'
 
@@ -34,8 +33,23 @@ const desktopCSS = {
   borderRadius: '0 0 1em 1em',
 }
 
+const instructionsCSS = {
+  fontSize: 0,
+  textAlign: 'left',
+  ml: '0.5rem',
+  lineHeight: 1,
+}
+
+const mobileInstructionsCSS = {
+  ...instructionsCSS,
+  fontSize: 'smaller',
+  ml: '-0.5rem',
+  mr: '-0.5rem',
+  mt: '0.25rem',
+}
+
 const MapModeToggle = ({ belowMinZoom, isMobile }) => {
-  const { data: mapData, mapMode, setMapMode } = useMapData()
+  const { mapMode, setMapMode } = useMapData()
 
   const handleFilterClick = useCallback(() => {
     setMapMode('filter')
@@ -48,10 +62,6 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
   const handleUnitClick = useCallback(() => {
     setMapMode('unit')
   }, [setMapMode])
-
-  if (isMobile && mapData !== null) {
-    return null
-  }
 
   return (
     <Box sx={isMobile ? mobileCSS : desktopCSS}>
@@ -98,38 +108,26 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
         </Flex>
 
         {(mapMode === 'unit' || mapMode === 'pixel') && belowMinZoom ? (
-          <Flex
-            sx={{
-              alignItems: 'center',
-              ml: '1rem',
-              color: 'accent',
-            }}
-          >
-            <ExclamationTriangle size="16px" style={{ marginRight: '.5rem' }} />
-            <Text>
-              Zoom in to select {mapMode === 'pixel' ? 'a pixel' : 'an area'}
-            </Text>
-          </Flex>
+          <Text sx={isMobile ? mobileInstructionsCSS : instructionsCSS}>
+            Zoom in to
+            {!isMobile ? <br /> : ' '}
+            select {mapMode === 'pixel' ? 'a pixel' : 'an area'}
+          </Text>
         ) : (
-          <Text
-            sx={{
-              fontSize: 0,
-              textAlign: 'left',
-              ml: '0.5rem',
-              lineHeight: 1,
-            }}
-          >
+          <Text sx={isMobile ? mobileInstructionsCSS : instructionsCSS}>
             {mapMode === 'unit' ? (
               <>
-                Select a subwatershed or marine <br />
-                lease block to show details in sidebar
+                Select a subwatershed or marine {!isMobile ? <br /> : ' '}
+                lease block to show details
+                {!isMobile ? ' in sidebar' : null}
               </>
             ) : null}
 
             {mapMode === 'pixel' ? (
               <>
-                Pan the map behind the crosshairs <br /> to show details in
-                sidebar
+                Pan the map behind the crosshairs {!isMobile ? <br /> : ' '} to
+                show details
+                {!isMobile ? ' in sidebar' : null}
               </>
             ) : null}
 

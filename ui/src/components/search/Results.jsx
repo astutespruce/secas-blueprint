@@ -90,7 +90,7 @@ const Results = ({
               size="1.5rem"
               style={{ margin: '0 0.5rem 0 0' }}
             />
-            <Text sx={{ fontSize: [2, 3] }}>Error loading search results.</Text>
+            <Text>Error loading search results.</Text>
           </Flex>
 
           <Text sx={{ mt: '1rem' }}>
@@ -169,9 +169,7 @@ const Results = ({
         >
           <Box sx={{ pointerEvents: 'none' }}>
             <Text>{name}</Text>
-            {address ? (
-              <Text sx={{ fontSize: [0, 1], color: 'grey.8' }}>{address}</Text>
-            ) : null}
+            {address ? <Text sx={{ color: 'grey.8' }}>{address}</Text> : null}
           </Box>
         </Box>
       ))}
