@@ -110,7 +110,7 @@ const MapContainer = () => {
 
       if (mapData === null) {
         nextTab = tab === 'mobile-selected-map' || isMobile ? 'map' : 'info'
-      } else if (tab === 'map') {
+      } else if (tab === 'map' || tab === 'mobile-selected-map') {
         nextTab = 'mobile-selected-map'
       } else if (!tab.startsWith('selected-')) {
         nextTab = 'selected-priorities'
