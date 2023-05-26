@@ -57,7 +57,7 @@ const parseValue = (value, isLatitude = false) => {
       decimalDegrees = factor * (degrees + minutes / 60 + seconds / 3600)
     }
   } else {
-    const decimalMatch = /[\d+.*]+/g.exec(value)
+    const decimalMatch = /[\d+.*-]+/g.exec(value)
     if (decimalMatch) {
       decimalDegrees = factor * parseFloat(decimalMatch[0])
     } else {

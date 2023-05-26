@@ -77,8 +77,6 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
             alignItems: 'center',
           }}
         >
-          <Text sx={{ mr: '0.5rem' }}>Show:</Text>
-
           <Button
             variant="group"
             data-state={mapMode === 'unit' ? 'active' : null}
