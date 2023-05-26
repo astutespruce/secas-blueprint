@@ -1,428 +1,166 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import {
-  LocationArrow,
-  SearchLocation,
-  TimesCircle,
-  TrashAlt,
-} from '@emotion-icons/fa-solid'
-import { Box, Button, Grid, Input, Flex, Spinner, Text } from 'theme-ui'
+import React, { useCallback, useState, useLayoutEffect, useRef } from 'react'
+import { CaretRight, CaretDown } from '@emotion-icons/fa-solid'
+import { Box, Flex } from 'theme-ui'
 
-import { Search, useSearch } from 'components/search'
-import { Tabs } from 'components/tabs'
-import { hasGeolocation, hasWindow } from 'util/dom'
-
-const navigatorOptions = {
-  enableHighAccuracy: false,
-  maximumAge: 0,
-  timeout: 6000,
-}
+import { Search, LatLon } from 'components/search'
 
 const controlCSS = {
   alignItems: 'center',
   justifyContent: 'center',
   position: 'absolute',
-
   padding: '6px',
   color: 'grey.9',
   bg: '#FFF',
   pointerEvents: 'auto',
   borderRadius: '0.25rem',
-  boxShadow: '2px 2px 6px #333',
+  boxShadow: '0 0 0 2px rgba(0,0,0,.1)',
 }
-
-const inputCSS = {
-  flex: '0 0 auto',
-  width: '136px',
-  fontSize: 0,
-  borderRadius: '0.25rem',
-  outline: 'none',
-  py: '0.25rem',
-  px: '0.5rem',
-}
-const invalidInputCSS = {
-  ...inputCSS,
-  borderWidth: '1px 0.5rem 1px 1px',
-  borderStyle: 'solid',
-  borderColor: 'accent',
-}
-
-const tabs = [
-  {
-    id: 'find',
-    label: 'Search by name',
-  },
-  { id: 'latlong', label: 'Go to lat/long' },
-]
 
 const FindLocation = () => {
-  const [
-    { isOpen, isPending, tab, lat, lon, isLatValid, isLonValid },
-    setState,
-  ] = useState({
-    isOpen: false,
-    isPending: false,
-    tab: 'find',
-    lat: '',
-    lon: '',
-    isLatValid: true,
-    isLonValid: true,
+  const placenameInputRef = useRef()
+  const latLonInputRef = useRef(null)
+  const isMountedRef = useRef(false)
+
+  const [{ showOptions, showPlacenameResults, mode }, setState] = useState({
+    showOptions: false,
+    showPlacenameResults: true,
+    mode: 'placename',
   })
 
-  const { setLocation, reset: resetSearch } = useSearch()
-
-  const handleShow = useCallback((e) => {
-    e.stopPropagation()
-
-    setState((prevState) => ({
+  const toggleShowOptions = useCallback(() => {
+    setState(({ showOptions: prevShowOptions, ...prevState }) => ({
       ...prevState,
-      isOpen: true,
+      showOptions: !prevShowOptions,
+      showPlacenameResults: false,
     }))
   }, [])
 
-  const handleHide = useCallback(() => {
+  const handlePlacenameSelect = useCallback(() => {
+    setState((prevState) => ({ ...prevState, showPlacenameResults: false }))
+  }, [])
+
+  const handlePlacenameFocus = useCallback(() => {
     setState((prevState) => ({
       ...prevState,
-      isOpen: false,
+      showOptions: false,
+      showPlacenameResults: true,
     }))
   }, [])
 
-  // add event listener to the window
-  useEffect(() => {
-    const handleEscape = ({ key }) => {
-      if (key === 'Escape') {
-        if (!isOpen) {
-          return
-        }
-
-        resetSearch()
-        setState(() => ({
-          tab: 'find',
-          lat: '',
-          lon: '',
-          isLatValid: true,
-          isLonValid: true,
-          isPending: false,
-          isOpen: false,
-        }))
-      }
-    }
-
-    if (hasWindow) {
-      document.addEventListener('keydown', handleEscape)
-    }
-
-    return () => {
-      if (hasWindow) {
-        document.removeEventListener('keydown', handleEscape)
-      }
-    }
-  }, [isOpen, resetSearch])
-
-  const handleLatitudeChange = ({ target: { value } }) => {
+  const handleLatLonFocus = useCallback(() => {
     setState((prevState) => ({
       ...prevState,
-      lat: value,
-      isLatValid: value === '' || Math.abs(parseFloat(value)) < 89,
+      showOptions: false,
     }))
-  }
-
-  const handleLongitudeChange = ({ target: { value } }) => {
-    setState((prevState) => ({
-      ...prevState,
-      lon: value,
-      isLonValid: value === '' || Math.abs(parseFloat(value)) <= 180,
-    }))
-  }
-
-  const handleSetLocation = useCallback(() => {
-    setLocation({
-      latitude: parseFloat(lat),
-      longitude: parseFloat(lon),
-      timestamp: new Date().getTime(),
-    })
-  }, [setLocation, lat, lon])
-
-  const handleReset = () => {
-    setState((prevState) => ({
-      ...prevState,
-      lat: '',
-      lon: '',
-      isLatValid: true,
-      isLonValid: true,
-    }))
-
-    setLocation(null)
-  }
-
-  const handleGetMyLocation = useCallback(() => {
-    setState((prevState) => ({
-      ...prevState,
-      isPending: true,
-    }))
-    navigator.geolocation.getCurrentPosition(
-      ({ coords: { latitude, longitude } }) => {
-        setState((prevState) => ({
-          ...prevState,
-          isPending: false,
-          lat: latitude,
-          lon: longitude,
-          isLatValid: true,
-          isLonValid: true,
-        }))
-        setLocation({
-          latitude,
-          longitude,
-          timestamp: new Date().getTime(),
-        })
-      },
-      (error) => {
-        console.error(error)
-        setState((prevState) => ({
-          ...prevState,
-          isPending: false,
-        }))
-      },
-      navigatorOptions
-    )
-  }, [setLocation])
-
-  const handleTabChange = useCallback((newTab) => {
-    setState((prevState) => ({ ...prevState, tab: newTab }))
   }, [])
 
-  const handleLatLongKeyDown = useCallback(
-    ({ key }) => {
-      if (key === 'Enter' && isLatValid && isLonValid) {
-        handleSetLocation()
+  const setPlacenameMode = useCallback(() => {
+    setState(({ mode: prevMode, ...prevState }) => ({
+      ...prevState,
+      mode: 'placename',
+      showOptions: false,
+      showPlacenameResults: true,
+    }))
+  }, [])
+
+  const setLatLonMode = useCallback(() => {
+    setState((prevState) => ({
+      ...prevState,
+      mode: 'latlon',
+      showOptions: false,
+    }))
+  }, [])
+
+  useLayoutEffect(() => {
+    // skip on first mount
+    if (!isMountedRef.current) {
+      isMountedRef.current = true
+      return
+    }
+
+    if (mode === 'placename') {
+      if (placenameInputRef.current) {
+        placenameInputRef.current.focus()
       }
-    },
-    [handleSetLocation, isLatValid, isLonValid]
-  )
-
-  const button = (
-    <Box
-      sx={{
-        ...controlCSS,
-        top: '106px',
-        right: '10px',
-        mt: '1px',
-        cursor: 'pointer',
-        width: '29px',
-        '&:hover': {
-          bg: '#F2F2F2',
-        },
-      }}
-      onClick={handleShow}
-      title="Find place on map"
-    >
-      <SearchLocation size="1em" />
-    </Box>
-  )
-
-  if (!isOpen) {
-    return button
-  }
-
-  const isDisabled = !isLatValid || !isLonValid || lat === '' || lon === ''
+    } else if (latLonInputRef.current) {
+      latLonInputRef.current.focus()
+    }
+  }, [mode])
 
   return (
     <>
       <Box
         sx={{
-          position: 'absolute',
-          zIndex: 20000,
-          left: 0,
-          right: 0,
-          top: 0,
-          bottom: 0,
-          bg: 'rgba(0,0,0,.5)',
-        }}
-        onClick={handleHide}
-      />
-
-      {button}
-
-      <Box
-        sx={{
           ...controlCSS,
           zIndex: 20001,
-          top: '65px',
-          left: '12px',
-          border: '1px solid #AAA',
-          boxShadow: '2px 2px 6px #333',
+          top: '10px',
+          right: '10px',
           overflow: 'hidden',
           userSelect: 'none',
+          width: '290px',
         }}
       >
-        <Flex sx={{ alignItems: 'center', gap: '1rem', mb: '0.5rem' }}>
-          <Text
-            sx={{
-              ml: '0.5em',
-              mr: '1rem',
-              flex: '1 1 auto',
-              fontWeight: 'bold',
-              fontSize: 2,
-            }}
+        <Flex sx={{ alignItems: 'flex-start' }}>
+          <Box
+            onClick={toggleShowOptions}
+            sx={{ flex: '0 0 auto', cursor: 'pointer', color: 'grey.8' }}
           >
-            Find a location on the map
-          </Text>
+            {showOptions ? (
+              <CaretDown size="1.5em" />
+            ) : (
+              <CaretRight size="1.5em" style={{ marginTop: '0.2rem' }} />
+            )}
+          </Box>
+          <Box sx={{ flex: '1 1 auto', fontSize: 0 }}>
+            <Box
+              sx={{
+                display: mode === 'placename' ? 'block' : 'none',
+                '& .search-results': {
+                  mt: '0.5rem',
+                  ml: '-1.5rem',
+                  display: showPlacenameResults ? 'block' : 'none',
+                },
+              }}
+            >
+              <Search
+                ref={placenameInputRef}
+                onFocus={handlePlacenameFocus}
+                onSelect={handlePlacenameSelect}
+              />
+            </Box>
 
-          <Button
-            variant="close"
-            onClick={handleHide}
-            tabIndex="-1"
-            sx={{ flex: '0 0 auto', margin: 0, p: 0, fontSize: '0.8rem' }}
-          >
-            <TimesCircle size="1.5em" />
-          </Button>
+            <Box
+              sx={{
+                display: mode === 'latlon' ? 'block' : 'none',
+              }}
+            >
+              <LatLon ref={latLonInputRef} onFocus={handleLatLonFocus} />
+            </Box>
+          </Box>
         </Flex>
 
-        <Box sx={{ mx: '-7px' }}>
-          <Tabs
-            tabs={tabs}
-            activeTab={tab}
-            activeVariant="tabs.active"
-            variant="tabs.default"
-            onChange={handleTabChange}
-          />
-        </Box>
-
-        {tab === 'find' ? (
+        {showOptions ? (
           <Box
             sx={{
-              maxWidth: '334px',
-              width: '320px',
-              mx: '-7px',
-              mb: '-6px',
+              mt: '0.25rem',
               pt: '0.25rem',
-              '& .search-results': {
-                maxWidth: '320px',
+              borderTop: '1px solid',
+              borderTopColor: 'grey.3',
+              fontSize: 1,
+              lineHeight: 1,
+              '& > div': {
+                p: '0.25rem',
+                cursor: 'pointer',
+                '&:hover': {
+                  bg: 'grey.0',
+                },
               },
             }}
           >
-            <Search />
+            <Box onClick={setPlacenameMode}>Find by a name or address</Box>
+            <Box onClick={setLatLonMode}>Find by latitude & longitude</Box>
           </Box>
-        ) : (
-          <Box sx={{ maxWidth: '318px' }}>
-            {isPending ? (
-              <Flex
-                sx={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  height: '80px',
-                }}
-              >
-                <Spinner size="2em" />
-              </Flex>
-            ) : (
-              <>
-                <Grid columns={2} gap={0} sx={{ mt: '0.5rem' }}>
-                  <Flex sx={{ justifyContent: 'center' }}>
-                    <Text>latitude</Text>
-                  </Flex>
-
-                  <Flex sx={{ justifyContent: 'center' }}>
-                    <Text>longitude</Text>
-                  </Flex>
-
-                  <Flex sx={{ justifyContent: 'center' }}>
-                    <Input
-                      type="number"
-                      onChange={handleLatitudeChange}
-                      onKeyDown={handleLatLongKeyDown}
-                      autoFocus
-                      value={lat}
-                      variant={isLatValid ? null : 'input-invalid'}
-                      tabIndex={0}
-                      sx={{
-                        ...(!isLatValid ? invalidInputCSS : inputCSS),
-                      }}
-                    />
-                  </Flex>
-                  <Flex sx={{ justifyContent: 'center' }}>
-                    <Input
-                      type="number"
-                      onChange={handleLongitudeChange}
-                      onKeyDown={handleLatLongKeyDown}
-                      value={lon}
-                      variant={isLonValid ? null : 'input-invalid'}
-                      tabIndex={0}
-                      sx={{
-                        ...(!isLonValid ? invalidInputCSS : inputCSS),
-                      }}
-                    />
-                  </Flex>
-                </Grid>
-
-                <Flex
-                  sx={{
-                    justifyContent: 'flex-end',
-                    alignItems: 'center',
-                    mt: '1rem',
-                    mr: '0.5rem',
-                    fontSize: 0,
-                    gap: '0.5rem',
-                    button: {
-                      px: '0.5em',
-                      py: '0.25em',
-                      fontSize: 1,
-                    },
-                  }}
-                >
-                  {hasGeolocation ? (
-                    <Button
-                      onClick={handleGetMyLocation}
-                      sx={{
-                        border: 'none',
-                        color: 'link',
-                        backgroundColor: 'transparent !important',
-                        mr: '1rem',
-                      }}
-                    >
-                      <Flex sx={{ alignItems: 'center', gap: '0.25rem' }}>
-                        <LocationArrow size="1em" />
-                        <Text>use my location</Text>
-                      </Flex>
-                    </Button>
-                  ) : null}
-
-                  <Button
-                    variant="secondary"
-                    onClick={handleReset}
-                    sx={{ '&:hover': { bg: 'grey.2' } }}
-                  >
-                    <Flex sx={{ alignItems: 'center', gap: '0.25rem' }}>
-                      <Box sx={{ color: 'grey.8' }}>
-                        <TrashAlt size="1em" />
-                      </Box>
-                      <Text>reset</Text>
-                    </Flex>
-                  </Button>
-
-                  <Button
-                    sx={{ cursor: isDisabled ? 'not-allowed' : 'pointer' }}
-                    disabled={isDisabled}
-                    variant={isDisabled ? 'secondary' : 'primary'}
-                    onClick={handleSetLocation}
-                  >
-                    <Flex
-                      sx={{
-                        alignItems: 'center',
-                        gap: '0.25rem',
-                        color: isDisabled ? 'grey.6' : '#FFF',
-                      }}
-                    >
-                      <Box sx={{ mt: '-2px' }}>
-                        <SearchLocation size="1em" />
-                      </Box>
-                      <Text>GO</Text>
-                    </Flex>
-                  </Button>
-                </Flex>
-              </>
-            )}
-          </Box>
-        )}
+        ) : null}
       </Box>
     </>
   )

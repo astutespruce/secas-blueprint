@@ -1,9 +1,16 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react'
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+  forwardRef,
+} from 'react'
 import PropTypes from 'prop-types'
 import { Search, Times } from '@emotion-icons/fa-solid'
 import { Box, Flex, Input } from 'theme-ui'
 
-const SearchField = ({ value, onChange, onFocus }) => {
+/* eslint-disable-next-line react/display-name */
+const SearchField = forwardRef(({ value, onChange, onFocus }, ref) => {
   const [internalValue, setInternalValue] = useState('')
   const timeoutRef = useRef(null)
 
@@ -30,9 +37,7 @@ const SearchField = ({ value, onChange, onFocus }) => {
 
   useEffect(() => {
     // set value on mount if context has a previous value
-    if (value !== '') {
-      setInternalValue(value)
-    }
+    setInternalValue(value)
   }, [value])
 
   return (
@@ -54,7 +59,7 @@ const SearchField = ({ value, onChange, onFocus }) => {
       >
         <Search size="1em" style={{ flex: '0 0 auto' }} />
         <Input
-          autoFocus
+          ref={ref}
           sx={{
             width: '100%',
             flex: '1 1 auto',
@@ -92,7 +97,7 @@ const SearchField = ({ value, onChange, onFocus }) => {
       </Flex>
     </Box>
   )
-}
+})
 
 SearchField.propTypes = {
   value: PropTypes.string,

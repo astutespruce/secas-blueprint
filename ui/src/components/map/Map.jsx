@@ -61,6 +61,9 @@ const mapWidgetCSS = {
   '.mapboxgl-ctrl-attrib.mapboxgl-compact': {
     minHeight: '24px',
   },
+  '.mapboxgl-ctrl-top-right': {
+    top: '50px',
+  },
 }
 
 // layer in Mapbox Light that we want to come AFTER our layers here
@@ -790,12 +793,10 @@ const Map = () => {
           width: '100%',
           height: '100%',
           '& canvas': {
-            // borderLeft: '2px solid transparent',
             borderLeftColor: 'grey.3',
             borderLeftWidth: ['0px', '2px'],
             borderLeftStyle: 'solid',
             '&:focus-visible': {
-              // borderLeftColor: 'blue',
               borderLeftColor: 'blue !important',
             },
           },

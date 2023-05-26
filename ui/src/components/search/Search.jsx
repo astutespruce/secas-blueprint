@@ -1,11 +1,19 @@
-import React, { useCallback, useEffect, useState, memo } from 'react'
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+  memo,
+  forwardRef,
+} from 'react'
+import PropTypes from 'prop-types'
 import { Box } from 'theme-ui'
 
 import { useSearch } from './Provider'
 import SearchField from './SearchField'
 import Results from './Results'
 
-const Search = (props) => {
+/* eslint-disable-next-line react/display-name */
+const Search = forwardRef(({ onSelect, ...props }, ref) => {
   const [index, setIndex] = useState(null)
 
   const {
@@ -50,9 +58,17 @@ const Search = (props) => {
     setIndex(null)
   }, [query])
 
+  const handleSelectId = useCallback(
+    (id) => {
+      setSelectedId(id)
+      onSelect(id)
+    },
+    [setSelectedId, onSelect]
+  )
+
   return (
     <Box onKeyDown={handleKeyDown}>
-      <SearchField value={query} onChange={setQuery} {...props} />
+      <SearchField ref={ref} value={query} onChange={setQuery} {...props} />
 
       {query && query.length >= 3 ? (
         <Results
@@ -61,11 +77,19 @@ const Search = (props) => {
           isLoading={isLoading}
           error={error}
           selectedId={selectedId}
-          setSelectedId={setSelectedId}
+          setSelectedId={handleSelectId}
         />
       ) : null}
     </Box>
   )
+})
+
+Search.propTypes = {
+  onSelect: PropTypes.func,
+}
+
+Search.defaultProps = {
+  onSelect: () => {},
 }
 
 export default memo(Search)
