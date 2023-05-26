@@ -1,8 +1,15 @@
-import React, { useCallback, useState, useLayoutEffect, useRef } from 'react'
+import React, {
+  useCallback,
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+} from 'react'
 import { CaretRight, CaretDown } from '@emotion-icons/fa-solid'
 import { Box, Flex } from 'theme-ui'
 
 import { Search, LatLon } from 'components/search'
+import { hasWindow } from 'util/dom'
 
 const controlCSS = {
   alignItems: 'center',
@@ -21,22 +28,31 @@ const FindLocation = () => {
   const latLonInputRef = useRef(null)
   const isMountedRef = useRef(false)
 
-  const [{ showOptions, showPlacenameResults, mode }, setState] = useState({
-    showOptions: false,
-    showPlacenameResults: true,
-    mode: 'placename',
-  })
+  const [{ showOptions, showPlacenameResults, mode, isFocused }, setState] =
+    useState({
+      showOptions: false,
+      showPlacenameResults: true,
+      mode: 'placename',
+      isFocused: false,
+    })
 
-  const toggleShowOptions = useCallback(() => {
+  const toggleShowOptions = useCallback((e) => {
+    e.stopPropagation()
+
     setState(({ showOptions: prevShowOptions, ...prevState }) => ({
       ...prevState,
       showOptions: !prevShowOptions,
       showPlacenameResults: false,
+      isFocused: true,
     }))
   }, [])
 
   const handlePlacenameSelect = useCallback(() => {
-    setState((prevState) => ({ ...prevState, showPlacenameResults: false }))
+    setState((prevState) => ({
+      ...prevState,
+      showPlacenameResults: false,
+      isFocused: false,
+    }))
   }, [])
 
   const handlePlacenameFocus = useCallback(() => {
@@ -44,6 +60,7 @@ const FindLocation = () => {
       ...prevState,
       showOptions: false,
       showPlacenameResults: true,
+      isFocused: true,
     }))
   }, [])
 
@@ -51,23 +68,38 @@ const FindLocation = () => {
     setState((prevState) => ({
       ...prevState,
       showOptions: false,
+      isFocused: true,
     }))
   }, [])
 
-  const setPlacenameMode = useCallback(() => {
+  const setPlacenameMode = useCallback((e) => {
+    e.stopPropagation()
+
+    if (placenameInputRef.current) {
+      placenameInputRef.current.focus()
+    }
+
     setState(({ mode: prevMode, ...prevState }) => ({
       ...prevState,
       mode: 'placename',
       showOptions: false,
       showPlacenameResults: true,
+      isFocused: true,
     }))
   }, [])
 
-  const setLatLonMode = useCallback(() => {
+  const setLatLonMode = useCallback((e) => {
+    e.stopPropagation()
+
+    if (latLonInputRef.current) {
+      latLonInputRef.current.focus()
+    }
+
     setState((prevState) => ({
       ...prevState,
       mode: 'latlon',
       showOptions: false,
+      isFocused: true,
     }))
   }, [])
 
@@ -87,9 +119,37 @@ const FindLocation = () => {
     }
   }, [mode])
 
+  // prevent click from calling window click handler
+  const handleClick = useCallback((e) => e.stopPropagation(), [])
+
+  // add event listener to the window
+  useEffect(() => {
+    const handleWindowClick = () => {
+      if (isFocused) {
+        setState((prevState) => ({
+          ...prevState,
+          showOptions: false,
+          showPlacenameResults: false,
+          isFocused: false,
+        }))
+      }
+    }
+
+    if (hasWindow) {
+      document.addEventListener('click', handleWindowClick)
+    }
+
+    return () => {
+      if (hasWindow) {
+        document.removeEventListener('click', handleWindowClick)
+      }
+    }
+  }, [isFocused])
+
   return (
     <>
       <Box
+        onClick={handleClick}
         sx={{
           ...controlCSS,
           zIndex: 20001,
@@ -97,7 +157,7 @@ const FindLocation = () => {
           right: '10px',
           overflow: 'hidden',
           userSelect: 'none',
-          width: '290px',
+          width: isFocused || showOptions ? '290px' : '160px',
         }}
       >
         <Flex sx={{ alignItems: 'flex-start' }}>
@@ -134,7 +194,11 @@ const FindLocation = () => {
                 display: mode === 'latlon' ? 'block' : 'none',
               }}
             >
-              <LatLon ref={latLonInputRef} onFocus={handleLatLonFocus} />
+              <LatLon
+                ref={latLonInputRef}
+                isCompact={!isFocused}
+                onFocus={handleLatLonFocus}
+              />
             </Box>
           </Box>
         </Flex>

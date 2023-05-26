@@ -10,9 +10,12 @@ import { Search, Times } from '@emotion-icons/fa-solid'
 import { Box, Flex, Input } from 'theme-ui'
 
 /* eslint-disable-next-line react/display-name */
-const SearchField = forwardRef(({ value, onChange, onFocus }, ref) => {
+const SearchField = forwardRef(({ value, onChange, onFocus, onBlur }, ref) => {
   const [internalValue, setInternalValue] = useState('')
   const timeoutRef = useRef(null)
+
+  // prevent click from calling window click handler
+  const handleClick = useCallback((e) => e.stopPropagation(), [])
 
   const handleChange = useCallback(
     ({ target: { value: newValue } }) => {
@@ -71,8 +74,10 @@ const SearchField = forwardRef(({ value, onChange, onFocus }, ref) => {
           }}
           placeholder="Find a place by name / address"
           value={internalValue}
+          onClick={handleClick}
           onChange={handleChange}
           onFocus={onFocus}
+          onBlur={onBlur}
         />
         {value !== '' && (
           <Box
@@ -103,11 +108,13 @@ SearchField.propTypes = {
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   onFocus: PropTypes.func,
+  onBlur: PropTypes.func,
 }
 
 SearchField.defaultProps = {
   value: '',
   onFocus: () => {},
+  onBlur: () => {},
 }
 
 export default SearchField

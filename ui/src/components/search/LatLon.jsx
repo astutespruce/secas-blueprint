@@ -122,18 +122,19 @@ const parseLatLon = (value) => {
 }
 
 /* eslint-disable-next-line react/display-name */
-const LatLon = forwardRef(({ onFocus }, ref) => {
+const LatLon = forwardRef(({ isCompact, onFocus, onBlur }, ref) => {
   const { setLocation, reset } = useSearch()
-  const [
-    { value, hasCoordinates, isValid, invalidReason, isFocused },
-    setState,
-  ] = useState({
-    value: '',
-    hasCoordinates: false,
-    isValid: true,
-    invalidReason: null,
-    isFocused: false,
-  })
+  const [{ value, hasCoordinates, isValid, invalidReason }, setState] =
+    useState({
+      value: '',
+      hasCoordinates: false,
+      isValid: true,
+      invalidReason: null,
+    })
+
+  // prevent click from calling window click handler
+  const handleClick = useCallback((e) => e.stopPropagation(), [])
+
   const handleChange = useCallback(({ target: { value: newValue } }) => {
     const hasCoordValue = newValue.search(hasCoordsRegex) !== -1
 
@@ -188,22 +189,16 @@ const LatLon = forwardRef(({ onFocus }, ref) => {
     ({ key }) => {
       if (key === 'Enter') {
         handleSubmit()
+      } else if (key === 'Escape') {
+        handleReset()
       }
     },
-    [handleSubmit]
+    [handleSubmit, handleReset]
   )
-
-  const handleFocus = useCallback(() => {
-    setState((prevState) => ({ ...prevState, isFocused: true }))
-    onFocus()
-  }, [onFocus])
-
-  const handleBlur = useCallback(() => {
-    setState((prevState) => ({ ...prevState, isFocused: false }))
-  }, [])
 
   return (
     <Box
+      onClick={handleClick}
       sx={{
         pr: '0.5rem',
       }}
@@ -243,9 +238,10 @@ const LatLon = forwardRef(({ onFocus }, ref) => {
             }}
             placeholder="Enter latitude, longitude"
             value={value}
+            onClick={handleClick}
             onChange={handleChange}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
+            onFocus={onFocus}
+            onBlur={onBlur}
             onKeyDown={handleInputKeyDown}
           />
           {value !== '' && (
@@ -270,76 +266,84 @@ const LatLon = forwardRef(({ onFocus }, ref) => {
           )}
         </Flex>
 
-        <Flex
-          sx={{
-            justifyContent: 'flex-end',
-          }}
-        >
-          <Button
-            disabled={!(hasCoordinates && isValid)}
-            variant={hasCoordinates && isValid ? 'primary' : 'secondary'}
-            onClick={handleSubmit}
+        {!isCompact ? (
+          <Flex
             sx={{
-              fontSize: 1,
-              px: '0.75em',
-              py: '0.1em',
-              cursor: hasCoordinates && isValid ? 'pointer' : 'not-allowed',
+              justifyContent: 'flex-end',
             }}
           >
-            Go
-          </Button>
-        </Flex>
+            <Button
+              disabled={!(hasCoordinates && isValid)}
+              variant={hasCoordinates && isValid ? 'primary' : 'secondary'}
+              onClick={handleSubmit}
+              sx={{
+                fontSize: 1,
+                px: '0.75em',
+                py: '0.1em',
+                cursor: hasCoordinates && isValid ? 'pointer' : 'not-allowed',
+              }}
+            >
+              Go
+            </Button>
+          </Flex>
+        ) : null}
       </Flex>
 
-      {isFocused ? (
-        <Box
-          className="latlon-instructions"
-          sx={{
-            mt: '0.5rem',
-            ml: '-1rem',
-            pb: '0.5rem',
-            color: 'grey.8',
-            fontSize: 0,
-            lineHeight: 1,
-          }}
-        >
-          Use decimal degrees or degrees° minutes&apos; seconds&quot; in
-          latitude, longitude order
-        </Box>
-      ) : null}
+      {!isCompact ? (
+        <>
+          <Box
+            className="latlon-instructions"
+            sx={{
+              mt: '0.5rem',
+              ml: '-1rem',
+              pb: '0.5rem',
+              color: 'grey.8',
+              fontSize: 0,
+              lineHeight: 1,
+            }}
+          >
+            Use decimal degrees or degrees° minutes&apos; seconds&quot; in
+            latitude, longitude order
+          </Box>
 
-      {!isValid ? (
-        <Box
-          sx={{
-            mt: '0.5rem',
-            ml: '-1.5rem',
-            mr: '-1rem',
-            pb: '0.25rem',
-            lineHeight: 1,
-          }}
-        >
-          <Flex sx={{ alignItems: 'center', gap: '0.25rem' }}>
-            <Box sx={{ color: 'accent' }}>
-              <ExclamationTriangle size="1em" />
+          {!isValid ? (
+            <Box
+              sx={{
+                mt: '0.5rem',
+                ml: '-1.5rem',
+                mr: '-1rem',
+                pb: '0.25rem',
+                lineHeight: 1,
+              }}
+            >
+              <Flex sx={{ alignItems: 'center', gap: '0.25rem' }}>
+                <Box sx={{ color: 'accent' }}>
+                  <ExclamationTriangle size="1em" />
+                </Box>
+                <Text sx={{ fontWeight: 'bold' }}>
+                  The value you entered is not valid.
+                </Text>
+              </Flex>
+              {invalidReason ? (
+                <Text sx={{ mt: '0.25rem' }}>{invalidReason}</Text>
+              ) : null}
             </Box>
-            <Text sx={{ fontWeight: 'bold' }}>
-              The value you entered is not valid.
-            </Text>
-          </Flex>
-          {invalidReason ? (
-            <Text sx={{ mt: '0.25rem' }}>{invalidReason}</Text>
           ) : null}
-        </Box>
+        </>
       ) : null}
     </Box>
   )
 })
 LatLon.propTypes = {
+  isCompact: PropTypes.bool,
   onFocus: PropTypes.func,
+  onBlur: PropTypes.func,
 }
 
 LatLon.defaultProps = {
+  isCompact: false,
   onFocus: () => {},
+  onBlur: () => {},
 }
 
 export default LatLon
