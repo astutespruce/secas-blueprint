@@ -152,7 +152,7 @@ const FindLocation = () => {
         onClick={handleClick}
         sx={{
           ...controlCSS,
-          zIndex: 20001,
+          zIndex: 2001,
           top: '10px',
           right: '10px',
           overflow: 'hidden',
