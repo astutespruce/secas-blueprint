@@ -9,6 +9,9 @@ export const isUnsupported =
 
 export const isLocalDev = hasWindow && process.env.NODE_ENV === 'development'
 
+export const hasGeolocation =
+  hasWindow && navigator && 'geolocation' in navigator
+
 /**
  * URI encode object key:value pairs
  *

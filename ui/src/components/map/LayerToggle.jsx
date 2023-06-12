@@ -142,15 +142,16 @@ const LayerToggle = () => {
             alignItems: 'center',
             justifyContent: 'center',
             position: 'absolute',
-            top: '10px',
-            right: '50px',
+            top: '160px',
+            right: '10px',
             padding: '6px',
             color: 'grey.9',
             bg: '#FFF',
             pointerEvents: 'auto',
             cursor: 'pointer',
             borderRadius: '0.25rem',
-            boxShadow: '2px 2px 6px #333',
+            boxShadow: '0 0 0 2px rgba(0,0,0,.1)',
+            // boxShadow: '2px 2px 6px #333',
           }}
           title="Choose map layer to show on map"
         >

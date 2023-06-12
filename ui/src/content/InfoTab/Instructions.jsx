@@ -75,6 +75,9 @@ const MobileInstructions = () => (
       Use the <b>Find Location</b> tab at the bottom to search for a place by
       name. When you tap on a place to select it from the list, it will show a
       marker at that location on the map.
+      <br />
+      You can also choose to add a marker at your current location (if allowed
+      by your device).
     </Paragraph>
   </>
 )
@@ -191,12 +194,14 @@ const DesktopInstructions = () => (
     </Paragraph>
 
     <Heading as="h3" sx={{ mt: '2rem', fontSize: [2, 3] }}>
-      To find a specific area:
+      To find a specific location:
     </Heading>
     <Paragraph sx={{ mt: '0.25rem' }}>
-      Use the <b>Find Location</b> tab in the sidebar to search for a place by
-      name. When you tap on a place to select it from the list, it will show a
-      marker at that location on the map.
+      Use the search bar in the upper right of the map. You can search by place
+      name or address, or enter latitude and longitude coordinates directly.
+      Once you have selected a location, it will show marker at that location on
+      the map. To remove the marker, click the <b>X</b> in the search field to
+      clear the search.
     </Paragraph>
   </>
 )

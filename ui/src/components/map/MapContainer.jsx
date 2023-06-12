@@ -28,9 +28,6 @@ const sidebarCSS = {
   flexDirection: 'column',
   overflowX: 'hidden',
   overflowY: 'hidden',
-  // borderRightColor: 'grey.3',
-  // borderRightWidth: ['0px', '1px'],
-  // borderRightStyle: 'solid',
 }
 
 const mobileSidebarCSS = {
@@ -96,15 +93,12 @@ const MapContainer = () => {
     if (mapMode !== mapModeRef.current) {
       mapModeRef.current = mapMode
 
-      // if compatible mapMode, keep showing find
-      if (tab === 'find' && (mapMode === 'filter' || mapMode === 'unit')) {
-        return
-      }
-
       if (mapMode === 'filter') {
         nextTab = 'filter'
-      } else {
+      } else if (!isMobile) {
         nextTab = 'info'
+        // in mobile: keep the mode the same
+        // in desktop:
         // if in pixel mode, map needs to load pixel data before showing
         // data in sidebar; default to info tab
       }
@@ -116,7 +110,7 @@ const MapContainer = () => {
 
       if (mapData === null) {
         nextTab = tab === 'mobile-selected-map' || isMobile ? 'map' : 'info'
-      } else if (tab === 'map') {
+      } else if (tab === 'map' || tab === 'mobile-selected-map') {
         nextTab = 'mobile-selected-map'
       } else if (!tab.startsWith('selected-')) {
         nextTab = 'selected-priorities'
@@ -298,22 +292,24 @@ const MapContainer = () => {
             </>
           ) : (
             <>
-              <Box sx={{ flex: '0 0 auto' }}>
-                {mapData !== null && (
-                  <SidebarHeader
-                    {...mapData}
-                    showClose={mapMode !== 'pixel'}
-                    onClose={unsetMapData}
-                  />
-                )}
+              {tab !== 'info' ? (
+                <Box sx={{ flex: '0 0 auto' }}>
+                  {mapData !== null && (
+                    <SidebarHeader
+                      {...mapData}
+                      showClose={mapMode !== 'pixel'}
+                      onClose={unsetMapData}
+                    />
+                  )}
 
-                <DesktopTabs
-                  tab={tab}
-                  mapMode={mapMode}
-                  hasMapData={mapData !== null}
-                  onChange={handleTabChange}
-                />
-              </Box>
+                  <DesktopTabs
+                    tab={tab}
+                    mapMode={mapMode}
+                    hasMapData={mapData !== null}
+                    onChange={handleTabChange}
+                  />
+                </Box>
+              ) : null}
 
               <Box
                 ref={contentNode}

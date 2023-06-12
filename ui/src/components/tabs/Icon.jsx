@@ -17,6 +17,7 @@ import {
   Tasks,
   SlidersH,
   UserFriends,
+  Compass,
 } from '@emotion-icons/fa-solid'
 
 const Icon = ({ name, ...props }) => {
@@ -48,6 +49,9 @@ const Icon = ({ name, ...props }) => {
     }
     case 'selected-partners': {
       return <UserFriends {...props} />
+    }
+    case 'latlong': {
+      return <Compass {...props} />
     }
     default: {
       // fallthrough to make sure we always get an icon

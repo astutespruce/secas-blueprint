@@ -31,6 +31,7 @@ import { useIsEqualEffect, useEventHandler } from 'util/hooks'
 import CrosshairsIcon from 'images/CrosshairsIcon.svg'
 
 import { unpackFeatureData } from './features'
+import FindLocation from './FindLocation'
 import { createRenderTarget, extractPixelData, StackedPNGTileLayer } from './gl'
 import { mapConfig as config, sources, layers } from './mapConfig'
 import { pixelLayers, pixelLayerIndex } from './pixelLayers'
@@ -59,6 +60,9 @@ const mapWidgetCSS = {
   },
   '.mapboxgl-ctrl-attrib.mapboxgl-compact': {
     minHeight: '24px',
+  },
+  '.mapboxgl-ctrl-top-right': {
+    top: '50px',
   },
 }
 
@@ -560,7 +564,7 @@ const Map = () => {
     if (location !== null) {
       const { current: map } = mapRef
       const { latitude, longitude } = location
-      map.flyTo({ center: [longitude, latitude], zoom: 12 })
+      map.jumpTo({ center: [longitude, latitude], zoom: 12 })
 
       if (locationMarkerRef.current === null) {
         locationMarkerRef.current = new mapboxgl.Marker()
@@ -789,12 +793,10 @@ const Map = () => {
           width: '100%',
           height: '100%',
           '& canvas': {
-            // borderLeft: '2px solid transparent',
             borderLeftColor: 'grey.3',
             borderLeftWidth: ['0px', '2px'],
             borderLeftStyle: 'solid',
             '&:focus-visible': {
-              // borderLeftColor: 'blue',
               borderLeftColor: 'blue !important',
             },
           },
@@ -860,6 +862,8 @@ const Map = () => {
               {mapMode !== 'unit' && !hidePixelLayerToggle ? (
                 <LayerToggle />
               ) : null}
+
+              <FindLocation />
             </>
           ) : null}
 

@@ -90,7 +90,7 @@ const Results = ({
               size="1.5rem"
               style={{ margin: '0 0.5rem 0 0' }}
             />
-            <Text sx={{ fontSize: [2, 3] }}>Error loading search results.</Text>
+            <Text>Error loading search results.</Text>
           </Flex>
 
           <Text sx={{ mt: '1rem' }}>
@@ -146,7 +146,7 @@ const Results = ({
   }
 
   return (
-    <Box ref={listNode}>
+    <Box ref={listNode} className="search-results">
       {results.map(({ id, name, address }, i) => (
         <Box
           key={id}
@@ -158,7 +158,7 @@ const Results = ({
             cursor: 'pointer',
             borderBottom: '1px solid',
             borderBottomColor: 'grey.1',
-            py: '0.75rem',
+            py: '0.25rem',
             pl: '1rem',
             pr: '1.5rem',
             '&:hover': {
@@ -169,9 +169,7 @@ const Results = ({
         >
           <Box sx={{ pointerEvents: 'none' }}>
             <Text>{name}</Text>
-            {address ? (
-              <Text sx={{ fontSize: [0, 1], color: 'grey.8' }}>{address}</Text>
-            ) : null}
+            {address ? <Text sx={{ color: 'grey.8' }}>{address}</Text> : null}
           </Box>
         </Box>
       ))}

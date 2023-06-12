@@ -1,11 +1,21 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react'
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+  forwardRef,
+} from 'react'
 import PropTypes from 'prop-types'
-import { Search, TimesCircle } from '@emotion-icons/fa-solid'
+import { Search, Times } from '@emotion-icons/fa-solid'
 import { Box, Flex, Input } from 'theme-ui'
 
-const SearchField = ({ value, onChange }) => {
+/* eslint-disable-next-line react/display-name */
+const SearchField = forwardRef(({ value, onChange, onFocus, onBlur }, ref) => {
   const [internalValue, setInternalValue] = useState('')
   const timeoutRef = useRef(null)
+
+  // prevent click from calling window click handler
+  const handleClick = useCallback((e) => e.stopPropagation(), [])
 
   const handleChange = useCallback(
     ({ target: { value: newValue } }) => {
@@ -30,28 +40,29 @@ const SearchField = ({ value, onChange }) => {
 
   useEffect(() => {
     // set value on mount if context has a previous value
-    if (value !== '') {
-      setInternalValue(value)
-    }
+    setInternalValue(value)
   }, [value])
 
   return (
-    <Box sx={{ py: '0.5rem', px: '1rem', bg: 'grey.1' }}>
+    <Box className="search-field-container">
       <Flex
+        className="search-field"
         sx={{
-          bg: '#FFF',
+          border: '1px solid',
+          borderColor: 'grey.1',
           px: '0.5rem',
           borderRadius: '0.5rem',
           color: value === '' ? 'grey.4' : 'grey.9',
           alignItems: 'center',
           '&:focus, &:focus-within': {
             color: 'grey.9',
+            borderColor: 'grey.9',
           },
         }}
       >
         <Search size="1em" style={{ flex: '0 0 auto' }} />
         <Input
-          autoFocus
+          ref={ref}
           sx={{
             width: '100%',
             flex: '1 1 auto',
@@ -61,9 +72,12 @@ const SearchField = ({ value, onChange }) => {
               color: 'grey.4',
             },
           }}
-          placeholder="Enter a location name"
+          placeholder="Find a place by name / address"
           value={internalValue}
+          onClick={handleClick}
           onChange={handleChange}
+          onFocus={onFocus}
+          onBlur={onBlur}
         />
         {value !== '' && (
           <Box
@@ -74,7 +88,7 @@ const SearchField = ({ value, onChange }) => {
               },
             }}
           >
-            <TimesCircle
+            <Times
               size="1.25em"
               style={{
                 flex: '0 0 auto',
@@ -88,15 +102,19 @@ const SearchField = ({ value, onChange }) => {
       </Flex>
     </Box>
   )
-}
+})
 
 SearchField.propTypes = {
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
+  onFocus: PropTypes.func,
+  onBlur: PropTypes.func,
 }
 
 SearchField.defaultProps = {
   value: '',
+  onFocus: () => {},
+  onBlur: () => {},
 }
 
 export default SearchField

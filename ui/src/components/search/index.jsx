@@ -1,4 +1,5 @@
 import Search from './Search'
+import LatLon from './LatLon'
 import { Provider, useSearch } from './Provider'
 
-export { Search, Provider, useSearch }
+export { Search, LatLon, Provider, useSearch }
