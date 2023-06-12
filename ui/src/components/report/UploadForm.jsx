@@ -147,7 +147,7 @@ const UploadForm = ({ onFileChange, onCreateReport }) => {
             </Box>
 
             <Paragraph>
-              Upload a shapefile or ESRI File Geodatabase Feature Class
+              Upload a zipped shapefile or ESRI File Geodatabase Feature Class
               containing your area of interest to generate a detailed PDF report
               of the Blueprint, underlying indicators, and landscape-level
               threats for your area of interest. It includes a map and summary
