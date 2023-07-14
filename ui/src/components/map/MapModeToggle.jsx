@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { Box, Text, Flex, Button } from 'theme-ui'
 
 import { useMapData } from 'components/data'
+import { Tooltip } from 'components/tooltip'
 
 const baseCSS = {
   position: 'absolute',
@@ -82,7 +83,14 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
             data-state={mapMode === 'unit' ? 'active' : null}
             onClick={handleUnitClick}
           >
-            Summary data
+            <Tooltip
+              content="Click on any subwatershed or marine lease block to show summary data for that area, including charts of the Blueprint, indicators present, threats, and land ownership. You may need to zoom in futher to select an area."
+              direction="bottom"
+              maxWidth="240px"
+              fontSize={0}
+            >
+              Summarize data
+            </Tooltip>
           </Button>
 
           <Button
@@ -90,7 +98,14 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
             data-state={mapMode === 'pixel' ? 'active' : null}
             onClick={handlePixelClick}
           >
-            Pixel data
+            <Tooltip
+              content="Center the crosshairs in the middle of the map over a point on the map to show specific data for that location, including the Blueprint, indicators, present, threats, and land ownership.  You may need to zoom in further to show pixel-level details."
+              direction="bottom"
+              maxWidth="240px"
+              fontSize={0}
+            >
+              Show data at a point
+            </Tooltip>
           </Button>
 
           {/* Filter mode is not available for mobile */}
@@ -100,7 +115,14 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
               data-state={mapMode === 'filter' ? 'active' : null}
               onClick={handleFilterClick}
             >
-              Pixel filters
+              <Tooltip
+                content="Pixel filters can help you find the part of the Blueprint that aligns with your mission, interests, or specific question. Use the filters to show areas on the map that fall within a range of values for one or more layers, including the Blueprint, hubs and corridors, underlying indicators, and threats."
+                direction="bottom"
+                maxWidth="240px"
+                fontSize={0}
+              >
+                Filter the Blueprint
+              </Tooltip>
             </Button>
           ) : null}
         </Flex>

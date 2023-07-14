@@ -115,9 +115,10 @@ const DesktopInstructions = () => (
       Pixel-level details:
     </Heading>
     <Paragraph sx={{ mt: '0.25rem' }}>
-      Choose <b>Pixel data</b> from the button bar above the map. Click on any
-      location to show pixel-level data for that location. You may need to zoom
-      in further to select pixels. Zoom in further to choose a more precise
+      Choose <b>Pixel data</b> from the button bar above the map. Center the
+      crosshairs in the middle of the map over a point on the map to show
+      pixel-level data for that location. You may need to zoom in further to
+      show pixel-level details. Zoom in further to choose a more precise
       location, especially in areas that are highly pixelated.
       <br />
       <br />
