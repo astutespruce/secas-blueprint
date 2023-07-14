@@ -22,7 +22,7 @@ STYLE = json.dumps(
             "features": {
                 "type": "vector",
                 "url": f"mbtiles://{TILE_DIR}/se_other_features.mbtiles",
-                "minzoom": 5,
+                "minzoom": 4,
                 "maxzoom": 14,
             }
         },

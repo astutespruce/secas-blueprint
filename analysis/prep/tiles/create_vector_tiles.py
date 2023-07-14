@@ -13,9 +13,8 @@ tmp_dir = Path("/tmp")
 out_dir = Path("tiles")
 out_dir.mkdir(exist_ok=True)
 
-# use locally-compiled version from github.com/felt/tippecanoe
-tippecanoe = "../lib/tippecanoe/tippecanoe"
-tile_join = "../lib/tippecanoe/tile-join"
+tippecanoe = "tippecanoe"
+tile_join = "tile-join"
 
 
 def get_col_types(df, bool_cols=None):
@@ -57,13 +56,7 @@ def get_col_types(df, bool_cols=None):
 def create_tileset(infilename, outfilename, minzoom, maxzoom, layer_id, col_types=None):
     col_types = col_types or []
     ret = subprocess.run(
-        [
-            tippecanoe,
-            "-f",
-            "-pg",
-            "--hilbert",
-            "-ai",
-        ]
+        [tippecanoe, "-f", "-pg", "--hilbert", "-ai", "--drop-smallest-as-needed"]
         + ["-l", layer_id]
         + ["-Z", str(minzoom), "-z", str(maxzoom)]
         + col_types
@@ -100,6 +93,7 @@ print(
 
 tilesets = []
 
+print("creating ownership tiles")
 df = gp.read_feather(
     data_dir / "inputs/boundaries/ownership.feather",
     columns=["geometry", "Own_Type", "GAP_Sts", "Loc_Nm", "Loc_Own"],
@@ -113,13 +107,14 @@ tilesets.append(outfilename)
 create_tileset(
     infilename,
     outfilename,
-    minzoom=5,
+    minzoom=4,
     maxzoom=14,
     layer_id="ownership",
     col_types=get_col_types(df),
 )
 
 
+print("creating subregion tiles")
 df = gp.read_feather(
     data_dir / "boundaries/base_subregions.feather",
 ).to_crs(GEO_CRS)
@@ -140,9 +135,17 @@ create_tileset(
 
 
 # create SLR NODATA tiles
-df = gp.read_feather(
-    data_dir / "for_tiles/slr_not_modeled.feather", columns=["geometry"]
-).to_crs(GEO_CRS)
+print("creating SLR tiles")
+df = (
+    gp.read_feather(
+        data_dir / "for_tiles/slr_not_modeled.feather", columns=["geometry"]
+    )
+    .to_crs(GEO_CRS)
+    .explode(ignore_index=True)
+)
+# reset the index to a new attribute, because tippecanoe segfaults when no attributes
+# present besides geometry
+df = df.reset_index()
 infilename = tmp_dir / "slr_not_modeled.fgb"
 write_dataframe(df, infilename)
 
@@ -158,7 +161,14 @@ create_tileset(
 
 outfilename = out_dir / "se_other_features.mbtiles"
 ret = subprocess.run(
-    [tile_join, "-f", "-pg"] + ["-o", f"{str(outfilename)}"] + tilesets
+    [
+        tile_join,
+        "-f",
+        "-pg",
+        "--no-tile-size-limit",
+    ]
+    + ["-o", f"{str(outfilename)}"]
+    + tilesets
 )
 ret.check_returncode()
 

@@ -137,27 +137,7 @@ const Filter = ({
             {label}
           </Label>
 
-          <InfoTooltip content={tooltipContent} direction="right">
-            <Flex
-              sx={{
-                flex: '0 0 auto',
-                ml: '0.5em',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '1.5em',
-                width: '1.5em',
-                borderRadius: '2em',
-                border: '1px solid',
-                borderColor: 'grey.3',
-                '&:hover': {
-                  bg: 'grey.1',
-                  borderColor: 'grey.4',
-                },
-              }}
-            >
-              i
-            </Flex>
-          </InfoTooltip>
+          <InfoTooltip content={tooltipContent} direction="right" />
         </Flex>
 
         {enabled ? (
