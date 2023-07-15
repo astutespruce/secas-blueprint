@@ -1,11 +1,8 @@
-import React, { useCallback, useRef } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 import { Box, Checkbox, Flex, Label, Text } from 'theme-ui'
 
 import { InfoTooltip } from 'components/tooltip'
-import { indexBy } from 'util/data'
-
-import RangeSlider from './RangeSlider'
 
 const Filter = ({
   id,
@@ -21,33 +18,14 @@ const Filter = ({
 }) => {
   const checkboxRef = useRef(null)
 
-  const hasRange = values[values.length - 1].value > values[0].value
-  const valueIndex = indexBy(values, 'value')
+  // NOTE: this is clunky and does not update
+  const [valueState, setValueState] = useState(() =>
+    Object.fromEntries(
+      values.map(({ value }) => [value, value >= range[0] && value <= range[1]])
+    )
+  )
 
-  let summaryLabel = null
-  if (hasRange) {
-    if (range[1] > range[0]) {
-      summaryLabel = (
-        <Flex>
-          <Text sx={{ flex: '0 0 auto' }}>Showing:</Text>
-          <Box sx={{ flex: '1 1 auto', ml: '1rem', textAlign: 'center' }}>
-            <Text>&quot;{valueIndex[range[0]].label}&quot;</Text>
-            <Text sx={{ my: '0.1rem' }}>
-              <b>to</b>
-            </Text>
-            <Text>
-              &quot;
-              {valueIndex[range[1]].label}&quot;
-            </Text>
-          </Box>
-        </Flex>
-      )
-    } else {
-      summaryLabel = `Showing: "${valueIndex[range[0]].label}"`
-    }
-  } else {
-    summaryLabel = `Showing: ${presenceLabel} (presence-only indicator)`
-  }
+  const hasMultipleValues = values.length > 1
 
   const tooltipContent = (
     <Box sx={{ fontSize: 0 }}>
@@ -55,7 +33,7 @@ const Filter = ({
       {description ? <Text sx={{ mb: '0.5rem' }}>{description}</Text> : null}
       <b>{indicatorValueLabel || 'Values'}:</b>
       <br />
-      {hasRange ? (
+      {hasMultipleValues ? (
         <Box
           as="ul"
           sx={{
@@ -92,9 +70,25 @@ const Filter = ({
     }
   }, [id, enabled, range, onChange])
 
-  const handleRangeChange = useCallback(
-    (newRange) => {
-      onChange({ id, enabled: true, range: newRange })
+  const handleValueCheckboxChange = useCallback(
+    (value) => () => {
+      setValueState((prevState) => {
+        const newState = {
+          ...prevState,
+          [value]: !prevState[value],
+        }
+
+        // FIXME: temporary hack until backend is updated
+        const enabledValues = Object.entries(newState)
+          .filter(([k, v]) => v)
+          .map(([k, v]) => k)
+        onChange({
+          id,
+          enabled: true,
+          range: [Math.min(...enabledValues), Math.max(...enabledValues)],
+        })
+        return newState
+      })
     },
     [id, onChange]
   )
@@ -147,25 +141,50 @@ const Filter = ({
                 {indicatorValueLabel}
               </Text>
             ) : null}
-            {hasRange ? (
-              <RangeSlider
-                values={values}
-                range={range}
-                goodThreshold={goodThreshold}
-                onChange={handleRangeChange}
-              />
-            ) : null}
+            {hasMultipleValues ? (
+              <Box sx={{ mt: '0.25rem' }}>
+                {values.map(({ value, label: valueLabel }) => (
+                  <Box key={value}>
+                    <Label
+                      sx={{
+                        flex: '1 1 auto',
+                        fontSize: 1,
+                        // TODO:
+                        // fontWeight: enabled ? 'bold' : 'normal',
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      <Checkbox
+                        ref={checkboxRef}
+                        readOnly={false}
+                        checked={valueState[value]}
+                        onChange={handleValueCheckboxChange(value)}
+                        sx={{
+                          cursor: 'pointer',
+                          mr: '0.25em',
+                          width: '1.5em',
+                          height: '1.5em',
+                        }}
+                      />
 
-            <Text
-              sx={{
-                fontSize: 0,
-                color: 'grey.8',
-                pb: '0.5rem',
-                lineHeight: 1.2,
-              }}
-            >
-              {summaryLabel}
-            </Text>
+                      {valueLabel}
+                    </Label>
+                  </Box>
+                ))}
+              </Box>
+            ) : (
+              <Text
+                sx={{
+                  fontSize: 0,
+                  color: 'grey.8',
+                  pb: '0.5rem',
+                  lineHeight: 1.2,
+                }}
+              >
+                {/* {summaryLabel} */}
+                Showing: {presenceLabel} (presence-only indicator)
+              </Text>
+            )}
           </Box>
         ) : null}
       </Box>
