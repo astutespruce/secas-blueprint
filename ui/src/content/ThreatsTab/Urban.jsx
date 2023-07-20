@@ -19,8 +19,11 @@ const DataSource = () => (
     <OutboundLink to="https://www.usgs.gov/centers/eros/science/national-land-cover-database">
       National Land Cover Database
     </OutboundLink>
-    . Future urban growth estimates derived from the FUTURES model. Data
-    provided by the{' '}
+    . Future urban growth estimates derived from{' '}
+    <OutboundLink to="https://www.sciencebase.gov/catalog/item/63f50297d34efa0476b04cf7">
+      FUTURES model projections for the contiguous United States
+    </OutboundLink>
+    . Data provided by the{' '}
     <OutboundLink to="https://cnr.ncsu.edu/geospatial/">
       Center for Geospatial Analytics
     </OutboundLink>
