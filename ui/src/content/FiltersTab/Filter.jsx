@@ -102,6 +102,11 @@ const Filter = ({
               fontSize: 1,
               fontWeight: enabled ? 'bold' : 'normal',
               lineHeight: 1.5,
+              border: '2px solid transparent',
+              '&:focus-within': {
+                border: '2px dashed',
+                borderColor: 'highlight',
+              },
             }}
           >
             <Checkbox
@@ -114,6 +119,9 @@ const Filter = ({
                 mr: '0.25em',
                 width: '1.5em',
                 height: '1.5em',
+                'input:focus ~ &': {
+                  backgroundColor: 'transparent',
+                },
               }}
             />
 
@@ -138,8 +146,12 @@ const Filter = ({
                       sx={{
                         flex: '1 1 auto',
                         fontSize: 1,
-                        fontWeight: activeValues[value] ? 'bold' : 'normal',
-                        lineHeight: 1.5,
+                        lineHeight: 1.3,
+                        border: '2px solid transparent',
+                        '&:focus-within': {
+                          border: '2px dashed',
+                          borderColor: 'highlight',
+                        },
                       }}
                     >
                       <Checkbox
@@ -152,6 +164,9 @@ const Filter = ({
                           mr: '0.25em',
                           width: '1.5em',
                           height: '1.5em',
+                          'input:focus ~ &': {
+                            backgroundColor: 'transparent',
+                          },
                         }}
                       />
 
