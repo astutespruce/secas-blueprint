@@ -4,7 +4,7 @@ import { BitmapLayer } from '@deck.gl/layers'
 class StackedPNGLayer extends BitmapLayer {
   draw({ uniforms }) {
     const { model } = this.state
-    const { bounds, images, opacity, filterRanges, renderTarget } = this.props
+    const { bounds, images, opacity, filterValues, renderTarget } = this.props
 
     if (
       !model ||
@@ -25,7 +25,7 @@ class StackedPNGLayer extends BitmapLayer {
       .setUniforms({
         ...indicatorImages,
         bounds,
-        ranges: filterRanges,
+        filterValues,
         renderLayerPalette: renderTarget.palette,
         renderLayerPaletteSize: renderTarget.palette.width,
         renderLayerTextureIndex: renderTarget.textureIndex,

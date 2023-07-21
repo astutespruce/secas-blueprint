@@ -45,18 +45,20 @@ const FiltersTab = () => {
           {
             id: 'corridors',
             label: 'Hubs and corridors',
-            // IMPORTANT: values are a custom range that are unpacked to correct
-            // values in handlePriorityFilters below; only endpoints of range
-            // are used
+            // IMPORTANT: values are a subset that acts as a proxy for their
+            // corresponding rawValues; all rawValues are toggled as each entry
+            // is toggled
             values: [
               {
                 value: 1,
+                rawValues: [1, 2],
                 label: 'Corridors',
                 description:
                   'inland corridors connect inland hubs; marine and estuarine corridors connect marine hubs within broad marine mammal movement areas.',
               },
               {
-                value: 2,
+                value: 3,
+                rawValues: [3, 4],
                 label: 'Hubs',
                 description:
                   'inland hubs are large patches (~5,000+ acres) of highest priority Blueprint areas and/or protected lands; marine and estuarine hubs are large estuaries and large patches (~5,000+ acres) of highest priority Blueprint areas.',
@@ -104,47 +106,6 @@ const FiltersTab = () => {
     []
   )
 
-  const handlePriorityFilters = useCallback(
-    ({ id, enabled, range }) => {
-      if (id === 'corridors' && enabled) {
-        // custom handler to unpack the values used for the range for filtering
-        // to the underying pixel range
-
-        let expandedRange = null
-        if (range[1] === 1) {
-          // if only showing corridors, show inland & marine
-          expandedRange = [1, 2]
-        } else if (range[0] === 2) {
-          // if only showing hubs, show inland & marine
-          expandedRange = [3, 4]
-        } else {
-          // otherwise show full value range
-          expandedRange = [1, 4]
-        }
-
-        setFilters({ id, enabled, range: expandedRange })
-      } else {
-        setFilters({ id, enabled, range })
-      }
-    },
-    // intentionally omitting dependencies; nothing changes after mount
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
-    []
-  )
-
-  // re-pack corridor full range to [1,2] range used by slider
-  const { blueprint: blueprintFilter, corridors: corridorsFilter } = filters
-  const priorityFilterState = {
-    blueprint: blueprintFilter,
-    corridors: {
-      enabled: corridorsFilter.enabled,
-      range: [
-        corridorsFilter.range[0] === 3 ? 2 : 1,
-        corridorsFilter.range[1] === 2 ? 1 : 2,
-      ],
-    },
-  }
-
   return (
     <>
       <Flex
@@ -162,8 +123,8 @@ const FiltersTab = () => {
           color="#4d004b0d"
           borderColor="#4d004b2b"
           entries={priorities}
-          filters={priorityFilterState}
-          onChange={handlePriorityFilters}
+          filters={filters}
+          onChange={setFilters}
         />
         <FilterGroup
           id="threats"

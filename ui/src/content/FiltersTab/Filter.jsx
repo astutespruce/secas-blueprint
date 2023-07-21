@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import { Box, Checkbox, Flex, Label, Text } from 'theme-ui'
 
 import { InfoTooltip } from 'components/tooltip'
+import { indexBy } from 'util/data'
+import { useIsEqualCallback } from 'util/hooks'
 
 const Filter = ({
   id,
@@ -12,19 +14,12 @@ const Filter = ({
   valueLabel: indicatorValueLabel,
   presenceLabel,
   enabled,
-  range,
-  goodThreshold,
+  activeValues,
+  // goodThreshold, // TODO: implement or remove
   onChange,
 }) => {
+  const valueIndex = indexBy(values, 'value')
   const checkboxRef = useRef(null)
-
-  // NOTE: this is clunky and does not update
-  const [valueState, setValueState] = useState(() =>
-    Object.fromEntries(
-      values.map(({ value }) => [value, value >= range[0] && value <= range[1]])
-    )
-  )
-
   const hasMultipleValues = values.length > 1
 
   const tooltipContent = (
@@ -60,38 +55,32 @@ const Filter = ({
     </Box>
   )
 
-  // retain existing range when toggling enabled
-  const toggleEnabled = useCallback(() => {
-    onChange({ id, enabled: !enabled, range })
+  // retain previous active values
+  const toggleEnabled = useIsEqualCallback(() => {
+    onChange({ id, enabled: !enabled, activeValues })
 
     // blur on uncheck
     if (checkboxRef.current && enabled) {
       checkboxRef.current.blur()
     }
-  }, [id, enabled, range, onChange])
+  }, [id, enabled, activeValues, onChange])
 
-  const handleValueCheckboxChange = useCallback(
-    (value) => () => {
-      setValueState((prevState) => {
-        const newState = {
-          ...prevState,
-          [value]: !prevState[value],
-        }
+  const handleToggleValue = (value) => () => {
+    const newActiveValues = {
+      ...activeValues,
+    }
 
-        // FIXME: temporary hack until backend is updated
-        const enabledValues = Object.entries(newState)
-          .filter(([k, v]) => v)
-          .map(([k, v]) => k)
-        onChange({
-          id,
-          enabled: true,
-          range: [Math.min(...enabledValues), Math.max(...enabledValues)],
-        })
-        return newState
+    // if a checkbox is a proxy for multiple values, toggle them all
+    if (valueIndex[value].rawValues) {
+      valueIndex[value].rawValues.forEach((v) => {
+        newActiveValues[v] = !activeValues[v]
       })
-    },
-    [id, onChange]
-  )
+    } else {
+      newActiveValues[value] = !activeValues[value]
+    }
+
+    onChange({ id, enabled, activeValues: newActiveValues })
+  }
 
   return (
     <Box
@@ -149,16 +138,15 @@ const Filter = ({
                       sx={{
                         flex: '1 1 auto',
                         fontSize: 1,
-                        // TODO:
-                        // fontWeight: enabled ? 'bold' : 'normal',
+                        fontWeight: activeValues[value] ? 'bold' : 'normal',
                         lineHeight: 1.5,
                       }}
                     >
                       <Checkbox
                         ref={checkboxRef}
                         readOnly={false}
-                        checked={valueState[value]}
-                        onChange={handleValueCheckboxChange(value)}
+                        checked={activeValues[value]}
+                        onChange={handleToggleValue(value)}
                         sx={{
                           cursor: 'pointer',
                           mr: '0.25em',
@@ -202,21 +190,20 @@ Filter.propTypes = {
       label: PropTypes.string.isRequired,
     })
   ).isRequired,
-  goodThreshold: PropTypes.number,
+  // goodThreshold: PropTypes.number,
   valueLabel: PropTypes.string,
   presenceLabel: PropTypes.string,
-  range: PropTypes.arrayOf(PropTypes.number).isRequired,
+  activeValues: PropTypes.objectOf(PropTypes.bool).isRequired,
   enabled: PropTypes.bool,
-  onChange: PropTypes.func,
+  onChange: PropTypes.func.isRequired,
 }
 
 Filter.defaultProps = {
   description: null,
   enabled: false,
-  goodThreshold: null,
+  // goodThreshold: null,
   valueLabel: null,
   presenceLabel: null,
-  onChange: () => {},
 }
 
 export default Filter

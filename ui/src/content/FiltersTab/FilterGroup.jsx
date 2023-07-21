@@ -68,7 +68,8 @@ FilterGroup.propTypes = {
   filters: PropTypes.objectOf(
     PropTypes.shape({
       enabled: PropTypes.bool,
-      range: PropTypes.arrayOf(PropTypes.number).isRequired,
+      // range: PropTypes.arrayOf(PropTypes.number).isRequired,
+      activeValues: PropTypes.objectOf(PropTypes.bool).isRequired,
     })
   ).isRequired,
   onChange: PropTypes.func,

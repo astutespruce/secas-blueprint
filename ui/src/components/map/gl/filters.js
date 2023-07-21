@@ -1,3 +1,5 @@
+import { range } from 'util/data'
+
 /**
  * Construct WebGL filter expressions to inject into fragment shader
  * because we can't do this in a loop in the shader.
@@ -13,7 +15,7 @@ export const getFilterExpr = (encodingSchemes) => {
     const expressions = []
     layers.forEach(({ offset, bits }) => {
       expressions.push(
-        `\n((ranges[${i}][1] < 0.0) || withinRange(valueRGB${textureIndex}, ${offset}.0, ${bits}.0, ranges[${i}]))`
+        `\n((filterValues[${i}] < 0.0) || matchValue(valueRGB${textureIndex}, ${offset}.0, ${bits}.0, filterValues[${i}]))`
       )
       i += 1
     })
@@ -28,31 +30,34 @@ export const getFilterExpr = (encodingSchemes) => {
 }
 
 /**
- * Construct uniform of vec2 values of [minVal, maxVal] for each indicator.
- * maxVal is set to -1 to ignore this indicator when filtering.
+ * Construct uniform of int values of encoded filter values.
+ * The bit in the position of each value (after accounting for value shift) is
+ * set to 1 for each active filter.
+ * Value is set to -1 to ignore this indicator when filtering.
  * @param {Array} encodingSchemes - array of encoding config
- * @param {Object} filterRanges - key:[minVal, maxVal] for filters
+ * @param {Object} filters - key:{<value>: true / false} for filters
  */
-export const getFilterRanges = (encodingSchemes, filterRanges) => {
-  const ranges = []
+export const getFilterValues = (encodingSchemes, filters) => {
+  const filterValues = []
 
   encodingSchemes.forEach((layers) => {
     layers.forEach(({ id, valueShift }) => {
-      let range = filterRanges[id]
-      if (range) {
-        if (range.length) {
-          if (valueShift) {
-            range = [range[0] + 1, range[1] + 1]
-          }
-        } else {
-          // filter based on ABSENCE (nodata)
-          range = [0, 0]
-        }
+      const activeValues = filters[id]
+      if (activeValues) {
+        const encodedFilterValue = parseInt(
+          range(0, Math.max(...Object.keys(activeValues)) + 1 + valueShift)
+            .map((i) => (activeValues[i - valueShift] ? 1 : 0))
+            .reverse()
+            .join(''),
+          2
+        )
+
+        filterValues.push(encodedFilterValue)
       } else {
-        range = [-1, -1]
+        // use -1 as a sentinel value not to filter this layer
+        filterValues.push(-1)
       }
-      ranges.push(...range)
     })
   })
-  return ranges
+  return filterValues
 }
