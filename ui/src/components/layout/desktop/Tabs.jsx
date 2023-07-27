@@ -10,7 +10,7 @@ const defaultTabs = [
 ]
 
 const filterTabs = [
-  { id: 'filter', label: 'Pixel filters' },
+  { id: 'filter', label: 'Filter the Blueprint' },
   { id: 'find', label: 'Find Location' },
 ]
 

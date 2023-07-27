@@ -245,7 +245,7 @@ const MapContainer = () => {
                   <Box sx={{ mr: '0.5rem' }}>
                     <SlidersH size="1.5rem" />
                   </Box>
-                  <Heading as="h3">Pixel filters</Heading>
+                  <Heading as="h3">Filter the Blueprint</Heading>
                 </Flex>
                 <Flex
                   sx={{

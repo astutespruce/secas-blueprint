@@ -1,5 +1,5 @@
-import React, { useMemo, useCallback } from 'react'
-import { Flex } from 'theme-ui'
+import React, { useMemo } from 'react'
+import { Box, Flex } from 'theme-ui'
 
 import {
   useBlueprintPriorities,
@@ -117,9 +117,17 @@ const FiltersTab = () => {
           position: 'relative', // prevents layout scroll issue on page
         }}
       >
+        <Box
+          sx={{ px: '1rem', py: '0.5rem', lineHeight: 1.2, color: 'grey.8' }}
+        >
+          Pixel filters can help you find the part of the Blueprint that aligns
+          with your mission, interest, or specific question. Enable the filters
+          below to show areas on the map that fall within a range of values for
+          one or more layers.
+        </Box>
         <FilterGroup
           id="blueprint"
-          label="Priorities"
+          label="Filter by priorities"
           color="#4d004b0d"
           borderColor="#4d004b2b"
           entries={priorities}
@@ -128,7 +136,7 @@ const FiltersTab = () => {
         />
         <FilterGroup
           id="threats"
-          label="Threats"
+          label="Filter by threats"
           color="#f3c6a830"
           borderColor="#f3c6a891"
           entries={threats}
@@ -139,7 +147,7 @@ const FiltersTab = () => {
           <FilterGroup
             key={ecosystem.id}
             {...ecosystem}
-            label={`${ecosystem.label} indicators`}
+            label={`Filter by ${ecosystem.label.toLowerCase()} indicators`}
             entries={ecosystem.indicators}
             filters={filters}
             onChange={setFilters}

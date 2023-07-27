@@ -84,7 +84,7 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
             onClick={handleUnitClick}
           >
             <Tooltip
-              content="Click on any subwatershed or marine lease block to show summary data for that area, including charts of the Blueprint, indicators present, threats, and land ownership. You may need to zoom in futher to select an area."
+              content="Show data summaries and charts for a subwatershed or marine lease block"
               direction="bottom"
               maxWidth="240px"
               fontSize={0}
@@ -99,12 +99,12 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
             onClick={handlePixelClick}
           >
             <Tooltip
-              content="Center the crosshairs in the middle of the map over a point on the map to show specific data for that location, including the Blueprint, indicators, present, threats, and land ownership.  You may need to zoom in further to show pixel-level details."
+              content="Show values at a specific point for the Blueprint, indicators, threats, and more"
               direction="bottom"
               maxWidth="240px"
               fontSize={0}
             >
-              Show data at a point
+              View point data
             </Tooltip>
           </Button>
 
@@ -116,7 +116,7 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
               onClick={handleFilterClick}
             >
               <Tooltip
-                content="Pixel filters can help you find the part of the Blueprint that aligns with your mission, interests, or specific question. Use the filters to show areas on the map that fall within a range of values for one or more layers, including the Blueprint, hubs and corridors, underlying indicators, and threats."
+                content="Find your part of the Blueprint by showing only areas that score within a certain range on indicators and more"
                 direction="bottom"
                 maxWidth="240px"
                 fontSize={0}
