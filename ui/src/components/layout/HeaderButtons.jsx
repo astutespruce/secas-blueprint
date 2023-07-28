@@ -19,33 +19,6 @@ const HeaderButtons = () => (
     }}
   >
     <Box>
-      <Link to="/custom_report">
-        <Flex
-          sx={{
-            fontWeight: 700,
-            fontSize: 1,
-            color: '#FFF',
-            alignItems: 'center',
-            cursor: 'pointer',
-            border: '1px solid #FFF',
-            borderRadius: '0.25rem',
-            p: '0.25em 0.5em',
-            '&:hover': {
-              bg: darken('primary', 0.1),
-            },
-          }}
-        >
-          <FileAlt size="1em" />
-          <Box
-            sx={{ marginLeft: '0.5rem', display: ['none', 'none', 'block'] }}
-          >
-            Upload Shapefile
-          </Box>
-        </Flex>
-      </Link>
-    </Box>
-
-    <Box>
       <Link to="/help">
         <Flex
           sx={{
@@ -67,6 +40,33 @@ const HeaderButtons = () => (
             sx={{ marginLeft: '0.5rem', display: ['none', 'none', 'block'] }}
           >
             How to use this viewer
+          </Box>
+        </Flex>
+      </Link>
+    </Box>
+
+    <Box>
+      <Link to="/custom_report">
+        <Flex
+          sx={{
+            fontWeight: 700,
+            fontSize: 1,
+            color: '#FFF',
+            alignItems: 'center',
+            cursor: 'pointer',
+            border: '1px solid #FFF',
+            borderRadius: '0.25rem',
+            p: '0.25em 0.5em',
+            '&:hover': {
+              bg: darken('primary', 0.1),
+            },
+          }}
+        >
+          <FileAlt size="1em" />
+          <Box
+            sx={{ marginLeft: '0.5rem', display: ['none', 'none', 'block'] }}
+          >
+            Upload shapefile
           </Box>
         </Flex>
       </Link>

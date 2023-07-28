@@ -44,8 +44,6 @@ const instructionsCSS = {
 const mobileInstructionsCSS = {
   ...instructionsCSS,
   fontSize: 'smaller',
-  ml: '-0.5rem',
-  mr: '-0.5rem',
   mt: '0.25rem',
 }
 
@@ -131,7 +129,7 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
           <Text sx={isMobile ? mobileInstructionsCSS : instructionsCSS}>
             Zoom in to
             {!isMobile ? <br /> : ' '}
-            select {mapMode === 'pixel' ? 'a pixel' : 'an area'}
+            select {mapMode === 'pixel' ? 'a point' : 'an area'}
           </Text>
         ) : (
           <Text sx={isMobile ? mobileInstructionsCSS : instructionsCSS}>

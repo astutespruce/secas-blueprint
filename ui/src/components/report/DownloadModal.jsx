@@ -173,7 +173,7 @@ const DownloadModal = ({ id, type, onClose }) => {
               <br />
               Please try again. If that does not work, please{' '}
               <OutboundLink to={`mailto:${contactEmail}`}>
-                Contact Us
+                contact us
               </OutboundLink>
               .
             </Text>
@@ -208,7 +208,7 @@ const DownloadModal = ({ id, type, onClose }) => {
                 sx={{ color: '#FFF' }}
                 href={`mailto:${contactEmail}`}
               >
-                Contact Us
+                contact us
               </OutboundLink>
               .
             </>

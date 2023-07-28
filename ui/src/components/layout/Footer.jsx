@@ -78,7 +78,7 @@ const Footer = () => {
         <ContactModal>
           <Flex sx={{ alignItems: 'center', px: '0.5em' }}>
             <Envelope size="1em" style={{ marginRight: '0.5em' }} />
-            <Text sx={modalLinkCSS}>Contact Us</Text>
+            <Text sx={modalLinkCSS}>Contact us</Text>
           </Flex>
         </ContactModal>
       </Box>
@@ -102,7 +102,7 @@ const Footer = () => {
         <ReportProblemModal>
           <Flex sx={{ alignItems: 'center', px: '0.5em' }}>
             <ExclamationCircle size="1em" style={{ marginRight: '0.5em' }} />
-            <Text sx={modalLinkCSS}>Report a Problem</Text>
+            <Text sx={modalLinkCSS}>Report a problem</Text>
           </Flex>
         </ReportProblemModal>
       </Box>
@@ -122,7 +122,7 @@ const Footer = () => {
         <FeedbackModal>
           <Flex sx={{ alignItems: 'center', px: '0.5em' }}>
             <Comments size="1em" style={{ marginRight: '0.5em' }} />
-            <Text sx={modalLinkCSS}>Provide Feedback</Text>
+            <Text sx={modalLinkCSS}>Provide feedback</Text>
           </Flex>
         </FeedbackModal>
       </Box>

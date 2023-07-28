@@ -30,7 +30,7 @@ const NeedHelp = () => (
             '&:hover': { textDecoration: 'underline' },
           }}
         >
-          Contact Us
+          contact us
         </Text>
       </ContactModal>
     </Box>

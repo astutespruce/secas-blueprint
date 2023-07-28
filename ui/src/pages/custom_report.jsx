@@ -15,7 +15,7 @@ const CustomReportPage = ({
 }) => (
   <Layout>
     <HeaderImage
-      title="Create a Custom Blueprint Report"
+      title="Upload a shapefile to create a custom report"
       image={headerImage}
       credits={{
         author: 'U.S. Fish and Wildlife Service Southeast Region',
