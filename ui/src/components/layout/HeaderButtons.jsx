@@ -66,7 +66,7 @@ const HeaderButtons = () => (
           <Box
             sx={{ marginLeft: '0.5rem', display: ['none', 'none', 'block'] }}
           >
-            Upload shapefile
+            Upload a shapefile
           </Box>
         </Flex>
       </Link>
