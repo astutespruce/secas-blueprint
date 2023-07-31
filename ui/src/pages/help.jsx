@@ -301,7 +301,7 @@ const HelpPage = ({
           Create a custom report for a specific area of interest:
         </Heading>
         <Paragraph>
-          Click on the <b>Upload Shapefile</b> button in the upper right. You
+          Click on the <b>Upload a shapefile</b> button in the upper right. You
           will be able to upload your area of interest and create a detailed PDF
           report of the Blueprint, hubs and corridors, underlying indicators,
           and landscape-level threats in that area.
