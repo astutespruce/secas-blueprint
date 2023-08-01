@@ -19,7 +19,7 @@ const HeaderButtons = () => (
     }}
   >
     <Box>
-      <Link to="/help">
+      <a href="/help" target="_blank">
         <Flex
           sx={{
             fontWeight: 700,
@@ -42,7 +42,7 @@ const HeaderButtons = () => (
             How to use this viewer
           </Box>
         </Flex>
-      </Link>
+      </a>
     </Box>
 
     <Box>

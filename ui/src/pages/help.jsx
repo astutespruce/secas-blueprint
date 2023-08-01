@@ -271,32 +271,6 @@ const HelpPage = ({
       <Divider />
 
       <Box as="section">
-        <Heading as="h2">Display different map layers:</Heading>
-        <Paragraph>
-          You can display map layers other than the Blueprint. Choose{' '}
-          <b>View point data</b> or <b>Filter the Blueprint</b> from the button
-          bar above the map, and then click the button in the upper right of the
-          map to display the list of available layers.
-        </Paragraph>
-        <Grid columns={[0, '1.5fr 1fr']} gap={4} sx={{ mt: '3rem' }}>
-          <Box>
-            <GatsbyImage
-              image={toggleLayersButtonImage}
-              alt="Help image for toggle layers button"
-            />
-          </Box>
-          <Box>
-            <GatsbyImage
-              image={toggleLayersModalImage}
-              alt="Help image for toggle layers modal popup"
-            />
-          </Box>
-        </Grid>
-      </Box>
-
-      <Divider />
-
-      <Box as="section">
         <Heading as="h2">
           Create a custom report for a specific area of interest:
         </Heading>
@@ -327,6 +301,32 @@ const HelpPage = ({
           <Image src={Thumbnail3} alt="Tool report example screenshot 3" />
           <Image src={Thumbnail4} alt="Tool report example screenshot 4" />
           <Image src={Thumbnail5} alt="Tool report example screenshot 5" />
+        </Grid>
+      </Box>
+
+      <Divider />
+
+      <Box as="section">
+        <Heading as="h2">Display different map layers:</Heading>
+        <Paragraph>
+          You can display map layers other than the Blueprint. Choose{' '}
+          <b>View point data</b> or <b>Filter the Blueprint</b> from the button
+          bar above the map, and then click the button in the upper right of the
+          map to display the list of available layers.
+        </Paragraph>
+        <Grid columns={[0, '1.5fr 1fr']} gap={4} sx={{ mt: '3rem' }}>
+          <Box>
+            <GatsbyImage
+              image={toggleLayersButtonImage}
+              alt="Help image for toggle layers button"
+            />
+          </Box>
+          <Box>
+            <GatsbyImage
+              image={toggleLayersModalImage}
+              alt="Help image for toggle layers modal popup"
+            />
+          </Box>
         </Grid>
       </Box>
 

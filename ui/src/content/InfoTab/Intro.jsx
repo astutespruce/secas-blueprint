@@ -69,7 +69,7 @@ const Intro = () => {
           <Instructions />
         ) : (
           <Paragraph sx={{ mt: '1rem' }}>
-            <Link to="/help">Read instructions on how to use this viewer</Link>.
+            <a href="/help" target="_blank">Read instructions on how to use this viewer</a>.
           </Paragraph>
         )}
       </Box>
