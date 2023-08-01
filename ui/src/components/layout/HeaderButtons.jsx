@@ -3,6 +3,7 @@ import { Box, Flex } from 'theme-ui'
 import { darken } from '@theme-ui/color'
 import { FileAlt } from '@emotion-icons/fa-regular'
 import { QuestionCircle } from '@emotion-icons/fa-solid'
+import { withPrefix } from 'gatsby'
 
 import { Link } from 'components/link'
 
@@ -19,7 +20,7 @@ const HeaderButtons = () => (
     }}
   >
     <Box>
-      <a href="/help" target="_blank">
+      <a href={withPrefix('/help')} target="_blank" rel="noopener noreferrer">
         <Flex
           sx={{
             fontWeight: 700,

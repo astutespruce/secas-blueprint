@@ -1,8 +1,9 @@
 import React from 'react'
 import { Box, Paragraph } from 'theme-ui'
+import { withPrefix } from 'gatsby'
 
 import { useBreakpoints } from 'components/layout'
-import { OutboundLink, Link } from 'components/link'
+import { OutboundLink } from 'components/link'
 
 import Instructions from './Instructions'
 
@@ -69,7 +70,10 @@ const Intro = () => {
           <Instructions />
         ) : (
           <Paragraph sx={{ mt: '1rem' }}>
-            <a href="/help" target="_blank">Read instructions on how to use this viewer</a>.
+            <a href={withPrefix('/help')} target="_blank">
+              Read instructions on how to use this viewer
+            </a>
+            .
           </Paragraph>
         )}
       </Box>
