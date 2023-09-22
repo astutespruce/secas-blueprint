@@ -122,8 +122,8 @@ const FiltersTab = () => {
         >
           Pixel filters can help you find the part of the Blueprint that aligns
           with your mission, interest, or specific question. Enable the filters
-          below to show areas on the map that fall within a range of values for
-          one or more layers.
+          below to narrow down the Blueprint to the part that falls within a
+          range of values for one or more layers.
         </Box>
         <FilterGroup
           id="blueprint"

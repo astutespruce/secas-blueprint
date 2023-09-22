@@ -109,6 +109,7 @@ const InfoTooltip = ({ content, direction, maxWidth }) => {
           borderColor: 'grey.3',
           cursor: 'pointer',
           color: 'grey.8',
+          bg: '#FFF',
           '&:hover': {
             bg: 'grey.2',
             borderColor: 'grey.4',

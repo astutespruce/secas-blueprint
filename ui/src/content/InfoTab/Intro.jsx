@@ -70,7 +70,7 @@ const Intro = () => {
           <Instructions />
         ) : (
           <Paragraph sx={{ mt: '1rem' }}>
-            <a href={withPrefix('/help')} target="_blank">
+            <a href={withPrefix('/help')} target="_blank" rel="noreferrer">
               Read instructions on how to use this viewer
             </a>
             .

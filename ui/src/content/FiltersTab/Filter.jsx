@@ -1,6 +1,7 @@
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useCallback, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { Box, Checkbox, Flex, Label, Text } from 'theme-ui'
+import { Filter as FilterIcon, Plus, Minus } from '@emotion-icons/fa-solid'
 
 import { InfoTooltip } from 'components/tooltip'
 import { indexBy } from 'util/data'
@@ -82,12 +83,28 @@ const Filter = ({
     onChange({ id, enabled, activeValues: newActiveValues })
   }
 
+  const handleKeyDown = useCallback(
+    ({ key }) => {
+      if (key === 'Enter' || key === ' ') {
+        onChange({ id, enabled: !enabled, activeValues })
+      }
+    },
+    [id, enabled, activeValues, onChange]
+  )
+
   return (
     <Box
       sx={{
-        pl: '1rem',
         pr: '0.5rem',
-        py: '0.25rem',
+        '&:hover': {
+          borderColor: 'highlight',
+          '& .filter-icon': {
+            color: 'grey.9',
+          },
+          '& .label': {
+            bg: 'blue.0',
+          },
+        },
         '&:not(:first-of-type)': {
           borderTop: '2px solid',
           borderTopColor: 'grey.1',
@@ -96,98 +113,119 @@ const Filter = ({
     >
       <Box>
         <Flex sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-          <Label
+          <Box
+            tabIndex={0}
+            onClick={toggleEnabled}
+            onKeyDown={handleKeyDown}
+            className="label"
             sx={{
               flex: '1 1 auto',
+              pl: '1rem',
+              py: '0.25rem',
               fontSize: 1,
               fontWeight: enabled ? 'bold' : 'normal',
               lineHeight: 1.5,
               border: '2px solid transparent',
+              cursor: 'pointer',
               '&:focus-within': {
                 border: '2px dashed',
                 borderColor: 'highlight',
               },
             }}
           >
-            <Checkbox
-              ref={checkboxRef}
-              readOnly={false}
-              checked={enabled}
-              onChange={toggleEnabled}
+            <Flex
               sx={{
-                cursor: 'pointer',
-                mr: '0.25em',
-                width: '1.5em',
-                height: '1.5em',
-                'input:focus ~ &': {
-                  backgroundColor: 'transparent',
-                },
+                flex: '1 1 auto',
+                alignItems: 'center',
+                gap: '0.5rem',
               }}
-            />
-
-            {label}
-          </Label>
+            >
+              <Box
+                className="filter-icon"
+                sx={{ color: enabled ? 'grey.9' : 'grey.4' }}
+              >
+                {enabled ? (
+                  <Box
+                    sx={{
+                      position: 'relative',
+                    }}
+                  >
+                    <FilterIcon
+                      size="1em"
+                      style={{ position: 'relative', top: 0 }}
+                    />
+                    {/* <Text
+                      sx={{
+                        position: 'absolute',
+                        top: 0,
+                        left: '-0.5rem',
+                      }}
+                    >
+                      <Minus size="0.6em" />
+                    </Text> */}
+                  </Box>
+                ) : (
+                  <Box sx={{ position: 'relative' }}>
+                    <FilterIcon size="1em" style={{ top: 0 }} />
+                    <Text
+                      sx={{
+                        position: 'absolute',
+                        top: '-0.2rem',
+                        left: '-0.5rem',
+                        fontSize: 3,
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      <Plus size="0.6em" />
+                    </Text>
+                  </Box>
+                )}
+              </Box>
+              <Text>{label}</Text>
+            </Flex>
+          </Box>
 
           <InfoTooltip content={tooltipContent} direction="right" />
         </Flex>
 
         {enabled ? (
-          <Box sx={{ ml: '1.75rem', mr: '1rem' }}>
-            {indicatorValueLabel ? (
-              <Text sx={{ fontSize: 0, color: 'grey.8', lineHeight: 1.2 }}>
-                {indicatorValueLabel}
-              </Text>
-            ) : null}
-            {hasMultipleValues ? (
-              <Box sx={{ mt: '0.25rem' }}>
-                {values.map(({ value, label: valueLabel }) => (
-                  <Box key={value}>
-                    <Label
+          <Box sx={{ ml: '2.5rem', mr: '1rem', pb: '0.5rem' }}>
+            <Box>
+              {values.map(({ value, label: valueLabel }) => (
+                <Box key={value}>
+                  <Label
+                    sx={{
+                      flex: '1 1 auto',
+                      fontSize: 1,
+                      lineHeight: 1.3,
+                      border: '2px solid transparent',
+                      '&:focus-within': {
+                        border: '2px dashed',
+                        borderColor: 'highlight',
+                      },
+                    }}
+                  >
+                    <Checkbox
+                      ref={checkboxRef}
+                      readOnly={false}
+                      checked={activeValues[value]}
+                      onChange={handleToggleValue(value)}
                       sx={{
-                        flex: '1 1 auto',
-                        fontSize: 1,
-                        lineHeight: 1.3,
-                        border: '2px solid transparent',
-                        '&:focus-within': {
-                          border: '2px dashed',
-                          borderColor: 'highlight',
+                        cursor: 'pointer',
+                        mr: '0.25em',
+                        width: '1.5em',
+                        height: '1.5em',
+                        'input:focus ~ &': {
+                          backgroundColor: 'transparent',
                         },
                       }}
-                    >
-                      <Checkbox
-                        ref={checkboxRef}
-                        readOnly={false}
-                        checked={activeValues[value]}
-                        onChange={handleToggleValue(value)}
-                        sx={{
-                          cursor: 'pointer',
-                          mr: '0.25em',
-                          width: '1.5em',
-                          height: '1.5em',
-                          'input:focus ~ &': {
-                            backgroundColor: 'transparent',
-                          },
-                        }}
-                      />
+                    />
 
-                      {valueLabel}
-                    </Label>
-                  </Box>
-                ))}
-              </Box>
-            ) : (
-              <Text
-                sx={{
-                  fontSize: 0,
-                  color: 'grey.8',
-                  pb: '0.5rem',
-                  lineHeight: 1.2,
-                }}
-              >
-                {/* {summaryLabel} */}
-                Showing: {presenceLabel} (presence-only indicator)
-              </Text>
-            )}
+                    {valueLabel}
+                  </Label>
+                </Box>
+              ))}
+            </Box>
           </Box>
         ) : null}
       </Box>

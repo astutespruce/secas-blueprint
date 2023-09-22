@@ -14,7 +14,7 @@ import {
   useDismiss,
   FloatingPortal,
 } from '@floating-ui/react-dom-interactions'
-import { Box, Flex } from 'theme-ui'
+import { Box } from 'theme-ui'
 
 const arrowBaseCSS = {
   position: 'absolute',
