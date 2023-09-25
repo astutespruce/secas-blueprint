@@ -43,6 +43,12 @@ const HelpPage = ({
     filterImage: {
       childImageSharp: { gatsbyImageData: filterImage },
     },
+    filterBeforeImage: {
+      childImageSharp: { gatsbyImageData: filterBeforeImage },
+    },
+    filterAfterImage: {
+      childImageSharp: { gatsbyImageData: filterAfterImage },
+    },
     toggleLayersButtonImage: {
       childImageSharp: { gatsbyImageData: toggleLayersButtonImage },
     },
@@ -226,10 +232,10 @@ const HelpPage = ({
       <Box as="section">
         <Heading as="h2">Filter the Blueprint:</Heading>
         <Paragraph>
-          Pixel filters can help you find the part of the Blueprint that aligns
-          with your mission, interests, or specific question. Use the filters to
-          show areas on the map that fall within a range of values for one or
-          more layers, including the Blueprint, hubs and corridors, underlying
+          Filters can help you find the part of the Blueprint that aligns with
+          your mission, interests, or specific question. Use the filters to show
+          areas on the map that fall within a range of values for one or more
+          layers, including the Blueprint, hubs and corridors, underlying
           indicators, and threats.
         </Paragraph>
 
@@ -260,8 +266,23 @@ const HelpPage = ({
           that do not co-occur at the same location, such as estuarine coastal
           condition and Great Plains perennial grasslands, nothing will display
           on the map.
-          <br />
-          <br />
+        </Paragraph>
+        <Grid columns={[0, 2]} gap={4} sx={{ mt: '3rem' }}>
+          <Box>
+            <GatsbyImage
+              image={filterBeforeImage}
+              alt="Help image for filtering the Blueprint showing before filters are applied"
+            />
+          </Box>
+          <Box>
+            <GatsbyImage
+              image={filterAfterImage}
+              alt="Help image for filtering the Blueprint showing after filters are applied"
+            />
+          </Box>
+        </Grid>
+
+        <Paragraph sx={{ mt: '2rem' }}>
           Note: pixel filters may take a few moments to display within your
           browser, especially as you pan or zoom the map. You may need to zoom
           in to see areas that meet your filters.
@@ -447,6 +468,26 @@ export const pageQuery = graphql`
       }
     }
     filterImage: file(relativePath: { eq: "help-filter.png" }) {
+      childImageSharp {
+        gatsbyImageData(
+          layout: CONSTRAINED
+          formats: [AUTO, WEBP]
+          placeholder: BLURRED
+          width: 600
+        )
+      }
+    }
+    filterBeforeImage: file(relativePath: { eq: "help-filter-before.png" }) {
+      childImageSharp {
+        gatsbyImageData(
+          layout: CONSTRAINED
+          formats: [AUTO, WEBP]
+          placeholder: BLURRED
+          width: 600
+        )
+      }
+    }
+    filterAfterImage: file(relativePath: { eq: "help-filter-after.png" }) {
       childImageSharp {
         gatsbyImageData(
           layout: CONSTRAINED

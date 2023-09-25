@@ -1,7 +1,7 @@
 import React, { useCallback, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { Box, Checkbox, Flex, Label, Text } from 'theme-ui'
-import { Filter as FilterIcon, Plus, Minus } from '@emotion-icons/fa-solid'
+import { Filter as FilterIcon, Plus } from '@emotion-icons/fa-solid'
 
 import { InfoTooltip } from 'components/tooltip'
 import { indexBy } from 'util/data'

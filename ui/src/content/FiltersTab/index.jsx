@@ -120,10 +120,10 @@ const FiltersTab = () => {
         <Box
           sx={{ px: '1rem', py: '0.5rem', lineHeight: 1.2, color: 'grey.8' }}
         >
-          Pixel filters can help you find the part of the Blueprint that aligns
-          with your mission, interest, or specific question. Enable the filters
-          below to narrow down the Blueprint to the part that falls within a
-          range of values for one or more layers.
+          Filters can help you find the part of the Blueprint that aligns with
+          your mission, interest, or specific question. Enable the filters below
+          to narrow down the Blueprint to the part that falls within a range of
+          values for one or more layers.
         </Box>
         <FilterGroup
           id="blueprint"
