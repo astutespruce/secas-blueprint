@@ -180,7 +180,7 @@ const UploadContainer = () => {
                 <Paragraph>
                   Please try again. If that does not work, please{' '}
                   <OutboundLink href={`mailto:${contactEmail}`}>
-                    Contact Us
+                    contact us
                   </OutboundLink>
                   .
                 </Paragraph>

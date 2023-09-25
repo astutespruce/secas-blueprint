@@ -7,7 +7,7 @@ import { OutboundLink } from 'components/link'
 import BoundModal from './BoundModal'
 
 const ContactModal = ({ children }) => (
-  <BoundModal title="Contact Us" anchorNode={children}>
+  <BoundModal title="Contact us" anchorNode={children}>
     <Paragraph>
       Do you have a question about the Blueprint? Would you like help using the
       Blueprint to support a proposal or inform a decision? Southeast Blueprint

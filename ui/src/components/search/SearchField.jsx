@@ -69,7 +69,7 @@ const SearchField = forwardRef(({ value, onChange, onFocus, onBlur }, ref) => {
             border: 'none',
             outline: 'none',
             '&::placeholder': {
-              color: 'grey.4',
+              color: 'grey.8',
             },
           }}
           placeholder="Find a place by name / address"

@@ -14,7 +14,7 @@ import {
   useDismiss,
   FloatingPortal,
 } from '@floating-ui/react-dom-interactions'
-import { Box, Flex } from 'theme-ui'
+import { Box } from 'theme-ui'
 
 const arrowBaseCSS = {
   position: 'absolute',
@@ -25,7 +25,7 @@ const arrowBaseCSS = {
   transform: 'rotate(45deg)',
 }
 
-const InfoTooltip = ({ content, direction, maxWidth }) => {
+const Tooltip = ({ children, content, direction, maxWidth, fontSize }) => {
   const [open, setOpen] = useState(false)
   const arrowRef = useRef(null)
   const {
@@ -94,30 +94,9 @@ const InfoTooltip = ({ content, direction, maxWidth }) => {
 
   return (
     <>
-      <Flex
-        ref={reference}
-        {...getReferenceProps()}
-        sx={{
-          flex: '0 0 auto',
-          ml: '0.5em',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '1.25em',
-          width: '1.25em',
-          borderRadius: '2em',
-          border: '1px solid',
-          borderColor: 'grey.3',
-          cursor: 'pointer',
-          color: 'grey.8',
-          bg: '#FFF',
-          '&:hover': {
-            bg: 'grey.2',
-            borderColor: 'grey.4',
-          },
-        }}
-      >
-        ?
-      </Flex>
+      <span ref={reference} {...getReferenceProps()}>
+        {children}
+      </span>
       <FloatingPortal>
         {open && (
           <Box
@@ -143,7 +122,7 @@ const InfoTooltip = ({ content, direction, maxWidth }) => {
                 borderColor: 'grey.3',
                 overflow: 'hidden',
                 maxWidth,
-                fontSize: 1,
+                fontSize,
               }}
             >
               {content}
@@ -156,15 +135,18 @@ const InfoTooltip = ({ content, direction, maxWidth }) => {
   )
 }
 
-InfoTooltip.propTypes = {
+Tooltip.propTypes = {
+  children: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
   content: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
   direction: PropTypes.string,
   maxWidth: PropTypes.string,
+  fontSize: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 }
 
-InfoTooltip.defaultProps = {
+Tooltip.defaultProps = {
   direction: 'right',
   maxWidth: '28rem',
+  fontSize: 1,
 }
 
-export default InfoTooltip
+export default Tooltip

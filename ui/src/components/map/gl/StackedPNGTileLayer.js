@@ -12,7 +12,7 @@ import vertexShader from 'raw-loader!./vertex.vs'
 /* eslint-disable-next-line */
 import fragmentShader from 'raw-loader!./fragment.fs'
 
-import { getFilterExpr, getFilterRanges } from './filters'
+import { getFilterExpr, getFilterValues } from './filters'
 import StackedPNGLayer from './StackedPNGLayer'
 
 /**
@@ -103,7 +103,7 @@ export default class StackedPNGTileLayer extends TileLayer {
     }
 
     // TODO: figure out how to hoist this to state or memoize it:
-    const filterRanges = getFilterRanges(
+    const filterValues = getFilterValues(
       layers.map(({ encoding }) => encoding),
       filters || {}
     )
@@ -112,7 +112,7 @@ export default class StackedPNGTileLayer extends TileLayer {
       shaders,
       bounds: [west, south, east, north],
       images,
-      filterRanges,
+      filterValues,
       renderTarget,
     })
   }

@@ -24,10 +24,10 @@ uniform sampler2D indicator3;
 uniform sampler2D indicator4;
 uniform sampler2D indicator5;
 
-// pairs of [minVal, maxVal] for each indicator; [-1, -1] indicates no filtering
-// for that indicator
-// count is filled from JS since this can't be dynamic in the shader
-uniform vec2 ranges[<NUM_INDICATORS>];
+// encoded filters, with a bit set to 1 for each value that is present in the
+// set of activated filters.  -1 indicates no filtering for that indicator.
+// NOTE: array size is filled from JS since this can't be dynamic in the shader
+uniform float filterValues[<NUM_INDICATORS>];
 
 // return 32-bit integer(ish)
 float rgbToInt32(vec3 v) {
@@ -59,17 +59,28 @@ float bitwise_and(float v1, float v2) {
   return result;
 }
 
+// shift v num bits right
 float rshift(float v, float num) {
   return (num == 0.0) ? v : floor(v / pow(2.0, num));
+}
+
+// shift v num bits left
+float lshift(float v, float num) {
+  return (num == 0.0) ? v : v * pow(2.0, num);
 }
 
 // calculate bitmask for extracting number of bits from an integer (using
 // floating point math)
 float bitmask(float bits) { return pow(2.0, bits) - 1.0; }
 
-bool withinRange(float valueRGB, float offset, float numBits, vec2 range) {
+bool matchValue(float valueRGB, float offset, float numBits,
+                float filterValue) {
   float value = bitwise_and(rshift(valueRGB, offset), bitmask(numBits));
-  return (value >= range[0] && value <= range[1]);
+
+  // use left shift to set the bit in the value position to 1
+  // then use bitwise AND to verify that value is also turned on in active
+  // filters. If the value is 0, then value is not present in active filters.
+  return bitwise_and(filterValue, lshift(1.0, value)) > 0.0;
 }
 
 void main(void) {
@@ -80,8 +91,8 @@ void main(void) {
   float valueRGB4 = rgbToInt32(texture2D(indicator4, vTexCoord).rgb * 255.0);
   float valueRGB5 = rgbToInt32(texture2D(indicator5, vTexCoord).rgb * 255.0);
 
-  // canRender is True where all filters are either not set or values are
-  // within range
+  // canRender is True where all filters are either not set or value is one
+  // of active filter values
 
   // replaced dynamically from JS; sets canRender
   // <FILTER_EXPR>

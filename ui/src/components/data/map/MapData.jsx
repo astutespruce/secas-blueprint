@@ -8,6 +8,7 @@ import React, {
 import PropTypes from 'prop-types'
 
 import { useIndicators } from 'components/data/Indicators'
+import { indexBy, range } from 'util/data'
 
 const Context = createContext()
 
@@ -21,40 +22,48 @@ export const Provider = ({ children }) => {
 
   const [{ mapMode, data, selectedIndicator, renderLayer, filters }, setState] =
     useState(() => {
-      const initFilters = indicators.reduce(
-        (prev, { id, values }) => ({
+      const initFilters = indicators.reduce((prev, { id, values }) => {
+        const valuesIndex = indexBy(values, 'value')
+
+        return {
           ...prev,
           [id]: {
             enabled: false,
-            range: [
-              values[0].color === null ? values[1].value : values[0].value,
-              values[values.length - 1].value,
-            ],
+            activeValues: Object.fromEntries(
+              range(values[0].value, values[values.length - 1].value + 1).map(
+                (v) => [
+                  v,
+                  // disable value if we don't normally show it
+                  valuesIndex[v] && valuesIndex[v].color !== null,
+                ]
+              )
+            ),
           },
-        }),
-        {}
-      )
+        }
+      }, {})
 
       initFilters.blueprint = {
         enabled: false,
-        // skip not a priority class
-        range: [1, 4],
+        // skip not a priority class; values 1-4
+        activeValues: Object.fromEntries(range(1, 5).map((v) => [v, true])),
       }
 
       initFilters.corridors = {
         enabled: false,
-        range: [1, 4],
+        // values 1-4
+        activeValues: Object.fromEntries(range(1, 5).map((v) => [v, true])),
       }
 
       initFilters.urban = {
         enabled: false,
-        range: [1, 5],
+        // values 1-5
+        activeValues: Object.fromEntries(range(1, 6).map((v) => [v, true])),
       }
 
       initFilters.slr = {
         enabled: false,
-        // hardcoded values to capture depth + nodata
-        range: [0, 13],
+        // hardcoded values to capture depth + nodata (values 0-13)
+        activeValues: Object.fromEntries(range(0, 14).map((v) => [v, true])),
       }
 
       return {
@@ -87,10 +96,11 @@ export const Provider = ({ children }) => {
     []
   )
 
-  const filterRanges = useMemo(
+  // save initial activeValues for reset
+  const initFilterValues = useMemo(
     () =>
       Object.entries(filters).reduce(
-        (prev, [id, { range }]) => ({ ...prev, [id]: range }),
+        (prev, [id, { activeValues }]) => ({ ...prev, [id]: activeValues }),
         {}
       ),
     // intentionally ignores dependencies, doesn't change after mount
@@ -128,14 +138,14 @@ export const Provider = ({ children }) => {
     }))
   }, [])
 
-  const setFilters = useCallback(({ id, enabled, range }) => {
+  const setFilters = useCallback(({ id, enabled, activeValues }) => {
     setState(({ filters: prevFilters, ...prevState }) => ({
       ...prevState,
       filters: {
         ...prevFilters,
         [id]: {
           enabled,
-          range,
+          activeValues,
         },
       },
     }))
@@ -148,7 +158,7 @@ export const Provider = ({ children }) => {
         filters: Object.keys(prevFilters).reduce(
           (prev, id) => ({
             ...prev,
-            [id]: { enabled: false, range: filterRanges[id] },
+            [id]: { enabled: false, activeValues: initFilterValues[id] },
           }),
           {}
         ),

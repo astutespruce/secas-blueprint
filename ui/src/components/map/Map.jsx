@@ -546,7 +546,8 @@ const Map = () => {
     const activeFilters = Object.entries(filters)
       .filter(([_, { enabled }]) => enabled)
       .reduce(
-        (prev, [id, { range }]) => Object.assign(prev, { [id]: range }),
+        (prev, [id, { activeValues }]) =>
+          Object.assign(prev, { [id]: activeValues }),
         {}
       )
 

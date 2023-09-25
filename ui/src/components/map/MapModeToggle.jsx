@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { Box, Text, Flex, Button } from 'theme-ui'
 
 import { useMapData } from 'components/data'
+import { Tooltip } from 'components/tooltip'
 
 const baseCSS = {
   position: 'absolute',
@@ -43,8 +44,6 @@ const instructionsCSS = {
 const mobileInstructionsCSS = {
   ...instructionsCSS,
   fontSize: 'smaller',
-  ml: '-0.5rem',
-  mr: '-0.5rem',
   mt: '0.25rem',
 }
 
@@ -82,7 +81,14 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
             data-state={mapMode === 'unit' ? 'active' : null}
             onClick={handleUnitClick}
           >
-            Summary data
+            <Tooltip
+              content="Show data summaries and charts for a subwatershed or marine lease block"
+              direction="bottom"
+              maxWidth="240px"
+              fontSize={0}
+            >
+              Summarize data
+            </Tooltip>
           </Button>
 
           <Button
@@ -90,7 +96,14 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
             data-state={mapMode === 'pixel' ? 'active' : null}
             onClick={handlePixelClick}
           >
-            Pixel data
+            <Tooltip
+              content="Show values at a specific point for the Blueprint, indicators, threats, and more"
+              direction="bottom"
+              maxWidth="240px"
+              fontSize={0}
+            >
+              View point data
+            </Tooltip>
           </Button>
 
           {/* Filter mode is not available for mobile */}
@@ -100,7 +113,14 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
               data-state={mapMode === 'filter' ? 'active' : null}
               onClick={handleFilterClick}
             >
-              Pixel filters
+              <Tooltip
+                content="Find your part of the Blueprint by showing only areas that score within a certain range on indicators and more"
+                direction="bottom"
+                maxWidth="240px"
+                fontSize={0}
+              >
+                Filter the Blueprint
+              </Tooltip>
             </Button>
           ) : null}
         </Flex>
@@ -109,7 +129,7 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
           <Text sx={isMobile ? mobileInstructionsCSS : instructionsCSS}>
             Zoom in to
             {!isMobile ? <br /> : ' '}
-            select {mapMode === 'pixel' ? 'a pixel' : 'an area'}
+            select {mapMode === 'pixel' ? 'a point' : 'an area'}
           </Text>
         ) : (
           <Text sx={isMobile ? mobileInstructionsCSS : instructionsCSS}>

@@ -54,6 +54,18 @@ export const groupBy = (data, groupField) =>
  */
 export const sum = (values) => values.reduce((prev, value) => prev + value, 0)
 
+/** Generate an array of values between [min, max)
+ * range(10) => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+ * range(1, 10) => [1, 2, 3, 4, 5, 6, 7, 8, 9]
+ *
+ * @param {min} - max value if starting from 0 and max is null, or min value if max is provided
+ * @param {max} - max value, optional
+ */
+export const range = (min, max = null) =>
+  max !== null
+    ? Array.from(Array(max - min), (_, i) => i + min)
+    : [...Array(min).keys()]
+
 /**
  * Calculate the min and max values for an array of numbers
  * @param {Array} values

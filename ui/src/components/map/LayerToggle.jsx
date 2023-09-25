@@ -134,7 +134,7 @@ const LayerToggle = () => {
 
   return (
     <BoundModal
-      title="Choose map layer to show on map"
+      title="Choose layer to show on map"
       anchorNode={
         <Flex
           className="map-button"
@@ -151,9 +151,8 @@ const LayerToggle = () => {
             cursor: 'pointer',
             borderRadius: '0.25rem',
             boxShadow: '0 0 0 2px rgba(0,0,0,.1)',
-            // boxShadow: '2px 2px 6px #333',
           }}
-          title="Choose map layer to show on map"
+          title="Choose layer to show on map"
         >
           <LayerGroup size="1em" />
         </Flex>

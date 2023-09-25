@@ -6,7 +6,7 @@ import React, {
   useLayoutEffect,
 } from 'react'
 import { Box, Button, Flex, Heading, Text } from 'theme-ui'
-import { SlidersH, TimesCircle } from '@emotion-icons/fa-solid'
+import { Filter, TimesCircle } from '@emotion-icons/fa-solid'
 
 import { useBreakpoints } from 'components/layout'
 import { useMapData } from 'components/data'
@@ -243,9 +243,9 @@ const MapContainer = () => {
               >
                 <Flex sx={{ alignItems: 'center' }}>
                   <Box sx={{ mr: '0.5rem' }}>
-                    <SlidersH size="1.5rem" />
+                    <Filter size="1.5rem" />
                   </Box>
-                  <Heading as="h3">Pixel filters</Heading>
+                  <Heading as="h3">Filter the Blueprint</Heading>
                 </Flex>
                 <Flex
                   sx={{

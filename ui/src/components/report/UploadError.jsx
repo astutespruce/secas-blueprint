@@ -26,7 +26,7 @@ const UploadError = ({ error, handleClearError }) => (
             Please try again. If that does not work, try a different file or
           </Text>{' '}
           <Link sx={{ color: '#FFF' }} href={`mailto:${contactEmail}`}>
-            Contact Us
+            contact us
           </Link>
           .
         </>
