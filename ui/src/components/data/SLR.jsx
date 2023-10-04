@@ -24,11 +24,6 @@ export const useSLR = () => {
 
   return {
     depth: slr.slice(0, 11),
-    nodata: slr.slice(11).map(({ color, value, ...rest }) => ({
-      ...rest,
-      value,
-      // make not modeled class white since we add crosshatches
-      color: value === 13 ? '#FFFFFF' : color,
-    })),
+    nodata: slr.slice(11),
   }
 }

@@ -39,7 +39,7 @@ SECAS_STATES = [
     "TN",
     "TX",
     "VA",
-    # "USVI",  # expected to be added in 2023
+    "VI",
     "WV",
 ]
 
@@ -55,11 +55,6 @@ BLUEPRINT_COLORS = {
     if "color" in entry and entry["value"] > 0
 }
 
-# Note: value field is the value in the input_areas raster, bounds are in
-# EPSG:5070
-INPUTS = {e["id"]: e for e in json.loads(open(json_dir / "inputs.json").read())}
-
-INPUT_AREA_COLORS = {e["value"]: e["color"] for e in INPUTS.values()}
 
 CORRIDORS = json.loads(open(json_dir / "corridors.json").read())
 CORRIDORS_COLORS = {

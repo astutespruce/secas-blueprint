@@ -84,7 +84,7 @@ def extract_slr_by_mask_and_geometry(
             "na": True <if only in inland areas>
         }
         OR
-        None if there is only NODATA / areas not modeled
+        None if there is only NODATA
     """
     # prescreen to make sure data are present
     with rasterio.open(mask_filename) as src:
@@ -103,7 +103,7 @@ def extract_slr_by_mask_and_geometry(
     if slr_nodata_acres < 1e-6:
         slr_nodata_acres = 0
 
-    # combine areas not modeled with SLR nodata areas
+    # set NODATA into value 13
     slr_acres[13] += slr_nodata_acres
 
     # if all areas in the polygon have no SLR data, return None
@@ -204,7 +204,7 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
 
         slr_nodata_acres[slr_nodata_acres < 1e-6] = 0
 
-        # combine areas not modeled with SLR nodata areas
+        # set NODATA into value 13
         slr_acres[:, 13] += slr_nodata_acres
 
         # accumulate values for bins 0-10

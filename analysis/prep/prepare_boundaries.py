@@ -1,20 +1,17 @@
 from pathlib import Path
-import warnings
 
 import geopandas as gp
 import pandas as pd
 from pyogrio.geopandas import read_dataframe, write_dataframe
 import rasterio
-from rasterio.features import rasterize
+from rasterio.features import rasterize, dataset_features
 from rasterio import windows
 import shapely
 
-from analysis.constants import DATA_CRS, SECAS_STATES, MASK_RESOLUTION, INPUTS
-from analysis.lib.geometry import dissolve, make_valid, to_dict_all, to_dict
-from analysis.lib.raster import write_raster, add_overviews, create_lowres_mask
+from analysis.constants import DATA_CRS, SECAS_STATES
+from analysis.lib.geometry import make_valid, to_dict_all
+from analysis.lib.raster import write_raster, add_overviews
 
-# suppress warnings about writing to feather
-warnings.filterwarnings("ignore", message=".*initial implementation of Parquet.*")
 
 src_dir = Path("source_data")
 data_dir = Path("data")
@@ -26,31 +23,28 @@ bnd_dir.mkdir(exist_ok=True, parents=True)
 out_dir.mkdir(exist_ok=True, parents=True)
 
 
-### Extract Blueprint boundary polygon
-bnd_df = read_dataframe(src_dir / "blueprint/SE_Blueprint_Extent.shp")[["geometry"]]
-# boundary has multiple geometries, union together and cleanup
-bnd_df = gp.GeoDataFrame(
-    geometry=[shapely.union_all(shapely.make_valid(bnd_df.geometry.values))],
-    index=[0],
-    crs=bnd_df.crs,
-)
-bnd_df.to_feather(out_dir / "se_boundary.feather")
-write_dataframe(bnd_df, data_dir / "boundaries/se_boundary.fgb")
+### Extract subregions that define where to expect certain indicators
+subregion_df = read_dataframe(
+    src_dir / "blueprint/SoutheastBlueprint2023Subregions.shp", columns=["SubRgn"]
+).rename(columns={"SubRgn": "subregion"})
+
+subregion_df["geometry"] = shapely.make_valid(subregion_df.geometry.values)
+
+subregion_df.to_feather(bnd_dir / "base_subregions.feather")
+write_dataframe(subregion_df, bnd_dir / "base_subregions.fgb")
 
 
 ### Extract Blueprint extent
 print("Extracting SE Blueprint extent")
-with rasterio.open(src_dir / "blueprint/SE_Blueprint_2022.tif") as src:
+with rasterio.open(src_dir / "blueprint/SoutheastBlueprint2023Extent.tif") as src:
     nodata = int(src.nodata)
     data = src.read(1)
-
-    data[data != nodata] = 1
 
     # uncomment to recalculate
     # window = windows.get_data_window(data, nodata=nodata)
     # print(window)
 
-    window = windows.Window(col_off=855, row_off=294, width=144065, height=71409)
+    window = windows.Window(col_off=901, row_off=901, width=147307, height=71439)
     transform = windows.transform(window, src.transform)
 
     data = data[window.toslices()]
@@ -65,87 +59,26 @@ with rasterio.open(src_dir / "blueprint/SE_Blueprint_2022.tif") as src:
 
     add_overviews(outfilename)
 
-
-### Extract input areas
-df = read_dataframe(src_dir / "blueprint/InputAreas.shp", columns=["gridcode"]).rename(
-    columns={"gridcode": "value"}
-)
-
-df["geometry"] = make_valid(df.geometry.values)
-df = dissolve(df, by="value")
-
-inputs = {e["value"]: e["id"] for e in INPUTS}
-df["id"] = df["value"].map(inputs)
-
-write_dataframe(df, bnd_dir / "input_areas.fgb")
-df.to_feather(out_dir / "input_areas.feather")
-
-# rasterize to match the blueprint
-# convert to pairs of GeoJSON , value
-df = pd.DataFrame(df[["geometry", "value"]].copy())
-df.geometry = df.geometry.values
-shapes = df.apply(lambda row: (to_dict(row.geometry), row.value), axis=1)
-
-print("Rasterizing inputs...")
-with rasterio.open(bnd_dir / "se_blueprint_extent.tif") as src:
-    data = rasterize(
-        shapes.values, src.shape, transform=src.transform, dtype="uint8", fill=255
-    )
-
-    outfilename = out_dir / "input_areas.tif"
-    write_raster(
-        outfilename,
-        data,
-        src.transform,
+    # extract boundary polygon
+    bnd_geom = pd.Series(dataset_features(src, bidx=1, geographic=False))
+    bnd_geom = bnd_geom.apply(lambda x: shapely.geometry.shape(x["geometry"]))
+    bnd_geom = shapely.union_all(shapely.make_valid(bnd_geom))
+    bnd_df = gp.GeoDataFrame(
+        geometry=[bnd_geom],
+        index=[0],
         crs=src.crs,
-        nodata=255,
     )
+    bnd_df.to_feather(out_dir / "se_boundary.feather")
+    write_dataframe(bnd_df, data_dir / "boundaries/se_boundary.fgb")
 
-    add_overviews(outfilename)
-
-    create_lowres_mask(
-        outfilename,
-        str(outfilename).replace(".tif", "_mask.tif"),
-        resolution=MASK_RESOLUTION,
-        ignore_zero=True,
-    )
-
-
-### Extract the Base Blueprint data extent and write to a new raster
-# NOTE: the data extent transform is exactly the same as the data extent transform
-# for full SE Blueprint (above)
-print("Extracting Base Blueprint extent")
-with rasterio.open(src_dir / "blueprint/BaseBlueprintExtent2022.tif") as src:
-    nodata = int(src.nodata)
-    data = src.read(1)
-
-    # uncomment to recalculate
-    window = windows.get_data_window(data, nodata=nodata)
-    print(window)
-
-    # window = windows.Window(col_off=855, row_off=806, width=106719, height=60170)
-    transform = windows.transform(window, src.transform)
-
-    data = data[window.toslices()]
-    outfilename = bnd_dir / "base_blueprint_extent.tif"
-    write_raster(
-        outfilename,
-        data,
-        transform,
-        crs=src.crs,
-        nodata=nodata,
-    )
-
-    add_overviews(outfilename)
-
-    ### Extract a non-marine mask aligned to the above
+    # Extract a non-marine mask aligned to the above
     # Note: this is still within the total footprint of the above; it is not
     # a smaller shape
-    df = read_dataframe(
-        src_dir / "base_blueprint/BaseBlueprintSubRgn.shp", columns=["SubRgn"]
-    )
-    df = df.loc[~df.SubRgn.str.contains("Marine")]
-    shapes = to_dict_all(df.geometry.values)
+    subregion_df = subregion_df.loc[
+        ~subregion_df.subregion.str.contains("Marine")
+    ].copy()
+    subregion_df["geometry"] = shapely.make_valid(subregion_df.geometry.values)
+    shapes = to_dict_all(subregion_df.geometry.values)
     nonmarine_mask = rasterize(
         shapes, data.shape, transform=transform, dtype="uint8", fill=0, default_value=1
     )
@@ -167,7 +100,7 @@ with rasterio.open(src_dir / "blueprint/BaseBlueprintExtent2022.tif") as src:
 state_list = ",".join(f"'{state}'" for state in SECAS_STATES)
 states = (
     read_dataframe(
-        src_dir / "boundaries/tl_2021_us_state.shp",
+        src_dir / "boundaries/tl_2022_us_state.zip",
         columns=["STATEFP", "STUSPS", "NAME"],
         where=f""""STUSPS" in ({state_list})""",
     )
@@ -180,7 +113,7 @@ states.to_feather(out_dir / "states.feather")
 fips_list = ",".join(f"'{fips}'" for fips in states.STATEFP.unique())
 counties = (
     read_dataframe(
-        src_dir / "boundaries/tl_2021_us_county.shp",
+        src_dir / "boundaries/tl_2022_us_county.zip",
         columns=["STATEFP", "GEOID", "NAME", "geometry"],
         where=f""""STATEFP" in ({fips_list})""",
     )
@@ -212,12 +145,3 @@ df["geometry"] = make_valid(df.geometry.values)
 
 write_dataframe(df, bnd_dir / "parca.fgb")
 df.to_feather(out_dir / "parca.feather")
-
-
-### Extract subregions that define where to expect certain indicators
-df = read_dataframe(
-    src_dir / "base_blueprint/BaseBlueprintSubRgn.shp", columns=["SubRgn"]
-).rename(columns={"SubRgn": "subregion"})
-
-df.to_feather(bnd_dir / "base_subregions.feather")
-write_dataframe(df, bnd_dir / "base_subregions.fgb")

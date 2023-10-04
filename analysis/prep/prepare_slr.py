@@ -1,4 +1,3 @@
-import json
 import math
 from pathlib import Path
 import re
@@ -6,7 +5,7 @@ import subprocess
 from time import time
 
 import rasterio
-from rasterio.features import geometry_mask, dataset_features, rasterize
+from rasterio.features import geometry_mask, rasterize
 from rasterio.windows import Window
 import pandas as pd
 import numpy as np
@@ -259,12 +258,6 @@ data_extent_df = read_dataframe(
 data_extent_df["group"] = "data_extent"
 data_extent_df["geometry"] = make_valid(data_extent_df.geometry.values)
 
-not_modeled_df = read_dataframe(
-    src_dir / "NOAA_SLR_Viewer_NoDataAreas.shp", columns=[]
-).to_crs(DATA_CRS)
-not_modeled_df["group"] = "not_modeled"
-not_modeled_df["geometry"] = make_valid(not_modeled_df.geometry.values)
-
 # veil is inland counties where SLR isn't applicable
 not_applicable_df = read_dataframe(src_dir / "SLRViewer_Veil.shp", columns=[]).to_crs(
     DATA_CRS
@@ -272,10 +265,10 @@ not_applicable_df = read_dataframe(src_dir / "SLRViewer_Veil.shp", columns=[]).t
 not_applicable_df["group"] = "not_applicable"
 not_applicable_df["geometry"] = make_valid(not_applicable_df.geometry.values)
 
-df = pd.concat([data_extent_df, not_modeled_df, not_applicable_df], ignore_index=True)
+df = pd.concat([data_extent_df, not_applicable_df], ignore_index=True)
 df = dissolve(df.explode(ignore_index=True), by="group")
 
-# rasterize these stacked in the following decreasing precedence: not modeled(13), data extent(11), veil(12)
+# rasterize these stacked in the following decreasing precedence: data extent(11), veil(12)
 analysis_areas = np.zeros(shape=extent_raster.shape, dtype="uint8")
 rasterize(
     to_dict_all(not_applicable_df.geometry.values),
@@ -292,15 +285,6 @@ rasterize(
     transform=extent_raster.transform,
     dtype="uint8",
     default_value=11,
-    out=analysis_areas,
-)
-
-rasterize(
-    to_dict_all(not_modeled_df.geometry.values),
-    extent_raster.shape,
-    transform=extent_raster.transform,
-    dtype="uint8",
-    default_value=13,
     out=analysis_areas,
 )
 
@@ -359,11 +343,6 @@ bnd = gp.read_feather(
 df["geometry"] = shapely.intersection(df.geometry.values, bnd)
 
 write_dataframe(df, tmp_dir / "slr_analysis_areas.fgb")
-
-# write areas not modeled for tiles
-df.loc[df.group == "not_modeled"].to_feather(
-    data_dir / "for_tiles/slr_not_modeled.feather"
-)
 
 data_extent = df.loc[df.group == "data_extent"].geometry.values[0]
 
