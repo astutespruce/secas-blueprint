@@ -436,11 +436,6 @@ for index, indicator_row in indicator_df.iterrows():
 
 indicator_df = indicator_df.sort_values(by="id")
 
-with open(constants_dir / "indicators.json", "w") as out:
-    res = out.write(
-        json.dumps(indicator_df.to_dict(orient="records"), indent=2, ensure_ascii=False)
-    )
-
 
 ################################################################################
 ### Extract indicator GeoTIFFs
@@ -503,14 +498,76 @@ for index, indicator_row in indicator_df.iterrows():
         with rasterio.open(outfilename, "r+") as src:
             src.write_colormap(1, colormap)
 
-        # NOTE: will need to account for mask offset when prescreening indicators
         print("Creating mask...")
+        # create a transform for the mask that is an integer number of rows/cols
+        # offset from the origin; this makes sure that we can always do an
+        # origin point offset then read from the mask
+        col_off = int(round((out_transform.c - extent.transform.c) / MASK_RESOLUTION))
+        row_off = int(round((out_transform.f - extent.transform.f) / -MASK_RESOLUTION))
+
+        mask_transform = Affine(
+            a=MASK_RESOLUTION,
+            b=0.0,
+            c=extent.transform.c + col_off * MASK_RESOLUTION,
+            d=0.0,
+            e=-MASK_RESOLUTION,
+            f=extent.transform.f - row_off * MASK_RESOLUTION,
+        )
         create_lowres_mask(
             outfilename,
             str(outfilename).replace(".tif", "_mask.tif"),
             resolution=MASK_RESOLUTION,
+            transform=mask_transform,
             ignore_zero=not has_zero,
         )
 
 
+################################################################################
+### Extract subregions associated with indicator
+################################################################################
+print("Extracting subregions associated with each indicator")
+indicator_df["subregions"] = None
+subregion_df = pd.read_feather(
+    data_dir / "boundaries/subregions.feather", columns=["value", "subregion"]
+)
+subregion_lut = subregion_df.set_index("value").subregion.to_dict()
+bins = np.arange(subregion_df.value.max() + 1)
+with rasterio.open(data_dir / "boundaries/subregion_mask.tif") as subregions:
+    subregion_values = subregions.read(1)
+    for index, indicator_row in indicator_df.iterrows():
+        print(f"Finding subregions for {indicator_row.label}")
+        mask_filename = indicators_out_dir / str(indicator_row.filename).replace(
+            ".tif", "_mask.tif"
+        )
+
+        with rasterio.open(mask_filename) as src:
+            read_window = shift_window(
+                windows.Window(
+                    col_off=0,
+                    row_off=0,
+                    width=subregions.width,
+                    height=subregions.height,
+                ),
+                subregions.transform,
+                src.transform,
+            )
+            mask = src.read(1, window=read_window, boundless=True)
+            indicator_subregions = np.where(mask == 1, subregion_values, NODATA)
+
+            values = subregion_values[(subregion_values != NODATA) & (mask == 1)]
+            counts = np.bincount(values, minlength=len(bins))
+            # drop any where the area is < 0.1% of the total area of the indicator
+            # these are usually at the edges of subregions where the indicator
+            # has 0 values and was clipped to subregion boundaries
+            ix = counts / counts.sum() >= 0.001
+            indicator_subregions = sorted([subregion_lut[v] for v in bins[ix]])
+            indicator_df.at[index, "subregions"] = indicator_subregions
+
+
 extent.close()
+
+
+with open(constants_dir / "indicators.json", "w") as out:
+    res = out.write(
+        json.dumps(indicator_df.to_dict(orient="records"), indent=2, ensure_ascii=False)
+    )

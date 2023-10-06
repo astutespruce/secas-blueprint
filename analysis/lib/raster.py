@@ -252,7 +252,13 @@ def detect_data_by_mask(dataset, mask, window):
     return False
 
 
-def create_lowres_mask(filename, outfilename, resolution, ignore_zero=False):
+def create_lowres_mask(
+    filename,
+    outfilename,
+    resolution,
+    transform=None,
+    ignore_zero=False,
+):
     """Create a resampled lower resolution mask.
 
     This is used to pre-screen areas where data are present for higher-resolution
@@ -267,15 +273,22 @@ def create_lowres_mask(filename, outfilename, resolution, ignore_zero=False):
     outfilename : str
     resolution : int
         target resolution
+    transform : Affine, optional (default: None)
+        transform to use for aligning upper left coordinate; must also have
+        resolution set properly
     ignore_zero : bool, optional (default: False)
         if True, 0 values are treated as nodata
     """
+
     with rasterio.open(filename) as src:
         nodata = src.nodatavals[0]
-        # output is still precisely aligned to same upper left coordinate
-        dst_transform = Affine(
-            resolution, 0, src.transform.c, 0, -resolution, src.transform.f
-        )
+
+        if transform is None:
+            # output is still precisely aligned to same upper left coordinate
+            transform = Affine(
+                resolution, 0, src.transform.c, 0, -resolution, src.transform.f
+            )
+
         width = math.ceil((src.width * src.transform.a) / resolution)
         height = math.ceil((src.height * (-src.transform.e)) / resolution)
 
@@ -284,7 +297,7 @@ def create_lowres_mask(filename, outfilename, resolution, ignore_zero=False):
             width=width,
             height=height,
             nodata=nodata,
-            transform=dst_transform,
+            transform=transform,
             resampling=Resampling.max,
         ) as vrt:
             data = vrt.read()
@@ -295,7 +308,7 @@ def create_lowres_mask(filename, outfilename, resolution, ignore_zero=False):
             data[data != nodata] = 1
 
             meta = src.profile.copy()
-            meta.update({"width": width, "height": height, "transform": dst_transform})
+            meta.update({"width": width, "height": height, "transform": transform})
 
             # add compression
             meta["compress"] = "lzw"

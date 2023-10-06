@@ -54,7 +54,14 @@
     "valueLabel": "",
     "captionLabel": "Atlantic migratory fish habitat",
     "goodThreshold": 7,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Florida Peninsula",
+      "North Appalachians",
+      "Piedmont",
+      "South Appalachians"
+    ]
   },
   {
     "id": "f_caribbeannaturallandcoverinfloodplains",
@@ -96,7 +103,10 @@
     "valueLabel": "",
     "captionLabel": "Caribbean natural landcover in floodplains",
     "goodThreshold": 4,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "f_caribbeannetworkcomplexity",
@@ -133,7 +143,10 @@
     "valueLabel": "",
     "captionLabel": "Caribbean network complexity",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "f_caribbeanpermeablesurface",
@@ -165,7 +178,10 @@
     "valueLabel": "",
     "captionLabel": "Caribbean permeable surface",
     "goodThreshold": 4,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "f_gulfmigratoryfishconnectivity",
@@ -192,7 +208,13 @@
     "valueLabel": "",
     "captionLabel": "Gulf migratory fish connectivity",
     "goodThreshold": 1,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Central Gulf Coastal Plain",
+      "East Gulf Coastal Plain",
+      "Mid East Gulf Coastal Plain",
+      "Mississippi Alluvial Valley"
+    ]
   },
   {
     "id": "f_imperiledaquaticspecies",
@@ -254,7 +276,30 @@
     "valueLabel": "",
     "captionLabel": "imperiled aquatic species",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Central Gulf Coastal Plain",
+      "Chihuahuan Deserts",
+      "East Gulf Coastal Plain",
+      "Edwards Plateau",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
+      "Interior Plateau",
+      "Mid East Gulf Coastal Plain",
+      "Mississippi Alluvial Valley",
+      "North Appalachians",
+      "North Missouri",
+      "Ouachita",
+      "Ozarks and Plains",
+      "Piedmont",
+      "Plains and Timbers",
+      "South Appalachians",
+      "South Texas Plains",
+      "Texas Blackland Prairies",
+      "West Gulf Coastal Plain"
+    ]
   },
   {
     "id": "f_naturallandcoverinfloodplains",
@@ -296,7 +341,30 @@
     "valueLabel": "",
     "captionLabel": "natural landcover in floodplains",
     "goodThreshold": 4,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Central Gulf Coastal Plain",
+      "Chihuahuan Deserts",
+      "East Gulf Coastal Plain",
+      "Edwards Plateau",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
+      "Interior Plateau",
+      "Mid East Gulf Coastal Plain",
+      "Mississippi Alluvial Valley",
+      "North Appalachians",
+      "North Missouri",
+      "Ouachita",
+      "Ozarks and Plains",
+      "Piedmont",
+      "Plains and Timbers",
+      "South Appalachians",
+      "South Texas Plains",
+      "Texas Blackland Prairies",
+      "West Gulf Coastal Plain"
+    ]
   },
   {
     "id": "f_networkcomplexity",
@@ -348,7 +416,30 @@
     "valueLabel": "",
     "captionLabel": "network complexity",
     "goodThreshold": 4,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Central Gulf Coastal Plain",
+      "Chihuahuan Deserts",
+      "East Gulf Coastal Plain",
+      "Edwards Plateau",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
+      "Interior Plateau",
+      "Mid East Gulf Coastal Plain",
+      "Mississippi Alluvial Valley",
+      "North Appalachians",
+      "North Missouri",
+      "Ouachita",
+      "Ozarks and Plains",
+      "Piedmont",
+      "Plains and Timbers",
+      "South Appalachians",
+      "South Texas Plains",
+      "Texas Blackland Prairies",
+      "West Gulf Coastal Plain"
+    ]
   },
   {
     "id": "f_permeablesurface",
@@ -380,7 +471,30 @@
     "valueLabel": "",
     "captionLabel": "permeable surface",
     "goodThreshold": 4,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Central Gulf Coastal Plain",
+      "Chihuahuan Deserts",
+      "East Gulf Coastal Plain",
+      "Edwards Plateau",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
+      "Interior Plateau",
+      "Mid East Gulf Coastal Plain",
+      "Mississippi Alluvial Valley",
+      "North Appalachians",
+      "North Missouri",
+      "Ouachita",
+      "Ozarks and Plains",
+      "Piedmont",
+      "Plains and Timbers",
+      "South Appalachians",
+      "South Texas Plains",
+      "Texas Blackland Prairies",
+      "West Gulf Coastal Plain"
+    ]
   },
   {
     "id": "f_westvirginiaimperiledaquaticspecies",
@@ -422,7 +536,10 @@
     "valueLabel": "",
     "captionLabel": "west virginia imperiled aquatic species",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "North Appalachians"
+    ]
   },
   {
     "id": "m_atlanticcoralandhardbottom",
@@ -479,7 +596,13 @@
     "valueLabel": "",
     "captionLabel": "Atlantic coral & hardbottom",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Atlantic Marine",
+      "Florida Peninsula",
+      "Gulf of Mexico"
+    ]
   },
   {
     "id": "m_atlanticdeepseacoralrichness",
@@ -516,7 +639,11 @@
     "valueLabel": "",
     "captionLabel": "Atlantic deep-sea coral richness",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Marine",
+      "Gulf of Mexico"
+    ]
   },
   {
     "id": "m_atlanticestuarinefishhabitat",
@@ -573,7 +700,14 @@
     "valueLabel": "",
     "captionLabel": "Atlantic estuarine fish habitat",
     "goodThreshold": 7,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Atlantic Marine",
+      "Florida Peninsula",
+      "Gulf of Mexico",
+      "Piedmont"
+    ]
   },
   {
     "id": "m_atlanticmarinebirds",
@@ -640,7 +774,13 @@
     "valueLabel": "",
     "captionLabel": "Atlantic marine birds",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Atlantic Marine",
+      "Florida Peninsula",
+      "Gulf of Mexico"
+    ]
   },
   {
     "id": "m_atlanticmarinemammals",
@@ -707,7 +847,13 @@
     "valueLabel": "",
     "captionLabel": "Atlantic marine mammals",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Atlantic Marine",
+      "Florida Peninsula",
+      "Gulf of Mexico"
+    ]
   },
   {
     "id": "m_caribbeanbeachhabitat",
@@ -734,7 +880,10 @@
     "valueLabel": "",
     "captionLabel": "Caribbean beach habitat",
     "goodThreshold": 2,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "m_caribbeancoastalshorelinecondition",
@@ -756,7 +905,10 @@
     "valueLabel": "",
     "captionLabel": "Caribbean coastal shoreline condition",
     "goodThreshold": 1,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "m_caribbeanfishhotspots",
@@ -793,7 +945,10 @@
     "valueLabel": "",
     "captionLabel": "Caribbean fish hotspots",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "m_caribbeanfishnurseryhabitat",
@@ -815,7 +970,10 @@
     "valueLabel": "",
     "captionLabel": "Caribbean fish nursery habitat",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "m_caribbeanseagrass",
@@ -862,7 +1020,10 @@
     "valueLabel": "",
     "captionLabel": "Caribbean seagrass",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "m_caribbeanshallowhardbottomandcoral",
@@ -904,7 +1065,10 @@
     "valueLabel": "",
     "captionLabel": "Caribbean shallow hardbottom and coral",
     "goodThreshold": 3,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "m_coastalshorelinecondition",
@@ -941,7 +1105,16 @@
     "valueLabel": "",
     "captionLabel": "coastal shoreline condition",
     "goodThreshold": 3,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Central Gulf Coastal Plain",
+      "East Gulf Coastal Plain",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "Mid East Gulf Coastal Plain",
+      "Mississippi Alluvial Valley"
+    ]
   },
   {
     "id": "m_estuarinecoastalcondition",
@@ -983,7 +1156,18 @@
     "valueLabel": "",
     "captionLabel": "estuarine coastal condition",
     "goodThreshold": 4,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Atlantic Marine",
+      "Central Gulf Coastal Plain",
+      "East Gulf Coastal Plain",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "Gulf of Mexico",
+      "Mid East Gulf Coastal Plain",
+      "Mississippi Alluvial Valley"
+    ]
   },
   {
     "id": "m_gulfcoralandhardbottom",
@@ -1030,7 +1214,17 @@
     "valueLabel": "",
     "captionLabel": "Gulf coral & hardbottom",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Marine",
+      "Central Gulf Coastal Plain",
+      "East Gulf Coastal Plain",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "Gulf of Mexico",
+      "Mid East Gulf Coastal Plain",
+      "Mississippi Alluvial Valley"
+    ]
   },
   {
     "id": "m_gulfdeepseacoralrichness",
@@ -1067,7 +1261,10 @@
     "valueLabel": "",
     "captionLabel": "Gulf deep-sea coral richness",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Gulf of Mexico"
+    ]
   },
   {
     "id": "m_gulfmarinemammals",
@@ -1134,7 +1331,16 @@
     "valueLabel": "",
     "captionLabel": "Gulf marine mammals",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Central Gulf Coastal Plain",
+      "East Gulf Coastal Plain",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "Gulf of Mexico",
+      "Mid East Gulf Coastal Plain",
+      "Mississippi Alluvial Valley"
+    ]
   },
   {
     "id": "m_gulfseaturtles",
@@ -1176,7 +1382,16 @@
     "valueLabel": "",
     "captionLabel": "Gulf sea turtles",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Central Gulf Coastal Plain",
+      "East Gulf Coastal Plain",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "Gulf of Mexico",
+      "Mid East Gulf Coastal Plain",
+      "Mississippi Alluvial Valley"
+    ]
   },
   {
     "id": "m_islandhabitat",
@@ -1203,7 +1418,16 @@
     "valueLabel": "",
     "captionLabel": "island habitat",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Central Gulf Coastal Plain",
+      "East Gulf Coastal Plain",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "Mid East Gulf Coastal Plain",
+      "Mississippi Alluvial Valley"
+    ]
   },
   {
     "id": "m_marinehighlymigratoryfish",
@@ -1255,7 +1479,11 @@
     "valueLabel": "",
     "captionLabel": "marine highly migratory fish",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Marine",
+      "Gulf of Mexico"
+    ]
   },
   {
     "id": "m_resilientcoastalsites",
@@ -1302,7 +1530,17 @@
     "valueLabel": "",
     "captionLabel": "resilient coastal sites",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Central Gulf Coastal Plain",
+      "East Gulf Coastal Plain",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "Mid East Gulf Coastal Plain",
+      "Mississippi Alluvial Valley",
+      "West Gulf Coastal Plain"
+    ]
   },
   {
     "id": "m_seagrass",
@@ -1319,7 +1557,18 @@
     "valueLabel": "",
     "captionLabel": "seagrass",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Atlantic Marine",
+      "Central Gulf Coastal Plain",
+      "East Gulf Coastal Plain",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "Gulf of Mexico",
+      "Mid East Gulf Coastal Plain",
+      "Mississippi Alluvial Valley"
+    ]
   },
   {
     "id": "m_southatlanticbeachbirds",
@@ -1361,7 +1610,11 @@
     "valueLabel": "",
     "captionLabel": "South Atlantic beach birds",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Florida Peninsula"
+    ]
   },
   {
     "id": "m_southatlanticmaritimeforest",
@@ -1383,7 +1636,12 @@
     "valueLabel": "",
     "captionLabel": "South Atlantic maritime forest",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "East Gulf Coastal Plain",
+      "Florida Peninsula"
+    ]
   },
   {
     "id": "m_stablecoastalwetlands",
@@ -1410,7 +1668,16 @@
     "valueLabel": "",
     "captionLabel": "stable coastal wetlands",
     "goodThreshold": 1,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Central Gulf Coastal Plain",
+      "East Gulf Coastal Plain",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "Mid East Gulf Coastal Plain",
+      "Mississippi Alluvial Valley"
+    ]
   },
   {
     "id": "t_caribbeangreenwaysandtrails",
@@ -1457,7 +1724,10 @@
     "valueLabel": "",
     "captionLabel": "Caribbean greenways & trails",
     "goodThreshold": 4,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_caribbeanhabitatpatchsizelargeislands",
@@ -1499,7 +1769,10 @@
     "valueLabel": "",
     "captionLabel": "Caribbean habitat patch size (large islands)",
     "goodThreshold": 3,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_caribbeanhabitatpatchsizesmallislands",
@@ -1536,7 +1809,10 @@
     "valueLabel": "",
     "captionLabel": "Caribbean habitat patch size (small islands)",
     "goodThreshold": 3,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_caribbeanislandhabitat",
@@ -1588,7 +1864,10 @@
     "valueLabel": "",
     "captionLabel": "Caribbean island habitat",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_caribbeankarsthabitat",
@@ -1620,7 +1899,10 @@
     "valueLabel": "",
     "captionLabel": "Caribbean karst habitat",
     "goodThreshold": 3,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_caribbeanlandscapecondition",
@@ -1657,7 +1939,10 @@
     "valueLabel": "",
     "captionLabel": "Caribbean landscape condition",
     "goodThreshold": 4,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_caribbeanlowurbanhistoriclandscapes",
@@ -1684,7 +1969,10 @@
     "valueLabel": "",
     "captionLabel": "Caribbean low-urban historic landscapes",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_caribbeanreforestationpotential",
@@ -1721,7 +2009,10 @@
     "valueLabel": "",
     "captionLabel": "Caribbean reforestation potential",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_caribbeanurbanparksize",
@@ -1768,7 +2059,10 @@
     "valueLabel": "",
     "captionLabel": "Caribbean urban park size",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_eastcoastalplainopenpinebirds",
@@ -1810,7 +2104,16 @@
     "valueLabel": "",
     "captionLabel": "east coastal plain open pine birds",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Central Gulf Coastal Plain",
+      "East Gulf Coastal Plain",
+      "Florida Peninsula",
+      "Mid East Gulf Coastal Plain",
+      "Piedmont",
+      "South Appalachians"
+    ]
   },
   {
     "id": "t_equitableaccesstopotentialparks",
@@ -1842,7 +2145,30 @@
     "valueLabel": "",
     "captionLabel": "equitable access to potential parks",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Central Gulf Coastal Plain",
+      "Chihuahuan Deserts",
+      "East Gulf Coastal Plain",
+      "Edwards Plateau",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
+      "Interior Plateau",
+      "Mid East Gulf Coastal Plain",
+      "Mississippi Alluvial Valley",
+      "North Appalachians",
+      "North Missouri",
+      "Ouachita",
+      "Ozarks and Plains",
+      "Piedmont",
+      "Plains and Timbers",
+      "South Appalachians",
+      "South Texas Plains",
+      "Texas Blackland Prairies",
+      "West Gulf Coastal Plain"
+    ]
   },
   {
     "id": "t_firefrequency",
@@ -1874,7 +2200,30 @@
     "valueLabel": "",
     "captionLabel": "fire frequency",
     "goodThreshold": 2,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Central Gulf Coastal Plain",
+      "Chihuahuan Deserts",
+      "East Gulf Coastal Plain",
+      "Edwards Plateau",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
+      "Interior Plateau",
+      "Mid East Gulf Coastal Plain",
+      "Mississippi Alluvial Valley",
+      "North Appalachians",
+      "North Missouri",
+      "Ouachita",
+      "Ozarks and Plains",
+      "Piedmont",
+      "Plains and Timbers",
+      "South Appalachians",
+      "South Texas Plains",
+      "Texas Blackland Prairies",
+      "West Gulf Coastal Plain"
+    ]
   },
   {
     "id": "t_greatplainsperennialgrasslands",
@@ -1911,7 +2260,14 @@
     "valueLabel": "",
     "captionLabel": "Great Plains perennial grasslands",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Edwards Plateau",
+      "High Plains and Tablelands",
+      "Plains and Timbers",
+      "South Texas Plains",
+      "Texas Blackland Prairies"
+    ]
   },
   {
     "id": "t_greenwaysandtrails",
@@ -1963,7 +2319,30 @@
     "valueLabel": "",
     "captionLabel": "greenways & trails",
     "goodThreshold": 4,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Central Gulf Coastal Plain",
+      "Chihuahuan Deserts",
+      "East Gulf Coastal Plain",
+      "Edwards Plateau",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
+      "Interior Plateau",
+      "Mid East Gulf Coastal Plain",
+      "Mississippi Alluvial Valley",
+      "North Appalachians",
+      "North Missouri",
+      "Ouachita",
+      "Ozarks and Plains",
+      "Piedmont",
+      "Plains and Timbers",
+      "South Appalachians",
+      "South Texas Plains",
+      "Texas Blackland Prairies",
+      "West Gulf Coastal Plain"
+    ]
   },
   {
     "id": "t_intacthabitatcores",
@@ -1995,7 +2374,30 @@
     "valueLabel": "",
     "captionLabel": "intact habitat cores",
     "goodThreshold": 1,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Central Gulf Coastal Plain",
+      "Chihuahuan Deserts",
+      "East Gulf Coastal Plain",
+      "Edwards Plateau",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
+      "Interior Plateau",
+      "Mid East Gulf Coastal Plain",
+      "Mississippi Alluvial Valley",
+      "North Appalachians",
+      "North Missouri",
+      "Ouachita",
+      "Ozarks and Plains",
+      "Piedmont",
+      "Plains and Timbers",
+      "South Appalachians",
+      "South Texas Plains",
+      "Texas Blackland Prairies",
+      "West Gulf Coastal Plain"
+    ]
   },
   {
     "id": "t_interiorsoutheastgrasslands",
@@ -2037,7 +2439,16 @@
     "valueLabel": "",
     "captionLabel": "Interior Southeast grasslands",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Central Gulf Coastal Plain",
+      "Interior Plateau",
+      "Mid East Gulf Coastal Plain",
+      "North Appalachians",
+      "Ozarks and Plains",
+      "Piedmont",
+      "South Appalachians"
+    ]
   },
   {
     "id": "t_mississippialluvialvalleyforestbirdsprotection",
@@ -2104,7 +2515,12 @@
     "valueLabel": "Priority of forest breeding bird habitat patch for future protection",
     "captionLabel": "Mississippi Alluvial Valley forest birds - protection",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Central Gulf Coastal Plain",
+      "Mississippi Alluvial Valley",
+      "West Gulf Coastal Plain"
+    ]
   },
   {
     "id": "t_mississippialluvialvalleyforestbirdsreforestation",
@@ -2171,7 +2587,13 @@
     "valueLabel": "Likelihood that reforestation will contribute to forest breeding bird habitat needs",
     "captionLabel": "Mississippi Alluvial Valley forest birds - reforestation",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Central Gulf Coastal Plain",
+      "Gulf Coastal Prairies",
+      "Mississippi Alluvial Valley",
+      "West Gulf Coastal Plain"
+    ]
   },
   {
     "id": "t_playas",
@@ -2203,7 +2625,12 @@
     "valueLabel": "",
     "captionLabel": "playas",
     "goodThreshold": 2,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Edwards Plateau",
+      "High Plains and Tablelands",
+      "Plains and Timbers"
+    ]
   },
   {
     "id": "t_resilientterrestrialsites",
@@ -2255,7 +2682,30 @@
     "valueLabel": "",
     "captionLabel": "resilient terrestrial sites",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Central Gulf Coastal Plain",
+      "Chihuahuan Deserts",
+      "East Gulf Coastal Plain",
+      "Edwards Plateau",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
+      "Interior Plateau",
+      "Mid East Gulf Coastal Plain",
+      "Mississippi Alluvial Valley",
+      "North Appalachians",
+      "North Missouri",
+      "Ouachita",
+      "Ozarks and Plains",
+      "Piedmont",
+      "Plains and Timbers",
+      "South Appalachians",
+      "South Texas Plains",
+      "Texas Blackland Prairies",
+      "West Gulf Coastal Plain"
+    ]
   },
   {
     "id": "t_southatlanticamphibianandreptileareas",
@@ -2277,7 +2727,15 @@
     "valueLabel": "",
     "captionLabel": "South Atlantic amphibian & reptile areas",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "East Gulf Coastal Plain",
+      "Florida Peninsula",
+      "North Appalachians",
+      "Piedmont",
+      "South Appalachians"
+    ]
   },
   {
     "id": "t_southatlanticforestbirds",
@@ -2319,7 +2777,16 @@
     "valueLabel": "",
     "captionLabel": "South Atlantic forest birds",
     "goodThreshold": 2,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "East Gulf Coastal Plain",
+      "Florida Peninsula",
+      "Mid East Gulf Coastal Plain",
+      "North Appalachians",
+      "Piedmont",
+      "South Appalachians"
+    ]
   },
   {
     "id": "t_southatlanticlowurbanhistoriclandscapes",
@@ -2346,7 +2813,13 @@
     "valueLabel": "",
     "captionLabel": "South Atlantic low-urban historic landscapes",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "East Gulf Coastal Plain",
+      "North Appalachians",
+      "Piedmont"
+    ]
   },
   {
     "id": "t_urbanparksize",
@@ -2388,7 +2861,31 @@
     "valueLabel": "",
     "captionLabel": "urban park size",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Atlantic Marine",
+      "Central Gulf Coastal Plain",
+      "Chihuahuan Deserts",
+      "East Gulf Coastal Plain",
+      "Edwards Plateau",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
+      "Interior Plateau",
+      "Mid East Gulf Coastal Plain",
+      "Mississippi Alluvial Valley",
+      "North Appalachians",
+      "North Missouri",
+      "Ouachita",
+      "Ozarks and Plains",
+      "Piedmont",
+      "Plains and Timbers",
+      "South Appalachians",
+      "South Texas Plains",
+      "Texas Blackland Prairies",
+      "West Gulf Coastal Plain"
+    ]
   },
   {
     "id": "t_westcoastalplainandouachitasforestedwetlandbirds",
@@ -2430,7 +2927,13 @@
     "valueLabel": "",
     "captionLabel": "West Coastal Plain & Ouachitas forested wetland birds",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Gulf Coastal Prairies",
+      "Mississippi Alluvial Valley",
+      "Ouachita",
+      "West Gulf Coastal Plain"
+    ]
   },
   {
     "id": "t_westcoastalplainandouachitasopenpinebirds",
@@ -2477,7 +2980,13 @@
     "valueLabel": "",
     "captionLabel": "West Coastal Plain & Ouachitas open pine birds",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Gulf Coastal Prairies",
+      "Mississippi Alluvial Valley",
+      "Ouachita",
+      "West Gulf Coastal Plain"
+    ]
   },
   {
     "id": "t_westgulfcoastmottledducknesting",
@@ -2544,6 +3053,13 @@
     "valueLabel": "",
     "captionLabel": "west gulf coast mottled duck nesting",
     "goodThreshold": null,
-    "url": ""
+    "url": "",
+    "subregions": [
+      "Central Gulf Coastal Plain",
+      "Gulf Coastal Prairies",
+      "Mississippi Alluvial Valley",
+      "Texas Blackland Prairies",
+      "West Gulf Coastal Plain"
+    ]
   }
 ]
