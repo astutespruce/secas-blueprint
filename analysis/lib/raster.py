@@ -50,6 +50,29 @@ def get_window(dataset, bounds, boundless=True):
     return Window(col_off, row_off, w, h)
 
 
+def shift_window(window, window_transform, transform):
+    """Shift window based on one transform to a window appropriate for a different
+    transform.
+
+    Parameters
+    ----------
+    window : rasterio.windows.Window
+    window_transform : affine.Affine
+        transform upon which window is based
+    transform : affine.Affine
+        the transform to which to shift the window
+
+    Returns
+    -------
+    rasterio.windows.Window
+    """
+    col_off = int(round((window_transform.c - transform.c) / transform.a))
+    row_off = int(round((window_transform.f - transform.f) / transform.e))
+    return Window(
+        col_off=col_off, row_off=row_off, width=window.width, height=window.height
+    )
+
+
 def boundless_raster_geometry_mask(dataset, shapes, bounds, all_touched=False):
     """Alternative to rasterio.mask::raster_geometry_mask that allows boundless
     reads from raster data sources.
@@ -264,7 +287,6 @@ def create_lowres_mask(filename, outfilename, resolution, ignore_zero=False):
             transform=dst_transform,
             resampling=Resampling.max,
         ) as vrt:
-
             data = vrt.read()
 
             if ignore_zero:
