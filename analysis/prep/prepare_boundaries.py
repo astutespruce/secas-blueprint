@@ -110,20 +110,26 @@ with rasterio.open(src_dir / "blueprint/SoutheastBlueprint2023Extent.tif") as sr
     )
 
     ### Extract a non-marine mask aligned to the above
-    # Note: this is still within the total footprint of the above; it is not
-    # a smaller shape
+    # this mask is used for NLCD and urban, which are currently limited to
+    # the contiguous Southeast (so it is also a smaller size but same origin)
     inland_subregions = subregion_df.loc[
-        ~subregion_df.subregion.str.contains("Marine")
+        ~subregion_df.subregion.isin(["Atlantic Marine", "Gulf of Mexico", "Caribbean"])
     ].copy()
-    inland_subregions["geometry"] = shapely.make_valid(
-        inland_subregions.geometry.values
-    )
     shapes = to_dict_all(inland_subregions.geometry.values)
+    bounds = inland_subregions.total_bounds
+    rows = math.ceil((bounds[1] - transform.f) / transform.e)
+    cols = math.ceil((bounds[2] - transform.c) / transform.a)
+
     nonmarine_mask = rasterize(
-        shapes, data.shape, transform=transform, dtype="uint8", fill=0, default_value=1
+        shapes,
+        (rows, cols),
+        transform=transform,
+        dtype="uint8",
+        fill=0,
+        default_value=1,
     )
 
-    outfilename = out_dir / "nonmarine_mask.tif"
+    outfilename = out_dir / "contiguous_southeast_inland_mask.tif"
     write_raster(
         outfilename,
         nonmarine_mask,

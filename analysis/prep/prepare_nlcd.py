@@ -25,7 +25,7 @@ tmp_dir = Path("/tmp")
 
 out_dir.mkdir(parents=True, exist_ok=True)
 
-bnd_raster = rasterio.open(bnd_dir / "nonmarine_mask.tif")
+bnd_raster = rasterio.open(bnd_dir / "contiguous_southeast_inland_mask.tif")
 
 ### Extract landcover
 print("Processing landcover")
@@ -38,7 +38,7 @@ landcover_remap_table = np.array(
     [(k, i) for i, k in enumerate(NLCD_CODES.keys())], dtype="uint8"
 )
 
-for infile in src_dir.glob("landcover/*/*.img"):
+for infile in sorted(src_dir.glob("landcover/*/*.img")):
     year = int(infile.stem.split("_")[1])
     outfilename = out_dir / f"landcover_{year}.tif"
 
@@ -48,7 +48,7 @@ for infile in src_dir.glob("landcover/*/*.img"):
     year_start = time()
     print(f"Extracting {infile}")
 
-    ### Extract within extent of SE Base Blueprint
+    ### Extract within extent of contiguous Southeast inland mask
     with rasterio.open(infile) as src:
         window = src.window(*bnd_raster.bounds)
         window_floored = window.round_offsets(op="floor", pixel_precision=3)
@@ -104,13 +104,15 @@ for infile in src_dir.glob("landcover/*/*.img"):
         print(f"Done with {year} in {time()-year_start:.2f}s")
 
 
-print("Creating mask")
-create_lowres_mask(
-    out_dir / "landcover_2019.tif",
-    out_dir / "landcover_mask.tif",
-    resolution=MASK_RESOLUTION,
-    ignore_zero=False,
-)
+outfilename = out_dir / "landcover_mask.tif"
+if not outfilename.exists():
+    print("Creating mask")
+    create_lowres_mask(
+        out_dir / "landcover_2021.tif",
+        outfilename,
+        resolution=MASK_RESOLUTION,
+        ignore_zero=False,
+    )
 
 
 ### Extract percent impervious
@@ -125,7 +127,7 @@ impervious_colormap = {
     },
 }
 
-for infile in src_dir.glob("impervious/*/*.img"):
+for infile in sorted(src_dir.glob("impervious/*/*.img")):
     year = int(infile.stem.split("_")[1])
     outfilename = out_dir / f"impervious_{year}.tif"
 
@@ -192,10 +194,12 @@ for infile in src_dir.glob("impervious/*/*.img"):
 
         print(f"Done with {year} in {time()-year_start:.2f}s")
 
-print("Creating mask")
-create_lowres_mask(
-    out_dir / "impervious_2019.tif",
-    out_dir / "impervious_mask.tif",
-    resolution=MASK_RESOLUTION,
-    ignore_zero=False,
-)
+outfilename = out_dir / "impervious_mask.tif"
+if not outfilename.exists():
+    print("Creating mask")
+    create_lowres_mask(
+        out_dir / "impervious_2021.tif",
+        outfilename,
+        resolution=MASK_RESOLUTION,
+        ignore_zero=False,
+    )

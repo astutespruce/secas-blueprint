@@ -1,8 +1,7 @@
 # SECAS Southeast Conservation Blueprint Urban Growth data
 
-Urbanization data were provided by Anna Petrasova (Center for Geospatial Analytics,
-North Carolina State University) to USFWS staff on 6/23/2022, and downloaded
-from USFWS teams site on 8/2/2022.
+Urbanization data were downloaded from https://www.sciencebase.gov/catalog/item/63f50297d34efa0476b04cf7
+on 10/5/2023.
 
 ## Data processing
 
@@ -14,10 +13,5 @@ available for Puerto Rico or U.S. Virgin Islands.
 Data are first converted from floating point to frequency bins (number of times
 out of 50 model runs that predicted urbanization).
 
-Value 51 denotes currently urbanized in NLCD 2019.
-
-NLCD 2019 values contained within the data provided by the FUTURES are not quite
-correct; they are masked out in areas covered by protected areas within PAD-US.
-
-To get around this, we merged in NLCD 2019 prepared for use in this tool; see
-`source_data/nlcd/README.md`.
+Value 51 denotes currently urbanized in NLCD 2019. NLCD 2019 data were prepared
+separately for use in this tool; see `source_data/nlcd/README.md`.

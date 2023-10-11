@@ -57,46 +57,50 @@ extent = rasterio.open(data_dir / "boundaries/se_blueprint_extent.tif")
 ################################################################################
 ### Extract blueprint to data extent
 ################################################################################
-print("Extracting blueprint")
-df = (
-    read_dataframe(
-        src_dir / "Blueprint2023.tif.vat.dbf",
-        columns=["Value", "Red", "Green", "Blue"],
+outfilename = out_dir / "se_blueprint_2023.tif"
+
+if not outfilename.exists():
+    print("Extracting blueprint")
+    df = (
+        read_dataframe(
+            src_dir / "Blueprint2023.tif.vat.dbf",
+            columns=["Value", "Red", "Green", "Blue"],
+        )
+        .set_index("Value")
+        .astype("uint8")
     )
-    .set_index("Value")
-    .astype("uint8")
-)
-df["Alpha"] = 255
-df.loc[0, "Alpha"] = 0
-colormap = df.apply(tuple, axis=1).to_dict()
+    df["Alpha"] = 255
+    df.loc[0, "Alpha"] = 0
+    colormap = df.apply(tuple, axis=1).to_dict()
 
-with rasterio.open(src_dir / "Blueprint2023.tif") as src:
-    nodata = int(src.nodata)
+    with rasterio.open(src_dir / "Blueprint2023.tif") as src:
+        nodata = int(src.nodata)
 
-    read_window = shift_window(
-        windows.Window(col_off=0, row_off=0, width=extent.width, height=extent.height),
-        extent.transform,
-        src.transform,
-    )
+        read_window = shift_window(
+            windows.Window(
+                col_off=0, row_off=0, width=extent.width, height=extent.height
+            ),
+            extent.transform,
+            src.transform,
+        )
 
-    data = src.read(1, window=read_window)
-    data = np.where(data == nodata, NODATA, data)
+        data = src.read(1, window=read_window)
+        data = np.where(data == nodata, NODATA, data)
 
-    outfilename = out_dir / "se_blueprint_2023.tif"
-    write_raster(
-        outfilename,
-        data,
-        transform=extent.transform,
-        crs=src.crs,
-        nodata=NODATA,
-    )
+        write_raster(
+            outfilename,
+            data,
+            transform=extent.transform,
+            crs=src.crs,
+            nodata=NODATA,
+        )
 
-    del data
+        del data
 
-    with rasterio.open(outfilename, "r+") as out:
-        out.write_colormap(1, colormap)
+        with rasterio.open(outfilename, "r+") as out:
+            out.write_colormap(1, colormap)
 
-    add_overviews(outfilename)
+        add_overviews(outfilename)
 
 ################################################################################
 ### Extract hubs and corridors
@@ -252,6 +256,7 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
             "2023 Indicator values": "values",
             '2023 Blueprint Explorer "Good" threshold': "goodThreshold",
             "2023 Indicator descriptions": "description",
+            "Hub Link": "url",
         }
     )
     key = df.label.apply(
@@ -312,9 +317,6 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
 
     df["values"] = None
     df["valueLabel"] = ""
-
-    # FIXME: placeholder
-    df["url"] = ""
 
     df = df[
         [

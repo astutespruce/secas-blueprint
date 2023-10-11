@@ -42,21 +42,21 @@ tmp_dir = Path("/tmp")
 
 out_dir.mkdir(parents=True, exist_ok=True)
 
-bnd_raster = rasterio.open(bnd_dir / "nonmarine_mask.tif")
+bnd_raster = rasterio.open(bnd_dir / "contiguous_southeast_inland_mask.tif")
 bnd = shapely.box(*bnd_raster.bounds)
 
 
-# Read NLCD 2019 prepared using analysis/prep/prepare_nlcd.py
+# Read NLCD 2021 prepared using analysis/prep/prepare_nlcd.py
 # this aligns exactly to bnd_raster
-print("Reading NLCD 2019")
-with rasterio.open(nlcd_dir / "landcover_2019.tif") as src:
+print("Reading NLCD 2021")
+with rasterio.open(nlcd_dir / "landcover_2021.tif") as src:
     already_urban = src.read(1)
     already_urban = np.where((already_urban >= 2) & (already_urban <= 5), True, False)
 
 
 ### Find the overlapping window for the SE Blueprint extent
 # NOTE: the urban layers are basically in same projection but use NAD83 instead of WGS84
-with rasterio.open(src_dir / "probability_SSP2_2020.tif") as src:
+with rasterio.open(src_dir / "fv2_probability_newDevelopment_2030.tif") as src:
     window = src.window(*shapely.total_bounds(bnd))
     window_floored = window.round_offsets(op="floor", pixel_precision=3)
     w = math.ceil(window.width + window.col_off - window_floored.col_off)
@@ -97,7 +97,7 @@ for year in URBAN_YEARS:
         print(f"Skipping {year} (already exists)")
         continue
 
-    with rasterio.open(src_dir / f"probability_SSP2_{year}.tif") as src:
+    with rasterio.open(src_dir / f"fv2_probability_newDevelopment_{year}.tif") as src:
         out = np.zeros((full_window.height, full_window.width), dtype="uint8")
 
         for window in Bar(f"Processing {year}", max=len(windows)).iter(windows):
@@ -161,7 +161,7 @@ print("Creating urban mask")
 outfilename = out_dir / "urban_mask.tif"
 if not outfilename.exists():
     create_lowres_mask(
-        out_dir / f"urban_2100.tif",
+        out_dir / "urban_2100.tif",
         outfilename,
         resolution=MASK_RESOLUTION,
         ignore_zero=False,

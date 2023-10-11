@@ -304,7 +304,9 @@ with rasterio.open(vrt_filename) as vrt:
     # SLR origin is located within SE Blueprint extent
     data = vrt.read(1, window=Window(0, 0, width, height))
     out = np.ones(extent_raster.shape, dtype="uint8") * np.uint8(NODATA)
-    out[top:, left:] = data
+    # NOTE: because read from VRT can't use boundless option without segfault
+    # this returns a smaller shape
+    out[top : top + data.shape[0], left : left + data.shape[1]] = data
 
     # merge in areas not modeled, in data extent, outside data extent
     out = np.where((out == NODATA) & (analysis_areas > 0), analysis_areas, out)

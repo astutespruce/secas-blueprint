@@ -54,7 +54,7 @@
     "valueLabel": "",
     "captionLabel": "Atlantic migratory fish habitat",
     "goodThreshold": 7,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/65c222610313470b999f342ebf56c859/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Florida Peninsula",
@@ -103,7 +103,7 @@
     "valueLabel": "",
     "captionLabel": "Caribbean natural landcover in floodplains",
     "goodThreshold": 4,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/10b1722decbb4e7ea497108777b85264/about",
     "subregions": [
       "Caribbean"
     ]
@@ -143,7 +143,7 @@
     "valueLabel": "",
     "captionLabel": "Caribbean network complexity",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/d4c056954bfe4e9aa2c7c603aa1593b1/about",
     "subregions": [
       "Caribbean"
     ]
@@ -178,7 +178,7 @@
     "valueLabel": "",
     "captionLabel": "Caribbean permeable surface",
     "goodThreshold": 4,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/e6075d1afa7e4cf0ad00f00b2033c81c/about",
     "subregions": [
       "Caribbean"
     ]
@@ -208,7 +208,7 @@
     "valueLabel": "",
     "captionLabel": "Gulf migratory fish connectivity",
     "goodThreshold": 1,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/3bb0ba3e460a4c8b9f1970ba83fc4dca/about",
     "subregions": [
       "Central Gulf Coastal Plain",
       "East Gulf Coastal Plain",
@@ -276,7 +276,7 @@
     "valueLabel": "",
     "captionLabel": "imperiled aquatic species",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/b8c3a9c98a884a6b82cd70a904931a9c/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
@@ -341,7 +341,7 @@
     "valueLabel": "",
     "captionLabel": "natural landcover in floodplains",
     "goodThreshold": 4,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/9a908b4b3a8443bea1fca74261d7938f/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
@@ -416,7 +416,7 @@
     "valueLabel": "",
     "captionLabel": "network complexity",
     "goodThreshold": 4,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/29903714287a430f8cf71e3e42dccbcc/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
@@ -471,7 +471,7 @@
     "valueLabel": "",
     "captionLabel": "permeable surface",
     "goodThreshold": 4,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/fws::permeable-surface-southeast-blueprint-indicator/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
@@ -536,7 +536,7 @@
     "valueLabel": "",
     "captionLabel": "west virginia imperiled aquatic species",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/a9e4a9964bb9464bbf620195133a43f0/about",
     "subregions": [
       "North Appalachians"
     ]
@@ -596,7 +596,7 @@
     "valueLabel": "",
     "captionLabel": "Atlantic coral & hardbottom",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/87bb82c4993e4a2baaa17b3aa77e8631/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Atlantic Marine",
@@ -639,7 +639,7 @@
     "valueLabel": "",
     "captionLabel": "Atlantic deep-sea coral richness",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/43113a697188432c8bf8f99099b35396/about",
     "subregions": [
       "Atlantic Marine",
       "Gulf of Mexico"
@@ -700,7 +700,7 @@
     "valueLabel": "",
     "captionLabel": "Atlantic estuarine fish habitat",
     "goodThreshold": 7,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/660c18d241f04ca695e1667f9b5b3d49/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Atlantic Marine",
@@ -774,7 +774,7 @@
     "valueLabel": "",
     "captionLabel": "Atlantic marine birds",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/aa34bc46ff534c89aab65d7d749087fb/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Atlantic Marine",
@@ -847,7 +847,7 @@
     "valueLabel": "",
     "captionLabel": "Atlantic marine mammals",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/e58767bd7b7c4a8c9bf586d169f1593f/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Atlantic Marine",
@@ -880,7 +880,7 @@
     "valueLabel": "",
     "captionLabel": "Caribbean beach habitat",
     "goodThreshold": 2,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/1622a316b6bf4c8293284c98e1000dae/about",
     "subregions": [
       "Caribbean"
     ]
@@ -905,7 +905,7 @@
     "valueLabel": "",
     "captionLabel": "Caribbean coastal shoreline condition",
     "goodThreshold": 1,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/52049e30b212477093df581f2a5cb381/about",
     "subregions": [
       "Caribbean"
     ]
@@ -945,7 +945,7 @@
     "valueLabel": "",
     "captionLabel": "Caribbean fish hotspots",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/72ffc219c52140c8bef5ad612cbb4728/about",
     "subregions": [
       "Caribbean"
     ]
@@ -970,7 +970,7 @@
     "valueLabel": "",
     "captionLabel": "Caribbean fish nursery habitat",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/43c6c44d5eec41e78587c60a323d6f15/about",
     "subregions": [
       "Caribbean"
     ]
@@ -1020,7 +1020,7 @@
     "valueLabel": "",
     "captionLabel": "Caribbean seagrass",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/19b5282bf8f54c83b0109075c698ba91/about",
     "subregions": [
       "Caribbean"
     ]
@@ -1065,7 +1065,7 @@
     "valueLabel": "",
     "captionLabel": "Caribbean shallow hardbottom and coral",
     "goodThreshold": 3,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/b7d6f168736f4a66a1330ae85bfe8046/about",
     "subregions": [
       "Caribbean"
     ]
@@ -1105,7 +1105,7 @@
     "valueLabel": "",
     "captionLabel": "coastal shoreline condition",
     "goodThreshold": 3,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/d75e310afae54c03b32a2a2699a2e5d7/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
@@ -1156,7 +1156,7 @@
     "valueLabel": "",
     "captionLabel": "estuarine coastal condition",
     "goodThreshold": 4,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/f916234cccff4c01a828e3232b8b2abd/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Atlantic Marine",
@@ -1214,7 +1214,7 @@
     "valueLabel": "",
     "captionLabel": "Gulf coral & hardbottom",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/d2820454193444ceb019865dc9545bb7/about",
     "subregions": [
       "Atlantic Marine",
       "Central Gulf Coastal Plain",
@@ -1261,7 +1261,7 @@
     "valueLabel": "",
     "captionLabel": "Gulf deep-sea coral richness",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/ccf4843485d848989951fbb5d3e530be/about",
     "subregions": [
       "Gulf of Mexico"
     ]
@@ -1331,7 +1331,7 @@
     "valueLabel": "",
     "captionLabel": "Gulf marine mammals",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/3b1b20bfde1e4a359131a0251dc6d617/about",
     "subregions": [
       "Central Gulf Coastal Plain",
       "East Gulf Coastal Plain",
@@ -1382,7 +1382,7 @@
     "valueLabel": "",
     "captionLabel": "Gulf sea turtles",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/154ccf741a7e4cc19f2c93b29abe9233/about",
     "subregions": [
       "Central Gulf Coastal Plain",
       "East Gulf Coastal Plain",
@@ -1418,7 +1418,7 @@
     "valueLabel": "",
     "captionLabel": "island habitat",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/1d076b5ffc164689afba7a09b054faea/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
@@ -1479,7 +1479,7 @@
     "valueLabel": "",
     "captionLabel": "marine highly migratory fish",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/8d893f24147a47f7bb48f8071c2d3a6a/about",
     "subregions": [
       "Atlantic Marine",
       "Gulf of Mexico"
@@ -1530,7 +1530,7 @@
     "valueLabel": "",
     "captionLabel": "resilient coastal sites",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/fws::resilient-coastal-sites-southeast-blueprint-indicator/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
@@ -1557,7 +1557,7 @@
     "valueLabel": "",
     "captionLabel": "seagrass",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/b93aaabad9b44e30a2a656313d5282e6/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Atlantic Marine",
@@ -1610,7 +1610,7 @@
     "valueLabel": "",
     "captionLabel": "South Atlantic beach birds",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/7ba82b4fdf53416f83ff1b01cabe0c5d/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Florida Peninsula"
@@ -1636,7 +1636,7 @@
     "valueLabel": "",
     "captionLabel": "South Atlantic maritime forest",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/50cf7d1f057e4c61afaea65c882b372b/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "East Gulf Coastal Plain",
@@ -1668,7 +1668,7 @@
     "valueLabel": "",
     "captionLabel": "stable coastal wetlands",
     "goodThreshold": 1,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/802eb4993d0d4904ac360823c99b4b7a/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
@@ -1724,7 +1724,7 @@
     "valueLabel": "",
     "captionLabel": "Caribbean greenways & trails",
     "goodThreshold": 4,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/b9bc4120389443ddb1ab41e69a18c1ce/about",
     "subregions": [
       "Caribbean"
     ]
@@ -1769,7 +1769,7 @@
     "valueLabel": "",
     "captionLabel": "Caribbean habitat patch size (large islands)",
     "goodThreshold": 3,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/ff01e3820aee415d9bba555d05b8cc14/about",
     "subregions": [
       "Caribbean"
     ]
@@ -1809,7 +1809,7 @@
     "valueLabel": "",
     "captionLabel": "Caribbean habitat patch size (small islands)",
     "goodThreshold": 3,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/20e82f19b78f40bca8df9a7713a515eb/about",
     "subregions": [
       "Caribbean"
     ]
@@ -1864,7 +1864,7 @@
     "valueLabel": "",
     "captionLabel": "Caribbean island habitat",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/dca9fcb28ec34a6e98aa43227e21b871/about",
     "subregions": [
       "Caribbean"
     ]
@@ -1899,7 +1899,7 @@
     "valueLabel": "",
     "captionLabel": "Caribbean karst habitat",
     "goodThreshold": 3,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/5177f53c3d4a4fae8cf7e3d541b58160/about",
     "subregions": [
       "Caribbean"
     ]
@@ -1939,7 +1939,7 @@
     "valueLabel": "",
     "captionLabel": "Caribbean landscape condition",
     "goodThreshold": 4,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/651cacf61f51448a8df2df5fced53f66/about",
     "subregions": [
       "Caribbean"
     ]
@@ -1969,7 +1969,7 @@
     "valueLabel": "",
     "captionLabel": "Caribbean low-urban historic landscapes",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/bb6f52c0a3f34311a0eb2b2bbcd211d3/about",
     "subregions": [
       "Caribbean"
     ]
@@ -2009,7 +2009,7 @@
     "valueLabel": "",
     "captionLabel": "Caribbean reforestation potential",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/53136c4fb806443d8e7062060612d9aa/about",
     "subregions": [
       "Caribbean"
     ]
@@ -2059,7 +2059,7 @@
     "valueLabel": "",
     "captionLabel": "Caribbean urban park size",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/ab02184458e045fc9142c84a2ac8e2c3/about",
     "subregions": [
       "Caribbean"
     ]
@@ -2104,7 +2104,7 @@
     "valueLabel": "",
     "captionLabel": "east coastal plain open pine birds",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/78717a5537ba434299d69d5dce038022/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
@@ -2145,7 +2145,7 @@
     "valueLabel": "",
     "captionLabel": "equitable access to potential parks",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/0f44447ccc2b4968ae61e239bbfbeeda/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
@@ -2200,7 +2200,7 @@
     "valueLabel": "",
     "captionLabel": "fire frequency",
     "goodThreshold": 2,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/1d8eb7be82b34236a74f9888ced2d603/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
@@ -2260,7 +2260,7 @@
     "valueLabel": "",
     "captionLabel": "Great Plains perennial grasslands",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/fws::great-plains-perennial-grasslands-southeast-blueprint-indicator/about",
     "subregions": [
       "Edwards Plateau",
       "High Plains and Tablelands",
@@ -2319,7 +2319,7 @@
     "valueLabel": "",
     "captionLabel": "greenways & trails",
     "goodThreshold": 4,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/16a21210f4494f33a7a8fa3c69aeaabc/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
@@ -2374,7 +2374,7 @@
     "valueLabel": "",
     "captionLabel": "intact habitat cores",
     "goodThreshold": 1,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/cd9bf9cb7cb545ce96cbc154a4fdc214/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
@@ -2439,7 +2439,7 @@
     "valueLabel": "",
     "captionLabel": "Interior Southeast grasslands",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/fws::interior-southeast-grasslands-southeast-blueprint-indicator/about",
     "subregions": [
       "Central Gulf Coastal Plain",
       "Interior Plateau",
@@ -2515,7 +2515,7 @@
     "valueLabel": "Priority of forest breeding bird habitat patch for future protection",
     "captionLabel": "Mississippi Alluvial Valley forest birds - protection",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/eb58a600736d44b6bdaaa029e2149397/about",
     "subregions": [
       "Central Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
@@ -2587,7 +2587,7 @@
     "valueLabel": "Likelihood that reforestation will contribute to forest breeding bird habitat needs",
     "captionLabel": "Mississippi Alluvial Valley forest birds - reforestation",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/a8d1a484128e4b6e8361c4ccf82b6ec4/about",
     "subregions": [
       "Central Gulf Coastal Plain",
       "Gulf Coastal Prairies",
@@ -2625,7 +2625,7 @@
     "valueLabel": "",
     "captionLabel": "playas",
     "goodThreshold": 2,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/ba3d0db90f81404c8401cd40460d37d3/about",
     "subregions": [
       "Edwards Plateau",
       "High Plains and Tablelands",
@@ -2682,7 +2682,7 @@
     "valueLabel": "",
     "captionLabel": "resilient terrestrial sites",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/fws::resilient-terrestrial-sites-southeast-blueprint-indicator/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
@@ -2727,7 +2727,7 @@
     "valueLabel": "",
     "captionLabel": "South Atlantic amphibian & reptile areas",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/6b9c4e03c92b477c8cdcb53bdedb4587/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "East Gulf Coastal Plain",
@@ -2777,7 +2777,7 @@
     "valueLabel": "",
     "captionLabel": "South Atlantic forest birds",
     "goodThreshold": 2,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/a466de8174964bce8de87495b4595436/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "East Gulf Coastal Plain",
@@ -2813,7 +2813,7 @@
     "valueLabel": "",
     "captionLabel": "South Atlantic low-urban historic landscapes",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/fws::south-atlantic-low-urban-historic-landscapes-southeast-blueprint-indicator/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "East Gulf Coastal Plain",
@@ -2861,7 +2861,7 @@
     "valueLabel": "",
     "captionLabel": "urban park size",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/4f558e55c0b34763936e40dd54298523/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Atlantic Marine",
@@ -2927,7 +2927,7 @@
     "valueLabel": "",
     "captionLabel": "West Coastal Plain & Ouachitas forested wetland birds",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/afadbc26118744e3a8305959c8eed565/about",
     "subregions": [
       "Gulf Coastal Prairies",
       "Mississippi Alluvial Valley",
@@ -2980,7 +2980,7 @@
     "valueLabel": "",
     "captionLabel": "West Coastal Plain & Ouachitas open pine birds",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/eed0dea432d94b30927da6caf4ec543e/about",
     "subregions": [
       "Gulf Coastal Prairies",
       "Mississippi Alluvial Valley",
@@ -3053,7 +3053,7 @@
     "valueLabel": "",
     "captionLabel": "west gulf coast mottled duck nesting",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/b062fbced69d4f30baa1ab423d55d4b7/about",
     "subregions": [
       "Central Gulf Coastal Plain",
       "Gulf Coastal Prairies",
