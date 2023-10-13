@@ -270,7 +270,7 @@ df = dissolve(df.explode(ignore_index=True), by="group")
 
 # rasterize these stacked in the following decreasing precedence: data extent(11), veil(12)
 analysis_areas = np.zeros(shape=extent_raster.shape, dtype="uint8")
-rasterize(
+_ = rasterize(
     to_dict_all(not_applicable_df.geometry.values),
     extent_raster.shape,
     transform=extent_raster.transform,
@@ -279,7 +279,7 @@ rasterize(
     out=analysis_areas,
 )
 
-rasterize(
+_ = rasterize(
     to_dict_all(data_extent_df.geometry.values),
     extent_raster.shape,
     transform=extent_raster.transform,

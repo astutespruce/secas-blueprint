@@ -5,11 +5,15 @@ import rasterio
 
 from analysis.constants import (
     BLUEPRINT,
-    INPUTS,
+    ECOSYSTEMS,
+    INDICATORS,
+    CORRIDORS,
     M2_ACRES,
 )
+from analysis.lib.util import pluck
 from analysis.lib.raster import (
     boundless_raster_geometry_mask,
+    detect_data_by_mask,
     extract_count_in_geometry,
     summarize_raster_by_units_grid,
 )
@@ -23,15 +27,17 @@ from analysis.lib.util import pluck
 
 data_dir = Path("data")
 src_dir = data_dir / "inputs"
-blueprint_filename = src_dir / "se_blueprint_2022.tif"
-bp_inputs_filename = src_dir / "boundaries/input_areas.tif"
-bp_inputs_mask_filename = src_dir / "boundaries/input_areas_mask.tif"
+indicators_dir = src_dir / "indicators"
+blueprint_filename = src_dir / "blueprint.tif"
+blueprint_mask_filename = src_dir / "blueprint_mask.tif"
+corridors_filename = src_dir / "corridors.tif"
+
+blueprint_bins = range(0, len(BLUEPRINT))
+corridor_bins = range(0, len(CORRIDORS))
 
 
 def get_shape_mask(shapes, bounds):
-    """Calculate the area of overlap between geometries and Blueprint grids.
-
-    NOTE: Blueprint and inputs are on the same grid
+    """Calculate the area of overlap between geometries and Blueprint.
 
     Parameters
     ----------
@@ -40,7 +46,7 @@ def get_shape_mask(shapes, bounds):
 
     Returns
     -------
-    dict or None (if no overlap with Blueprint input areas)
+    dict or None (if no overlap with Blueprint)
         {
             'prescreen_origin': <xmin, ymax of lowres mask>,
             'prescreen_mask': <2d array, True outside shapes, at lower resolution>,
@@ -54,7 +60,7 @@ def get_shape_mask(shapes, bounds):
     """
 
     # create lowres shape mask and window (used to presecreen some datasets)
-    with rasterio.open(bp_inputs_mask_filename) as src:
+    with rasterio.open(blueprint_filename) as src:
         prescreen_mask, _, prescreen_window = boundless_raster_geometry_mask(
             src, shapes, bounds, all_touched=True
         )
@@ -86,50 +92,77 @@ def get_shape_mask(shapes, bounds):
     return results
 
 
-def extract_input_areas_by_mask(shape_mask, window, cellsize):
-    """Extract stats of Blueprint input areas based on shape_mask.
-
-    It is assumed that shape_mask has already been prescreened to ensure
-    overlap with input areas.
+def detect_indicators_by_mask(mask, window, indicators):
+    """Check area of interest against coarse resolution indicator mask for
+    each indicator to see if indicator is present in this area.
 
     Parameters
     ----------
-    shape_mask : 2d array
+    dataset : open rasterio.Dataset
+    mask : 2d array
         True outside shapes
-    window : rasterio.windows.Window
-        read window for Southeast standard origin
-    cellsize : float
-        pixel area in acres
+    indicators : list-like of indicator IDs
 
     Returns
     -------
-    dict
-        {
-            "inside_se_acres": <acres within Blueprint inputs>,
-            "inputs": {<id>: <acres>, ...},
-            "promote_base": <True if base is only input present>
-        }
+    list of indicator IDs present in area
     """
-    counts = extract_count_in_geometry(
-        bp_inputs_filename,
-        shape_mask,
-        window,
-        bins=range(0, max(e["value"] for e in INPUTS.values()) + 1),
-        boundless=True,
-    )
 
-    total_count = counts.sum()
+    indicators_with_data = []
+    for indicator in indicators:
+        with rasterio.open(
+            src_dir / indicator["filename"].replace(".tif", "_mask.tif")
+        ) as src:
+            if detect_data_by_mask(src, mask, window):
+                indicators_with_data.append(indicator)
 
-    return {
-        "inside_se_acres": (total_count * cellsize),
-        "inputs": {
-            e["id"]: (counts[e["value"]] * cellsize)
-            for e in INPUTS.values()
-            if counts[e["value"]]
-        },
-        # promote base blueprint if it is the only input present
-        "promote_base": counts[1] == total_count,
-    }
+    return indicators_with_data
+
+
+# def extract_input_areas_by_mask(shape_mask, window, cellsize):
+#     """Extract stats of Blueprint input areas based on shape_mask.
+
+#     It is assumed that shape_mask has already been prescreened to ensure
+#     overlap with input areas.
+
+#     Parameters
+#     ----------
+#     shape_mask : 2d array
+#         True outside shapes
+#     window : rasterio.windows.Window
+#         read window for Southeast standard origin
+#     cellsize : float
+#         pixel area in acres
+
+#     Returns
+#     -------
+#     dict
+#         {
+#             "inside_se_acres": <acres within Blueprint inputs>,
+#             "inputs": {<id>: <acres>, ...},
+#             "promote_base": <True if base is only input present>
+#         }
+#     """
+#     counts = extract_count_in_geometry(
+#         bp_inputs_filename,
+#         shape_mask,
+#         window,
+#         bins=range(0, max(e["value"] for e in INPUTS.values()) + 1),
+#         boundless=True,
+#     )
+
+#     total_count = counts.sum()
+
+#     return {
+#         "inside_se_acres": (total_count * cellsize),
+#         "inputs": {
+#             e["id"]: (counts[e["value"]] * cellsize)
+#             for e in INPUTS.values()
+#             if counts[e["value"]]
+#         },
+#         # promote base blueprint if it is the only input present
+#         "promote_base": counts[1] == total_count,
+#     }
 
 
 def extract_blueprint_by_mask(shape_mask, window, cellsize, rasterized_acres, **kwargs):
@@ -179,7 +212,7 @@ def extract_blueprint_by_mask(shape_mask, window, cellsize, rasterized_acres, **
     return blueprint
 
 
-def summarize_blueprint_by_units_grid(df, units_grid, out_dir):
+def summarize_blueprint_by_units_grid(df, units_grid, out_dir, marine=False):
     """Summarize by HUC12 or marine lease block
 
     Parameters
@@ -189,31 +222,97 @@ def summarize_blueprint_by_units_grid(df, units_grid, out_dir):
         raster, and must have result of df.bounds joined in
     units_grid : SummaryUnitGrid instance
     out_dir : str
+    marine : bool, optional (default: False)
+        if True, analysis is limited to marine indicators
     """
 
-    if not "value" in df.columns:
+    if "value" not in df.columns:
         raise ValueError("GeoDataFrame for summary must include value column")
 
     with rasterio.open(blueprint_filename) as value_dataset:
         cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
-        bins = range(0, len(BLUEPRINT))
 
         blueprint_acres = (
             summarize_raster_by_units_grid(
                 df,
                 units_grid,
                 value_dataset,
-                bins=bins,
+                bins=blueprint_bins,
                 progress_label="Summarizing Southeast Blueprint",
+            )
+            * cellsize
+        )
+        total_acres = blueprint_acres.sum(axis=1)
+
+    with rasterio.open(corridors_filename) as value_dataset:
+        corridor_acres = (
+            summarize_raster_by_units_grid(
+                df,
+                units_grid,
+                value_dataset,
+                bins=corridor_bins,
+                progress_label="Summarizing Base Blueprint Corridors",
             )
             * cellsize
         )
 
     out = pd.DataFrame(
         blueprint_acres,
-        columns=[f"value_{v}" for v in bins],
+        columns=[f"blueprint_{v}" for v in blueprint_bins],
         index=df.index,
+    ).join(
+        pd.DataFrame(
+            corridor_acres,
+            columns=[f"corridors_{v}" for v in corridor_bins],
+            index=df.index,
+        )
     )
+
+    # only use marine indicators in marine blocks; otherwise check them all
+    # because some marine indicators are coastal
+    if marine:
+        check_indicators = [i for i in INDICATORS if i["id"].startswith("m_")]
+    else:
+        check_indicators = INDICATORS
+
+    for indicator in check_indicators:
+        id = indicator["id"]
+        filename = indicators_dir / indicator["filename"]
+        # WARNING: some indicators have missing values in the range and are non-contiguous
+        values = [v["value"] for v in indicator["values"]]
+        with rasterio.open(filename) as value_dataset:
+            indicator_acres = (
+                summarize_raster_by_units_grid(
+                    df,
+                    units_grid,
+                    value_dataset,
+                    bins=range(0, values[-1] + 1),
+                    progress_label=f"Summarizing {indicator['label']}",
+                )
+                * cellsize
+            )
+
+            # skip any where no data are present in any units
+            if not indicator_acres.any():
+                print(f"{indicator['label']} is not present in any summary units")
+                continue
+
+        # Some indicators exclude 0 values, their columns need to be dropped
+        if values[0] > 0:
+            indicator_acres = indicator_acres[:, values[0] :]
+
+        total_indicator_acres = indicator_acres.sum(axis=1)
+        outside_indicator_acres = total_acres - total_indicator_acres
+        outside_indicator_acres[outside_indicator_acres < 1e-6] = 0
+        # store a column of 0s for indicators with discontinuous value ranges
+        indicator_df = pd.DataFrame(
+            indicator_acres,
+            columns=[f"{id}_value_{v}" for v in range(values[0], values[-1] + 1)],
+            index=df.index,
+        )
+        indicator_df[f"{id}_outside"] = outside_indicator_acres
+
+        out = out.join(indicator_df)
 
     out.reset_index().to_feather(out_dir / "blueprint.feather")
 

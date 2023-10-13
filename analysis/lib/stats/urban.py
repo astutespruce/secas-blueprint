@@ -13,7 +13,7 @@ from analysis.lib.raster import (
 from analysis.lib.stats.summary_units import read_unit_from_feather
 
 # values are number of runs out of 50 that are predicted to urbanize
-# 51 = urban as of 2019 (NLCD)
+# 51 = urban as of 2021 (NLCD)
 # NOTE: index 0 = not predicted to urbanize
 PROBABILITIES = np.append(np.arange(0, 51) / 50.0, np.array([1.0]))
 
@@ -92,12 +92,12 @@ def extract_urban_by_mask(
         if outside_urban_acres < 1e-6:
             outside_urban_acres = 0
 
-        if year == 2020:
+        if year == 2030:
             # extract area already urban (in index 51)
             already_urban_acres = urban_acres[51]
             urban_results.append(
                 {
-                    "label": "Urban in 2019",
+                    "label": "Urban in 2021",
                     "acres": already_urban_acres,
                     "percent": 100 * already_urban_acres / rasterized_acres,
                 }
@@ -183,7 +183,7 @@ def summarize_urban_by_units_grid(df, units_grid, out_dir):
     outside_urban_acres[outside_urban_acres < 1e-6] = 0
 
     urban = pd.DataFrame(
-        {"urban_2019": already_urban_acres, f"urban_proj_{year}": projected_acres},
+        {"urban_2021": already_urban_acres, f"urban_proj_{year}": projected_acres},
         index=df.index,
     )
 

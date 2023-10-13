@@ -23,6 +23,7 @@ FED:<fed_%>,LOC:<loc_%>,...
 
 from pathlib import Path
 from itertools import product
+import warnings
 
 import geopandas as gp
 import numpy as np
@@ -31,7 +32,6 @@ import pandas as pd
 from analysis.constants import (
     GEO_CRS,
     CORRIDORS,
-    INPUTS,
     BLUEPRINT,
     INDICATORS,
     SLR_DEPTH_BINS,
@@ -42,6 +42,13 @@ from analysis.constants import (
 )
 from analysis.lib.attribute_encoding import encode_values, delta_encode_values
 from analysis.lib.stats.ownership import get_lta_search_info
+
+# ignore future warning about concat; this is because we join to empty data frames
+# with the full summary unit index
+warnings.filterwarnings(
+    "ignore",
+    message=".*The behavior of array concatenation with empty entries is deprecated.*",
+)
 
 
 def encode_ownership_protection(df, field):
@@ -73,8 +80,8 @@ def encode_ownership_protection(df, field):
     )
 
 
-def encode_base_blueprint(df):
-    """Encode Base Blueprint, Corridors, and Indicators
+def encode_blueprint(df):
+    """Encode Blueprint, Corridors, and Indicators
 
     Parameters
     ----------
@@ -85,12 +92,12 @@ def encode_base_blueprint(df):
     -------
     DataFrame
     """
-    priority_cols = [f"priority_{v['value']}" for v in INPUTS["base"]["values"]]
-    base_blueprint = encode_values(
-        df[priority_cols],
+    blueprint_cols = [f"blueprint_{v['value']}" for v in BLUEPRINT]
+    blueprint = encode_values(
+        df[blueprint_cols],
         df.rasterized_acres,
         1000,
-    ).rename("base")
+    ).rename("blueprint")
 
     corridor_cols = [f"corridors_{v['value']}" for v in CORRIDORS]
     corridors = encode_values(
@@ -101,15 +108,14 @@ def encode_base_blueprint(df):
 
     # only check areas of indicators actually present in summaries for unit type
     check_indicators = {
-        e["id"]: e for e in INDICATORS["base"] if f"{e['id']}_outside" in df.columns
+        e["id"]: e for e in INDICATORS if f"{e['id']}_outside" in df.columns
     }
 
-    # Create a DataFrame with one encoded column per indicator
+    # NOTE: serialized indicator ID is its position in full indicators list
+    # join to empty data frame to have full index
     indicators = df[[]]
-
-    # serialized indictor ID is its position in full indicators list
-    for i, id in enumerate([i["id"] for i in INDICATORS["base"]]):
-        if not id in check_indicators:
+    for i, id in enumerate([i["id"] for i in INDICATORS]):
+        if id not in check_indicators:
             continue
 
         indicator = check_indicators[id]
@@ -121,7 +127,6 @@ def encode_base_blueprint(df):
         indicator_acres = indicator_acres.loc[total_acres > 0]
 
         # NOTE: we always keep the indicator even if only 0 values are present
-
         if len(indicator_acres) == 0:
             continue
 
@@ -135,10 +140,10 @@ def encode_base_blueprint(df):
     indicators = (
         indicators.fillna("")
         .apply(lambda row: ",".join((f"{k}:{v}" for k, v in row.items() if v)), axis=1)
-        .rename("base_indicators")
+        .rename("indicators")
     )
 
-    return pd.DataFrame(base_blueprint).join(corridors).join(indicators)
+    return pd.DataFrame(blueprint).join(corridors).join(indicators)
 
 
 data_dir = Path("data")
@@ -162,7 +167,6 @@ huc12 = (
             "acres",
             "rasterized_acres",
             "outside_se",
-            "input_id",
             "minx",
             "miny",
             "maxx",
@@ -196,51 +200,7 @@ blueprint_results = (
     .set_index("id")
     .join(huc12.rasterized_acres)
 )
-
-blueprint_cols = [f"value_{v['value']}" for v in BLUEPRINT]
-blueprint = encode_values(
-    blueprint_results[blueprint_cols], blueprint_results.rasterized_acres, 1000
-).rename("blueprint")
-
-
-# Base Blueprint
-print("Encoding Base Blueprint...")
-base_results = (
-    pd.read_feather(results_dir / "base.feather")
-    .set_index("id")
-    .join(huc12.rasterized_acres)
-)
-base = encode_base_blueprint(base_results)
-
-### Caribbean
-# Dictionary encode <priority>:<percent>, only for priorities > 0
-print("Encoding Caribbean LCD...")
-
-
-def encode_caribbean_priorities(row):
-    row = row.dropna().astype("uint")
-    return ",".join([f"{row.index[i]}:{v}" for i, v in enumerate(row.values)])
-
-
-cols = [f"priority_{v['value']}" for v in INPUTS["car"]["values"]]
-col_map = {f"priority_{v['value']}": v["value"] for v in INPUTS["car"]["values"]}
-
-car_df = (
-    pd.read_feather(results_dir / "car.feather")
-    .set_index("id")
-    .join(huc12.rasterized_acres)
-)
-
-# convert to percent * 10 and fill with nan so that we can drop them at row level
-car_df[cols] = (1000 * car_df[cols].divide(car_df.rasterized_acres, axis=0)).round()
-for col in cols:
-    ix = car_df[col] == 0
-    car_df.loc[ix, col] = np.nan
-
-# rename columns to integer priority to make encoding easier
-caribbean = (
-    car_df[cols].rename(columns=col_map).apply(encode_caribbean_priorities, axis=1)
-).rename("car")
+blueprint = encode_blueprint(blueprint_results)
 
 ### SLR Depth
 # delta encode percent * 10; dict encode nodata values
@@ -260,35 +220,11 @@ slr_nodata = encode_values(
     slr_results[SLR_NODATA_COLS], huc12.rasterized_acres.loc[slr_results.index], 1000
 ).rename("slr_nodata")
 
-# ### SLR scenario projections
-# # TODO: not currently used
-# # delta encode feet * 10 (1 decimal place) by ascending scenario; scenarios
-# # are comma-delimited
-# proj_results = None
-# # div is just so we can reuse delta encoding logic and divide everything by 1
-# slr_proj_results = slr_results.dropna()
-# div = np.ones((len(slr_proj_results),))
-# for scenario in SLR_PROJ_SCENARIOS:
-#     proj_cols = [f"{year}_{scenario}" for year in SLR_YEARS]
-#     proj = delta_encode_values(slr_proj_results[proj_cols], div, 10).rename(
-#         f"slr_proj_{scenario}"
-#     )
-
-#     if proj_results is None:
-#         proj_results = pd.DataFrame(proj)
-#     else:
-#         proj_results = proj_results.join(proj)
-
-# slr_proj = proj_results.apply(lambda row: ",".join(row), axis=1).rename("slr_proj")
-
-# slr = pd.DataFrame(slr_depth).join(slr_nodata).join(slr_proj)
-
-
 slr = pd.DataFrame(slr_depth).join(slr_nodata)
 
 
 ### Urban
-# Combine NLCD 2001-2019 with future urban 2020-2060
+# Combine NLCD 2001-2021 with future urban 2030-2060
 print("Encoding urban...")
 urban_indexes = [i for i in NLCD_INDEXES if "Developed" in NLCD_INDEXES[i]["label"]]
 cols = ["id"] + [f"{year}_{i}" for year, i in product(NLCD_YEARS, urban_indexes)]
@@ -302,7 +238,8 @@ for year in NLCD_YEARS:
 
 nlcd_results = nlcd_results[[str(year) for year in NLCD_YEARS]]
 
-cols = ["id"] + [f"urban_proj_{year}" for year in URBAN_YEARS[:5]]
+# UI is limited to 2030 - 2060
+cols = ["id"] + [f"urban_proj_{year}" for year in URBAN_YEARS[:4]]
 urban_results = pd.read_feather(results_dir / "urban.feather", columns=cols).set_index(
     "id"
 )
@@ -336,12 +273,10 @@ protection = encode_ownership_protection(protection_results, "GAP_Sts").rename(
 
 
 huc12 = (
-    huc12[["geometry", "name", "input_id", "type"]]
+    huc12[["geometry", "name", "type"]]
     .join(huc12[["acres", "rasterized_acres", "outside_se"]].round().astype("int"))
     .join(lta_search, how="left")
     .join(blueprint, how="left")
-    .join(base, how="left")
-    .join(caribbean, how="left")
     .join(slr, how="left")
     .join(urban, how="left")
     .join(ownership, how="left")
@@ -367,7 +302,6 @@ marine = (
             "acres",
             "rasterized_acres",
             "outside_se",
-            "input_id",
         ],
     )
     .set_index("id")
@@ -384,32 +318,7 @@ blueprint_results = (
     .set_index("id")
     .join(marine.rasterized_acres)
 )
-
-blueprint_cols = [f"value_{v['value']}" for v in BLUEPRINT]
-blueprint = encode_values(
-    blueprint_results[blueprint_cols], blueprint_results.rasterized_acres, 1000
-).rename("blueprint")
-
-
-### Base Blueprint
-print("Encoding Base Blueprint...")
-base_results = (
-    pd.read_feather(results_dir / "base.feather")
-    .set_index("id")
-    .join(marine.rasterized_acres)
-)
-base = encode_base_blueprint(base_results)
-
-
-### Florida Marine Blueprint
-print("Encoding Florida Marine Blueprint...")
-flm_results = (
-    pd.read_feather(results_dir / "flm.feather")
-    .set_index("id")
-    .join(marine.rasterized_acres)
-)
-cols = [f"priority_{v['value']}" for v in INPUTS["flm"]["values"]]
-flm = encode_values(flm_results[cols], flm_results.rasterized_acres, 1000).rename("flm")
+blueprint = encode_blueprint(blueprint_results)
 
 
 ### Ownership / protection
@@ -435,11 +344,9 @@ protection = encode_ownership_protection(protection_results, "GAP_Sts").rename(
 )
 
 marine = (
-    marine[["geometry", "name", "input_id", "type"]]
+    marine[["geometry", "name", "type"]]
     .join(marine[["acres", "rasterized_acres", "outside_se"]].round().astype("int"))
     .join(blueprint, how="left")
-    .join(base, how="left")
-    .join(flm, how="left")
     .join(ownership, how="left")
     .join(protection, how="left")
 )
@@ -456,13 +363,11 @@ out = pd.concat(
 for col in (
     [
         "lta_search",
-        "car",
-        "flm",
         "ownership",
         "protection",
         "urban",
     ]
-    + base.columns.tolist()
+    + blueprint.columns.tolist()
     + slr.columns.tolist()
 ):
     out[col] = out[col].fillna("")

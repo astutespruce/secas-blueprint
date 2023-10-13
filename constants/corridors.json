@@ -3,21 +3,42 @@
     "value": 0,
     "label": "Not a hub or corridor",
     "description": null,
-    "color": null,
-    "order": 4
+    "color": null
   },
   {
     "value": 1,
-    "color": "#9B9B9B",
-    "label": "Corridors",
-    "description": "Corridors connect those hubs.  In marine and estuarine areas, corridors connect those hubs within broad marine mammal movement areas.",
-    "order": 1
+    "color": "#464646",
+    "label": "Inland continental hubs",
+    "description": "Inland hubs are large patches (~5,000+ acres) of highest priority Blueprint areas and/or protected lands."
   },
   {
     "value": 2,
-    "color": "#464646",
-    "label": "Hubs",
-    "description": "In inland areas, hubs are large patches (~5,000+ acres) of highest priority Blueprint areas and/or protected lands.  In marine and estuarine areas, hubs are large estuaries and large patches (~5,000+ acres) of highest priority Blueprint areas.",
-    "order": 0
+    "color": "#9B9B9B",
+    "label": "Inland continental corridors",
+    "description": "Inland corridors connect those hubs."
+  },
+  {
+    "value": 3,
+    "color": "#444F89",
+    "label": "Marine & estuarine continental hubs",
+    "description": "Marine and estuarine hubs are large estuaries and large patches (~5,000+ acres) of highest priority Blueprint areas."
+  },
+  {
+    "value": 4,
+    "color": "#9EBBD7",
+    "label": "Marine & estuarine continental corridors",
+    "description": "Marine and estuarine corridors connect those hubs within broad marine mammal and turtle movement areas."
+  },
+  {
+    "value": 5,
+    "color": "#154F4A",
+    "label": "Caribbean hubs",
+    "description": "Caribbean hubs are large patches (~500+ acres) of highest priority Blueprint areas and/or protected lands."
+  },
+  {
+    "value": 6,
+    "color": "#8EB6B0",
+    "label": "Caribbean corridors",
+    "description": "Caribbean corridors connect those hubs."
   }
 ]

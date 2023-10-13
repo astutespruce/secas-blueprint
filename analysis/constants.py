@@ -65,17 +65,9 @@ CORRIDORS_COLORS = {
 ECOSYSTEMS = json.loads(open(json_dir / "ecosystems.json").read())
 
 
-# Combine all constants/indicators/*.json files into a single data structure
-raw_indicators = [
-    json.loads(open(filename).read())
-    for filename in (json_dir / "indicators").glob("*.json")
-]
-# convert to dict keyed by input ID
-INDICATORS = {e["input"]: e["indicators"] for e in raw_indicators}
-INDICATOR_INDEX = {}
-for indicators in INDICATORS.values():
-    for indicator in indicators:
-        INDICATOR_INDEX[indicator["id"]] = indicator
+INDICATORS = json.loads(open(json_dir / "indicators.json").read())
+INDICATORS_INDEX = {indicator["id"]: indicator for indicator in INDICATORS}
+
 
 OWNERSHIP = {
     e["value"]: e for e in json.loads(open(json_dir / "ownership.json").read())
@@ -121,12 +113,15 @@ SLR_LEGEND = SLR[:11]
 SLR_NODATA = SLR[11:]
 
 
-NLCD_YEARS = [2001, 2004, 2006, 2008, 2011, 2013, 2016, 2019]
+NLCD_YEARS = [2001, 2004, 2006, 2008, 2011, 2013, 2016, 2019, 2021]
 
 # Original codes
 NLCD_CODES = {
     11: {"label": "Open water", "color": "#466B9F"},
-    12: {"label": "Perennial ice/snow", "color": "#D1DEF8"},
+    12: {
+        "label": "Perennial ice/snow",
+        "color": "#FFFFFF",
+    },  # original color: "#D1DEF8"
     21: {"label": "Developed (open space)", "color": "#DEC5C5"},
     22: {"label": "Developed (low intensity)", "color": "#D99282"},
     23: {"label": "Developed (medium intensity)", "color": "#EB0000"},
@@ -144,7 +139,10 @@ NLCD_CODES = {
 }
 
 NLCD_INDEXES = {i: e for i, e in enumerate(NLCD_CODES.values())}
+NLCD_COLORS = landcover_colormap = {k: v["color"] for k, v in NLCD_INDEXES.items()}
+NLCD_LEGEND = list(NLCD_CODES.values())
 
+# in miles
 LTA_SEARCH_RADIUS_BINS = [
     25,
     50,

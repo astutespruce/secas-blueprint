@@ -14,7 +14,7 @@ import shapely
 
 from analysis.constants import MASK_RESOLUTION, CORRIDORS
 from analysis.lib.colors import hex_to_uint8
-from analysis.lib.geometry import to_dict_all, dissolve
+from analysis.lib.geometry import to_dict, dissolve
 from analysis.lib.raster import (
     write_raster,
     add_overviews,
@@ -57,7 +57,7 @@ extent = rasterio.open(data_dir / "boundaries/se_blueprint_extent.tif")
 ################################################################################
 ### Extract blueprint to data extent
 ################################################################################
-outfilename = out_dir / "se_blueprint_2023.tif"
+outfilename = out_dir / "blueprint.tif"
 
 if not outfilename.exists():
     print("Extracting blueprint")
@@ -102,6 +102,13 @@ if not outfilename.exists():
 
         add_overviews(outfilename)
 
+        create_lowres_mask(
+            outfilename,
+            str(outfilename).replace(".tif", "_mask.tif"),
+            resolution=MASK_RESOLUTION,
+            ignore_zero=False,
+        )
+
 ################################################################################
 ### Extract hubs and corridors
 ################################################################################
@@ -110,31 +117,35 @@ if not outfilename.exists():
     print("Extracting hubs and corridors")
 
     print("Reading hubs and making valid")
-    hubs = pd.concat(
-        [
-            read_dataframe(
-                src_dir / "hubs_corridors/ContinentalInlandHubs2023.shp",
-                columns=[],
-                use_arrow=True,
-            ).explode(ignore_index=True),
-            read_dataframe(
-                src_dir / "hubs_corridors/ContinentalEstuarineAndMarineHubs2023.shp",
-                columns=[],
-                use_arrow=True,
-            ).explode(ignore_index=True),
-            read_dataframe(
-                src_dir / "hubs_corridors/CaribbeanHubs2023.shp",
-                columns=[],
-                use_arrow=True,
-            ).explode(ignore_index=True),
-        ],
-        ignore_index=True,
-    )
+    inland_hubs = read_dataframe(
+        src_dir / "hubs_corridors/ContinentalInlandHubs2023.shp",
+        columns=[],
+        use_arrow=True,
+    ).explode(ignore_index=True)
+    inland_hubs["value"] = 1
+    marine_hubs = read_dataframe(
+        src_dir / "hubs_corridors/ContinentalEstuarineAndMarineHubs2023.shp",
+        columns=[],
+        use_arrow=True,
+    ).explode(ignore_index=True)
+    marine_hubs["value"] = 3
+    caribbean_hubs = read_dataframe(
+        src_dir / "hubs_corridors/CaribbeanHubs2023.shp",
+        columns=[],
+        use_arrow=True,
+    ).explode(ignore_index=True)
+    caribbean_hubs["value"] = 5
+
+    # sort so that inland hubs get rasterized last (on top)
+    hubs = pd.concat([inland_hubs, marine_hubs, caribbean_hubs], ignore_index=True)
+
     ix = ~shapely.is_valid(hubs.geometry.values)
     hubs.loc[ix, "geometry"] = shapely.buffer(hubs.loc[ix].geometry.values, 0)
-
-    hubs["group"] = 1
-    hubs = dissolve(hubs, by="group").explode(ignore_index=True)
+    hubs = (
+        dissolve(hubs, by="value")
+        .explode(ignore_index=True)
+        .sort_values(by="value", ascending=False)
+    )
 
     with rasterio.open(
         src_dir / "hubs_corridors/ContinentalInlandCorridors2023.tif"
@@ -145,23 +156,25 @@ if not outfilename.exists():
     ) as caribbean:
         # consolidate all values into a single raster, writing hubs over corridors
         # see values in corridors.json
-        # 0 = not a hub or corridor, but within data extent
-        # 1 = corridor
-        # 2 = hub
+        # NOTE: per guidance from Amy K., always stack inland on top of marine
 
-        print("Reading inland corridors")
-        # Inland corridors are at 30m snapped to blueprint extent
-        inland_window = shift_window(
+        data = np.zeros(shape=(extent.shape), dtype="uint8")
+
+        print("Reading Caribbean corridors")
+        # Caribbean data are limited to Caribbean extent, so use a larger read
+        # window to read full extent
+        carribean_window = shift_window(
             windows.Window(
                 col_off=0, row_off=0, width=extent.width, height=extent.height
             ),
             extent.transform,
-            inland.transform,
+            caribbean.transform,
         )
-        inland_corridors_data = inland.read(1, window=inland_window)
-
-        data = np.where(inland_corridors_data == np.uint8(1), np.uint8(1), np.uint8(0))
-        del inland_corridors_data
+        caribbean_corridors_data = caribbean.read(
+            1, window=carribean_window, boundless=True
+        )
+        data[caribbean_corridors_data == np.uint8(1)] = np.uint8(6)
+        del caribbean_corridors_data
 
         print("Reading marine corridors")
         # Marine corridors are at 90m; resample them to 30m
@@ -175,42 +188,33 @@ if not outfilename.exists():
         ) as vrt:
             marine_corridors_data = vrt.read()[0]
 
-        data[marine_corridors_data == np.uint8(1)] = np.uint8(1)
+        data[marine_corridors_data == np.uint8(1)] = np.uint8(4)
         del marine_corridors_data
 
-        print("Reading Caribbean corridors")
-        # Caribbean data are limited to Caribbean extent, so use a larger read
-        # window to read full extent
-        car_window = shift_window(
+        print("Reading inland corridors")
+        # Inland corridors are at 30m snapped to blueprint extent
+        inland_window = shift_window(
             windows.Window(
                 col_off=0, row_off=0, width=extent.width, height=extent.height
             ),
             extent.transform,
-            caribbean.transform,
+            inland.transform,
         )
-        caribbean_corridors_data = caribbean.read(1, window=car_window, boundless=True)
-
-        data[caribbean_corridors_data == np.uint8(1)] = np.uint8(1)
-        del caribbean_corridors_data
+        inland_corridors_data = inland.read(1, window=inland_window)
+        data[inland_corridors_data == np.uint8(1)] = np.uint8(2)
+        del inland_corridors_data
 
         print("Rasterizing hubs")
-        hubs_data = rasterize(
-            to_dict_all(hubs.geometry.values),
-            out_shape=(extent.height, extent.width),
+        _ = rasterize(
+            hubs.apply(lambda row: (to_dict(row.geometry), row.value), axis=1),
             transform=extent.transform,
-            dtype="uint8",
+            out=data,
         )
-        data[hubs_data == 1] = np.uint8(2)
-
-        del hubs_data
 
         # stamp back in nodata from Blueprint extent
         extent_data = extent.read(1)
         data[extent_data == np.uint8(extent.nodata)] = np.uint8(255)
         del extent_data
-
-        print(extent.shape)
-        print(data.shape)
 
         print("Writing corridors...")
         write_raster(

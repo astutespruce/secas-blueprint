@@ -32,6 +32,9 @@ out_dir.mkdir(exist_ok=True, parents=True)
 subregion_df = read_dataframe(
     src_dir / "blueprint/SoutheastBlueprint2023Subregions.shp", columns=["SubRgn"]
 ).rename(columns={"SubRgn": "subregion"})
+subregion_df["marine"] = subregion_df.subregion.isin(
+    ["Atlantic Marine", "Gulf of Mexico"]
+)
 subregion_df["hilbert"] = subregion_df.hilbert_distance()
 subregion_df = (
     subregion_df.sort_values(by="hilbert")
