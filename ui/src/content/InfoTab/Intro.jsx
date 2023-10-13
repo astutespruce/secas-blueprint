@@ -20,7 +20,7 @@ const Intro = () => {
           <Paragraph sx={{ fontSize: 1 }}>
             <b>Head&apos;s up!</b>
             <br />A new version of the Southeast Conservation Blueprint was just
-            released (10/12/2023). This viewer is currently being updated to the
+            released (10/13/2023). This viewer is currently being updated to the
             new version and will be released later this year, but in the
             meantime it is based on Southeast Blueprint 2022. As part of the
             upcoming update, this viewer will expand its functionality,
