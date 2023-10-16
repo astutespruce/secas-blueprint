@@ -12,7 +12,7 @@ import shapely
 
 from analysis.constants import DATA_CRS, SECAS_STATES, MASK_RESOLUTION
 from analysis.lib.geometry import make_valid, to_dict_all, to_dict
-from analysis.lib.raster import write_raster, add_overviews
+from analysis.lib.raster import write_raster, add_overviews, create_lowres_mask
 
 NODATA = 255
 
@@ -64,7 +64,7 @@ with rasterio.open(src_dir / "blueprint/SoutheastBlueprint2023Extent.tif") as sr
     transform = windows.transform(window, src.transform)
 
     data = data[window.toslices()]
-    outfilename = bnd_dir / "se_blueprint_extent.tif"
+    outfilename = out_dir / "blueprint_extent.tif"
     write_raster(
         outfilename,
         data,
@@ -74,6 +74,12 @@ with rasterio.open(src_dir / "blueprint/SoutheastBlueprint2023Extent.tif") as sr
     )
 
     add_overviews(outfilename)
+
+    create_lowres_mask(
+        outfilename,
+        str(outfilename).replace(".tif", "_mask.tif"),
+        resolution=MASK_RESOLUTION,
+    )
 
     # extract boundary polygon
     bnd_geom = pd.Series(dataset_features(src, bidx=1, geographic=False))

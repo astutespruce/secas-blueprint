@@ -26,7 +26,6 @@ from itertools import product
 import warnings
 
 import geopandas as gp
-import numpy as np
 import pandas as pd
 
 from analysis.constants import (

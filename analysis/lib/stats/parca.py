@@ -95,14 +95,15 @@ def summarize_parcas_by_units(df, out_dir):
     results.reset_index().to_feather(out_dir / "parca.feather")
 
 
-def get_parca_results(results_dir, unit_id):
+def get_parca_results(results_dir, unit):
     """Fetch PARCAs for the unit_id
 
     Parameters
     ----------
     results_dir : Path
         path containing results
-    unit_id : str
+    unit : pandas.Series
+        row for this unit from the units dataset, indexed by unit ID (unit.name)
 
     Returns
     -------
@@ -110,7 +111,7 @@ def get_parca_results(results_dir, unit_id):
         [{"name": <name>, "description": <description>}]
     """
 
-    results = read_unit_from_feather(results_dir / "parca.feather", unit_id)
+    results = read_unit_from_feather(results_dir / "parca.feather", unit.name)
 
     if len(results) == 0:
         return None

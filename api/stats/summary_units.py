@@ -1,13 +1,11 @@
 from pathlib import Path
 
-from analysis.lib.stats.core import get_unit_core_results
-from analysis.lib.stats.base_blueprint import get_base_blueprint_unit_results
-from analysis.lib.stats.caribbean import get_caribbean_unit_results
-from analysis.lib.stats.florida_marine import get_florida_marine_unit_results
-from analysis.lib.stats.ownership import get_ownership_unit_results
+from analysis.lib.stats.blueprint import get_blueprint_unit_results
+from analysis.lib.stats.ownership import get_lta_search_info, get_ownership_unit_results
 from analysis.lib.stats.parca import get_parca_results
 from analysis.lib.stats.urban import get_urban_unit_results
 from analysis.lib.stats.slr import get_slr_unit_results
+from analysis.lib.stats.summary_units import read_unit_from_feather
 
 data_dir = Path("data")
 
@@ -26,58 +24,68 @@ def get_summary_unit_results(unit_type, unit_id):
     """
     results_dir = data_dir / "results" / unit_type
 
-    df, results = get_unit_core_results(unit_type, unit_id)
-    if df is None:
+    units_filename = (
+        "huc12.feather" if unit_type == "huc12" else "marine_blocks.feather"
+    )
+
+    df = read_unit_from_feather(
+        data_dir / "inputs/summary_units" / units_filename,
+        unit_id,
+        columns=[
+            "id",
+            "name",
+            "acres",
+            "rasterized_acres",
+            "outside_se",
+            "minx",
+            "miny",
+            "maxx",
+            "maxy",
+        ],
+    )
+    if len(df) == 0:
+        # no unit with that ID
         return None
 
     unit = df.iloc[0]
 
-    results.update(get_ownership_unit_results(results_dir, unit_id, unit.acres))
+    name_suffix = "subwatershed" if unit_type == "huc12" else "marine lease block"
+    name = f"{unit['name']} {name_suffix}"
+    bounds = unit[["minx", "miny", "maxx", "maxy"]].tolist()
+
+    results = {
+        "name": name,
+        "acres": unit.acres,
+        "rasterized_acres": unit.rasterized_acres,
+        "outside_se_acres": unit.outside_se,
+        "outside_se_percent": 100 * unit.outside_se / unit.rasterized_acres,
+        "bounds": bounds,
+    }
 
     if unit_type == "huc12":
-        parca_results = get_parca_results(results_dir, unit_id)
-        if parca_results:
+        center, lta_search_radius = get_lta_search_info(
+            df[["minx", "miny", "maxx", "maxy"]].values
+        )
+        results["center"] = center[0]
+        results["lta_search_radius"] = lta_search_radius[0]
+
+    blueprint_results = get_blueprint_unit_results(results_dir, unit)
+    if blueprint_results is not None:
+        results.update(blueprint_results)
+
+    results.update(get_ownership_unit_results(results_dir, unit))
+
+    if unit_type == "huc12":
+        parca_results = get_parca_results(results_dir, unit)
+        if parca_results is not None:
             results["parca"] = parca_results
 
-        slr_results = get_slr_unit_results(results_dir, unit_id, unit.rasterized_acres)
-        if slr_results:
+        slr_results = get_slr_unit_results(results_dir, unit)
+        if slr_results is not None:
             results["slr"] = slr_results
 
-        if unit.input_id == "base":
-            base_blueprint_results = get_base_blueprint_unit_results(
-                results_dir, unit_id, unit.rasterized_acres
-            )
-            results["inputs"][0].update(base_blueprint_results)
-            if "corridors" in base_blueprint_results:
-                results["corridors"] = base_blueprint_results["corridors"]
-
-            urban_results = get_urban_unit_results(
-                results_dir, unit_id, unit.rasterized_acres
-            )
-            if urban_results:
-                results["urban"] = urban_results
-
-        if unit.input_id == "car":
-            results["inputs"][0].update(
-                get_caribbean_unit_results(results_dir, unit_id, unit.rasterized_acres)
-            )
-
-    else:
-        results["exclude_threats"] = True
-
-        if unit.input_id == "base":
-            base_blueprint_results = get_base_blueprint_unit_results(
-                results_dir, unit_id, unit.rasterized_acres
-            )
-            results["inputs"][0].update(base_blueprint_results)
-            if "corridors" in base_blueprint_results:
-                results["corridors"] = base_blueprint_results["corridors"]
-
-        elif unit.input_id == "flm":
-            results["inputs"][0].update(
-                get_florida_marine_unit_results(
-                    results_dir, unit_id, unit.rasterized_acres
-                )
-            )
+        urban_results = get_urban_unit_results(results_dir, unit)
+        if urban_results is not None:
+            results["urban"] = urban_results
 
     return results

@@ -123,7 +123,7 @@ def boundless_raster_geometry_mask(dataset, shapes, bounds, all_touched=False):
     return mask, transform, window
 
 
-def extract_count_in_geometry(filename, geometry_mask, window, bins, boundless=False):
+def extract_count_in_geometry(filename, mask_config, bins, boundless=False):
     """Apply the geometry mask to values read from filename, and generate a list
     of pixel counts for each bin in bins.
 
@@ -131,10 +131,8 @@ def extract_count_in_geometry(filename, geometry_mask, window, bins, boundless=F
     ----------
     filename : str
         input GeoTIFF filename
-    geometry_mask : 2D boolean ndarray
-        True for all pixels outside geometry, False inside.
-    window : rasterio.windows.Window
-        Window that defines the footprint of the geometry_mask within the raster.
+    mask_config : AOIMaskConfig
+        provides mask of geometry and enables getting window for this raster
     bins : list-like
         List-like of values ranging from 0 to max value (not sparse!).
         Counts will be generated that correspond to this list of bins.
@@ -149,10 +147,11 @@ def extract_count_in_geometry(filename, geometry_mask, window, bins, boundless=F
     """
 
     with rasterio.open(filename) as src:
+        window = mask_config.get_mask_window(src.transform)
         data = src.read(1, window=window, boundless=boundless)
         nodata = src.nodatavals[0]
 
-    mask = (data == nodata) | geometry_mask
+    mask = (data == nodata) | mask_config.shape_mask
 
     # slice out flattened array of values that are not masked
     values = data[~mask]

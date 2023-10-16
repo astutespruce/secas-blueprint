@@ -7,7 +7,7 @@ import shapely
 
 from analysis.lib.raster import SummaryUnitGrid
 
-from analysis.lib.stats.core import summarize_blueprint_by_units_grid
+from analysis.lib.stats.blueprint import summarize_blueprint_by_units_grid
 from analysis.lib.stats.nlcd import summarize_nlcd_by_units_grid
 from analysis.lib.stats.ownership import summarize_ownership_by_units
 from analysis.lib.stats.parca import summarize_parcas_by_units

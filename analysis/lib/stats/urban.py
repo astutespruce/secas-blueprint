@@ -6,6 +6,7 @@ import rasterio
 
 from analysis.constants import M2_ACRES, URBAN_YEARS
 from analysis.lib.raster import (
+    clip_window,
     detect_data_by_mask,
     extract_count_in_geometry,
     summarize_raster_by_units_grid,
@@ -21,38 +22,17 @@ PROBABILITIES = np.append(np.arange(0, 51) / 50.0, np.array([1.0]))
 src_dir = Path("data/inputs/threats/urban")
 urban_filename = str(src_dir / "urban_{year}.tif")
 mask_filename = src_dir / "urban_mask.tif"
-results_filename = "data/results/huc12/urban.feather"
 
 
 def extract_urban_by_mask(
-    shape_mask,
-    window,
-    cellsize,
-    prescreen_mask,
-    prescreen_window,
-    rasterized_acres,
-    outside_se_acres,
-    **kwargs,
+    mask_config,
 ):
     """Calculate area of current urban and projected urbanization by decade
     based on shape_mask
 
     Parameters
     ----------
-    shape_mask : 2d array
-        True outside shapes
-    window : rasterio.windows.Window
-        read window for Southeast standard origin
-    cellsize : float
-        pixel area in acres
-    prescreen_mask : 2d array
-        True outside shapes, at lower resolution
-    prescreen_window : rasterio.windows.Window
-        read window for Southeast standard origin at lower resolution
-    rasterized_acres : float
-        rasterized area of shape mask
-    outside_se_acres : float
-        acres outside SE Blueprint
+    mask_config : AOIMaskConfig
 
     Returns
     -------
@@ -63,7 +43,6 @@ def extract_urban_by_mask(
                 "acres": <acres>,
                 "percent": <percent>
             }, ... <for current urban, projected urban, and area not urbanized by 2100 (if any)>],
-            "total_urban_acres": <acres within this dataset>,
             "outside_urban_acres": <acres outside this dataset but within SE>,
             "outside_urban_percent": <percent outside this dataset but within SE>,
             "noturban_2100_acres": <acres not urbanized by 2100>,
@@ -71,20 +50,30 @@ def extract_urban_by_mask(
             "nonzero_urban_2060_percent": <percent of area urbanized at any probability not already urbanized in 2019>
         }
     """
+    rasterized_acres = mask_config.mask_acres
+    outside_se_acres = mask_config.outside_se_acres
+    cellsize = mask_config.cellsize
+
     # prescreen to make sure data are present
     with rasterio.open(mask_filename) as src:
-        if not detect_data_by_mask(src, prescreen_mask, prescreen_window):
+        prescreen_window = mask_config.get_prescreen_window(src.transform)
+        # use window clipped to extent of dataset to see if there is even
+        # any overlap
+        clipped_window = clip_window(prescreen_window, src.width, src.height)
+        if not (
+            clipped_window.width > 0
+            and clipped_window.height > 0
+            and detect_data_by_mask(src, mask_config.prescreen_mask, prescreen_window)
+        ):
             return None
 
-    bins = np.arange(0, len(PROBABILITIES))
+    bins = range(len(PROBABILITIES))
 
     urban_results = []
     for year in URBAN_YEARS:
         filename = urban_filename.format(year=year)
         urban_acres = (
-            extract_count_in_geometry(
-                filename, shape_mask, window, bins, boundless=True
-            )
+            extract_count_in_geometry(filename, mask_config, bins, boundless=True)
             * cellsize
         )
         total_urban_acres = urban_acres.sum()
@@ -126,7 +115,6 @@ def extract_urban_by_mask(
 
     results = {
         "entries": urban_results,
-        "total_urban_acres": total_urban_acres,
         "outside_urban_acres": outside_urban_acres,
         "outside_urban_percent": 100 * outside_urban_acres / rasterized_acres,
         "nonzero_urban_2060_percent": 100 * nonzero_urban_2060_acres / rasterized_acres,
@@ -221,14 +209,14 @@ def summarize_urban_by_units_grid(df, units_grid, out_dir):
     urban.reset_index().to_feather(out_dir / "urban.feather")
 
 
-def get_urban_unit_results(results_dir, unit_id, rasterized_acres):
+def get_urban_unit_results(results_dir, unit):
     """Get current and projected urbanization for the unit_id
 
     Parameters
     ----------
     results_dir : Path
-    unit_id : str
-    rasterized_acres : float
+    unit : pandas.Series
+        row for this unit from the units dataset, indexed by unit ID (unit.name)
 
     Returns
     -------
@@ -246,32 +234,41 @@ def get_urban_unit_results(results_dir, unit_id, rasterized_acres):
             "nonzero_urban_2060_percent": <percent of area urbanized at any probability not already urbanized in 2019>
         }
     """
-    urban_results = read_unit_from_feather(results_dir / "urban.feather", unit_id)
+    urban_results = read_unit_from_feather(results_dir / "urban.feather", unit.name)
     if len(urban_results) == 0:
         return {}
 
-    unit = urban_results.iloc[0]
+    urban_results = urban_results.iloc[0]
 
     entries = [
         {
-            "label": "Urban in 2019",
-            "acres": unit.urban_2019,
-            "percent": 100 * unit.urban_2019 / rasterized_acres,
+            "label": "Urban in 2021",
+            "acres": urban_results.urban_2021,
+            "percent": 100 * urban_results.urban_2021 / unit.rasterized_acres,
         }
     ] + [
         {
+            "year": year,
             "label": f"{year} projected extent",
-            "acres": unit[f"urban_proj_{year}"],
-            "percent": 100 * unit[f"urban_proj_{year}"] / rasterized_acres,
+            "acres": urban_results[f"urban_proj_{year}"],
+            "percent": 100
+            * urban_results[f"urban_proj_{year}"]
+            / unit.rasterized_acres,
         }
         for year in URBAN_YEARS
     ]
 
     return {
         "entries": entries,
-        "outside_urban_acres": unit.outside_urban,
-        "outside_urban_percent": 100 * unit.outside_urban / rasterized_acres,
-        "noturban_2100_acres": unit.noturban_2100,
-        "noturban_2100_percent": 100 * unit.noturban_2100 / rasterized_acres,
-        "nonzero_urban_2060_percent": 100 * unit.nonzero_urban_2060 / rasterized_acres,
+        "outside_urban_acres": urban_results.outside_urban,
+        "outside_urban_percent": 100
+        * urban_results.outside_urban
+        / unit.rasterized_acres,
+        "nonzero_urban_2060_percent": 100
+        * urban_results.nonzero_urban_2060
+        / unit.rasterized_acres,
+        "noturban_2100_acres": urban_results.noturban_2100,
+        "noturban_2100_percent": 100
+        * urban_results.noturban_2100
+        / unit.rasterized_acres,
     }

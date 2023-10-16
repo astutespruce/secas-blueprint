@@ -52,7 +52,7 @@ constants_dir = Path("constants")
 
 indicators_out_dir.mkdir(exist_ok=True)
 
-extent = rasterio.open(data_dir / "boundaries/se_blueprint_extent.tif")
+extent = rasterio.open(out_dir / "boundaries/blueprint_extent.tif")
 
 ################################################################################
 ### Extract blueprint to data extent
@@ -102,12 +102,6 @@ if not outfilename.exists():
 
         add_overviews(outfilename)
 
-        create_lowres_mask(
-            outfilename,
-            str(outfilename).replace(".tif", "_mask.tif"),
-            resolution=MASK_RESOLUTION,
-            ignore_zero=False,
-        )
 
 ################################################################################
 ### Extract hubs and corridors

@@ -19,7 +19,7 @@ src_dir = Path("source_data")
 data_dir = Path("data")
 analysis_dir = data_dir / "inputs/summary_units"
 bnd_dir = data_dir / "boundaries"  # GIS files output for reference
-blueprint_extent_filename = bnd_dir / "se_blueprint_extent.tif"
+blueprint_extent_filename = data_dir / "inputs/boundaries/blueprint_extent.tif"
 
 if not analysis_dir.exists():
     os.makedirs(analysis_dir)

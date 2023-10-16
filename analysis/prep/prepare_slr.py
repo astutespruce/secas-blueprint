@@ -131,7 +131,7 @@ colormap = {
 
 # use the SE Blueprint extent grid to derive the master offset coordinates
 # so that everything is correctly aligned
-extent_raster = rasterio.open(bnd_dir / "se_blueprint_extent.tif")
+extent_raster = rasterio.open(data_dir / "inputs/boundaries/blueprint_extent.tif")
 align_ul = np.take(extent_raster.transform, [2, 5]).tolist()
 
 for gdb in sorted(src_dir.glob("*slr_data_dist/*.gdb")):
