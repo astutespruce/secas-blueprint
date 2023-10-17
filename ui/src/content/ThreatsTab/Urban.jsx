@@ -9,12 +9,13 @@ import { OutboundLink } from 'components/link'
 import UrbanCategories from './UrbanCategories'
 
 const YEARS = [
-  2001, 2004, 2006, 2008, 2011, 2013, 2016, 2019, 2020, 2030, 2040, 2050, 2060,
+  2001, 2004, 2006, 2008, 2011, 2013, 2016, 2019, 2021, 2020, 2030, 2040, 2050,
+  2060,
 ]
 
 const DataSource = () => (
   <Text sx={{ mt: '2rem', color: 'grey.8', fontSize: 1 }}>
-    Past and current (2019) urban levels based on developed land cover classes
+    Past and current (2021) urban levels based on developed land cover classes
     from the{' '}
     <OutboundLink to="https://www.usgs.gov/centers/eros/science/national-land-cover-database">
       National Land Cover Database

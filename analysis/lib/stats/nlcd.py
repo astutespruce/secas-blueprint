@@ -43,11 +43,11 @@ def extract_nlcd_by_mask(
             "entries": [
                 {
                 "label": <label>,
-                "acres": [<acres in 2001>, ..., <acres in 2019>],
-                "percent": [<percent in 2001>, ..., <percent in 2019>],
+                "acres": [<acres in 2001>, ..., <acres in 2021>],
+                "percent": [<percent in 2001>, ..., <percent in 2021>],
                 }, ... <for each NLCD class present>
             ]
-            "years": [2001,...,2019],
+            "years": [2001,...,2021],
             "total_nlcd_acres": <acres within this dataset>,
             "outside_nlcd_acres": <acres outside this dataset but within SE>,
             "outside_nlcd_percent": <percent outside this dataset but within SE>,

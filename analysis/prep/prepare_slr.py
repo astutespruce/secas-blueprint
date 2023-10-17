@@ -462,7 +462,7 @@ df = gp.GeoDataFrame(
 
 # only keep those that intersect the SLR data extent
 tree = shapely.STRtree(df.geometry.values)
-ix = np.unique(tree.query(data_extent, predicate="intersects")[1])
+ix = np.unique(tree.query(data_extent, predicate="intersects"))
 df = df.take(ix).reset_index(drop=True)
 
 

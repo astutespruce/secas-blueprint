@@ -4,7 +4,7 @@
     <p>
         The FUTURES urban growth model predicts the likelihood that an area will
         urbanize at every decade from 2020 to 2100. Developed areas from the
-        2019 National Landcover Database serve as the baseline for current urban
+        2021 National Landcover Database serve as the baseline for current urban
         areas. The model simulates landscape change based on trends in
         population growth, local development suitability factors, and an urban
         patch-growing algorithm. It considers environmental drivers like
@@ -43,7 +43,7 @@
         <p>
             <br />
             {{results.urban.entries[0].percent|format_percent}}% of this
-            area is already urban in 2019, and an additional
+            area is already urban in 2021, and an additional
             {{results.urban.nonzero_urban_2060_percent|format_percent}}%
             has at least a moderate probability of urbanizing by 2060.
         </p>
@@ -59,11 +59,15 @@
 
     <div class="caption">
         Table {{table.counter}}: Extent of projected urbanization by decade{% if results.name %} within {{results.name}}{% if results.type %} {{results.type}}{% endif %}{% else %} in this area{% endif %}.
-        Values from  <a href="https://www.sciencebase.gov/catalog/item/63f50297d34efa0476b04cf7">FUTURES model projections for the contiguous United States</a>.
+        Values from
+        <a href="https://www.sciencebase.gov/catalog/item/63f50297d34efa0476b04cf7">FUTURES model projections for the contiguous United States</a>.
         Data provided by the
         <a href="https://cnr.ncsu.edu/geospatial/">Center for Geospatial Analytics</a>,
         NC State University.
-        2060 corresponds to the <a href="https://secassoutheast.org/our-goal">SECAS goal</a>: a 10% or greater improvement in the health, function, and connectivity of Southeastern ecosystems by 2060.
+        2060 corresponds to the
+        <a href="https://secassoutheast.org/our-goal">SECAS goal</a>:
+        a 10% or greater improvement in the health, function, and connectivity of
+        Southeastern ecosystems by 2060.
     </div>
 
     {% set table.counter=table.counter+1 %}
@@ -115,6 +119,6 @@
     <p class="no-break">
     By 2060, the size of the urban footprint is projected to increase
         <b>{{results.urban.percent_increase_by_2060|format_number}}%</b>
-        over 2019 levels.
+        over 2021 levels.
     </p>
 {% endif %}

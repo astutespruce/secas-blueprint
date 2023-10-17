@@ -194,7 +194,7 @@ const BlueprintTab = ({
   return (
     <Box sx={{ py: '2rem', pl: '1rem', pr: '2rem' }}>
       <Box as="section">
-        <Heading as="h3">Southeast Blueprint 2022 Priority</Heading>
+        <Heading as="h3">Southeast Blueprint 2023 Priority</Heading>
         <Text sx={{ color: 'grey.9' }}>
           for a connected network of lands and waters
         </Text>
@@ -272,7 +272,7 @@ const BlueprintTab = ({
 
           <Text sx={{ fontSize: 0, color: 'grey.8', mb: '2rem' }}>
             See{' '}
-            <OutboundLink to="https://www.sciencebase.gov/catalog/file/get/62d5816fd34e87fffb2dda77?name=Southeast_Blueprint_2022_Development_Process.pdf">
+            <OutboundLink to="https://www.sciencebase.gov/catalog/file/get/64f8da38d34ed30c20546a6a?name=Southeast_Blueprint_2023_Development_Process.pdf">
               Blueprint development process
             </OutboundLink>{' '}
             for more details about how individual Blueprint inputs were

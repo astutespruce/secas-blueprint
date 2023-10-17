@@ -190,17 +190,17 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
             * cellsize
         )
 
-        total_slr_acres = slr_acres.sum(axis=1)
+    total_slr_acres = slr_acres.sum(axis=1)
 
-        slr_nodata_acres = df.rasterized_acres - df.outside_se - total_slr_acres
+    slr_nodata_acres = df.rasterized_acres - df.outside_se - total_slr_acres
 
-        slr_nodata_acres[slr_nodata_acres < 1e-6] = 0
+    slr_nodata_acres[slr_nodata_acres < 1e-6] = 0
 
-        # set NODATA into value 13
-        slr_acres[:, 13] += slr_nodata_acres
+    # set NODATA into value 13
+    slr_acres[:, 13] += slr_nodata_acres
 
-        # accumulate values for bins 0-10
-        slr_acres[:, :11] = np.cumsum(slr_acres[:, :11], axis=1)
+    # accumulate values for bins 0-10
+    slr_acres[:, :11] = np.cumsum(slr_acres[:, :11], axis=1)
 
     depth_cols = [f"depth_{v}" for v in SLR_DEPTH_BINS]
     cols = depth_cols + SLR_NODATA_COLS
@@ -210,6 +210,7 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
         columns=cols,
         index=df.index,
     )
+    slr["total_slr_acres"] = total_slr_acres
 
     # only calculate projections where there is data [:12]
     # (exclude not modeled / inland counties)
@@ -266,8 +267,6 @@ def get_slr_unit_results(results_dir, unit):
                 "acres": <acres>,
                 "percent": <percent>
             }, ... <for each inundation depth>],
-            "notinundated_acres" : <acres not inundated by 10ft >,
-            "notinundated_percent" : <percent not inundated by 10ft >,
             "projections": {
                 <scenario>: [<depth in 2020>, <depth in 2030>, ... <depth in 2100>]
             }
@@ -311,14 +310,14 @@ def get_slr_unit_results(results_dir, unit):
 
     projections = {
         SLR_PROJ_SCENARIOS[scenario]: [
-            slr_results[f"{year}_{scenario}"] for year in SLR_YEARS
+            slr_results[f"{year}_{scenario}"].round(2) for year in SLR_YEARS
         ]
         for scenario in SLR_PROJ_SCENARIOS
     }
 
     return {
         "depth": depth,
-        "notinundated_acres": slr_results.not_inundated,
-        "notinundated_percent": 100 * slr_results.not_inundated / unit.rasterized_acres,
+        # FIXME:
+        # "total_slr_acres": slr_results.total_slr_acres,
         "projections": projections,
     }

@@ -47,7 +47,7 @@ def extract_urban_by_mask(
             "outside_urban_percent": <percent outside this dataset but within SE>,
             "noturban_2100_acres": <acres not urbanized by 2100>,
             "noturban_2100_percent": <percent not urbanized by 2100>,
-            "nonzero_urban_2060_percent": <percent of area urbanized at any probability not already urbanized in 2019>
+            "nonzero_urban_2060_percent": <percent of area urbanized at any probability not already urbanized in 2021>
         }
     """
     rasterized_acres = mask_config.mask_acres
@@ -109,12 +109,13 @@ def extract_urban_by_mask(
 
     noturban_2100_acres = urban_acres[0]  # set to 2100 by last loop
 
-    # if nothing is urban or projected to urbanize by 2100, return None
-    if urban_acres[1:].max() == 0:
-        return None
+    # if nothing is urban or projected to urbanize by 2100, return na
+    # if urban_acres[1:].max() == 0:
+    #     return {"na": True}
 
     results = {
         "entries": urban_results,
+        "total_urban_acres": total_urban_acres,
         "outside_urban_acres": outside_urban_acres,
         "outside_urban_percent": 100 * outside_urban_acres / rasterized_acres,
         "nonzero_urban_2060_percent": 100 * nonzero_urban_2060_acres / rasterized_acres,
@@ -198,6 +199,7 @@ def summarize_urban_by_units_grid(df, units_grid, out_dir):
             # total urbanization is sum of acres by probability bin * probability
             urban[f"urban_proj_{year}"] = (urban_acres * PROBABILITIES).sum(axis=1)
 
+    urban["total_urban_acres"] = total_urban_acres
     urban["nonzero_urban_2060"] = nonzero_urban_2060_acres
     urban["noturban_2100"] = urban_acres[:, 0]  # set to 2100 by last loop
     urban["outside_urban"] = outside_urban_acres
@@ -210,7 +212,7 @@ def summarize_urban_by_units_grid(df, units_grid, out_dir):
 
 
 def get_urban_unit_results(results_dir, unit):
-    """Get current and projected urbanization for the unit_id
+    """Get current and projected urbanization for the unit
 
     Parameters
     ----------
@@ -227,11 +229,12 @@ def get_urban_unit_results(results_dir, unit):
                 "acres": <acres>,
                 "percent": <percent>
             }, ... <for current urban, projected urban, and area not urbanized by 2100 (if any)>],
+            "total_urban_acres": <total urban acres>,
             "outside_urban_acres": <acres outside this dataset but within SE>,
             "outside_urban_percent": <percent outside this dataset but within SE>,
             "noturban_2100_acres": <acres not urbanized by 2100>,
             "noturban_2100_percent": <percent not urbanized by 2100>,
-            "nonzero_urban_2060_percent": <percent of area urbanized at any probability not already urbanized in 2019>
+            "nonzero_urban_2060_percent": <percent of area urbanized at any probability not already urbanized in 2021>
         }
     """
     urban_results = read_unit_from_feather(results_dir / "urban.feather", unit.name)
@@ -260,6 +263,7 @@ def get_urban_unit_results(results_dir, unit):
 
     return {
         "entries": entries,
+        "total_urban_acres": urban_results.total_urban_acres,
         "outside_urban_acres": urban_results.outside_urban,
         "outside_urban_percent": 100
         * urban_results.outside_urban

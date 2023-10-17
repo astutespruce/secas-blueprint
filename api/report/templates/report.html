@@ -23,41 +23,15 @@
 
         {% include "blocks/blueprint.html" %}
 
-        {% if results.promote_base %}
-            {% with src=results.inputs[0] %}
-                {% if "corridors" in results %}
-                    {% include "blocks/corridors.html" %}
-                {% else %}
-                    {% include "blocks/no_corridors.html" %}
-                {% endif %}
-
-                {% with ecosystems=src.ecosystems %}
-                    {% include "blocks/ecosystems.html" %}
-                {% endwith %}
-            {% endwith %}
-
+        {% if "corridors" in results %}
+            {% include "blocks/corridors.html" %}
         {% else %}
-            {% if (results.inputs|length) > 1 %}
-                {% include "blocks/input_areas.html" %}
-            {% endif %}
-
-            {% for src in results.inputs %}
-                {% if src.id == "base" %}
-                    {% if "corridors" in results %}
-                        {% include "blocks/corridors.html" %}
-                    {% else %}
-                        {% include "blocks/no_corridors.html" %}
-                    {% endif %}
-
-                    {% with ecosystems=src.ecosystems %}
-                        {% include "blocks/ecosystems.html" %}
-                    {% endwith %}
-
-                {% else %}
-                    {% include "blocks/blueprint_input.html" %}
-                {% endif %}
-            {% endfor %}
+            {% include "blocks/no_corridors.html" %}
         {% endif %}
+
+        {% with ecosystems=src.ecosystems %}
+            {% include "blocks/ecosystems.html" %}
+        {% endwith %}
 
         {% if not results.exclude_threats %}
           {% include "blocks/threats.html" %}

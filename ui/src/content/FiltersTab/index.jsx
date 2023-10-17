@@ -77,7 +77,7 @@ const FiltersTab = () => {
               // values are not in order and need to be sorted in ascending order
               .sort(sortByFunc('value')),
             description:
-              'Past and current (2019) urban levels based on developed land cover classes from the National Land Cover Database. Future urban growth estimates derived from the FUTURES model. Data provided by the Center for Geospatial Analytics, NC State University.',
+              'Past and current (2021) urban levels based on developed land cover classes from the National Land Cover Database. Future urban growth estimates derived from the FUTURES model. Data provided by the Center for Geospatial Analytics, NC State University.',
           },
           {
             id: 'slr',

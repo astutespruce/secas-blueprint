@@ -53,7 +53,7 @@ else:
 
 setup(
     name="secas-blueprint",
-    version="0.1.0",
+    version="0.5.0",
     url="https://github.com/astutespruce/secas-blueprint",
     license="MIT",
     author="Brendan C. Ward",

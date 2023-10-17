@@ -13,5 +13,5 @@ available for Puerto Rico or U.S. Virgin Islands.
 Data are first converted from floating point to frequency bins (number of times
 out of 50 model runs that predicted urbanization).
 
-Value 51 denotes currently urbanized in NLCD 2019. NLCD 2019 data were prepared
+Value 51 denotes currently urbanized in NLCD 2021. NLCD 2021 data were prepared
 separately for use in this tool; see `source_data/nlcd/README.md`.

@@ -1,6 +1,7 @@
 <h3 id="Urban">Urban growth</h3>
 
-{% if 'base' in results.input_ids %}
+
+{% if results.urban.noturban_2100_percent >= 100 %}
 <p>
     This area is not projected to be impacted by urbanization up to 2100.
 </p>
