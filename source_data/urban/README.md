@@ -7,7 +7,7 @@ on 10/5/2023.
 
 Data are processed using `analysis/prep/prepare_urban.py`.
 
-Data are clipped to the inland portion of the Base Blueprint. Data are not
+Data are clipped to the inland continental part of the Blueprint. Data are not
 available for Puerto Rico or U.S. Virgin Islands.
 
 Data are first converted from floating point to frequency bins (number of times

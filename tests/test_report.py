@@ -51,6 +51,16 @@ def read_cache(path):
 
 ### Create reports for an AOI
 aois = [
+    # {"name": "", "path": "no_urban"}
+    # {"name": "GA Sentinal Landscapes: Fort Benning Area", "path": "benareautm_polygon"},
+    # {
+    #     "name": "GA Sentinal Landscapes: Coastal Area",
+    #     "path": "coastareautm_polygon",
+    # },
+    # {
+    #     "name": "GA Sentinal Landscapes: Savannah River Area",
+    #     "path": "savboundutm_polygon",
+    # },
     # {"name": "", "path": "Bayou P FLP"}
     # {
     #     "name": "West Central Longleaf and Streams",
@@ -92,13 +102,13 @@ aois = [
     # {"name": "Enviva Hamlet", "path": "Enviva_Hamlet_80_mile_sourcing_radius"},
     # {"name": "LCP: Black River", "path": "LCP_BlackRiver"},
     # {"name": "Green River proposed boundary", "path": "GreenRiver_ProposedBoundary"},
-    {"name": "LCP: Broad", "path": "LCP_Broad"},
+    # {"name": "LCP: Broad", "path": "LCP_Broad"},
     # {"name": "Caledonia area, MS", "path": "caledonia"},
     # {"name": "Napoleonville area, LA", "path": "Napoleonville"},
     # {"name": "Area in El Yunque National Forest, PR", "path": "yunque"},
     # {"name": "San Juan area, PR", "path": "SanJuan"},
     # {"name": "Area near Magnet, TX", "path": "magnet"},
-    # {"name": "TriState area at junction of MO, OK, KS", "path": "TriState"},
+    {"name": "TriState area at junction of MO, OK, KS", "path": "TriState"},
     # {"name": "Quincy, FL area", "path": "Quincy"},
     # {"name": "Doyle Springs, TN area", "path": "DoyleSprings"},
     # {"name": "Cave Spring, VA area", "path": "CaveSpring"},
@@ -147,17 +157,14 @@ for aoi in aois:
 
         # compile indicator IDs across all inputs
         indicators = []
-        for input_area in results["inputs"]:
-            for ecosystem in input_area.get("ecosystems", []):
-                indicators.extend([i["id"] for i in ecosystem["indicators"]])
+        for ecosystem in results.get("ecosystems", []):
+            indicators.extend([i["id"] for i in ecosystem["indicators"]])
 
         geo_df = df.to_crs(GEO_CRS)
         task = render_maps(
             geo_df.total_bounds,
             geometry=geo_df.geometry.values[0],
             indicators=indicators,
-            input_ids=results["input_ids"],
-            input_areas=len(results["input_ids"]) > 1,
             corridors="corridors" in results,
             urban="urban" in results,
             slr="slr" in results,
@@ -186,17 +193,25 @@ for aoi in aois:
 
 ## Create reports for summary units
 ids = {
-    # "huc12": [
-    #     #     # "050500030804"  # in WV
-    #     #     # "030902030700"  # in base blueprint but missing SLR (Dry Tortugas)
-    #     #     # "031002010205",  # in base blueprint but with SLR present
-    #     #     #     #     #     # "210100070101",  # in Caribbean
-    #     #     # "031101020903",  # Florida with inland marine indicators
-    #     #     #     #     #     # "031102050805",  # Florida gulf coast
-    #     #     # "030902061101"  # area with SLR not modeled
-    #     "030102051002"  # area with both marine and inland hubs / corridors
-    # ],
+    "huc12": [
+        # "060101020201"
+        # "210100020408"
+        # "030201030401"
+        # "210100020302"
+        # "110702070806"
+        # "030902021500" # TODO: verify sum of Blueprint
+        #     #     # "050500030804"  # in WV
+        #     #     # "030902030700"  # in base blueprint but missing SLR (Dry Tortugas)
+        #     #     # "031002010205",  # in base blueprint but with SLR present
+        #     #     #     #     #     # "210100070101",  # in Caribbean
+        #     #     # "031101020903",  # Florida with inland marine indicators
+        #     #     #     #     #     # "031102050805",  # Florida gulf coast
+        #     #     # "030902061101"  # area with SLR not modeled
+        #     "030102051002"  # area with both marine and inland hubs / corridors
+    ],
     # "marine_blocks": [
+    #     "NJ19-07-6177"
+    #     "NI18-02-6031"
     #     #     "NG16-12-780",  # in FL Marine
     #     "NI18-07-6210",  # Atlantic coast
     #     #     #     # "NG16-03-299",  # Gulf coast
@@ -220,9 +235,8 @@ for unit_type in ids:
 
         # compile indicator IDs across all inputs
         indicators = []
-        for input_area in results["inputs"]:
-            for ecosystem in input_area.get("ecosystems", []):
-                indicators.extend([i["id"] for i in ecosystem["indicators"]])
+        for ecosystem in results.get("ecosystems", []):
+            indicators.extend([i["id"] for i in ecosystem["indicators"]])
 
         maps = None
         if CACHE_MAPS:
@@ -234,7 +248,6 @@ for unit_type in ids:
                 results["bounds"],
                 summary_unit_id=unit_id,
                 indicators=indicators,
-                input_ids=results["input_ids"],
                 corridors="corridors" in results,
                 urban="urban" in results,
                 slr="slr" in results,

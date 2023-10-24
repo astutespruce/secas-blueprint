@@ -317,7 +317,6 @@ def get_slr_unit_results(results_dir, unit):
 
     return {
         "depth": depth,
-        # FIXME:
-        # "total_slr_acres": slr_results.total_slr_acres,
+        "total_slr_acres": slr_results.total_slr_acres,
         "projections": projections,
     }

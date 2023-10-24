@@ -29,9 +29,7 @@
             {% include "blocks/no_corridors.html" %}
         {% endif %}
 
-        {% with ecosystems=src.ecosystems %}
-            {% include "blocks/ecosystems.html" %}
-        {% endwith %}
+        {% include "blocks/ecosystems.html" %}
 
         {% if not results.exclude_threats %}
           {% include "blocks/threats.html" %}

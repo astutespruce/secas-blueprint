@@ -85,7 +85,15 @@ if not outfilename.exists():
         )
 
         data = src.read(1, window=read_window)
-        data = np.where(data == nodata, NODATA, data)
+
+        # Fill NODATA values within Blueprint extent with 0 values, per direction
+        # from Amy K on 10/20/2023
+        data = np.where(data == nodata, 0, data)
+
+        extent_data = extent.read(1)
+        data = np.where(extent_data == 1, data, NODATA)
+
+        del extent_data
 
         write_raster(
             outfilename,
@@ -528,7 +536,7 @@ for index, indicator_row in indicator_df.iterrows():
 print("Extracting subregions associated with each indicator")
 indicator_df["subregions"] = None
 subregion_df = pd.read_feather(
-    data_dir / "boundaries/subregions.feather", columns=["value", "subregion"]
+    data_dir / "inputs/boundaries/subregions.feather", columns=["value", "subregion"]
 )
 subregion_lut = subregion_df.set_index("value").subregion.to_dict()
 bins = np.arange(subregion_df.value.max() + 1)

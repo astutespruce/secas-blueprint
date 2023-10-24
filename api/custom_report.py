@@ -114,9 +114,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
     maps, scale, map_errors = await render_maps(
         geo_df.total_bounds,
         geometry=geo_df.geometry.values[0],
-        input_ids=results["input_ids"],
         indicators=indicators,
-        input_areas=len(results["input_ids"]) > 1,
         corridors="corridors" in results,
         urban="urban" in results,
         slr="slr" in results and results["slr"].get("na", False) is not True,

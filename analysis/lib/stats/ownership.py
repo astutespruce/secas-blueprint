@@ -239,6 +239,9 @@ def get_ownership_unit_results(results_dir, unit):
             if key in protection_present
         ]
 
+    # lists of protected areas omitted for summary units; these are often too long
+    # and not useful
+
     return results
 
 

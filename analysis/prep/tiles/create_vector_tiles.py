@@ -116,7 +116,7 @@ create_tileset(
 
 print("creating subregion tiles")
 df = gp.read_feather(
-    data_dir / "boundaries/subregions.feather",
+    data_dir / "inputs/boundaries/subregions.feather",
 ).to_crs(GEO_CRS)
 
 infilename = tmp_dir / "subregions.fgb"

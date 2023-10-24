@@ -89,7 +89,7 @@ async def render_raster_maps(
     aoi_image : Image object
     indicators : list-like of indicator IDs
     corridors : bool (default False)
-        if True, will render corridors for Base Blueprint
+        if True, will render corridors for Blueprint
     urban : bool (default False)
         if True, will render urban map
     slr : bool (default False)
@@ -180,7 +180,7 @@ async def render_maps(
     indicators : list-like, optional (default: None)
         If present, is a list of all indicator IDs to render.
     corridors : bool, optional (default: False)
-        If True, Base Blueprint corridors will be rendered
+        If True, corridors will be rendered
     urban : bool, optional (default: False)
         If True, urban will be rendered.
     slr : bool, optional (default: False)

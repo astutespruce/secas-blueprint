@@ -134,27 +134,42 @@ colormap = {
 extent_raster = rasterio.open(data_dir / "inputs/boundaries/blueprint_extent.tif")
 align_ul = np.take(extent_raster.transform, [2, 5]).tolist()
 
-for gdb in sorted(src_dir.glob("*slr_data_dist/*.gdb")):
+
+for infile in sorted(
+    list(src_dir.glob("*slr_data_dist/*.gdb"))
+    + list(src_dir.glob("*slr_data_dist/*.gpkg"))
+):
     chunk_start = time()
 
     outfilename = (
         tmp_dir
-        / f"{gdb.stem.replace('_slr_final_dist', '')}_{LEVELS[0]}_{LEVELS[-1]}ft.tif"
+        / f"{infile.stem.replace('_slr_final_dist', '')}_{LEVELS[0]}_{LEVELS[-1]}ft.tif"
     )
 
     if outfilename.exists():
-        print(f"Skipping {gdb} (outputs already exist)")
+        print(f"Skipping {infile} (outputs already exist)")
         continue
 
-    print(f"\n\n--------- Processing {gdb} ------------")
+    print(f"\n\n--------- Processing {infile} ------------")
 
     # ignore the low-lying areas, gather the SLR depth layers in order of descending
     # depth so that we stack from highest to lowest
-    slr_layers = sorted(
-        [l[0] for l in list_layers(gdb) if "_slr_" in l[0]],
-        key=lambda l: int(re.findall("\d+(?=ft)", l)[0]),
-        reverse=True,
-    )
+    # NOTE: newer SLR layers have 1/2 foot increments: *_slr_1_0ft
+    # older ones have 1 foot increments: *_slr_1ft
+    slr_layers = {}
+    for layer in [l[0] for l in list_layers(infile) if "_slr_" in l[0]]:
+        suffix = layer.split("_slr_")[1]
+        ft = int(re.findall("\d+", suffix)[0])
+        if "_" in suffix:
+            # only keep if whole feet
+            if suffix.endswith("0ft"):
+                slr_layers[ft] = layer
+        else:
+            slr_layers[ft] = layer
+
+    slr_layers = [
+        l[1] for l in sorted(slr_layers.items(), key=lambda x: x[0], reverse=True)
+    ]
 
     # calculate the outer bounds and dimensions
     print("Calculating outer bounds")
@@ -164,9 +179,11 @@ for gdb in sorted(src_dir.glob("*slr_data_dist/*.gdb")):
     ymax = -math.inf
     for layer in slr_layers:
         # WARNING: CRS is not consistent across the suite
-        crs = read_info(gdb, layer)["crs"]
+        crs = read_info(infile, layer)["crs"]
         bounds = (
-            gp.GeoDataFrame(geometry=shapely.box(*read_bounds(gdb, layer)[1]), crs=crs)
+            gp.GeoDataFrame(
+                geometry=shapely.box(*read_bounds(infile, layer)[1]), crs=crs
+            )
             .to_crs(DATA_CRS)
             .total_bounds
         )
@@ -186,8 +203,8 @@ for gdb in sorted(src_dir.glob("*slr_data_dist/*.gdb")):
     out = np.ones((height, width), dtype="uint8") * np.uint8(NODATA)
 
     for layer in slr_layers:
-        depth = np.uint8(re.findall("\d+(?=ft)", layer)[0])
-        mask = rasterize_depth_polygons(gdb, layer, width, height, transform)
+        depth = np.uint8((re.findall("\d+", layer.split("_slr_")[1])[0]))
+        mask = rasterize_depth_polygons(infile, layer, width, height, transform)
         depth = mask.astype("uint8") * depth
 
         out = np.where(mask, depth, out)

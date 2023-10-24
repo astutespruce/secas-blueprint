@@ -1,6 +1,7 @@
 from copy import deepcopy
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import rasterio
 
@@ -72,7 +73,7 @@ def detect_indicators_by_mask(mask_config, indicators):
     return indicators_with_data
 
 
-def extract_blueprint_by_mask(mask_config, **kwargs):
+def extract_blueprint_by_mask(mask_config, subregions):
     """Extract areas by each Blueprint category based on shape_mask
 
     It is assumed that shape_mask has already been prescreened to ensure
@@ -81,6 +82,8 @@ def extract_blueprint_by_mask(mask_config, **kwargs):
     Parameters
     ----------
     mask_config : AOIMaskConfig
+    subregions : set
+        set of subregion names that are present in AOI
 
     Returns
     -------
@@ -122,21 +125,25 @@ def extract_blueprint_by_mask(mask_config, **kwargs):
         * cellsize
     )
 
-    # empty list indicates no hubs / corridors present
-    corridors = []
+    # empty dict indicates no hubs / corridors present
+    corridors = {}
 
     # 0 is not hub / corridor, so ignore that for determining presence
     if corridor_acres[1:].max() > 0:
         # only keep the ones that are present
-        corridors = [
+        corridor_values = [
             {
                 **e,
                 "acres": corridor_acres[i],
                 "percent": 100 * corridor_acres[i] / rasterized_acres,
             }
-            for i, e in enumerate(pluck(CORRIDORS, ["label"]))
+            for i, e in enumerate(pluck(CORRIDORS, ["label", "value", "color", "type"]))
             if corridor_acres[i]
         ]
+        # sort so that value 0 goes to end
+        corridor_values = sorted(corridor_values, key=lambda x: x["value"] or 99)
+        corridor_types = set(v["type"] for v in corridor_values if v["value"] > 0)
+        corridors = {"entries": corridor_values, "types": corridor_types}
 
     ### for each indicator present, merge indicator info with acres
     indicators_present = detect_indicators_by_mask(
@@ -202,14 +209,22 @@ def extract_blueprint_by_mask(mask_config, **kwargs):
     for ecosystem in ecosystems_present:
         id = ecosystem["id"]
 
+        # include either indicators that are present or those expected based on
+        # subregions
+        expected_indicators = [
+            id
+            for id in ecosystem["indicators"]
+            if id in indicators
+            or subregions.intersection(INDICATORS_INDEX[id]["subregions"])
+        ]
+
         ecosystem["indicator_summary"] = [
             {
                 "id": id,
                 "label": INDICATORS_INDEX[id]["label"],
                 "present": id in indicators,
             }
-            for id in ecosystem["indicators"]
-            if id.startswith("base:")
+            for id in expected_indicators
         ]
 
         # update ecosystem with only indicators that are present
@@ -226,7 +241,7 @@ def extract_blueprint_by_mask(mask_config, **kwargs):
         "total_acres": total_acres,
     }
 
-    if len(corridors):
+    if corridors:
         results["corridors"] = corridors
 
     return results
@@ -271,7 +286,7 @@ def summarize_blueprint_by_units_grid(df, units_grid, out_dir, marine=False):
                 units_grid,
                 value_dataset,
                 bins=corridor_bins,
-                progress_label="Summarizing Base Blueprint Corridors",
+                progress_label="Summarizing hubs & corridors",
             )
             * cellsize
         )
@@ -377,20 +392,24 @@ def get_blueprint_unit_results(results_dir, unit):
 
     cols = [c for c in blueprint_results.index if c.startswith("corridors_")]
     corridor_acres = blueprint_results[cols].values
-    corridors = []
+    corridors = {}
 
     # ignore 0 (not a hub / corridor)
     if corridor_acres[1:].max() > 0:
         # only keep the ones that are present
-        corridors = [
+        corridor_values = [
             {
                 **e,
                 "acres": corridor_acres[i],
                 "percent": 100 * corridor_acres[i] / unit.rasterized_acres,
             }
-            for i, e in enumerate(pluck(CORRIDORS, ["label"]))
+            for i, e in enumerate(pluck(CORRIDORS, ["label", "value", "color", "type"]))
             if corridor_acres[i]
         ]
+        # sort so that value 0 goes to end
+        corridor_values = sorted(corridor_values, key=lambda x: x["value"] or 99)
+        corridor_types = set(v["type"] for v in corridor_values if v["value"] > 0)
+        corridors = {"entries": corridor_values, "types": corridor_types}
 
     # only check areas of indicators actually present in summaries for unit type
     check_indicators = [
@@ -446,13 +465,22 @@ def get_blueprint_unit_results(results_dir, unit):
     for ecosystem in ecosystems_present:
         id = ecosystem["id"]
 
+        # include either indicators that are present or those expected based on
+        # subregions
+        expected_indicators = [
+            id
+            for id in ecosystem["indicators"]
+            if id in indicators
+            or unit.subregions.intersection(INDICATORS_INDEX[id]["subregions"])
+        ]
+
         ecosystem["indicator_summary"] = [
             {
                 "id": id,
                 "label": INDICATORS_INDEX[id]["label"],
                 "present": id in indicators,
             }
-            for id in ecosystem["indicators"]
+            for id in expected_indicators
         ]
 
         # update ecosystem with only indicators that are present
@@ -469,7 +497,7 @@ def get_blueprint_unit_results(results_dir, unit):
         "ecosystems": ecosystems,
     }
 
-    if len(corridors):
+    if corridors:
         results["corridors"] = corridors
 
     return results

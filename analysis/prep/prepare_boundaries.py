@@ -46,7 +46,7 @@ subregion_df = (
 
 subregion_df["geometry"] = shapely.make_valid(subregion_df.geometry.values)
 
-subregion_df.to_feather(bnd_dir / "subregions.feather")
+subregion_df.to_feather(out_dir / "subregions.feather")
 write_dataframe(subregion_df, bnd_dir / "subregions.fgb")
 
 

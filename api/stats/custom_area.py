@@ -18,6 +18,7 @@ from analysis.lib.stats.urban import extract_urban_by_mask
 
 data_dir = Path("data/inputs")
 bnd_dir = data_dir / "boundaries"
+subregions_filename = bnd_dir / "subregions.feather"
 boundary_filename = bnd_dir / "se_boundary.feather"
 slr_bounds_filename = data_dir / "threats/slr/slr_bounds.feather"
 extent_filename = bnd_dir / "blueprint_extent.tif"
@@ -58,7 +59,7 @@ class AOIMaskConfig(object):
 
             data = src.read(1, window=self._mask_window, boundless=True)
             # count 0 values within shape_mask
-            self.outside_se_acres = (data[~self.shape_mask] == 0).sum()
+            self.outside_se_acres = (data[~self.shape_mask] == 0).sum() * self.cellsize
             if self.outside_se_acres < 1e-6:
                 self.outside_se_acres = 0
 
@@ -88,11 +89,18 @@ def get_custom_area_results(df):
     shapes = [to_dict(geometry)]
     bounds = shapely.bounds(geometry)
 
-    # if area of interest does not intersect SE region boundary,
-    # there will be no results
-    se_bnd = gp.read_feather(boundary_filename).geometry.values
-    shapely.prepare(se_bnd)
-    if not shapely.intersects(geometry, se_bnd).any():
+    subregion_df = gp.read_feather(
+        subregions_filename, columns=["subregion", "geometry"]
+    )
+    tree = shapely.STRtree(subregion_df.geometry.values)
+    subregions = set(
+        subregion_df.subregion.take(
+            np.unique(tree.query(geometry, predicate="intersects"))
+        )
+    )
+
+    # if area does not intersect any of the subregions, there will be no results
+    if len(subregions) == 0:
         return None
 
     mask_config = AOIMaskConfig(shapes, bounds)
@@ -109,6 +117,7 @@ def get_custom_area_results(df):
     lta_search_radius = lta_search_radius[0]
 
     results = {
+        "subregions": subregions,
         "acres": polygon_acres,
         "center": center,
         "lta_search_radius": lta_search_radius,
@@ -119,7 +128,7 @@ def get_custom_area_results(df):
         / mask_config.mask_acres,
     }
 
-    blueprint = extract_blueprint_by_mask(mask_config)
+    blueprint = extract_blueprint_by_mask(mask_config, subregions)
     results.update(blueprint)
 
     urban = extract_urban_by_mask(mask_config)

@@ -21,7 +21,7 @@ huc12_raster_filename = bnd_dir / "huc12.tif"
 marine_filename = data_dir / "inputs/summary_units/marine_blocks.feather"
 marine_raster_filename = bnd_dir / "marine_blocks.tif"
 
-subregion_df = gp.read_feather(bnd_dir / "subregions.feather")
+subregion_df = gp.read_feather(data_dir / "inputs/boundaries/subregions.feather")
 
 
 start = time()

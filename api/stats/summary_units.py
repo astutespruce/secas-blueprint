@@ -41,8 +41,11 @@ def get_summary_unit_results(unit_type, unit_id):
             "miny",
             "maxx",
             "maxy",
+            "subregions",
         ],
     )
+    df["subregions"] = df.subregions.apply(set)
+
     if len(df) == 0:
         # no unit with that ID
         return None

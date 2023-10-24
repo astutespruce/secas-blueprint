@@ -137,7 +137,7 @@ for infile in sorted(src_dir.glob("impervious/*/*.img")):
     year_start = time()
     print(f"Extracting {infile}")
 
-    ### Extract within extent of SE Base Blueprint
+    ### Extract within extent of SE Blueprint
     with rasterio.open(infile) as src:
         window = src.window(*bnd_raster.bounds)
         window_floored = window.round_offsets(op="floor", pixel_precision=3)

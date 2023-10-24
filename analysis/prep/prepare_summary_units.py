@@ -27,6 +27,8 @@ if not analysis_dir.exists():
 bnd_df = gp.read_feather(data_dir / "inputs/boundaries/se_boundary.feather")
 bnd = bnd_df.geometry.values[0]
 
+subregion_df = gp.read_feather(data_dir / "inputs/boundaries/subregions.feather")
+
 ### Extract HUC12 within boundary
 print("Reading source HUC12s...")
 
@@ -84,6 +86,20 @@ huc12_wgs84 = huc12.to_crs(GEO_CRS)
 huc12 = huc12.join(huc12_wgs84.bounds)
 
 huc12["value"] = np.arange(1, len(huc12) + 1).astype("uint16")
+
+# get subregions list for each huc12
+tree = shapely.STRtree(huc12.geometry.values)
+left, right = tree.query(subregion_df.geometry.values, predicate="intersects")
+pairs = (
+    pd.Series(
+        subregion_df.subregion.values.take(left),
+        index=huc12.id.values.take(right),
+        name="subregions",
+    )
+    .groupby(level=0)
+    .apply(list)
+)
+huc12 = huc12.join(pairs, on="id")
 
 
 ### Marine units
@@ -165,6 +181,23 @@ marine_wgs84 = marine.to_crs(GEO_CRS)
 marine = marine.join(marine_wgs84.bounds)
 
 marine["value"] = np.arange(1, len(marine) + 1).astype("uint16")
+
+# get subregions for marine blocks
+# NOTE: these are pre-filtered to only include marine subregions and avoid edge
+# effects
+marine_subregions = subregion_df.loc[subregion_df.marine]
+tree = shapely.STRtree(marine.geometry.values)
+left, right = tree.query(marine_subregions.geometry.values, predicate="intersects")
+pairs = (
+    pd.Series(
+        marine_subregions.subregion.values.take(left),
+        index=marine.id.values.take(right),
+        name="subregions",
+    )
+    .groupby(level=0)
+    .apply(list)
+)
+marine = marine.join(pairs, on="id")
 
 
 # rasterize for summary unit analysis, use full extent
