@@ -123,9 +123,15 @@ def encode_blueprint(df):
         indicator_acres = df[cols]
         total_acres = indicator_acres.sum(axis=1)
 
-        indicator_acres = indicator_acres.loc[total_acres > 0]
+        # drop any entries where they are not present or are only 0 values for
+        # indicators with 0 values
+        indicator_acres = indicator_acres.loc[
+            (total_acres > 0)
+            & ~(
+                (values[0]["value"] == 0) & (indicator_acres[cols[1:]].max(axis=1) == 0)
+            )
+        ]
 
-        # NOTE: we always keep the indicator even if only 0 values are present
         if len(indicator_acres) == 0:
             continue
 
@@ -149,6 +155,16 @@ data_dir = Path("data")
 out_dir = data_dir / "for_tiles"
 out_dir.mkdir(exist_ok=True, parents=True)
 
+subregions = (
+    pd.read_feather(
+        data_dir / "inputs/boundaries/subregions.feather",
+        columns=["value", "subregion"],
+    )
+    .set_index("subregion")
+    .value.to_dict()
+)
+
+
 ###################################################################
 ### HUC12
 ###################################################################
@@ -163,6 +179,7 @@ huc12 = (
             "id",
             "geometry",
             "name",
+            "subregions",
             "acres",
             "rasterized_acres",
             "outside_se",
@@ -176,6 +193,9 @@ huc12 = (
     .to_crs(GEO_CRS)
 )
 huc12["type"] = "subwatershed"
+huc12["subregions"] = huc12.subregions.apply(
+    lambda x: ",".join(str(subregions[s]) for s in x)
+)
 
 ### Encode center / radius as x,y,radius(miles)
 center, lta_search_radius = get_lta_search_info(
@@ -272,7 +292,7 @@ protection = encode_ownership_protection(protection_results, "GAP_Sts").rename(
 
 
 huc12 = (
-    huc12[["geometry", "name", "type"]]
+    huc12[["geometry", "name", "subregions", "type"]]
     .join(huc12[["acres", "rasterized_acres", "outside_se"]].round().astype("int"))
     .join(lta_search, how="left")
     .join(blueprint, how="left")
@@ -298,6 +318,7 @@ marine = (
             "id",
             "geometry",
             "name",
+            "subregions",
             "acres",
             "rasterized_acres",
             "outside_se",
@@ -307,6 +328,9 @@ marine = (
     .to_crs(GEO_CRS)
 )
 marine["type"] = "marine lease block"
+marine["subregions"] = marine.subregions.apply(
+    lambda x: ",".join(str(subregions[s]) for s in x)
+)
 
 
 ### Southeast Blueprint
@@ -343,7 +367,7 @@ protection = encode_ownership_protection(protection_results, "GAP_Sts").rename(
 )
 
 marine = (
-    marine[["geometry", "name", "type"]]
+    marine[["geometry", "name", "subregions", "type"]]
     .join(marine[["acres", "rasterized_acres", "outside_se"]].round().astype("int"))
     .join(blueprint, how="left")
     .join(ownership, how="left")

@@ -1,7 +1,6 @@
 from copy import deepcopy
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 import rasterio
 
@@ -20,11 +19,8 @@ from analysis.lib.raster import (
     extract_count_in_geometry,
     summarize_raster_by_units_grid,
 )
-from analysis.lib.stats.ownership import get_lta_search_info
 from analysis.lib.stats.summary_units import (
     read_unit_from_feather,
-    huc12_filename,
-    marine_filename,
 )
 
 data_dir = Path("data")
@@ -33,8 +29,8 @@ indicators_dir = src_dir / "indicators"
 blueprint_filename = src_dir / "blueprint.tif"
 corridors_filename = src_dir / "corridors.tif"
 
-blueprint_bins = range(0, len(BLUEPRINT))
-corridor_bins = range(0, len(CORRIDORS))
+BLUEPRINT_BINS = range(0, len(BLUEPRINT))
+CORRIDOR_BINS = range(0, len(CORRIDORS))
 
 
 def detect_indicators_by_mask(mask_config, indicators):
@@ -272,7 +268,7 @@ def summarize_blueprint_by_units_grid(df, units_grid, out_dir, marine=False):
                 df,
                 units_grid,
                 value_dataset,
-                bins=blueprint_bins,
+                bins=BLUEPRINT_BINS,
                 progress_label="Summarizing Southeast Blueprint",
             )
             * cellsize
@@ -285,7 +281,7 @@ def summarize_blueprint_by_units_grid(df, units_grid, out_dir, marine=False):
                 df,
                 units_grid,
                 value_dataset,
-                bins=corridor_bins,
+                bins=CORRIDOR_BINS,
                 progress_label="Summarizing hubs & corridors",
             )
             * cellsize
@@ -293,12 +289,12 @@ def summarize_blueprint_by_units_grid(df, units_grid, out_dir, marine=False):
 
     out = pd.DataFrame(
         blueprint_acres,
-        columns=[f"blueprint_{v}" for v in blueprint_bins],
+        columns=[f"blueprint_{v}" for v in BLUEPRINT_BINS],
         index=df.index,
     ).join(
         pd.DataFrame(
             corridor_acres,
-            columns=[f"corridors_{v}" for v in corridor_bins],
+            columns=[f"corridors_{v}" for v in CORRIDOR_BINS],
             index=df.index,
         )
     )
@@ -327,12 +323,13 @@ def summarize_blueprint_by_units_grid(df, units_grid, out_dir, marine=False):
                 * cellsize
             )
 
-            # skip any where no data are present in any units
-            if not indicator_acres.any():
-                print(f"{indicator['label']} is not present in any summary units")
-                continue
+        # skip any where no data are present in any units
+        if not indicator_acres.any():
+            print(f"{indicator['label']} is not present in any summary units")
+            continue
 
         # Some indicators exclude 0 values, their columns need to be dropped
+        # so that index 0 is aligned with first value of indicator
         if values[0] > 0:
             indicator_acres = indicator_acres[:, values[0] :]
 

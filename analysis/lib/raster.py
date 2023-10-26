@@ -429,33 +429,33 @@ def summarize_raster_by_units_grid(
         values_in_unit = values[in_unit & (values != nodata)]
         out[i, :] = np.bincount(values_in_unit, minlength=num_bins).astype("uint")
 
-        # DEBUG: write value and unit rasters
-        outfilename = "/tmp/values.tif"
-        write_raster(
-            outfilename,
-            np.where(in_unit, values, nodata),
-            transform=value_dataset.window_transform(value_window),
-            crs=value_dataset.crs,
-            nodata=nodata,
-        )
-        if value_dataset.colormap(1):
-            with rasterio.open(outfilename, "r+") as out_raster:
-                out_raster.write_colormap(1, value_dataset.colormap(1))
+        # # DEBUG: write value and unit rasters
+        # outfilename = "/tmp/values.tif"
+        # write_raster(
+        #     outfilename,
+        #     np.where(in_unit, values, nodata),
+        #     transform=value_dataset.window_transform(value_window),
+        #     crs=value_dataset.crs,
+        #     nodata=nodata,
+        # )
+        # if value_dataset.colormap(1):
+        #     with rasterio.open(outfilename, "r+") as out_raster:
+        #         out_raster.write_colormap(1, value_dataset.colormap(1))
 
-        write_raster(
-            "/tmp/unit.tif",
-            np.where(in_unit, 1, 0).astype("uint8"),
-            transform=units_grid.dataset.window_transform(
-                Window(
-                    unit_window.col_off + units_grid.window.col_off,
-                    unit_window.row_off + units_grid.window.row_off,
-                    unit_window.width,
-                    unit_window.height,
-                )
-            ),
-            crs=units_grid.dataset.crs,
-            nodata=0,
-        )
+        # write_raster(
+        #     "/tmp/unit.tif",
+        #     np.where(in_unit, 1, 0).astype("uint8"),
+        #     transform=units_grid.dataset.window_transform(
+        #         Window(
+        #             unit_window.col_off + units_grid.window.col_off,
+        #             unit_window.row_off + units_grid.window.row_off,
+        #             unit_window.width,
+        #             unit_window.height,
+        #         )
+        #     ),
+        #     crs=units_grid.dataset.crs,
+        #     nodata=0,
+        # )
 
     return out
 

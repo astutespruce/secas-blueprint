@@ -19,7 +19,7 @@ NODATA = 255
 
 src_dir = Path("source_data")
 data_dir = Path("data")
-json_dir = Path("constants")
+constants_dir = Path("constants")
 bnd_dir = data_dir / "boundaries"  # used for processing but not as inputs
 out_dir = data_dir / "inputs/boundaries"  # used as inputs for other steps
 
@@ -49,6 +49,7 @@ subregion_df["geometry"] = shapely.make_valid(subregion_df.geometry.values)
 subregion_df.to_feather(out_dir / "subregions.feather")
 write_dataframe(subregion_df, bnd_dir / "subregions.fgb")
 
+subregion_df[['value', 'subregion', 'marine']].to_json(constants_dir / 'subregions.json', orient='records')
 
 ### Extract Blueprint extent
 print("Extracting SE Blueprint extent")
