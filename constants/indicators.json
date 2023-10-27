@@ -76,31 +76,31 @@
       },
       {
         "value": 1,
-        "label": "≤60% natural landcover within the estimated floodplain, by catchment",
+        "label": "≤60% natural landcover",
         "color": "#B6EFB6"
       },
       {
         "value": 2,
-        "label": ">60-70%",
+        "label": ">60-70% natural landcover",
         "color": "#98C7AD"
       },
       {
         "value": 3,
-        "label": ">70-80",
+        "label": ">70-80 natural landcover",
         "color": "#7090A1"
       },
       {
         "value": 4,
-        "label": ">80-90%",
+        "label": ">80-90% natural landcover",
         "color": "#3D4D8A"
       },
       {
         "value": 5,
-        "label": ">90% natural landcover within the estimated floodplain, by catchment",
+        "label": ">90% natural landcover",
         "color": "#090D5E"
       }
     ],
-    "valueLabel": "",
+    "valueLabel": "Percent natural landcover within the estimated floodplain, by catchment",
     "captionLabel": "Caribbean natural landcover in floodplains",
     "goodThreshold": 4,
     "url": "https://secas-fws.hub.arcgis.com/maps/10b1722decbb4e7ea497108777b85264/about",
@@ -119,26 +119,26 @@
       },
       {
         "value": 1,
-        "label": "1 connected stream class",
+        "label": "1 size class",
         "color": "#D7D5E9"
       },
       {
         "value": 2,
-        "label": "2 connected stream classes",
+        "label": "2 size classes",
         "color": "#AFC1DD"
       },
       {
         "value": 3,
-        "label": "3 connected stream classes",
+        "label": "3 size classes",
         "color": "#72ACD1"
       },
       {
         "value": 4,
-        "label": "4 connected stream classes",
+        "label": "4 size classes",
         "color": "#3C93C2"
       }
     ],
-    "valueLabel": "",
+    "valueLabel": "Number of connected stream size classes",
     "captionLabel": "Caribbean network complexity",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/d4c056954bfe4e9aa2c7c603aa1593b1/about",
@@ -152,26 +152,26 @@
     "values": [
       {
         "value": 1,
-        "label": "≤70% of catchment or small island permeable (likely degraded instream flow, water quality, and aquatic species communities)",
+        "label": "≤70% permeable (likely degraded instream flow, water quality, and aquatic species communities)",
         "color": "#CCCCFF"
       },
       {
         "value": 2,
-        "label": ">70-90% of catchment or small island permeable (likely degraded water quality and not supporting many aquatic species)",
+        "label": ">70-90% permeable (likely degraded water quality and not supporting many aquatic species)",
         "color": "#9783F7"
       },
       {
         "value": 3,
-        "label": ">90-95% of catchment or small island permeable (likely declining water quality and supporting most aquatic species)",
+        "label": ">90-95% permeable (likely declining water quality and supporting most aquatic species)",
         "color": "#6145ED"
       },
       {
         "value": 4,
-        "label": ">95% of catchment or small island permeable (likely high water quality and supporting most sensitive aquatic species)",
+        "label": ">95% permeable (likely high water quality and supporting most sensitive aquatic species)",
         "color": "#0000E0"
       }
     ],
-    "valueLabel": "",
+    "valueLabel": "Percent of catchment or small island permeable",
     "captionLabel": "Caribbean permeable surface",
     "goodThreshold": 4,
     "url": "https://secas-fws.hub.arcgis.com/maps/e6075d1afa7e4cf0ad00f00b2033c81c/about",
@@ -223,51 +223,51 @@
       },
       {
         "value": 1,
-        "label": "0 aquatic animal SGCN observed",
+        "label": "0 species",
         "color": "#FFFFC0"
       },
       {
         "value": 2,
-        "label": "1 aquatic animal SGCN observed",
+        "label": "1 species",
         "color": "#E9F898"
       },
       {
         "value": 3,
-        "label": "2 aquatic animal SGCN observed",
+        "label": "2 species",
         "color": "#BBE9A1"
       },
       {
         "value": 4,
-        "label": "3 aquatic animal SGCN observed",
+        "label": "3 species",
         "color": "#73CDB8"
       },
       {
         "value": 5,
-        "label": "4 aquatic animal SGCN observed",
+        "label": "4 species",
         "color": "#39B5C4"
       },
       {
         "value": 6,
-        "label": "5 aquatic animal SGCN observed",
+        "label": "5 species",
         "color": "#1990C0"
       },
       {
         "value": 7,
-        "label": "6 aquatic animal SGCN observed",
+        "label": "6 species",
         "color": "#205DA8"
       },
       {
         "value": 8,
-        "label": "7 aquatic animal SGCN observed",
+        "label": "7 species",
         "color": "#243394"
       },
       {
         "value": 9,
-        "label": "8+ aquatic animal Species of Greatest Conservation Need (SGCN) observed",
+        "label": "8+ species",
         "color": "#081D58"
       }
     ],
-    "valueLabel": "",
+    "valueLabel": "Number of aquatic animal Species of Greatest Conservation Need (SGCN) observed",
     "captionLabel": "imperiled aquatic species",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/b8c3a9c98a884a6b82cd70a904931a9c/about",
@@ -308,31 +308,31 @@
       },
       {
         "value": 1,
-        "label": "≤60% natural habitat within the estimated floodplain, by catchment",
+        "label": "≤60% natural landcover",
         "color": "#B6EFB6"
       },
       {
         "value": 2,
-        "label": ">60-70%",
+        "label": ">60-70% natural landcover",
         "color": "#98C7AD"
       },
       {
         "value": 3,
-        "label": ">70-80%",
+        "label": ">70-80% natural landcover",
         "color": "#7090A1"
       },
       {
         "value": 4,
-        "label": ">80-90%",
+        "label": ">80-90% natural landcover",
         "color": "#3D4D8A"
       },
       {
         "value": 5,
-        "label": ">90% natural habitat within the estimated floodplain, by catchment",
+        "label": ">90% natural landcover",
         "color": "#090D5E"
       }
     ],
-    "valueLabel": "",
+    "valueLabel": "Percent natural landcover within the estimated floodplain, by catchment",
     "captionLabel": "natural landcover in floodplains",
     "goodThreshold": 4,
     "url": "https://secas-fws.hub.arcgis.com/maps/9a908b4b3a8443bea1fca74261d7938f/about",
@@ -373,41 +373,41 @@
       },
       {
         "value": 1,
-        "label": "1 connected stream class",
+        "label": "1 size class",
         "color": "#D7D5E9"
       },
       {
         "value": 2,
-        "label": "2 connected stream classes",
+        "label": "2 size classes",
         "color": "#AFC1DD"
       },
       {
         "value": 3,
-        "label": "3 connected stream classes",
+        "label": "3 size classes",
         "color": "#72ACD1"
       },
       {
         "value": 4,
-        "label": "4 connected stream classes",
+        "label": "4 size classes",
         "color": "#3C93C2"
       },
       {
         "value": 5,
-        "label": "5 connected stream classes",
+        "label": "5 size classes",
         "color": "#07828F"
       },
       {
         "value": 6,
-        "label": "6 connected stream classes",
+        "label": "6 size classes",
         "color": "#016D5B"
       },
       {
         "value": 7,
-        "label": "7 connected stream classes",
+        "label": "7 size classes",
         "color": "#014636"
       }
     ],
-    "valueLabel": "",
+    "valueLabel": "Number of connected stream size classes",
     "captionLabel": "network complexity",
     "goodThreshold": 4,
     "url": "https://secas-fws.hub.arcgis.com/maps/29903714287a430f8cf71e3e42dccbcc/about",
@@ -443,26 +443,26 @@
     "values": [
       {
         "value": 1,
-        "label": "≤70% of catchment permeable (likely degraded instream flow, water quality, and aquatic species communities)",
+        "label": "≤70% permeable (likely degraded instream flow, water quality, and aquatic species communities)",
         "color": "#CCCCFF"
       },
       {
         "value": 2,
-        "label": ">70-90% of catchment permeable (likely degraded water quality and not supporting many aquatic species)",
+        "label": ">70-90% permeable (likely degraded water quality and not supporting many aquatic species)",
         "color": "#9783F7"
       },
       {
         "value": 3,
-        "label": ">90-95% of catchment permeable (likely declining water quality and supporting most aquatic species)",
+        "label": ">90-95% permeable (likely declining water quality and supporting most aquatic species)",
         "color": "#6145ED"
       },
       {
         "value": 4,
-        "label": ">95% of catchment permeable (likely high water quality and supporting most sensitive aquatic species)",
+        "label": ">95% permeable (likely high water quality and supporting most sensitive aquatic species)",
         "color": "#0000E0"
       }
     ],
-    "valueLabel": "",
+    "valueLabel": "Percent of catchment permeable ",
     "captionLabel": "permeable surface",
     "goodThreshold": 4,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::permeable-surface-southeast-blueprint-indicator/about",
@@ -503,31 +503,31 @@
       },
       {
         "value": 1,
-        "label": "0 aquatic imperiled (G1/G2) or threatened/endangered animal species observed",
+        "label": "0 species",
         "color": "#FFFFC0"
       },
       {
         "value": 2,
-        "label": "1 aquatic imperiled (G1/G2) or threatened/endangered animal species observed",
+        "label": "1 species",
         "color": "#E9F898"
       },
       {
         "value": 3,
-        "label": "2 aquatic imperiled (G1/G2) or threatened/endangered animal species observed",
+        "label": "2 species",
         "color": "#BBE9A1"
       },
       {
         "value": 4,
-        "label": "3 aquatic imperiled (G1/G2) or threatened/endangered animal species observed",
+        "label": "3 species",
         "color": "#73CDB8"
       },
       {
         "value": 5,
-        "label": "4+ aquatic imperiled (G1/G2) or threatened/endangered animal species observed",
+        "label": "4+ species",
         "color": "#39B5C4"
       }
     ],
-    "valueLabel": "",
+    "valueLabel": "Number of aquatic imperiled (G1/G2) or threatened/endangered animal species observed",
     "captionLabel": "west virginia imperiled aquatic species",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/a9e4a9964bb9464bbf620195133a43f0/about",
@@ -711,56 +711,56 @@
       },
       {
         "value": 1,
-        "label": "≤10th percentile of importance",
+        "label": "≤10th percentile",
         "color": "#FEE825"
       },
       {
         "value": 2,
-        "label": ">10th-20th percentile of importance",
+        "label": ">10th-20th percentile",
         "color": "#B5DE2C"
       },
       {
         "value": 3,
-        "label": ">20th-30th percentile of importance",
+        "label": ">20th-30th percentile",
         "color": "#6DCF5A"
       },
       {
         "value": 4,
-        "label": ">30th-40th percentile of importance",
+        "label": ">30th-40th percentile",
         "color": "#35B879"
       },
       {
         "value": 5,
-        "label": ">40th-50th percentile of importance",
+        "label": ">40th-50th percentile",
         "color": "#1F9E89"
       },
       {
         "value": 6,
-        "label": ">50th-60th percentile of importance",
+        "label": ">50th-60th percentile",
         "color": "#26838F"
       },
       {
         "value": 7,
-        "label": ">60th-70th percentile of importance",
+        "label": ">60th-70th percentile",
         "color": "#31688E"
       },
       {
         "value": 8,
-        "label": ">70th-80th percentile of importance",
+        "label": ">70th-80th percentile",
         "color": "#3E4A8A"
       },
       {
         "value": 9,
-        "label": ">80th-90th percentile of importance",
+        "label": ">80th-90th percentile",
         "color": "#482878"
       },
       {
         "value": 10,
-        "label": ">90th percentile of importance for marine bird index species (across the full East Coast study area)",
+        "label": ">90th percentile",
         "color": "#440154"
       }
     ],
-    "valueLabel": "",
+    "valueLabel": "Percentile of importance for marine bird index species (across the full East Coast study area)",
     "captionLabel": "Atlantic marine birds",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/aa34bc46ff534c89aab65d7d749087fb/about",
@@ -784,56 +784,56 @@
       },
       {
         "value": 1,
-        "label": "≤10th percentile of importance",
+        "label": "≤10th percentile",
         "color": "#FFFFD9"
       },
       {
         "value": 2,
-        "label": ">10th-20th percentile of importance",
+        "label": ">10th-20th percentile",
         "color": "#FDF7B9"
       },
       {
         "value": 3,
-        "label": ">20th-30th percentile of importance",
+        "label": ">20th-30th percentile",
         "color": "#FBE39E"
       },
       {
         "value": 4,
-        "label": ">30th-40th percentile of importance",
+        "label": ">30th-40th percentile",
         "color": "#FACC88"
       },
       {
         "value": 5,
-        "label": ">40th-50th percentile of importance",
+        "label": ">40th-50th percentile",
         "color": "#F7B578"
       },
       {
         "value": 6,
-        "label": ">50th-60th percentile of importance",
+        "label": ">50th-60th percentile",
         "color": "#F49D71"
       },
       {
         "value": 7,
-        "label": ">60th-70th percentile of importance",
+        "label": ">60th-70th percentile",
         "color": "#F08371"
       },
       {
         "value": 8,
-        "label": ">70th-80th percentile of importance",
+        "label": ">70th-80th percentile",
         "color": "#E96677"
       },
       {
         "value": 9,
-        "label": ">80th-90th percentile of importance",
+        "label": ">80th-90th percentile",
         "color": "#E14981"
       },
       {
         "value": 10,
-        "label": ">90th percentile of importance for marine mammal index species (across the full East Coast study area)",
+        "label": ">90th percentile",
         "color": "#D9348B"
       }
     ],
-    "valueLabel": "",
+    "valueLabel": "Percentile of importance for marine mammal index species (across the full East Coast study area)",
     "captionLabel": "Atlantic marine mammals",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/e58767bd7b7c4a8c9bf586d169f1593f/about",
@@ -1254,56 +1254,56 @@
       },
       {
         "value": 1,
-        "label": "≤10th percentile of importance",
+        "label": "≤10th percentile",
         "color": "#FFFFD9"
       },
       {
         "value": 2,
-        "label": ">10th-20th percentile of importance",
+        "label": ">10th-20th percentile",
         "color": "#FDF7B9"
       },
       {
         "value": 3,
-        "label": ">20th-30th percentile of importance",
+        "label": ">20th-30th percentile",
         "color": "#FBE39E"
       },
       {
         "value": 4,
-        "label": ">30th-40th percentile of importance",
+        "label": ">30th-40th percentile",
         "color": "#FACC88"
       },
       {
         "value": 5,
-        "label": ">40th-50th percentile of importance",
+        "label": ">40th-50th percentile",
         "color": "#F7B578"
       },
       {
         "value": 6,
-        "label": ">50th-60th percentile of importance",
+        "label": ">50th-60th percentile",
         "color": "#F49D71"
       },
       {
         "value": 7,
-        "label": ">60th-70th percentile of importance",
+        "label": ">60th-70th percentile",
         "color": "#F08371"
       },
       {
         "value": 8,
-        "label": ">70th-80th percentile of importance",
+        "label": ">70th-80th percentile",
         "color": "#E96677"
       },
       {
         "value": 9,
-        "label": ">80th-90th percentile of importance",
+        "label": ">80th-90th percentile",
         "color": "#E14981"
       },
       {
         "value": 10,
-        "label": ">90th percentile of importance for marine mammal index species (across larger analysis area)",
+        "label": ">90th percentile",
         "color": "#D9348B"
       }
     ],
-    "valueLabel": "",
+    "valueLabel": "Percentile of importance for marine mammal index species (across larger analysis area)",
     "captionLabel": "Gulf marine mammals",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/3b1b20bfde1e4a359131a0251dc6d617/about",
@@ -1330,31 +1330,31 @@
       },
       {
         "value": 1,
-        "label": "≤60th percentile of importance",
+        "label": "≤60th percentile",
         "color": "#EBB698"
       },
       {
         "value": 2,
-        "label": ">60th-70th percentile of importance",
+        "label": ">60th-70th percentile",
         "color": "#CF9270"
       },
       {
         "value": 3,
-        "label": ">70th-80th percentile of importance",
+        "label": ">70th-80th percentile",
         "color": "#9E6B90"
       },
       {
         "value": 4,
-        "label": ">80th-90th percentile of importance",
+        "label": ">80th-90th percentile",
         "color": "#714DBF"
       },
       {
         "value": 5,
-        "label": ">90th percentile of importance for sea turtle index species (across larger analysis area)",
+        "label": ">90th percentile",
         "color": "#3900B3"
       }
     ],
-    "valueLabel": "",
+    "valueLabel": "Percentile of importance for sea turtle index species (across larger analysis area)",
     "captionLabel": "Gulf sea turtles",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/154ccf741a7e4cc19f2c93b29abe9233/about",
@@ -1412,46 +1412,46 @@
     "values": [
       {
         "value": 1,
-        "label": "≤30th percentile of importance",
+        "label": "≤30th percentile",
         "color": "#F8DCD9"
       },
       {
         "value": 2,
-        "label": ">30th-40th percentile of importance",
+        "label": ">30th-40th percentile",
         "color": "#F5BDC4"
       },
       {
         "value": 3,
-        "label": ">40th-50th percentile of importance",
+        "label": ">40th-50th percentile",
         "color": "#E8A0B8"
       },
       {
         "value": 4,
-        "label": ">50th-60th percentile of importance",
+        "label": ">50th-60th percentile",
         "color": "#D685B2"
       },
       {
         "value": 5,
-        "label": ">60th-70th percentile of importance",
+        "label": ">60th-70th percentile",
         "color": "#C06CAD"
       },
       {
         "value": 6,
-        "label": ">70th-80th percentile of importance",
+        "label": ">70th-80th percentile",
         "color": "#A456A6"
       },
       {
         "value": 7,
-        "label": ">80th-90th percentile of importance",
+        "label": ">80th-90th percentile",
         "color": "#80469A"
       },
       {
         "value": 8,
-        "label": ">90th percentile of importance for bluefin tuna and skipjack tuna or blue shark",
+        "label": ">90th percentile",
         "color": "#583C88"
       }
     ],
-    "valueLabel": "",
+    "valueLabel": "Percentile of importance for bluefin and skipjack tuna or blue shark",
     "captionLabel": "marine highly migratory fish",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/8d893f24147a47f7bb48f8071c2d3a6a/about",
@@ -1550,36 +1550,36 @@
     "values": [
       {
         "value": 0,
-        "label": "Open water or not identified as important for bird index species",
+        "label": "Open water or not identified as a priority",
         "color": null
       },
       {
         "value": 1,
-        "label": "≤20th percentile of importance for bird index species",
+        "label": "≤20th percentile",
         "color": "#FDDCAF"
       },
       {
         "value": 2,
-        "label": ">20th-40th percentile of importance",
+        "label": ">20th-40th percentile",
         "color": "#FDB27B"
       },
       {
         "value": 3,
-        "label": ">40th-60th percentile of importance",
+        "label": ">40th-60th percentile",
         "color": "#F26D4B"
       },
       {
         "value": 4,
-        "label": ">60th-80th percentile of importance",
+        "label": ">60th-80th percentile",
         "color": "#C91D13"
       },
       {
         "value": 5,
-        "label": ">80th percentile of importance for bird index species (American oystercatcher, Wilson's plover, least tern, piping plover)",
+        "label": ">80th percentile",
         "color": "#7F0000"
       }
     ],
-    "valueLabel": "",
+    "valueLabel": "Percentile of importance for beach bird index species (American oystercatcher, Wilson's plover, least tern, piping plover)",
     "captionLabel": "South Atlantic beach birds",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/7ba82b4fdf53416f83ff1b01cabe0c5d/about",
@@ -2048,11 +2048,11 @@
       },
       {
         "value": 5,
-        "label": "High priority for open pine conservation for focal bird species (Bachman's sparrow, red-cockaded woodpecker, Henslow's sparrow, red-headed woodpecker, Northern bobwhite, and brown-headed nuthatch) (score >80-100)",
+        "label": "High priority (score >80-100)",
         "color": "#67001F"
       }
     ],
-    "valueLabel": "",
+    "valueLabel": "Priority for open pine conservation for focal bird species",
     "captionLabel": "east coastal plain open pine birds",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/78717a5537ba434299d69d5dce038022/about",
@@ -2074,26 +2074,26 @@
     "values": [
       {
         "value": 0,
-        "label": "Not identified as a priority for a new park that would create nearby equitable access (within urban areas)",
+        "label": "Not identified as a priority (within urban areas)",
         "color": null
       },
       {
         "value": 1,
-        "label": "Moderate priority for a new park that would create nearby equitable access",
+        "label": "Moderate priority",
         "color": "#DFB8E6"
       },
       {
         "value": 2,
-        "label": "High priority for a new park that would create nearby equitable access",
+        "label": "High priority",
         "color": "#AC66ED"
       },
       {
         "value": 3,
-        "label": "Very high priority for a new park that would create nearby equitable access",
+        "label": "Very high priority",
         "color": "#700CF2"
       }
     ],
-    "valueLabel": "",
+    "valueLabel": "Priority for a new park that would create nearby equitable access",
     "captionLabel": "equitable access to potential parks",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/0f44447ccc2b4968ae61e239bbfbeeda/about",
@@ -2125,7 +2125,7 @@
     "id": "t_firefrequency",
     "filename": "FireFrequency.tif",
     "label": "Fire frequency",
-    "description": "This indicator uses remote sensing to estimate the number of times an area has been burned from 2013 to 2021. Many Southeastern ecosystems rely on regular, low-intensity fires to maintain habitat, encourage native plant growth, and reduce wildfire risk. This indicator combines burned area layers from U.S. Geological Survey Landsat data and the inter-agency Monitoring Trends in Burn Severity program. Landsat-based fire predictions within the range of longleaf pine are also available through <a href='https://landscapepartnership.org/key-issues/wildland-fire/fire-mapping/regional-fire-mapping/se-firemap/se-firemap-version-1-0'>Southeast FireMap</a>.",
+    "description": "This indicator uses remote sensing to estimate the number of times an area has been burned from 2013 to 2021. Many Southeastern ecosystems rely on regular, low-intensity fires to maintain habitat, encourage native plant growth, and reduce wildfire risk. This indicator combines burned area layers from U.S. Geological Survey Landsat data and the inter-agency Monitoring Trends in Burn Severity program. Landsat-based fire predictions within the range of longleaf pine are also available through <a href='https://landscapepartnership.org/key-issues/wildland-fire/fire-mapping/regional-fire-mapping/se-firemap/se-firemap-version-1-0' target='_blank'>Southeast FireMap</a>.",
     "values": [
       {
         "value": 0,
@@ -2846,12 +2846,12 @@
     "values": [
       {
         "value": 0,
-        "label": "Not suitable for forested wetland bird umbrella species (score =0)",
+        "label": "Not suitable (score =0)",
         "color": null
       },
       {
         "value": 1,
-        "label": "Low habitat suitability for forested wetland bird umbrella species (score >0-20)",
+        "label": "Low habitat suitability (score >0-20)",
         "color": "#EAE0AF"
       },
       {
@@ -2871,11 +2871,11 @@
       },
       {
         "value": 5,
-        "label": "High habitat suitability for forested wetland bird umbrella species (Acadian flycatcher, Kentucky warbler, yellow-throated warbler, prothonotary warbler, red-shouldered hawk) (score >80)",
+        "label": "High habitat suitability (score >80)",
         "color": "#164A89"
       }
     ],
-    "valueLabel": "",
+    "valueLabel": "Habitat suitability for forested wetland bird umbrella species",
     "captionLabel": "West Coastal Plain & Ouachitas forested wetland birds",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/afadbc26118744e3a8305959c8eed565/about",
@@ -2894,41 +2894,41 @@
     "values": [
       {
         "value": 0,
-        "label": "Pine patch too small and isolated to support a population of any umbrella bird species or not an upland pine patch",
+        "label": "Pine patch too small and isolated to support a population of any species or not an upland pine patch",
         "color": null
       },
       {
         "value": 1,
-        "label": "Pine patch part of a cluster of nearby patches able to support a population of 1 umbrella bird species if managed in open condition",
+        "label": "Pine patch part of a cluster of nearby patches able to support a population of 1 species",
         "color": "#FDD7D3"
       },
       {
         "value": 2,
-        "label": "Pine patch part of a cluster of nearby patches able to support a population of 2 umbrella bird species if managed in open condition",
+        "label": "Pine patch part of a cluster of nearby patches able to support a population of 2 species",
         "color": "#FBACB9"
       },
       {
         "value": 3,
-        "label": "Pine patch part of a cluster of nearby patches able to support a population of all 3 umbrella bird species if managed in open condition",
+        "label": "Pine patch part of a cluster of nearby patches able to support a population of all 3 species",
         "color": "#F768A1"
       },
       {
         "value": 4,
-        "label": "Pine patch large enough to support a population of 1 umbrella bird species if managed in open condition",
+        "label": "Pine patch large enough to support a population of 1 species",
         "color": "#CD238F"
       },
       {
         "value": 5,
-        "label": "Pine patch large enough to support a population of 2 umbrella bird species if managed in open condition",
+        "label": "Pine patch large enough to support a population of 2 species",
         "color": "#8B0179"
       },
       {
         "value": 6,
-        "label": "Pine patch large enough to support a population of all 3 umbrella bird species (brown-headed nuthatch, Bachman's sparrow, red-cockaded woodpecker) if managed in open condition",
+        "label": "Pine patch large enough to support a population of all 3 species",
         "color": "#49006A"
       }
     ],
-    "valueLabel": "",
+    "valueLabel": "Ability of pine patch to support a population of umbrella bird species if managed in open condition",
     "captionLabel": "West Coastal Plain & Ouachitas open pine birds",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/eed0dea432d94b30927da6caf4ec543e/about",
@@ -2947,61 +2947,61 @@
     "values": [
       {
         "value": 0,
-        "label": "Not identified as suitable mottled duck nesting habitat (within TX and LA)",
+        "label": "Not identified as suitable habitat (within TX and LA)",
         "color": null
       },
       {
         "value": 1,
-        "label": "0-10th percentile of suitable mottled duck nesting habitat",
+        "label": "0-10th percentile",
         "color": "#FFFFBE"
       },
       {
         "value": 2,
-        "label": "10th-20th percentile of suitable mottled duck nesting habitat",
+        "label": "10th-20th percentile",
         "color": "#FFEFA3"
       },
       {
         "value": 3,
-        "label": "20th-30th percentile of suitable mottled duck nesting habitat",
+        "label": "20th-30th percentile",
         "color": "#FEDD7F"
       },
       {
         "value": 4,
-        "label": "30th–40th percentile of suitable mottled duck nesting habitat",
+        "label": "30th-40th percentile",
         "color": "#FEBF5A"
       },
       {
         "value": 5,
-        "label": "40th-50th percentile of suitable mottled duck nesting habitat",
+        "label": "40th-50th percentile",
         "color": "#FD9D43"
       },
       {
         "value": 6,
-        "label": "50th-60th percentile of suitable mottled duck nesting habitat",
+        "label": "50th-60th percentile",
         "color": "#FD7134"
       },
       {
         "value": 7,
-        "label": "60th-70th percentile of suitable mottled duck nesting habitat",
+        "label": "60th-70th percentile",
         "color": "#F43D25"
       },
       {
         "value": 8,
-        "label": "70th-80th percentile of suitable mottled duck nesting habitat",
+        "label": "70th-80th percentile",
         "color": "#DB141E"
       },
       {
         "value": 9,
-        "label": "80th-90th percentile of suitable mottled duck nesting habitat",
+        "label": "80th-90th percentile",
         "color": "#B60026"
       },
       {
         "value": 10,
-        "label": "90th-100th percentile of suitable mottled duck nesting habitat",
+        "label": "90th-100th percentile",
         "color": "#800026"
       }
     ],
-    "valueLabel": "",
+    "valueLabel": "Percentile of suitable mottled duck nesting habitat",
     "captionLabel": "west gulf coast mottled duck nesting",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/b062fbced69d4f30baa1ab423d55d4b7/about",

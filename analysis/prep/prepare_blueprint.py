@@ -378,10 +378,11 @@ for index, indicator_row in indicator_df.iterrows():
         .str.replace("<=", "≤")
         .str.replace(">=", "≥")
         .str.replace("’", "'")
+        .str.replace("–", "-")
         .str.strip()
     )
 
-    # shorten labels for MAV birds
+    # shorten labels for some indicators
     if filename == "MississippiAlluvialValleyForestBirds_Protection.tif":
         indicator_df.at[
             index, "valueLabel"
@@ -428,6 +429,183 @@ for index, indicator_row in indicator_df.iterrows():
                 "Most likely",
             )
         )
+    elif filename == "EastCoastalPlainOpenPineBirds.tif":
+        indicator_df.at[
+            index, "valueLabel"
+        ] = "Priority for open pine conservation for focal bird species"
+        df["label"] = df["label"].str.replace(
+            "High priority for open pine conservation for focal bird species (Bachman's sparrow, red-cockaded woodpecker, Henslow's sparrow, red-headed woodpecker, Northern bobwhite, and brown-headed nuthatch)",
+            "High priority",
+        )
+    elif filename == "EquitableAccessToPotentialParks.tif":
+        indicator_df.at[
+            index, "valueLabel"
+        ] = "Priority for a new park that would create nearby equitable access"
+        df["label"] = df["label"].str.replace(
+            " for a new park that would create nearby equitable access", ""
+        )
+    elif filename == "WestCoastalPlainandOuachitasForestedWetlandBirds.tif":
+        indicator_df.at[
+            index, "valueLabel"
+        ] = "Habitat suitability for forested wetland bird umbrella species"
+        df["label"] = (
+            df["label"]
+            .str.replace(
+                "High habitat suitability for forested wetland bird umbrella species (Acadian flycatcher, Kentucky warbler, yellow-throated warbler, prothonotary warbler, red-shouldered hawk)",
+                "High habitat suitability",
+            )
+            .str.replace(" for forested wetland bird umbrella species", "")
+        )
+
+    elif filename == "WestCoastalPlainandOuachitasOpenPineBirds.tif":
+        indicator_df.at[
+            index, "valueLabel"
+        ] = "Ability of pine patch to support a population of umbrella bird species if managed in open condition"
+        df["label"] = (
+            df["label"]
+            .str.replace(" if managed in open condition", "")
+            .str.replace("umbrella bird ", "")
+            .str.replace(" (brown-headed nuthatch, Bachman's sparrow, red-cockaded woodpecker)", "")
+        )
+
+    elif filename == "WestGulfCoastMottledDuckNesting.tif":
+        indicator_df.at[
+            index, "valueLabel"
+        ] = "Percentile of suitable mottled duck nesting habitat"
+        df["label"] = (
+            df["label"]
+            .str.replace(" of suitable mottled duck nesting habitat", "")
+            .str.replace(" mottled duck nesting", "")
+        )
+
+    elif filename in (
+        "NaturalLandcoverInFloodplains.tif",
+        "CaribbeanNaturalLandcoverInFloodplains.tif",
+    ):
+        indicator_df.at[
+            index, "valueLabel"
+        ] = "Percent natural landcover within the estimated floodplain, by catchment"
+        df["label"] = (
+            df["label"]
+            .str.replace(
+                " natural habitat within the estimated floodplain, by catchment", ""
+            )
+            .str.replace(
+                " natural landcover within the estimated floodplain, by catchment", ""
+            )
+        )
+        df.loc[df['value']!=0, 'label'] += " natural landcover"
+
+    elif filename == "ImperiledAquaticSpecies.tif":
+        indicator_df.at[
+            index, "valueLabel"
+        ] = "Number of aquatic animal Species of Greatest Conservation Need (SGCN) observed"
+        df["label"] = (
+            df["label"]
+            .str.replace(
+                "aquatic animal Species of Greatest Conservation Need (SGCN) observed",
+                "species",
+            )
+            .str.replace("aquatic animal SGCN observed", "species")
+        )
+
+    elif filename == "WestVirginiaImperiledAquaticSpecies.tif":
+        indicator_df.at[
+            index, "valueLabel"
+        ] = "Number of aquatic imperiled (G1/G2) or threatened/endangered animal species observed"
+        df["label"] = df["label"].str.replace(
+            "aquatic imperiled (G1/G2) or threatened/endangered animal species observed",
+            "species",
+        )
+
+    elif filename == "AtlanticMarineBirds.tif":
+        indicator_df.at[
+            index, "valueLabel"
+        ] = "Percentile of importance for marine bird index species (across the full East Coast study area)"
+        df["label"] = (
+            df["label"]
+            .str.replace(
+                " of importance for marine bird index species (across the full East Coast study area)",
+                "",
+            )
+            .str.replace(" of importance", "")
+        )
+
+    elif filename == "AtlanticMarineMammals.tif":
+            indicator_df.at[
+                index, "valueLabel"
+            ] = "Percentile of importance for marine mammal index species (across the full East Coast study area)"
+            df["label"] = df["label"].str.replace(" of importance for marine mammal index species (across the full East Coast study area)", "").str.replace(" of importance", "")
+
+
+    elif filename == "GulfMarineMammals.tif":
+        indicator_df.at[
+            index, "valueLabel"
+        ] = "Percentile of importance for marine mammal index species (across larger analysis area)"
+        df["label"] = df["label"].str.replace(" of importance for marine mammal index species (across larger analysis area)", "").str.replace(" of importance", "")
+
+    elif filename == "GulfSeaTurtles.tif":
+        indicator_df.at[
+            index, "valueLabel"
+        ] = "Percentile of importance for sea turtle index species (across larger analysis area)"
+        df["label"] = df["label"].str.replace(" of importance for sea turtle index species (across larger analysis area)", "").str.replace(" of importance", "")
+
+    elif filename == "MarineHighlyMigratoryFish.tif":
+        indicator_df.at[
+            index, "valueLabel"
+        ] = "Percentile of importance for bluefin and skipjack tuna or blue shark"
+        df["label"] = df["label"].str.replace(" of importance for bluefin tuna and skipjack tuna or blue shark", "").str.replace(" of importance", "")
+
+
+    elif filename == "SouthAtlanticBeachBirds.tif":
+        indicator_df.at[
+            index, "valueLabel"
+        ] = "Percentile of importance for beach bird index species (American oystercatcher, Wilson's plover, least tern, piping plover)"
+        df["label"] = (
+            df["label"]
+            .str.replace(
+                "Open water or not identified as important for bird index species",
+                "Open water or not identified as a priority",
+            )
+            .str.replace(
+                " of importance for bird index species (American oystercatcher, Wilson's plover, least tern, piping plover)",
+                "",
+            )
+            .str.replace(" of importance for bird index species", "")
+            .str.replace(" of importance", "")
+        )
+
+    elif filename in ("PermeableSurface.tif", "CaribbeanPermeableSurface.tif"):
+        df["label"] = (
+            df["label"]
+            .str.replace(" of catchment or small island", "")
+            .str.replace(" of catchment", "")
+        )
+
+        if filename == "PermeableSurface.tif":
+            indicator_df.at[index, "valueLabel"] = "Percent of catchment permeable "
+        elif filename == "CaribbeanPermeableSurface.tif":
+            indicator_df.at[
+                index, "valueLabel"
+            ] = "Percent of catchment or small island permeable"
+
+    elif filename == "NetworkComplexity.tif":
+        indicator_df.at[index, "valueLabel"] = "Number of connected stream size classes"
+        df["label"] = (
+            df["label"]
+            .str.replace("connected stream classes", "size classes")
+            .str.replace("connected stream class", "size class")
+        )
+
+    elif filename == "CaribbeanNetworkComplexity.tif":
+        indicator_df.at[index, "valueLabel"] = "Number of connected stream size classes"
+        df["label"] = (
+            df["label"]
+            .str.replace("connected stream classes", "size classes")
+            .str.replace("connected stream class", "size class")
+        )
+
+    #######################
 
     df["color"] = (
         df[["red", "green", "blue"]]
