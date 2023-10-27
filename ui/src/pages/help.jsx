@@ -572,6 +572,8 @@ HelpPage.propTypes = {
     pointDataImage: PropTypes.object.isRequired,
     pointDataTabsImage: PropTypes.object.isRequired,
     filterImage: PropTypes.object.isRequired,
+    filterBeforeImage: PropTypes.object.isRequired,
+    filterAfterImage: PropTypes.object.isRequired,
     toggleLayersButtonImage: PropTypes.object.isRequired,
     toggleLayersModalImage: PropTypes.object.isRequired,
     searchFieldImage: PropTypes.object.isRequired,

@@ -21,6 +21,7 @@ import {
   useBlueprintPriorities,
   useMapData,
   useIndicators,
+  useSubregions,
   useSLR,
 } from 'components/data'
 import { useBreakpoints } from 'components/layout'
@@ -96,6 +97,7 @@ const Map = () => {
   )
   const { ecosystems: ecosystemInfo, indicators: indicatorInfo } =
     useIndicators()
+  const subregionInfo = useSubregions()
   const { nodata: slrNodataValues } = useSLR()
   const slrNodata = slrNodataValues[slrNodataValues.length - 1]
 
@@ -112,11 +114,6 @@ const Map = () => {
   const breakpoint = useBreakpoints()
   const isMobile = breakpoint === 0
   const { location } = useSearch()
-
-  const showSLRNodata =
-    mapMode !== 'unit' &&
-    ((renderLayer && renderLayer.id === 'slr') ||
-      (filters && filters.slr && filters.slr.enabled))
 
   const updateMapIsDrawing = useDebouncedCallback(() => {
     if (mapIsDrawingRef.current) {
@@ -272,10 +269,7 @@ const Map = () => {
 
         // add normal mapbox layers// add layers
         layers.forEach((layer) => {
-          map.addLayer(
-            layer,
-            layer.id.startsWith('slr-not-modeled') ? undefined : beforeLayer
-          )
+          map.addLayer(layer, beforeLayer)
         })
 
         // if map is initialized in pixel or filter mode
@@ -351,7 +345,14 @@ const Map = () => {
         // highlight selected
         map.setFilter('unit-outline-highlight', ['==', 'id', properties.id])
 
-        setMapData(unpackFeatureData(properties, ecosystemInfo, indicatorInfo))
+        setMapData(
+          unpackFeatureData(
+            properties,
+            ecosystemInfo,
+            indicatorInfo,
+            subregionInfo
+          )
+        )
         if (isMobile) {
           map.resize()
         }
@@ -503,7 +504,7 @@ const Map = () => {
 
     // intentionally omitting getPixelData; it is static
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
-    [isLoaded, mapMode, showSLRNodata]
+    [isLoaded, mapMode]
   )
 
   // handler for changed mapData
@@ -580,26 +581,6 @@ const Map = () => {
     }
   }, [location, isLoaded])
 
-  // handler for changed showSLRNodata
-  useEffect(() => {
-    if (!isLoaded) return
-    const { current: map } = mapRef
-
-    const slrVisibility =
-      isRenderLayerVisibleRef.current && showSLRNodata ? 'visible' : 'none'
-
-    map.setLayoutProperty(
-      'slr-not-modeled-crosshatch',
-      'visibility',
-      slrVisibility
-    )
-    map.setLayoutProperty(
-      'slr-not-modeled-outline',
-      'visibility',
-      slrVisibility
-    )
-  }, [showSLRNodata, isLoaded])
-
   const handleToggleRenderLayerVisible = useCallback(() => {
     const { current: map } = mapRef
     if (!map) return
@@ -619,23 +600,10 @@ const Map = () => {
           // still works
           opacity: newIsVisible ? 0.7 : 0,
         })
-
-        const slrVisibility = showSLRNodata && newIsVisible ? 'visible' : 'none'
-
-        map.setLayoutProperty(
-          'slr-not-modeled-outline',
-          'visibility',
-          slrVisibility
-        )
-        map.setLayoutProperty(
-          'slr-not-modeled-crosshatch',
-          'visibility',
-          slrVisibility
-        )
       }
       return newIsVisible
     })
-  }, [showSLRNodata])
+  }, [])
 
   const handleBasemapChange = useCallback(
     (styleID) => {
@@ -721,12 +689,6 @@ const Map = () => {
               }
             }
 
-            if (l.id.startsWith('slr-not-modeled')) {
-              layer.layout = {
-                visibility: showSLRNodata ? 'visible' : 'none',
-              }
-            }
-
             map.addLayer(layer, beforeLayer)
           })
 
@@ -741,7 +703,7 @@ const Map = () => {
         map.once('idle', updateStyle)
       }
     },
-    [isLoaded, mapData, mapMode, showSLRNodata]
+    [isLoaded, mapData, mapMode]
   )
 
   let belowMinZoom = false
@@ -764,18 +726,6 @@ const Map = () => {
       subtitle: renderLayer.valueLabel,
       categories: renderLayer.categories,
     }
-  }
-  if (showSLRNodata) {
-    legendProps.categories = legendProps.categories.concat([
-      {
-        value: 99,
-        label: slrNodata.label,
-        color: '#FFF',
-        pattern: crosshatch,
-        outlineWidth: 1,
-        outlineColor: '#000000',
-      },
-    ])
   }
 
   return (

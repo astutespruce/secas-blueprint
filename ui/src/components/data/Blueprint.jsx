@@ -27,6 +27,7 @@ export const useBlueprintPriorities = () => {
 
   return {
     all,
+    // remove 0 value (lowest priority)
     categories: all.slice(0, all.length - 1),
   }
 }

@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Box, Flex, Text } from 'theme-ui'
-import { ExclamationTriangle } from '@emotion-icons/fa-solid'
+import { Box } from 'theme-ui'
 
 import {
   InfoTab,
@@ -39,13 +38,12 @@ const TabContent = ({ tab, mapData }) => {
   const {
     type,
     isLoading,
-    inputId,
     blueprint,
     corridors,
+    subregions,
     outsideSEPercent,
     rasterizedAcres,
     indicators,
-    ecosystems,
     slr,
     urban,
     ownership,
@@ -58,28 +56,6 @@ const TabContent = ({ tab, mapData }) => {
     return <Box sx={{ textAlign: 'center', mt: '1rem' }}>Loading...</Box>
   }
 
-  if (inputId === null) {
-    return (
-      <>
-        <Flex sx={{ py: '2rem', pl: '1rem', pr: '2rem', alignItems: 'center' }}>
-          <Box sx={{ flex: '0 0 auto', mr: '1rem', color: 'orange' }}>
-            <ExclamationTriangle size="2em" />
-          </Box>
-          <Text sx={{ color: 'grey.8', flex: '1 1 auto' }}>
-            <b>No pixel-level details are available for this area.</b>
-          </Text>
-        </Flex>
-        <Text sx={{ pl: '1rem', pr: '2rem' }}>
-          It falls outside the 15 states of the Southeast where the Blueprint
-          uses consistent methods and indicators.
-          <br />
-          <br />
-          Switch to summary mode to learn more about this area.
-        </Text>
-      </>
-    )
-  }
-
   switch (tab) {
     case 'selected-priorities': {
       return (
@@ -87,9 +63,8 @@ const TabContent = ({ tab, mapData }) => {
           type={type}
           blueprint={blueprint}
           corridors={corridors}
-          inputId={inputId}
+          subregions={subregions}
           outsideSEPercent={outsideSEPercent}
-          ecosystems={ecosystems}
           {...mapData}
         />
       )
@@ -98,7 +73,6 @@ const TabContent = ({ tab, mapData }) => {
       return (
         <IndicatorsTab
           type={type}
-          inputId={inputId}
           indicators={indicators}
           outsideSEPercent={outsideSEPercent}
           rasterizedAcres={rasterizedAcres}

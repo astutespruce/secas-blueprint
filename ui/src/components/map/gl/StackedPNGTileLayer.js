@@ -62,7 +62,7 @@ export default class StackedPNGTileLayer extends TileLayer {
         vs: vertexShader,
         fs: fragmentShader
           .replace(
-            '<NUM_INDICATORS>',
+            '<NUM_LAYERS>',
             sum(encodingSchemes.map((e) => e.length)).toString()
           )
           .replace('// <FILTER_EXPR>', getFilterExpr(encodingSchemes)),
@@ -77,6 +77,9 @@ export default class StackedPNGTileLayer extends TileLayer {
     if (!this.props.visible) {
       return { images: null }
     }
+
+    // TODO: prevent fetching of tiles outside of bounds of layer?
+    // may need to instead populate image with null values
 
     const imageRequests = this.props.layers.map(({ url }) =>
       fetchImage(gl, _getURLFromTemplate(url, tile))

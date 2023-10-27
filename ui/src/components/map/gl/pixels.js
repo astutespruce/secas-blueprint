@@ -3,7 +3,7 @@
 import { readPixelsToArray } from '@luma.gl/core'
 import GL from '@luma.gl/constants'
 
-import { indexBy } from 'util/data'
+import { indexBy, setIntersection, sum } from 'util/data'
 
 const TILE_SIZE = 512
 
@@ -98,23 +98,20 @@ export const getTile = (map, screenPoint, layer) => {
   }
 }
 
-const extractIndicators = (data, subregion, ecosystemInfo, indicatorInfo) => {
+const extractIndicators = (data, ecosystemInfo, indicatorInfo, subregions) => {
   const ecosystemIndex = indexBy(ecosystemInfo, 'id')
 
-  let hasInland = false
-  let hasMarine = false
-
-  let indicators = indicatorInfo.map(
-    ({ id, values: valuesInfo, ...indicator }) => {
+  // only show indicators that are either present or likely present based on
+  // subregion
+  let indicators = indicatorInfo
+    .filter(({ id, subregions: indicatorSubregions }) => {
       const present = data[id] !== undefined && data[id] !== null
-
-      if (present) {
-        if (id.startsWith('base:land_') || id.startsWith('base:freshwater_')) {
-          hasInland = true
-        } else {
-          hasMarine = true
-        }
-      }
+      return (
+        present || setIntersection(indicatorSubregions, subregions).size > 0
+      )
+    })
+    .map(({ id, values: valuesInfo, ...indicator }) => {
+      const present = data[id] !== undefined && data[id] !== null
 
       const values = valuesInfo.map(({ value, ...rest }) => ({
         ...rest,
@@ -127,31 +124,18 @@ const extractIndicators = (data, subregion, ecosystemInfo, indicatorInfo) => {
         id,
         values,
         total: present ? 100 : 0,
-        ecosystem: ecosystemIndex[id.split(':')[1].split('_')[0]],
+        ecosystem: ecosystemIndex[id.split('_')[0]],
       }
-    }
-  )
-
-  if (!hasInland) {
-    indicators = indicators.filter(({ id }) => id.search('marine_') !== -1)
-  } else if (!hasMarine) {
-    // has no marine, likely inland, don't show any marine indicators
-    indicators = indicators.filter(({ id }) => id.search('marine_') === -1)
-  }
-
-  // filter for subregions that can contain a given indicator
-  if (subregion) {
-    indicators = indicators.filter(({ subregions }) =>
-      subregions ? subregions.indexOf(subregion) !== -1 : true
-    )
-  }
-
-  indicators = indexBy(indicators, 'id')
+    })
 
   // aggregate these up by ecosystems for ecosystems that are present
   const ecosystemsPresent = new Set(
-    Object.keys(indicators).map((id) => id.split(':')[1].split('_')[0])
+    indicators
+      .filter(({ values }) => sum(values.map(({ percent }) => percent)) > 0)
+      .map(({ ecosystem: { id } }) => id)
   )
+
+  indicators = indexBy(indicators, 'id')
 
   const ecosystems = ecosystemInfo
     .filter(({ id }) => ecosystemsPresent.has(id))
@@ -241,11 +225,9 @@ export const extractPixelData = (
     })
   })
 
-  // if data is empty, then pixel is is outside base blueprint area
+  // if data is empty, then pixel is is outside blueprint area
   if (Object.keys(data).length === 0) {
-    return {
-      inputId: null,
-    }
+    return {}
   }
 
   // extract info from feature data
@@ -257,32 +239,15 @@ export const extractPixelData = (
     ({ layer: { id } }) => id === 'subregions'
   )
 
-  // unpack indicators and ecosystems
-  data.indicators = {
-    base: extractIndicators(
-      data,
-      subregion,
-      ecosystemInfo,
-      indicatorInfo.base.indicators
-    ),
-  }
+  const subregions = new Set([subregion])
 
-  if (data.urban === undefined || data.urban === null) {
-    // if urban is not present but within Blueprint area and not in marine areas, then
-    // set to 0
-    data.urban =
-      data.blueprint !== undefined &&
-      data.blueprint !== null &&
-      data.indicators &&
-      data.indicators.base &&
-      data.indicators.base.ecosystems &&
-      (data.indicators.base.ecosystems.filter(({ id }) => id === 'land')
-        .length > 0 ||
-        data.indicators.base.ecosystems.filter(({ id }) => id === 'freshwater')
-          .length > 0)
-        ? 0
-        : null
-  }
+  // unpack indicators and ecosystems
+  data.indicators = extractIndicators(
+    data,
+    ecosystemInfo,
+    indicatorInfo,
+    subregions
+  )
 
   // extract SLR
   if (data.slr !== undefined && data.slr !== null) {
@@ -330,8 +295,7 @@ export const extractPixelData = (
   }
 
   return {
-    inputId: 'base', // pixel data only available for SE Base Blueprint area
-    subregion,
+    subregions,
     outsideSEPercent: 0,
     ...data,
     ownership,

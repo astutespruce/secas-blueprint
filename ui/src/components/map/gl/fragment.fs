@@ -16,18 +16,21 @@ uniform float renderLayerBits;
 uniform sampler2D renderLayerPalette;
 uniform float renderLayerPaletteSize;
 
-// uniforms for textures of indicator tiles
-uniform sampler2D indicator0;
-uniform sampler2D indicator1;
-uniform sampler2D indicator2;
-uniform sampler2D indicator3;
-uniform sampler2D indicator4;
-uniform sampler2D indicator5;
+// uniforms for textures for each layer
+uniform sampler2D layer0;
+uniform sampler2D layer1;
+uniform sampler2D layer2;
+uniform sampler2D layer3;
+uniform sampler2D layer4;
+uniform sampler2D layer5;
+uniform sampler2D layer6;
+uniform sampler2D layer7;
+uniform sampler2D layer8;
 
 // encoded filters, with a bit set to 1 for each value that is present in the
-// set of activated filters.  -1 indicates no filtering for that indicator.
+// set of activated filters.  -1 indicates no filtering for that layer.
 // NOTE: array size is filled from JS since this can't be dynamic in the shader
-uniform float filterValues[<NUM_INDICATORS>];
+uniform float filterValues[<NUM_LAYERS>];
 
 // return 32-bit integer(ish)
 float rgbToInt32(vec3 v) {
@@ -84,12 +87,15 @@ bool matchValue(float valueRGB, float offset, float numBits,
 }
 
 void main(void) {
-  float valueRGB0 = rgbToInt32(texture2D(indicator0, vTexCoord).rgb * 255.0);
-  float valueRGB1 = rgbToInt32(texture2D(indicator1, vTexCoord).rgb * 255.0);
-  float valueRGB2 = rgbToInt32(texture2D(indicator2, vTexCoord).rgb * 255.0);
-  float valueRGB3 = rgbToInt32(texture2D(indicator3, vTexCoord).rgb * 255.0);
-  float valueRGB4 = rgbToInt32(texture2D(indicator4, vTexCoord).rgb * 255.0);
-  float valueRGB5 = rgbToInt32(texture2D(indicator5, vTexCoord).rgb * 255.0);
+  float valueRGB0 = rgbToInt32(texture2D(layer0, vTexCoord).rgb * 255.0);
+  float valueRGB1 = rgbToInt32(texture2D(layer1, vTexCoord).rgb * 255.0);
+  float valueRGB2 = rgbToInt32(texture2D(layer2, vTexCoord).rgb * 255.0);
+  float valueRGB3 = rgbToInt32(texture2D(layer3, vTexCoord).rgb * 255.0);
+  float valueRGB4 = rgbToInt32(texture2D(layer4, vTexCoord).rgb * 255.0);
+  float valueRGB5 = rgbToInt32(texture2D(layer5, vTexCoord).rgb * 255.0);
+  float valueRGB6 = rgbToInt32(texture2D(layer6, vTexCoord).rgb * 255.0);
+  float valueRGB7 = rgbToInt32(texture2D(layer7, vTexCoord).rgb * 255.0);
+  float valueRGB8 = rgbToInt32(texture2D(layer8, vTexCoord).rgb * 255.0);
 
   // canRender is True where all filters are either not set or value is one
   // of active filter values
@@ -102,7 +108,8 @@ void main(void) {
   float valueRGB;
   if (renderLayerTextureIndex == 0) {
     valueRGB = valueRGB0;
-  } else if (renderLayerTextureIndex == 1) {
+  }
+  else if (renderLayerTextureIndex == 1) {
     valueRGB = valueRGB1;
   } else if (renderLayerTextureIndex == 2) {
     valueRGB = valueRGB2;
@@ -112,7 +119,14 @@ void main(void) {
     valueRGB = valueRGB4;
   } else if (renderLayerTextureIndex == 5) {
     valueRGB = valueRGB5;
+  } else if (renderLayerTextureIndex == 6) {
+    valueRGB = valueRGB6;
+  } else if (renderLayerTextureIndex == 7) {
+    valueRGB = valueRGB7;
+  } else if (renderLayerTextureIndex == 8) {
+    valueRGB = valueRGB8;
   }
+
   float renderValue = bitwise_and(rshift(valueRGB, renderLayerOffset),
                                   bitmask(renderLayerBits));
 

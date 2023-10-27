@@ -9,8 +9,7 @@ import { OutboundLink } from 'components/link'
 import UrbanCategories from './UrbanCategories'
 
 const YEARS = [
-  2001, 2004, 2006, 2008, 2011, 2013, 2016, 2019, 2021, 2020, 2030, 2040, 2050,
-  2060,
+  2001, 2004, 2006, 2008, 2011, 2013, 2016, 2019, 2021, 2030, 2040, 2050, 2060,
 ]
 
 const DataSource = () => (

@@ -13,12 +13,7 @@ import { indexBy, range } from 'util/data'
 const Context = createContext()
 
 export const Provider = ({ children }) => {
-  const {
-    indicators: {
-      // base is only input with indicators
-      base: { indicators },
-    },
-  } = useIndicators()
+  const { indicators } = useIndicators()
 
   const [{ mapMode, data, selectedIndicator, renderLayer, filters }, setState] =
     useState(() => {
@@ -50,8 +45,8 @@ export const Provider = ({ children }) => {
 
       initFilters.corridors = {
         enabled: false,
-        // values 1-4
-        activeValues: Object.fromEntries(range(1, 5).map((v) => [v, true])),
+        // values 1-6
+        activeValues: Object.fromEntries(range(1, 7).map((v) => [v, true])),
       }
 
       initFilters.urban = {

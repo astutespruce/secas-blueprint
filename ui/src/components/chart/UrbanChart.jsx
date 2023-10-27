@@ -14,7 +14,7 @@ import YAxis from './line/YAxis'
 
 const UrbanChart = ({ data, width, height }) => {
   const margin = { left: 60, right: 10, top: 16, bottom: 50 }
-  const splitIndex = 8 // split at 2019
+  const splitIndex = 9 // split at 2021
   const colors = ['#666666', '#D90000']
 
   const [minX, maxX] = extent(data.map(({ x }) => x))
@@ -51,7 +51,7 @@ const UrbanChart = ({ data, width, height }) => {
     .map((y) => ({ y: yScale(y), label: formatNumber(y) }))
 
   const leftPoints = points.slice(0, splitIndex)
-  // start right points at 2019
+  // start right points at 2021
   const rightPoints = points.slice(splitIndex - 1)
 
   return (
@@ -100,33 +100,33 @@ const UrbanChart = ({ data, width, height }) => {
         {/* dividing line */}
 
         <line
-          x1={xScale(2019)}
+          x1={xScale(2021)}
           y1={yScale(0)}
-          x2={xScale(2019)}
+          x2={xScale(2021)}
           y2={yScale(maxY) - 22}
           stroke="#AAA"
         />
 
         <text
-          x={xScale(2019) - 8}
+          x={xScale(2021) - 6}
           y={yScale(maxY) - 12}
           textAnchor="end"
           fontSize={10}
           fill="#777"
           className="label"
         >
-          Past trend
+          &#x2190; Past trend
         </text>
 
         <text
-          x={xScale(2020) + 2}
+          x={xScale(2021) + 6}
           y={yScale(maxY) - 12}
           textAnchor="start"
           fontSize={10}
           fill="#777"
           className="label"
         >
-          Future trend
+          Future trend &#x2192;
         </text>
 
         {/* render in reverse order so that tooltips show properly with increasing trends */}

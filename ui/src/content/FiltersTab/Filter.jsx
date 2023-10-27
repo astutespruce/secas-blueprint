@@ -13,7 +13,6 @@ const Filter = ({
   description,
   values,
   valueLabel: indicatorValueLabel,
-  presenceLabel,
   enabled,
   activeValues,
   // goodThreshold, // TODO: implement or remove
@@ -21,7 +20,6 @@ const Filter = ({
 }) => {
   const valueIndex = indexBy(values, 'value')
   const checkboxRef = useRef(null)
-  const hasMultipleValues = values.length > 1
 
   const tooltipContent = (
     <Box sx={{ fontSize: 0 }}>
@@ -29,30 +27,26 @@ const Filter = ({
       {description ? <Text sx={{ mb: '0.5rem' }}>{description}</Text> : null}
       <b>{indicatorValueLabel || 'Values'}:</b>
       <br />
-      {hasMultipleValues ? (
-        <Box
-          as="ul"
-          sx={{
-            m: 0,
-            lineHeight: 1.2,
-            fontSize: 0,
-            '& li+li': {
-              mt: '0.25em',
-            },
-          }}
-        >
-          {values.map(
-            ({ value, label: valueLabel, description: valueDescription }) => (
-              <li key={value}>
-                {valueLabel}
-                {valueDescription ? `: ${valueDescription}` : null}
-              </li>
-            )
-          )}
-        </Box>
-      ) : (
-        `${presenceLabel} (presence-only indicator)`
-      )}
+      <Box
+        as="ul"
+        sx={{
+          m: 0,
+          lineHeight: 1.2,
+          fontSize: 0,
+          '& li+li': {
+            mt: '0.25em',
+          },
+        }}
+      >
+        {values.map(
+          ({ value, label: valueLabel, description: valueDescription }) => (
+            <li key={value}>
+              {valueLabel}
+              {valueDescription ? `: ${valueDescription}` : null}
+            </li>
+          )
+        )}
+      </Box>
     </Box>
   )
 
@@ -154,15 +148,6 @@ const Filter = ({
                       size="1em"
                       style={{ position: 'relative', top: 0 }}
                     />
-                    {/* <Text
-                      sx={{
-                        position: 'absolute',
-                        top: 0,
-                        left: '-0.5rem',
-                      }}
-                    >
-                      <Minus size="0.6em" />
-                    </Text> */}
                   </Box>
                 ) : (
                   <Box sx={{ position: 'relative' }}>
@@ -191,6 +176,12 @@ const Filter = ({
         {enabled ? (
           <Box sx={{ ml: '2.5rem', mr: '1rem', pb: '0.5rem' }}>
             <Box>
+              {indicatorValueLabel ? (
+                <Text sx={{ lineHeight: 1.2, mb: '0.5rem' }}>
+                  {indicatorValueLabel}:
+                </Text>
+              ) : null}
+
               {values.map(({ value, label: valueLabel }) => (
                 <Box key={value}>
                   <Label
@@ -245,7 +236,6 @@ Filter.propTypes = {
   ).isRequired,
   // goodThreshold: PropTypes.number,
   valueLabel: PropTypes.string,
-  presenceLabel: PropTypes.string,
   activeValues: PropTypes.objectOf(PropTypes.bool).isRequired,
   enabled: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
@@ -256,7 +246,6 @@ Filter.defaultProps = {
   enabled: false,
   // goodThreshold: null,
   valueLabel: null,
-  presenceLabel: null,
 }
 
 export default Filter

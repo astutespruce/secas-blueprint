@@ -4,10 +4,7 @@ import { siteMetadata } from '../../../gatsby-config'
 const { tileHost } = siteMetadata
 
 export const mapConfig = {
-  bounds: [
-    -106.64569513153471, 17.636123947586636, -64.51380002048602,
-    40.63868991990464,
-  ],
+  bounds: [-106.64569497, 17.63478139, -64.44293322, 40.63868947],
   maxBounds: [-180, -80, 180, 80],
   minZoom: 3,
   maxZoom: 14,
@@ -20,14 +17,14 @@ export const sources = {
     tileSize: 256,
     minzoom: 3,
     maxzoom: 14,
-    bounds: [-106.66188036, 17.92676033, -65.22106481, 40.638801],
-    tiles: [`${tileHost}/services/se_blueprint_2022/tiles/{z}/{x}/{y}.png`],
+    bounds: [-108.0227, 16.97285, -57.03082, 41.58111],
+    tiles: [`${tileHost}/services/blueprint/tiles/{z}/{x}/{y}.png`],
   },
   mapUnits: {
     type: 'vector',
     minzoom: 3,
     maxzoom: 14,
-    bounds: [-106.66188036, 17.92676033, -65.22106481, 40.6388013],
+    bounds: [-180, -85, 180, 85],
     tiles: [`${tileHost}/services/se_map_units/tiles/{z}/{x}/{y}.pbf`],
     // note: can use promoteId: 'id' to promote feature properties ID to feature ID
     promoteId: 'id',
@@ -36,7 +33,7 @@ export const sources = {
     type: 'vector',
     minzoom: 3,
     maxzoom: 14,
-    bounds: [-106.655273, 17.769612, -65.214844, 40.647304],
+    bounds: [-106.655273, 17.623082, -64.423828, 40.647304],
     tiles: [`${tileHost}/services/se_other_features/tiles/{z}/{x}/{y}.pbf`],
   },
 }
