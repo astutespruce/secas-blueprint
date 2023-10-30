@@ -6,7 +6,7 @@ import React, {
   useCallback,
 } from 'react'
 import PropTypes from 'prop-types'
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 
 import { searchPlaces, getPlace } from './mapbox'
 
@@ -81,23 +81,22 @@ const useSearchSuggestions = (query) => {
     isLoading,
     error,
     data: results = [],
-  } = useQuery(
-    ['search', query],
-    () => {
+  } = useQuery({
+    queryKey: ['search', query],
+    queryFn: () => {
       if (!query) {
         return null
       }
 
       return searchPlaces(query)
     },
-    {
-      enabled: !!query && query.length >= 3,
-      staleTime: 60 * 60 * 1000, // 60 minutes
-      // staleTime: 1, // use then reload to force refresh of underlying data during dev
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-    }
-  )
+
+    enabled: !!query && query.length >= 3,
+    staleTime: 60 * 60 * 1000, // 60 minutes
+    // staleTime: 1, // use then reload to force refresh of underlying data during dev
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+  })
 
   // Just log the error, there isn't much we can show the user here
   if (error) {
@@ -113,23 +112,22 @@ const useRetriveItemDetails = (selectedId) => {
     isLoading,
     error,
     data: location = null,
-  } = useQuery(
-    ['retrieve', selectedId],
-    () => {
+  } = useQuery({
+    queryKey: ['retrieve', selectedId],
+    queryFn: () => {
       if (!selectedId) {
         return null
       }
 
       return getPlace(selectedId)
     },
-    {
-      enabled: !!selectedId,
-      staleTime: 60 * 60 * 1000, // 60 minutes
-      // staleTime: 1, // use then reload to force refresh of underlying data during dev
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-    }
-  )
+
+    enabled: !!selectedId,
+    staleTime: 60 * 60 * 1000, // 60 minutes
+    // staleTime: 1, // use then reload to force refresh of underlying data during dev
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+  })
 
   // Just log the error, there isn't much we can show the user here
   if (error) {

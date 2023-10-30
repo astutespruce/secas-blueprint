@@ -37,11 +37,10 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
         ctx["redis"], ctx["job_id"], 50, "Creating maps (this might take a while)"
     )
 
-    # compile indicator IDs across all inputs
+    # compile indicator IDs across all ecosystems
     indicators = []
-    for input_area in results["inputs"]:
-        for ecosystem in input_area.get("ecosystems", []):
-            indicators.extend([i["id"] for i in ecosystem["indicators"]])
+    for ecosystem in results.get("ecosystems", []):
+        indicators.extend([i["id"] for i in ecosystem["indicators"]])
 
     maps, scale, map_errors = await render_maps(
         results["bounds"],
