@@ -24,29 +24,16 @@ const Filter = ({
   const tooltipContent = (
     <Box sx={{ fontSize: 0 }}>
       <Text sx={{ mb: 0, fontSize: 1, fontWeight: 'bold' }}>{label}</Text>
-      {description ? <Text sx={{ mb: '0.5rem' }}>{description}</Text> : null}
-      <b>{indicatorValueLabel || 'Values'}:</b>
-      <br />
-      <Box
-        as="ul"
-        sx={{
-          m: 0,
-          lineHeight: 1.2,
-          fontSize: 0,
-          '& li+li': {
-            mt: '0.25em',
-          },
-        }}
-      >
-        {values.map(
-          ({ value, label: valueLabel, description: valueDescription }) => (
-            <li key={value}>
-              {valueLabel}
-              {valueDescription ? `: ${valueDescription}` : null}
-            </li>
-          )
-        )}
-      </Box>
+      {description ? (
+        <Text sx={{ mb: '0.5rem' }}>
+          {/* handle links */}
+          {description.search(/<a/g) !== -1 ? (
+            <div dangerouslySetInnerHTML={{ __html: description }} />
+          ) : (
+            description
+          )}
+        </Text>
+      ) : null}
     </Box>
   )
 

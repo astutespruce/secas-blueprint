@@ -5,7 +5,6 @@ import { Check } from '@emotion-icons/fa-solid'
 
 import { PercentBarChart } from 'components/chart'
 import { useOwnership } from 'components/data'
-import { OutboundLink } from 'components/link'
 import { sum } from 'util/data'
 
 const Protection = ({ type, protection }) => {
@@ -18,19 +17,19 @@ const Protection = ({ type, protection }) => {
     color: 'grey.9',
   }))
 
-  const total = sum(bars.map(({ percent }) => Math.min(percent, 100)))
-
-  const remainder = 100 - total
-  if (remainder > 0) {
-    bars.push({
-      id: 'not_conserved',
-      label: 'Not conserved',
-      color: 'grey.5',
-      percent: remainder,
-    })
-  }
-
   if (type === 'pixel') {
+    const total = sum(bars.map(({ percent }) => Math.min(percent, 100)))
+
+    const remainder = 100 - total
+    if (remainder > 0) {
+      bars.push({
+        id: 'not_conserved',
+        label: 'Not conserved',
+        color: 'grey.5',
+        percent: remainder,
+      })
+    }
+
     return (
       <Box sx={{ ml: '0.5rem', mt: '0.5rem' }}>
         {bars.map(({ id, label, percent }) => (
@@ -68,34 +67,9 @@ const Protection = ({ type, protection }) => {
     )
   }
 
-  return (
-    <>
-      {bars.map((bar) => (
-        <PercentBarChart
-          key={bar.id}
-          {...bar}
-          sx={{ mt: '0.5rem', mb: '1rem' }}
-        />
-      ))}
-
-      <Text sx={{ color: 'grey.8', fontSize: 1 }}>
-        {total > 100 ? (
-          <>
-            Note: due to overlapping protected areas compiled from multiple
-            sources and designations, the sum of areas in above categories is
-            more than 100% of this area.
-            <br />
-            <br />
-          </>
-        ) : null}
-        Land and marine protectection status is derived from the{' '}
-        <OutboundLink to="https://www.usgs.gov/programs/gap-analysis-project/science/pad-us-data-download">
-          Protected Areas Database of the United States
-        </OutboundLink>{' '}
-        (PAD-US v3.0).
-      </Text>
-    </>
-  )
+  return bars.map((bar) => (
+    <PercentBarChart key={bar.id} {...bar} sx={{ mt: '0.5rem', mb: '1rem' }} />
+  ))
 }
 
 Protection.propTypes = {
