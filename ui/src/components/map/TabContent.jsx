@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Box } from 'theme-ui'
+import { Box, Flex, Text } from 'theme-ui'
+import { ExclamationTriangle } from '@emotion-icons/fa-solid'
 
 import {
   InfoTab,
@@ -38,7 +39,7 @@ const TabContent = ({ tab, mapData }) => {
   const {
     type,
     isLoading,
-    blueprint,
+    blueprint = null,
     corridors,
     subregions,
     outsideSEPercent,
@@ -54,6 +55,21 @@ const TabContent = ({ tab, mapData }) => {
 
   if (isLoading) {
     return <Box sx={{ textAlign: 'center', mt: '1rem' }}>Loading...</Box>
+  }
+
+  if (blueprint === null) {
+    return (
+      <>
+        <Flex sx={{ py: '2rem', pl: '1rem', pr: '2rem', alignItems: 'center' }}>
+          <Box sx={{ flex: '0 0 auto', mr: '1rem', color: 'orange' }}>
+            <ExclamationTriangle size="2em" />
+          </Box>
+          <Text sx={{ color: 'grey.8', flex: '1 1 auto' }}>
+            <b>No pixel-level details are available for this area.</b>
+          </Text>
+        </Flex>
+      </>
+    )
   }
 
   switch (tab) {
