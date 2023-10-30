@@ -12,7 +12,7 @@ from rasterio.enums import Resampling
 from rasterio.vrt import WarpedVRT
 import shapely
 
-from analysis.constants import MASK_RESOLUTION, CORRIDORS
+from analysis.constants import MASK_RESOLUTION, CORRIDORS, BLUEPRINT
 from analysis.lib.colors import hex_to_uint8
 from analysis.lib.geometry import to_dict, dissolve
 from analysis.lib.raster import (
@@ -61,17 +61,11 @@ outfilename = out_dir / "blueprint.tif"
 
 if not outfilename.exists():
     print("Extracting blueprint")
-    df = (
-        read_dataframe(
-            src_dir / "Blueprint2023.tif.vat.dbf",
-            columns=["Value", "Red", "Green", "Blue"],
-        )
-        .set_index("Value")
-        .astype("uint8")
-    )
-    df["Alpha"] = 255
-    df.loc[0, "Alpha"] = 0
-    colormap = df.apply(tuple, axis=1).to_dict()
+    colormap = {
+        e["value"]: hex_to_uint8(e["color"])
+        for e in BLUEPRINT
+    }
+    colormap[0] = (255, 255, 255, 0)
 
     with rasterio.open(src_dir / "Blueprint2023.tif") as src:
         nodata = int(src.nodata)
@@ -338,6 +332,13 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
         ]
     ]
 
+    df["description"] = (
+        df["description"]
+        .str.replace("’", "'")
+        .str.replace("–", "-")
+        .str.strip()
+    )
+
     if merged is None:
         merged = df
     else:
@@ -466,6 +467,8 @@ for index, indicator_row in indicator_df.iterrows():
             .str.replace(" if managed in open condition", "")
             .str.replace("umbrella bird ", "")
             .str.replace(" (brown-headed nuthatch, Bachman's sparrow, red-cockaded woodpecker)", "")
+            .str.replace("Pine patch ", "")
+            .str.capitalize()
         )
 
     elif filename == "WestGulfCoastMottledDuckNesting.tif":

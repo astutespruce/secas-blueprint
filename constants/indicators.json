@@ -3,7 +3,7 @@
     "id": "f_atlanticmigratoryfishhabitat",
     "filename": "AtlanticMigratoryFishHabitat.tif",
     "label": "Atlantic migratory fish habitat",
-    "description": "This indicator measures the condition of migratory fish habitat along the Atlantic coast within each catchment, using metrics of water quality, aquatic connectivity, habitat fragmentation, flow alteration, and more. Areas of excellent fish habitat are already in good condition and face few threats. Restoration opportunity areas are doing well in some respects, but restoration projects could significantly improve them. Degraded areas of opportunity face many challenges, and restoration projects are unlikely to increase available fish habitat unless particularly large in scope and scale. This indicator originates from the Atlantic Coast Fish Habitat Partnership’s fish habitat conservation area mapping and prioritization project.",
+    "description": "This indicator measures the condition of migratory fish habitat along the Atlantic coast within each catchment, using metrics of water quality, aquatic connectivity, habitat fragmentation, flow alteration, and more. Areas of excellent fish habitat are already in good condition and face few threats. Restoration opportunity areas are doing well in some respects, but restoration projects could significantly improve them. Degraded areas of opportunity face many challenges, and restoration projects are unlikely to increase available fish habitat unless particularly large in scope and scale. This indicator originates from the Atlantic Coast Fish Habitat Partnership's fish habitat conservation area mapping and prioritization project.",
     "values": [
       {
         "value": 0,
@@ -67,7 +67,7 @@
     "id": "f_caribbeannaturallandcoverinfloodplains",
     "filename": "CaribbeanNaturalLandcoverInFloodplains.tif",
     "label": "Caribbean natural landcover in floodplains",
-    "description": "This indicator measures the amount of natural landcover in the estimated floodplain of rivers and streams within each catchment in the U.S. Caribbean. It assesses the stream channel and its surrounding riparian buffer, measuring the percent of unaltered habitat like forests, wetlands, or open water (rather than agriculture or development) in the floodplain. Intact vegetated buffers within the floodplain of rivers and streams provide aquatic habitat, improve water quality, reduce erosion and flooding, recharge groundwater, and more. This indicator originates from LANDFIRE land cover. It applies to the floodplain predicted to be inundated by a 100-year flood (also known as the 1% annual chance flood), derived from the Federal Emergency Management Agency’s National Flood Hazard Layer, and buffered flowlines representing other streams.",
+    "description": "This indicator measures the amount of natural landcover in the estimated floodplain of rivers and streams within each catchment in the U.S. Caribbean. It assesses the stream channel and its surrounding riparian buffer, measuring the percent of unaltered habitat like forests, wetlands, or open water (rather than agriculture or development) in the floodplain. Intact vegetated buffers within the floodplain of rivers and streams provide aquatic habitat, improve water quality, reduce erosion and flooding, recharge groundwater, and more. This indicator originates from LANDFIRE land cover. It applies to the floodplain predicted to be inundated by a 100-year flood (also known as the 1% annual chance flood), derived from the Federal Emergency Management Agency's National Flood Hazard Layer, and buffered flowlines representing other streams.",
     "values": [
       {
         "value": 0,
@@ -110,7 +110,7 @@
     "id": "f_caribbeannetworkcomplexity",
     "filename": "CaribbeanNetworkComplexity.tif",
     "label": "Caribbean network complexity",
-    "description": "This indicator depicts the number of connected stream size classes in a river network between dams or waterfalls in the U.S. Caribbean. River networks with a variety of connected stream classes help retain aquatic biodiversity in a changing climate by allowing species to access climate refugia and move between habitats. This indicator originates from the Southeast Aquatic Resources Partnership. It applies to the estimated floodplain, which spatially defines areas predicted to be inundated by a 100-year flood (also known as the 1% annual chance flood), based on the Federal Emergency Management Agency’s National Flood Hazard Layer, and buffered flowlines representing other streams.",
+    "description": "This indicator depicts the number of connected stream size classes in a river network between dams or waterfalls in the U.S. Caribbean. River networks with a variety of connected stream classes help retain aquatic biodiversity in a changing climate by allowing species to access climate refugia and move between habitats. This indicator originates from the Southeast Aquatic Resources Partnership. It applies to the estimated floodplain, which spatially defines areas predicted to be inundated by a 100-year flood (also known as the 1% annual chance flood), based on the Federal Emergency Management Agency's National Flood Hazard Layer, and buffered flowlines representing other streams.",
     "values": [
       {
         "value": 0,
@@ -148,7 +148,7 @@
     "id": "f_caribbeanpermeablesurface",
     "filename": "CaribbeanPermeableSurface.tif",
     "label": "Caribbean permeable surface",
-    "description": "This indicator measures the average percent of non-impervious cover within each catchment in the U.S. Caribbean. High levels of impervious surface degrade water quality and alter freshwater flow, impacting both aquatic species communities and ecosystem services for people, like the availability of clean drinking water. It originates from the National Oceanic and Atmospheric Administration’s Coastal Change Analysis Program landcover.",
+    "description": "This indicator measures the average percent of non-impervious cover within each catchment in the U.S. Caribbean. High levels of impervious surface degrade water quality and alter freshwater flow, impacting both aquatic species communities and ecosystem services for people, like the availability of clean drinking water. It originates from the National Oceanic and Atmospheric Administration's Coastal Change Analysis Program landcover.",
     "values": [
       {
         "value": 1,
@@ -181,7 +181,7 @@
     "id": "f_gulfmigratoryfishconnectivity",
     "filename": "GulfMigratoryFishConnectivity.tif",
     "label": "Gulf migratory fish connectivity",
-    "description": "This indicator captures how far upstream migratory fish in the Gulf of Mexico have been observed. How far upstream migratory fish can travel reflects not just the presence of dams and other barriers, but also the presence of measures like fish ladders that allow specific species to access habitat upstream of dams. This indicator originates from The Nature Conservancy’s Southeast Aquatic Connectivity Assessment Project and applies to the Environmental Protection Agency’s estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood (also known as the 1% annual chance flood).",
+    "description": "This indicator captures how far upstream migratory fish in the Gulf of Mexico have been observed. How far upstream migratory fish can travel reflects not just the presence of dams and other barriers, but also the presence of measures like fish ladders that allow specific species to access habitat upstream of dams. This indicator originates from The Nature Conservancy's Southeast Aquatic Connectivity Assessment Project and applies to the Environmental Protection Agency's estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood (also known as the 1% annual chance flood).",
     "values": [
       {
         "value": 0,
@@ -214,7 +214,7 @@
     "id": "f_imperiledaquaticspecies",
     "filename": "ImperiledAquaticSpecies.tif",
     "label": "Imperiled aquatic species",
-    "description": "This indicator measures the number of aquatic animal Species of Greatest Conservation Need (SGCN) observed within each 12-digit HUC subwatershed, including fish, mussels, snails, crayfish, and amphibians. SGCN are identified in State Wildlife Action Plans as most in need of conservation action. This indicator captures patterns of rare and endemic aquatic species diversity. It originates from state Natural Heritage Program data collected by the Southeast Aquatic Resources Partnership and applies to the Environmental Protection Agency’s estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood (also known as the 1% annual chance flood).",
+    "description": "This indicator measures the number of aquatic animal Species of Greatest Conservation Need (SGCN) observed within each 12-digit HUC subwatershed, including fish, mussels, snails, crayfish, and amphibians. SGCN are identified in State Wildlife Action Plans as most in need of conservation action. This indicator captures patterns of rare and endemic aquatic species diversity. It originates from state Natural Heritage Program data collected by the Southeast Aquatic Resources Partnership and applies to the Environmental Protection Agency's estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood (also known as the 1% annual chance flood).",
     "values": [
       {
         "value": 0,
@@ -299,7 +299,7 @@
     "id": "f_naturallandcoverinfloodplains",
     "filename": "NaturalLandcoverInFloodplains.tif",
     "label": "Natural landcover in floodplains",
-    "description": "This indicator measures the amount of natural landcover in the estimated floodplain of rivers and streams within each catchment. It assesses the stream channel and its surrounding riparian buffer, measuring the percent of unaltered habitat like forests, wetlands, or open water (rather than agriculture or development). Intact vegetated buffers within the floodplain of rivers and streams provide aquatic habitat, improve water quality, reduce erosion and flooding, recharge groundwater, and more. This indicator originates from the National Land Cover Database and applies to the Environmental Protection Agency’s estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood (also known as the 1% annual chance flood).",
+    "description": "This indicator measures the amount of natural landcover in the estimated floodplain of rivers and streams within each catchment. It assesses the stream channel and its surrounding riparian buffer, measuring the percent of unaltered habitat like forests, wetlands, or open water (rather than agriculture or development). Intact vegetated buffers within the floodplain of rivers and streams provide aquatic habitat, improve water quality, reduce erosion and flooding, recharge groundwater, and more. This indicator originates from the National Land Cover Database and applies to the Environmental Protection Agency's estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood (also known as the 1% annual chance flood).",
     "values": [
       {
         "value": 0,
@@ -364,7 +364,7 @@
     "id": "f_networkcomplexity",
     "filename": "NetworkComplexity.tif",
     "label": "Network complexity",
-    "description": "This indicator depicts the number of connected stream size classes in a river network between dams or waterfalls. River networks with a variety of connected stream classes help retain aquatic biodiversity in a changing climate by allowing species to access climate refugia and move between habitats. This indicator originates from the Southeast Aquatic Resources Partnership and applies to the Environmental Protection Agency’s estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood (also known as the 1% annual chance flood).",
+    "description": "This indicator depicts the number of connected stream size classes in a river network between dams or waterfalls. River networks with a variety of connected stream classes help retain aquatic biodiversity in a changing climate by allowing species to access climate refugia and move between habitats. This indicator originates from the Southeast Aquatic Resources Partnership and applies to the Environmental Protection Agency's estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood (also known as the 1% annual chance flood).",
     "values": [
       {
         "value": 0,
@@ -465,7 +465,7 @@
     "valueLabel": "Percent of catchment permeable ",
     "captionLabel": "permeable surface",
     "goodThreshold": 4,
-    "url": "https://secas-fws.hub.arcgis.com/maps/fws::permeable-surface-southeast-blueprint-indicator/about",
+    "url": "https://secas-fws.hub.arcgis.com/maps/fws::permeable-surface-southeast-blueprint-indicator-2023/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
@@ -494,7 +494,7 @@
     "id": "f_westvirginiaimperiledaquaticspecies",
     "filename": "WestVirginiaImperiledAquaticSpecies.tif",
     "label": "West Virginia imperiled aquatic species",
-    "description": "This indicator counts the number of aquatic species within each 12-digit HUC subwatershed in West Virginia that are listed as G1 (globally critically imperiled), G2 (globally imperiled), or threatened/endangered under the U.S. Endangered Species Act. This indicator captures patterns of rare and endemic aquatic species diversity. It fills a key gap in the imperiled aquatic species indicator, which does not yet cover West Virginia. This indicator originates from the Environmental Protection Agency’s EnviroAtlas data.",
+    "description": "This indicator counts the number of aquatic species within each 12-digit HUC subwatershed in West Virginia that are listed as G1 (globally critically imperiled), G2 (globally imperiled), or threatened/endangered under the U.S. Endangered Species Act. This indicator captures patterns of rare and endemic aquatic species diversity. It fills a key gap in the imperiled aquatic species indicator, which does not yet cover West Virginia. This indicator originates from the Environmental Protection Agency's EnviroAtlas data.",
     "values": [
       {
         "value": 0,
@@ -537,7 +537,7 @@
     "id": "m_atlanticcoralandhardbottom",
     "filename": "AtlanticCoralandHardbottom.tif",
     "label": "Atlantic coral & hardbottom",
-    "description": "This indicator predicts the presence of coral and hardbottom in the Atlantic ocean based on direct observations, known locations of human-created structures like artificial reefs, and predictive models. The models use hardbottom observations and a suite of environmental predictors including measures of depth, seafloor topography and substrate, oceanography, and geography. Hardbottom provides an anchor for important seafloor habitats such as deep-sea corals, plants, and sponges, providing valuable structure that supports a wide range of invertebrate and fish species. This indicator combines data from The Nature Conservancy’s South Atlantic Bight Marine Assessment and multiple National Oceanic and Atmospheric Administration datasets (deep-sea coral observations, shipwrecks, artificial reefs, and two projects predicting hardbottom distribution).",
+    "description": "This indicator predicts the presence of coral and hardbottom in the Atlantic ocean based on direct observations, known locations of human-created structures like artificial reefs, and predictive models. The models use hardbottom observations and a suite of environmental predictors including measures of depth, seafloor topography and substrate, oceanography, and geography. Hardbottom provides an anchor for important seafloor habitats such as deep-sea corals, plants, and sponges, providing valuable structure that supports a wide range of invertebrate and fish species. This indicator combines data from The Nature Conservancy's South Atlantic Bight Marine Assessment and multiple National Oceanic and Atmospheric Administration datasets (deep-sea coral observations, shipwrecks, artificial reefs, and two projects predicting hardbottom distribution).",
     "values": [
       {
         "value": 0,
@@ -638,7 +638,7 @@
     "id": "m_atlanticestuarinefishhabitat",
     "filename": "AtlanticEstuarineFishHabitat.tif",
     "label": "Atlantic estuarine fish habitat",
-    "description": "This indicator measures the condition of estuarine fish habitat along the Atlantic coast using metrics of water quality, marsh edges, seagrass and oyster reefs, fragmentation, human development, and more. Areas of excellent fish habitat are already in good condition and face few threats. Restoration opportunity areas are doing well in some respects, but restoration projects could significantly improve them. Degraded areas of opportunity face many challenges, and restoration projects are unlikely to increase available fish habitat unless particularly large in scope and scale. This indicator originates from the Atlantic Coast Fish Habitat Partnership’s fish habitat conservation area mapping and prioritization project.",
+    "description": "This indicator measures the condition of estuarine fish habitat along the Atlantic coast using metrics of water quality, marsh edges, seagrass and oyster reefs, fragmentation, human development, and more. Areas of excellent fish habitat are already in good condition and face few threats. Restoration opportunity areas are doing well in some respects, but restoration projects could significantly improve them. Degraded areas of opportunity face many challenges, and restoration projects are unlikely to increase available fish habitat unless particularly large in scope and scale. This indicator originates from the Atlantic Coast Fish Habitat Partnership's fish habitat conservation area mapping and prioritization project.",
     "values": [
       {
         "value": 0,
@@ -702,7 +702,7 @@
     "id": "m_atlanticmarinebirds",
     "filename": "AtlanticMarineBirds.tif",
     "label": "Atlantic marine birds",
-    "description": "This indicator identifies important areas in the Atlantic Ocean for birds that feed exclusively or mainly at sea. It uses seasonal predictions of relative abundance for 19 species of marine birds (Audubon’s shearwater, band-rumped storm petrel, black-capped petrel, black scoter, Bonaparte's gull, bridled tern, brown pelican, common loon, common tern, Cory's shearwater, great shearwater, Manx shearwater, Northern gannet, parasitic jaeger, red-throated loon, royal tern, sooty shearwater, sooty tern, white-winged scoter) based on sightings from boat-based surveys and marine environmental data like fronts, primary productivity, and ocean currents. This indicator originates from Duke University’s Marine-life Data and Analysis Team marine bird models.",
+    "description": "This indicator identifies important areas in the Atlantic Ocean for birds that feed exclusively or mainly at sea. It uses seasonal predictions of relative abundance for 19 species of marine birds (Audubon's shearwater, band-rumped storm petrel, black-capped petrel, black scoter, Bonaparte's gull, bridled tern, brown pelican, common loon, common tern, Cory's shearwater, great shearwater, Manx shearwater, Northern gannet, parasitic jaeger, red-throated loon, royal tern, sooty shearwater, sooty tern, white-winged scoter) based on sightings from boat-based surveys and marine environmental data like fronts, primary productivity, and ocean currents. This indicator originates from Duke University's Marine-life Data and Analysis Team marine bird models.",
     "values": [
       {
         "value": 0,
@@ -775,7 +775,7 @@
     "id": "m_atlanticmarinemammals",
     "filename": "AtlanticMarineMammals.tif",
     "label": "Atlantic marine mammals",
-    "description": "This indicator identifies important areas in the Atlantic Ocean for dolphins, whales, and seals. It incorporates density predictions for 20 marine mammals species or species groups (Atlantic spotted dolphin, Atlantic white-sided dolphin, Clymene dolphin, common bottlenose dolphin, Cuvier’s beaked whale, dwarf and pygmy sperm whales, fin whale, harbor porpoise, humpback whale, mesoplodont beaked whales, North Atlantic right whale, pantropical spotted dolphin, pilot whales, Risso’s dolphin, rough-toothed dolphin, seals, short-beaked common dolphin, sperm whale, striped dolphin, unidentified beaked whales) based on sightings from boat-based and aerial surveys and data on oceanographic conditions. It uses marine mammal models developed by the Duke Marine Lab.",
+    "description": "This indicator identifies important areas in the Atlantic Ocean for dolphins, whales, and seals. It incorporates density predictions for 20 marine mammals species or species groups (Atlantic spotted dolphin, Atlantic white-sided dolphin, Clymene dolphin, common bottlenose dolphin, Cuvier's beaked whale, dwarf and pygmy sperm whales, fin whale, harbor porpoise, humpback whale, mesoplodont beaked whales, North Atlantic right whale, pantropical spotted dolphin, pilot whales, Risso's dolphin, rough-toothed dolphin, seals, short-beaked common dolphin, sperm whale, striped dolphin, unidentified beaked whales) based on sightings from boat-based and aerial surveys and data on oceanographic conditions. It uses marine mammal models developed by the Duke Marine Lab.",
     "values": [
       {
         "value": 0,
@@ -848,7 +848,7 @@
     "id": "m_caribbeanbeachhabitat",
     "filename": "CaribbeanBeachHabitat.tif",
     "label": "Caribbean beach habitat",
-    "description": "This indicator evaluates beach habitat for six species of birds and sea turtles that nest on beaches in the U.S. Caribbean (Wilson’s plover, American oystercatcher, and hawksbill, leatherback, green, and loggerhead sea turtles). It includes beach locations, sea turtle nest observations, and predicted suitable habitat for birds and sea turtles. Beaches, especially those known to support beach-nesting species, are particularly important habitats due to their limited spatial extent and vulnerability to development and sea-level rise. This indicator combines multiple datasets from the Gap Analysis Program, State of the World’s Sea Turtles, OpenStreetMap, and more.",
+    "description": "This indicator evaluates beach habitat for six species of birds and sea turtles that nest on beaches in the U.S. Caribbean (Wilson's plover, American oystercatcher, and hawksbill, leatherback, green, and loggerhead sea turtles). It includes beach locations, sea turtle nest observations, and predicted suitable habitat for birds and sea turtles. Beaches, especially those known to support beach-nesting species, are particularly important habitats due to their limited spatial extent and vulnerability to development and sea-level rise. This indicator combines multiple datasets from the Gap Analysis Program, State of the World's Sea Turtles, OpenStreetMap, and more.",
     "values": [
       {
         "value": 0,
@@ -876,7 +876,7 @@
     "id": "m_caribbeancoastalshorelinecondition",
     "filename": "CaribbeanCoastalShorelineCondition.tif",
     "label": "Caribbean coastal shoreline condition",
-    "description": "This indicator assesses shoreline alteration based on the presence of hardened structures like seawalls, groins, and riprap at the dynamic interface between land and water along the U.S. Caribbean coast. By restricting the natural movement of sediment, shoreline armoring increases erosion, prevents the inland migration of coastal ecosystems in response to sea-level rise, and degrades habitat for birds, sea turtles, fish, plants, and other species both on and offshore. This indicator originates from the National Oceanic and Atmospheric Administration’s Continuously Updated Shoreline Product.",
+    "description": "This indicator assesses shoreline alteration based on the presence of hardened structures like seawalls, groins, and riprap at the dynamic interface between land and water along the U.S. Caribbean coast. By restricting the natural movement of sediment, shoreline armoring increases erosion, prevents the inland migration of coastal ecosystems in response to sea-level rise, and degrades habitat for birds, sea turtles, fish, plants, and other species both on and offshore. This indicator originates from the National Oceanic and Atmospheric Administration's Continuously Updated Shoreline Product.",
     "values": [
       {
         "value": 0,
@@ -899,7 +899,7 @@
     "id": "m_caribbeanfishhotspots",
     "filename": "CaribbeanFishHotspots.tif",
     "label": "Caribbean fish hotspots",
-    "description": "This indicator represents areas of high predicted fish density and diversity in the U.S. Caribbean based on the presence of mangroves, seagrass, and coral in close proximity to one another. Many marine and estuarine fish species use mangroves, seagrass, and coral during different life stages or activities. These habitats provide nursery areas, foraging opportunities, shelter, and protection from predators. This indicator draws from research in Puerto Rico that examines fish density and the number of fish species present at different distances from various habitat types (Pittman et al. 2007). It uses benthic habitat data from The Nature Conservancy and landcover from the National Oceanic and Atmospheric Administration’s Coastal Change Analysis Program.",
+    "description": "This indicator represents areas of high predicted fish density and diversity in the U.S. Caribbean based on the presence of mangroves, seagrass, and coral in close proximity to one another. Many marine and estuarine fish species use mangroves, seagrass, and coral during different life stages or activities. These habitats provide nursery areas, foraging opportunities, shelter, and protection from predators. This indicator draws from research in Puerto Rico that examines fish density and the number of fish species present at different distances from various habitat types (Pittman et al. 2007). It uses benthic habitat data from The Nature Conservancy and landcover from the National Oceanic and Atmospheric Administration's Coastal Change Analysis Program.",
     "values": [
       {
         "value": 0,
@@ -937,7 +937,7 @@
     "id": "m_caribbeanfishnurseryhabitat",
     "filename": "CaribbeanFishNurseryHabitat.tif",
     "label": "Caribbean fish nursery habitat",
-    "description": "This indicator represents nursery and spawning habitat or other concentration areas for fish in the U.S. Caribbean. It captures places like mangrove lagoons, bays, estuaries, and some coral reefs. These areas serve as important nursery habitat for many fish species including snook, tarpon, snapper, great barracuda, grunt, mojarra, mullet, jack, bonefish, and more. This data originates from the National Oceanic and Atmospheric Administration’s Environmental Sensitivity Index.",
+    "description": "This indicator represents nursery and spawning habitat or other concentration areas for fish in the U.S. Caribbean. It captures places like mangrove lagoons, bays, estuaries, and some coral reefs. These areas serve as important nursery habitat for many fish species including snook, tarpon, snapper, great barracuda, grunt, mojarra, mullet, jack, bonefish, and more. This data originates from the National Oceanic and Atmospheric Administration's Environmental Sensitivity Index.",
     "values": [
       {
         "value": 0,
@@ -1051,7 +1051,7 @@
     "id": "m_coastalshorelinecondition",
     "filename": "CoastalShorelineCondition.tif",
     "label": "Coastal shoreline condition",
-    "description": "This indicator assesses shoreline condition based on the presence of hardened structures like jetties, groins, and riprap, as well as other human development. By restricting the natural movement of sediment, shoreline armoring increases erosion, prevents the inland migration of coastal ecosystems in response to sea-level rise, and degrades habitat for birds, sea turtles, fish, plants, and other species both on and offshore. Natural shorelines in harder-to-develop coastal areas receive the highest shoreline condition scores, while hardened shorelines receive the lowest scores. This indicator originates from the National Oceanic and Atmospheric Administration’s Environmental Sensitivity Index dataset.",
+    "description": "This indicator assesses shoreline condition based on the presence of hardened structures like jetties, groins, and riprap, as well as other human development. By restricting the natural movement of sediment, shoreline armoring increases erosion, prevents the inland migration of coastal ecosystems in response to sea-level rise, and degrades habitat for birds, sea turtles, fish, plants, and other species both on and offshore. Natural shorelines in harder-to-develop coastal areas receive the highest shoreline condition scores, while hardened shorelines receive the lowest scores. This indicator originates from the National Oceanic and Atmospheric Administration's Environmental Sensitivity Index dataset.",
     "values": [
       {
         "value": 0,
@@ -1245,7 +1245,7 @@
     "id": "m_gulfmarinemammals",
     "filename": "GulfMarineMammals.tif",
     "label": "Gulf marine mammals",
-    "description": "This indicator identifies important areas in the Gulf of Mexico for dolphins and whales. It incorporates monthly density predictions for 13 marine mammal species or species groups (Atlantic spotted dolphin, beaked whales, blackfish [which includes killer whale, melon-headed whale, false killer whale, pygmy killer whale], bottlenose dolphin, Bryde’s whale, clymene dolphin, pantropical spotted dolphin, pilot whales, pygmy/dwarf sperm whales, Rice’s whale, Risso’s dolphin, sperm whale, spinner dolphin) based on sightings from boat-based and aerial surveys and data on oceanographic conditions. It uses marine mammal models developed by the National Oceanic and Atmospheric Administration as part of the Gulf of Mexico Marine Assessment Program for Protected Species (GoMMAPPS).",
+    "description": "This indicator identifies important areas in the Gulf of Mexico for dolphins and whales. It incorporates monthly density predictions for 13 marine mammal species or species groups (Atlantic spotted dolphin, beaked whales, blackfish [which includes killer whale, melon-headed whale, false killer whale, pygmy killer whale], bottlenose dolphin, Bryde's whale, clymene dolphin, pantropical spotted dolphin, pilot whales, pygmy/dwarf sperm whales, Rice's whale, Risso's dolphin, sperm whale, spinner dolphin) based on sightings from boat-based and aerial surveys and data on oceanographic conditions. It uses marine mammal models developed by the National Oceanic and Atmospheric Administration as part of the Gulf of Mexico Marine Assessment Program for Protected Species (GoMMAPPS).",
     "values": [
       {
         "value": 0,
@@ -1321,7 +1321,7 @@
     "id": "m_gulfseaturtles",
     "filename": "GulfSeaTurtles.tif",
     "label": "Gulf sea turtles",
-    "description": "This indicator identifies important areas in the Gulf of Mexico for sea turtles. It incorporates monthly density predictions for four species (green, Kemp’s ridley, leatherback, and loggerhead sea turtles) based on sightings from boat-based and aerial surveys and data on oceanographic conditions. It uses sea turtle models developed by the National Oceanic and Atmospheric Administration as part of the Gulf of Mexico Marine Assessment Program for Protected Species (GoMMAPPS).",
+    "description": "This indicator identifies important areas in the Gulf of Mexico for sea turtles. It incorporates monthly density predictions for four species (green, Kemp's ridley, leatherback, and loggerhead sea turtles) based on sightings from boat-based and aerial surveys and data on oceanographic conditions. It uses sea turtle models developed by the National Oceanic and Atmospheric Administration as part of the Gulf of Mexico Marine Assessment Program for Protected Species (GoMMAPPS).",
     "values": [
       {
         "value": 0,
@@ -1372,7 +1372,7 @@
     "id": "m_islandhabitat",
     "filename": "IslandHabitat.tif",
     "label": "Island habitat",
-    "description": "This indicator represents important habitat for coastal island-dependent species across the Southeast. Because the isolation of islands can make them ecologically unique and protect them from disturbance and mainland predators, they often serve as important habitat for many species of mammals, plants, and insects, as well as breeding coastal birds and sea turtles. The highest scores go to island critical habitat for six threatened and endangered animal and plant species: piping plover, loggerhead sea turtle, Cape Sable thoroughwort, Florida semaphore cactus, silver rice rat, and Bartram’s hairstreak butterfly. This indicator uses U.S. Fish and Wildlife Service critical habitat data and island boundaries from the U.S. Geological Survey and Esri.",
+    "description": "This indicator represents important habitat for coastal island-dependent species across the Southeast. Because the isolation of islands can make them ecologically unique and protect them from disturbance and mainland predators, they often serve as important habitat for many species of mammals, plants, and insects, as well as breeding coastal birds and sea turtles. The highest scores go to island critical habitat for six threatened and endangered animal and plant species: piping plover, loggerhead sea turtle, Cape Sable thoroughwort, Florida semaphore cactus, silver rice rat, and Bartram's hairstreak butterfly. This indicator uses U.S. Fish and Wildlife Service critical habitat data and island boundaries from the U.S. Geological Survey and Esri.",
     "values": [
       {
         "value": 0,
@@ -1461,7 +1461,7 @@
     "id": "m_resilientcoastalsites",
     "filename": "ResilientCoastalSites.tif",
     "label": "Resilient coastal sites",
-    "description": "This indicator depicts the capacity of coastal habitats to migrate to adjacent lowlands in order to sustain biodiversity and natural services under increasing inundation from sea-level rise. It is based on the physical and condition characteristics of current tidal complexes, their predicted migration space, and surrounding buffer areas. These characteristics include marsh complex size, shared edge with migration space, sediment balance, water quality, natural landcover, landform diversity, and more. This indicator originates from The Nature Conservancy’s Resilient Coastal Sites project.",
+    "description": "This indicator depicts the capacity of coastal habitats to migrate to adjacent lowlands in order to sustain biodiversity and natural services under increasing inundation from sea-level rise. It is based on the physical and condition characteristics of current tidal complexes, their predicted migration space, and surrounding buffer areas. These characteristics include marsh complex size, shared edge with migration space, sediment balance, water quality, natural landcover, landform diversity, and more. This indicator originates from The Nature Conservancy's Resilient Coastal Sites project.",
     "values": [
       {
         "value": 1,
@@ -1502,7 +1502,7 @@
     "valueLabel": "",
     "captionLabel": "resilient coastal sites",
     "goodThreshold": null,
-    "url": "https://secas-fws.hub.arcgis.com/maps/fws::resilient-coastal-sites-southeast-blueprint-indicator/about",
+    "url": "https://secas-fws.hub.arcgis.com/maps/fws::resilient-coastal-sites-southeast-blueprint-indicator-2023/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
@@ -1518,7 +1518,7 @@
     "id": "m_seagrass",
     "filename": "Seagrass.tif",
     "label": "Seagrass",
-    "description": "This indicator represents the presence of seagrass in the Atlantic Ocean and Gulf of Mexico. Seagrasses provide food and habitat for a range of marine and estuarine wildlife, including fish, sea turtles, shrimp, crabs, oysters, and more. They also produce oxygen, filter water, control erosion, and buffer storms. Seagrasses serve as an important indicator of the overall health of coastal ecosystems because they are sensitive to water quality and require sufficiently clear water for sunlight to penetrate. This indicator originates from the National Oceanic and Atmospheric Administration’s Marine Cadastre.",
+    "description": "This indicator represents the presence of seagrass in the Atlantic Ocean and Gulf of Mexico. Seagrasses provide food and habitat for a range of marine and estuarine wildlife, including fish, sea turtles, shrimp, crabs, oysters, and more. They also produce oxygen, filter water, control erosion, and buffer storms. Seagrasses serve as an important indicator of the overall health of coastal ecosystems because they are sensitive to water quality and require sufficiently clear water for sunlight to penetrate. This indicator originates from the National Oceanic and Atmospheric Administration's Marine Cadastre.",
     "values": [
       {
         "value": 1,
@@ -1546,7 +1546,7 @@
     "id": "m_southatlanticbeachbirds",
     "filename": "SouthAtlanticBeachBirds.tif",
     "label": "South Atlantic beach birds",
-    "description": "This indicator is an index of habitat suitability for four shorebird species (American oystercatcher, Wilson's plover, least tern, piping plover) in the South Atlantic, based on observed abundance. It assesses beaches and nearby onshore habitats. Shorebirds’ relative use of beaches and neighboring habitats for nesting, foraging, and breeding is an indicator of ecosystem health and quality. This indicator combines bird data from the U.S. Geological Survey and state waterbird biologists in FL, GA, SC, and NC.",
+    "description": "This indicator is an index of habitat suitability for four shorebird species (American oystercatcher, Wilson's plover, least tern, piping plover) in the South Atlantic, based on observed abundance. It assesses beaches and nearby onshore habitats. Shorebirds' relative use of beaches and neighboring habitats for nesting, foraging, and breeding is an indicator of ecosystem health and quality. This indicator combines bird data from the U.S. Geological Survey and state waterbird biologists in FL, GA, SC, and NC.",
     "values": [
       {
         "value": 0,
@@ -1652,7 +1652,7 @@
     "id": "t_caribbeangreenwaysandtrails",
     "filename": "CaribbeanGreenwaysandTrails.tif",
     "label": "Caribbean greenways & trails",
-    "description": "This cultural resource indicator measures both the natural condition and connected length of greenways and trails in the U.S. Caribbean to characterize the quality of the recreational experience. Natural condition is based on the amount of impervious surface surrounding the path. Connected length captures how far a person can go without leaving a dedicated path, based on common distances for walking, running, and biking. This indicator originates from OpenStreetMap data and the National Oceanic and Atmospheric Administration’s Coastal Change Analysis Program landcover.",
+    "description": "This cultural resource indicator measures both the natural condition and connected length of greenways and trails in the U.S. Caribbean to characterize the quality of the recreational experience. Natural condition is based on the amount of impervious surface surrounding the path. Connected length captures how far a person can go without leaving a dedicated path, based on common distances for walking, running, and biking. This indicator originates from OpenStreetMap data and the National Oceanic and Atmospheric Administration's Coastal Change Analysis Program landcover.",
     "values": [
       {
         "value": 0,
@@ -1700,7 +1700,7 @@
     "id": "t_caribbeanhabitatpatchsizelargeislands",
     "filename": "CaribbeanHabitatPatchSizeLargeIslands.tif",
     "label": "Caribbean habitat patch size (large islands)",
-    "description": "This indicator represents the size of natural habitat patches on large islands in the U.S. Caribbean that are unfragmented by roads, urban development, or agriculture. Large areas of intact natural habitat are important for many wildlife species, including reptiles and amphibians, birds, and large mammals. It uses LANDFIRE landcover and road data, mimicking Esri’s intact habitat cores approach from their green infrastructure data.",
+    "description": "This indicator represents the size of natural habitat patches on large islands in the U.S. Caribbean that are unfragmented by roads, urban development, or agriculture. Large areas of intact natural habitat are important for many wildlife species, including reptiles and amphibians, birds, and large mammals. It uses LANDFIRE landcover and road data, mimicking Esri's intact habitat cores approach from their green infrastructure data.",
     "values": [
       {
         "value": 0,
@@ -1743,7 +1743,7 @@
     "id": "t_caribbeanhabitatpatchsizesmallislands",
     "filename": "CaribbeanHabitatPatchSizeSmallIslands.tif",
     "label": "Caribbean habitat patch size (small islands)",
-    "description": "This indicator represents the size of natural habitat patches on small islands in the U.S. Caribbean that are unfragmented by roads, urban development, or agriculture. Large areas of intact natural habitat are important for many wildlife species, including reptiles and amphibians, birds, and large mammals. It uses LANDFIRE landcover and road data, mimicking Esri’s intact habitat cores approach from their green infrastructure data.",
+    "description": "This indicator represents the size of natural habitat patches on small islands in the U.S. Caribbean that are unfragmented by roads, urban development, or agriculture. Large areas of intact natural habitat are important for many wildlife species, including reptiles and amphibians, birds, and large mammals. It uses LANDFIRE landcover and road data, mimicking Esri's intact habitat cores approach from their green infrastructure data.",
     "values": [
       {
         "value": 0,
@@ -1781,7 +1781,7 @@
     "id": "t_caribbeanislandhabitat",
     "filename": "CaribbeanIslandHabitat.tif",
     "label": "Caribbean island habitat",
-    "description": "This indicator represents the importance of island habitat in the U.S. Caribbean for federally listed and other imperiled species based on the presence of imperiled and invasive animals. The isolation of islands often makes them ecologically unique and protects them from disturbance and mainland predators; however, these factors also make them more vulnerable to invasive species. This indicator uses species data from Island Conservation’s Threatened Island Biodiversity Database, U.S. Fish and Wildlife Service critical habitat, and the Puerto Rico and U.S. Virgin Islands Gap Analysis Program.",
+    "description": "This indicator represents the importance of island habitat in the U.S. Caribbean for federally listed and other imperiled species based on the presence of imperiled and invasive animals. The isolation of islands often makes them ecologically unique and protects them from disturbance and mainland predators; however, these factors also make them more vulnerable to invasive species. This indicator uses species data from Island Conservation's Threatened Island Biodiversity Database, U.S. Fish and Wildlife Service critical habitat, and the Puerto Rico and U.S. Virgin Islands Gap Analysis Program.",
     "values": [
       {
         "value": 0,
@@ -1867,7 +1867,7 @@
     "id": "t_caribbeanlandscapecondition",
     "filename": "CaribbeanLandscapeCondition.tif",
     "label": "Caribbean landscape condition",
-    "description": "This indicator for the U.S. Caribbean represents natural areas with limited human alteration while also considering the natural landcover of the surrounding landscape. Examples of human alteration include urban development and intense agricultural use. The degree of naturalness across the landscape is a key ecological condition for sustaining species and ecosystem services that are sensitive to habitat fragmentation at multiple scales. This indicator uses LANDFIRE landcover and ideas from the Florida Critical Lands and Waters Identification Project’s approach for evaluating landscape integrity.",
+    "description": "This indicator for the U.S. Caribbean represents natural areas with limited human alteration while also considering the natural landcover of the surrounding landscape. Examples of human alteration include urban development and intense agricultural use. The degree of naturalness across the landscape is a key ecological condition for sustaining species and ecosystem services that are sensitive to habitat fragmentation at multiple scales. This indicator uses LANDFIRE landcover and ideas from the Florida Critical Lands and Waters Identification Project's approach for evaluating landscape integrity.",
     "values": [
       {
         "value": 1,
@@ -2019,7 +2019,7 @@
     "id": "t_eastcoastalplainopenpinebirds",
     "filename": "EastCoastalPlainOpenPineBirds.tif",
     "label": "East Coastal Plain open pine birds",
-    "description": "This indicator identifies areas within the historic longleaf pine range east of the Mississippi River where creating or maintaining open pine habitat would most benefit six focal species of birds (Bachman’s sparrow, red-cockaded woodpecker, Henslow’s sparrow, red-headed woodpecker, Northern bobwhite, brown-headed nuthatch). It prioritizes areas for open pine conservation based on suitability for longleaf pine, feasibility of prescribed burning, proximity to protected lands, habitat suitability for focal bird species, and proximity to bird source populations. It originates from the East Gulf Coastal Plain Joint Venture’s prioritization of areas for open pine ecosystem restoration.",
+    "description": "This indicator identifies areas within the historic longleaf pine range east of the Mississippi River where creating or maintaining open pine habitat would most benefit six focal species of birds (Bachman's sparrow, red-cockaded woodpecker, Henslow's sparrow, red-headed woodpecker, Northern bobwhite, brown-headed nuthatch). It prioritizes areas for open pine conservation based on suitability for longleaf pine, feasibility of prescribed burning, proximity to protected lands, habitat suitability for focal bird species, and proximity to bird source populations. It originates from the East Gulf Coastal Plain Joint Venture's prioritization of areas for open pine ecosystem restoration.",
     "values": [
       {
         "value": 0,
@@ -2070,7 +2070,7 @@
     "id": "t_equitableaccesstopotentialparks",
     "filename": "EquitableAccessToPotentialParks.tif",
     "label": "Equitable access to potential parks",
-    "description": "This cultural resource indicator prioritizes places to create new parks that would fill gaps in equitable access to open space within socially vulnerable communities in urban areas. It identifies areas where residents currently lack access to parks within a 10-minute walk (accounting for walkable road networks and access barriers like highways and fences), then prioritizes based on park need using demographic and environmental metrics. Parks help improve public health, foster a conservation ethic by providing opportunities for people to connect with nature, and support critical ecosystem services. This indicator originates from the Trust for Public Land’s ParkServe park priority areas and the Center for Disease Control’s Social Vulnerability Index.",
+    "description": "This cultural resource indicator prioritizes places to create new parks that would fill gaps in equitable access to open space within socially vulnerable communities in urban areas. It identifies areas where residents currently lack access to parks within a 10-minute walk (accounting for walkable road networks and access barriers like highways and fences), then prioritizes based on park need using demographic and environmental metrics. Parks help improve public health, foster a conservation ethic by providing opportunities for people to connect with nature, and support critical ecosystem services. This indicator originates from the Trust for Public Land's ParkServe park priority areas and the Center for Disease Control's Social Vulnerability Index.",
     "values": [
       {
         "value": 0,
@@ -2211,7 +2211,7 @@
     "valueLabel": "",
     "captionLabel": "Great Plains perennial grasslands",
     "goodThreshold": null,
-    "url": "https://secas-fws.hub.arcgis.com/maps/fws::great-plains-perennial-grasslands-southeast-blueprint-indicator/about",
+    "url": "https://secas-fws.hub.arcgis.com/maps/fws::great-plains-perennial-grasslands-southeast-blueprint-indicator-2023/about",
     "subregions": [
       "Edwards Plateau",
       "High Plains and Tablelands",
@@ -2299,7 +2299,7 @@
     "id": "t_intacthabitatcores",
     "filename": "IntactHabitatCores.tif",
     "label": "Intact habitat cores",
-    "description": "This indicator represents the size of large, unfragmented patches of natural habitat. It identifies minimally disturbed natural areas at least 100 acres in size and greater than 200 meters wide. Large areas of intact natural habitat are important for many wildlife species, including reptiles and amphibians, birds, and large mammals. This indicator originates from Esri’s green infrastructure data.",
+    "description": "This indicator represents the size of large, unfragmented patches of natural habitat. It identifies minimally disturbed natural areas at least 100 acres in size and greater than 200 meters wide. Large areas of intact natural habitat are important for many wildlife species, including reptiles and amphibians, birds, and large mammals. This indicator originates from Esri's green infrastructure data.",
     "values": [
       {
         "value": 0,
@@ -2390,7 +2390,7 @@
     "valueLabel": "",
     "captionLabel": "Interior Southeast grasslands",
     "goodThreshold": null,
-    "url": "https://secas-fws.hub.arcgis.com/maps/fws::interior-southeast-grasslands-southeast-blueprint-indicator/about",
+    "url": "https://secas-fws.hub.arcgis.com/maps/fws::interior-southeast-grasslands-southeast-blueprint-indicator-2023/about",
     "subregions": [
       "Central Gulf Coastal Plain",
       "Interior Plateau",
@@ -2405,7 +2405,7 @@
     "id": "t_mississippialluvialvalleyforestbirdsprotection",
     "filename": "MississippiAlluvialValleyForestBirds_Protection.tif",
     "label": "Mississippi Alluvial Valley forest birds - protection",
-    "description": "This indicator prioritizes areas for new land protection within the Mississippi Alluvial Valley (MAV) based on benefits to forest breeding birds that need large interior cores of bottomland hardwood habitat (Swainson’s warbler, cerulean warbler, swallow-tailed kite). The model considers core size, the amount of existing protected land within a forest patch, proximity to reforestation priorities, and risk of conversion to agriculture based on flooding frequency. The highest scores go to drier, unprotected forest patches with cores at least 2,000 ha (~5,000 ac) in size that are adjacent to complementary reforestation priority areas also identified by the Lower Mississippi Valley Joint Venture (LMVJV). This indicator originates from the LMVJV MAV forest breeding bird protection priorities.",
+    "description": "This indicator prioritizes areas for new land protection within the Mississippi Alluvial Valley (MAV) based on benefits to forest breeding birds that need large interior cores of bottomland hardwood habitat (Swainson's warbler, cerulean warbler, swallow-tailed kite). The model considers core size, the amount of existing protected land within a forest patch, proximity to reforestation priorities, and risk of conversion to agriculture based on flooding frequency. The highest scores go to drier, unprotected forest patches with cores at least 2,000 ha (~5,000 ac) in size that are adjacent to complementary reforestation priority areas also identified by the Lower Mississippi Valley Joint Venture (LMVJV). This indicator originates from the LMVJV MAV forest breeding bird protection priorities.",
     "values": [
       {
         "value": 0,
@@ -2477,7 +2477,7 @@
     "id": "t_mississippialluvialvalleyforestbirdsreforestation",
     "filename": "MississippiAlluvialValleyForestBirds_Reforestation.tif",
     "label": "Mississippi Alluvial Valley forest birds - reforestation",
-    "description": "This indicator prioritizes areas for reforestation within the Mississippi Alluvial Valley (MAV) based on benefits to three species of forest breeding birds that need large interior cores of bottomland hardwood habitat (Swainson’s warbler, cerulean warbler, swallow-tailed kite). The model considers the core size, number of cores, and percent of local forest cover that would result from reforestation, as well as risk of conversion to agriculture based on flooding frequency. The highest scores go to drier areas where reforestation would create new forest patches containing interior cores at least 2,000 ha (~5,000 ac) in size. It originates from the Lower Mississippi Valley Joint Venture MAV forest breeding bird reforestation priorities.",
+    "description": "This indicator prioritizes areas for reforestation within the Mississippi Alluvial Valley (MAV) based on benefits to three species of forest breeding birds that need large interior cores of bottomland hardwood habitat (Swainson's warbler, cerulean warbler, swallow-tailed kite). The model considers the core size, number of cores, and percent of local forest cover that would result from reforestation, as well as risk of conversion to agriculture based on flooding frequency. The highest scores go to drier areas where reforestation would create new forest patches containing interior cores at least 2,000 ha (~5,000 ac) in size. It originates from the Lower Mississippi Valley Joint Venture MAV forest breeding bird reforestation priorities.",
     "values": [
       {
         "value": 0,
@@ -2633,7 +2633,7 @@
     "valueLabel": "",
     "captionLabel": "resilient terrestrial sites",
     "goodThreshold": null,
-    "url": "https://secas-fws.hub.arcgis.com/maps/fws::resilient-terrestrial-sites-southeast-blueprint-indicator/about",
+    "url": "https://secas-fws.hub.arcgis.com/maps/fws::resilient-terrestrial-sites-southeast-blueprint-indicator-2023/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
@@ -2662,7 +2662,7 @@
     "id": "t_southatlanticamphibianandreptileareas",
     "filename": "SouthAtlanticAmphibianandReptileAreas.tif",
     "label": "South Atlantic amphibian & reptile areas",
-    "description": "This indicator represents Priority Amphibian and Reptile Conservation Areas (PARCAs) in the South Atlantic. PARCA is an expert-driven, nonregulatory designation that includes places capable of supporting viable amphibian and reptile populations, places occupied by rare or imperiled species, and places rich in biodiversity or species unique to that geographic area (i.e., endemism). Reptiles and amphibians are a critical part of the Southeast region’s rich biodiversity and many populations are declining in the face of threats like habitat loss, invasive species, and climate change.",
+    "description": "This indicator represents Priority Amphibian and Reptile Conservation Areas (PARCAs) in the South Atlantic. PARCA is an expert-driven, nonregulatory designation that includes places capable of supporting viable amphibian and reptile populations, places occupied by rare or imperiled species, and places rich in biodiversity or species unique to that geographic area (i.e., endemism). Reptiles and amphibians are a critical part of the Southeast region's rich biodiversity and many populations are declining in the face of threats like habitat loss, invasive species, and climate change.",
     "values": [
       {
         "value": 0,
@@ -2764,7 +2764,7 @@
     "valueLabel": "",
     "captionLabel": "South Atlantic low-urban historic landscapes",
     "goodThreshold": null,
-    "url": "https://secas-fws.hub.arcgis.com/maps/fws::south-atlantic-low-urban-historic-landscapes-southeast-blueprint-indicator/about",
+    "url": "https://secas-fws.hub.arcgis.com/maps/fws::south-atlantic-low-urban-historic-landscapes-southeast-blueprint-indicator-2023/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "East Gulf Coastal Plain",
@@ -2842,7 +2842,7 @@
     "id": "t_westcoastalplainandouachitasforestedwetlandbirds",
     "filename": "WestCoastalPlainandOuachitasForestedWetlandBirds.tif",
     "label": "West Coastal Plain & Ouachitas forested wetland birds",
-    "description": "This indicator is an index of habitat suitability for five forested wetland bird species (Acadian flycatcher, Kentucky warbler, yellow-throated warbler, prothonotary warbler, red-shouldered hawk) within bottomland hardwood forests and riparian areas in the West Gulf Coastal Plain/Ouachitas (WGCPO) Bird Conservation Region. It uses metrics like patch size, dispersal distance, and distance to water to assess the potential for habitat to support sustainable populations of these birds. This indicator originates from the Lower Mississippi Valley Joint Venture’s forested wetland decision support model for the WGCPO region.",
+    "description": "This indicator is an index of habitat suitability for five forested wetland bird species (Acadian flycatcher, Kentucky warbler, yellow-throated warbler, prothonotary warbler, red-shouldered hawk) within bottomland hardwood forests and riparian areas in the West Gulf Coastal Plain/Ouachitas (WGCPO) Bird Conservation Region. It uses metrics like patch size, dispersal distance, and distance to water to assess the potential for habitat to support sustainable populations of these birds. This indicator originates from the Lower Mississippi Valley Joint Venture's forested wetland decision support model for the WGCPO region.",
     "values": [
       {
         "value": 0,
@@ -2890,41 +2890,41 @@
     "id": "t_westcoastalplainandouachitasopenpinebirds",
     "filename": "WestCoastalPlainandOuachitasOpenPineBirds.tif",
     "label": "West Coastal Plain & Ouachitas open pine birds",
-    "description": "This indicator identifies areas with pine trees that, if managed for open condition, could support a population of three umbrella bird species (brown-headed nuthatch, Bachman’s sparrow, red-cockaded woodpecker). It evaluates potential habitat in the West Gulf Coastal Plain/Ouachitas (WGCPO) Bird Conservation Region based on each species’ habitat needs and population dynamics, prioritizing opportunities to restore and manage habitat to benefit open pine birds. Final scores reflect both the selectiveness of the species and whether an area meets the habitat requirements through one large patch, or clusters of smaller patches in sufficiently close proximity for breeding pairs to disperse. This indicator updates the Lower Mississippi Valley Joint Venture’s open pine decision support model for the WGCPO region.",
+    "description": "This indicator identifies areas with pine trees that, if managed for open condition, could support a population of three umbrella bird species (brown-headed nuthatch, Bachman's sparrow, red-cockaded woodpecker). It evaluates potential habitat in the West Gulf Coastal Plain/Ouachitas (WGCPO) Bird Conservation Region based on each species' habitat needs and population dynamics, prioritizing opportunities to restore and manage habitat to benefit open pine birds. Final scores reflect both the selectiveness of the species and whether an area meets the habitat requirements through one large patch, or clusters of smaller patches in sufficiently close proximity for breeding pairs to disperse. This indicator updates the Lower Mississippi Valley Joint Venture's open pine decision support model for the WGCPO region.",
     "values": [
       {
         "value": 0,
-        "label": "Pine patch too small and isolated to support a population of any species or not an upland pine patch",
+        "label": "Too small and isolated to support a population of any species or not an upland pine patch",
         "color": null
       },
       {
         "value": 1,
-        "label": "Pine patch part of a cluster of nearby patches able to support a population of 1 species",
+        "label": "Part of a cluster of nearby patches able to support a population of 1 species",
         "color": "#FDD7D3"
       },
       {
         "value": 2,
-        "label": "Pine patch part of a cluster of nearby patches able to support a population of 2 species",
+        "label": "Part of a cluster of nearby patches able to support a population of 2 species",
         "color": "#FBACB9"
       },
       {
         "value": 3,
-        "label": "Pine patch part of a cluster of nearby patches able to support a population of all 3 species",
+        "label": "Part of a cluster of nearby patches able to support a population of all 3 species",
         "color": "#F768A1"
       },
       {
         "value": 4,
-        "label": "Pine patch large enough to support a population of 1 species",
+        "label": "Large enough to support a population of 1 species",
         "color": "#CD238F"
       },
       {
         "value": 5,
-        "label": "Pine patch large enough to support a population of 2 species",
+        "label": "Large enough to support a population of 2 species",
         "color": "#8B0179"
       },
       {
         "value": 6,
-        "label": "Pine patch large enough to support a population of all 3 species",
+        "label": "Large enough to support a population of all 3 species",
         "color": "#49006A"
       }
     ],

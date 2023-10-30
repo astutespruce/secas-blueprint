@@ -99,11 +99,10 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
             "area of interest does not overlap Southeast Blueprint or area of interest did not overlap with the center of at least one 30m pixel in the Southeast Blueprint"
         )
 
-    # compile indicator IDs across all inputs
+    # compile indicator IDs across all ecosystems
     indicators = []
-    for input_area in results["inputs"]:
-        for ecosystem in input_area.get("ecosystems", []):
-            indicators.extend([i["id"] for i in ecosystem["indicators"]])
+    for ecosystem in results.get("ecosystems", []):
+        indicators.extend([i["id"] for i in ecosystem["indicators"]])
 
     await set_progress(
         ctx["redis"], ctx["job_id"], 25, "Creating maps (this might take a while)"
