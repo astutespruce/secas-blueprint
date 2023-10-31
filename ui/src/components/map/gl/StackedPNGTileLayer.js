@@ -21,13 +21,10 @@ import StackedPNGLayer from './StackedPNGLayer'
  * @param {String} url - url of tile
  * @returns
  */
-const fetchImage = async (gl, url) => {
-  const data = await load(url, ImageLoader)
+const fetchImage = async (gl, url, skip = false) => {
+  const data = skip ? null : await load(url, ImageLoader)
 
-  if (!data) {
-    return null
-  }
-
+  // always create a texture, which can be empty if there is no data
   return new Texture2D(gl, {
     data,
     format: GL.RGBA,
@@ -78,11 +75,16 @@ export default class StackedPNGTileLayer extends TileLayer {
       return { images: null }
     }
 
-    // TODO: prevent fetching of tiles outside of bounds of layer?
-    // may need to instead populate image with null values
+    const {
+      bbox: { west, south, east, north },
+    } = tile
 
-    const imageRequests = this.props.layers.map(({ url }) =>
-      fetchImage(gl, _getURLFromTemplate(url, tile))
+    const imageRequests = this.props.layers.map(
+      ({ url, bounds: [xmin, ymin, xmax, ymax] }) => {
+        // intersect tile bounds and layer bounds and skip if no overlap
+        const skip = west > xmax || east < xmin || south > ymax || north < ymin
+        return fetchImage(gl, _getURLFromTemplate(url, tile), skip)
+      }
     )
 
     const images = await Promise.all(imageRequests)

@@ -33,21 +33,25 @@ const IndicatorPixelValueChart = ({
   const [currentValue] = values.filter(({ percent }) => percent === 100)
 
   return (
-    <Box sx={{ mt: goodThreshold ? '1.5rem' : '0.25rem' }}>
-      {present && valueLabel ? (
+    <Box>
+      {present && !!valueLabel ? (
         <Text
           sx={{
             fontSize: 0,
             color: 'grey.8',
-            mt: '-0.25rem',
-            mb: '0.5rem',
             lineHeight: 1.2,
           }}
         >
           {valueLabel}
         </Text>
       ) : null}
-      <Flex sx={{ alignItems: 'center', opacity: present ? 1 : 0.25 }}>
+      <Flex
+        sx={{
+          mt: goodThreshold ? '1.25rem' : '0.5rem',
+          alignItems: 'center',
+          opacity: present ? 1 : 0.25,
+        }}
+      >
         <Text sx={labelCSS}>Low</Text>
         <Flex
           sx={{
@@ -100,15 +104,7 @@ const IndicatorPixelValueChart = ({
       </Flex>
 
       <Text sx={{ color: 'grey.8', fontSize: 0, mt: '1rem' }}>
-        Value:{' '}
-        {present
-          ? currentValue.label
-          : // <>
-            //   {valueLabel
-            //     ? `${valueLabel}: ${currentValue.label.toLowerCase()}`
-            //     : currentValue.label}
-            // </>
-            'Not present'}
+        Value: {present ? currentValue.label : 'Not present'}
       </Text>
     </Box>
   )

@@ -10,7 +10,7 @@ export const pixelLayers = [
     ...pixelLayerSourceConfig,
     id: 'pixels0',
     url: `${tileHost}/services/se_pixel_layers_0/tiles/{z}/{x}/{y}.png`,
-    // bounds: [-108.0227, 16.97285, -57.03082, 41.58111],
+    bounds: [-108.0227, 16.97285, -57.03082, 41.58111],
     encoding: [
       { id: 'blueprint', offset: 0, bits: 3, valueShift: 1 },
       { id: 'corridors', offset: 3, bits: 3, valueShift: 1 },
@@ -30,7 +30,7 @@ export const pixelLayers = [
     ...pixelLayerSourceConfig,
     id: 'pixels1',
     url: `${tileHost}/services/se_pixel_layers_1/tiles/{z}/{x}/{y}.png`,
-    // bounds: [-108.0227, 23.78806, -74.172, 41.58053],
+    bounds: [-108.0227, 23.78806, -74.172, 41.58053],
     encoding: [
       {
         id: 'f_imperiledaquaticspecies',
@@ -60,7 +60,7 @@ export const pixelLayers = [
     ...pixelLayerSourceConfig,
     id: 'pixels2',
     url: `${tileHost}/services/se_pixel_layers_2/tiles/{z}/{x}/{y}.png`,
-    // bounds: [-104.02594, 25.61165, -88.12292, 37.43785],
+    bounds: [-104.02594, 25.61165, -88.12292, 37.43785],
     encoding: [
       {
         id: 't_greatplainsperennialgrasslands',
@@ -105,7 +105,7 @@ export const pixelLayers = [
     ...pixelLayerSourceConfig,
     id: 'pixels3',
     url: `${tileHost}/services/se_pixel_layers_3/tiles/{z}/{x}/{y}.png`,
-    // bounds: [-96.19012, 23.87306, -74.14382, 41.58098],
+    bounds: [-96.19012, 23.87306, -74.14382, 41.58098],
     encoding: [
       {
         id: 'f_atlanticmigratoryfishhabitat',
@@ -161,7 +161,7 @@ export const pixelLayers = [
     ...pixelLayerSourceConfig,
     id: 'pixels4',
     url: `${tileHost}/services/se_pixel_layers_4/tiles/{z}/{x}/{y}.png`,
-    // bounds: [-98.78124, 22.37943, -70.45039, 40.46617],
+    bounds: [-98.78124, 22.37943, -70.45039, 40.46617],
     encoding: [
       {
         id: 'm_coastalshorelinecondition',
@@ -203,7 +203,7 @@ export const pixelLayers = [
     ...pixelLayerSourceConfig,
     id: 'pixels5',
     url: `${tileHost}/services/se_pixel_layers_5/tiles/{z}/{x}/{y}.png`,
-    // bounds: [-98.58603, 16.97285, -59.75763, 35.67848],
+    bounds: [-98.58603, 16.97285, -59.75763, 35.67848],
     encoding: [
       {
         id: 'f_gulfmigratoryfishconnectivity',
@@ -227,7 +227,7 @@ export const pixelLayers = [
     ...pixelLayerSourceConfig,
     id: 'pixels6',
     url: `${tileHost}/services/se_pixel_layers_6/tiles/{z}/{x}/{y}.png`,
-    // bounds: [-84.0406, 22.37943, -70.45003, 39.62234],
+    bounds: [-84.0406, 22.37943, -70.45003, 39.62234],
     encoding: [
       {
         id: 'm_atlanticcoralandhardbottom',
@@ -249,7 +249,7 @@ export const pixelLayers = [
     ...pixelLayerSourceConfig,
     id: 'pixels7',
     url: `${tileHost}/services/se_pixel_layers_7/tiles/{z}/{x}/{y}.png`,
-    // bounds: [-67.97848, 16.97285, -64.29697, 19.34715],
+    bounds: [-67.97848, 16.97285, -64.29697, 19.34715],
     encoding: [
       {
         id: 'f_caribbeannaturallandcoverinfloodplains',
@@ -296,7 +296,7 @@ export const pixelLayers = [
     ...pixelLayerSourceConfig,
     id: 'pixels8',
     url: `${tileHost}/services/se_pixel_layers_8/tiles/{z}/{x}/{y}.png`,
-    // bounds: [-67.97848, 16.97285, -64.29697, 19.34715],
+    bounds: [-67.97848, 16.97285, -64.29697, 19.34715],
     encoding: [
       {
         id: 't_caribbeangreenwaysandtrails',

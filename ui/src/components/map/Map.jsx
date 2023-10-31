@@ -250,6 +250,7 @@ const Map = () => {
           id: 'pixelLayers',
           type: StackedPNGTileLayer,
           refinementStrategy: 'no-overlap',
+          extent: bounds,
           opacity: 0.7,
           filters: null,
           visible: false,
