@@ -4,7 +4,12 @@ import { siteMetadata } from '../../../gatsby-config'
 const { tileHost } = siteMetadata
 
 export const mapConfig = {
-  bounds: [-106.64569497, 17.63478139, -64.44293322, 40.63868947],
+  // NOTE: these are not the data bounds, but ideal bounds to leave enough room
+  // east of Puerto Rico for the legend
+  bounds: [
+    -106.93611462308955, 14.65662961734786, -48.85555906753385,
+    43.47207027673693,
+  ],
   maxBounds: [-180, -80, 180, 80],
   minZoom: 3,
   maxZoom: 14,

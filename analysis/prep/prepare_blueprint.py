@@ -276,7 +276,7 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
             "id": ecosystem_id,
             "label": sheet_name.capitalize(),
             **ECOSYSTEM_COLORS[ecosystem_id],
-            "indicators": df.id.values.tolist(),
+            "indicators": df.id.sort_values().values.tolist(),
         }
     )
 
@@ -502,7 +502,7 @@ for index, indicator_row in indicator_df.iterrows():
     elif filename == "ImperiledAquaticSpecies.tif":
         indicator_df.at[
             index, "valueLabel"
-        ] = "Number of aquatic animal Species of Greatest Conservation Need (SGCN) observed"
+        ] = "Number of aquatic animal Species of Greatest Conservation Need observed"
         df["label"] = (
             df["label"]
             .str.replace(

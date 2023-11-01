@@ -98,8 +98,6 @@ const Map = () => {
   const { ecosystems: ecosystemInfo, indicators: indicatorInfo } =
     useIndicators()
   const subregionInfo = useSubregions()
-  const { nodata: slrNodataValues } = useSLR()
-  const slrNodata = slrNodataValues[slrNodataValues.length - 1]
 
   const [isLoaded, setIsLoaded] = useState(false)
   const [isRenderLayerVisible, setisRenderLayerVisible] = useState(true)
@@ -204,7 +202,7 @@ const Map = () => {
       }
 
       const { bounds, maxBounds, minZoom, maxZoom } = config
-      const { center, zoom } = getCenterAndZoom(mapNode.current, bounds, 0.1)
+      const { center, zoom } = getCenterAndZoom(mapNode.current, bounds, 0)
 
       // Token must be set before constructing map
       mapboxgl.accessToken = mapboxToken

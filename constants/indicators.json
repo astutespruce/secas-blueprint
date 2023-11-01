@@ -104,7 +104,9 @@
     "captionLabel": "Caribbean natural landcover in floodplains",
     "goodThreshold": 4,
     "url": "https://secas-fws.hub.arcgis.com/maps/10b1722decbb4e7ea497108777b85264/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "f_caribbeannetworkcomplexity",
@@ -142,7 +144,9 @@
     "captionLabel": "Caribbean network complexity",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/d4c056954bfe4e9aa2c7c603aa1593b1/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "f_caribbeanpermeablesurface",
@@ -175,7 +179,9 @@
     "captionLabel": "Caribbean permeable surface",
     "goodThreshold": 4,
     "url": "https://secas-fws.hub.arcgis.com/maps/e6075d1afa7e4cf0ad00f00b2033c81c/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "f_gulfmigratoryfishconnectivity",
@@ -267,7 +273,7 @@
         "color": "#081D58"
       }
     ],
-    "valueLabel": "Number of aquatic animal Species of Greatest Conservation Need (SGCN) observed",
+    "valueLabel": "Number of aquatic animal Species of Greatest Conservation Need observed",
     "captionLabel": "imperiled aquatic species",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/b8c3a9c98a884a6b82cd70a904931a9c/about",
@@ -531,7 +537,9 @@
     "captionLabel": "west virginia imperiled aquatic species",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/a9e4a9964bb9464bbf620195133a43f0/about",
-    "subregions": ["North Appalachians"]
+    "subregions": [
+      "North Appalachians"
+    ]
   },
   {
     "id": "m_atlanticcoralandhardbottom",
@@ -632,7 +640,10 @@
     "captionLabel": "Atlantic deep-sea coral richness",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/43113a697188432c8bf8f99099b35396/about",
-    "subregions": ["Atlantic Marine", "Gulf of Mexico"]
+    "subregions": [
+      "Atlantic Marine",
+      "Gulf of Mexico"
+    ]
   },
   {
     "id": "m_atlanticestuarinefishhabitat",
@@ -870,7 +881,9 @@
     "captionLabel": "Caribbean beach habitat",
     "goodThreshold": 2,
     "url": "https://secas-fws.hub.arcgis.com/maps/1622a316b6bf4c8293284c98e1000dae/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "m_caribbeancoastalshorelinecondition",
@@ -893,7 +906,9 @@
     "captionLabel": "Caribbean coastal shoreline condition",
     "goodThreshold": 1,
     "url": "https://secas-fws.hub.arcgis.com/maps/52049e30b212477093df581f2a5cb381/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "m_caribbeanfishhotspots",
@@ -931,7 +946,9 @@
     "captionLabel": "Caribbean fish hotspots",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/72ffc219c52140c8bef5ad612cbb4728/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "m_caribbeanfishnurseryhabitat",
@@ -954,7 +971,9 @@
     "captionLabel": "Caribbean fish nursery habitat",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/43c6c44d5eec41e78587c60a323d6f15/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "m_caribbeanseagrass",
@@ -1002,7 +1021,9 @@
     "captionLabel": "Caribbean seagrass",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/19b5282bf8f54c83b0109075c698ba91/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "m_caribbeanshallowhardbottomandcoral",
@@ -1045,7 +1066,9 @@
     "captionLabel": "Caribbean shallow hardbottom and coral",
     "goodThreshold": 3,
     "url": "https://secas-fws.hub.arcgis.com/maps/b7d6f168736f4a66a1330ae85bfe8046/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "m_coastalshorelinecondition",
@@ -1239,7 +1262,9 @@
     "captionLabel": "Gulf deep-sea coral richness",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/ccf4843485d848989951fbb5d3e530be/about",
-    "subregions": ["Gulf of Mexico"]
+    "subregions": [
+      "Gulf of Mexico"
+    ]
   },
   {
     "id": "m_gulfmarinemammals",
@@ -1455,7 +1480,10 @@
     "captionLabel": "marine highly migratory fish",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/8d893f24147a47f7bb48f8071c2d3a6a/about",
-    "subregions": ["Atlantic Marine", "Gulf of Mexico"]
+    "subregions": [
+      "Atlantic Marine",
+      "Gulf of Mexico"
+    ]
   },
   {
     "id": "m_resilientcoastalsites",
@@ -1583,7 +1611,10 @@
     "captionLabel": "South Atlantic beach birds",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/7ba82b4fdf53416f83ff1b01cabe0c5d/about",
-    "subregions": ["Atlantic Coastal Plain", "Florida Peninsula"]
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Florida Peninsula"
+    ]
   },
   {
     "id": "m_southatlanticmaritimeforest",
@@ -1694,7 +1725,9 @@
     "captionLabel": "Caribbean greenways & trails",
     "goodThreshold": 4,
     "url": "https://secas-fws.hub.arcgis.com/maps/b9bc4120389443ddb1ab41e69a18c1ce/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_caribbeanhabitatpatchsizelargeislands",
@@ -1737,7 +1770,9 @@
     "captionLabel": "Caribbean habitat patch size (large islands)",
     "goodThreshold": 3,
     "url": "https://secas-fws.hub.arcgis.com/maps/ff01e3820aee415d9bba555d05b8cc14/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_caribbeanhabitatpatchsizesmallislands",
@@ -1775,7 +1810,9 @@
     "captionLabel": "Caribbean habitat patch size (small islands)",
     "goodThreshold": 3,
     "url": "https://secas-fws.hub.arcgis.com/maps/20e82f19b78f40bca8df9a7713a515eb/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_caribbeanislandhabitat",
@@ -1828,7 +1865,9 @@
     "captionLabel": "Caribbean island habitat",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/dca9fcb28ec34a6e98aa43227e21b871/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_caribbeankarsthabitat",
@@ -1861,7 +1900,9 @@
     "captionLabel": "Caribbean karst habitat",
     "goodThreshold": 3,
     "url": "https://secas-fws.hub.arcgis.com/maps/5177f53c3d4a4fae8cf7e3d541b58160/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_caribbeanlandscapecondition",
@@ -1899,7 +1940,9 @@
     "captionLabel": "Caribbean landscape condition",
     "goodThreshold": 4,
     "url": "https://secas-fws.hub.arcgis.com/maps/651cacf61f51448a8df2df5fced53f66/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_caribbeanlowurbanhistoriclandscapes",
@@ -1927,7 +1970,9 @@
     "captionLabel": "Caribbean low-urban historic landscapes",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/bb6f52c0a3f34311a0eb2b2bbcd211d3/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_caribbeanreforestationpotential",
@@ -1965,7 +2010,9 @@
     "captionLabel": "Caribbean reforestation potential",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/53136c4fb806443d8e7062060612d9aa/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_caribbeanurbanparksize",
@@ -2013,7 +2060,9 @@
     "captionLabel": "Caribbean urban park size",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/ab02184458e045fc9142c84a2ac8e2c3/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_eastcoastalplainopenpinebirds",
