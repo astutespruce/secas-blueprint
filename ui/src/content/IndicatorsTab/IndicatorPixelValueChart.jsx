@@ -32,6 +32,8 @@ const IndicatorPixelValueChart = ({
 }) => {
   const [currentValue] = values.filter(({ percent }) => percent === 100)
 
+  const fade = !present || (currentValue.value === 0 && !currentValue.color)
+
   return (
     <Box>
       {present && !!valueLabel ? (
@@ -45,11 +47,12 @@ const IndicatorPixelValueChart = ({
           {valueLabel}
         </Text>
       ) : null}
+
       <Flex
         sx={{
           mt: goodThreshold ? '1.25rem' : '0.5rem',
           alignItems: 'center',
-          opacity: present ? 1 : 0.25,
+          opacity: fade ? 0.25 : 1,
         }}
       >
         <Text sx={labelCSS}>Low</Text>

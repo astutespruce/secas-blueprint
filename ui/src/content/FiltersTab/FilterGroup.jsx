@@ -13,38 +13,49 @@ const FilterGroup = ({
   entries,
   filters,
   onChange,
-}) => (
-  <Box
-    sx={{
-      width: '100%',
-      flex: '0 0 auto',
-      '&:not(:first-of-type)': {
-        '&>div:first-of-type': {
-          borderTop: '1px solid',
-          borderTopColor: borderColor,
+}) => {
+  const visibleEntries = entries.filter(
+    ({ id: entryId, canBeVisible }) => canBeVisible || filters[entryId].enabled
+  )
+  return (
+    <Box
+      sx={{
+        width: '100%',
+        flex: '0 0 auto',
+        '&:not(:first-of-type)': {
+          '&>div:first-of-type': {
+            borderTop: '1px solid',
+            borderTopColor: borderColor,
+          },
         },
-      },
-    }}
-  >
-    <FilterGroupHeader
-      id={id}
-      label={label}
-      color={color}
-      borderColor={borderColor}
-    />
+      }}
+    >
+      <FilterGroupHeader
+        id={id}
+        label={label}
+        color={color}
+        borderColor={borderColor}
+      />
 
-    <Box sx={{ mb: '1rem' }}>
-      {entries.map((entry) => (
-        <Filter
-          key={entry.label}
-          {...entry}
-          {...filters[entry.id]}
-          onChange={onChange}
-        />
-      ))}
+      <Box sx={{ mb: '1rem' }}>
+        {visibleEntries.length > 0 ? (
+          visibleEntries.map((entry) => (
+            <Filter
+              key={entry.label}
+              {...entry}
+              {...filters[entry.id]}
+              onChange={onChange}
+            />
+          ))
+        ) : (
+          <Box sx={{ mt: '1rem', color: 'grey.8', textAlign: 'center' }}>
+            no filters available for this area
+          </Box>
+        )}
+      </Box>
     </Box>
-  </Box>
-)
+  )
+}
 
 FilterGroup.propTypes = {
   id: PropTypes.string.isRequired,

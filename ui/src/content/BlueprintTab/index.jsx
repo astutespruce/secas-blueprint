@@ -25,7 +25,7 @@ const BlueprintTab = ({
 }) => {
   const { all: allPriorities } = useBlueprintPriorities()
   const corridorCategories = useCorridors()
-  const subregionInfo = useSubregions()
+  const { subregions: subregionInfo } = useSubregions()
   const marineSubregions = useMemo(
     () =>
       new Set(

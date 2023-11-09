@@ -116,18 +116,14 @@ const extractIndicators = (
  * @param {Object} properties
  * @param {Array} ecosystemInfo - array of ecosystem info
  * @param {Array} indicatorInfo - array of indicator info
- * @param {Array} subregionInfo - array of subregion info
+ * @param {Object} subregionIndex - lookup of subregions by value
  */
 export const unpackFeatureData = (
   properties,
   ecosystemInfo,
   indicatorInfo,
-  subregionInfo
+  subregionIndex
 ) => {
-  // console.log('unpackFeatureData', properties || 'properties are empty')
-
-  const subregionIndex = indexBy(subregionInfo, 'value')
-
   const values = Object.entries(properties)
     .map(([rawKey, value]) => {
       const key = camelCase(rawKey)

@@ -22,8 +22,8 @@ const DataSource = () => (
     . Future urban growth estimates derived from{' '}
     <OutboundLink to="https://www.sciencebase.gov/catalog/item/63f50297d34efa0476b04cf7">
       FUTURES model projections for the contiguous United States
-    </OutboundLink>
-    . Data provided by the{' '}
+    </OutboundLink>{' '}
+    developed by the{' '}
     <OutboundLink to="https://cnr.ncsu.edu/geospatial/">
       Center for Geospatial Analytics
     </OutboundLink>

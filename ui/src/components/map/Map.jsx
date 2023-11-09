@@ -22,7 +22,6 @@ import {
   useMapData,
   useIndicators,
   useSubregions,
-  useSLR,
 } from 'components/data'
 import { useBreakpoints } from 'components/layout'
 import { useSearch } from 'components/search'
@@ -83,6 +82,7 @@ const Map = () => {
     setData: setMapData,
     renderLayer,
     filters,
+    setVisibleSubregions,
   } = useMapData()
   const mapModeRef = useRef(mapMode)
   const { all: blueprintInfo, categories: blueprintCategories } =
@@ -97,7 +97,7 @@ const Map = () => {
   )
   const { ecosystems: ecosystemInfo, indicators: indicatorInfo } =
     useIndicators()
-  const subregionInfo = useSubregions()
+  const { subregionIndex } = useSubregions()
 
   const [isLoaded, setIsLoaded] = useState(false)
   const [isRenderLayerVisible, setisRenderLayerVisible] = useState(true)
@@ -192,6 +192,20 @@ const Map = () => {
       isLoading: pixelData === null,
       ...(pixelData || {}),
     })
+  }, 10)
+
+  const updateVisibleSubregions = useDebouncedCallback(() => {
+    if (mapModeRef.current !== 'filter') {
+      return
+    }
+
+    const { current: map } = mapRef
+    if (!map) return
+
+    const subregions = map
+      .queryRenderedFeatures(null, { layers: ['subregions'] })
+      .map(({ properties: { subregion } }) => subregion)
+    setVisibleSubregions(new Set(subregions))
   }, 10)
 
   useEffect(
@@ -306,12 +320,17 @@ const Map = () => {
 
         map.on('moveend', () => {
           mapIsDrawingRef.current = true
+          if (mapModeRef.current === 'filter') {
+            updateVisibleSubregions()
+          }
           updateMapIsDrawing()
         })
 
         map.on('zoomend', () => {
           if (mapModeRef.current === 'pixel') {
             getPixelData()
+          } else if (mapModeRef.current === 'filter') {
+            updateVisibleSubregions()
           }
           setCurrentZoom(map.getZoom())
         })
@@ -349,7 +368,7 @@ const Map = () => {
             properties,
             ecosystemInfo,
             indicatorInfo,
-            subregionInfo
+            subregionIndex
           )
         )
         if (isMobile) {
@@ -484,6 +503,10 @@ const Map = () => {
             // data prop is used to force deeper reloading of tiles
             data: { visible: true },
           })
+
+          if (mapMode === 'filter') {
+            map.once('idle', updateVisibleSubregions)
+          }
         }
       }
 

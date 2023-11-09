@@ -1,9 +1,10 @@
 import { graphql, useStaticQuery } from 'gatsby'
 
+import { indexBy } from 'util/data'
 import { extractNodes } from 'util/graphql'
 
 export const useSubregions = () => {
-  const { subregions } = useStaticQuery(graphql`
+  const { subregions: rawSubregions } = useStaticQuery(graphql`
     query {
       subregions: allSubregionsJson {
         edges {
@@ -17,5 +18,10 @@ export const useSubregions = () => {
     }
   `)
 
-  return extractNodes(subregions)
+  const subregions = extractNodes(rawSubregions)
+
+  return {
+    subregions,
+    subregionIndex: indexBy(subregions, 'value'),
+  }
 }

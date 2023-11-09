@@ -8,67 +8,79 @@ import React, {
 import PropTypes from 'prop-types'
 
 import { useIndicators } from 'components/data/Indicators'
+import { useSubregions } from 'components/data/Subregions'
 import { indexBy, range } from 'util/data'
 
 const Context = createContext()
 
 export const Provider = ({ children }) => {
   const { indicators } = useIndicators()
+  const { subregionIndex } = useSubregions()
 
-  const [{ mapMode, data, selectedIndicator, renderLayer, filters }, setState] =
-    useState(() => {
-      const initFilters = indicators.reduce((prev, { id, values }) => {
-        const valuesIndex = indexBy(values, 'value')
-
-        return {
-          ...prev,
-          [id]: {
-            enabled: false,
-            activeValues: Object.fromEntries(
-              range(values[0].value, values[values.length - 1].value + 1).map(
-                (v) => [
-                  v,
-                  // disable value if we don't normally show it
-                  valuesIndex[v] && valuesIndex[v].color !== null,
-                ]
-              )
-            ),
-          },
-        }
-      }, {})
-
-      initFilters.blueprint = {
-        enabled: false,
-        // skip not a priority class; values 1-4
-        activeValues: Object.fromEntries(range(1, 5).map((v) => [v, true])),
-      }
-
-      initFilters.corridors = {
-        enabled: false,
-        // values 1-6
-        activeValues: Object.fromEntries(range(1, 7).map((v) => [v, true])),
-      }
-
-      initFilters.urban = {
-        enabled: false,
-        // values 1-5
-        activeValues: Object.fromEntries(range(1, 6).map((v) => [v, true])),
-      }
-
-      initFilters.slr = {
-        enabled: false,
-        // hardcoded values to capture depth + nodata (values 0-13)
-        activeValues: Object.fromEntries(range(0, 14).map((v) => [v, true])),
-      }
+  const [
+    {
+      mapMode,
+      data,
+      selectedIndicator,
+      renderLayer,
+      filters,
+      visibleSubregions, // only set when in filter mode
+    },
+    setState,
+  ] = useState(() => {
+    const initFilters = indicators.reduce((prev, { id, values }) => {
+      const valuesIndex = indexBy(values, 'value')
 
       return {
-        mapMode: 'unit', // filter, pixel, or unit
-        data: null,
-        selectedIndicator: null,
-        renderLayer: null,
-        filters: initFilters,
+        ...prev,
+        [id]: {
+          enabled: false,
+          activeValues: Object.fromEntries(
+            range(values[0].value, values[values.length - 1].value + 1).map(
+              (v) => [
+                v,
+                // disable value if we don't normally show it
+                valuesIndex[v] && valuesIndex[v].color !== null,
+              ]
+            )
+          ),
+        },
       }
-    })
+    }, {})
+
+    initFilters.blueprint = {
+      enabled: false,
+      // skip not a priority class; values 1-4
+      activeValues: Object.fromEntries(range(1, 5).map((v) => [v, true])),
+    }
+
+    initFilters.corridors = {
+      enabled: false,
+      // values 1-6
+      activeValues: Object.fromEntries(range(1, 7).map((v) => [v, true])),
+    }
+
+    initFilters.urban = {
+      enabled: false,
+      // values 1-5
+      activeValues: Object.fromEntries(range(1, 6).map((v) => [v, true])),
+    }
+
+    initFilters.slr = {
+      enabled: false,
+      // hardcoded values to capture depth + nodata (values 0-13)
+      activeValues: Object.fromEntries(range(0, 14).map((v) => [v, true])),
+    }
+
+    return {
+      mapMode: 'unit', // filter, pixel, or unit
+      data: null,
+      selectedIndicator: null,
+      renderLayer: null,
+      filters: initFilters,
+      visibleSubregions: new Set(),
+    }
+  })
 
   const setData = useCallback(
     (newData) => {
@@ -146,6 +158,13 @@ export const Provider = ({ children }) => {
     }))
   }, [])
 
+  const setVisibleSubregions = useCallback((newVisibleSubregions) => {
+    setState((prevState) => ({
+      ...prevState,
+      visibleSubregions: newVisibleSubregions,
+    }))
+  }, [])
+
   const resetFilters = useCallback(
     () => {
       setState(({ filters: prevFilters, ...prevState }) => ({
@@ -178,10 +197,12 @@ export const Provider = ({ children }) => {
       filters,
       setFilters,
       resetFilters,
+      visibleSubregions,
+      setVisibleSubregions,
     }),
     // other deps do not change
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
-    [data, mapMode, selectedIndicator, renderLayer, filters]
+    [data, mapMode, selectedIndicator, renderLayer, filters, visibleSubregions]
   )
 
   return <Context.Provider value={providerValue}>{children}</Context.Provider>
