@@ -24,6 +24,17 @@ log = logging.getLogger(__name__)
 log.setLevel(LOGGING_LEVEL)
 
 
+class ArqLogFilter(logging.Filter):
+    def __init__(self, name: str = "ArqLogFilter") -> None:
+        super().__init__(name)
+
+    def filter(self, record):
+        # suppress logging of cron jobs
+        if record.levelname == "INFO" and "cron:" in record.getMessage():
+            return False
+        return True
+
+
 if SENTRY_DSN:
     log.info("setting up sentry in background worker")
     sentry_sdk.init(dsn=SENTRY_DSN, environment=SENTRY_ENV)
@@ -45,6 +56,39 @@ async def cleanup_files(ctx):
 
 async def startup(ctx):
     ctx["redis"] = await arq.create_pool(REDIS)
+
+    logging.config.dictConfig(
+        {
+            "version": 1,
+            "disable_existing_loggers": False,
+            "formatters": {
+                "console": {
+                    "class": "logging.Formatter",
+                    "datefmt": "%H:%M:%S",
+                    "format": "%(levelname)s:\t\b%(asctime)s %(message)s",
+                },
+            },
+            "handlers": {
+                "console": {
+                    "class": "logging.StreamHandler",
+                    "formatter": "console",
+                    "filters": ["ArqLogFilter"],
+                },
+            },
+            "filters": {
+                "ArqLogFilter": {
+                    "()": ArqLogFilter,
+                }
+            },
+            "loggers": {
+                "arq": {
+                    "handlers": ["console"],
+                    "level": "INFO",
+                    "propagate": True,
+                },
+            },
+        }
+    )
 
 
 async def shutdown(ctx):
