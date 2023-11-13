@@ -28,6 +28,7 @@ const IndicatorPixelValueChart = ({
   present,
   values,
   currentValue,
+  isZeroValue,
   valueLabel,
   goodThreshold,
 }) => (
@@ -48,6 +49,7 @@ const IndicatorPixelValueChart = ({
       sx={{
         mt: goodThreshold ? '1.25rem' : '0.5rem',
         alignItems: 'center',
+        opacity: isZeroValue ? 0.25 : 1,
       }}
     >
       <Text sx={labelCSS}>Low</Text>
@@ -119,6 +121,7 @@ IndicatorPixelValueChart.propTypes = {
   currentValue: PropTypes.shape({
     label: PropTypes.string,
   }),
+  isZeroValue: PropTypes.bool,
   valueLabel: PropTypes.string,
   goodThreshold: PropTypes.number,
 }
@@ -126,6 +129,7 @@ IndicatorPixelValueChart.propTypes = {
 IndicatorPixelValueChart.defaultProps = {
   valueLabel: null,
   currentValue: null,
+  isZeroValue: false,
   present: false,
   goodThreshold: null,
 }
