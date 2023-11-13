@@ -58,7 +58,7 @@
 
 <div class="no-break">
     <div class="caption">
-        Table {{table.counter}}: Extent of flooding by projected average highest daily tide due to sea level rise{% if results.name %} within {{results.name}}{% if results.type %} {{results.type}}{% endif %}{% else %} in this area{% endif %}.
+        Table {{table.counter}}: Extent of flooding by projected average highest daily tide due to sea level rise{% if name %} within {{name}}{% else %} in this area{% endif %}.
         Values from the <a href="https://coast.noaa.gov/slrdata/">NOAA sea-level rise inundation data</a>.
     </div>
     {% set table.counter=table.counter+1 %}
@@ -100,7 +100,7 @@
 <!-- Projection table: -->
 <div class="no-break">
     <div class="caption">
-        Table {{table.counter}}: Projected sea level rise by decade{% if results.name %} within {{results.name}}{% if results.type %} {{results.type}}{% endif %}{% else %} in this area{% endif %}.
+        Table {{table.counter}}: Projected sea level rise by decade{% if name %} within {{name}}{% else %} in this area{% endif %}.
         Values are based on area-weighted averages of decadal projections for
         1-degree grid cells that overlap this area
         based on <a href="https://oceanservice.noaa.gov/hazards/sealevelrise/sealevelrise-tech-report.html">NOAA's 2022 Sea Level Rise Report</a>.

@@ -452,6 +452,15 @@ table td.highlight-col {
   border: 1px solid #aaa;
 }
 
+.legend-patch.outside-se {
+  background-color: rgba(51, 51, 51, 0.25);
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAADpJREFUKFONzEsKADAIA9Hk/oe2WGjpR6OzfgzRy9hwBoAVnMhnCm6k4IUy+KEIhuiFKTqhRAuWyOEA/DwKCnfY+F8AAAAASUVORK5CYII=);
+  background-size: 6px;
+  background-repeat: repeat;
+  /* have to use transform scale to flip horizontally due to bug in Weasyprint */
+  transform: scaleX(-1);
+}
+
 .legend-label {
   flex: 1 1 auto;
   color: #333;

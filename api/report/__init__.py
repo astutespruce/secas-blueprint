@@ -56,7 +56,7 @@ template = env.get_template("report.html")
 css_template = env.get_template("report.css")
 
 
-def create_report(maps, results, name=None, area_type=None):
+def create_report(maps, results, name=None, is_custom_area=True):
     """Create PDF report with maps and results
 
     Parameters
@@ -65,8 +65,9 @@ def create_report(maps, results, name=None, area_type=None):
     results : dict
     name : str, optional (default: None)
         name of area to show as report title / header
-    area_type : str, optional (default: None)
-        type of area, if applicable (e.g., subwatershed)
+    is_custom_area : bool, optional (default: True)
+        True if results represent a custom area of interest rather than a summary
+        unit
 
     Returns
     -------
@@ -74,11 +75,7 @@ def create_report(maps, results, name=None, area_type=None):
     """
 
     title = "Southeast Conservation Blueprint Summary"
-    subtitle = ""
-    if name is not None:
-        subtitle = f"for {name}"
-        if area_type is not None:
-            subtitle += " " + area_type
+    subtitle = f"for {name}" if name is not None else ""
 
     ownership_acres = sum([e["acres"] for e in results.get("ownership", [])])
     protection_acres = sum([e["acres"] for e in results.get("protection", [])])
@@ -110,6 +107,8 @@ def create_report(maps, results, name=None, area_type=None):
         "date": date.today().strftime("%m/%d/%Y"),
         # write date in ISO format for embedding in PDF metadata
         "create_date": datetime.now(timezone.utc).isoformat(),
+        "name": name,
+        "is_custom_area": is_custom_area,
         "title": title,
         "subtitle": subtitle,
         "url": SITE_URL,

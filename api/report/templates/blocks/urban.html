@@ -37,7 +37,12 @@
                         <div>{{item.label}}</div>
                     </div>
                 {% endfor %}
-
+                {% if results.outside_se_percent > 0 %}
+                    <div class="legend-element flex align-center">
+                        <div class="legend-patch outside-se"></div>
+                        <div class="legend-label">Outside Southeast Blueprint</div>
+                    </div>
+                {% endif %}
             </div>
         </div>
         <p>
@@ -58,7 +63,7 @@
 <div class="no-break">
 
     <div class="caption">
-        Table {{table.counter}}: Extent of projected urbanization by decade{% if results.name %} within {{results.name}}{% if results.type %} {{results.type}}{% endif %}{% else %} in this area{% endif %}.
+        Table {{table.counter}}: Extent of projected urbanization by decade{% if name %} within {{name}}{% else %} in this area{% endif %}.
         Values from
         <a href="https://www.sciencebase.gov/catalog/item/63f50297d34efa0476b04cf7">FUTURES model projections for the contiguous United States</a>
         developed by the

@@ -33,6 +33,12 @@
                         <div class="legend-label">{{entry.label}}</div>
                     </div>
                 {% endfor %}
+                {% if results.outside_se_percent > 0 %}
+                    <div class="legend-element flex align-center">
+                        <div class="legend-patch outside-se"></div>
+                        <div class="legend-label">Outside Southeast Blueprint</div>
+                    </div>
+                {% endif %}
             </div>
         </div>
 
@@ -46,7 +52,7 @@
 
 <div class="no-break">
     <div class="caption">
-        Table {{table.counter}}: Indicator values for {{indicator.captionLabel or indicator.label}}{% if results.name %} within {{results.name}}{% if results.type %} {{results.type}}{% endif %}{% else %} in this area{% endif %}.
+        Table {{table.counter}}: Indicator values for {{indicator.captionLabel or indicator.label}}{% if name %} within {{name}}{% else %} in this area{% endif %}.
         {% if indicator.goodThreshold %}
             Good condition thresholds reflect the range of indicator values that occur in healthy, functioning ecosystems.
         {% else %}
