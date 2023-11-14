@@ -16,6 +16,7 @@ STYLE = {
         "mask": {
             "type": "vector",
             "url": f"mbtiles://{TILE_DIR}/se_mask.mbtiles",
+            "maxzoom": 8,
         },
     },
     "layers": [

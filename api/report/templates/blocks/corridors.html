@@ -50,7 +50,7 @@
             {% endfor %}
             {% if results.outside_se_percent > 0 %}
                 <div class="legend-element flex align-center">
-                    <div class="legend-patch outside-se"></div>
+                    <div class="legend-patch outside-se {% if flip_crosshatch %}flip-x{% endif %}"></div>
                     <div class="legend-label">Outside Southeast Blueprint</div>
                 </div>
             {% endif %}

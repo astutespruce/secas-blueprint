@@ -457,7 +457,10 @@ table td.highlight-col {
   background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAADpJREFUKFONzEsKADAIA9Hk/oe2WGjpR6OzfgzRy9hwBoAVnMhnCm6k4IUy+KEIhuiFKTqhRAuWyOEA/DwKCnfY+F8AAAAASUVORK5CYII=);
   background-size: 6px;
   background-repeat: repeat;
-  /* have to use transform scale to flip horizontally due to bug in Weasyprint */
+}
+
+/* have to flip patterns on MacOS due to bug in Weasyprint */
+.flip-x {
   transform: scaleX(-1);
 }
 

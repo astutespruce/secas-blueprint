@@ -2,6 +2,7 @@ from base64 import b64encode
 from datetime import date, datetime, timezone
 from io import BytesIO
 from pathlib import Path
+import sys
 
 import weasyprint
 from weasyprint import HTML
@@ -116,6 +117,8 @@ def create_report(maps, results, name=None, area_type="custom"):
         "ownership_acres": ownership_acres,
         "protection_acres": protection_acres,
         "results": results,
+        # have to flip the crosshatch horizontally due to bug in WeasyPrint
+        "flip_crosshatch": sys.platform == "darwin",
     }
 
     # Render variables as needed into the CSS

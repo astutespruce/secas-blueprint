@@ -15,10 +15,12 @@ STYLE = {
         "map_units": {
             "type": "vector",
             "url": f"mbtiles://{TILE_DIR}/se_map_units.mbtiles",
+            "maxzoom": 14,
         },
         "mask": {
             "type": "vector",
             "url": f"mbtiles://{TILE_DIR}/se_mask.mbtiles",
+            "maxzoom": 8,
         },
     },
     "layers": [
@@ -84,7 +86,7 @@ def get_summary_unit_map_image(id, center, zoom, width, height):
             10,
             10,
             2.0,
-            False,
+            True,
         )
 
         return Image.frombytes("RGBA", (width, height), map.renderBuffer()), None
