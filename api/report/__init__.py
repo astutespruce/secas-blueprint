@@ -56,7 +56,7 @@ template = env.get_template("report.html")
 css_template = env.get_template("report.css")
 
 
-def create_report(maps, results, name=None, is_custom_area=True):
+def create_report(maps, results, name=None, area_type="custom"):
     """Create PDF report with maps and results
 
     Parameters
@@ -65,9 +65,8 @@ def create_report(maps, results, name=None, is_custom_area=True):
     results : dict
     name : str, optional (default: None)
         name of area to show as report title / header
-    is_custom_area : bool, optional (default: True)
-        True if results represent a custom area of interest rather than a summary
-        unit
+    area_type : str, optional (default: "custom")
+        one of {"custom", "huc12", "marine_hex"}
 
     Returns
     -------
@@ -108,7 +107,7 @@ def create_report(maps, results, name=None, is_custom_area=True):
         # write date in ISO format for embedding in PDF metadata
         "create_date": datetime.now(timezone.utc).isoformat(),
         "name": name,
-        "is_custom_area": is_custom_area,
+        "area_type": area_type,
         "title": title,
         "subtitle": subtitle,
         "url": SITE_URL,

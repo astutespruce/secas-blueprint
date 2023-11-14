@@ -18,8 +18,8 @@ data_dir = Path("data")
 bnd_dir = data_dir / "boundaries"
 huc12_filename = data_dir / "inputs/summary_units/huc12.feather"
 huc12_raster_filename = bnd_dir / "huc12.tif"
-marine_filename = data_dir / "inputs/summary_units/marine_blocks.feather"
-marine_raster_filename = bnd_dir / "marine_blocks.tif"
+marine_filename = data_dir / "inputs/summary_units/marine_hex.feather"
+marine_raster_filename = bnd_dir / "marine_hex.tif"
 
 subregion_df = gp.read_feather(data_dir / "inputs/boundaries/subregions.feather")
 
@@ -82,14 +82,14 @@ print(f"Processed {len(units_df):,} zones in {(time() - start) / 60.0:.2f}m")
 print("\n\n--------------------------------------------------\n\n")
 
 #########################################################################
-########### Marine Lease Blocks #########################################
+########### Marine Hexes ################################################
 #########################################################################
 
-out_dir = data_dir / "results/marine_blocks"
+out_dir = data_dir / "results/marine_hex"
 out_dir.mkdir(exist_ok=True, parents=True)
 
 
-print("Reading marine blocks boundaries")
+print("Reading marine hex boundaries")
 units_df = gp.read_feather(
     marine_filename,
     columns=["id", "value", "rasterized_acres", "outside_se", "geometry"],
@@ -97,7 +97,7 @@ units_df = gp.read_feather(
 units_df = units_df.join(units_df.bounds)
 
 
-print("Reading marine blocks grid")
+print("Reading marine hex grid")
 with rasterio.open(marine_raster_filename) as units_dataset:
     units_grid = SummaryUnitGrid(units_dataset, units_df.total_bounds)
 

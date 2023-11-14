@@ -108,13 +108,14 @@ aois = [
     # {"name": "Area in El Yunque National Forest, PR", "path": "yunque"},
     # {"name": "San Juan area, PR", "path": "SanJuan"},
     # {"name": "Area near Magnet, TX", "path": "magnet"},
-    {"name": "TriState area at junction of MO, OK, KS", "path": "TriState"},
+    # {"name": "TriState area at junction of MO, OK, KS", "path": "TriState"},
     # {"name": "Quincy, FL area", "path": "Quincy"},
     # {"name": "Doyle Springs, TN area", "path": "DoyleSprings"},
     # {"name": "Cave Spring, VA area", "path": "CaveSpring"},
     # {"name": "South Atlantic Offshore", "path": "SAOffshore"},
     # {"name": "Florida Offshore", "path": "FLOffshore"},
     # {"name": "Razor", "path": "Razor"},
+    # {"name":"Single Test Area", "path": "SingleTest"}
 ]
 
 for aoi in aois:
@@ -155,7 +156,7 @@ for aoi in aois:
     if not maps:
         print("Rendering maps...")
 
-        # compile indicator IDs across all inputs
+        # compile indicator IDs across all ecosystems
         indicators = []
         for ecosystem in results.get("ecosystems", []):
             indicators.extend([i["id"] for i in ecosystem["indicators"]])
@@ -194,12 +195,8 @@ for aoi in aois:
 ## Create reports for summary units
 ids = {
     "huc12": [
-        # "060101020201"
-        # "210100020408"
-        # "030201030401"
-        # "210100020302"
-        # "110702070806"
-        # "030902021500" # TODO: verify sum of Blueprint
+        # "020403030502",
+        # "051402060702",
         #     #     # "050500030804"  # in WV
         #     #     # "030902030700"  # in base blueprint but missing SLR (Dry Tortugas)
         #     #     # "031002010205",  # in base blueprint but with SLR present
@@ -209,14 +206,10 @@ ids = {
         #     #     # "030902061101"  # area with SLR not modeled
         #     "030102051002"  # area with both marine and inland hubs / corridors
     ],
-    # "marine_blocks": [
-    #     "NJ19-07-6177"
-    #     "NI18-02-6031"
-    #     #     "NG16-12-780",  # in FL Marine
-    #     "NI18-07-6210",  # Atlantic coast
-    #     #     #     # "NG16-03-299",  # Gulf coast
-    #     #     #     # "NG17-10-6583",  # Florida keys, overlaps with protected areas
-    # ],
+    "marine_hex": [
+        # "154309",
+        "407103"
+    ],
 }
 
 
@@ -264,7 +257,9 @@ for unit_type in ids:
 
         results["scale"] = scale
 
-        pdf = create_report(maps=maps, results=results, name=results["name"])
+        pdf = create_report(
+            maps=maps, results=results, name=results["name"], area_type=unit_type
+        )
 
         with open(out_dir / f"{unit_id}_report.pdf", "wb") as out:
             out.write(pdf)

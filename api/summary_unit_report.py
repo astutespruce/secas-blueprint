@@ -14,13 +14,13 @@ log.setLevel(LOGGING_LEVEL)
 
 async def create_summary_unit_report(ctx, unit_type, unit_id):
     """Generate Southeast Blueprint Report for a HUC12
-    or Marine Lease Block
+    or marine hex grid cell
 
     Parameters
     ----------
     ctx : job context
     unit_type : str
-        one of "huc12", "marine_blocks"
+        one of "huc12", "marine_hex"
     unit_id : str
     """
 
@@ -30,7 +30,7 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
     results = get_summary_unit_results(unit_type, unit_id)
     if results is None:
         raise DataError(
-            "Unit id is not valid (not an existing subwatershed or marine lease block ID)"
+            "Unit id is not valid (not an existing subwatershed or marine hex grid ID)"
         )
 
     await set_progress(
@@ -74,7 +74,9 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
 
     results["scale"] = scale
 
-    pdf = create_report(maps=maps, results=results, name=results["name"])
+    pdf = create_report(
+        maps=maps, results=results, name=results["name"], area_type=unit_type
+    )
 
     await set_progress(ctx["redis"], ctx["job_id"], 95, "Nearly done", errors=errors)
 

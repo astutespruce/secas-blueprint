@@ -11,11 +11,11 @@ data_dir = Path("data")
 
 
 def get_summary_unit_results(unit_type, unit_id):
-    """Get statistics for a single summary unit (HUC12 / marine block)
+    """Get statistics for a single summary unit (HUC12 / marine hex)
 
     Parameters
     ----------
-    unit_type : str, one of {"huc12", "marine_blocks"}
+    unit_type : str, one of {"huc12", "marine_hex"}
     unit_id : str
 
     Returns
@@ -24,9 +24,7 @@ def get_summary_unit_results(unit_type, unit_id):
     """
     results_dir = data_dir / "results" / unit_type
 
-    units_filename = (
-        "huc12.feather" if unit_type == "huc12" else "marine_blocks.feather"
-    )
+    units_filename = "huc12.feather" if unit_type == "huc12" else "marine_hex.feather"
 
     df = read_unit_from_feather(
         data_dir / "inputs/summary_units" / units_filename,
@@ -52,7 +50,7 @@ def get_summary_unit_results(unit_type, unit_id):
 
     unit = df.iloc[0]
 
-    name_suffix = "subwatershed" if unit_type == "huc12" else "marine lease block"
+    name_suffix = "subwatershed" if unit_type == "huc12" else ""
     name = f"{unit['name']} {name_suffix}"
     bounds = unit[["minx", "miny", "maxx", "maxy"]].tolist()
 

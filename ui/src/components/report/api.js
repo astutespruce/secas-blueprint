@@ -57,8 +57,8 @@ export const createSummaryUnitReport = async (id, type, onProgress) => {
 
   if (type === 'subwatershed') {
     unitType = 'huc12'
-  } else if (type === 'marine lease block') {
-    unitType = 'marine_blocks'
+  } else if (type === 'marine hex') {
+    unitType = 'marine_hex'
   }
 
   const response = await fetch(`${API}/${unitType}/${id}?token=${apiToken}`, {

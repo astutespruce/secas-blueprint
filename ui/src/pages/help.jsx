@@ -113,17 +113,17 @@ const HelpPage = ({
         <Heading as="h2">Summarize data:</Heading>
 
         <Paragraph>
-          This mode allows you to select a subwatershed or marine lease block
-          and view data summaries and charts for the Blueprint, indicators,
-          threats, and land ownership.
+          This mode allows you to select a subwatershed or marine hexagon and
+          view data summaries and charts for the Blueprint, indicators, threats,
+          and land ownership.
         </Paragraph>
 
         <Grid columns={[0, 2]} gap={4} sx={{ mt: '2rem' }}>
           <Flex sx={{ flexDirection: 'column', justifyContent: 'center' }}>
             <Paragraph>
               Choose <b>Summarize data</b> from the button bar above the map.
-              Click on any subwatershed or marine lease block for details. You
-              may need to zoom in to select an area.
+              Click on any subwatershed or marine hexagon for details. You may
+              need to zoom in to select an area.
             </Paragraph>
           </Flex>
 

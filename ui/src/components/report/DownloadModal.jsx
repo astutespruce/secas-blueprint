@@ -283,7 +283,7 @@ const DownloadModal = ({ id, type, onClose }) => {
 
 DownloadModal.propTypes = {
   id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  type: PropTypes.oneOf(['subwatershed', 'marine lease block']).isRequired,
+  type: PropTypes.oneOf(['subwatershed', 'marine hex']).isRequired,
   onClose: PropTypes.func.isRequired,
 }
 

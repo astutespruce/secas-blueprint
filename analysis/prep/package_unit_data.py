@@ -307,13 +307,13 @@ huc12 = (
 ### Marine
 ###################################################################
 
-results_dir = data_dir / "results/marine_blocks"
+results_dir = data_dir / "results/marine_hex"
 
 print("--------------------------------")
-print("Reading marine_blocks...")
+print("Reading marine_hex...")
 marine = (
     gp.read_feather(
-        data_dir / "inputs/summary_units/marine_blocks.feather",
+        data_dir / "inputs/summary_units/marine_hex.feather",
         columns=[
             "id",
             "geometry",
@@ -327,7 +327,7 @@ marine = (
     .set_index("id")
     .to_crs(GEO_CRS)
 )
-marine["type"] = "marine lease block"
+marine["type"] = "marine hex"
 marine["subregions"] = marine.subregions.apply(
     lambda x: ",".join(str(subregions[s]) for s in x)
 )
@@ -376,7 +376,7 @@ marine = (
 
 ##################################
 
-### Merge HUC12 and Marine Blocks into single dataframe
+### Merge HUC12 and Marine hexes into single dataframe
 
 out = pd.concat(
     [huc12.reset_index(), marine.reset_index()], ignore_index=True, sort=False

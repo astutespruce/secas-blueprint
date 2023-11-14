@@ -103,94 +103,106 @@ huc12 = huc12.join(pairs, on="id")
 
 
 ### Marine units
-print("Reading marine blocks...")
+print("Reading marine hexes...")
 
-atl = read_dataframe(
-    src_dir / "summary_units/marine_blocks/Atlantic.zip",
-    columns=["PROT_NUMBE", "BLOCK_NUMB"],
+conus = read_dataframe(
+    src_dir
+    / "summary_units/hex/EPA_Hexagons_40km_Unioned_w_GoMMAPPS_Hegagons_40km.shp",
+    columns=["HEXID", "HEXID_1"],
 ).to_crs(DATA_CRS)
-gulf = read_dataframe(
-    src_dir / "summary_units/marine_blocks/Gulf_of_Mexico.zip",
-    columns=["PROT_NUMBE", "BLOCK_NUMB"],
+conus["id"] = conus[["HEXID", "HEXID_1"]].max(axis=1)
+conus = conus.drop(columns=["HEXID", "HEXID_1"])
+
+caribbean = read_dataframe(
+    src_dir / "summary_units/hex/VIPR_Hexagons_DoNOTexactlyMatchEPAHexes.shp",
+    columns=[],
 ).to_crs(DATA_CRS)
+caribbean["id"] = caribbean.index + conus.id.max() + 1
 
-marine = pd.concat([atl, gulf], ignore_index=True)
-marine["id"] = marine.PROT_NUMBE.str.strip() + "-" + marine.BLOCK_NUMB.str.strip()
-marine["name"] = (
-    marine.PROT_NUMBE.str.strip() + ": Block " + marine.BLOCK_NUMB.str.strip()
-)
-
-# there are a couple blocks without proper names and 0 area; drop them
-marine = marine[["id", "name", "geometry"]].dropna()
-
-# some blocks have multiple parts, merge them
-grouped = marine.groupby("id")
-
-# save as DataFrame instead of GeoDataFrame for easier processing
-marine = pd.DataFrame(
-    grouped.geometry.apply(lambda g: g.values).apply(
-        lambda g: shapely.union_all(g) if len(g) > 1 else g[0]
-    )
-).join(grouped.name.first())
-
-# coerce all to MultiPolygons
-ix = shapely.get_type_id(marine.geometry.values) == 3
-marine.loc[ix, "geometry"] = marine.loc[ix].geometry.apply(
-    lambda g: shapely.multipolygons([g])
-)
-
-marine = (
-    gp.GeoDataFrame(marine, geometry="geometry", crs=DATA_CRS)
-    .reset_index()
-    .rename(columns={"index": "id"})
-)
+marine = pd.concat([conus, caribbean], ignore_index=True)
+marine["id"] = marine.id.astype(str)
+marine["name"] = "Hex ID: " + marine.id
 
 
-# select out those within the SE boundary
-print("Selecting Marine blocks in region...")
+# select out those within the marine subregions / Caribbean
+hex_subregions = subregion_df.loc[
+    subregion_df.marine | (subregion_df.subregion == "Caribbean")
+]
 tree = shapely.STRtree(marine.geometry.values)
-ix = tree.query(bnd, predicate="intersects")
+ix = np.unique(tree.query(hex_subregions.geometry.values, predicate="intersects")[1])
 marine = marine.iloc[ix].copy().reset_index(drop=True)
 
 marine["geometry"] = shapely.make_valid(marine.geometry.values)
 
+# Find and dissolve overlapping HUC12s
+print("Dissolving HUC12s")
+tree = shapely.STRtree(marine.geometry.values)
+left, right = tree.query(huc12.geometry.values, predicate="intersects")
+huc12_bnd = shapely.polygons(
+    shapely.get_exterior_ring(
+        shapely.get_parts(shapely.union_all(huc12.geometry.values.take(left)))
+    )
+)
+
+# drop any that are completely contained
+contained = tree.query(huc12_bnd, predicate="contains_properly")[1]
+ix = np.setdiff1d(np.arange(len(marine)), contained)
+marine = marine.take(ix)
+
 marine["acres"] = shapely.area(marine.geometry.values) * M2_ACRES
 
-# only keep those that are larger than 100 acres (arbitrary); others are slivers
-marine = marine.loc[marine.acres > 100].dropna()
-
-# only keep those that are >= 50% within region
+# cut any that intersect HUC12s to fall outside HUC12s
+huc12_bnd = shapely.multipolygons(huc12_bnd)
 tree = shapely.STRtree(marine.geometry.values)
-ix = tree.query(bnd, predicate="contains")
+clip_ix = tree.query(huc12_bnd, predicate="intersects")
+keep_ix = np.setdiff1d(np.arange(len(marine)), clip_ix)
 
-edge_df = marine.loc[~marine.id.isin(marine.iloc[ix].id)].copy()
-edge_df["overlap"] = (
-    100
-    * shapely.area(shapely.intersection(edge_df.geometry.values, bnd))
-    / shapely.area(edge_df.geometry.values)
+print("Clipping marine hexes to fall outside HUC12s")
+clipped = marine.take(clip_ix)
+clipped["geometry"] = shapely.difference(clipped.geometry.values, huc12_bnd)
+clipped["acres"] = shapely.area(clipped.geometry.values) * M2_ACRES
+
+# only keep those still within Blueprint extent
+tree = shapely.STRtree(clipped.geometry.values)
+ix = tree.query(bnd, predicate="intersects")
+clipped = clipped.take(ix)
+
+tree = shapely.STRtree(clipped.geometry.values)
+ix = clipped.index.values.take(tree.query(bnd, predicate="contains_properly"))
+clipped["overlap_acres"] = 0.0
+clipped.loc[ix, "overlap_acres"] = clipped.loc[ix].acres
+
+ix = clipped.overlap_acres == 0
+clipped.loc[ix, "overlap_acres"] = (
+    shapely.area(shapely.intersection(clipped.loc[ix].geometry.values, bnd)) * M2_ACRES
 )
 
-drop_ids = edge_df.loc[edge_df.overlap < 50].id
+# only keep those larger than a 30x30 m pixel
+clipped = clipped.loc[clipped.overlap_acres >= 0.222].drop(columns=["overlap_acres"])
 
-print(
-    f"Dropping {len(drop_ids)} marine blocks that do not sufficiently overlap input areas"
+marine = pd.concat([marine.take(keep_ix), clipped], ignore_index=True).reset_index(
+    drop=True
 )
-marine = marine.loc[~marine.id.isin(drop_ids)].copy()
+
+# coerce all to multi
+ix = shapely.get_type_id(marine.geometry.values) == 3
+marine.loc[ix, "geometry"] = marine.loc[ix].geometry.apply(
+    lambda g: shapely.multipolygons([g])
+)
 
 marine_wgs84 = marine.to_crs(GEO_CRS)
 marine = marine.join(marine_wgs84.bounds)
 
 marine["value"] = np.arange(1, len(marine) + 1).astype("uint16")
 
-# get subregions for marine blocks
-# NOTE: these are pre-filtered to only include marine subregions and avoid edge
-# effects
-marine_subregions = subregion_df.loc[subregion_df.marine]
+# get subregions for marine hexes
+# NOTE: these are pre-filtered to only include marine / Caribbean subregions and
+# avoid edge effects
 tree = shapely.STRtree(marine.geometry.values)
-left, right = tree.query(marine_subregions.geometry.values, predicate="intersects")
+left, right = tree.query(hex_subregions.geometry.values, predicate="intersects")
 pairs = (
     pd.Series(
-        marine_subregions.subregion.values.take(left),
+        hex_subregions.subregion.values.take(left),
         index=marine.id.values.take(right),
         name="subregions",
     )
@@ -249,7 +261,7 @@ with rasterio.open(blueprint_extent_filename) as src:
         (src.height, src.width),
         transform=src.transform,
         fill=0,  # values are >= 1
-        # can use uint16 since there are ~35k blocks
+        # can use uint16 since there are ~32k hexes
         dtype="uint16",
     )
 
@@ -271,12 +283,12 @@ with rasterio.open(blueprint_extent_filename) as src:
     marine["rasterized_acres"] = counts * cellsize
     marine["outside_se"] = outside_se_counts * cellsize
 
-    outfilename = bnd_dir / "marine_blocks.tif"
+    outfilename = bnd_dir / "marine_hex.tif"
     write_raster(outfilename, data, transform=src.transform, crs=src.crs, nodata=0)
     add_overviews(outfilename)
 
 # Save in EPSG:5070 for analysis
 huc12.to_feather(analysis_dir / "huc12.feather")
 write_dataframe(huc12, bnd_dir / "huc12.fgb")
-marine.to_feather(analysis_dir / "marine_blocks.feather")
-write_dataframe(marine, bnd_dir / "marine_blocks.fgb")
+marine.to_feather(analysis_dir / "marine_hex.feather")
+write_dataframe(marine, bnd_dir / "marine_hex.fgb")

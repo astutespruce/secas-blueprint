@@ -1,6 +1,7 @@
 import React from 'react'
-import { Box, Paragraph } from 'theme-ui'
+import { Box, Button, Flex, Paragraph, Text } from 'theme-ui'
 import { withPrefix } from 'gatsby'
+import { SearchLocation } from '@emotion-icons/fa-solid'
 
 import { useBreakpoints } from 'components/layout'
 import { OutboundLink } from 'components/link'
@@ -20,9 +21,33 @@ const Intro = () => {
             Southeast Conservation Adaptation Strategy
           </OutboundLink>{' '}
           (SECAS). It is a living, spatial plan to achieve the SECAS vision of a
-          connected network of lands and waters across the Southeast and
-          Caribbean. The Blueprint is regularly updated to incorporate new data,
-          partner input, and information about on-the-ground conditions.
+          connected network of lands and waters across the
+        </Paragraph>
+        <Flex
+          sx={{
+            mt: '1rem',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Button sx={{ py: '0.25rem', px: '0.5rem' }}>
+            <Flex sx={{ gap: '0.5rem', alignItems: 'center' }}>
+              <Text>Continental Southeast</Text>
+              <SearchLocation size="1em" />
+            </Flex>
+          </Button>
+          and{' '}
+          <Button sx={{ py: '0.25rem', px: '0.5rem' }}>
+            <Flex sx={{ gap: '0.5rem', alignItems: 'center' }}>
+              <Text>Caribbean</Text>
+              <SearchLocation size="1em" />
+            </Flex>
+          </Button>
+        </Flex>
+
+        <Paragraph sx={{ mt: '1rem' }}>
+          The Blueprint is regularly updated to incorporate new data, partner
+          input, and information about on-the-ground conditions.
           <br />
           <br />
           For more information, visit the{' '}
@@ -47,7 +72,7 @@ const Intro = () => {
         >
           <li>
             <b>Summarize data</b> to show charts and information for a
-            subwatershed or marine lease block
+            subwatershed or marine hexagon
           </li>
           <li>
             <b>View point data</b> to discover what is driving the Blueprint

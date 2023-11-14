@@ -200,7 +200,6 @@ async def custom_report_endpoint(
 
 @app.post("/api/reports/huc12/{unit_id}")
 async def huc12_report_endpoint(unit_id: str, token: APIKey = Depends(get_token)):
-
     try:
         redis = await arq.create_pool(REDIS)
         job = await redis.enqueue_job(
@@ -216,15 +215,13 @@ async def huc12_report_endpoint(unit_id: str, token: APIKey = Depends(get_token)
         await redis.close()
 
 
-@app.post("/api/reports/marine_blocks/{unit_id}")
-async def marine_blocks_report_endpoint(
-    unit_id: str, token: APIKey = Depends(get_token)
-):
+@app.post("/api/reports/marine_hex/{unit_id}")
+async def marine_hex_report_endpoint(unit_id: str, token: APIKey = Depends(get_token)):
     try:
         redis = await arq.create_pool(REDIS)
         job = await redis.enqueue_job(
             "create_summary_unit_report",
-            "marine_blocks",
+            "marine_hex",
             unit_id,
             _queue_name=REDIS_QUEUE,
         )

@@ -57,16 +57,14 @@ const PixelIndicatorListItem = ({ indicator, onSelect }) => {
         {label}
       </Text>
 
-      <Box>
-        <IndicatorPixelValueChart
-          present={present}
-          values={values}
-          currentValue={currentValue}
-          isZeroValue={isZeroValue}
-          valueLabel={valueLabel}
-          goodThreshold={goodThreshold}
-        />
-      </Box>
+      <IndicatorPixelValueChart
+        present={present}
+        values={values}
+        currentValue={currentValue}
+        isZeroValue={isZeroValue}
+        valueLabel={valueLabel}
+        goodThreshold={goodThreshold}
+      />
 
       {present && !isZeroValue ? (
         <Text

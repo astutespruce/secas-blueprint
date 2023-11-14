@@ -188,12 +188,16 @@ export const unpackFeatureData = (
     Object.keys(values.ownership).forEach((k) => {
       values.ownership[k] *= 0.1
     })
+  } else {
+    values.ownership = {}
   }
 
   if (values.protection) {
     Object.keys(values.protection).forEach((k) => {
       values.protection[k] *= 0.1
     })
+  } else {
+    values.protection = {}
   }
 
   if (values.ltaSearch) {

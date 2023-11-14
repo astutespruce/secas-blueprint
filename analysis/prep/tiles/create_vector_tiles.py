@@ -148,40 +148,25 @@ ret = subprocess.run(
 ret.check_returncode()
 
 
-######### Create combined tileset for summary units, boundary, mask for frontend
+######### Create combined tileset for summary units and boundary for frontend
 tilesets = []
 
-### Prepare boundary and inverse mask
+### Prepare boundary
 print(
-    "\n\n------------------------------------------------\nCreating boundary and mask tiles\n------------------------------------------------\n"
+    "\n\n------------------------------------------------\nCreating boundary tiles\n------------------------------------------------\n"
 )
-bnd_df = (
-    gp.read_feather(data_dir / "inputs/boundaries/se_boundary.feather")
-    .to_crs(GEO_CRS)
-    .explode(ignore_index=True)
+bnd_df = gp.read_feather(data_dir / "inputs/boundaries/se_boundary.feather").to_crs(
+    GEO_CRS
 )
 infilename = tmp_dir / "se_boundary.fgb"
-write_dataframe(bnd_df, infilename)
+write_dataframe(bnd_df.explode(ignore_index=True), infilename)
 
 outfilename = tmp_dir / "se_boundary.mbtiles"
 create_tileset(infilename, outfilename, minzoom=2, maxzoom=14, layer_id="boundary")
 tilesets.append(outfilename)
 
 
-# Create mask by cutting Southeast bounds out of world bounds
-# NOTE: mask is only used in report
-world = shapely.box(-180, -85, 180, 85)
-mask = shapely.normalize(shapely.difference(world, bnd_df.geometry.values[0]))
-
-infilename = tmp_dir / "se_mask.fgb"
-write_dataframe(gp.GeoDataFrame({"geometry": mask}, index=[0], crs=GEO_CRS), infilename)
-
-outfilename = tmp_dir / "se_mask.mbtiles"
-create_tileset(infilename, outfilename, minzoom=0, maxzoom=8, layer_id="mask")
-tilesets.append(outfilename)
-
-
-### Export HUC12 / marine blocks to tiles
+### Export HUC12 / marine hexes to tiles
 print(
     "\n\n------------------------------------------------\nCreating summary unit tiles\n------------------------------------------------\n"
 )
@@ -193,7 +178,7 @@ outfilename = tmp_dir / "units.mbtiles"
 create_tileset(
     infilename,
     outfilename,
-    minzoom=8,
+    minzoom=6,
     maxzoom=14,
     layer_id="units",
     col_types=get_col_types(df),
@@ -203,7 +188,7 @@ tilesets.append(outfilename)
 
 ### Merge tiles
 print(
-    "\n\n------------------------------------------------\nMerging summary units, boundary, mask\n------------------------------------------------\n"
+    "\n\n------------------------------------------------\nMerging summary units and boundary\n------------------------------------------------\n"
 )
 
 
@@ -212,3 +197,19 @@ ret = subprocess.run(
     [tile_join, "-f", "-pg"] + ["-o", f"{str(outfilename)}"] + tilesets
 )
 ret.check_returncode()
+
+
+print(
+    "\n\n------------------------------------------------\nCreating mask tiles\n------------------------------------------------\n"
+)
+
+# Create mask by cutting Southeast bounds out of world bounds
+# NOTE: mask is only used in report
+world = shapely.box(-180, -85, 180, 85)
+mask = shapely.normalize(shapely.difference(world, bnd_df.geometry.values[0]))
+
+infilename = tmp_dir / "se_mask.fgb"
+write_dataframe(gp.GeoDataFrame({"geometry": mask}, index=[0], crs=GEO_CRS), infilename)
+
+outfilename = out_dir / "se_mask.mbtiles"
+create_tileset(infilename, outfilename, minzoom=0, maxzoom=8, layer_id="mask")

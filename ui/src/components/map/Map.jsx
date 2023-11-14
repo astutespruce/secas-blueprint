@@ -38,7 +38,6 @@ import { pixelLayers, pixelLayerIndex } from './pixelLayers'
 import { Legend } from './legend'
 import LayerToggle from './LayerToggle'
 import MapModeToggle from './MapModeToggle'
-import { crosshatch } from './patterns'
 import StyleToggle from './StyleToggle'
 import { getCenterAndZoom } from './viewport'
 
@@ -243,13 +242,6 @@ const Map = () => {
         if (isLocalDev) {
           map.resize()
         }
-
-        // add crosshatch image
-        const img = new Image(crosshatch.width, crosshatch.height)
-        img.onload = () => {
-          map.addImage(crosshatch.id, img, crosshatch.options)
-        }
-        img.src = crosshatch.src
 
         // add sources
         Object.entries(sources).forEach(([id, source]) => {
@@ -659,13 +651,6 @@ const Map = () => {
             map.setPaintProperty('background', 'background-color', '#FFF')
             map.setPaintProperty('satellite', 'raster-opacity', 0.75)
           }
-
-          // add crosshatch image back
-          const img = new Image(crosshatch.width, crosshatch.height)
-          img.onload = () => {
-            map.addImage(crosshatch.id, img, crosshatch.options)
-          }
-          img.src = crosshatch.src
 
           // add sources back
           Object.entries(sources).forEach(([id, source]) => {

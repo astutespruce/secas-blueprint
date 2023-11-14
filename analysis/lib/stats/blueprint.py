@@ -244,7 +244,7 @@ def extract_blueprint_by_mask(mask_config, subregions):
 
 
 def summarize_blueprint_by_units_grid(df, units_grid, out_dir, marine=False):
-    """Summarize by HUC12 or marine lease block
+    """Summarize by HUC12 or marine hex grid cell
 
     Parameters
     ----------
@@ -299,7 +299,7 @@ def summarize_blueprint_by_units_grid(df, units_grid, out_dir, marine=False):
         )
     )
 
-    # only use marine indicators in marine blocks; otherwise check them all
+    # only use marine indicators in marine hexes; otherwise check them all
     # because some marine indicators are coastal
     if marine:
         check_indicators = [i for i in INDICATORS if i["id"].startswith("m_")]
@@ -350,7 +350,7 @@ def summarize_blueprint_by_units_grid(df, units_grid, out_dir, marine=False):
 
 
 def get_blueprint_unit_results(results_dir, unit):
-    """Get results for a single summary unit (HUC12 / marine lease block).
+    """Get results for a single summary unit (HUC12 / marine hex grid cell).
 
     Parameters
     ----------
@@ -449,8 +449,7 @@ def get_blueprint_unit_results(results_dir, unit):
         if good_threshold is not None:
             indicator_results["good_total"] = indicator_acres[
                 # adjust index because values are only from min_value to max_value
-                good_threshold
-                - indicator["values"][0]["value"] :
+                good_threshold - indicator["values"][0]["value"] :
             ].sum()
 
         indicators[id] = indicator_results

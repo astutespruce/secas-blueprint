@@ -84,7 +84,7 @@ ids = {
     # "060200020506"  # in AppLCC area
     # "030101010301"  # in Nature's Network  / South Atlantic overlap area
     # ],
-    # "marine_blocks": ["NI18-07-6210"],
+    # "marine_hex": [],
 }
 
 
