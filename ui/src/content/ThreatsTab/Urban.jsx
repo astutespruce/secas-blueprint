@@ -31,7 +31,7 @@ const DataSource = () => (
   </Text>
 )
 
-const Urban = ({ type, urban }) => {
+const Urban = ({ type, urban, subregions }) => {
   const urbanCategories = useUrban()
 
   if (type === 'pixel') {
@@ -42,7 +42,6 @@ const Urban = ({ type, urban }) => {
             Projected future urbanization data is not currently available for
             this area.
           </Text>
-          <DataSource />
         </Box>
       )
     }
@@ -58,6 +57,17 @@ const Urban = ({ type, urban }) => {
         <UrbanCategories categories={urbanCategories} value={urban} />
 
         <DataSource />
+      </Box>
+    )
+  }
+
+  if (subregions && subregions.has('Caribbean')) {
+    return (
+      <Box>
+        <Text sx={{ color: 'grey.8' }}>
+          Projected future urbanization data is not currently available for this
+          area.
+        </Text>
       </Box>
     )
   }
@@ -108,10 +118,12 @@ Urban.propTypes = {
     PropTypes.arrayOf(PropTypes.number),
     PropTypes.number,
   ]),
+  subregions: PropTypes.object,
 }
 
 Urban.defaultProps = {
   urban: null,
+  subregions: null,
 }
 
 export default Urban
