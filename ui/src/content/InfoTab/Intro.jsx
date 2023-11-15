@@ -23,9 +23,7 @@ const Intro = () => {
           (SECAS). It is a living, spatial plan to achieve the SECAS vision of a
           connected network of lands and waters across the Southeast and
           Caribbean. The Blueprint is regularly updated to incorporate new data,
-          partner input, and information about on-the-ground conditions. The
-          Blueprint is regularly updated to incorporate new data, partner input,
-          and information about on-the-ground conditions.
+          partner input, and information about on-the-ground conditions.
           <br />
           <br />
           For more information, visit the{' '}
