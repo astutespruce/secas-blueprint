@@ -142,7 +142,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
 
     results["scale"] = scale
 
-    pdf = create_report(maps=maps, results=results, name=name, is_custom_area=True)
+    pdf = create_report(maps=maps, results=results, name=name, area_type="custom")
 
     await set_progress(ctx["redis"], ctx["job_id"], 95, "Nearly done", errors=errors)
 
