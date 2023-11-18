@@ -1,31 +1,32 @@
 import React, { useMemo } from 'react'
-import { Box, Flex } from 'theme-ui'
+import { Box, Flex, Text } from 'theme-ui'
+import { ExclamationTriangle } from '@emotion-icons/fa-solid'
 
 import {
   useBlueprintPriorities,
+  useCorridors,
   useIndicators,
   useMapData,
   useSLR,
   useUrban,
+  useSubregions,
 } from 'components/data'
-import { indexBy, sortByFunc } from 'util/data'
+import { indexBy, sortByFunc, setIntersection } from 'util/data'
 import FilterGroup from './FilterGroup'
 
 const FiltersTab = () => {
   const { all: blueprint } = useBlueprintPriorities()
+  const corridors = useCorridors()
 
-  const {
-    ecosystems: rawEcosystems,
-    indicators: {
-      // base is only input with indicators
-      base: { indicators: rawIndicators },
-    },
-  } = useIndicators()
+  const { ecosystems: rawEcosystems, indicators: rawIndicators } =
+    useIndicators()
 
   const { depth, nodata: slrNodata } = useSLR()
   const urban = useUrban()
+  const { subregions: rawSubregions } = useSubregions()
+  const subregionsIndex = indexBy(rawSubregions, 'subregion')
 
-  const { filters, setFilters } = useMapData()
+  const { filters, setFilters, visibleSubregions } = useMapData()
 
   // nest indicators under ecosystems
   const { priorities, threats, ecosystems } = useMemo(
@@ -40,30 +41,13 @@ const FiltersTab = () => {
             values: blueprint
               .slice()
               .sort(sortByFunc('value'))
-              .slice(1, blueprint.length),
+              .slice(1, blueprint.length)
+              .reverse(),
           },
           {
             id: 'corridors',
             label: 'Hubs and corridors',
-            // IMPORTANT: values are a subset that acts as a proxy for their
-            // corresponding rawValues; all rawValues are toggled as each entry
-            // is toggled
-            values: [
-              {
-                value: 1,
-                rawValues: [1, 2],
-                label: 'Corridors',
-                description:
-                  'inland corridors connect inland hubs; marine and estuarine corridors connect marine hubs within broad marine mammal movement areas.',
-              },
-              {
-                value: 3,
-                rawValues: [3, 4],
-                label: 'Hubs',
-                description:
-                  'inland hubs are large patches (~5,000+ acres) of highest priority Blueprint areas and/or protected lands; marine and estuarine hubs are large estuaries and large patches (~5,000+ acres) of highest priority Blueprint areas.',
-              },
-            ],
+            values: corridors.filter(({ value }) => value > 0),
             description:
               'The Blueprint uses a least-cost path connectivity analysis to identify corridors that link hubs across the shortest distance possible, while also routing through as much Blueprint priority as possible.',
           },
@@ -77,7 +61,7 @@ const FiltersTab = () => {
               // values are not in order and need to be sorted in ascending order
               .sort(sortByFunc('value')),
             description:
-              'Past and current (2019) urban levels based on developed land cover classes from the National Land Cover Database. Future urban growth estimates derived from the FUTURES model. Data provided by the Center for Geospatial Analytics, NC State University.',
+              'Past and current (2021) urban levels based on developed land cover classes from the National Land Cover Database. Future urban growth estimates derived from the FUTURES model developed by the Center for Geospatial Analytics, NC State University.  Data extent limited to the inland continental Southeast.',
           },
           {
             id: 'slr',
@@ -95,7 +79,11 @@ const FiltersTab = () => {
         ecosystems: rawEcosystems.map(
           ({ indicators: ecosystemIndicators, ...ecosystem }) => ({
             ...ecosystem,
-            indicators: ecosystemIndicators.map((id) => indicators[id]),
+            indicators: ecosystemIndicators.map((id) => ({
+              ...indicators[id],
+              // sort indicator values in descending order
+              values: indicators[id].values.slice().reverse(),
+            })),
           })
         ),
       }
@@ -105,6 +93,22 @@ const FiltersTab = () => {
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
     []
   )
+
+  if (
+    visibleSubregions.size === 0 &&
+    Object.values(filters).filter(({ enabled }) => enabled).length === 0
+  ) {
+    return (
+      <Flex sx={{ py: '2rem', pl: '1rem', pr: '2rem', alignItems: 'center' }}>
+        <Box sx={{ flex: '0 0 auto', mr: '1rem', color: 'orange' }}>
+          <ExclamationTriangle size="2em" />
+        </Box>
+        <Text sx={{ color: 'grey.8', flex: '1 1 auto' }}>
+          <b>No filters are available for this area.</b>
+        </Text>
+      </Flex>
+    )
+  }
 
   return (
     <>
@@ -130,7 +134,10 @@ const FiltersTab = () => {
           label="Filter by priorities"
           color="#4d004b0d"
           borderColor="#4d004b2b"
-          entries={priorities}
+          entries={priorities.map((entry) => ({
+            ...entry,
+            canBeVisible: visibleSubregions.size > 0,
+          }))}
           filters={filters}
           onChange={setFilters}
         />
@@ -139,7 +146,13 @@ const FiltersTab = () => {
           label="Filter by threats"
           color="#f3c6a830"
           borderColor="#f3c6a891"
-          entries={threats}
+          entries={threats.map((threat) => ({
+            ...threat,
+            canBeVisible:
+              [...visibleSubregions].filter(
+                (name) => !subregionsIndex[name].marine
+              ).length > 0,
+          }))}
           filters={filters}
           onChange={setFilters}
         />
@@ -148,7 +161,14 @@ const FiltersTab = () => {
             key={ecosystem.id}
             {...ecosystem}
             label={`Filter by ${ecosystem.label.toLowerCase()} indicators`}
-            entries={ecosystem.indicators}
+            entries={ecosystem.indicators.map(
+              ({ subregions: indicatorSubregions, ...rest }) => ({
+                ...rest,
+                canBeVisible:
+                  setIntersection(indicatorSubregions, visibleSubregions).size >
+                  0,
+              })
+            )}
             filters={filters}
             onChange={setFilters}
           />

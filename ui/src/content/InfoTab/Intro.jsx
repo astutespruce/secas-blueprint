@@ -1,6 +1,7 @@
 import React from 'react'
-import { Alert, Box, Paragraph } from 'theme-ui'
+import { Box, Button, Flex, Paragraph, Text } from 'theme-ui'
 import { withPrefix } from 'gatsby'
+import { SearchLocation } from '@emotion-icons/fa-solid'
 
 import { useBreakpoints } from 'components/layout'
 import { OutboundLink } from 'components/link'
@@ -14,21 +15,6 @@ const Intro = () => {
   return (
     <>
       <Box as="section">
-        <Alert
-          sx={{ bg: 'blue.1', fontWeight: 'normal', py: '0.5em', mb: '1rem' }}
-        >
-          <Paragraph sx={{ fontSize: 1 }}>
-            <b>Head&apos;s up!</b>
-            <br />A new version of the Southeast Conservation Blueprint was just
-            released (10/13/2023). This viewer is currently being updated to the
-            new version and will be released later this year, but in the
-            meantime it is based on Southeast Blueprint 2022. As part of the
-            upcoming update, this viewer will expand its functionality,
-            including the ability to explore the underlying indicators across
-            the entire Southeast, Puerto Rico, and the U.S. Virgin Islands. Stay
-            tuned!
-          </Paragraph>
-        </Alert>
         <Paragraph>
           The Southeast Conservation Blueprint is the primary product of the{' '}
           <OutboundLink to="https://secassoutheast.org/">
@@ -62,7 +48,7 @@ const Intro = () => {
         >
           <li>
             <b>Summarize data</b> to show charts and information for a
-            subwatershed or marine lease block
+            subwatershed or marine hexagon
           </li>
           <li>
             <b>View point data</b> to discover what is driving the Blueprint

@@ -6,6 +6,7 @@ import {
   parseDeltaEncodedValues,
   parseDictEncodedValues,
   indexBy,
+  setIntersection,
   sum,
 } from 'util/data'
 
@@ -27,23 +28,33 @@ const isEmpty = (text) => {
 /**
  * Extract dictionary-encoded counts and means
  * @param {Object} packedPercents
- * @param {Object} ecosystemInfo - array of ecosystem info
- * @param {Object} indicatorInfo - lookup of indicator info by index
+ * @param {Array} ecosystemInfo - array of ecosystem info
+ * @param {Array} indicatorInfo - array of indicator info
+ * @param {Array} subregions - array of subregion names
  */
 const extractIndicators = (
   packedPercents,
   ecosystemInfo,
   indicatorInfo,
-  type
+  subregions
 ) => {
   const ecosystemIndex = indexBy(ecosystemInfo, 'id')
 
   // merge incoming packed percents with indicator info
-  let indicators = indicatorInfo.map(
-    ({ values: valuesInfo, ...indicator }, i) => {
+  let indicators = indicatorInfo
+    // only show indicators that are either present or likely present based on
+    // subregion
+    .filter(({ subregions: indicatorSubregions }, i) => {
       const present = !!packedPercents[i]
 
-      const percents = present ? applyFactor(packedPercents[i], 0.1) : []
+      return (
+        present || setIntersection(indicatorSubregions, subregions).size > 0
+      )
+    })
+    .map(({ pos, values: valuesInfo, ...indicator }) => {
+      const present = !!packedPercents[pos]
+
+      const percents = present ? applyFactor(packedPercents[pos], 0.1) : []
 
       // merge percent into values
       const values = valuesInfo.map((value, j) => ({
@@ -56,31 +67,18 @@ const extractIndicators = (
         ...indicator,
         values,
         total: Math.min(sum(percents), 100),
-        ecosystem: ecosystemIndex[indicator.id.split(':')[1].split('_')[0]],
+        ecosystem: ecosystemIndex[indicator.id.split('_')[0]],
       }
-    }
-  )
-
-  // includes indicators that may be present in coastal areas
-  const hasMarine =
-    indicators.filter(
-      ({ id, total }) => id.search('marine_') !== -1 && total > 0
-    ).length > 0
-
-  if (!hasMarine) {
-    // has no marine, likely inland, don't show any marine indicators
-    indicators = indicators.filter(({ id }) => id.search('marine_') === -1)
-  } else if (type === 'marine lease block') {
-    // has no inland
-    indicators = indicators.filter(({ id }) => id.search('marine_') !== -1)
-  }
-
-  indicators = indexBy(indicators, 'id')
+    })
 
   // aggregate these up by ecosystems for ecosystems that are present
   const ecosystemsPresent = new Set(
-    Object.keys(indicators).map((id) => id.split(':')[1].split('_')[0])
+    indicators
+      .filter(({ values }) => sum(values.map(({ percent }) => percent)) > 0)
+      .map(({ ecosystem: { id } }) => id)
   )
+
+  indicators = indexBy(indicators, 'id')
 
   const ecosystems = ecosystemInfo
     .filter(({ id }) => ecosystemsPresent.has(id))
@@ -115,32 +113,27 @@ const extractIndicators = (
 
 /**
  * Unpack encoded attributes in feature data.
- * NOTE: indicators are returned by their index within their input (e.g., southatlantic), not id.
  * @param {Object} properties
- * @param {Object} inputs - lookup of input area info by input area id
- * @param {Object} ecosystemInfo - array of ecosystem info
- * @param {Object} indicatorValues - mapping of index in input to indicator object
+ * @param {Array} ecosystemInfo - array of ecosystem info
+ * @param {Array} indicatorInfo - array of indicator info
+ * @param {Object} subregionIndex - lookup of subregions by value
  */
-export const unpackFeatureData = (properties, ecosystemInfo, indicatorInfo) => {
-  // console.log(
-  //   'unpackFeatureData',
-  //   properties ? properties.id : 'properties are empty'
-  // )
-
+export const unpackFeatureData = (
+  properties,
+  ecosystemInfo,
+  indicatorInfo,
+  subregionIndex
+) => {
   const values = Object.entries(properties)
     .map(([rawKey, value]) => {
       const key = camelCase(rawKey)
 
-      if (!value || typeof value !== 'string') {
+      if (!value || typeof value !== 'string' || key === 'name') {
         return [key, value]
       }
 
       if (isEmpty(value)) {
         return [key, null]
-      }
-
-      if (key === 'name' || key === 'inputId') {
-        return [key, value]
       }
 
       if (value.indexOf('^') !== -1) {
@@ -152,6 +145,8 @@ export const unpackFeatureData = (properties, ecosystemInfo, indicatorInfo) => {
       if (value.indexOf('|') !== -1) {
         return [key, parsePipeEncodedValues(value)]
       }
+
+      // everything else
       return [key, value]
     })
     .reduce((prev, [key, value]) => {
@@ -167,54 +162,42 @@ export const unpackFeatureData = (properties, ecosystemInfo, indicatorInfo) => {
   }
 
   // rescale scaled values from percent * 10 back to percent
-  const priorityColumns = [
+  const scaledColumns = [
     'blueprint',
     'corridors',
-    'base',
-    'flm',
     'slrDepth',
     'slrNodata',
     'urban',
   ]
-  priorityColumns.forEach((c) => {
+  scaledColumns.forEach((c) => {
     values[c] = values[c] ? applyFactor(values[c], 0.1) : []
   })
 
-  // Transform Caribbean so that it follows same structure
-  // It is dict-encoded percent*10
-  // Array has positions 0 ... 24 to match possible priority values.
-  if (values.car) {
-    const car = Array.from(Array(25)).map(() => 0)
-    Object.entries(values.car).forEach(([index, percent]) => {
-      car[index] = percent / 10
-    })
-    values.car = car
-  } else {
-    values.car = []
-  }
+  values.subregions = new Set(
+    (values.subregions || '').split(',').map((v) => subregionIndex[v].subregion)
+  )
 
-  // extract indicators where available
-  values.indicators = {}
-
-  if (values.baseIndicators) {
-    values.indicators.base = extractIndicators(
-      values.baseIndicators || {},
-      ecosystemInfo,
-      indicatorInfo.base.indicators,
-      values.type
-    )
-  }
+  values.indicators = extractIndicators(
+    values.indicators || {},
+    ecosystemInfo,
+    indicatorInfo,
+    values.subregions
+  )
 
   if (values.ownership) {
     Object.keys(values.ownership).forEach((k) => {
       values.ownership[k] *= 0.1
     })
+  } else {
+    values.ownership = {}
   }
 
   if (values.protection) {
     Object.keys(values.protection).forEach((k) => {
       values.protection[k] *= 0.1
     })
+  } else {
+    values.protection = {}
   }
 
   if (values.ltaSearch) {

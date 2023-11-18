@@ -2,7 +2,7 @@
 
 body {
   line-height: 1.4;
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: 'Source Sans 3', sans-serif;
   font-size: 14pt;
   color: #333;
 }
@@ -10,7 +10,7 @@ body {
 @page {
   size: letter;
   margin: 1in 0.5in 0.5in;
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: 'Source Sans 3', sans-serif;
 
   @top-left {
     content: '{{title}} {{subtitle}}';
@@ -336,7 +336,7 @@ table td.highlight-col {
 }
 
 .map-footer {
-  margin-top: 12pt;
+  margin-top: 10pt;
   width: 100%;
 }
 
@@ -436,7 +436,7 @@ table td.highlight-col {
 .legend {
   flex: 1 1 auto;
   line-height: 1.1;
-  font-size: 10pt;
+  font-size: 11pt;
 }
 
 .legend header {
@@ -452,15 +452,27 @@ table td.highlight-col {
   border: 1px solid #aaa;
 }
 
+.legend-patch.outside-se {
+  background-color: rgba(51, 51, 51, 0.25);
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAADpJREFUKFONzEsKADAIA9Hk/oe2WGjpR6OzfgzRy9hwBoAVnMhnCm6k4IUy+KEIhuiFKTqhRAuWyOEA/DwKCnfY+F8AAAAASUVORK5CYII=);
+  background-size: 6px;
+  background-repeat: repeat;
+}
+
+/* have to flip patterns on MacOS due to bug in Weasyprint */
+.flip-x {
+  transform: scaleX(-1);
+}
+
 .legend-label {
   flex: 1 1 auto;
   color: #333;
 }
 
 .legend-header {
-  margin-bottom: 4pt;
+  margin-bottom: 2pt;
   font-weight: bold;
-  font-size: 1rem;
+  font-size: 11pt;
 }
 
 .legend-element + .legend-element {

@@ -15,15 +15,15 @@ class StackedPNGLayer extends BitmapLayer {
       return
     }
 
-    const indicatorImages = images.reduce((prev, cur, i) => {
-      Object.assign(prev, { [`indicator${i}`]: cur })
+    const layerImages = images.reduce((prev, cur, i) => {
+      Object.assign(prev, { [`layer${i}`]: cur })
       return prev
     }, {})
 
     model
       .setUniforms(uniforms)
       .setUniforms({
-        ...indicatorImages,
+        ...layerImages,
         bounds,
         filterValues,
         renderLayerPalette: renderTarget.palette,

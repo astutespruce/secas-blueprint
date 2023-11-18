@@ -39,13 +39,12 @@ const TabContent = ({ tab, mapData }) => {
   const {
     type,
     isLoading,
-    inputId,
-    blueprint,
+    blueprint = null,
     corridors,
+    subregions,
     outsideSEPercent,
     rasterizedAcres,
     indicators,
-    ecosystems,
     slr,
     urban,
     ownership,
@@ -58,7 +57,7 @@ const TabContent = ({ tab, mapData }) => {
     return <Box sx={{ textAlign: 'center', mt: '1rem' }}>Loading...</Box>
   }
 
-  if (inputId === null) {
+  if (blueprint === null) {
     return (
       <>
         <Flex sx={{ py: '2rem', pl: '1rem', pr: '2rem', alignItems: 'center' }}>
@@ -69,13 +68,6 @@ const TabContent = ({ tab, mapData }) => {
             <b>No pixel-level details are available for this area.</b>
           </Text>
         </Flex>
-        <Text sx={{ pl: '1rem', pr: '2rem' }}>
-          It falls outside the 15 states of the Southeast where the Blueprint
-          uses consistent methods and indicators.
-          <br />
-          <br />
-          Switch to summary mode to learn more about this area.
-        </Text>
       </>
     )
   }
@@ -87,9 +79,8 @@ const TabContent = ({ tab, mapData }) => {
           type={type}
           blueprint={blueprint}
           corridors={corridors}
-          inputId={inputId}
+          subregions={subregions}
           outsideSEPercent={outsideSEPercent}
-          ecosystems={ecosystems}
           {...mapData}
         />
       )
@@ -98,7 +89,6 @@ const TabContent = ({ tab, mapData }) => {
       return (
         <IndicatorsTab
           type={type}
-          inputId={inputId}
           indicators={indicators}
           outsideSEPercent={outsideSEPercent}
           rasterizedAcres={rasterizedAcres}
@@ -106,7 +96,14 @@ const TabContent = ({ tab, mapData }) => {
       )
     }
     case 'selected-threats': {
-      return <ThreatsTab type={type} slr={slr} urban={urban} />
+      return (
+        <ThreatsTab
+          type={type}
+          slr={slr}
+          urban={urban}
+          subregions={subregions}
+        />
+      )
     }
     case 'selected-partners': {
       return (

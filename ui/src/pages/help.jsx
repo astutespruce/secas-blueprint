@@ -8,7 +8,6 @@ import {
   Flex,
   Grid,
   Heading,
-  Image,
   Paragraph,
 } from 'theme-ui'
 import { GatsbyImage } from 'gatsby-plugin-image'
@@ -16,12 +15,6 @@ import { GatsbyImage } from 'gatsby-plugin-image'
 import { Layout, SEO } from 'components/layout'
 import { OutboundLink } from 'components/link'
 import { HeaderImage } from 'components/image'
-
-import Thumbnail1 from 'images/report/report_sm_1.png'
-import Thumbnail2 from 'images/report/report_sm_2.png'
-import Thumbnail3 from 'images/report/report_sm_3.png'
-import Thumbnail4 from 'images/report/report_sm_4.png'
-import Thumbnail5 from 'images/report/report_sm_5.png'
 
 const HelpPage = ({
   data: {
@@ -67,6 +60,21 @@ const HelpPage = ({
     searchLatLongImage: {
       childImageSharp: { gatsbyImageData: searchLatLongImage },
     },
+    reportImage1: {
+      childImageSharp: { gatsbyImageData: reportImage1 },
+    },
+    reportImage2: {
+      childImageSharp: { gatsbyImageData: reportImage2 },
+    },
+    reportImage3: {
+      childImageSharp: { gatsbyImageData: reportImage3 },
+    },
+    reportImage4: {
+      childImageSharp: { gatsbyImageData: reportImage4 },
+    },
+    reportImage5: {
+      childImageSharp: { gatsbyImageData: reportImage5 },
+    },
   },
 }) => (
   <Layout>
@@ -105,17 +113,17 @@ const HelpPage = ({
         <Heading as="h2">Summarize data:</Heading>
 
         <Paragraph>
-          This mode allows you to select a subwatershed or marine lease block
-          and view data summaries and charts for the Blueprint, indicators,
-          threats, and land ownership.
+          This mode allows you to select a subwatershed or marine hexagon and
+          view data summaries and charts for the Blueprint, indicators, threats,
+          and land ownership.
         </Paragraph>
 
         <Grid columns={[0, 2]} gap={4} sx={{ mt: '2rem' }}>
           <Flex sx={{ flexDirection: 'column', justifyContent: 'center' }}>
             <Paragraph>
               Choose <b>Summarize data</b> from the button bar above the map.
-              Click on any subwatershed or marine lease block for details. You
-              may need to zoom in to select an area.
+              Click on any subwatershed or marine hexagon for details. You may
+              need to zoom in to select an area.
             </Paragraph>
           </Flex>
 
@@ -317,11 +325,26 @@ const HelpPage = ({
             },
           }}
         >
-          <Image src={Thumbnail1} alt="Tool report example screenshot 1" />
-          <Image src={Thumbnail2} alt="Tool report example screenshot 2" />
-          <Image src={Thumbnail3} alt="Tool report example screenshot 3" />
-          <Image src={Thumbnail4} alt="Tool report example screenshot 4" />
-          <Image src={Thumbnail5} alt="Tool report example screenshot 5" />
+          <GatsbyImage
+            image={reportImage1}
+            alt="Tool report example screenshot 1"
+          />
+          <GatsbyImage
+            image={reportImage2}
+            alt="Tool report example screenshot 2"
+          />
+          <GatsbyImage
+            image={reportImage3}
+            alt="Tool report example screenshot 3"
+          />
+          <GatsbyImage
+            image={reportImage4}
+            alt="Tool report example screenshot 4"
+          />
+          <GatsbyImage
+            image={reportImage5}
+            alt="Tool report example screenshot 5"
+          />
         </Grid>
       </Box>
 
@@ -561,6 +584,56 @@ export const pageQuery = graphql`
         )
       }
     }
+    reportImage1: file(relativePath: { eq: "report/report_sm_1.png" }) {
+      childImageSharp {
+        gatsbyImageData(
+          layout: CONSTRAINED
+          formats: [AUTO, WEBP]
+          placeholder: BLURRED
+          width: 180
+        )
+      }
+    }
+    reportImage2: file(relativePath: { eq: "report/report_sm_2.png" }) {
+      childImageSharp {
+        gatsbyImageData(
+          layout: CONSTRAINED
+          formats: [AUTO, WEBP]
+          placeholder: BLURRED
+          width: 180
+        )
+      }
+    }
+    reportImage3: file(relativePath: { eq: "report/report_sm_3.png" }) {
+      childImageSharp {
+        gatsbyImageData(
+          layout: CONSTRAINED
+          formats: [AUTO, WEBP]
+          placeholder: BLURRED
+          width: 180
+        )
+      }
+    }
+    reportImage4: file(relativePath: { eq: "report/report_sm_4.png" }) {
+      childImageSharp {
+        gatsbyImageData(
+          layout: CONSTRAINED
+          formats: [AUTO, WEBP]
+          placeholder: BLURRED
+          width: 180
+        )
+      }
+    }
+    reportImage5: file(relativePath: { eq: "report/report_sm_5.png" }) {
+      childImageSharp {
+        gatsbyImageData(
+          layout: CONSTRAINED
+          formats: [AUTO, WEBP]
+          placeholder: BLURRED
+          width: 180
+        )
+      }
+    }
   }
 `
 
@@ -572,12 +645,19 @@ HelpPage.propTypes = {
     pointDataImage: PropTypes.object.isRequired,
     pointDataTabsImage: PropTypes.object.isRequired,
     filterImage: PropTypes.object.isRequired,
+    filterBeforeImage: PropTypes.object.isRequired,
+    filterAfterImage: PropTypes.object.isRequired,
     toggleLayersButtonImage: PropTypes.object.isRequired,
     toggleLayersModalImage: PropTypes.object.isRequired,
     searchFieldImage: PropTypes.object.isRequired,
     searchOptionsImage: PropTypes.object.isRequired,
     searchResultsImage: PropTypes.object.isRequired,
     searchLatLongImage: PropTypes.object.isRequired,
+    reportImage1: PropTypes.object.isRequired,
+    reportImage2: PropTypes.object.isRequired,
+    reportImage3: PropTypes.object.isRequired,
+    reportImage4: PropTypes.object.isRequired,
+    reportImage5: PropTypes.object.isRequired,
   }).isRequired,
 }
 

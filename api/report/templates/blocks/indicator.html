@@ -33,6 +33,12 @@
                         <div class="legend-label">{{entry.label}}</div>
                     </div>
                 {% endfor %}
+                {% if results.outside_se_percent > 0 %}
+                    <div class="legend-element flex align-center">
+                        <div class="legend-patch outside-se {% if flip_crosshatch %}flip-x{% endif %}"></div>
+                        <div class="legend-label">Outside Southeast Blueprint</div>
+                    </div>
+                {% endif %}
             </div>
         </div>
 
@@ -46,8 +52,8 @@
 
 <div class="no-break">
     <div class="caption">
-        Table {{table.counter}}: Indicator values for {{indicator.captionLabel or indicator.label}}{% if results.name %} within {{results.name}}{% if results.type %} {{results.type}}{% endif %}{% else %} in this area{% endif %}.
-        {% if "goodThreshold" in indicator %}
+        Table {{table.counter}}: Indicator values for {{indicator.captionLabel or indicator.label}}{% if name %} within {{name}}{% else %} in this area{% endif %}.
+        {% if indicator.goodThreshold %}
             Good condition thresholds reflect the range of indicator values that occur in healthy, functioning ecosystems.
         {% else %}
             A good condition threshold is not yet defined for this indicator.
@@ -55,7 +61,7 @@
     </div>
     {% set table.counter=table.counter+1 %}
 
-    {% if "goodThreshold" in indicator %}
+    {% if indicator.goodThreshold %}
         <table class="centered">
             <thead>
                 <tr>
@@ -99,15 +105,6 @@
                         <td class="label">Area not evaluated for this indicator</td>
                         <td class="acres">{{indicator.outside_indicator_acres|format_number}}</td>
                         <td class="percent">{{indicator.outside_indicator_percent|format_percent}}%</td>
-                    </tr>
-                {% endif %}
-
-                {% if src.outside_input_acres %}
-                    <tr class="remainder-row">
-                        <td class="level no-border"></td>
-                        <td class="label">Outside {{src.label}} input area</td>
-                        <td class="acres">{{src.outside_input_acres|format_number}}</td>
-                        <td class="percent">{{src.outside_input_percent|format_percent}}%</td>
                     </tr>
                 {% endif %}
 
@@ -164,15 +161,6 @@
                     </tr>
                 {% endif %}
 
-                {% if src.outside_input_acres %}
-                    <tr class="remainder-row">
-                        <td class="no-border no-background"></td>
-                        <td class="label">Outside {{src.label}} input area</td>
-                        <td class="acres">{{src.outside_input_acres|format_number}}</td>
-                        <td class="percent">{{src.outside_input_percent|format_percent}}%</td>
-                    </tr>
-                {% endif %}
-
                 {% if results.outside_se_acres %}
                     <tr class="remainder-row">
                         <td class="no-border no-background"></td>
@@ -194,7 +182,7 @@
 </div>
 
 <!-- special case for PARCAs: show specific area info -->
-{% if indicator.id=="base:land_saamphibianandreptileareas" and results["parca"] %}
+{% if indicator.id=="t_southatlanticamphibianandreptileareas" and results["parca"] %}
     {% include "blocks/parca_details.html" %}
 {% endif %}
 

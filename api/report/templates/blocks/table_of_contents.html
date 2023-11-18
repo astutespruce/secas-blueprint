@@ -21,78 +21,26 @@
       </a>
     </li>
 
-    {% if results.promote_base %}
-      <div class="divider"></div>
-      <li>
-        <a href="#Corridors">
-          <div>Hubs and Corridors</div>
-        </a>
-        <a href="#Corridors">
-          <div target="#Corridors" class="tocpagenr"></div>
-        </a>
-      </li>
+    <div class="divider"></div>
+    <li>
+      <a href="#Corridors">
+        <div>Hubs and Corridors</div>
+      </a>
+      <a href="#Corridors">
+        <div target="#Corridors" class="tocpagenr"></div>
+      </a>
+    </li>
 
-      <div class="divider"></div>
-      <li>
-        <a href="#IndicatorSummary">
-          <div>Indicator Summary</div>
-        </a>
-        <a href="#IndicatorSummary">
-          <div target="#IndicatorSummary" class="tocpagenr"></div>
-        </a>
-      </li>
+    <div class="divider"></div>
+    <li>
+      <a href="#IndicatorSummary">
+        <div>Indicator Summary</div>
+      </a>
+      <a href="#IndicatorSummary">
+        <div target="#IndicatorSummary" class="tocpagenr"></div>
+      </a>
+    </li>
 
-    {% else %}
-
-      {% if (results.inputs|length) > 1 %}
-        <div class="divider"></div>
-        <li>
-          <a href="#InputAreas">
-            <div>Southeast Blueprint Input Areas</div>
-          </a>
-          <a href="#InputAreas">
-            <div target="#InputAreas" class="tocpagenr"></div>
-          </a>
-        </li>
-      {% endif %}
-
-      {% for src in results.inputs %}
-
-        {% if src.id == "base" %}
-          <div class="divider"></div>
-          <li>
-            <a href="#Corridors">
-              <div>Base Blueprint: Hubs and Corridors</div>
-            </a>
-            <a href="#Corridors">
-              <div target="#Corridors" class="tocpagenr"></div>
-            </a>
-          </li>
-
-          <div class="divider"></div>
-          <li>
-            <a href="#IndicatorSummary">
-              <div>Base Blueprint: Indicator Summary</div>
-            </a>
-            <a href="#IndicatorSummary">
-              <div target="#IndicatorSummary" class="tocpagenr"></div>
-            </a>
-          </li>
-
-        {% else %}
-          <div class="divider"></div>
-          <li>
-            <a href="#{{src.id}}">
-              <div>{{src.label}}</div>
-            </a>
-            <a href="#{{src.id}}">
-              <div target="#{{src.id}}" class="tocpagenr"></div>
-            </a>
-          </li>
-        {% endif %}
-      {% endfor %}
-
-    {% endif %}
 
     {% if not results.exclude_threats %}
       <div class="divider"></div>
@@ -106,17 +54,15 @@
       </li>
     {% endif %}
 
-    {% if results.ownership or results.protection %}
-      <div class="divider"></div>
-      <li>
-        <a href="#Ownership">
-          <div>Ownership and Partners</div>
-        </a>
-        <a href="#Ownership">
-          <div target="#Ownership" class="tocpagenr"></div>
-        </a>
-      </li>
-    {% endif %}
+    <div class="divider"></div>
+    <li>
+      <a href="#Ownership">
+        <div>Ownership and Partners</div>
+      </a>
+      <a href="#Ownership">
+        <div target="#Ownership" class="tocpagenr"></div>
+      </a>
+    </li>
 
     <div class="divider"></div>
     <li>

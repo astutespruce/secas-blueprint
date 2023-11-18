@@ -228,3 +228,11 @@ export const histogram = (a) =>
     (prev, cur) => Object.assign(prev, { [cur]: (prev[cur] || 0) + 1 }),
     {}
   )
+
+/**
+ * Return the set intersection of two sets
+ * @param {Set} a
+ * @param {Set} b
+ * @returns Set
+ */
+export const setIntersection = (a, b) => new Set([...a].filter((v) => b.has(v)))

@@ -1,6 +1,5 @@
 import { graphql, useStaticQuery } from 'gatsby'
 
-import { indexBy } from 'util/data'
 import { extractNodes } from 'util/graphql'
 
 export const useIndicators = () => {
@@ -20,22 +19,18 @@ export const useIndicators = () => {
       indicators: allIndicatorsJson {
         edges {
           node {
-            input
-            indicators {
-              id # note: not jsonId here due to embedded structure
+            id: jsonId
+            label
+            url
+            description
+            goodThreshold
+            values {
+              value
               label
-              url
-              description
-              goodThreshold
-              values {
-                value
-                label
-                color
-              }
-              valueLabel
-              presenceLabel
-              subregions
+              color
             }
+            valueLabel
+            subregions
           }
         }
       }
@@ -43,6 +38,10 @@ export const useIndicators = () => {
   `)
   return {
     ecosystems: extractNodes(ecosystems),
-    indicators: indexBy(extractNodes(indicators), 'input'),
+    indicators: extractNodes(indicators).map(({ subregions, ...rest }, i) => ({
+      ...rest,
+      subregions: new Set(subregions),
+      pos: i, // position within list of indicators, used to unpack packed indicator values
+    })),
   }
 }

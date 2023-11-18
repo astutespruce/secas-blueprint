@@ -4,34 +4,48 @@
     "label": "Not a hub or corridor",
     "description": null,
     "color": null,
-    "order": 4
+    "type": null
   },
   {
     "value": 1,
-    "color": "#9B9B9B",
-    "label": "Inland corridors",
-    "description": "Inland corridors connect those hubs.",
-    "order": 1
+    "color": "#464646",
+    "label": "Inland continental hubs",
+    "description": "Inland hubs are large patches (~5,000+ acres) of highest priority Blueprint areas and/or protected lands.",
+    "type": "inland"
   },
   {
     "value": 2,
-    "color": "#9EBBD7",
-    "label": "Marine & estuarine corridors",
-    "description": "Marine and estuarine corridors connect those hubs within broad marine mammal movement areas.",
-    "order": 3
+    "color": "#9B9B9B",
+    "label": "Inland continental corridors",
+    "description": "Inland corridors connect those hubs.",
+    "type": "inland"
   },
   {
     "value": 3,
-    "color": "#464646",
-    "label": "Inland hubs",
-    "description": "Inland hubs are large patches (~5,000+ acres) of highest priority Blueprint areas and/or protected lands.",
-    "order": 0
+    "color": "#444F89",
+    "label": "Marine & estuarine continental hubs",
+    "description": "Marine and estuarine hubs are large estuaries and large patches (~5,000+ acres) of highest priority Blueprint areas.",
+    "type": "marine"
   },
   {
     "value": 4,
-    "color": "#454F89",
-    "label": "Marine & estuarine hubs",
-    "description": "Marine and estuarine hubs are large estuaries and large patches (~5,000+ acres) of highest priority Blueprint areas.",
-    "order": 2
+    "color": "#9EBBD7",
+    "label": "Marine & estuarine continental corridors",
+    "description": "Marine and estuarine corridors connect those hubs within broad marine mammal and turtle movement areas.",
+    "type": "marine"
+  },
+  {
+    "value": 5,
+    "color": "#154F4A",
+    "label": "Caribbean hubs",
+    "description": "Caribbean hubs are large patches (~500+ acres) of highest priority Blueprint areas and/or protected lands.",
+    "type": "caribbean"
+  },
+  {
+    "value": 6,
+    "color": "#8EB6B0",
+    "label": "Caribbean corridors",
+    "description": "Caribbean corridors connect those hubs.",
+    "type": "caribbean"
   }
 ]

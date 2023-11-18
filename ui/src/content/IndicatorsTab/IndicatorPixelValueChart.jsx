@@ -27,92 +27,87 @@ const currentPatchCSS = {
 const IndicatorPixelValueChart = ({
   present,
   values,
+  currentValue,
+  isZeroValue,
   valueLabel,
   goodThreshold,
-}) => {
-  const [currentValue] = values.filter(({ percent }) => percent === 100)
-
-  return (
-    <Box sx={{ mt: goodThreshold ? '1.5rem' : '0.25rem' }}>
-      {present && valueLabel ? (
-        <Text
-          sx={{
-            fontSize: 0,
-            color: 'grey.8',
-            mt: '-0.25rem',
-            mb: '0.5rem',
-            lineHeight: 1.2,
-          }}
-        >
-          {valueLabel}
-        </Text>
-      ) : null}
-      <Flex sx={{ alignItems: 'center', opacity: present ? 1 : 0.25 }}>
-        <Text sx={labelCSS}>Low</Text>
-        <Flex
-          sx={{
-            alignItems: 'center',
-            flex: '1 1 auto',
-            mx: '1rem',
-            border: '1px solid',
-            borderColor: present ? 'grey.6' : 'grey.4',
-          }}
-        >
-          {/* always have a 0 value bin */}
-          {values[0].value > 0 ? <Box sx={patchCSS} /> : null}
-
-          {values.map(({ value, percent }) => (
-            <React.Fragment key={value}>
-              <Box sx={percent === 100 ? currentPatchCSS : patchCSS}>
-                {value === goodThreshold ? (
-                  <Text
-                    sx={{
-                      position: 'absolute',
-                      width: '94px',
-                      top: '-1.2rem',
-                      fontSize: '10px',
-                      borderLeft: '1px dashed',
-                      borderLeftColor: 'grey.6',
-                    }}
-                  >
-                    &rarr; good condition
-                  </Text>
-                ) : null}
-                {percent === 100 ? (
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      left: '50%',
-                      top: '0.8rem',
-                      ml: '-0.5rem',
-                      borderBottom: '0.6rem solid',
-                      borderBottomColor: 'grey.9',
-                      borderLeft: '0.5rem solid transparent',
-                      borderRight: '0.5rem solid transparent',
-                    }}
-                  />
-                ) : null}
-              </Box>
-            </React.Fragment>
-          ))}
-        </Flex>
-        <Text sx={labelCSS}>High</Text>
-      </Flex>
-
-      <Text sx={{ color: 'grey.8', fontSize: 0, mt: '1rem' }}>
-        Value:{' '}
-        {present
-          ? currentValue.label
-          : // <>
-            //   {valueLabel
-            //     ? `${valueLabel}: ${currentValue.label.toLowerCase()}`
-            //     : currentValue.label}
-            // </>
-            'Not present'}
+}) => (
+  <Box>
+    {present && !!valueLabel ? (
+      <Text
+        sx={{
+          fontSize: 0,
+          color: 'grey.8',
+          lineHeight: 1.2,
+        }}
+      >
+        {valueLabel}
       </Text>
-    </Box>
-  )
-}
+    ) : null}
+
+    <Flex
+      sx={{
+        mt: goodThreshold ? '1.25rem' : '0.5rem',
+        alignItems: 'center',
+        opacity: isZeroValue ? 0.25 : 1,
+      }}
+    >
+      <Text sx={labelCSS}>Low</Text>
+      <Flex
+        sx={{
+          alignItems: 'center',
+          flex: '1 1 auto',
+          mx: '1rem',
+          border: '1px solid',
+          borderColor: present ? 'grey.6' : 'grey.4',
+        }}
+      >
+        {/* always have a 0 value bin */}
+        {values[0].value > 0 ? <Box sx={patchCSS} /> : null}
+
+        {values.map(({ value, percent }) => (
+          <React.Fragment key={value}>
+            <Box sx={percent === 100 ? currentPatchCSS : patchCSS}>
+              {value === goodThreshold ? (
+                <Text
+                  sx={{
+                    position: 'absolute',
+                    width: '94px',
+                    top: '-1.2rem',
+                    fontSize: '10px',
+                    borderLeft: '1px dashed',
+                    borderLeftColor: 'grey.6',
+                  }}
+                >
+                  &rarr; good condition
+                </Text>
+              ) : null}
+              {percent === 100 ? (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    left: '50%',
+                    top: '0.8rem',
+                    ml: '-0.5rem',
+                    borderBottom: '0.6rem solid',
+                    borderBottomColor: 'grey.9',
+                    borderLeft: '0.5rem solid transparent',
+                    borderRight: '0.5rem solid transparent',
+                  }}
+                />
+              ) : null}
+            </Box>
+          </React.Fragment>
+        ))}
+      </Flex>
+      <Text sx={labelCSS}>High</Text>
+    </Flex>
+
+    <Text sx={{ color: 'grey.8', fontSize: 0, mt: '1rem' }}>
+      Value: {present ? currentValue.label : 'Not present'}
+    </Text>
+  </Box>
+)
 
 IndicatorPixelValueChart.propTypes = {
   present: PropTypes.bool,
@@ -123,12 +118,18 @@ IndicatorPixelValueChart.propTypes = {
       percent: PropTypes.number.isRequired, // will be either 0 (absent) or 100 (present)
     })
   ).isRequired,
+  currentValue: PropTypes.shape({
+    label: PropTypes.string,
+  }),
+  isZeroValue: PropTypes.bool,
   valueLabel: PropTypes.string,
   goodThreshold: PropTypes.number,
 }
 
 IndicatorPixelValueChart.defaultProps = {
   valueLabel: null,
+  currentValue: null,
+  isZeroValue: false,
   present: false,
   goodThreshold: null,
 }

@@ -7,7 +7,7 @@ import NeedHelp from 'content/NeedHelp'
 import SLR from './SLR'
 import Urban from './Urban'
 
-const ThreatsTab = ({ type, slr, urban }) => {
+const ThreatsTab = ({ type, slr, urban, subregions }) => {
   if (type !== 'pixel' && type !== 'subwatershed') {
     return (
       <Paragraph
@@ -30,7 +30,7 @@ const ThreatsTab = ({ type, slr, urban }) => {
         <Flex sx={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
           <Heading as="h3">Urbanization</Heading>
         </Flex>
-        <Urban type={type} urban={urban} />
+        <Urban type={type} urban={urban} subregions={subregions} />
       </Box>
 
       <Divider variant="styles.hr.light" sx={{ my: '3rem' }} />
@@ -63,11 +63,13 @@ ThreatsTab.propTypes = {
     PropTypes.arrayOf(PropTypes.number),
     PropTypes.number,
   ]),
+  subregions: PropTypes.object,
 }
 
 ThreatsTab.defaultProps = {
   slr: null,
   urban: null,
+  subregions: null,
 }
 
 export default ThreatsTab

@@ -1,5 +1,7 @@
 import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
+import { graphql, useStaticQuery } from 'gatsby'
+import { GatsbyImage } from 'gatsby-plugin-image'
 import {
   Box,
   Button,
@@ -10,19 +12,12 @@ import {
   Text,
   Divider,
   Grid,
-  Image,
   Paragraph,
 } from 'theme-ui'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { ContactModal } from 'components/modal'
 import { OutboundLink } from 'components/link'
-
-import Thumbnail1 from 'images/report/report_sm_1.png'
-import Thumbnail2 from 'images/report/report_sm_2.png'
-import Thumbnail3 from 'images/report/report_sm_3.png'
-import Thumbnail4 from 'images/report/report_sm_4.png'
-import Thumbnail5 from 'images/report/report_sm_5.png'
 
 import DropZone from './DropZone'
 
@@ -34,6 +29,77 @@ const linkCSS = {
 }
 
 const UploadForm = ({ onFileChange, onCreateReport }) => {
+  const {
+    reportImage1: {
+      childImageSharp: { gatsbyImageData: reportImage1 },
+    },
+    reportImage2: {
+      childImageSharp: { gatsbyImageData: reportImage2 },
+    },
+    reportImage3: {
+      childImageSharp: { gatsbyImageData: reportImage3 },
+    },
+    reportImage4: {
+      childImageSharp: { gatsbyImageData: reportImage4 },
+    },
+    reportImage5: {
+      childImageSharp: { gatsbyImageData: reportImage5 },
+    },
+  } = useStaticQuery(graphql`
+    query {
+      reportImage1: file(relativePath: { eq: "report/report_sm_1.png" }) {
+        childImageSharp {
+          gatsbyImageData(
+            layout: CONSTRAINED
+            formats: [AUTO, WEBP]
+            placeholder: BLURRED
+            width: 180
+          )
+        }
+      }
+      reportImage2: file(relativePath: { eq: "report/report_sm_2.png" }) {
+        childImageSharp {
+          gatsbyImageData(
+            layout: CONSTRAINED
+            formats: [AUTO, WEBP]
+            placeholder: BLURRED
+            width: 180
+          )
+        }
+      }
+      reportImage3: file(relativePath: { eq: "report/report_sm_3.png" }) {
+        childImageSharp {
+          gatsbyImageData(
+            layout: CONSTRAINED
+            formats: [AUTO, WEBP]
+            placeholder: BLURRED
+            width: 180
+          )
+        }
+      }
+      reportImage4: file(relativePath: { eq: "report/report_sm_4.png" }) {
+        childImageSharp {
+          gatsbyImageData(
+            layout: CONSTRAINED
+            formats: [AUTO, WEBP]
+            placeholder: BLURRED
+            width: 180
+          )
+        }
+      }
+      reportImage5: file(relativePath: { eq: "report/report_sm_5.png" }) {
+        childImageSharp {
+          gatsbyImageData(
+            layout: CONSTRAINED
+            formats: [AUTO, WEBP]
+            placeholder: BLURRED
+            width: 180
+          )
+        }
+      }
+    }
+  `)
+
   const methods = useForm({
     mode: 'onBlur',
   })
@@ -211,11 +277,26 @@ const UploadForm = ({ onFileChange, onCreateReport }) => {
             },
           }}
         >
-          <Image src={Thumbnail1} alt="Tool report example screenshot 1" />
-          <Image src={Thumbnail2} alt="Tool report example screenshot 2" />
-          <Image src={Thumbnail3} alt="Tool report example screenshot 3" />
-          <Image src={Thumbnail4} alt="Tool report example screenshot 4" />
-          <Image src={Thumbnail5} alt="Tool report example screenshot 5" />
+          <GatsbyImage
+            image={reportImage1}
+            alt="Tool report example screenshot 1"
+          />
+          <GatsbyImage
+            image={reportImage2}
+            alt="Tool report example screenshot 2"
+          />
+          <GatsbyImage
+            image={reportImage3}
+            alt="Tool report example screenshot 3"
+          />
+          <GatsbyImage
+            image={reportImage4}
+            alt="Tool report example screenshot 4"
+          />
+          <GatsbyImage
+            image={reportImage5}
+            alt="Tool report example screenshot 5"
+          />
         </Grid>
         <Paragraph sx={{ mt: '1rem' }}>...and much more!</Paragraph>
       </Box>

@@ -21,7 +21,7 @@ import {
   useBlueprintPriorities,
   useMapData,
   useIndicators,
-  useSLR,
+  useSubregions,
 } from 'components/data'
 import { useBreakpoints } from 'components/layout'
 import { useSearch } from 'components/search'
@@ -38,7 +38,6 @@ import { pixelLayers, pixelLayerIndex } from './pixelLayers'
 import { Legend } from './legend'
 import LayerToggle from './LayerToggle'
 import MapModeToggle from './MapModeToggle'
-import { crosshatch } from './patterns'
 import StyleToggle from './StyleToggle'
 import { getCenterAndZoom } from './viewport'
 
@@ -82,6 +81,7 @@ const Map = () => {
     setData: setMapData,
     renderLayer,
     filters,
+    setVisibleSubregions,
   } = useMapData()
   const mapModeRef = useRef(mapMode)
   const { all: blueprintInfo, categories: blueprintCategories } =
@@ -96,8 +96,7 @@ const Map = () => {
   )
   const { ecosystems: ecosystemInfo, indicators: indicatorInfo } =
     useIndicators()
-  const { nodata: slrNodataValues } = useSLR()
-  const slrNodata = slrNodataValues[slrNodataValues.length - 1]
+  const { subregionIndex } = useSubregions()
 
   const [isLoaded, setIsLoaded] = useState(false)
   const [isRenderLayerVisible, setisRenderLayerVisible] = useState(true)
@@ -112,11 +111,6 @@ const Map = () => {
   const breakpoint = useBreakpoints()
   const isMobile = breakpoint === 0
   const { location } = useSearch()
-
-  const showSLRNodata =
-    mapMode !== 'unit' &&
-    ((renderLayer && renderLayer.id === 'slr') ||
-      (filters && filters.slr && filters.slr.enabled))
 
   const updateMapIsDrawing = useDebouncedCallback(() => {
     if (mapIsDrawingRef.current) {
@@ -199,6 +193,20 @@ const Map = () => {
     })
   }, 10)
 
+  const updateVisibleSubregions = useDebouncedCallback(() => {
+    if (mapModeRef.current !== 'filter') {
+      return
+    }
+
+    const { current: map } = mapRef
+    if (!map) return
+
+    const subregions = map
+      .queryRenderedFeatures(null, { layers: ['subregions'] })
+      .map(({ properties: { subregion } }) => subregion)
+    setVisibleSubregions(new Set(subregions))
+  }, 10)
+
   useEffect(
     () => {
       // if there is no window, we cannot render this component
@@ -207,7 +215,7 @@ const Map = () => {
       }
 
       const { bounds, maxBounds, minZoom, maxZoom } = config
-      const { center, zoom } = getCenterAndZoom(mapNode.current, bounds, 0.1)
+      const { center, zoom } = getCenterAndZoom(mapNode.current, bounds, 0)
 
       // Token must be set before constructing map
       mapboxgl.accessToken = mapboxToken
@@ -235,13 +243,6 @@ const Map = () => {
           map.resize()
         }
 
-        // add crosshatch image
-        const img = new Image(crosshatch.width, crosshatch.height)
-        img.onload = () => {
-          map.addImage(crosshatch.id, img, crosshatch.options)
-        }
-        img.src = crosshatch.src
-
         // add sources
         Object.entries(sources).forEach(([id, source]) => {
           map.addSource(id, source)
@@ -253,6 +254,7 @@ const Map = () => {
           id: 'pixelLayers',
           type: StackedPNGTileLayer,
           refinementStrategy: 'no-overlap',
+          extent: bounds,
           opacity: 0.7,
           filters: null,
           visible: false,
@@ -272,10 +274,7 @@ const Map = () => {
 
         // add normal mapbox layers// add layers
         layers.forEach((layer) => {
-          map.addLayer(
-            layer,
-            layer.id.startsWith('slr-not-modeled') ? undefined : beforeLayer
-          )
+          map.addLayer(layer, beforeLayer)
         })
 
         // if map is initialized in pixel or filter mode
@@ -313,12 +312,17 @@ const Map = () => {
 
         map.on('moveend', () => {
           mapIsDrawingRef.current = true
+          if (mapModeRef.current === 'filter') {
+            updateVisibleSubregions()
+          }
           updateMapIsDrawing()
         })
 
         map.on('zoomend', () => {
           if (mapModeRef.current === 'pixel') {
             getPixelData()
+          } else if (mapModeRef.current === 'filter') {
+            updateVisibleSubregions()
           }
           setCurrentZoom(map.getZoom())
         })
@@ -351,7 +355,14 @@ const Map = () => {
         // highlight selected
         map.setFilter('unit-outline-highlight', ['==', 'id', properties.id])
 
-        setMapData(unpackFeatureData(properties, ecosystemInfo, indicatorInfo))
+        setMapData(
+          unpackFeatureData(
+            properties,
+            ecosystemInfo,
+            indicatorInfo,
+            subregionIndex
+          )
+        )
         if (isMobile) {
           map.resize()
         }
@@ -484,6 +495,10 @@ const Map = () => {
             // data prop is used to force deeper reloading of tiles
             data: { visible: true },
           })
+
+          if (mapMode === 'filter') {
+            map.once('idle', updateVisibleSubregions)
+          }
         }
       }
 
@@ -503,7 +518,7 @@ const Map = () => {
 
     // intentionally omitting getPixelData; it is static
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
-    [isLoaded, mapMode, showSLRNodata]
+    [isLoaded, mapMode]
   )
 
   // handler for changed mapData
@@ -580,26 +595,6 @@ const Map = () => {
     }
   }, [location, isLoaded])
 
-  // handler for changed showSLRNodata
-  useEffect(() => {
-    if (!isLoaded) return
-    const { current: map } = mapRef
-
-    const slrVisibility =
-      isRenderLayerVisibleRef.current && showSLRNodata ? 'visible' : 'none'
-
-    map.setLayoutProperty(
-      'slr-not-modeled-crosshatch',
-      'visibility',
-      slrVisibility
-    )
-    map.setLayoutProperty(
-      'slr-not-modeled-outline',
-      'visibility',
-      slrVisibility
-    )
-  }, [showSLRNodata, isLoaded])
-
   const handleToggleRenderLayerVisible = useCallback(() => {
     const { current: map } = mapRef
     if (!map) return
@@ -619,23 +614,10 @@ const Map = () => {
           // still works
           opacity: newIsVisible ? 0.7 : 0,
         })
-
-        const slrVisibility = showSLRNodata && newIsVisible ? 'visible' : 'none'
-
-        map.setLayoutProperty(
-          'slr-not-modeled-outline',
-          'visibility',
-          slrVisibility
-        )
-        map.setLayoutProperty(
-          'slr-not-modeled-crosshatch',
-          'visibility',
-          slrVisibility
-        )
       }
       return newIsVisible
     })
-  }, [showSLRNodata])
+  }, [])
 
   const handleBasemapChange = useCallback(
     (styleID) => {
@@ -669,13 +651,6 @@ const Map = () => {
             map.setPaintProperty('background', 'background-color', '#FFF')
             map.setPaintProperty('satellite', 'raster-opacity', 0.75)
           }
-
-          // add crosshatch image back
-          const img = new Image(crosshatch.width, crosshatch.height)
-          img.onload = () => {
-            map.addImage(crosshatch.id, img, crosshatch.options)
-          }
-          img.src = crosshatch.src
 
           // add sources back
           Object.entries(sources).forEach(([id, source]) => {
@@ -721,12 +696,6 @@ const Map = () => {
               }
             }
 
-            if (l.id.startsWith('slr-not-modeled')) {
-              layer.layout = {
-                visibility: showSLRNodata ? 'visible' : 'none',
-              }
-            }
-
             map.addLayer(layer, beforeLayer)
           })
 
@@ -741,7 +710,7 @@ const Map = () => {
         map.once('idle', updateStyle)
       }
     },
-    [isLoaded, mapData, mapMode, showSLRNodata]
+    [isLoaded, mapData, mapMode]
   )
 
   let belowMinZoom = false
@@ -764,18 +733,6 @@ const Map = () => {
       subtitle: renderLayer.valueLabel,
       categories: renderLayer.categories,
     }
-  }
-  if (showSLRNodata) {
-    legendProps.categories = legendProps.categories.concat([
-      {
-        value: 99,
-        label: slrNodata.label,
-        color: '#FFF',
-        pattern: crosshatch,
-        outlineWidth: 1,
-        outlineColor: '#000000',
-      },
-    ])
   }
 
   return (

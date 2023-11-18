@@ -2,6 +2,7 @@ from base64 import b64encode
 from datetime import date, datetime, timezone
 from io import BytesIO
 from pathlib import Path
+import sys
 
 import weasyprint
 from weasyprint import HTML
@@ -56,7 +57,7 @@ template = env.get_template("report.html")
 css_template = env.get_template("report.css")
 
 
-def create_report(maps, results, name=None, area_type=None):
+def create_report(maps, results, name=None, area_type="custom"):
     """Create PDF report with maps and results
 
     Parameters
@@ -65,8 +66,8 @@ def create_report(maps, results, name=None, area_type=None):
     results : dict
     name : str, optional (default: None)
         name of area to show as report title / header
-    area_type : str, optional (default: None)
-        type of area, if applicable (e.g., subwatershed)
+    area_type : str, optional (default: "custom")
+        one of {"custom", "huc12", "marine_hex"}
 
     Returns
     -------
@@ -74,11 +75,7 @@ def create_report(maps, results, name=None, area_type=None):
     """
 
     title = "Southeast Conservation Blueprint Summary"
-    subtitle = ""
-    if name is not None:
-        subtitle = f"for {name}"
-        if area_type is not None:
-            subtitle += " " + area_type
+    subtitle = f"for {name}" if name is not None else ""
 
     ownership_acres = sum([e["acres"] for e in results.get("ownership", [])])
     protection_acres = sum([e["acres"] for e in results.get("protection", [])])
@@ -89,9 +86,10 @@ def create_report(maps, results, name=None, area_type=None):
     }
 
     if "corridors" in results:
-        # custom ordering to put inland first
-        # legends["corridors"] = CORRIDORS[2:0:-1] + CORRIDORS[4:2:-1] + CORRIDORS[:1]
-        legends["corridors"] = sorted(CORRIDORS, key=lambda x: x["order"])
+        # show legend entries only for types that are present
+        legends["corridors"] = [
+            e for e in CORRIDORS if e["type"] in results["corridors"]["types"]
+        ] + CORRIDORS[:1]
 
     if "urban" in results:
         legends["urban"] = URBAN_LEGEND
@@ -109,6 +107,8 @@ def create_report(maps, results, name=None, area_type=None):
         "date": date.today().strftime("%m/%d/%Y"),
         # write date in ISO format for embedding in PDF metadata
         "create_date": datetime.now(timezone.utc).isoformat(),
+        "name": name,
+        "area_type": area_type,
         "title": title,
         "subtitle": subtitle,
         "url": SITE_URL,
@@ -117,6 +117,8 @@ def create_report(maps, results, name=None, area_type=None):
         "ownership_acres": ownership_acres,
         "protection_acres": protection_acres,
         "results": results,
+        # have to flip the crosshatch horizontally due to bug in WeasyPrint
+        "flip_crosshatch": sys.platform == "darwin",
     }
 
     # Render variables as needed into the CSS

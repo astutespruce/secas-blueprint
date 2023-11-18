@@ -29,6 +29,10 @@ LOCATOR_STYLE = {
             "type": "vector",
             "url": f"mbtiles://{TILE_DIR}/se_map_units.mbtiles",
         },
+        "mask": {
+            "type": "vector",
+            "url": f"mbtiles://{TILE_DIR}/se_mask.mbtiles",
+        },
     },
     "layers": [
         {"id": "basemap", "type": "raster", "source": "basemap"},
@@ -41,7 +45,7 @@ LOCATOR_STYLE = {
         },
         {
             "id": "mask",
-            "source": "map_units",
+            "source": "mask",
             "source-layer": "mask",
             "type": "fill",
             "paint": {"fill-color": "#333333", "fill-opacity": 0.5},

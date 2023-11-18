@@ -24,12 +24,12 @@ const Instructions = () => (
       </Heading>
 
       <Heading as="h3" sx={{ mt: '2rem', fontSize: [2, 3] }}>
-        Subwatershed and marine lease block details:
+        Subwatershed and marine hexagon details:
       </Heading>
       <Paragraph sx={{ mt: '0.25rem' }}>
         Choose <b>Summary data</b> from the button bar below the map. Click on
-        any subwatershed or marine lease block for details. You may need to zoom
-        in futher to select an area.
+        any subwatershed or marine hexagon for details. You may need to zoom in
+        futher to select an area.
         <br />
         <br />
         Use the tabs in the bottom bar to navigate the different types of

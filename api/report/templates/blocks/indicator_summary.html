@@ -1,7 +1,7 @@
 <section>
-    <h2 id="IndicatorSummary">{% if (results.input|length) > 1 %}Base Blueprint: {% endif %}Indicator Summary</h2>
+    <h2 id="IndicatorSummary">Indicator Summary</h2>
 
-    {% for ecosystem in ecosystems %}
+    {% for ecosystem in results.ecosystems %}
         <div class="no-break">
             <div class="caption">
                 Table {{table.counter}}: {{ecosystem.label}} indicators.

@@ -4,8 +4,7 @@ from time import time
 
 from pyogrio import read_dataframe
 
-from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES, SECAS_STATES
-from analysis.lib.geometry import dissolve
+from analysis.constants import GEO_CRS, SECAS_STATES
 from api.report import create_report
 from api.report.map import render_maps
 from api.stats.custom_area import get_custom_area_results
@@ -27,19 +26,16 @@ for state in SECAS_STATES:
     df = states.loc[states.id == state]
     results = get_custom_area_results(df)
 
-    # compile indicator IDs across all inputs
+    # compile indicator IDs across all ecosystems
     indicators = []
-    for input_area in results["inputs"]:
-        for ecosystem in input_area.get("ecosystems", []):
-            indicators.extend([i["id"] for i in ecosystem["indicators"]])
+    for ecosystem in results.get("ecosystems", []):
+        indicators.extend([i["id"] for i in ecosystem["indicators"]])
 
     geo_df = df.to_crs(GEO_CRS)
     task = render_maps(
         geo_df.total_bounds,
         geometry=geo_df.geometry.values[0],
         indicators=indicators,
-        input_ids=results["input_ids"],
-        input_areas=len(results["input_ids"]) > 1,
         corridors="corridors" in results,
         urban="urban" in results,
         slr="slr" in results,

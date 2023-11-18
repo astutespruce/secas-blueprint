@@ -170,16 +170,15 @@ def summarize_ownership_by_units(df, out_dir):
     by_protection.to_feather(out_dir / "protection.feather")
 
 
-def get_ownership_unit_results(results_dir, unit_id, acres):
+def get_ownership_unit_results(results_dir, unit):
     """Fetch ownership and protection results for the unit_id
 
     Parameters
     ----------
     results_dir : Path
         path containing results
-    unit_id : str
-    acres : float
-        acres of polygon summary unit boundary
+    unit : pandas.Series
+        row for this unit from the units dataset, indexed by unit ID (unit.name)
 
     Returns
     -------
@@ -196,8 +195,9 @@ def get_ownership_unit_results(results_dir, unit_id, acres):
 
     # read ownership / protection (may be empty)
     ownership_results = read_unit_from_feather(
-        results_dir / "ownership.feather", unit_id
+        results_dir / "ownership.feather", unit.name
     )
+
     if len(ownership_results) > 0:
         ownerships_present = ownership_results.Own_Type.unique()
         # use the native order of OWNERSHIP to drive order of results
@@ -210,14 +210,14 @@ def get_ownership_unit_results(results_dir, unit_id, acres):
                 .acres,
                 "percent": 100
                 * ownership_results.loc[ownership_results.Own_Type == key].iloc[0].acres
-                / acres,
+                / unit.acres,
             }
             for key, value in OWNERSHIP.items()
             if key in ownerships_present
         ]
 
     protection_results = read_unit_from_feather(
-        results_dir / "protection.feather", unit_id
+        results_dir / "protection.feather", unit.name
     )
     if len(protection_results) > 0:
         protection_present = protection_results.GAP_Sts.unique()
@@ -233,11 +233,14 @@ def get_ownership_unit_results(results_dir, unit_id, acres):
                 * protection_results.loc[protection_results.GAP_Sts == key]
                 .iloc[0]
                 .acres
-                / acres,
+                / unit.acres,
             }
             for key, value in PROTECTION.items()
             if key in protection_present
         ]
+
+    # lists of protected areas omitted for summary units; these are often too long
+    # and not useful
 
     return results
 

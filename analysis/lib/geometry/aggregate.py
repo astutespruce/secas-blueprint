@@ -37,7 +37,6 @@ def dissolve(df, by, grid_size=None, agg=None, allow_multi=True, op="union"):
         g.values.data, grid_size=grid_size, op=op
     )
 
-    # Note: this method is 5x faster than geopandas.dissolve (until it is migrated to use pygeos)
     dissolved = gp.GeoDataFrame(
         df.groupby(by).agg(agg).reset_index(), geometry="geometry", crs=df.crs
     )

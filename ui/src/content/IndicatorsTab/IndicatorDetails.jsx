@@ -138,16 +138,6 @@ const IndicatorDetails = ({
           overflowY: 'auto',
         }}
       >
-        <Paragraph
-          sx={{
-            mt: type === 'pixel' ? '0.25rem' : '0.5rem',
-            fontSize: 1,
-            lineHeight: 1.3,
-          }}
-        >
-          {description}
-        </Paragraph>
-
         {valueLabel ? (
           <Text sx={{ mt: '1rem', mb: '-1.5rem', fontWeight: 'bold' }}>
             {valueLabel}:
@@ -159,6 +149,21 @@ const IndicatorDetails = ({
           values={percentTableValues}
           goodThreshold={goodThreshold}
         />
+
+        <Box
+          sx={{
+            mt: type === 'pixel' ? '0.25rem' : '0.5rem',
+            fontSize: 1,
+            lineHeight: 1.3,
+          }}
+        >
+          {/* handle links */}
+          {description.search(/<a/g) !== -1 ? (
+            <div dangerouslySetInnerHTML={{ __html: description }} />
+          ) : (
+            description
+          )}
+        </Box>
 
         <Box sx={{ mt: '2rem' }}>
           To learn more and explore the GIS data,{' '}

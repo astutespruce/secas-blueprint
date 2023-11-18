@@ -99,11 +99,10 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
             "area of interest does not overlap Southeast Blueprint or area of interest did not overlap with the center of at least one 30m pixel in the Southeast Blueprint"
         )
 
-    # compile indicator IDs across all inputs
+    # compile indicator IDs across all ecosystems
     indicators = []
-    for input_area in results["inputs"]:
-        for ecosystem in input_area.get("ecosystems", []):
-            indicators.extend([i["id"] for i in ecosystem["indicators"]])
+    for ecosystem in results.get("ecosystems", []):
+        indicators.extend([i["id"] for i in ecosystem["indicators"]])
 
     await set_progress(
         ctx["redis"], ctx["job_id"], 25, "Creating maps (this might take a while)"
@@ -114,9 +113,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
     maps, scale, map_errors = await render_maps(
         geo_df.total_bounds,
         geometry=geo_df.geometry.values[0],
-        input_ids=results["input_ids"],
         indicators=indicators,
-        input_areas=len(results["input_ids"]) > 1,
         corridors="corridors" in results,
         urban="urban" in results,
         slr="slr" in results and results["slr"].get("na", False) is not True,
@@ -145,7 +142,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
 
     results["scale"] = scale
 
-    pdf = create_report(maps=maps, results=results, name=name)
+    pdf = create_report(maps=maps, results=results, name=name, area_type="custom")
 
     await set_progress(ctx["redis"], ctx["job_id"], 95, "Nearly done", errors=errors)
 

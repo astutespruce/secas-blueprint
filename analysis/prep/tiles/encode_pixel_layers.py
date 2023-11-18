@@ -1,43 +1,50 @@
 from pathlib import Path
 from math import ceil, log2
 
+from affine import Affine
 from progress.bar import Bar
 import numpy as np
 import pandas as pd
 import rasterio
-from rasterio.windows import get_data_window
+from rasterio.windows import get_data_window, Window, transform as transform_for_window
 import geopandas as gp
 import shapely
 
 
-from analysis.constants import INDICATORS, CORRIDORS
-from analysis.lib.raster import write_raster
+from analysis.constants import (
+    INDICATORS,
+    BLUEPRINT,
+    CORRIDORS,
+    URBAN,
+    SLR_DEPTH_BINS,
+    SLR_NODATA_VALUES,
+    DATA_CRS,
+)
+from analysis.lib.raster import write_raster, add_overviews, shift_window, clip_window
 
 data_dir = Path("data/inputs")
-indicators_dir = data_dir / "indicators/base"
+indicators_dir = data_dir / "indicators"
 out_dir = Path("data/for_tiles")
 
-# NOTE: all tiles are limited to extent of base blueprint (indicators not available elsewhere)
-blueprint_filename = indicators_dir / "base_blueprint.tif"
-corridors_filename = indicators_dir / "corridors.tif"
+bnd_filename = data_dir / "boundaries/se_boundary.feather"
+extent_filename = data_dir / "boundaries/blueprint_extent.tif"
+blueprint_filename = data_dir / "blueprint.tif"
+corridors_filename = data_dir / "corridors.tif"
 urban_filename = data_dir / "threats/urban/urban_2060_binned.tif"
 slr_filename = data_dir / "threats/slr/slr.tif"
-bnd_filename = data_dir / "boundaries/input_areas.feather"
-
 
 # very small amount added to numbers to make sure that log2 gives us current number of bytes
 EPS = 1e-6
 
-
-# only base has indicators
-INDICATORS = INDICATORS["base"]
+# window size in pixels; underlying blocks in GeoTIFFs are 256x256
+WINDOW_SIZE = 4096
 
 
 ### Create dataframe with info about bits required, groups, etc
 indicators = pd.DataFrame(
     [
         [
-            e["id"].split("_")[0].replace("base:", ""),
+            e["id"].split("_")[0],
             e["id"],
             indicators_dir / e["filename"],
             min([v["value"] for v in e["values"]]),
@@ -55,33 +62,32 @@ core = pd.DataFrame(
             "ecosystem": "",
             "id": "blueprint",
             "filename": blueprint_filename,
-            "min_value": 0,
-            "max_value": 4,
+            "min_value": BLUEPRINT[0]["value"],
+            "max_value": BLUEPRINT[-1]["value"],
         },
         {
             "ecosystem": "",
             "id": "corridors",
             "filename": corridors_filename,
-            "min_value": 0,
-            "max_value": 4,
+            "min_value": CORRIDORS[0]["value"],
+            "max_value": CORRIDORS[-1]["value"],
         },
         {
             "ecosystem": "threat",
             "id": "urban",
             "filename": urban_filename,
-            "min_value": 1,
-            "max_value": 5,
+            "min_value": URBAN[0]["value"],
+            "max_value": URBAN[-1]["value"],
         },
         {
             "ecosystem": "threat",
             "id": "slr",
             "filename": slr_filename,
-            "min_value": 0,
-            "max_value": 13,
+            "min_value": SLR_DEPTH_BINS[0],
+            "max_value": SLR_NODATA_VALUES[-1]["value"],
         },
     ]
 )
-
 
 df = pd.concat(
     [
@@ -98,6 +104,7 @@ df["max_value"] += df.value_shift
 df["bits"] = df.max_value.apply(lambda x: ceil(log2(max(x, 2) + EPS)))
 
 # # export for manual review and assignment of groups
+# # (enable when updating encoding)
 # tmp = df[["bits"]].copy()
 # tmp["group"] = ""
 # tmp.to_csv(out_dir / "layers.csv", index=True, index_label="id")
@@ -108,12 +115,17 @@ grouped = pd.read_csv(out_dir / "layers.csv").set_index("id")
 print("Groups:")
 print(grouped.groupby("group", dropna=False).bits.sum())
 
-if grouped.group.isnull().max():
+if grouped.group.isnull().any():
     raise ValueError("All layers must be assigned to a group")
 
 df = df.join(grouped.group)
 df["orig_pos"] = np.arange(len(df))
 df = df.sort_values(by=["group", "orig_pos"])
+
+df["bounds"] = df.src.apply(lambda x: x.bounds)
+df["box"] = df.bounds.apply(lambda x: shapely.box(*x))
+# DEBUG: look at spatial overlap within groups
+# write_dataframe(gp.GeoDataFrame(df[['group', 'box']].reset_index(),geometry='box', crs=DATA_CRS), '/tmp/boxes.fgb')
 
 groups = sorted(df.group.unique())
 
@@ -147,68 +159,112 @@ for group in groups:
 
 ### determine the block windows that overlap bounds
 # everything else will be filled with 0
-print("Calculating overlapping windows")
-bnd_df = gp.read_feather(bnd_filename)
-bnd = bnd_df.loc[bnd_df.id == "base"].geometry.values[0]
-blueprint = rasterio.open(blueprint_filename)
-windows = np.array([w for _, w in blueprint.block_windows(1)])
-bounds = np.array([blueprint.window_bounds(w) for w in windows]).T
-bounds = shapely.box(*bounds)
+# print("Calculating overlapping windows")
+bnd = gp.read_feather(bnd_filename).geometry.values[0]
+extent = rasterio.open(extent_filename)
+windows = []
+for row_off in np.arange(extent.height, step=WINDOW_SIZE):
+    for col_off in np.arange(extent.width, step=WINDOW_SIZE):
+        windows.append(
+            Window(
+                row_off=row_off, col_off=col_off, width=WINDOW_SIZE, height=WINDOW_SIZE
+            )
+        )
+
+bounds = shapely.box(*np.array([extent.window_bounds(w) for w in windows]).T)
 tree = shapely.STRtree(bounds)
 ix = tree.query(bnd, predicate="intersects")
 ix.sort()
-windows = windows[ix]
+windows = np.array(windows)[ix]
+bounds = bounds[ix]
+bounds = gp.GeoDataFrame({"geometry": bounds}, crs=DATA_CRS).reset_index()
 
 for group in groups:
+    print(f"\n---------------------------------\nProcessing group {group}")
     rows = df.loc[df.group == group]
-    total_bits = rows.bits.sum()
+
+    group_bounds = (
+        rows.bounds.apply(lambda x: x[0]).min(),
+        rows.bounds.apply(lambda x: x[1]).min(),
+        rows.bounds.apply(lambda x: x[2]).max(),
+        rows.bounds.apply(lambda x: x[3]).max(),
+    )
+
+    out_transform = Affine(
+        a=extent.transform.a,
+        b=0.0,
+        c=group_bounds[0],
+        d=0.0,
+        e=extent.transform.e,
+        f=group_bounds[3],
+    )
+
+    out_shape = (
+        int((group_bounds[3] - group_bounds[1]) / 30.0),
+        int((group_bounds[2] - group_bounds[0]) / 30.0),
+    )
 
     # tile creation pipeline expects uint32 for creating RGB PNGs
-    out = np.zeros(shape=blueprint.shape, dtype="uint32")
+    out = np.zeros(shape=out_shape, dtype="uint32")
 
-    # process each stack of layers by window to avoid running out of memory
-    for window in Bar(
-        f"Processing group {group} ({total_bits} bits)", max=len(windows)
-    ).iter(windows):
-        window_shape = (window.height, window.width)
-        ix = window.toslices()
-        has_data = False
-        layer_bits = []
-        for id in rows.index:
-            row = rows.loc[id]
+    for id, row in rows.iterrows():
+        nodata = np.uint32(row.nodata)
 
-            data = row.src.read(1, window=window)
+        # process each stack of layers by window to avoid running out of memory
+        for i, window in Bar(f"Processing {id}", max=len(windows)).iter(
+            enumerate(windows)
+        ):
+            # clip output window to output grid
+            out_window = clip_window(
+                shift_window(window, extent.window_transform(window), out_transform),
+                max_width=out_shape[1],
+                max_height=out_shape[0],
+            )
+            read_window = shift_window(
+                out_window,
+                transform_for_window(out_window, out_transform),
+                row.src.transform,
+            )
+
+            # if window doesn't overlap, then skip
+            clipped_window = clip_window(read_window, row.src.width, row.src.height)
+            if clipped_window.width == 0 or clipped_window.height == 0:
+                continue
+
+            data = row.src.read(1, window=read_window, boundless=True).astype("uint32")
 
             # shift values up if needed
             if row.value_shift:
-                data[data != row.nodata] += 1
+                data[data != nodata] += np.uint32(1)
 
             # set nodata pixels to 0 (combined with existing 0 values that are below row.min_value)
-            data[data == row.nodata] = 0
+            data[data == row.nodata] = np.uint32(0)
 
             if data.max() > 0:
-                out[ix] = np.bitwise_or(
-                    np.left_shift(data.astype("uint32"), row.offset), out[ix]
+                out_ix = out_window.toslices()
+                out[out_ix] = np.bitwise_or(
+                    np.left_shift(data, row.offset), out[out_ix]
                 )
 
     # determine the window where data are available, and write out a smaller output
     print("Calculating data window...")
     data_window = get_data_window(out, nodata=0)
     out = out[data_window.toslices()]
-    transform = blueprint.window_transform(data_window)
+    transform = transform_for_window(data_window, out_transform)
 
     print(f"Data window: {data_window}")
 
     print("Writing GeoTIFF...")
     outfilename = out_dir / f"se_pixel_layers_{group}.tif"
-    write_raster(outfilename, out, transform=transform, crs=blueprint.crs, nodata=0)
+    write_raster(outfilename, out, transform=transform, crs=extent.crs, nodata=0)
 
-    # NOTE: we intentionally don't create overviews because this messes up the
+    # Only use overviews for low zooms; otherwise the overviews mess up the
     # data when converting to WGS84
+    add_overviews(outfilename)
 
 
 #### Notes
 # to verify that values are encoded correctly
 # 1. cast encoded values to correct type (e.g., uint16): value = encoded[106,107].view('uint16')
 # 2. use bit shifting and bit AND logic to extract value, based on offset and nbits:
-# (value >> offset) & ((2**nbits)-1) # => original value
+# ((value >> offset) & ((2**nbits)-1)) - value_shift # => original value

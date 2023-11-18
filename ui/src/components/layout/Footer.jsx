@@ -51,7 +51,7 @@ const Footer = () => {
           mr: '0.5rem',
         }}
       >
-        Version: Southeast Blueprint 2022
+        Version: Southeast Blueprint 2023
       </Flex>
 
       <Box

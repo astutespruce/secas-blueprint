@@ -26,7 +26,7 @@ const Icon = ({ name, ...props }) => {
       return <InfoCircle {...props} />
     }
     case 'map':
-    case 'unit-map': {
+    case 'mobile-selected-map': {
       return <Map {...props} />
     }
     case 'filter': {

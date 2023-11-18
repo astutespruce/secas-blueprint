@@ -51,6 +51,16 @@ def read_cache(path):
 
 ### Create reports for an AOI
 aois = [
+    # {"name": "", "path": "no_urban"}
+    # {"name": "GA Sentinal Landscapes: Fort Benning Area", "path": "benareautm_polygon"},
+    # {
+    #     "name": "GA Sentinal Landscapes: Coastal Area",
+    #     "path": "coastareautm_polygon",
+    # },
+    # {
+    #     "name": "GA Sentinal Landscapes: Savannah River Area",
+    #     "path": "savboundutm_polygon",
+    # },
     # {"name": "", "path": "Bayou P FLP"}
     # {
     #     "name": "West Central Longleaf and Streams",
@@ -92,7 +102,7 @@ aois = [
     # {"name": "Enviva Hamlet", "path": "Enviva_Hamlet_80_mile_sourcing_radius"},
     # {"name": "LCP: Black River", "path": "LCP_BlackRiver"},
     # {"name": "Green River proposed boundary", "path": "GreenRiver_ProposedBoundary"},
-    {"name": "LCP: Broad", "path": "LCP_Broad"},
+    # {"name": "LCP: Broad", "path": "LCP_Broad"},
     # {"name": "Caledonia area, MS", "path": "caledonia"},
     # {"name": "Napoleonville area, LA", "path": "Napoleonville"},
     # {"name": "Area in El Yunque National Forest, PR", "path": "yunque"},
@@ -105,6 +115,7 @@ aois = [
     # {"name": "South Atlantic Offshore", "path": "SAOffshore"},
     # {"name": "Florida Offshore", "path": "FLOffshore"},
     # {"name": "Razor", "path": "Razor"},
+    # {"name":"Single Test Area", "path": "SingleTest"}
 ]
 
 for aoi in aois:
@@ -145,19 +156,16 @@ for aoi in aois:
     if not maps:
         print("Rendering maps...")
 
-        # compile indicator IDs across all inputs
+        # compile indicator IDs across all ecosystems
         indicators = []
-        for input_area in results["inputs"]:
-            for ecosystem in input_area.get("ecosystems", []):
-                indicators.extend([i["id"] for i in ecosystem["indicators"]])
+        for ecosystem in results.get("ecosystems", []):
+            indicators.extend([i["id"] for i in ecosystem["indicators"]])
 
         geo_df = df.to_crs(GEO_CRS)
         task = render_maps(
             geo_df.total_bounds,
             geometry=geo_df.geometry.values[0],
             indicators=indicators,
-            input_ids=results["input_ids"],
-            input_areas=len(results["input_ids"]) > 1,
             corridors="corridors" in results,
             urban="urban" in results,
             slr="slr" in results,
@@ -186,22 +194,22 @@ for aoi in aois:
 
 ## Create reports for summary units
 ids = {
-    # "huc12": [
-    #     #     # "050500030804"  # in WV
-    #     #     # "030902030700"  # in base blueprint but missing SLR (Dry Tortugas)
-    #     #     # "031002010205",  # in base blueprint but with SLR present
-    #     #     #     #     #     # "210100070101",  # in Caribbean
-    #     #     # "031101020903",  # Florida with inland marine indicators
-    #     #     #     #     #     # "031102050805",  # Florida gulf coast
-    #     #     # "030902061101"  # area with SLR not modeled
-    #     "030102051002"  # area with both marine and inland hubs / corridors
-    # ],
-    # "marine_blocks": [
-    #     #     "NG16-12-780",  # in FL Marine
-    #     "NI18-07-6210",  # Atlantic coast
-    #     #     #     # "NG16-03-299",  # Gulf coast
-    #     #     #     # "NG17-10-6583",  # Florida keys, overlaps with protected areas
-    # ],
+    "huc12": [
+        # "020403030502",
+        # "051402060702",
+        #     #     # "050500030804"  # in WV
+        #     #     # "030902030700"  # in base blueprint but missing SLR (Dry Tortugas)
+        #     #     # "031002010205",  # in base blueprint but with SLR present
+        #     #     #     #     #     # "210100070101",  # in Caribbean
+        #     #     # "031101020903",  # Florida with inland marine indicators
+        #     #     #     #     #     # "031102050805",  # Florida gulf coast
+        #     #     # "030902061101"  # area with SLR not modeled
+        #     "030102051002"  # area with both marine and inland hubs / corridors
+    ],
+    "marine_hex": [
+        # "154309",
+        "407103"
+    ],
 }
 
 
@@ -220,9 +228,8 @@ for unit_type in ids:
 
         # compile indicator IDs across all inputs
         indicators = []
-        for input_area in results["inputs"]:
-            for ecosystem in input_area.get("ecosystems", []):
-                indicators.extend([i["id"] for i in ecosystem["indicators"]])
+        for ecosystem in results.get("ecosystems", []):
+            indicators.extend([i["id"] for i in ecosystem["indicators"]])
 
         maps = None
         if CACHE_MAPS:
@@ -234,7 +241,6 @@ for unit_type in ids:
                 results["bounds"],
                 summary_unit_id=unit_id,
                 indicators=indicators,
-                input_ids=results["input_ids"],
                 corridors="corridors" in results,
                 urban="urban" in results,
                 slr="slr" in results,
@@ -251,7 +257,9 @@ for unit_type in ids:
 
         results["scale"] = scale
 
-        pdf = create_report(maps=maps, results=results, name=results["name"])
+        pdf = create_report(
+            maps=maps, results=results, name=results["name"], area_type=unit_type
+        )
 
         with open(out_dir / f"{unit_id}_report.pdf", "wb") as out:
             out.write(pdf)

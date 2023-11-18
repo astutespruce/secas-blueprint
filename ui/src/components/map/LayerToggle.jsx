@@ -33,7 +33,14 @@ const LayerToggle = () => {
             .slice()
             .sort(sortByFunc('value'))
             .map(({ color }) => color),
-          categories: corridors.filter(({ value }) => value > 0),
+          categories: corridors
+            .filter(({ value }) => value > 0)
+            .map(({ value, label, color }) => ({
+              value,
+              label,
+              color,
+              type: 'fill',
+            })),
         },
       ]
 
@@ -78,7 +85,7 @@ const LayerToggle = () => {
         },
       ]
 
-      const indicatorsIndex = indexBy(indicators.base.indicators, 'id')
+      const indicatorsIndex = indexBy(indicators, 'id')
 
       ecosystems.forEach(
         ({ id: groupId, label: groupLabel, indicators: groupIndicators }) => {

@@ -82,7 +82,7 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
             onClick={handleUnitClick}
           >
             <Tooltip
-              content="Show data summaries and charts for a subwatershed or marine lease block"
+              content="Show data summaries and charts for a subwatershed or marine hexagon"
               direction="bottom"
               maxWidth="240px"
               fontSize={0}
@@ -136,7 +136,7 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
             {mapMode === 'unit' ? (
               <>
                 Select a subwatershed or marine {!isMobile ? <br /> : ' '}
-                lease block to show details
+                hexagon to show details
                 {!isMobile ? ' in sidebar' : null}
               </>
             ) : null}

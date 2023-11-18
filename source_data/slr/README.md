@@ -6,6 +6,8 @@ The latest SLR data are downloaded on 7/31/2022 from
 [NOAA](https://coast.noaa.gov/slrdata/) as polygon extent of inundation per foot
 of depth between 0 and 10 feet.
 
+Updated data for Florida and Georgia were downloaded on 9/28/2023.
+
 Data are downloaded using `analysis/prep/download_slr.py`.
 
 The latest SLR projections by decade and scenario at 1 degree grid cell
@@ -54,11 +56,10 @@ These are ultimately intersected with a user's area of interest to calculate the
 area-weighted mean of medians (each grid cell is a median) for each NOAA
 scenario for each decade.
 
-## NOAA data extent and areas data unavailable
+## NOAA data extent
 
-Shapefiles of the NOAA data extent and areas not modeled were obtained directly from
-William Brooks at NOAA on 10/13/2022. These include:
+Shapefiles of the NOAA data extent were obtained directly from William Brooks at
+NOAA on 10/13/2022. These include:
 
 - data extent: extent of areas where NOAA processed data
-- areas not modeled: extent of areas within data extent where no modeled data are available
 - veil: inland counties not considered for SLR analysis

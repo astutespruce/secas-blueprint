@@ -1,7 +1,11 @@
 import React, { useCallback, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { Box, Checkbox, Flex, Label, Text } from 'theme-ui'
-import { Filter as FilterIcon, Plus } from '@emotion-icons/fa-solid'
+import {
+  ExclamationTriangle,
+  Filter as FilterIcon,
+  Plus,
+} from '@emotion-icons/fa-solid'
 
 import { InfoTooltip } from 'components/tooltip'
 import { indexBy } from 'util/data'
@@ -13,46 +17,27 @@ const Filter = ({
   description,
   values,
   valueLabel: indicatorValueLabel,
-  presenceLabel,
   enabled,
   activeValues,
-  // goodThreshold, // TODO: implement or remove
+  canBeVisible,
   onChange,
 }) => {
   const valueIndex = indexBy(values, 'value')
   const checkboxRef = useRef(null)
-  const hasMultipleValues = values.length > 1
 
   const tooltipContent = (
     <Box sx={{ fontSize: 0 }}>
       <Text sx={{ mb: 0, fontSize: 1, fontWeight: 'bold' }}>{label}</Text>
-      {description ? <Text sx={{ mb: '0.5rem' }}>{description}</Text> : null}
-      <b>{indicatorValueLabel || 'Values'}:</b>
-      <br />
-      {hasMultipleValues ? (
-        <Box
-          as="ul"
-          sx={{
-            m: 0,
-            lineHeight: 1.2,
-            fontSize: 0,
-            '& li+li': {
-              mt: '0.25em',
-            },
-          }}
-        >
-          {values.map(
-            ({ value, label: valueLabel, description: valueDescription }) => (
-              <li key={value}>
-                {valueLabel}
-                {valueDescription ? `: ${valueDescription}` : null}
-              </li>
-            )
+      {description ? (
+        <Text sx={{ mb: '0.5rem' }}>
+          {/* handle links */}
+          {description.search(/<a/g) !== -1 ? (
+            <div dangerouslySetInnerHTML={{ __html: description }} />
+          ) : (
+            description
           )}
-        </Box>
-      ) : (
-        `${presenceLabel} (presence-only indicator)`
-      )}
+        </Text>
+      ) : null}
     </Box>
   )
 
@@ -154,15 +139,6 @@ const Filter = ({
                       size="1em"
                       style={{ position: 'relative', top: 0 }}
                     />
-                    {/* <Text
-                      sx={{
-                        position: 'absolute',
-                        top: 0,
-                        left: '-0.5rem',
-                      }}
-                    >
-                      <Minus size="0.6em" />
-                    </Text> */}
                   </Box>
                 ) : (
                   <Box sx={{ position: 'relative' }}>
@@ -190,42 +166,57 @@ const Filter = ({
 
         {enabled ? (
           <Box sx={{ ml: '2.5rem', mr: '1rem', pb: '0.5rem' }}>
-            <Box>
-              {values.map(({ value, label: valueLabel }) => (
-                <Box key={value}>
-                  <Label
-                    sx={{
-                      flex: '1 1 auto',
-                      fontSize: 1,
-                      lineHeight: 1.3,
-                      border: '2px solid transparent',
-                      '&:focus-within': {
-                        border: '2px dashed',
-                        borderColor: 'highlight',
-                      },
-                    }}
-                  >
-                    <Checkbox
-                      ref={checkboxRef}
-                      readOnly={false}
-                      checked={activeValues[value]}
-                      onChange={handleToggleValue(value)}
+            {canBeVisible ? (
+              <Box>
+                {indicatorValueLabel ? (
+                  <Text sx={{ lineHeight: 1.2, mb: '0.5rem' }}>
+                    {indicatorValueLabel}:
+                  </Text>
+                ) : null}
+
+                {values.map(({ value, label: valueLabel }) => (
+                  <Box key={value}>
+                    <Label
                       sx={{
-                        cursor: 'pointer',
-                        mr: '0.25em',
-                        width: '1.5em',
-                        height: '1.5em',
-                        'input:focus ~ &': {
-                          backgroundColor: 'transparent',
+                        flex: '1 1 auto',
+                        fontSize: 1,
+                        lineHeight: 1.3,
+                        border: '2px solid transparent',
+                        '&:focus-within': {
+                          border: '2px dashed',
+                          borderColor: 'highlight',
                         },
                       }}
-                    />
+                    >
+                      <Checkbox
+                        ref={checkboxRef}
+                        readOnly={false}
+                        checked={activeValues[value]}
+                        onChange={handleToggleValue(value)}
+                        sx={{
+                          cursor: 'pointer',
+                          mr: '0.25em',
+                          width: '1.5em',
+                          height: '1.5em',
+                          'input:focus ~ &': {
+                            backgroundColor: 'transparent',
+                          },
+                        }}
+                      />
 
-                    {valueLabel}
-                  </Label>
-                </Box>
-              ))}
-            </Box>
+                      {valueLabel}
+                    </Label>
+                  </Box>
+                ))}
+              </Box>
+            ) : (
+              <Flex
+                sx={{ gap: '0.25rem', color: 'grey.8', alignItems: 'center' }}
+              >
+                <ExclamationTriangle size="1em" />
+                <Text>not visible in this area</Text>
+              </Flex>
+            )}
           </Box>
         ) : null}
       </Box>
@@ -243,20 +234,18 @@ Filter.propTypes = {
       label: PropTypes.string.isRequired,
     })
   ).isRequired,
-  // goodThreshold: PropTypes.number,
   valueLabel: PropTypes.string,
-  presenceLabel: PropTypes.string,
   activeValues: PropTypes.objectOf(PropTypes.bool).isRequired,
   enabled: PropTypes.bool,
+  canBeVisible: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
 }
 
 Filter.defaultProps = {
   description: null,
   enabled: false,
-  // goodThreshold: null,
+  canBeVisible: true,
   valueLabel: null,
-  presenceLabel: null,
 }
 
 export default Filter

@@ -6,7 +6,7 @@ import pyarrow.compute as pc
 
 data_dir = Path("data")
 huc12_filename = data_dir / "inputs/summary_units/huc12.feather"
-marine_filename = data_dir / "inputs/summary_units/marine_blocks.feather"
+marine_filename = data_dir / "inputs/summary_units/marine_hex.feather"
 
 
 def read_unit_from_feather(filename, unit_id, columns=None):

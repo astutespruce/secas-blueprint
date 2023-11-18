@@ -16,6 +16,9 @@ from analysis.constants import OVERVIEW_FACTORS, DATA_CRS
 def get_window(dataset, bounds, boundless=True):
     """Calculate the window into dataset that contains bounds, for boundless reading.
 
+    If boundless is False and the window falls outside the bounds of the dataset,
+    one or both of the dimensions may be 0.
+
     Parameters
     ----------
     dataset : open rasterio dataset
@@ -31,23 +34,70 @@ def get_window(dataset, bounds, boundless=True):
     window_floored = window.round_offsets(op="floor", pixel_precision=3)
     col_off = window_floored.col_off
     row_off = window_floored.row_off
-    w = math.ceil(window.width + window.col_off - window_floored.col_off)
-    h = math.ceil(window.height + window.row_off - window_floored.row_off)
+    width = math.ceil(window.width + window.col_off - window_floored.col_off)
+    height = math.ceil(window.height + window.row_off - window_floored.row_off)
 
-    if not boundless:
-        if col_off < 0:
-            w = w - col_off
-            col_off = 0
-        if row_off < 0:
-            h = h - row_off
-            row_off = 0
-        if col_off + w > dataset.width:
-            w = dataset.width - col_off
+    window = Window(col_off, row_off, width, height)
+    if boundless:
+        return window
 
-        if row_off + h > dataset.height:
-            h = dataset.height - row_off
+    return clip_window(window, dataset.width, dataset.height)
 
-    return Window(col_off, row_off, w, h)
+
+def clip_window(window, max_width, max_height):
+    """
+    Convert a boundless window to a bounded window where the col_off and
+    row_off are >= 0 and height and width fit within max_width and height.
+
+    Parameters
+    ----------
+    window : rasterio.windows.Window
+    max_width : int
+    max_height : int
+
+    Returns
+    -------
+    rasterio.windows.Window
+    """
+    col_off = window.col_off
+    row_off = window.row_off
+    width = window.width
+    height = window.height
+    if col_off < 0:
+        width = max(width + col_off, 0)
+        col_off = 0
+    if row_off < 0:
+        height = max(height + row_off, 0)
+        row_off = 0
+    if col_off + width > max_width:
+        width = max(max_width - col_off, 0)
+    if row_off + height > max_height:
+        height = max(max_height - row_off, 0)
+
+    return Window(col_off, row_off, width, height)
+
+
+def shift_window(window, window_transform, transform):
+    """Shift window based on one transform to a window appropriate for a different
+    transform.
+
+    Parameters
+    ----------
+    window : rasterio.windows.Window
+    window_transform : affine.Affine
+        transform upon which window is based
+    transform : affine.Affine
+        the transform to which to shift the window
+
+    Returns
+    -------
+    rasterio.windows.Window
+    """
+    col_off = int(round((window_transform.c - transform.c) / transform.a))
+    row_off = int(round((window_transform.f - transform.f) / transform.e))
+    return Window(
+        col_off=col_off, row_off=row_off, width=window.width, height=window.height
+    )
 
 
 def boundless_raster_geometry_mask(dataset, shapes, bounds, all_touched=False):
@@ -73,7 +123,7 @@ def boundless_raster_geometry_mask(dataset, shapes, bounds, all_touched=False):
     return mask, transform, window
 
 
-def extract_count_in_geometry(filename, geometry_mask, window, bins, boundless=False):
+def extract_count_in_geometry(filename, mask_config, bins, boundless=False):
     """Apply the geometry mask to values read from filename, and generate a list
     of pixel counts for each bin in bins.
 
@@ -81,10 +131,8 @@ def extract_count_in_geometry(filename, geometry_mask, window, bins, boundless=F
     ----------
     filename : str
         input GeoTIFF filename
-    geometry_mask : 2D boolean ndarray
-        True for all pixels outside geometry, False inside.
-    window : rasterio.windows.Window
-        Window that defines the footprint of the geometry_mask within the raster.
+    mask_config : AOIMaskConfig
+        provides mask of geometry and enables getting window for this raster
     bins : list-like
         List-like of values ranging from 0 to max value (not sparse!).
         Counts will be generated that correspond to this list of bins.
@@ -99,10 +147,11 @@ def extract_count_in_geometry(filename, geometry_mask, window, bins, boundless=F
     """
 
     with rasterio.open(filename) as src:
+        window = mask_config.get_mask_window(src.transform)
         data = src.read(1, window=window, boundless=boundless)
         nodata = src.nodatavals[0]
 
-    mask = (data == nodata) | geometry_mask
+    mask = (data == nodata) | mask_config.shape_mask
 
     # slice out flattened array of values that are not masked
     values = data[~mask]
@@ -229,7 +278,13 @@ def detect_data_by_mask(dataset, mask, window):
     return False
 
 
-def create_lowres_mask(filename, outfilename, resolution, ignore_zero=False):
+def create_lowres_mask(
+    filename,
+    outfilename,
+    resolution,
+    transform=None,
+    ignore_zero=False,
+):
     """Create a resampled lower resolution mask.
 
     This is used to pre-screen areas where data are present for higher-resolution
@@ -244,15 +299,22 @@ def create_lowres_mask(filename, outfilename, resolution, ignore_zero=False):
     outfilename : str
     resolution : int
         target resolution
+    transform : Affine, optional (default: None)
+        transform to use for aligning upper left coordinate; must also have
+        resolution set properly
     ignore_zero : bool, optional (default: False)
         if True, 0 values are treated as nodata
     """
+
     with rasterio.open(filename) as src:
         nodata = src.nodatavals[0]
-        # output is still precisely aligned to same upper left coordinate
-        dst_transform = Affine(
-            resolution, 0, src.transform.c, 0, -resolution, src.transform.f
-        )
+
+        if transform is None:
+            # output is still precisely aligned to same upper left coordinate
+            transform = Affine(
+                resolution, 0, src.transform.c, 0, -resolution, src.transform.f
+            )
+
         width = math.ceil((src.width * src.transform.a) / resolution)
         height = math.ceil((src.height * (-src.transform.e)) / resolution)
 
@@ -261,10 +323,9 @@ def create_lowres_mask(filename, outfilename, resolution, ignore_zero=False):
             width=width,
             height=height,
             nodata=nodata,
-            transform=dst_transform,
+            transform=transform,
             resampling=Resampling.max,
         ) as vrt:
-
             data = vrt.read()
 
             if ignore_zero:
@@ -273,7 +334,7 @@ def create_lowres_mask(filename, outfilename, resolution, ignore_zero=False):
             data[data != nodata] = 1
 
             meta = src.profile.copy()
-            meta.update({"width": width, "height": height, "transform": dst_transform})
+            meta.update({"width": width, "height": height, "transform": transform})
 
             # add compression
             meta["compress"] = "lzw"
@@ -296,7 +357,10 @@ def summarize_raster_by_units_grid(
     bins,
     progress_label="Summarizing data...",
 ):
-    """Calculate counts of pixels per bin for each unit in df
+    """Calculate counts of pixels per bin for each unit in df.
+
+    This process accounts for potentially different offsets between the units_grid
+    and value_dataset
 
     Parameters
     ----------
@@ -323,9 +387,23 @@ def summarize_raster_by_units_grid(
     # TODO: consider moving this loop to Cython
     out = np.zeros((len(df), len(bins)), dtype="uint")
     for i, (_, row) in Bar(progress_label, max=len(df)).iter(enumerate(df.iterrows())):
+        # get boundless window in order to calculate offset adjustments for
+        # unit window, but then clip it to be boundless
         value_window = get_window(
-            value_dataset, (row.minx, row.miny, row.maxx, row.maxy), boundless=False
+            value_dataset, (row.minx, row.miny, row.maxx, row.maxy), boundless=True
         )
+        col_off_adj = -value_window.col_off if value_window.col_off < 0 else 0
+        row_off_adj = -value_window.row_off if value_window.row_off < 0 else 0
+
+        value_window = clip_window(
+            value_window, value_dataset.width, value_dataset.height
+        )
+
+        if value_window.width == 0 or value_window.height == 0:
+            continue
+
+        # shift the window for this area since we read the full data within a
+        # window
         value_window = Window(
             value_window.col_off - value_read_window.col_off,
             value_window.row_off - value_read_window.row_off,
@@ -340,25 +418,23 @@ def summarize_raster_by_units_grid(
         )
         # have to limit unit window to extent of area where value grid is available
         unit_window = Window(
-            unit_window.col_off - units_grid.window.col_off,
-            unit_window.row_off - units_grid.window.row_off,
+            (unit_window.col_off - units_grid.window.col_off) + col_off_adj,
+            (unit_window.row_off - units_grid.window.row_off) + row_off_adj,
             min(unit_window.width, value_window.width),
             min(unit_window.height, value_window.height),
         )
+        in_unit = units_grid.data[unit_window.toslices()] == row.value
 
         values = value_data[value_window.toslices()]
-        in_unit = units_grid.data[unit_window.toslices()] == row.value
         values_in_unit = values[in_unit & (values != nodata)]
         out[i, :] = np.bincount(values_in_unit, minlength=num_bins).astype("uint")
 
-        # DEBUG: write value and unit rasters
+        # # DEBUG: write value and unit rasters
         # outfilename = "/tmp/values.tif"
         # write_raster(
         #     outfilename,
         #     np.where(in_unit, values, nodata),
-        #     transform=value_dataset.window_transform(
-        #         get_window(value_dataset, (row.minx, row.miny, row.maxx, row.maxy))
-        #     ),
+        #     transform=value_dataset.window_transform(value_window),
         #     crs=value_dataset.crs,
         #     nodata=nodata,
         # )
@@ -370,111 +446,14 @@ def summarize_raster_by_units_grid(
         #     "/tmp/unit.tif",
         #     np.where(in_unit, 1, 0).astype("uint8"),
         #     transform=units_grid.dataset.window_transform(
-        #         get_window(units_grid.dataset, (row.minx, row.miny, row.maxx, row.maxy))
+        #         Window(
+        #             unit_window.col_off + units_grid.window.col_off,
+        #             unit_window.row_off + units_grid.window.row_off,
+        #             unit_window.width,
+        #             unit_window.height,
+        #         )
         #     ),
         #     crs=units_grid.dataset.crs,
-        #     nodata=0,
-        # )
-
-    return out
-
-
-def summarize_raster_by_units_dataset(
-    df, units_dataset, value_dataset, bins, progress_label="Summarizing data..."
-):
-    """Calculate counts of pixels per bin for each unit in df
-
-    Parameters
-    ----------
-    df : DataFrame
-        must have a column "value" that corresponds to the value in units_dataset.
-        units must not extend beyond extent of value_dataset and must have
-        result of df.bounds joined in
-    units_dataset : open rasterio Dataset
-    value_dataset : open rasterio Dataset
-    bins : array-like of value bins
-    message : str, optional
-
-    Returns
-    -------
-    ndarray of shape(n, m) where n=len(df) and m=len(bins), in same order as df
-    """
-    nodata = np.uint8(value_dataset.nodata)
-    num_bins = len(bins)
-
-    # both rasters have same origin point
-    same_origin = (
-        units_dataset.transform.c == value_dataset.transform.c
-        and units_dataset.transform.f == value_dataset.transform.f
-    )
-
-    # get read window for df
-    value_read_window = get_window(value_dataset, df.total_bounds, boundless=False)
-    if same_origin:
-        unit_read_window = value_read_window
-
-    else:
-        unit_read_window = get_window(units_dataset, df.total_bounds, boundless=False)
-
-    with Bar("Reading data", max=2) as bar:
-        unit_data = units_dataset.read(1, window=unit_read_window)
-        bar.next()
-        value_data = value_dataset.read(1, window=value_read_window)
-        bar.next()
-
-    # TODO: consider moving this loop to Cython
-    out = np.zeros((len(df), len(bins)), dtype="uint")
-    for i, (_, row) in Bar(progress_label, max=len(df)).iter(enumerate(df.iterrows())):
-        value_window = get_window(
-            value_dataset, (row.minx, row.miny, row.maxx, row.maxy), boundless=False
-        )
-        value_window = Window(
-            value_window.col_off - value_read_window.col_off,
-            value_window.row_off - value_read_window.row_off,
-            value_window.width,
-            value_window.height,
-        )
-
-        if same_origin:
-            unit_window = value_window
-        else:
-            unit_window = get_window(
-                units_dataset, (row.minx, row.miny, row.maxx, row.maxy), boundless=False
-            )
-            unit_window = Window(
-                unit_window.col_off - unit_read_window.col_off,
-                unit_window.row_off - unit_read_window.row_off,
-                unit_window.width,
-                unit_window.height,
-            )
-
-        values = value_data[value_window.toslices()]
-        in_unit = unit_data[unit_window.toslices()] == row.value
-        values_in_unit = values[in_unit & (values != nodata)]
-        out[i, :] = np.bincount(values_in_unit, minlength=num_bins).astype("uint")
-
-        # DEBUG: write value and unit rasters
-        # outfilename = "/tmp/values.tif"
-        # write_raster(
-        #     outfilename,
-        #     np.where(in_unit, values, nodata),
-        #     transform=value_dataset.window_transform(
-        #         get_window(value_dataset, (row.minx, row.miny, row.maxx, row.maxy))
-        #     ),
-        #     crs=value_dataset.crs,
-        #     nodata=nodata,
-        # )
-        # if value_dataset.colormap(1):
-        #     with rasterio.open(outfilename, "r+") as out_raster:
-        #         out_raster.write_colormap(1, value_dataset.colormap(1))
-
-        # write_raster(
-        #     "/tmp/unit.tif",
-        #     np.where(in_unit, 1, 0).astype("uint8"),
-        #     transform=units_dataset.window_transform(
-        #         get_window(units_dataset, (row.minx, row.miny, row.maxx, row.maxy))
-        #     ),
-        #     crs=units_dataset.crs,
         #     nodata=0,
         # )
 

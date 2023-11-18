@@ -2,24 +2,25 @@ import { graphql, useStaticQuery } from 'gatsby'
 
 import { extractNodes } from 'util/graphql'
 
-/**
- * Provides corridors data in ascending order
- */
 export const useCorridors = () => {
   const { corridors: rawCorridors } = useStaticQuery(graphql`
     query {
-      corridors: allCorridorsJson(sort: { order: ASC }) {
+      corridors: allCorridorsJson {
         edges {
           node {
             value
             label
             color
             description
+            type
           }
         }
       }
     }
   `)
 
-  return extractNodes(rawCorridors)
+  const corridors = extractNodes(rawCorridors)
+
+  // put 0 value at end
+  return corridors.slice(1).concat(corridors.slice(0, 1))
 }

@@ -1,4 +1,3 @@
-import json
 import math
 from pathlib import Path
 import re
@@ -6,7 +5,7 @@ import subprocess
 from time import time
 
 import rasterio
-from rasterio.features import geometry_mask, dataset_features, rasterize
+from rasterio.features import geometry_mask, rasterize
 from rasterio.windows import Window
 import pandas as pd
 import numpy as np
@@ -132,30 +131,45 @@ colormap = {
 
 # use the SE Blueprint extent grid to derive the master offset coordinates
 # so that everything is correctly aligned
-extent_raster = rasterio.open(bnd_dir / "se_blueprint_extent.tif")
+extent_raster = rasterio.open(data_dir / "inputs/boundaries/blueprint_extent.tif")
 align_ul = np.take(extent_raster.transform, [2, 5]).tolist()
 
-for gdb in sorted(src_dir.glob("*slr_data_dist/*.gdb")):
+
+for infile in sorted(
+    list(src_dir.glob("*slr_data_dist/*.gdb"))
+    + list(src_dir.glob("*slr_data_dist/*.gpkg"))
+):
     chunk_start = time()
 
     outfilename = (
         tmp_dir
-        / f"{gdb.stem.replace('_slr_final_dist', '')}_{LEVELS[0]}_{LEVELS[-1]}ft.tif"
+        / f"{infile.stem.replace('_slr_final_dist', '')}_{LEVELS[0]}_{LEVELS[-1]}ft.tif"
     )
 
     if outfilename.exists():
-        print(f"Skipping {gdb} (outputs already exist)")
+        print(f"Skipping {infile} (outputs already exist)")
         continue
 
-    print(f"\n\n--------- Processing {gdb} ------------")
+    print(f"\n\n--------- Processing {infile} ------------")
 
     # ignore the low-lying areas, gather the SLR depth layers in order of descending
     # depth so that we stack from highest to lowest
-    slr_layers = sorted(
-        [l[0] for l in list_layers(gdb) if "_slr_" in l[0]],
-        key=lambda l: int(re.findall("\d+(?=ft)", l)[0]),
-        reverse=True,
-    )
+    # NOTE: newer SLR layers have 1/2 foot increments: *_slr_1_0ft
+    # older ones have 1 foot increments: *_slr_1ft
+    slr_layers = {}
+    for layer in [l[0] for l in list_layers(infile) if "_slr_" in l[0]]:
+        suffix = layer.split("_slr_")[1]
+        ft = int(re.findall("\d+", suffix)[0])
+        if "_" in suffix:
+            # only keep if whole feet
+            if suffix.endswith("0ft"):
+                slr_layers[ft] = layer
+        else:
+            slr_layers[ft] = layer
+
+    slr_layers = [
+        l[1] for l in sorted(slr_layers.items(), key=lambda x: x[0], reverse=True)
+    ]
 
     # calculate the outer bounds and dimensions
     print("Calculating outer bounds")
@@ -165,9 +179,11 @@ for gdb in sorted(src_dir.glob("*slr_data_dist/*.gdb")):
     ymax = -math.inf
     for layer in slr_layers:
         # WARNING: CRS is not consistent across the suite
-        crs = read_info(gdb, layer)["crs"]
+        crs = read_info(infile, layer)["crs"]
         bounds = (
-            gp.GeoDataFrame(geometry=shapely.box(*read_bounds(gdb, layer)[1]), crs=crs)
+            gp.GeoDataFrame(
+                geometry=shapely.box(*read_bounds(infile, layer)[1]), crs=crs
+            )
             .to_crs(DATA_CRS)
             .total_bounds
         )
@@ -187,8 +203,8 @@ for gdb in sorted(src_dir.glob("*slr_data_dist/*.gdb")):
     out = np.ones((height, width), dtype="uint8") * np.uint8(NODATA)
 
     for layer in slr_layers:
-        depth = np.uint8(re.findall("\d+(?=ft)", layer)[0])
-        mask = rasterize_depth_polygons(gdb, layer, width, height, transform)
+        depth = np.uint8((re.findall("\d+", layer.split("_slr_")[1])[0]))
+        mask = rasterize_depth_polygons(infile, layer, width, height, transform)
         depth = mask.astype("uint8") * depth
 
         out = np.where(mask, depth, out)
@@ -259,12 +275,6 @@ data_extent_df = read_dataframe(
 data_extent_df["group"] = "data_extent"
 data_extent_df["geometry"] = make_valid(data_extent_df.geometry.values)
 
-not_modeled_df = read_dataframe(
-    src_dir / "NOAA_SLR_Viewer_NoDataAreas.shp", columns=[]
-).to_crs(DATA_CRS)
-not_modeled_df["group"] = "not_modeled"
-not_modeled_df["geometry"] = make_valid(not_modeled_df.geometry.values)
-
 # veil is inland counties where SLR isn't applicable
 not_applicable_df = read_dataframe(src_dir / "SLRViewer_Veil.shp", columns=[]).to_crs(
     DATA_CRS
@@ -272,12 +282,12 @@ not_applicable_df = read_dataframe(src_dir / "SLRViewer_Veil.shp", columns=[]).t
 not_applicable_df["group"] = "not_applicable"
 not_applicable_df["geometry"] = make_valid(not_applicable_df.geometry.values)
 
-df = pd.concat([data_extent_df, not_modeled_df, not_applicable_df], ignore_index=True)
+df = pd.concat([data_extent_df, not_applicable_df], ignore_index=True)
 df = dissolve(df.explode(ignore_index=True), by="group")
 
-# rasterize these stacked in the following decreasing precedence: not modeled(13), data extent(11), veil(12)
+# rasterize these stacked in the following decreasing precedence: data extent(11), veil(12)
 analysis_areas = np.zeros(shape=extent_raster.shape, dtype="uint8")
-rasterize(
+_ = rasterize(
     to_dict_all(not_applicable_df.geometry.values),
     extent_raster.shape,
     transform=extent_raster.transform,
@@ -286,21 +296,12 @@ rasterize(
     out=analysis_areas,
 )
 
-rasterize(
+_ = rasterize(
     to_dict_all(data_extent_df.geometry.values),
     extent_raster.shape,
     transform=extent_raster.transform,
     dtype="uint8",
     default_value=11,
-    out=analysis_areas,
-)
-
-rasterize(
-    to_dict_all(not_modeled_df.geometry.values),
-    extent_raster.shape,
-    transform=extent_raster.transform,
-    dtype="uint8",
-    default_value=13,
     out=analysis_areas,
 )
 
@@ -320,7 +321,9 @@ with rasterio.open(vrt_filename) as vrt:
     # SLR origin is located within SE Blueprint extent
     data = vrt.read(1, window=Window(0, 0, width, height))
     out = np.ones(extent_raster.shape, dtype="uint8") * np.uint8(NODATA)
-    out[top:, left:] = data
+    # NOTE: because read from VRT can't use boundless option without segfault
+    # this returns a smaller shape
+    out[top : top + data.shape[0], left : left + data.shape[1]] = data
 
     # merge in areas not modeled, in data extent, outside data extent
     out = np.where((out == NODATA) & (analysis_areas > 0), analysis_areas, out)
@@ -359,11 +362,6 @@ bnd = gp.read_feather(
 df["geometry"] = shapely.intersection(df.geometry.values, bnd)
 
 write_dataframe(df, tmp_dir / "slr_analysis_areas.fgb")
-
-# write areas not modeled for tiles
-df.loc[df.group == "not_modeled"].to_feather(
-    data_dir / "for_tiles/slr_not_modeled.feather"
-)
 
 data_extent = df.loc[df.group == "data_extent"].geometry.values[0]
 
@@ -481,7 +479,7 @@ df = gp.GeoDataFrame(
 
 # only keep those that intersect the SLR data extent
 tree = shapely.STRtree(df.geometry.values)
-ix = np.unique(tree.query(data_extent, predicate="intersects")[1])
+ix = np.unique(tree.query(data_extent, predicate="intersects"))
 df = df.take(ix).reset_index(drop=True)
 
 

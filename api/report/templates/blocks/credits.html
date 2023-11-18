@@ -9,32 +9,38 @@
     <a href="http://secassoutheast.org/">Southeast Conservation Adaptation Strategy</a>.
 </p>
 
-{% if results.urban or results.slr or results.ownership or results.protection %}
-
 <div style="font-size: 1.25rem; font-weight: bold;">Data credits</div>
 <p>
-    {% if results.urban %}
-        Urbanization data are derived from the FUTURES urban growth model.
-        Data provided by the
-        <a href="https://cnr.ncsu.edu/geospatial/">Center for Geospatial Analytics</a>,
-        NC State University (June 2022).
-        <br /><br />
-    {% endif %}
+    Land ownership and conservation status is derived from the
+    <a href="https://www.usgs.gov/programs/gap-analysis-project/science/pad-us-data-download">Protected Areas Database of the United States</a>
+    (PAD-US v3.0).
+    <br /><br />
 
-    {% if results.slr %}
-        Sea level rise data are derived from the National Oceanic and Atmospheric Administration's
-        <a href="https://coast.noaa.gov/slrdata/">Sea Level Rise Inundation Depth Data</a>
-        and the
-        <a href="https://oceanservice.noaa.gov/hazards/sealevelrise/sealevelrise-tech-report.html">2022 Sea Level Rise Technical Report</a>.
-        <br /><br />
-    {% endif %}
+    Future urban growth estimates derived from
+    <a href="https://www.sciencebase.gov/catalog/item/63f50297d34efa0476b04cf7">
+    FUTURES model projections for the contiguous United States</a> developed by the
+    <a href="https://cnr.ncsu.edu/geospatial/">Center for Geospatial Analytics</a>,
+    NC State University.
+    <br /><br />
 
-    {% if results.ownership or results.protection %}
-        Land ownership and conservation status is derived from the
-        <a href="https://www.usgs.gov/programs/gap-analysis-project/science/pad-us-data-download">Protected Areas Database of the United States</a>
-        (PAD-US v3.0).
+    Sea level rise data are derived from the National Oceanic and Atmospheric Administration's
+    <a href="https://coast.noaa.gov/slrdata/">Sea Level Rise Inundation Depth Data</a>
+    and the
+    <a href="https://oceanservice.noaa.gov/hazards/sealevelrise/sealevelrise-tech-report.html">2022 Sea Level Rise Technical Report</a>.
+    <br /><br />
+
+    {% if area_type == "huc12" %}
+        Subwatershed boundary is based on the
+        <a href="https://www.usgs.gov/national-hydrography/watershed-boundary-dataset">National Watershed Boundary Dataset</a>
+        (2023), U.S. Geological Survey.
+    {% elif area_type == "marine_hex" %}
+        Hexagon boundary is based on 40 km<sup>2</sup> hexagons developed by the
+        <a href="https://www.sciencebase.gov/catalog/item/5ba9378fe4b08583a5ca0937">U.S. Environmental Protection Agency</a>
+        and extended into the Gulf of Mexico by the
+        <a href="https://www.boem.gov/gommapps">Gulf of Mexico Marine Assessment Program for Protected Species</a> (GoMMAPPS).
+        Gulf of Mexico hexagons provided by the NOAA Southeast Fisheries Science Center. Similar hexagons were generated
+        in the U.S. Caribbean for internal use by the Southeast Conservation Adaptation Strategy (2023).
     {% endif %}
 </p>
 
-{% endif %}
 </section>

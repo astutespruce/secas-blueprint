@@ -10,6 +10,10 @@ import { IndicatorPropType } from './proptypes'
 
 const PixelIndicatorListItem = ({ indicator, onSelect }) => {
   const { label, values, valueLabel, goodThreshold } = indicator
+  const present = indicator.total > 0
+  const [currentValue] = values.filter(({ percent }) => percent === 100)
+  const isZeroValue =
+    !present || (currentValue.value === 0 && !currentValue.color)
 
   const breakpoint = useBreakpoints()
   const isMobile = breakpoint === 0
@@ -18,13 +22,11 @@ const PixelIndicatorListItem = ({ indicator, onSelect }) => {
     onSelect(indicator)
   }, [indicator, onSelect])
 
-  const present = indicator.total > 0
-
   return (
     <Box
-      onClick={present ? handleClick : undefined}
+      onClick={present && !isZeroValue ? handleClick : undefined}
       sx={{
-        cursor: present ? 'pointer' : 'unset',
+        cursor: present && !isZeroValue ? 'pointer' : 'unset',
         px: '1rem',
         pt: '1rem',
         pb: '1.5rem',
@@ -33,7 +35,7 @@ const PixelIndicatorListItem = ({ indicator, onSelect }) => {
           borderTop: '2px solid',
           borderTopColor: 'grey.1',
         },
-        ...(present
+        ...(present && !isZeroValue
           ? {
               '&:hover': {
                 bg: lighten('grey.0', 0.01),
@@ -47,9 +49,9 @@ const PixelIndicatorListItem = ({ indicator, onSelect }) => {
     >
       <Text
         sx={{
-          color: present ? 'primary' : 'grey.8',
+          color: present && !isZeroValue ? 'primary' : 'grey.8',
           fontSize: 2,
-          fontWeight: present ? 'bold' : 'unset',
+          fontWeight: present && !isZeroValue ? 'bold' : 'unset',
         }}
       >
         {label}
@@ -58,11 +60,13 @@ const PixelIndicatorListItem = ({ indicator, onSelect }) => {
       <IndicatorPixelValueChart
         present={present}
         values={values}
+        currentValue={currentValue}
+        isZeroValue={isZeroValue}
         valueLabel={valueLabel}
         goodThreshold={goodThreshold}
       />
 
-      {present ? (
+      {present && !isZeroValue ? (
         <Text
           as="label"
           sx={{

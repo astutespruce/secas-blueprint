@@ -1,3 +1,6 @@
-# Southeast Conservation Blueprint - 2022
+# Southeast Conservation Blueprint - 2023
 
-Data were downloaded 9/16/2022 from: https://www.sciencebase.gov/catalog/file/get/62d57290d34e87fffb2dda52?name=Southeast_Blueprint_2022_Data_Download.zip
+Data were downloaded 9/27/2023 from: USFWS MS Teams internal site.
+
+A separate XLSX file containing indicator descriptions and other details was
+provided directly by USFWS staff on 9/20/2023.
