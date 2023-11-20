@@ -1,8 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Box, Flex, Container, Heading } from 'theme-ui'
-import { convertToBgImage } from 'gbimage-bridge'
-import BackgroundImage from 'gatsby-background-image'
+import { Box, Container, Heading } from 'theme-ui'
+import { GatsbyImage } from 'gatsby-plugin-image'
 
 import Credits from './Credits'
 
@@ -15,79 +14,88 @@ const HeaderImage = ({
   subtitle,
   credits,
   caption,
+  background,
 }) => (
-  <>
-    <BackgroundImage
-      {...convertToBgImage(image)}
+  <Box
+    sx={{
+      position: 'relative',
+      height,
+      minHeight,
+      maxHeight: maxHeight || height,
+    }}
+  >
+    <GatsbyImage
+      image={image}
       style={{
+        position: 'relative',
+        top: 0,
+        zIndex: 0,
         height,
         minHeight,
         maxHeight: maxHeight || height,
       }}
       alt=""
-      preserveStackingContext
+    />
+
+    <Box
+      sx={{
+        mt: 0,
+        overflow: 'hidden',
+        width: '100%',
+        position: 'absolute',
+        zIndex: 2,
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+      }}
     >
-      <Flex
-        sx={{
-          mt: 0,
-          overflow: 'hidden',
-          width: '100%',
-          position: 'absolute',
-          zIndex: 2,
-          top: 0,
-          bottom: 0,
-          left: 0,
-          right: 0,
-          flexDirection: 'column',
-          justifyContent: 'flex-end',
-          alignItems: 'center',
-        }}
-      >
-        {title && (
-          <Box
+      {title && (
+        <Box
+          sx={{
+            background,
+            height: '100%',
+            py: ['2rem', '3rem'],
+          }}
+        >
+          <Container
             sx={{
-              width: '100%',
-              background: 'linear-gradient(transparent 0%, #0000009c 30%)',
-              py: ['2rem', '3rem'],
+              p: '1rem',
             }}
           >
-            <Container
+            <Heading
+              as="h1"
               sx={{
-                p: '1rem',
-                textShadow: '1px 1px 3px #000',
+                m: 0,
                 color: '#FFF',
+                textShadow: '1px 1px 3px #000',
                 lineHeight: 1.1,
+                fontSize: ['3rem', '3rem', '4rem'],
               }}
             >
+              {title}
+            </Heading>
+
+            {subtitle && (
               <Heading
-                as="h1"
+                as="h2"
                 sx={{
-                  m: 0,
-                  fontSize: '3rem',
+                  margin: '0.5rem 0 0 0',
+                  fontWeight: 'normal',
+                  fontSize: '1.75rem',
+                  textShadow: '1px 1px 3px #000',
+                  color: '#FFF',
                 }}
               >
-                {title}
+                {subtitle}
               </Heading>
-
-              {subtitle && (
-                <Heading
-                  as="h2"
-                  sx={{
-                    margin: '0.5rem 0 0 0',
-                    fontWeight: 'normal',
-                    fontSize: '1.5rem',
-                  }}
-                >
-                  {subtitle}
-                </Heading>
-              )}
-            </Container>
-          </Box>
-        )}
-      </Flex>
-    </BackgroundImage>
+            )}
+          </Container>
+        </Box>
+      )}
+    </Box>
     {credits ? <Credits caption={caption} {...credits} /> : null}
-  </>
+  </Box>
 )
 
 HeaderImage.propTypes = {
@@ -102,6 +110,7 @@ HeaderImage.propTypes = {
     author: PropTypes.string.isRequired,
   }),
   caption: PropTypes.string,
+  background: PropTypes.string,
 }
 
 HeaderImage.defaultProps = {
@@ -112,6 +121,7 @@ HeaderImage.defaultProps = {
   subtitle: null,
   credits: null,
   caption: null,
+  background: 'linear-gradient(transparent 0%, #00000066 30%)',
 }
 
 export default HeaderImage

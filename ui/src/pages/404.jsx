@@ -1,11 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { graphql } from 'gatsby'
-import { Box, Flex, Heading } from 'theme-ui'
-import { convertToBgImage } from 'gbimage-bridge'
-import BackgroundImage from 'gatsby-background-image'
+import { Box } from 'theme-ui'
 
+import { HeaderImage } from 'components/image'
 import { Layout, SEO } from 'components/layout'
+import { OutboundLink } from 'components/link'
 import { hasWindow } from 'util/dom'
 
 const NotFoundPage = ({
@@ -22,47 +22,58 @@ const NotFoundPage = ({
 
   return (
     <Layout>
-      <BackgroundImage
-        {...convertToBgImage(image)}
-        style={{
-          height: '100%',
-        }}
-        alt=""
-        preserveStackingContext
-      >
-        <Flex
+      <Box sx={{ position: 'relative', height: '100%' }}>
+        <HeaderImage
+          image={image}
+          title="PAGE NOT FOUND"
+          subtitle="Sorry, we could not find what you were looking for here."
+          height="100%"
+          minHeight="100%"
+          maxHeight="100%"
+        />
+        <Box
+          author="G. Peeples / U.S. Fish and Wildlife Service Southeast Region"
+          url="https://flickr.com/photos/usfwssoutheast/48754428566/"
           sx={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column',
-            height: '100%',
-            flex: '1 1 auto',
+            zIndex: 100,
+            bg: 'rgba(0, 0, 0, 0.6)',
+            py: '0.25rem',
             px: '1rem',
+            color: '#FFF',
+            position: 'absolute',
+            bottom: 0,
+            right: 0,
+            '& a': {
+              color: '#FFF',
+            },
           }}
         >
           <Box
             sx={{
+              fontSize: 'smaller',
+              textAlign: 'right',
               color: '#FFF',
-              p: '3rem',
-              background: 'rgba(0,0,0,0.7)',
+              a: {
+                color: '#FFF',
+                textDecoration: 'none',
+              },
             }}
           >
-            <Heading as="h1">NOT FOUND</Heading>
-            <Heading as="h2">
-              Sorry, we could not find what you were looking for here.
-            </Heading>
+            Photo:&nbsp;
+            <OutboundLink to="https://flickr.com/photos/usfwssoutheast/48754428566/">
+              G. Peeples / U.S. Fish and Wildlife Service Southeast Region
+            </OutboundLink>
           </Box>
-        </Flex>
-      </BackgroundImage>
+        </Box>
+      </Box>
     </Layout>
   )
 }
 
-// image: https://unsplash.com/photos/gAvQfrHwbgY
-
+// image: https://flickr.com/photos/usfwssoutheast/48754428566/
 export const pageQuery = graphql`
   query NotFoundPageQuery {
-    image: file(relativePath: { eq: "jack-kelly-gAvQfrHwbgY-unsplash.jpg" }) {
+    image: file(relativePath: { eq: "48754428566_d34b348ac3_o.jpg" }) {
       childImageSharp {
         gatsbyImageData(
           layout: FULL_WIDTH

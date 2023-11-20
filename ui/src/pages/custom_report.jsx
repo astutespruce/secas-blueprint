@@ -25,6 +25,7 @@ const CustomReportPage = ({
       height="14rem"
       maxHeight="14rem"
       minHeight="14rem"
+      background="linear-gradient(transparent 0%, #00000077 30%)"
     />
 
     <UploadContainer />
