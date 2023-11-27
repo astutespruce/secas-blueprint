@@ -20,7 +20,6 @@ huc12_filename = data_dir / "inputs/summary_units/huc12.feather"
 huc12_raster_filename = bnd_dir / "huc12.tif"
 marine_filename = data_dir / "inputs/summary_units/marine_hex.feather"
 marine_raster_filename = bnd_dir / "marine_hex.tif"
-
 subregion_df = gp.read_feather(data_dir / "inputs/boundaries/subregions.feather")
 
 
