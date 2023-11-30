@@ -8,18 +8,18 @@ packages = [{ include = "analysis" }]
 
 [tool.poetry.dependencies]
 python = "3.10"
-geopandas = "^0.14.0"
+geopandas = "^0.14.1"
 affine = "^2.4.0"
 aiofiles = "^23.2.1"
 fastapi = "^0.104.1"
 Jinja2 = "^3.1.2"
-numpy = "^1.26.1"
-pandas = "^2.1.2"
+numpy = "^1.26.2"
+pandas = "^2.1.3"
 Pillow = "^10.1.0"
 python-dotenv = "^1.0.0"
 python-multipart = "^0.0.6"
 rasterio = "^1.3.9"
-sentry-sdk = "^1.34.0"
+sentry-sdk = "^1.38.0"
 uvicorn = "^0.24.0"
 weasyprint = "^60.1"
 pyarrow = "^14.0.1"
@@ -30,15 +30,15 @@ shapely = "^2.0.2"
 pyogrio = "^0.7.2"
 openpyxl = "^3.1.2"
 gunicorn = "^21.2.0"
-fiona = "^1.9.5"
+Cython = "^3.0.6"
 
 [tool.poetry.dev-dependencies]
 Cython = "^3.0.5"
 watchgod = "^0.8.2"
 progress = "^1.6"
-httpx = {extras = ["http2"], version = "^0.25.1"}
+httpx = {extras = ["http2"], version = "^0.25.2"}
 watchfiles = "^0.21.0"
-ruff = "^0.1.5"
+ruff = "^0.1.6"
 
 [build-system]
 # numpy and Cython are required to execute setup.py to build Cython extensions

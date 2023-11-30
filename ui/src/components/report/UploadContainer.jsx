@@ -51,7 +51,7 @@ const UploadContainer = () => {
       reportURL: null,
     }))
 
-    logGAEvent('create-report', {
+    logGAEvent('create-custom-report', {
       name,
       file: file.name,
       sizeKB: file.size / 1024,

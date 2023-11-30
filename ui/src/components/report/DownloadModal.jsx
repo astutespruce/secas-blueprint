@@ -18,7 +18,7 @@ import {
 } from '@emotion-icons/fa-solid'
 
 import { OutboundLink } from 'components/link'
-import { captureException } from 'util/log'
+import { captureException, logGAEvent } from 'util/log'
 import { Modal } from 'components/modal'
 import { createSummaryUnitReport } from './api'
 import config from '../../../gatsby-config'
@@ -61,6 +61,8 @@ const DownloadModal = ({ id, type, onClose }) => {
       error: null,
       reportURL: null,
     }))
+
+    logGAEvent('create-summary-report', { type, id: `${type}:${id}` })
 
     try {
       const {
