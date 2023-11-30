@@ -15,3 +15,16 @@ export const captureException = (err, data) => {
     })
   }
 }
+
+export const logGAEvent = (event, data) => {
+  // NOTE: window.gtag only available in build mode
+  if (!hasWindow || !window.gtag) {
+    return
+  }
+
+  try {
+    window.gtag('event', event, data)
+  } catch (ex) {
+    console.error('Could not log event to google', ex)
+  }
+}

@@ -8,7 +8,7 @@ import {
 } from '@emotion-icons/fa-solid'
 
 import { InfoTooltip } from 'components/tooltip'
-import { indexBy } from 'util/data'
+import { logGAEvent } from 'util/log'
 import { useIsEqualCallback } from 'util/hooks'
 
 const Filter = ({
@@ -22,7 +22,6 @@ const Filter = ({
   canBeVisible,
   onChange,
 }) => {
-  const valueIndex = indexBy(values, 'value')
   const checkboxRef = useRef(null)
 
   const tooltipContent = (
@@ -43,7 +42,12 @@ const Filter = ({
 
   // retain previous active values
   const toggleEnabled = useIsEqualCallback(() => {
-    onChange({ id, enabled: !enabled, activeValues })
+    const isNowEnabled = !enabled
+    onChange({ id, enabled: isNowEnabled, activeValues })
+
+    if (isNowEnabled) {
+      logGAEvent('enable-filter', { filter: id })
+    }
 
     // blur on uncheck
     if (checkboxRef.current && enabled) {
@@ -54,16 +58,15 @@ const Filter = ({
   const handleToggleValue = (value) => () => {
     const newActiveValues = {
       ...activeValues,
+      [value]: !activeValues[value],
     }
-
-    // if a checkbox is a proxy for multiple values, toggle them all
-    if (valueIndex[value].rawValues) {
-      valueIndex[value].rawValues.forEach((v) => {
-        newActiveValues[v] = !activeValues[v]
-      })
-    } else {
-      newActiveValues[value] = !activeValues[value]
-    }
+    logGAEvent('set-filter-values', {
+      filter: id,
+      values: `${id}:${Object.entries(newActiveValues)
+        .filter(([k, v]) => v)
+        .map(([k]) => k.toString())
+        .join(',')}`,
+    })
 
     onChange({ id, enabled, activeValues: newActiveValues })
   }
@@ -71,7 +74,12 @@ const Filter = ({
   const handleKeyDown = useCallback(
     ({ key }) => {
       if (key === 'Enter' || key === ' ') {
-        onChange({ id, enabled: !enabled, activeValues })
+        const isNowEnabled = !enabled
+        onChange({ id, enabled: isNowEnabled, activeValues })
+
+        if (isNowEnabled) {
+          logGAEvent('enable-filter', { filter: id })
+        }
       }
     },
     [id, enabled, activeValues, onChange]

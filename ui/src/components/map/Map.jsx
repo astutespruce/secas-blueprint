@@ -28,6 +28,7 @@ import { useSearch } from 'components/search'
 import { hasWindow, isLocalDev } from 'util/dom'
 import { indexBy } from 'util/data'
 import { useIsEqualEffect, useEventHandler } from 'util/hooks'
+import { logGAEvent } from 'util/log'
 import CrosshairsIcon from 'images/CrosshairsIcon.svg'
 
 import { unpackFeatureData } from './features'

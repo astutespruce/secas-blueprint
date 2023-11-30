@@ -8,6 +8,7 @@ import React, {
 import PropTypes from 'prop-types'
 import { useQuery } from '@tanstack/react-query'
 
+import { logGAEvent } from 'util/log'
 import { searchPlaces, getPlace } from './mapbox'
 
 const Context = createContext()
@@ -26,6 +27,10 @@ export const Provider = ({ children }) => {
       selectedId: null,
       location: null,
     }))
+
+    if (newQuery) {
+      logGAEvent('search-place')
+    }
   }, [])
 
   const setSelectedId = useCallback((newId) => {
@@ -34,6 +39,10 @@ export const Provider = ({ children }) => {
       location: null,
       selectedId: newId,
     }))
+
+    if (newId !== null) {
+      logGAEvent('search-place-selected')
+    }
   }, [])
 
   const setLocation = useCallback((newLocation) => {

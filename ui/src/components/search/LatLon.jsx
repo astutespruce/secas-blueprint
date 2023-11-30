@@ -7,6 +7,7 @@ import {
   ExclamationTriangle,
 } from '@emotion-icons/fa-solid'
 
+import { logGAEvent } from 'util/log'
 import { useSearch } from './Provider'
 
 const invalidInputCSS = {
@@ -163,6 +164,9 @@ const LatLon = forwardRef(({ isCompact, onFocus, onBlur }, ref) => {
       isValid: isValueValid,
       invalidReason: nextInvalidReason,
     } = parseLatLon(value)
+
+    logGAEvent('search-lat-lon')
+
     if (isValueValid) {
       setLocation({ latitude: lat, longitude: lon })
     } else {

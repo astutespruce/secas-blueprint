@@ -18,7 +18,7 @@ import {
 } from '@emotion-icons/fa-solid'
 
 import { OutboundLink } from 'components/link'
-import { captureException } from 'util/log'
+import { captureException, logGAEvent } from 'util/log'
 import { uploadFile } from './api'
 import UploadForm from './UploadForm'
 import UploadError from './UploadError'
@@ -50,6 +50,12 @@ const UploadContainer = () => {
       error: null,
       reportURL: null,
     }))
+
+    logGAEvent('create-report', {
+      name,
+      file: file.name,
+      sizeKB: file.size / 1024,
+    })
 
     try {
       // upload file and update progress
@@ -88,6 +94,9 @@ const UploadContainer = () => {
           errors: null,
           error: uploadError,
         }))
+
+        logGAEvent('file-upload-error')
+
         return
       }
 

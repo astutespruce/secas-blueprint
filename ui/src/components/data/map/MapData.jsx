@@ -8,14 +8,13 @@ import React, {
 import PropTypes from 'prop-types'
 
 import { useIndicators } from 'components/data/Indicators'
-import { useSubregions } from 'components/data/Subregions'
 import { indexBy, range } from 'util/data'
+import { logGAEvent } from 'util/log'
 
 const Context = createContext()
 
 export const Provider = ({ children }) => {
   const { indicators } = useIndicators()
-  const { subregionIndex } = useSubregions()
 
   const [
     {
@@ -97,6 +96,13 @@ export const Provider = ({ children }) => {
         ...prevState,
         data: newData,
       }))
+
+      if (newData.type !== 'pixel') {
+        logGAEvent('set-map-data', {
+          type: newData.type,
+          id: `${newData.type}:${newData.id}`,
+        })
+      }
     },
     // intentionally ignores dependencies, doesn't change after mount
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
@@ -133,6 +139,12 @@ export const Provider = ({ children }) => {
       ...prevState,
       selectedIndicator: newSelectedIndicator,
     }))
+
+    if (newSelectedIndicator) {
+      logGAEvent('show-indicator-details', {
+        indicator: newSelectedIndicator,
+      })
+    }
   }, [])
 
   // renderLayer is null or an object: {id, label, colors, categories}

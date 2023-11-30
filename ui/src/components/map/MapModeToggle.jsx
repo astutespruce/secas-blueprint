@@ -4,6 +4,7 @@ import { Box, Text, Flex, Button } from 'theme-ui'
 
 import { useMapData } from 'components/data'
 import { Tooltip } from 'components/tooltip'
+import { logGAEvent } from 'util/log'
 
 const baseCSS = {
   position: 'absolute',
@@ -52,14 +53,17 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
 
   const handleFilterClick = useCallback(() => {
     setMapMode('filter')
+    logGAEvent('set-map-mode', { mode: 'filter' })
   }, [setMapMode])
 
   const handlePixelClick = useCallback(() => {
     setMapMode('pixel')
+    logGAEvent('set-map-mode', { mode: 'pixel-identify' })
   }, [setMapMode])
 
   const handleUnitClick = useCallback(() => {
     setMapMode('unit')
+    logGAEvent('set-map-mode', { mode: 'summary-unit' })
   }, [setMapMode])
 
   return (

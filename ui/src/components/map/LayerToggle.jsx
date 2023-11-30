@@ -11,6 +11,7 @@ import {
 } from 'components/data'
 import { BoundModal } from 'components/modal'
 import { indexBy, sortByFunc } from 'util/data'
+import { logGAEvent } from 'util/log'
 
 const LayerToggle = () => {
   const { renderLayer, setRenderLayer } = useMapData()
@@ -124,8 +125,14 @@ const LayerToggle = () => {
     (id) => () => {
       if (id === 'blueprint') {
         setRenderLayer(null)
+        logGAEvent('set-render-layer', {
+          layer: 'blueprint',
+        })
       } else {
         setRenderLayer(renderLayersIndex[id])
+        logGAEvent('set-render-layer', {
+          layer: id,
+        })
       }
     },
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
