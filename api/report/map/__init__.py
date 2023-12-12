@@ -165,6 +165,7 @@ async def render_maps(
     slr=False,
     ownership=False,
     protection=False,
+    add_mask=False,
 ):
     """Render maps for locator and each raster dataset that overlaps with area
     of interest.
@@ -189,6 +190,8 @@ async def render_maps(
         If True, ownership will be rendered.
     protection : bool, optional (default: False)
         If True, ownership will be rendered.
+    add_mask : bool, optional (default: False)
+        If True, will add a light transparent mask outside geometry
 
     Returns
     -------
@@ -224,7 +227,9 @@ async def render_maps(
     aoi_image = None
 
     if geometry:
-        aoi_image, error = get_aoi_map_image(geometry, center, zoom, WIDTH, HEIGHT)
+        aoi_image, error = get_aoi_map_image(
+            geometry, center, zoom, WIDTH, HEIGHT, add_mask=add_mask
+        )
         if error:
             errors["aoi"] = error
 

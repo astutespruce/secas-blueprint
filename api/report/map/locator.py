@@ -119,6 +119,7 @@ def get_locator_map_image(longitude, latitude, bounds, geometry=None):
     else:
         style["sources"]["marker"] = {
             "type": "geojson",
+            "tolerance": 0.1,
             "data": {"type": "Point", "coordinates": [longitude, latitude]},
         }
 

@@ -2,17 +2,22 @@ from base64 import b64decode
 from copy import deepcopy
 from io import BytesIO
 import json
+import logging
 
 from PIL import Image
 from pymgl import Map
+import shapely
 
 from analysis.lib.geometry import to_dict
 from api.settings import TILE_DIR
 
+
+log = logging.getLogger(__name__)
+
 STYLE = {
     "version": 8,
     "sources": {
-        "aoi": {"type": "geojson", "data": ""},
+        "aoi": {"type": "geojson", "tolerance": 0.1, "data": ""},
         "mask": {
             "type": "vector",
             "url": f"mbtiles://{TILE_DIR}/se_mask.mbtiles",
@@ -44,7 +49,7 @@ STYLE = {
 }
 
 
-def get_aoi_map_image(geometry, center, zoom, width, height):
+def get_aoi_map_image(geometry, center, zoom, width, height, add_mask=True):
     """Create a rendered map image of the area of interest.
 
     Parameters
@@ -56,6 +61,8 @@ def get_aoi_map_image(geometry, center, zoom, width, height):
         map width
     height : int
         map height
+    add_mask : bool, optional (default: False)
+        if True, will add a light transparent mask outside geometry
 
     Returns
     -------
@@ -64,6 +71,23 @@ def get_aoi_map_image(geometry, center, zoom, width, height):
 
     style = deepcopy(STYLE)
     style["sources"]["aoi"]["data"] = to_dict(geometry)
+
+    if add_mask:
+        try:
+            mask = shapely.difference(shapely.box(-180, -90, 180, 90), geometry)
+            style["sources"]["aoi_mask"] = {"type": "geojson", "data": to_dict(mask)}
+            style["layers"].insert(
+                -1,  # make sure that boundary layer is on top
+                {
+                    "id": "aoi-mask-fill",
+                    "source": "aoi_mask",
+                    "source-layer": "aoi_mask",
+                    "type": "fill",
+                    "paint": {"fill-color": "#FFFFFF", "fill-opacity": 0.5},
+                },
+            )
+        except Exception as ex:
+            log.error(f"could not create mask around area of interest {str(ex)}")
 
     try:
         map = Map(json.dumps(style), width, height, 1, *center, zoom=zoom)

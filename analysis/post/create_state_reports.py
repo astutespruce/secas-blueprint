@@ -47,6 +47,7 @@ for state in states.NAME.values:
         slr="slr" in results,
         ownership="ownership" in results,
         protection="protection" in results,
+        add_mask=True,
     )
 
     maps, scale, errors = asyncio.run(task)
