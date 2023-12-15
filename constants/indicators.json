@@ -2943,7 +2943,7 @@
     "id": "t_westgulfcoastmottledducknesting",
     "filename": "WestGulfCoastMottledDuckNesting.tif",
     "label": "West Gulf Coast mottled duck nesting",
-    "description": "This indicator depicts marshes and grasslands along the coast of Louisiana and Texas that are important for mottled duck nesting, based on key biological parameters such as patch size, land cover type, and distance to brood rearing habitat. As a non-migratory bird endemic to the Gulf coast, mottled ducks serve as good indicators of coastal marsh health and function. Urban growth, agricultural development, and hydrologic changes due to human alteration and climate change have caused significant mottled duck habitat loss and population declines. This indicator originates from a mottled duck decision support tool developed by the Gulf Coast Prairie Landscape Conservation Cooperative.",
+    "description": "This indicator depicts marshes and grasslands along the coast of Louisiana and Texas that are important for mottled duck nesting, based on key biological parameters such as patch size, land cover type, and distance to brood rearing habitat. As a non-migratory bird endemic to the Gulf coast, mottled ducks serve as good indicators of coastal marsh health and function. Urban growth, agricultural development, and hydrologic changes due to human alteration and climate change have caused significant mottled duck habitat loss and population declines. This indicator originates from a mottled duck decision support tool developed by the Gulf Coast Joint Venture.",
     "values": [
       {
         "value": 0,
