@@ -7,7 +7,7 @@ license = "MIT"
 packages = [{ include = "analysis" }]
 
 [tool.poetry.dependencies]
-python = "3.10"
+python = "^3.10"
 geopandas = "^0.14.1"
 affine = "^2.4.0"
 aiofiles = "^23.2.1"

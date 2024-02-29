@@ -524,7 +524,7 @@ def extract_window(src, window, transform, nodata):
     return vrt.read()[0]
 
 
-def write_raster(filename, data, transform, crs, nodata):
+def write_raster(filename, data, transform, crs, nodata, compress=True):
     """Write data to a GeoTIFF.
 
     Parameters
@@ -534,6 +534,8 @@ def write_raster(filename, data, transform, crs, nodata):
     transform : rasterio transform object
     crs : rasterio.crs object
     nodata : int
+    compress : bool, optional (default: True)
+        If True, will compress output uisng LZW
     """
 
     meta = {
@@ -545,7 +547,7 @@ def write_raster(filename, data, transform, crs, nodata):
         "count": 1,
         "crs": crs,
         "transform": transform,
-        "compress": "lzw",
+        "compress": "lzw" if compress else None,
         "tiled": True,
         "blockxsize": 256,
         "blockysize": 256,
