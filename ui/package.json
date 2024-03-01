@@ -85,7 +85,7 @@
     "start": "npm run develop",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
-    "deploy": "npm ci --production --no-audit --legacy-peer-deps && npm install gatsby-cli@5.12 --no-audit --no-save --legacy-peer-deps && gatsby telemetry --disable && gatsby clean && gatsby build --prefix-paths"
+    "deploy": "npm ci --production --no-audit --legacy-peer-deps && npm install gatsby-cli@5.13 --no-audit --no-save --legacy-peer-deps && gatsby telemetry --disable && gatsby clean && gatsby build --prefix-paths"
   },
   "repository": {
     "type": "git",
