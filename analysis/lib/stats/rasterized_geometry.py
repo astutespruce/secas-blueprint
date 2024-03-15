@@ -42,7 +42,7 @@ class RasterizedGeometry(object):
         # create masks and windows
         with rasterio.open(extent_filename) as src:
             windows, ratio = get_overlapping_windows(
-                src, geometry, bounds=bounds, window_size=WINDOW_SIZE
+                src, geometry, bounds=self.bounds, window_size=WINDOW_SIZE
             )
 
             num_windows = len(windows)
