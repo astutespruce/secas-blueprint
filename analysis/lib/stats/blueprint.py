@@ -29,7 +29,9 @@ BLUEPRINT_BINS = range(0, len(BLUEPRINT))
 CORRIDOR_BINS = range(0, len(CORRIDORS))
 
 
-def summarize_blueprint_in_aoi(rasterized_geometry, subregions):
+async def summarize_blueprint_in_aoi(
+    rasterized_geometry, subregions, progress_callback=None
+):
     """Extract areas by each Blueprint category based on rasterized geometry
 
     It is assumed that rasterized geometry has already been prescreened to ensure
@@ -40,6 +42,9 @@ def summarize_blueprint_in_aoi(rasterized_geometry, subregions):
     rasterized_geometry : RasterizedGeometry
     subregions : set
         set of subregion names that are present in AOI
+    progress_callback : async function
+        If not None, is an async function that is called with the percent that
+        this task is complete
 
     Returns
     -------
@@ -59,6 +64,9 @@ def summarize_blueprint_in_aoi(rasterized_geometry, subregions):
 
     total_acres = blueprint_acres.sum()
 
+    if progress_callback is not None:
+        await progress_callback(10)
+
     blueprint = [
         {
             **e,
@@ -72,6 +80,9 @@ def summarize_blueprint_in_aoi(rasterized_geometry, subregions):
         corridor_acres = rasterized_geometry.get_acres_by_bin(
             src, bins=range(len(CORRIDORS))
         )
+
+    if progress_callback is not None:
+        await progress_callback(20)
 
     # empty dict indicates no hubs / corridors present
     corridors = {}
@@ -103,7 +114,7 @@ def summarize_blueprint_in_aoi(rasterized_geometry, subregions):
                 indicators_present.append(indicator)
 
     indicators = {}
-    for indicator in indicators_present:
+    for i, indicator in enumerate(indicators_present):
         id = indicator["id"]
         filename = src_dir / "indicators" / indicator["filename"]
         bins = range(0, indicator["values"][-1]["value"] + 1)
@@ -153,6 +164,9 @@ def summarize_blueprint_in_aoi(rasterized_geometry, subregions):
             indicator_results["good_total"] = indicator_acres[good_threshold:].sum()
 
         indicators[id] = indicator_results
+
+        if progress_callback is not None:
+            await progress_callback(20 + (75 * (i + 1) / len(indicators_present)))
 
     ### aggregate indicators up to ecosystems
     # determine ecosystems present from indicators

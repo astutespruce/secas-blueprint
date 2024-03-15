@@ -7,6 +7,7 @@ from time import time
 
 from pyogrio.geopandas import read_dataframe
 import shapely
+from progress.bar import Bar
 
 from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES
 from analysis.lib.geometry import dissolve
@@ -87,20 +88,20 @@ aois = [
     #     "name": "NWFL Sentinel Landscapes Geography",
     #     "path": "NWFL_SentinelLandscapesGeography_20210812",
     # }
-    {"name": "Alabama", "path": "AL_SECAS_states"},
+    # {"name": "Alabama", "path": "AL_SECAS_states"},
     # {"name": "Arkansas", "path": "AR_SECAS_states"},
     # {"name": "Florida", "path": "FL_SECAS_states"},
     # {"name": "Georgia", "path": "GA_SECAS_states"},
     # {"name": "Kentucky", "path": "KY_SECAS_states"},
     # {"name": "Louisiana", "path": "LA_SECAS_states"},  # TODO: FIX this geometry
     # {"name": "Mississippi", "path": "MS_SECAS_states"},
-    {"name": "North Carolina", "path": "NC_SECAS_states"},
+    # {"name": "North Carolina", "path": "NC_SECAS_states"},
     # {"name": "South Carolina", "path": "SC_SECAS_states"},
     # {"name": "Tennessee", "path": "TN_SECAS_states"},
     # {"name": "FL test", "path": "EvergladesHeadwaterComplex_APPTYPE_0"},
     # {"name": "Guild Tracts", "path": "GuildTracts"}
     # {"name": "Florida Panhandle Boundary", "path": "FL_panhadle_boundary"},
-    # {"name": "Dell Murphy wetlands", "path": "Dell Murphy wetlands"},
+    {"name": "Dell Murphy wetlands", "path": "Dell Murphy wetlands"},
     # {"name": "TRB GA", "path": "TRB_GA"},
     # {"name": "Florida 5 Star County Boundary", "path": "FL_5StarCounty_Boundary"}
     # {"name": "Cumberland Plateau Focus Area", "path": "NFWF_Cumberland_Fund_TN"}
@@ -143,8 +144,16 @@ for aoi in aois:
     print(f"Area of geometry: {df.area.sum() *M2_ACRES:,.0f} acres")
 
     ### calculate results, data must be in DATA_CRS
+    bar = Bar("Summarizing rasters", max=100, suffix="%(percent)d%%")
+
+    async def progress_callback(percent):
+        bar.next(percent)
+
     print("Calculating results...")
-    results = get_custom_area_results(df)
+    task = get_custom_area_results(df, progress_callback=progress_callback)
+    results = asyncio.run(task)
+
+    bar.finish()
 
     if results is None:
         print(f"AOI: {path} does not overlap Blueprint")

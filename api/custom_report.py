@@ -85,7 +85,18 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
 
     # calculate results, data must be in DATA_CRS
     print("Calculating results...")
-    results = get_custom_area_results(df, max_acres=CUSTOM_REPORT_MAX_ACRES)
+
+    async def progress_callback(percent):
+        await set_progress(
+            ctx["redis"],
+            ctx["job_id"],
+            int(round(10 + (percent / 100) * 50)),
+            "Calculating results (this might take a while)",
+        )
+
+    results = await get_custom_area_results(
+        df, max_acres=CUSTOM_REPORT_MAX_ACRES, progress_callback=progress_callback
+    )
 
     if results is None:
         raise DataError(
@@ -98,7 +109,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
         indicators.extend([i["id"] for i in ecosystem["indicators"]])
 
     await set_progress(
-        ctx["redis"], ctx["job_id"], 25, "Creating maps (this might take a while)"
+        ctx["redis"], ctx["job_id"], 60, "Creating maps (this might take a while)"
     )
 
     print("Rendering maps...")
@@ -112,7 +123,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
         slr="slr" in results and results["slr"].get("na", False) is not True,
         ownership="ownership" in results,
         protection="protection" in results,
-        add_mask=results["acres"] >= 1e9,
+        add_mask=results["acres"] >= 10000000,
     )
 
     if map_errors:
@@ -129,7 +140,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
     await set_progress(
         ctx["redis"],
         ctx["job_id"],
-        75,
+        80,
         "Creating PDF (this might take a while)",
         errors=errors,
     )

@@ -19,13 +19,16 @@ urban_filename = str(src_dir / "urban_{year}.tif")
 mask_filename = src_dir / "urban_mask.tif"
 
 
-def summarize_urban_in_aoi(rasterized_geometry):
+async def summarize_urban_in_aoi(rasterized_geometry, progress_callback=None):
     """Calculate area of current urban and projected urbanization by decade
     based on rasterized geometry
 
     Parameters
     ----------
     rasterized_geometry : RasterizedGeometry
+    progress_callback : async function
+        If not None, is an async function that is called with the percent that
+        this task is complete
 
     Returns
     -------
@@ -52,7 +55,7 @@ def summarize_urban_in_aoi(rasterized_geometry):
     bins = range(len(PROBABILITIES))
 
     urban_results = []
-    for year in URBAN_YEARS:
+    for i, year in enumerate(URBAN_YEARS):
         with rasterio.open(urban_filename.format(year=year)) as src:
             urban_acres = rasterized_geometry.get_acres_by_bin(src, bins)
 
@@ -90,6 +93,9 @@ def summarize_urban_in_aoi(rasterized_geometry):
                 "percent": 100 * projected_acres / rasterized_geometry.acres,
             }
         )
+
+        if progress_callback is not None:
+            await progress_callback(100 * (i + 1) / len(URBAN_YEARS))
 
     noturban_2100_acres = urban_acres[0]  # set to 2100 by last loop
 
