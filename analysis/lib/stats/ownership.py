@@ -22,7 +22,7 @@ src_dir = Path("data/inputs/boundaries")
 ownership_filename = src_dir / "ownership.feather"
 
 
-def get_ownership_for_aoi(df, total_acres):
+def summarize_ownership_in_aoi(df, total_acres):
     """Get ownership and protection levels and other statistics for the DataFrame
 
     Parameters

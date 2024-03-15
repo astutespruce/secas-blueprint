@@ -31,7 +31,7 @@ REDIS_QUEUE = "southeast"
 
 MAP_RENDER_THREADS = int(os.getenv("MAP_RENDER_THREADS", 2))
 MAX_JOBS = int(os.getenv("MAX_JOBS", 2))
-CUSTOM_REPORT_MAX_ACRES = int(os.getenv("CUSTOM_REPORT_MAX_ACRES", 5e6))
+CUSTOM_REPORT_MAX_ACRES = int(os.getenv("CUSTOM_REPORT_MAX_ACRES", 50000000))
 
 # retain files for 24 hours to aid troubleshooting
 FILE_RETENTION = 86400

@@ -28,7 +28,7 @@ def write_cache(maps, scale, path):
             with open(path / f"{name.replace(':', '__')}.png", "wb") as out:
                 out.write(b64decode(data))
 
-    with open(path / f"scale.json", "w") as out:
+    with open(path / "scale.json", "w") as out:
         out.write(json.dumps(scale))
 
 
@@ -51,6 +51,11 @@ def read_cache(path):
 
 ### Create reports for an AOI
 aois = [
+    # {"name": "Gulf_SECAS_CBRS_Polygons", "path": "Gulf_SECAS_CBRS_Polygons"},
+    # {"name": "Caribbean_SECAS_CBRS_Polygons", "path": "Caribbean_SECAS_CBRS_Polygons"},
+    # {"name": "Atlantic_SECAS_CBRS_Polygons", "path": "Atlantic_SECAS_CBRS_Polygons"},
+    # {"name": "SECAS_CBRS_Polygons", "path": "SECAS_CBRS_Polygons"},
+    # {"name": "", "path": "large_poly"}
     # {"name": "", "path": "no_urban"}
     # {"name": "GA Sentinal Landscapes: Fort Benning Area", "path": "benareautm_polygon"},
     # {
@@ -82,19 +87,19 @@ aois = [
     #     "name": "NWFL Sentinel Landscapes Geography",
     #     "path": "NWFL_SentinelLandscapesGeography_20210812",
     # }
-    # {"name": "Alabama", "path": "AL_SECAS_states"},
+    {"name": "Alabama", "path": "AL_SECAS_states"},
     # {"name": "Arkansas", "path": "AR_SECAS_states"},
     # {"name": "Florida", "path": "FL_SECAS_states"},
     # {"name": "Georgia", "path": "GA_SECAS_states"},
     # {"name": "Kentucky", "path": "KY_SECAS_states"},
     # {"name": "Louisiana", "path": "LA_SECAS_states"},  # TODO: FIX this geometry
     # {"name": "Mississippi", "path": "MS_SECAS_states"},
-    # {"name": "North Carolina", "path": "NC_SECAS_states"},
+    {"name": "North Carolina", "path": "NC_SECAS_states"},
     # {"name": "South Carolina", "path": "SC_SECAS_states"},
     # {"name": "Tennessee", "path": "TN_SECAS_states"},
-    # {"name": "FL test", "path": "EvergladesHeadwaterComplex_APPTYPE_0"}
+    # {"name": "FL test", "path": "EvergladesHeadwaterComplex_APPTYPE_0"},
     # {"name": "Guild Tracts", "path": "GuildTracts"}
-    # {"name": "Florida Panhandle Boundary", "path": "FL_panhadle_boundary"}
+    # {"name": "Florida Panhandle Boundary", "path": "FL_panhadle_boundary"},
     # {"name": "Dell Murphy wetlands", "path": "Dell Murphy wetlands"},
     # {"name": "TRB GA", "path": "TRB_GA"},
     # {"name": "Florida 5 Star County Boundary", "path": "FL_5StarCounty_Boundary"}
@@ -108,7 +113,7 @@ aois = [
     # {"name": "Area in El Yunque National Forest, PR", "path": "yunque"},
     # {"name": "San Juan area, PR", "path": "SanJuan"},
     # {"name": "Area near Magnet, TX", "path": "magnet"},
-    {"name": "TriState area at junction of MO, OK, KS", "path": "TriState"},
+    # {"name": "TriState area at junction of MO, OK, KS", "path": "TriState"},
     # {"name": "Quincy, FL area", "path": "Quincy"},
     # {"name": "Doyle Springs, TN area", "path": "DoyleSprings"},
     # {"name": "Cave Spring, VA area", "path": "CaveSpring"},
@@ -124,7 +129,9 @@ for aoi in aois:
     print(f"Creating report for {name}...")
 
     start = time()
-    df = read_dataframe(f"examples/{path}.shp", columns=[]).to_crs(DATA_CRS)
+    df = read_dataframe(f"examples/{path}.shp", columns=[], force_2d=True).to_crs(
+        DATA_CRS
+    )
     df["geometry"] = shapely.make_valid(df.geometry.values)
     df["group"] = 1
     df = dissolve(df.explode(ignore_index=True), by="group")
@@ -133,6 +140,7 @@ for aoi in aois:
     print(
         f"Area of extent: {extent_area:,.0f} acres",
     )
+    print(f"Area of geometry: {df.area.sum() *M2_ACRES:,.0f} acres")
 
     ### calculate results, data must be in DATA_CRS
     print("Calculating results...")
@@ -171,6 +179,7 @@ for aoi in aois:
             slr="slr" in results,
             ownership="ownership" in results,
             protection="protection" in results,
+            add_mask=results["acres"] >= 1e9,
         )
 
         maps, scale, errors = asyncio.run(task)
@@ -195,6 +204,7 @@ for aoi in aois:
 ## Create reports for summary units
 ids = {
     "huc12": [
+        # "030502100102",  # duplicate PARCA bug
         # "020403030502",
         # "051402060702",
         #     #     # "050500030804"  # in WV
@@ -208,7 +218,7 @@ ids = {
     ],
     "marine_hex": [
         # "154309",
-        "407103"
+        # "407103"
     ],
 }
 

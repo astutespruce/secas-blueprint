@@ -1,5 +1,5 @@
-"""Create a custom report for a user-uploaded area of interest.
-"""
+"""Create a custom report for a user-uploaded area of interest."""
+
 import logging
 import tempfile
 
@@ -54,15 +54,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
 
     path = f"/vsizip/{zip_filename}/{dataset}"
 
-    df = read_dataframe(path, layer=layer, columns=[]).to_crs(DATA_CRS)
-
-    # estimate area and reject if too big
-    extent_area = shapely.area(shapely.box(*df.total_bounds)) * M2_ACRES
-    if extent_area >= CUSTOM_REPORT_MAX_ACRES:
-        raise DataError(
-            f"The bounding box of your area of interest is too large ({extent_area:,.0f} acres), it must be < {CUSTOM_REPORT_MAX_ACRES:,.0f} acres."
-        )
-
+    df = read_dataframe(path, layer=layer, columns=[], force_2d=True).to_crs(DATA_CRS)
     df["geometry"] = shapely.make_valid(df.geometry.values)
 
     # check for non-polygon results of making valid and strip them out
@@ -81,7 +73,8 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
         try:
             df["group"] = 1
             df = dissolve(df.explode(ignore_index=True), by="group")
-        except:
+
+        except Exception:
             raise DataError(
                 "Could not dissolve features together for analysis.  Please make sure all features have valid geometries and are of the same type."
             )
@@ -92,7 +85,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
 
     # calculate results, data must be in DATA_CRS
     print("Calculating results...")
-    results = get_custom_area_results(df)
+    results = get_custom_area_results(df, max_acres=CUSTOM_REPORT_MAX_ACRES)
 
     if results is None:
         raise DataError(
@@ -119,6 +112,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
         slr="slr" in results and results["slr"].get("na", False) is not True,
         ownership="ownership" in results,
         protection="protection" in results,
+        add_mask=results["acres"] >= 1e9,
     )
 
     if map_errors:

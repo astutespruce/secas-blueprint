@@ -1,5 +1,6 @@
 from copy import deepcopy
 from pathlib import Path
+from time import time
 
 import pandas as pd
 import rasterio
@@ -13,12 +14,7 @@ from analysis.constants import (
     M2_ACRES,
 )
 from analysis.lib.util import pluck
-from analysis.lib.raster import (
-    clip_window,
-    detect_data_by_mask,
-    extract_count_in_geometry,
-    summarize_raster_by_units_grid,
-)
+from analysis.lib.raster import summarize_raster_by_units_grid
 from analysis.lib.stats.summary_units import (
     read_unit_from_feather,
 )
@@ -33,93 +29,49 @@ BLUEPRINT_BINS = range(0, len(BLUEPRINT))
 CORRIDOR_BINS = range(0, len(CORRIDORS))
 
 
-def detect_indicators_by_mask(mask_config, indicators):
-    """Check area of interest against coarse resolution indicator mask for
-    each indicator to see if indicator is present in this area.
+def summarize_blueprint_in_aoi(rasterized_geometry, subregions):
+    """Extract areas by each Blueprint category based on rasterized geometry
 
-    Parameters
-    ----------
-    mask_config : AOIMaskConfig
-    indicators : list-like of indicator IDs
-
-    Returns
-    -------
-    list of indicator IDs present in area
-    """
-
-    prescreen_mask = mask_config.prescreen_mask
-
-    indicators_with_data = []
-    for indicator in indicators:
-        mask_filename = (
-            src_dir / "indicators" / indicator["filename"].replace(".tif", "_mask.tif")
-        )
-        with rasterio.open(mask_filename) as src:
-            prescreen_window = mask_config.get_prescreen_window(src.transform)
-            # use window clipped to extent of dataset to see if there is even
-            # any overlap
-            clipped_window = clip_window(prescreen_window, src.width, src.height)
-            if (
-                clipped_window.width > 0
-                and clipped_window.height > 0
-                and detect_data_by_mask(src, prescreen_mask, prescreen_window)
-            ):
-                indicators_with_data.append(indicator)
-
-    return indicators_with_data
-
-
-def extract_blueprint_by_mask(mask_config, subregions):
-    """Extract areas by each Blueprint category based on shape_mask
-
-    It is assumed that shape_mask has already been prescreened to ensure
+    It is assumed that rasterized geometry has already been prescreened to ensure
     overlap with Blueprint.
 
     Parameters
     ----------
-    mask_config : AOIMaskConfig
+    rasterized_geometry : RasterizedGeometry
     subregions : set
         set of subregion names that are present in AOI
 
     Returns
     -------
-    list of dicts, in descending priority order
-        [
-            {"value": <value>, "label": <label>, "acres": <acres>, "percent": <percent>}, ...
-        ]
+    {
+        "blueprint": [{"value": <...>, "label": <...>, "acres": <...>, "percent": <...>, ...}, ...],
+        "corridors": [{"value": <...>, "label": <...>, "acres": <...>, "percent": <...>, ...}, ...],
+        "legend": [...],
+        "ecosystems": ...,
+        "total_acres": <...>
+    }
     """
-    rasterized_acres = mask_config.mask_acres
-    cellsize = mask_config.cellsize
 
-    blueprint_acres = (
-        extract_count_in_geometry(
-            blueprint_filename,
-            mask_config,
-            bins=range(len(BLUEPRINT)),
-            boundless=True,
+    with rasterio.open(blueprint_filename) as src:
+        blueprint_acres = rasterized_geometry.get_acres_by_bin(
+            src, bins=range(len(BLUEPRINT))
         )
-        * cellsize
-    )
+
     total_acres = blueprint_acres.sum()
 
     blueprint = [
         {
             **e,
             "acres": blueprint_acres[i],
-            "percent": 100 * blueprint_acres[i] / mask_config.mask_acres,
+            "percent": 100 * blueprint_acres[i] / rasterized_geometry.acres,
         }
         for i, e in enumerate(pluck(BLUEPRINT, ["value", "label"]))
     ][::-1]
 
-    corridor_acres = (
-        extract_count_in_geometry(
-            corridors_filename,
-            mask_config,
-            bins=range(len(CORRIDORS)),
-            boundless=True,
+    with rasterio.open(corridors_filename) as src:
+        corridor_acres = rasterized_geometry.get_acres_by_bin(
+            src, bins=range(len(CORRIDORS))
         )
-        * cellsize
-    )
 
     # empty dict indicates no hubs / corridors present
     corridors = {}
@@ -131,7 +83,7 @@ def extract_blueprint_by_mask(mask_config, subregions):
             {
                 **e,
                 "acres": corridor_acres[i],
-                "percent": 100 * corridor_acres[i] / rasterized_acres,
+                "percent": 100 * corridor_acres[i] / rasterized_geometry.acres,
             }
             for i, e in enumerate(pluck(CORRIDORS, ["label", "value", "color", "type"]))
             if corridor_acres[i]
@@ -141,20 +93,23 @@ def extract_blueprint_by_mask(mask_config, subregions):
         corridor_types = set(v["type"] for v in corridor_values if v["value"] > 0)
         corridors = {"entries": corridor_values, "types": corridor_types}
 
-    ### for each indicator present, merge indicator info with acres
-    indicators_present = detect_indicators_by_mask(
-        mask_config,
-        INDICATORS,
-    )
+    indicators_present = []
+    for indicator in INDICATORS:
+        mask_filename = (
+            src_dir / "indicators" / indicator["filename"].replace(".tif", "_mask.tif")
+        )
+        with rasterio.open(mask_filename) as src:
+            if rasterized_geometry.detect_data(src):
+                indicators_present.append(indicator)
+
     indicators = {}
     for indicator in indicators_present:
         id = indicator["id"]
         filename = src_dir / "indicators" / indicator["filename"]
         bins = range(0, indicator["values"][-1]["value"] + 1)
-        indicator_acres = (
-            extract_count_in_geometry(filename, mask_config, bins, boundless=True)
-            * cellsize
-        )
+
+        with rasterio.open(filename) as src:
+            indicator_acres = rasterized_geometry.get_acres_by_bin(src, bins)
 
         if indicator_acres.sum() == 0:
             continue
@@ -180,7 +135,9 @@ def extract_blueprint_by_mask(mask_config, subregions):
                 {
                     **v,
                     "acres": indicator_acres[v["value"]],
-                    "percent": 100 * indicator_acres[v["value"]] / rasterized_acres,
+                    "percent": 100
+                    * indicator_acres[v["value"]]
+                    / rasterized_geometry.acres,
                 }
                 for v in indicator["values"]
             ][::-1],
@@ -188,7 +145,7 @@ def extract_blueprint_by_mask(mask_config, subregions):
             "outside_indicator_acres": outside_indicator_acres,
             "outside_indicator_percent": 100
             * outside_indicator_acres
-            / rasterized_acres,
+            / rasterized_geometry.acres,
         }
 
         good_threshold = indicator.get("goodThreshold", None)
