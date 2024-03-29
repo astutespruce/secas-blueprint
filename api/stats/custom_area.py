@@ -1,93 +1,49 @@
 from pathlib import Path
+from time import time
 
 import geopandas as gp
 import numpy as np
-import rasterio
 import shapely
 
 from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES
-from analysis.lib.geometry import to_dict, to_crs
-from analysis.lib.stats.blueprint import (
-    extract_blueprint_by_mask,
-)
-from analysis.lib.raster import boundless_raster_geometry_mask, shift_window
-from analysis.lib.stats.ownership import get_lta_search_info, get_ownership_for_aoi
+from analysis.lib.geometry import to_crs
+from analysis.lib.stats.blueprint import summarize_blueprint_in_aoi
+from analysis.lib.stats.ownership import get_lta_search_info, summarize_ownership_in_aoi
 from analysis.lib.stats.parca import get_parcas_for_aoi
-from analysis.lib.stats.slr import extract_slr_by_mask_and_geometry
-from analysis.lib.stats.urban import extract_urban_by_mask
+from analysis.lib.stats.rasterized_geometry import RasterizedGeometry
+from analysis.lib.stats.slr import summarize_slr_in_aoi
+from analysis.lib.stats.urban import summarize_urban_in_aoi
 
 data_dir = Path("data/inputs")
 bnd_dir = data_dir / "boundaries"
 subregions_filename = bnd_dir / "subregions.feather"
-boundary_filename = bnd_dir / "se_boundary.feather"
-slr_bounds_filename = data_dir / "threats/slr/slr_bounds.feather"
-extent_filename = bnd_dir / "blueprint_extent.tif"
-extent_mask_filename = bnd_dir / "blueprint_extent_mask.tif"
-blueprint_filename = data_dir / "blueprint.tif"
 
 
-class AOIMaskConfig(object):
-    """Class to store prescreen and rasterized mask information for masking
-    other raster datasets"""
-
-    def __init__(self, shapes, bounds):
-        """_summary_
-
-        Parameters
-        ----------
-        shapes : list-like of geometry objects that provide __geo_interface__
-        bounds : list-like of [xmin, ymin, xmax, ymax]
-        """
-        # create lowres shape mask and window (used to presecreen some datasets)
-        with rasterio.open(extent_mask_filename) as src:
-            (
-                self.prescreen_mask,
-                self._prescreen_transform,
-                self._prescreen_window,
-            ) = boundless_raster_geometry_mask(src, shapes, bounds, all_touched=True)
-
-        # create mask and window
-        with rasterio.open(extent_filename) as src:
-            (
-                self.shape_mask,
-                self._mask_transform,
-                self._mask_window,
-            ) = boundless_raster_geometry_mask(src, shapes, bounds, all_touched=False)
-
-            self.cellsize = src.res[0] * src.res[1] * M2_ACRES
-            self.mask_acres = (~self.shape_mask).sum() * self.cellsize
-
-            data = src.read(1, window=self._mask_window, boundless=True)
-            # count 0 values within shape_mask
-            self.outside_se_acres = (data[~self.shape_mask] == 0).sum() * self.cellsize
-            if self.outside_se_acres < 1e-6:
-                self.outside_se_acres = 0
-
-    def get_prescreen_window(self, target_transform):
-        return shift_window(
-            self._prescreen_window, self._prescreen_transform, target_transform
-        )
-
-    def get_mask_window(self, target_transform):
-        return shift_window(self._mask_window, self._mask_transform, target_transform)
-
-
-def get_custom_area_results(df):
+async def get_custom_area_results(df, max_acres=None, progress_callback=None):
     """Calculate statistics for custom area
 
     df : GeoDataFrame
         expected to only have one row representing the analysis area
+    max_area : float (in acres)
+        If not None, will raise error if geometry area is greater than this value
+    progress_callback : async function
+        If not None, is an async function that is called with the percent that
+        this task is complete
     """
 
+    # full_start = time()
     if len(df) > 1:
         raise ValueError(
             f"DataFrame for custom area had more rows than expected: {len(df)}"
         )
 
     geometry = df.geometry.values[0]
-    polygon_acres = shapely.area(geometry) * M2_ACRES
-    shapes = [to_dict(geometry)]
-    bounds = shapely.bounds(geometry)
+    acres = shapely.area(geometry) * M2_ACRES
+
+    if max_acres is not None and acres > max_acres:
+        raise ValueError(
+            f"Your area of interest is too large ({acres:,.0f} acres); it must be < {max_acres:,.0f} acres"
+        )
 
     subregion_df = gp.read_feather(
         subregions_filename, columns=["subregion", "geometry"]
@@ -103,14 +59,19 @@ def get_custom_area_results(df):
     if len(subregions) == 0:
         return None
 
-    mask_config = AOIMaskConfig(shapes, bounds)
+    # start = time()
+    rasterized_geometry = RasterizedGeometry(geometry)
+    # print(f"rasterized geom creation elapsed: {time() - start:.4f}s")
+
+    if progress_callback is not None:
+        await progress_callback(5)
 
     # there was an intersection but no data once rasterized (e.g., slivers)
-    if mask_config.mask_acres == 0:
+    if rasterized_geometry.acres == 0:
         return None
 
     geo_bounds = shapely.bounds(
-        to_crs(np.array([shapely.box(*bounds)]), DATA_CRS, GEO_CRS)
+        to_crs(np.array([shapely.box(*rasterized_geometry.bounds)]), DATA_CRS, GEO_CRS)
     )
     center, lta_search_radius = get_lta_search_info(geo_bounds)
     center = center[0]
@@ -118,33 +79,72 @@ def get_custom_area_results(df):
 
     results = {
         "subregions": subregions,
-        "acres": polygon_acres,
+        "acres": acres,
         "center": center,
         "lta_search_radius": lta_search_radius,
-        "rasterized_acres": mask_config.mask_acres,
-        "outside_se_acres": mask_config.outside_se_acres,
+        "rasterized_acres": rasterized_geometry.acres,
+        "outside_se_acres": rasterized_geometry.outside_se_acres,
         "outside_se_percent": 100
-        * mask_config.outside_se_acres
-        / mask_config.mask_acres,
+        * rasterized_geometry.outside_se_acres
+        / rasterized_geometry.acres,
     }
 
-    blueprint = extract_blueprint_by_mask(mask_config, subregions)
+    async def blueprint_progress_callback(percent):
+        if progress_callback is not None:
+            # blueprint progress scales between 5 and 60% of total progress
+            await progress_callback(5 + int(round((percent / 100) * 55)))
+
+    # start = time()
+    blueprint = await summarize_blueprint_in_aoi(
+        rasterized_geometry, subregions, progress_callback=blueprint_progress_callback
+    )
+    # print(f"blueprint elapsed: {time() - start:.4f}s")
     results.update(blueprint)
 
-    urban = extract_urban_by_mask(mask_config)
+    if progress_callback is not None:
+        await progress_callback(60)
+
+    async def urban_progress_callback(percent):
+        if progress_callback is not None:
+            # urban progress scales between 60 and 80% of total progress
+            await progress_callback(60 + int(round((percent / 100) * 20)))
+
+    # start = time()
+    urban = await summarize_urban_in_aoi(
+        rasterized_geometry, progress_callback=urban_progress_callback
+    )
+    # print(f"urban elapsed: {time() - start:.4f}s")
     if urban is not None:
         results["urban"] = urban
 
-    slr = extract_slr_by_mask_and_geometry(mask_config, geometry=geometry)
+    if progress_callback is not None:
+        await progress_callback(80)
+
+    # start = time()
+    slr = summarize_slr_in_aoi(rasterized_geometry, geometry=geometry)
+    # print(f"slr elapsed: {time() - start:.4f}s")
     if slr is not None:
         results["slr"] = slr
 
-    ownership_info = get_ownership_for_aoi(df, total_acres=polygon_acres)
+    if progress_callback is not None:
+        await progress_callback(90)
+
+    # start = time()
+    ownership_info = summarize_ownership_in_aoi(df, total_acres=acres)
+    # print(f"ownership elapsed: {time() - start:.4f}s")
     if ownership_info is not None:
         results.update(ownership_info)
+
+    if progress_callback is not None:
+        await progress_callback(99)
 
     parca = get_parcas_for_aoi(df)
     if parca is not None:
         results["parca"] = parca
+
+    if progress_callback is not None:
+        await progress_callback(100)
+
+    # print(f"full task elapsed: {time() - full_start:.4f}s")
 
     return results

@@ -5,37 +5,19 @@ import pandas as pd
 import rasterio
 
 from analysis.constants import M2_ACRES, NLCD_INDEXES, NLCD_YEARS
-from analysis.lib.raster import (
-    extract_count_in_geometry,
-    summarize_raster_by_units_grid,
-)
 from analysis.lib.stats.summary_units import read_unit_from_feather
 
 src_dir = Path("data/inputs/nlcd")
 nlcd_filename = str(src_dir / "landcover_{year}.tif")
 
 
-def extract_nlcd_by_mask(
-    shape_mask,
-    window,
-    cellsize,
-    rasterized_acres,
-    outside_se_acres,
-    **kwargs,
-):
+# TODO: test the results from this function; has not yet been used
+def summarize_nlcd_by_aoi(rasterized_geometry):
     """Calculate area of each NLCD class by shape_mask
     Parameters
     ----------
-    shape_mask : 2d array
-        True outside shapes
-    window : rasterio.windows.Window
-        read window for Southeast standard origin
-    cellsize : float
-        pixel area in acres
-    rasterized_acres : float
-        rasterized area of shape mask
-    outside_se_acres : float
-        acres outside SE Blueprint
+    rasterized_geometry : RasterizedGeometry
+
     Returns
     -------
     dict
@@ -59,19 +41,18 @@ def extract_nlcd_by_mask(
     # results are a matrix of years by type
     nlcd_results = np.zeros((len(NLCD_INDEXES), len(NLCD_YEARS)))
     for i, year in enumerate(NLCD_YEARS):
-        filename = nlcd_filename.format(year=year)
-        nlcd_acres = (
-            extract_count_in_geometry(
-                filename, shape_mask, window, bins, boundless=True
-            )
-            * cellsize
-        )
+        with rasterio.open(nlcd_filename.format(year=year)) as src:
+            nlcd_acres = rasterized_geometry.get_acres_by_bin(src, bins=bins)
 
         nlcd_results[:, i] = nlcd_acres
 
         if year == NLCD_YEARS[0]:
             total_nlcd_acres = nlcd_acres.sum()
-            outside_nlcd_acres = rasterized_acres - outside_se_acres - total_nlcd_acres
+            outside_nlcd_acres = (
+                rasterized_geometry.acres
+                - rasterized_geometry.outside_se_acres
+                - total_nlcd_acres
+            )
             if outside_nlcd_acres < 1e-6:
                 outside_nlcd_acres = 0
 
@@ -80,7 +61,7 @@ def extract_nlcd_by_mask(
         {
             "label": NLCD_INDEXES[i]["label"],
             "acres": nlcd_results[i].tolist(),
-            "percent": ((100 * nlcd_results[i]) / rasterized_acres).tolist(),
+            "percent": ((100 * nlcd_results[i]) / rasterized_geometry.acres).tolist(),
         }
         for i in NLCD_INDEXES
         if nlcd_results[i].sum()
@@ -91,7 +72,7 @@ def extract_nlcd_by_mask(
         "years": NLCD_YEARS,
         "total_nlcd_acres": total_nlcd_acres,
         "outside_nlcd_acres": outside_nlcd_acres,
-        "outside_nlcd_percent": 100 * outside_nlcd_acres / rasterized_acres,
+        "outside_nlcd_percent": 100 * outside_nlcd_acres / rasterized_geometry.acres,
     }
 
 

@@ -4,7 +4,7 @@ from time import time
 
 from pyogrio import read_dataframe
 
-from analysis.constants import DATA_CRS, GEO_CRS, SECAS_STATES
+from analysis.constants import DATA_CRS, GEO_CRS
 from api.report import create_report
 from api.report.map import render_maps
 from api.stats.custom_area import get_custom_area_results

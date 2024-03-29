@@ -5,12 +5,7 @@ import pandas as pd
 import rasterio
 
 from analysis.constants import M2_ACRES, URBAN_YEARS
-from analysis.lib.raster import (
-    clip_window,
-    detect_data_by_mask,
-    extract_count_in_geometry,
-    summarize_raster_by_units_grid,
-)
+from analysis.lib.raster import summarize_raster_by_units_grid
 from analysis.lib.stats.summary_units import read_unit_from_feather
 
 # values are number of runs out of 50 that are predicted to urbanize
@@ -24,15 +19,16 @@ urban_filename = str(src_dir / "urban_{year}.tif")
 mask_filename = src_dir / "urban_mask.tif"
 
 
-def extract_urban_by_mask(
-    mask_config,
-):
+async def summarize_urban_in_aoi(rasterized_geometry, progress_callback=None):
     """Calculate area of current urban and projected urbanization by decade
-    based on shape_mask
+    based on rasterized geometry
 
     Parameters
     ----------
-    mask_config : AOIMaskConfig
+    rasterized_geometry : RasterizedGeometry
+    progress_callback : async function
+        If not None, is an async function that is called with the percent that
+        this task is complete
 
     Returns
     -------
@@ -50,34 +46,25 @@ def extract_urban_by_mask(
             "nonzero_urban_2060_percent": <percent of area urbanized at any probability not already urbanized in 2021>
         }
     """
-    rasterized_acres = mask_config.mask_acres
-    outside_se_acres = mask_config.outside_se_acres
-    cellsize = mask_config.cellsize
 
     # prescreen to make sure data are present
     with rasterio.open(mask_filename) as src:
-        prescreen_window = mask_config.get_prescreen_window(src.transform)
-        # use window clipped to extent of dataset to see if there is even
-        # any overlap
-        clipped_window = clip_window(prescreen_window, src.width, src.height)
-        if not (
-            clipped_window.width > 0
-            and clipped_window.height > 0
-            and detect_data_by_mask(src, mask_config.prescreen_mask, prescreen_window)
-        ):
+        if not rasterized_geometry.detect_data(src):
             return None
 
     bins = range(len(PROBABILITIES))
 
     urban_results = []
-    for year in URBAN_YEARS:
-        filename = urban_filename.format(year=year)
-        urban_acres = (
-            extract_count_in_geometry(filename, mask_config, bins, boundless=True)
-            * cellsize
-        )
+    for i, year in enumerate(URBAN_YEARS):
+        with rasterio.open(urban_filename.format(year=year)) as src:
+            urban_acres = rasterized_geometry.get_acres_by_bin(src, bins)
+
         total_urban_acres = urban_acres.sum()
-        outside_urban_acres = rasterized_acres - outside_se_acres - total_urban_acres
+        outside_urban_acres = (
+            rasterized_geometry.acres
+            - rasterized_geometry.outside_se_acres
+            - total_urban_acres
+        )
         if outside_urban_acres < 1e-6:
             outside_urban_acres = 0
 
@@ -88,7 +75,7 @@ def extract_urban_by_mask(
                 {
                     "label": "Urban in 2021",
                     "acres": already_urban_acres,
-                    "percent": 100 * already_urban_acres / rasterized_acres,
+                    "percent": 100 * already_urban_acres / rasterized_geometry.acres,
                 }
             )
         elif year == 2060:
@@ -103,24 +90,25 @@ def extract_urban_by_mask(
                 "year": year,
                 "label": f"{year} projected extent",
                 "acres": projected_acres,
-                "percent": 100 * projected_acres / rasterized_acres,
+                "percent": 100 * projected_acres / rasterized_geometry.acres,
             }
         )
 
-    noturban_2100_acres = urban_acres[0]  # set to 2100 by last loop
+        if progress_callback is not None:
+            await progress_callback(100 * (i + 1) / len(URBAN_YEARS))
 
-    # if nothing is urban or projected to urbanize by 2100, return na
-    # if urban_acres[1:].max() == 0:
-    #     return {"na": True}
+    noturban_2100_acres = urban_acres[0]  # set to 2100 by last loop
 
     results = {
         "entries": urban_results,
         "total_urban_acres": total_urban_acres,
         "outside_urban_acres": outside_urban_acres,
-        "outside_urban_percent": 100 * outside_urban_acres / rasterized_acres,
-        "nonzero_urban_2060_percent": 100 * nonzero_urban_2060_acres / rasterized_acres,
+        "outside_urban_percent": 100 * outside_urban_acres / rasterized_geometry.acres,
+        "nonzero_urban_2060_percent": 100
+        * nonzero_urban_2060_acres
+        / rasterized_geometry.acres,
         "noturban_2100_acres": noturban_2100_acres,
-        "noturban_2100_percent": 100 * noturban_2100_acres / rasterized_acres,
+        "noturban_2100_percent": 100 * noturban_2100_acres / rasterized_geometry.acres,
     }
 
     return results
