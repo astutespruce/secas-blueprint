@@ -15,6 +15,7 @@ exports.onCreateWebpackConfig = ({ actions, stage, loaders, plugins }) => {
         zlib: require.resolve('browserify-zlib'),
       },
       fallback: {
+        assert: false,
         fs: false,
         crypto: false,
       },
