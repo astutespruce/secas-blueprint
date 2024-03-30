@@ -3,6 +3,7 @@ from pathlib import Path
 import geopandas as gp
 import numpy as np
 import pandas as pd
+from pyogrio import read_dataframe
 import shapely
 
 from analysis.constants import (
@@ -19,7 +20,7 @@ from analysis.lib.stats.summary_units import read_unit_from_feather
 
 
 src_dir = Path("data/inputs/boundaries")
-ownership_filename = src_dir / "ownership.feather"
+ownership_filename = src_dir / "ownership.fgb"
 
 
 def summarize_ownership_in_aoi(df, total_acres):
@@ -52,7 +53,12 @@ def summarize_ownership_in_aoi(df, total_acres):
             "num_protected_areas": <total number protected areas>
         }
     """
-    ownership = gp.read_feather(ownership_filename)
+    ownership = read_dataframe(
+        ownership_filename,
+        columns=["geometry", "GAP_Sts", "Own_Type", "Loc_Own", "Loc_Nm"],
+        bbox=tuple(df.total_bounds),
+        use_arrow=True,
+    )
     df = intersection(df, ownership)
 
     if df is None:

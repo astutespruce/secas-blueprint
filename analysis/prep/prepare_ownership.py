@@ -65,6 +65,6 @@ df = df.explode(ignore_index=True)
 df = df.loc[shapely.get_type_id(df.geometry.values) == 3].reset_index(drop=True)
 
 
+# Use FGB for more optimal reading by area of interest
 print("Writing files")
-df.to_feather(out_dir / "ownership.feather")
-write_dataframe(df, data_dir / "boundaries/ownership.fgb")
+write_dataframe(df, out_dir / "ownership.fgb")
