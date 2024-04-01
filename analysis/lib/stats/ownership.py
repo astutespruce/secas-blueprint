@@ -57,7 +57,8 @@ def summarize_ownership_in_aoi(df, total_acres):
         ownership_filename,
         columns=["geometry", "GAP_Sts", "Own_Type", "Loc_Own", "Loc_Nm"],
         bbox=tuple(df.total_bounds),
-        use_arrow=True,
+        # TODO: enable use_arrow once fixed in pyogrio
+        # use_arrow=True,
     )
     df = intersection(df, ownership)
 
