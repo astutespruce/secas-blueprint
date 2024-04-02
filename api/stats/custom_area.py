@@ -13,6 +13,7 @@ from analysis.lib.stats.parca import get_parcas_for_aoi
 from analysis.lib.stats.rasterized_geometry import RasterizedGeometry
 from analysis.lib.stats.slr import summarize_slr_in_aoi
 from analysis.lib.stats.urban import summarize_urban_in_aoi
+from api.errors import DataError
 
 data_dir = Path("data/inputs")
 bnd_dir = data_dir / "boundaries"
@@ -41,7 +42,7 @@ async def get_custom_area_results(df, max_acres=None, progress_callback=None):
     acres = shapely.area(geometry) * M2_ACRES
 
     if max_acres is not None and acres > max_acres:
-        raise ValueError(
+        raise DataError(
             f"Your area of interest is too large ({acres:,.0f} acres); it must be < {max_acres:,.0f} acres"
         )
 
