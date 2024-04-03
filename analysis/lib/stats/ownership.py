@@ -15,12 +15,113 @@ from analysis.constants import (
     M_MILES,
     LTA_SEARCH_RADIUS_BINS,
 )
-from analysis.lib.geometry import intersection, to_crs
+from analysis.lib.geometry import to_crs
 from analysis.lib.stats.summary_units import read_unit_from_feather
 
 
 src_dir = Path("data/inputs/boundaries")
 ownership_filename = src_dir / "ownership.fgb"
+ownership_columns = ["GAP_Sts", "Own_Type", "Loc_Own", "Loc_Nm"]
+
+
+def extract_ownership(df, use_bbox=False):
+    """Extract intersection with ownership data
+
+    Parameters
+    ----------
+    df : GeoDataFrame
+        area of interest
+    use_bbox : bool, optional (default: False)
+        if True, will filter ownership by bounds of df when reading features
+
+    Returns
+    -------
+    GeoDataFrame
+        indexed on index of df (multiple records per index value); includes
+        geometry field with the geometric intersection and acres calculated from
+        that field
+
+    """
+
+    index_name = df.index.name or "index"
+
+    # Note: no need to explode(), geometries are already single-part
+    ownership = read_dataframe(
+        ownership_filename,
+        columns=ownership_columns + ["geometry"],
+        bbox=tuple(df.total_bounds) if use_bbox else None,
+        # TODO: enable use_arrow once fixed in pyogrio
+        use_arrow=not use_bbox,
+    )
+
+    if len(ownership) == 0:
+        return None
+
+    # find all ownership polygons that intersect any part of the AOI
+    tmp = df.explode(ignore_index=False, index_parts=False)
+    left, right = shapely.STRtree(ownership.geometry.values).query(
+        tmp.geometry.values, predicate="intersects"
+    )
+
+    # no intersections
+    if len(left) == 0:
+        return None
+
+    pairs = gp.GeoDataFrame(
+        {
+            "geometry": tmp.geometry.values.take(left),
+            "index_right": ownership.index.values.take(right),
+            "geometry_right": ownership.geometry.values.take(right),
+        },
+        index=pd.Index(tmp.index.values.take(left), name=index_name),
+        geometry="geometry",
+        crs=df.crs,
+    )
+    shapely.prepare(pairs.geometry.values)
+    shapely.prepare(pairs.geometry_right.values)
+
+    # if left completely contains right, the right geometry is the intersection
+    left_contains = shapely.contains_properly(
+        pairs.geometry.values, pairs.geometry_right.values
+    )
+    pairs.loc[left_contains, "geometry"] = pairs.loc[
+        left_contains
+    ].geometry_right.values
+
+    # if right completely contains the left, the left (geometry) are the intersection
+    right_contains = ~left_contains & shapely.contains_properly(
+        pairs.geometry.values, pairs.geometry_right.values
+    )
+
+    # any that aren't contained in either direction must be intersected
+    ix = ~(left_contains | right_contains)
+    pairs.loc[ix, "geometry"] = shapely.intersection(
+        pairs.loc[ix].geometry.values, pairs.loc[ix].geometry_right.values
+    )
+
+    # explode and only keep polygons
+    pairs = pairs.drop(columns=["geometry_right"]).explode(
+        ignore_index=False, index_parts=False
+    )
+    pairs = pairs.loc[shapely.get_type_id(pairs.geometry.values) == 3]
+
+    if len(pairs) == 0:
+        return None
+
+    # aggregate to multipolygons based on ownership columns
+    ownership = gp.GeoDataFrame(
+        pairs.join(ownership[ownership_columns], on="index_right")
+        .groupby([index_name] + ownership_columns)
+        .agg({"geometry": shapely.multipolygons})
+        .reset_index()
+        .set_index(index_name),
+        geometry="geometry",
+        crs=df.crs,
+    )
+
+    ownership["acres"] = shapely.area(ownership.geometry.values) * M2_ACRES
+
+    return ownership
 
 
 def summarize_ownership_in_aoi(df, total_acres):
@@ -53,28 +154,16 @@ def summarize_ownership_in_aoi(df, total_acres):
             "num_protected_areas": <total number protected areas>
         }
     """
-    ownership = read_dataframe(
-        ownership_filename,
-        columns=["geometry", "GAP_Sts", "Own_Type", "Loc_Own", "Loc_Nm"],
-        bbox=tuple(df.total_bounds),
-        # TODO: enable use_arrow once fixed in pyogrio
-        # use_arrow=True,
-    )
-    df = intersection(df, ownership)
 
-    if df is None:
-        return None
+    ownership = extract_ownership(df, use_bbox=True)
 
-    df["acres"] = shapely.area(df.geometry_right.values.data) * M2_ACRES
-    df = df.loc[df.acres > 0].copy()
-
-    if not len(df):
+    if ownership is None or len(ownership) == 0:
         return None
 
     results = dict()
 
     by_owner = (
-        df[["Own_Type", "acres"]]
+        ownership[["Own_Type", "acres"]]
         .groupby(by="Own_Type")
         .acres.sum()
         .astype("float32")
@@ -92,7 +181,7 @@ def summarize_ownership_in_aoi(df, total_acres):
     ]
 
     by_protection = (
-        df[["GAP_Sts", "acres"]]
+        ownership[["GAP_Sts", "acres"]]
         .groupby(by="GAP_Sts")
         .acres.sum()
         .astype("float32")
@@ -109,20 +198,21 @@ def summarize_ownership_in_aoi(df, total_acres):
         if key in by_protection
     ]
 
+    # only list areas >= 1 acre
     by_area = (
-        df[["Loc_Nm", "Loc_Own", "acres"]]
-        .groupby(by=[df.index.get_level_values(0), "Loc_Nm", "Loc_Own"])
+        ownership.loc[ownership.acres >= 1][["Loc_Nm", "Loc_Own", "acres"]]
+        .groupby(by=["Loc_Nm", "Loc_Own"])
         .acres.sum()
         .astype("float32")
         .round()
         .reset_index()
-        .rename(columns={"level_0": "id", "Loc_Nm": "name", "Loc_Own": "owner"})
+        .rename(columns={"Loc_Nm": "name", "Loc_Own": "owner"})
         .sort_values(by="acres", ascending=False)
-    )
-    # drop very small areas, these are not helpful
-    by_area = by_area.loc[by_area.acres >= 1].copy()
+    ).head(25)
+    by_area.loc[by_area.name == "", "name"] = "Unknown name"
+    by_area.loc[by_area.owner == "", "owner"] = "Unknown owner"
 
-    results["protected_areas"] = by_area.head(25).to_dict(orient="records")
+    results["protected_areas"] = by_area.to_dict(orient="records")
     results["num_protected_areas"] = len(by_area)
 
     return results
@@ -139,24 +229,14 @@ def summarize_ownership_by_units(df, out_dir):
     """
     print("Calculating overlap with land ownership and protection")
 
-    ownership = gp.read_feather(
-        ownership_filename, columns=["geometry", "Own_Type", "GAP_Sts"]
-    )
-
     index_name = df.index.name
-
-    df = intersection(df, ownership)
+    ownership = extract_ownership(df, use_bbox=False)
 
     if df is None:
         return
 
-    df["acres"] = shapely.area(df.geometry_right.values) * M2_ACRES
-
-    # drop areas that touch but have no overlap
-    df = df.loc[df.acres > 0].copy()
-
     by_owner = (
-        df[["Own_Type", "acres"]]
+        ownership[["Own_Type", "acres"]]
         .groupby([index_name, "Own_Type"])
         .acres.sum()
         .astype("float32")
@@ -165,7 +245,7 @@ def summarize_ownership_by_units(df, out_dir):
     )
 
     by_protection = (
-        df[["GAP_Sts", "acres"]]
+        ownership[["GAP_Sts", "acres"]]
         .groupby([index_name, "GAP_Sts"])
         .acres.sum()
         .astype("float32")

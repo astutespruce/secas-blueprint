@@ -146,6 +146,4 @@ async def get_custom_area_results(df, max_acres=None, progress_callback=None):
     if progress_callback is not None:
         await progress_callback(100)
 
-    # print(f"full task elapsed: {time() - full_start:.4f}s")
-
     return results
