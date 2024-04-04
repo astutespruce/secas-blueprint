@@ -5,7 +5,7 @@ from pathlib import Path
 import sys
 
 import weasyprint
-from weasyprint import HTML
+from weasyprint import HTML, default_url_fetcher
 from jinja2 import Environment, FileSystemLoader
 
 from api.settings import SITE_URL
@@ -25,23 +25,33 @@ def reverse_filter(iterable):
 
 
 assets_dir = Path(__file__).parent / "templates/assets"
+asset_cache = {}
 
 
 def load_asset(path):
-    prefix = ""
-    data = ""
+    global asset_cache
 
-    if path.endswith(".png"):
-        prefix = "data:image/png;base64,"
+    if path.startswith("assets:"):
+        path = path.replace("assets:", "")
+        if path in asset_cache:
+            return asset_cache[path]
 
-    elif path.endswith(".svg"):
-        prefix = "data:image/svg+xml;base64,"
+        mime_type = None
+        if path.endswith(".png"):
+            mime_type = "image/png"
 
-    else:
-        raise NotImplementedError(f"{path} not a handled type")
+        elif path.endswith(".svg"):
+            mime_type = "image/svg+xml"
 
-    data = b64encode(open(assets_dir / path, "rb").read()).decode("utf-8")
-    return f"{prefix}{data}"
+        else:
+            raise NotImplementedError(f"{path} not a handled type")
+
+        value = {"string": open(assets_dir / path, "rb").read(), "mime_type": mime_type}
+        asset_cache[path] = value
+
+        return value
+
+    return default_url_fetcher(path)
 
 
 template_path = Path(__file__).parent.resolve() / "templates"
@@ -131,15 +141,13 @@ def create_report(maps, results, name=None, area_type="custom"):
     # with open("/tmp/test.html", "w") as out:
     #     out.write(template.render(**context))
 
-    # Can add variant="pdf/a-4b" to resolve issues viewing legend patches in
-    # some copies of Acrobat Pro; having enabled causes alert in Acrobat Reader
-    # / Pro about editing
     kwargs = {}
 
     # TODO: enable pdf/ua once accessibility features have been fixed in Weasyprint
-    # if weasyprint.__version__.startswith("59."):
-    #     kwargs["pdf_variant"] = "pdf/ua-1"
-    # else:
-    #     kwargs["variant"] = "pdf/ua-1"
+    # kwargs["variant"] = "pdf/ua-1"
 
-    return HTML(BytesIO((template.render(**context)).encode())).write_pdf(**kwargs)
+    pdf = HTML(
+        BytesIO((template.render(**context)).encode()), url_fetcher=load_asset
+    ).write_pdf(**kwargs)
+
+    return pdf
