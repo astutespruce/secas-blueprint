@@ -10,7 +10,7 @@ from .protection import get_protection_map_image
 from .raster import render_raster
 from .summary_unit import get_summary_unit_map_image
 from .mercator import get_zoom, get_map_bounds, get_map_scale
-from .util import pad_bounds, get_center, png_bytes_to_base64, to_base64, merge_maps
+from .util import pad_bounds, get_center, merge_maps, to_png_bytes
 
 
 from analysis.constants import (
@@ -62,7 +62,7 @@ def render_raster_map(bounds, scale, basemap_image, aoi_image, id, path, colors)
     """
     raster_img = render_raster(path, bounds, scale, WIDTH, HEIGHT, colors)
     map_image = merge_maps([basemap_image, raster_img, aoi_image])
-    map_image = to_base64(map_image)
+    map_image = to_png_bytes(map_image)
 
     return id, map_image
 
@@ -218,7 +218,7 @@ async def render_maps(
     if error:
         errors["locator"] = error
     else:
-        maps["locator"] = png_bytes_to_base64(locator_image)
+        maps["locator"] = locator_image
 
     basemap_image, error = get_basemap_image(center, zoom, WIDTH, HEIGHT)
     if error:
@@ -246,7 +246,7 @@ async def render_maps(
         if error:
             errors["ownership"] = error
         else:
-            maps["ownership"] = to_base64(
+            maps["ownership"] = to_png_bytes(
                 merge_maps([basemap_image, ownership_image, aoi_image])
             )
 
@@ -256,7 +256,7 @@ async def render_maps(
         if error:
             errors["protection"] = error
         else:
-            maps["protection"] = to_base64(
+            maps["protection"] = to_png_bytes(
                 merge_maps([basemap_image, protection_image, aoi_image])
             )
 

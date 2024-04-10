@@ -137,7 +137,17 @@ def create_report(maps, results, name=None, area_type="custom"):
 
     print("Creating report...")
 
+    def url_fetcher(path):
+        if path.startswith("maps:"):
+            return {
+                "string": maps[path.replace("maps:", "")],
+                "mime_type": "image/png",
+            }
+
+        return load_asset(path)
+
     # if DEBUG:
+    # TODO: will need to fill in images / convert to base64
     # with open("/tmp/test.html", "w") as out:
     #     out.write(template.render(**context))
 
@@ -147,7 +157,7 @@ def create_report(maps, results, name=None, area_type="custom"):
     # kwargs["variant"] = "pdf/ua-1"
 
     pdf = HTML(
-        BytesIO((template.render(**context)).encode()), url_fetcher=load_asset
+        BytesIO((template.render(**context)).encode()), url_fetcher=url_fetcher
     ).write_pdf(**kwargs)
 
     return pdf

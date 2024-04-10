@@ -15,7 +15,7 @@
 
     {% if maps.urban_2060 %}
         <div class="map-container">
-            <img src="data:image/png;base64,{{maps.urban_2060}}" alt="Map for projected urban growth - 2060" class="map">
+            <img src="maps:urban_2060" alt="Map for projected urban growth - 2060" class="map">
 
             {% include "elements/north_arrow.html" %}
         </div>
@@ -25,7 +25,7 @@
         <div class="flex map-footer">
             <div class="map-locator-container">
                 {% if maps.locator %}
-                    <img src="data:image/png;base64,{{maps.locator}}" alt="Locator map" class="map-locator">
+                    <img src="maps:locator" alt="Locator map" class="map-locator">
                 {% endif %}
             </div>
 

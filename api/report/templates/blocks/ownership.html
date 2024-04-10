@@ -8,7 +8,7 @@
         <h3 id="LandOwnership">Conserved lands ownership</h3>
         {% if maps.ownership %}
             <div class="map-container">
-                <img src="data:image/png;base64,{{maps.ownership}}" alt="Map of land ownership" class="map">
+                <img src="maps:ownership" alt="Map of land ownership" class="map">
 
                 {% include "elements/map_footer.html" %}
             </div>
@@ -16,7 +16,7 @@
             <div class="flex map-footer">
                 <div class="map-locator-container">
                     {% if maps.locator %}
-                        <img src="data:image/png;base64,{{maps.locator}}" alt="Locator map" class="map-locator">
+                        <img src="maps:locator" alt="Locator map" class="map-locator">
                     {% endif %}
                 </div>
 
@@ -116,7 +116,7 @@
     <h3 id="Protection">Land protection status</h3>
     {% if maps.protection %}
         <div class="map-container">
-            <img src="data:image/png;base64,{{maps.protection}}" alt="Map of land protection status" class="map">
+            <img src="maps:protection" alt="Map of land protection status" class="map">
 
             {% include "elements/map_footer.html" %}
         </div>
@@ -124,7 +124,7 @@
         <div class="flex map-footer">
             <div class="map-locator-container">
                 {% if maps.locator %}
-                    <img src="data:image/png;base64,{{maps.locator}}" alt="Locator map" class="map-locator">
+                    <img src="maps:locator" alt="Locator map" class="map-locator">
                 {% endif %}
             </div>
 

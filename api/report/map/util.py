@@ -120,3 +120,30 @@ def to_base64(img):
     # we can likely handle larger files
     img.save(buffer, format="PNG", compress_level=1)
     return b64encode(buffer.getvalue()).decode("utf-8")
+
+
+def to_png_bytes(img):
+    """Convert a PIL Image to encoded RGB PNG bytes.
+
+    NOTE: the alpha channel is currently dropped as it is not used in maps.
+
+    Parameters
+    ----------
+    img : PIL Image object
+
+    Returns
+    -------
+    bytes
+        PNG bytes
+    """
+    if img is None:
+        return None
+
+    if img.mode == "RGBA":
+        img = img.convert("RGB")
+
+    # Compression costs time, but since this is all transported in memory
+    # we can likely handle larger files
+    buffer = BytesIO()
+    img.save(buffer, format="PNG", compress_level=1)
+    return buffer.getvalue()

@@ -9,7 +9,7 @@
 
     {% if maps[indicator.id] %}
         <div class="map-container">
-            <img src="data:image/png;base64,{{maps[indicator.id]}}" alt="Map for {{indicator.label}}" class="map">
+            <img src="maps:{{indicator.id}}" alt="Map for {{indicator.label}}" class="map">
 
             {% include "elements/north_arrow.html" %}
         </div>
@@ -19,7 +19,7 @@
         <div class="flex map-footer">
             <div class="map-locator-container">
                 {% if maps.locator %}
-                    <img src="data:image/png;base64,{{maps.locator}}" alt="Locator map" class="map-locator">
+                    <img src="maps:locator" alt="Locator map" class="map-locator">
                 {% endif %}
             </div>
 
