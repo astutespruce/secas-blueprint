@@ -296,6 +296,10 @@ table td.highlight-col {
   height: 36pt;
 }
 
+.page-break {
+  page-break-after: always;
+}
+
 .text-center {
   text-align: center;
 }
