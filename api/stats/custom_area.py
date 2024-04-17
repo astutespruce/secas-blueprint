@@ -71,18 +71,9 @@ async def get_custom_area_results(df, max_acres=None, progress_callback=None):
     if rasterized_geometry.acres == 0:
         return None
 
-    geo_bounds = shapely.bounds(
-        to_crs(np.array([shapely.box(*rasterized_geometry.bounds)]), DATA_CRS, GEO_CRS)
-    )
-    center, lta_search_radius = get_lta_search_info(geo_bounds)
-    center = center[0]
-    lta_search_radius = lta_search_radius[0]
-
     results = {
         "subregions": subregions,
         "acres": acres,
-        "center": center,
-        "lta_search_radius": lta_search_radius,
         "rasterized_acres": rasterized_geometry.acres,
         "outside_se_acres": rasterized_geometry.outside_se_acres,
         "outside_se_percent": 100
