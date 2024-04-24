@@ -154,9 +154,10 @@ def validate_content_type(file):
         )
 
 
-@app.get("/api/health")
+@app.get("/api/health", status_code=200)
+@app.head("/api/health", status_code=200)
 async def health_endpoint():
-    return Response(status_code=200)
+    return Response()
 
 
 @app.post("/api/reports/custom")
