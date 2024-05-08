@@ -3,29 +3,35 @@ import { Eye, EyeSlash, LayerGroup } from '@emotion-icons/fa-solid'
 import { Box, Flex, Heading, Text } from 'theme-ui'
 
 import {
-  useMapData,
-  useCorridors,
-  useIndicators,
-  useSLR,
-  useUrban,
-} from 'components/data'
+  blueprint as blueprintInfo,
+  blueprintCategories,
+  corridors,
+  ecosystems,
+  indicators,
+  urban as urbanCategories,
+  slrDepth as depthCategories,
+  slrNodata as slrNodataCategories,
+} from 'config'
+import { useMapData } from 'components/data'
 import { BoundModal } from 'components/modal'
 import { indexBy, sortByFunc } from 'util/data'
 import { logGAEvent } from 'util/log'
 
+import { pixelLayerIndex } from './pixelLayers'
+
 const LayerToggle = () => {
   const { renderLayer, setRenderLayer } = useMapData()
-  const corridors = useCorridors()
-  const { ecosystems, indicators } = useIndicators()
-  const urbanCategories = useUrban()
-  const { depth: depthCategories, nodata: slrNodataCategories } = useSLR()
-
   const { renderLayerGroups, renderLayersIndex } = useMemo(
     () => {
       const coreLayers = [
         {
           id: 'blueprint',
           label: 'Blueprint priority',
+          colors: blueprintInfo
+            .map(({ color, value }) => (value === 0 ? null : color))
+            .reverse(),
+          categories: blueprintCategories,
+          layer: pixelLayerIndex.blueprint,
         },
         {
           id: 'corridors',
@@ -42,6 +48,7 @@ const LayerToggle = () => {
               color,
               type: 'fill',
             })),
+          layer: pixelLayerIndex.corridors,
         },
       ]
 
@@ -51,6 +58,7 @@ const LayerToggle = () => {
           label: 'Probability of urbanization by 2060',
           colors: urbanCategories.map(({ color }) => color),
           categories: urbanCategories.filter(({ color }) => color !== null),
+          layer: pixelLayerIndex.urban,
         },
         {
           id: 'slr',
@@ -68,6 +76,7 @@ const LayerToggle = () => {
               outlineWidth: 1,
               outlineColor: 'grey.5',
             })),
+          layer: pixelLayerIndex.slr,
         },
       ]
 
@@ -103,6 +112,7 @@ const LayerToggle = () => {
                   .filter(({ color }) => color !== null)
                   .reverse(),
                 valueLabel,
+                layer: pixelLayerIndex[id],
               }
             }),
           }

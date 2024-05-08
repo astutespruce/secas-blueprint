@@ -8,21 +8,21 @@
     "ecmaFeatures": {
       "experimentalObjectRestSpread": true,
       "impliedStrict": true,
-      "classes": true
-    }
+      "classes": true,
+    },
   },
   "env": {
     "browser": true,
-    "node": true
+    "node": true,
   },
   "settings": {
     "import/core-modules": [],
     "import/resolver": {
       "node": {
         "extensions": [".js", ".jsx"],
-        "moduleDirectory": ["src", "node_modules"]
-      }
-    }
+        "moduleDirectory": ["src", "../constants", "node_modules"],
+      },
+    },
   },
   "rules": {
     "no-use-before-define": 0,
@@ -37,8 +37,8 @@
     "react/jsx-filename-extension": [
       1,
       {
-        "extensions": [".js", ".jsx"]
-      }
+        "extensions": [".js", ".jsx"],
+      },
     ],
     "react/jsx-props-no-spreading": "off",
     "quotes": [
@@ -46,18 +46,18 @@
       "single",
       {
         "avoidEscape": true,
-        "allowTemplateLiterals": true
-      }
+        "allowTemplateLiterals": true,
+      },
     ],
     "jsx-a11y/accessible-emoji": 0,
     "jsx-a11y/href-no-hash": "off",
     "jsx-a11y/anchor-is-valid": [
       "warn",
       {
-        "aspects": ["invalidHref"]
-      }
+        "aspects": ["invalidHref"],
+      },
     ],
     "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn"
-  }
+    "react-hooks/exhaustive-deps": "warn",
+  },
 }

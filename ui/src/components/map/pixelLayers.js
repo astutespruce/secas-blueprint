@@ -347,3 +347,15 @@ pixelLayers.forEach(({ encoding }, textureIndex) => {
     pixelLayerIndex[id] = { textureIndex, bits, offset, valueShift }
   })
 })
+
+export const setPixelLayerProps = (map, newProps) => {
+  if (!map) return
+
+  /* eslint-disable-next-line no-underscore-dangle */
+  map.__deck.setProps({
+    layers: [
+      /* eslint-disable-next-line no-underscore-dangle */
+      map.__deck.layerManager.layers[0].clone(newProps),
+    ],
+  })
+}

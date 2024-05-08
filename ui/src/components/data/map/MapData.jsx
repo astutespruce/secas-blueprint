@@ -7,15 +7,13 @@ import React, {
 } from 'react'
 import PropTypes from 'prop-types'
 
-import { useIndicators } from 'components/data/Indicators'
+import { indicators } from 'config'
 import { indexBy, range } from 'util/data'
 import { logGAEvent } from 'util/log'
 
 const Context = createContext()
 
 export const Provider = ({ children }) => {
-  const { indicators } = useIndicators()
-
   const [
     {
       mapMode,

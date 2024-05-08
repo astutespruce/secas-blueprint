@@ -21,7 +21,11 @@ exports.onCreateWebpackConfig = ({ actions, stage, loaders, plugins }) => {
       },
 
       // Enable absolute imports with `/src` as root.
-      modules: [path.resolve(__dirname, 'src'), 'node_modules'],
+      modules: [
+        path.resolve(__dirname, 'src'),
+        path.resolve(__dirname, '../constants'),
+        'node_modules',
+      ],
     },
     plugins: [
       plugins.provide({

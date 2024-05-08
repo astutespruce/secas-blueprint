@@ -3,17 +3,15 @@ import PropTypes from 'prop-types'
 import { Box, Flex, Text } from 'theme-ui'
 import { Check } from '@emotion-icons/fa-solid'
 
+import { protection as protectionCategories } from 'config'
 import { PercentBarChart } from 'components/chart'
-import { useOwnership } from 'components/data'
 import { sum } from 'util/data'
 
 const Protection = ({ type, protection }) => {
-  const { protection: PROTECTION } = useOwnership()
-
   // handle empty protection information
-  const bars = PROTECTION.map((category) => ({
+  const bars = protectionCategories.map((category) => ({
     ...category,
-    percent: protection ? protection[category.id] || 0 : 0,
+    percent: protection ? protection[category.value] || 0 : 0,
     color: 'grey.9',
   }))
 
@@ -23,7 +21,7 @@ const Protection = ({ type, protection }) => {
     const remainder = 100 - total
     if (remainder > 0) {
       bars.push({
-        id: 'not_conserved',
+        value: 'not_conserved',
         label: 'Not conserved',
         color: 'grey.5',
         percent: remainder,
@@ -32,9 +30,9 @@ const Protection = ({ type, protection }) => {
 
     return (
       <Box sx={{ ml: '0.5rem', mt: '0.5rem' }}>
-        {bars.map(({ id, label, percent }) => (
+        {bars.map(({ value, label, percent }) => (
           <Flex
-            key={id}
+            key={value}
             sx={{
               alignItems: 'baseline',
               justifyContent: 'space-between',
@@ -68,7 +66,11 @@ const Protection = ({ type, protection }) => {
   }
 
   return bars.map((bar) => (
-    <PercentBarChart key={bar.id} {...bar} sx={{ mt: '0.5rem', mb: '1rem' }} />
+    <PercentBarChart
+      key={bar.value}
+      {...bar}
+      sx={{ mt: '0.5rem', mb: '1rem' }}
+    />
   ))
 }
 

@@ -14,28 +14,28 @@ import React, {
 import mapboxgl from '!mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { Box, Flex, Spinner } from 'theme-ui'
-import { MapboxLayer } from '@deck.gl/mapbox'
+import { MapboxOverlay } from '@deck.gl/mapbox'
 import { useDebouncedCallback } from 'use-debounce'
 
+import { blueprint as blueprintInfo, blueprintCategories } from 'config'
 import {
-  useBlueprintPriorities,
-  useMapData,
-  useIndicators,
-  useSubregions,
-} from 'components/data'
+  ecosystems as ecosystemInfo,
+  indicators as indicatorInfo,
+  subregionIndex,
+} from 'config'
+import { useMapData } from 'components/data'
 import { useBreakpoints } from 'components/layout'
 import { useSearch } from 'components/search'
 import { hasWindow, isLocalDev } from 'util/dom'
 import { indexBy } from 'util/data'
 import { useIsEqualEffect, useEventHandler } from 'util/hooks'
-import { logGAEvent } from 'util/log'
 import CrosshairsIcon from 'images/CrosshairsIcon.svg'
 
 import { unpackFeatureData } from './features'
 import FindLocation from './FindLocation'
 import { createRenderTarget, extractPixelData, StackedPNGTileLayer } from './gl'
 import { mapConfig as config, sources, layers } from './mapConfig'
-import { pixelLayers, pixelLayerIndex } from './pixelLayers'
+import { pixelLayers, pixelLayerIndex, setPixelLayerProps } from './pixelLayers'
 import { Legend } from './legend'
 import LayerToggle from './LayerToggle'
 import MapModeToggle from './MapModeToggle'
@@ -85,8 +85,8 @@ const Map = () => {
     setVisibleSubregions,
   } = useMapData()
   const mapModeRef = useRef(mapMode)
-  const { all: blueprintInfo, categories: blueprintCategories } =
-    useBlueprintPriorities()
+
+  // FIXME: remove
   const blueprintColors = useMemo(
     () =>
       blueprintInfo
@@ -95,9 +95,6 @@ const Map = () => {
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
     []
   )
-  const { ecosystems: ecosystemInfo, indicators: indicatorInfo } =
-    useIndicators()
-  const { subregionIndex } = useSubregions()
 
   const [isLoaded, setIsLoaded] = useState(false)
   const [isRenderLayerVisible, setisRenderLayerVisible] = useState(true)

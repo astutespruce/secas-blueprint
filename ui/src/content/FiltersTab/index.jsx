@@ -3,27 +3,20 @@ import { Box, Flex, Text } from 'theme-ui'
 import { ExclamationTriangle } from '@emotion-icons/fa-solid'
 
 import {
-  useBlueprintPriorities,
-  useCorridors,
-  useIndicators,
-  useMapData,
-  useSLR,
-  useUrban,
-  useSubregions,
-} from 'components/data'
+  blueprint,
+  corridors,
+  ecosystems as rawEcosystems,
+  indicators as rawIndicators,
+  subregions as rawSubregions,
+  urban,
+  slrDepth,
+  slrNodata,
+} from 'config'
+import { useMapData } from 'components/data'
 import { indexBy, sortByFunc, setIntersection } from 'util/data'
 import FilterGroup from './FilterGroup'
 
 const FiltersTab = () => {
-  const { all: blueprint } = useBlueprintPriorities()
-  const corridors = useCorridors()
-
-  const { ecosystems: rawEcosystems, indicators: rawIndicators } =
-    useIndicators()
-
-  const { depth, nodata: slrNodata } = useSLR()
-  const urban = useUrban()
-  const { subregions: rawSubregions } = useSubregions()
   const subregionsIndex = indexBy(rawSubregions, 'subregion')
 
   const { filters, setFilters, visibleSubregions } = useMapData()
@@ -66,7 +59,7 @@ const FiltersTab = () => {
           {
             id: 'slr',
             label: 'Flooding extent by projected sea-level rise',
-            values: depth
+            values: slrDepth
               .map(({ label, ...rest }) => ({
                 ...rest,
                 label: `${label} feet`,
