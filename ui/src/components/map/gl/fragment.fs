@@ -1,3 +1,4 @@
+#version 300 es
 #define SHADER_NAME stackedpng_fragment_shader
 
 #ifdef GL_FRAGMENT_PRECISION_HIGH
@@ -6,7 +7,8 @@ precision highp float;
 precision mediump float;
 #endif
 
-varying vec2 vTexCoord;
+in vec2 vTexCoord;
+out vec4 fragColor;
 
 // uniforms for rendering the output after filtering
 uniform float opacity;
@@ -30,6 +32,7 @@ uniform sampler2D layer8;
 // encoded filters, with a bit set to 1 for each value that is present in the
 // set of activated filters.  -1 indicates no filtering for that layer.
 // NOTE: array size is filled from JS since this can't be dynamic in the shader
+// TODO: can this be an int instead?  May need to make an int8 array in JS
 uniform float filterValues[<NUM_LAYERS>];
 
 // return 32-bit integer(ish)
@@ -87,15 +90,15 @@ bool matchValue(float valueRGB, float offset, float numBits,
 }
 
 void main(void) {
-  float valueRGB0 = rgbToInt32(texture2D(layer0, vTexCoord).rgb * 255.0);
-  float valueRGB1 = rgbToInt32(texture2D(layer1, vTexCoord).rgb * 255.0);
-  float valueRGB2 = rgbToInt32(texture2D(layer2, vTexCoord).rgb * 255.0);
-  float valueRGB3 = rgbToInt32(texture2D(layer3, vTexCoord).rgb * 255.0);
-  float valueRGB4 = rgbToInt32(texture2D(layer4, vTexCoord).rgb * 255.0);
-  float valueRGB5 = rgbToInt32(texture2D(layer5, vTexCoord).rgb * 255.0);
-  float valueRGB6 = rgbToInt32(texture2D(layer6, vTexCoord).rgb * 255.0);
-  float valueRGB7 = rgbToInt32(texture2D(layer7, vTexCoord).rgb * 255.0);
-  float valueRGB8 = rgbToInt32(texture2D(layer8, vTexCoord).rgb * 255.0);
+  float valueRGB0 = rgbToInt32(texture(layer0, vTexCoord).rgb * 255.0);
+  float valueRGB1 = rgbToInt32(texture(layer1, vTexCoord).rgb * 255.0);
+  float valueRGB2 = rgbToInt32(texture(layer2, vTexCoord).rgb * 255.0);
+  float valueRGB3 = rgbToInt32(texture(layer3, vTexCoord).rgb * 255.0);
+  float valueRGB4 = rgbToInt32(texture(layer4, vTexCoord).rgb * 255.0);
+  float valueRGB5 = rgbToInt32(texture(layer5, vTexCoord).rgb * 255.0);
+  float valueRGB6 = rgbToInt32(texture(layer6, vTexCoord).rgb * 255.0);
+  float valueRGB7 = rgbToInt32(texture(layer7, vTexCoord).rgb * 255.0);
+  float valueRGB8 = rgbToInt32(texture(layer8, vTexCoord).rgb * 255.0);
 
   // canRender is True where all filters are either not set or value is one
   // of active filter values
@@ -127,19 +130,15 @@ void main(void) {
     valueRGB = valueRGB8;
   }
 
-  float renderValue = bitwise_and(rshift(valueRGB, renderLayerOffset),
-                                  bitmask(renderLayerBits));
+  float renderValue = bitwise_and(rshift(valueRGB, renderLayerOffset), bitmask(renderLayerBits));
 
+  // TODO: use texelFetch() to get texture value; use textureSize() to avoid passing renderLayerPaletteSize
   // subtracting 0.1 from layer palette size is required to get this to work
   // properly on multiple graphics cards
-  vec4 color =
-      texture2D(renderLayerPalette,
-                vec2(renderValue / (renderLayerPaletteSize - 0.1), 0.5));
+  fragColor = texture(renderLayerPalette, vec2(renderValue / (renderLayerPaletteSize - 0.1), 0.5));
 
-  color.a = color.a * opacity;
+  fragColor.a = fragColor.a * opacity;
   if (!canRender) {
-    color.a = 0.0;
+    fragColor.a = 0.0;
   }
-
-  gl_FragColor = color;
 }

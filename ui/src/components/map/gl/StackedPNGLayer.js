@@ -20,20 +20,23 @@ class StackedPNGLayer extends BitmapLayer {
       return prev
     }, {})
 
-    model
-      .setUniforms(uniforms)
-      .setUniforms({
-        ...layerImages,
-        bounds,
-        filterValues,
-        renderLayerPalette: renderTarget.palette,
-        renderLayerPaletteSize: renderTarget.palette.width,
-        renderLayerTextureIndex: renderTarget.textureIndex,
-        renderLayerOffset: renderTarget.offset,
-        renderLayerBits: renderTarget.bits,
-        opacity,
-      })
-      .draw()
+    // NOTE: can only set plain uniforms via setUniforms
+    // ignore deprecated setUniforms; we do it this way to match BitmapLayer
+    model.setUniforms({
+      ...uniforms,
+      bounds,
+      filterValues,
+      renderLayerPaletteSize: renderTarget.palette.width,
+      renderLayerTextureIndex: renderTarget.layer.textureIndex,
+      renderLayerOffset: renderTarget.layer.offset,
+      renderLayerBits: renderTarget.layer.bits,
+      opacity,
+    })
+    model.setBindings({
+      renderLayerPalette: renderTarget.palette,
+      ...layerImages,
+    })
+    model.draw(this.context.renderPass)
   }
 
   getShaders() {
@@ -41,9 +44,8 @@ class StackedPNGLayer extends BitmapLayer {
       shaders: { vs, fs },
     } = this.props
 
-    const parentShaders = super.getShaders()
     return {
-      ...parentShaders,
+      disableWarnings: false,
       vs,
       fs,
       modules: [project32],

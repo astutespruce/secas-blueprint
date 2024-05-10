@@ -51,6 +51,8 @@ export const indicators = rawIndicators.map(
   })
 )
 
+export const indicatorsIndex = indexBy(indicators, 'id')
+
 // split depth and NODATA values
 export const slrDepth = rawSLR.slice(0, 11)
 export const slrNodata = rawSLR.slice(11)

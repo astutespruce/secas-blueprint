@@ -1,7 +1,7 @@
 /* eslint-disable no-bitwise */
 
-import { readPixelsToArray } from '@luma.gl/core'
-import GL from '@luma.gl/constants'
+// import { readPixelsToArray } from '@luma.gl/core'
+import { GL } from '@luma.gl/constants'
 
 import { indexBy, setIntersection, sum } from 'util/data'
 
@@ -16,14 +16,25 @@ const TILE_SIZE = 512
  * @returns uint32 value
  */
 export const readPixelToUint32 = (texture, offsetX, offsetY) => {
-  const pixel = readPixelsToArray(texture, {
-    sourceX: offsetX,
-    sourceY: offsetY,
-    sourceFormat: GL.RGBA,
-    sourceWidth: 1,
-    sourceHeight: 1,
-    sourceType: GL.UNSIGNED_BYTE,
-  })
+  // console.log('readPixelToUint32', texture, offsetX, offsetY)
+
+  // read R,G,B, ignoring alpha
+  let pixel = null
+  const buffer = texture.device.createBuffer({ byteLength: 4 })
+  try {
+    const cmd = texture.device.createCommandEncoder()
+    cmd.copyTextureToBuffer({
+      source: texture,
+      width: 1,
+      height: 1,
+      origin: [offsetX, offsetY],
+      destination: buffer,
+    })
+    cmd.finish()
+    pixel = buffer.readSyncWebGL()
+  } finally {
+    buffer.destroy()
+  }
 
   // decode to uint32, ignoring alpha value, which will be 0 for NODATA / empty tiles or 255
   const [r, g, b] = pixel
@@ -185,8 +196,6 @@ export const extractPixelData = (
     // and tileset claims it is loaded, but for the wrong zoom levels
     return null
   }
-
-  // console.debug('tile', tile)
 
   // images are at tile.data.images
   const {

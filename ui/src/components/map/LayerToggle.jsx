@@ -1,158 +1,29 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback } from 'react'
 import { Eye, EyeSlash, LayerGroup } from '@emotion-icons/fa-solid'
 import { Box, Flex, Heading, Text } from 'theme-ui'
 
-import {
-  blueprint as blueprintInfo,
-  blueprintCategories,
-  corridors,
-  ecosystems,
-  indicators,
-  urban as urbanCategories,
-  slrDepth as depthCategories,
-  slrNodata as slrNodataCategories,
-} from 'config'
 import { useMapData } from 'components/data'
 import { BoundModal } from 'components/modal'
-import { indexBy, sortByFunc } from 'util/data'
 import { logGAEvent } from 'util/log'
 
-import { pixelLayerIndex } from './pixelLayers'
+import { renderLayerGroups, renderLayersIndex } from './pixelLayers'
 
 const LayerToggle = () => {
   const { renderLayer, setRenderLayer } = useMapData()
-  const { renderLayerGroups, renderLayersIndex } = useMemo(
-    () => {
-      const coreLayers = [
-        {
-          id: 'blueprint',
-          label: 'Blueprint priority',
-          colors: blueprintInfo
-            .map(({ color, value }) => (value === 0 ? null : color))
-            .reverse(),
-          categories: blueprintCategories,
-          layer: pixelLayerIndex.blueprint,
-        },
-        {
-          id: 'corridors',
-          label: 'Hubs and corridors',
-          colors: corridors
-            .slice()
-            .sort(sortByFunc('value'))
-            .map(({ color }) => color),
-          categories: corridors
-            .filter(({ value }) => value > 0)
-            .map(({ value, label, color }) => ({
-              value,
-              label,
-              color,
-              type: 'fill',
-            })),
-          layer: pixelLayerIndex.corridors,
-        },
-      ]
-
-      const threatLayers = [
-        {
-          id: 'urban',
-          label: 'Probability of urbanization by 2060',
-          colors: urbanCategories.map(({ color }) => color),
-          categories: urbanCategories.filter(({ color }) => color !== null),
-          layer: pixelLayerIndex.urban,
-        },
-        {
-          id: 'slr',
-          label: 'Flooding extent by projected sea-level rise',
-          colors: depthCategories
-            .concat(slrNodataCategories)
-            .map(({ color }) => color),
-          categories: depthCategories
-            .concat(slrNodataCategories.filter(({ value }) => value !== 13))
-            .map(({ label, ...rest }, i) => ({
-              ...rest,
-              label:
-                /* eslint-disable-next-line no-nested-ternary */
-                i === 1 ? `${label} foot` : i <= 10 ? `${label} feet` : label,
-              outlineWidth: 1,
-              outlineColor: 'grey.5',
-            })),
-          layer: pixelLayerIndex.slr,
-        },
-      ]
-
-      const layers = coreLayers.concat(threatLayers)
-
-      const groups = [
-        {
-          id: 'core',
-          label: 'Priorities',
-          layers: coreLayers,
-        },
-        {
-          id: 'threats',
-          label: 'Threats',
-          layers: threatLayers,
-        },
-      ]
-
-      const indicatorsIndex = indexBy(indicators, 'id')
-
-      ecosystems.forEach(
-        ({ id: groupId, label: groupLabel, indicators: groupIndicators }) => {
-          const group = {
-            id: groupId,
-            label: `${groupLabel} indicators`,
-            layers: groupIndicators.map((id) => {
-              const { label, values, valueLabel } = indicatorsIndex[id]
-              return {
-                id,
-                label,
-                colors: values.map(({ color }) => color),
-                categories: values
-                  .filter(({ color }) => color !== null)
-                  .reverse(),
-                valueLabel,
-                layer: pixelLayerIndex[id],
-              }
-            }),
-          }
-
-          groups.push(group)
-          layers.push(...group.layers)
-        }
-      )
-
-      return {
-        renderLayerGroups: groups,
-        renderLayersIndex: indexBy(layers, 'id'),
-      }
-    },
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
-    []
-  )
 
   const handleSetRenderLayer = useCallback(
     (id) => () => {
-      if (id === 'blueprint') {
-        setRenderLayer(null)
-        logGAEvent('set-render-layer', {
-          layer: 'blueprint',
-        })
-      } else {
-        setRenderLayer(renderLayersIndex[id])
-        logGAEvent('set-render-layer', {
-          layer: id,
-        })
-      }
+      setRenderLayer(renderLayersIndex[id])
+      logGAEvent('set-render-layer', {
+        layer: id,
+      })
     },
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
     [renderLayersIndex]
   )
 
   const isActiveLayer = useCallback(
-    (id) =>
-      (renderLayer === null && id === 'blueprint') ||
-      (renderLayer && renderLayer.id === id),
+    (id) => renderLayer && renderLayer.id === id,
     [renderLayer]
   )
 

@@ -1,8 +1,6 @@
 import { TileLayer, _getURLFromTemplate } from '@deck.gl/geo-layers'
 import { load } from '@loaders.gl/core'
-import { Texture2D } from '@luma.gl/core'
 import { ImageLoader } from '@loaders.gl/images'
-import GL from '@luma.gl/constants'
 
 import { sum } from 'util/data'
 
@@ -14,30 +12,21 @@ import fragmentShader from 'raw-loader!./fragment.fs'
 
 import { getFilterExpr, getFilterValues } from './filters'
 import StackedPNGLayer from './StackedPNGLayer'
+import { createPNGTexture, createPaletteTexture } from './texture'
 
 /**
  * Fetch a tile image asynchronously and load into a GL texture
  * @param {Object} gl - WebGL context
  * @param {String} url - url of tile
+ * @param {Object} signal - fetch signal, will set aborted to abort fetch
+ * @param {bool} skip - skip loading tile data (e.g,. out of viewport)
  * @returns
  */
-const fetchImage = async (gl, url, skip = false) => {
-  const data = skip ? null : await load(url, ImageLoader)
+const fetchImage = async (device, url, signal, skip = false) => {
+  const data = skip ? null : await load(url, ImageLoader, { fetch: { signal } })
 
   // always create a texture, which can be empty if there is no data
-  return new Texture2D(gl, {
-    data,
-    format: GL.RGBA,
-    dataFormat: GL.RGBA,
-    type: GL.UNSIGNED_BYTE,
-    parameters: {
-      [GL.TEXTURE_MIN_FILTER]: GL.NEAREST,
-      [GL.TEXTURE_MAG_FILTER]: GL.NEAREST,
-      [GL.TEXTURE_WRAP_S]: GL.CLAMP_TO_EDGE,
-      [GL.TEXTURE_WRAP_T]: GL.CLAMP_TO_EDGE,
-    },
-    mipmaps: false,
-  })
+  return createPNGTexture(device, data)
 }
 
 /**
@@ -48,7 +37,8 @@ export default class StackedPNGTileLayer extends TileLayer {
   initializeState() {
     super.initializeState()
 
-    const { layers } = this.props
+    const { device } = this.context
+    const { layers, filters, renderLayer } = this.props
 
     const encodingSchemes = layers.map(({ encoding }) => encoding)
 
@@ -58,18 +48,55 @@ export default class StackedPNGTileLayer extends TileLayer {
       shaders: {
         vs: vertexShader,
         fs: fragmentShader
+
           .replace(
             '<NUM_LAYERS>',
             sum(encodingSchemes.map((e) => e.length)).toString()
           )
+
           .replace('// <FILTER_EXPR>', getFilterExpr(encodingSchemes)),
+      },
+      // following variables change over time and are updated via updateState
+      filterValues: getFilterValues(
+        layers.map(({ encoding }) => encoding),
+        filters || {}
+      ),
+      renderTarget: {
+        ...renderLayer,
+        palette: createPaletteTexture(device, renderLayer.colors),
       },
     })
   }
 
-  async getTileData(tile) {
-    const { gl } = this.context
+  updateState(props) {
+    super.updateState(props)
 
+    const newState = {}
+    const {
+      props: { layers, filters: newFilters, renderLayer: newRenderLayer },
+      oldProps: { renderLayer: oldRenderLayer },
+    } = props
+
+    // TODO: only do this if it changes
+    newState.filterValues = getFilterValues(
+      layers.map(({ encoding }) => encoding),
+      newFilters || {}
+    )
+    // only update render target when these are different
+    if (oldRenderLayer && newRenderLayer.id !== oldRenderLayer.id) {
+      const { device } = this.context
+      newState.renderTarget = {
+        ...newRenderLayer,
+        palette: createPaletteTexture(device, newRenderLayer.colors),
+      }
+    }
+
+    if (Object.keys(newState).length > 0) {
+      this.setState(newState)
+    }
+  }
+
+  async getTileData(tile) {
     // prevent fetching tiles if layer is not visible
     if (!this.props.visible) {
       return { images: null }
@@ -77,13 +104,19 @@ export default class StackedPNGTileLayer extends TileLayer {
 
     const {
       bbox: { west, south, east, north },
+      signal,
     } = tile
 
     const imageRequests = this.props.layers.map(
       ({ url, bounds: [xmin, ymin, xmax, ymax] }) => {
         // intersect tile bounds and layer bounds and skip if no overlap
         const skip = west > xmax || east < xmin || south > ymax || north < ymin
-        return fetchImage(gl, _getURLFromTemplate(url, tile), skip)
+        return fetchImage(
+          this.context.device,
+          _getURLFromTemplate(url, tile),
+          signal,
+          skip
+        )
       }
     )
 
@@ -92,30 +125,30 @@ export default class StackedPNGTileLayer extends TileLayer {
   }
 
   renderSubLayers(props) {
-    const { shaders } = this.state
+    // console.log('render sub layers', props)
+    if (!props.visible) {
+      return null
+    }
+
+    const { shaders, renderTarget, filterValues } = this.state
+
     const {
-      tile: {
-        bbox: { west, south, east, north },
-      },
-      layers,
+      tile: { boundingBox },
       data: { images } = {},
-      filters,
-      renderTarget,
     } = props
 
     if (images === null) {
       return null
     }
 
-    // TODO: figure out how to hoist this to state or memoize it:
-    const filterValues = getFilterValues(
-      layers.map(({ encoding }) => encoding),
-      filters || {}
-    )
-
     return new StackedPNGLayer(props, {
       shaders,
-      bounds: [west, south, east, north],
+      bounds: [
+        boundingBox[0][0],
+        boundingBox[0][1],
+        boundingBox[1][0],
+        boundingBox[1][1],
+      ],
       images,
       filterValues,
       renderTarget,
