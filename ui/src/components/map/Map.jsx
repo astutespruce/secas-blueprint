@@ -7,8 +7,6 @@ import React, { useEffect, useRef, useState, useCallback, memo } from 'react'
 import mapboxgl from '!mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { Box, Flex, Spinner } from 'theme-ui'
-import { TileLayer } from '@deck.gl/geo-layers'
-import { BitmapLayer } from '@deck.gl/layers'
 import { MapboxOverlay } from '@deck.gl/mapbox'
 import { useDebouncedCallback } from 'use-debounce'
 

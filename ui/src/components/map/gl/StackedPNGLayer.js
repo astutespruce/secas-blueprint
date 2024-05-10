@@ -21,7 +21,7 @@ class StackedPNGLayer extends BitmapLayer {
     }, {})
 
     // NOTE: can only set plain uniforms via setUniforms
-    // ignore deprecated setUniforms; we do it this way to match BitmapLayer
+    // ignore setUniforms deprecated status; we do it this way to match BitmapLayer
     model.setUniforms({
       ...uniforms,
       bounds,
@@ -36,6 +36,7 @@ class StackedPNGLayer extends BitmapLayer {
       renderLayerPalette: renderTarget.palette,
       ...layerImages,
     })
+
     model.draw(this.context.renderPass)
   }
 
@@ -45,7 +46,7 @@ class StackedPNGLayer extends BitmapLayer {
     } = this.props
 
     return {
-      disableWarnings: false,
+      // disableWarnings: false,
       vs,
       fs,
       modules: [project32],

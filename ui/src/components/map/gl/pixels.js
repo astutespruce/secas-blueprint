@@ -1,8 +1,5 @@
 /* eslint-disable no-bitwise */
 
-// import { readPixelsToArray } from '@luma.gl/core'
-import { GL } from '@luma.gl/constants'
-
 import { indexBy, setIntersection, sum } from 'util/data'
 
 const TILE_SIZE = 512
@@ -15,7 +12,7 @@ const TILE_SIZE = 512
  * @param {*} offsetY - offset y value into image
  * @returns uint32 value
  */
-export const readPixelToUint32 = (texture, offsetX, offsetY) => {
+const readPixelToUint32 = (texture, offsetX, offsetY) => {
   // console.log('readPixelToUint32', texture, offsetX, offsetY)
 
   // read R,G,B, ignoring alpha
@@ -71,7 +68,7 @@ const getTileID = (
   }
 }
 
-export const getTile = (map, screenPoint, layer) => {
+const getTile = (map, screenPoint, layer) => {
   // resolve the StackedPNGTileLayer; layers[1:n] are StackedPNGLayers
   const tileLayer = layer.implementation.deck.layerManager.layers[0]
   const {

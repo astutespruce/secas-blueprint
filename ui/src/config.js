@@ -1,14 +1,14 @@
-import rawBlueprint from 'blueprint.json'
-import rawCorridors from 'corridors.json'
-import ecosystems from 'ecosystems.json'
-import rawIndicators from 'indicators.json'
-import ownership from 'ownership.json'
-import protection from 'protection.json'
-import rawSLR from 'slr.json'
-import subregions from 'subregions.json'
-import urban from 'urban.json'
-
 import { indexBy } from 'util/data'
+
+import rawBlueprint from '../../constants/blueprint.json'
+import rawCorridors from '../../constants/corridors.json'
+import ecosystems from '../../constants/ecosystems.json'
+import rawIndicators from '../../constants/indicators.json'
+import ownership from '../../constants/ownership.json'
+import protection from '../../constants/protection.json'
+import rawSLR from '../../constants/slr.json'
+import subregions from '../../constants/subregions.json'
+import urban from '../../constants/urban.json'
 
 // export unmodified values directly
 export { ecosystems, ownership, protection, subregions, urban }

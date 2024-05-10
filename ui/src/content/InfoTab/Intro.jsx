@@ -1,7 +1,6 @@
 import React from 'react'
-import { Box, Button, Flex, Paragraph, Text } from 'theme-ui'
+import { Box, Paragraph } from 'theme-ui'
 import { withPrefix } from 'gatsby'
-import { SearchLocation } from '@emotion-icons/fa-solid'
 
 import { useBreakpoints } from 'components/layout'
 import { OutboundLink } from 'components/link'
