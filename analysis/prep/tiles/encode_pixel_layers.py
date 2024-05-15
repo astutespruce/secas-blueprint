@@ -6,6 +6,7 @@ from progress.bar import Bar
 import numpy as np
 import pandas as pd
 import rasterio
+from rasterio.enums import Resampling
 from rasterio.windows import get_data_window, Window, transform as transform_for_window
 import geopandas as gp
 import shapely
@@ -258,10 +259,7 @@ for group in groups:
     outfilename = out_dir / f"se_pixel_layers_{group}.tif"
     write_raster(outfilename, out, transform=transform, crs=extent.crs, nodata=0)
 
-    # Only use overviews for low zooms; otherwise the overviews mess up the
-    # data when converting to WGS84
-    add_overviews(outfilename)
-
+    # NOTE: intentionally not building overviews; they cause rendering issues
 
 #### Notes
 # to verify that values are encoded correctly

@@ -6,7 +6,6 @@ from progress.bar import Bar
 import numpy as np
 import rasterio
 from rasterio.enums import Resampling
-from rasterio.errors import WindowError
 from rasterio.mask import geometry_mask
 from rasterio.vrt import WarpedVRT
 from rasterio.windows import Window
@@ -326,15 +325,18 @@ def summarize_raster_by_units_grid(
     return out
 
 
-def add_overviews(filename):
+def add_overviews(filename, factors=None, resampling=None):
     """Add overviews to file for faster rendering.
 
     Parameters
     ----------
     filename : str
+    overview_factors : list-like of power of 2 integer values, optional (default: None)
+    resampling : Resampling enum value, optional (default: None)
+        if absent, Resampling.mode will be used, which may be slow to calculate
     """
     with rasterio.open(filename, "r+") as src:
-        src.build_overviews(OVERVIEW_FACTORS, Resampling.nearest)
+        src.build_overviews(factors or OVERVIEW_FACTORS, resampling or Resampling.mode)
 
 
 def extract_window(src, window, transform, nodata):
