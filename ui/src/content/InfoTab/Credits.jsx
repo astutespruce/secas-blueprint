@@ -2,7 +2,7 @@ import React from 'react'
 import { Box, Flex, Divider, Paragraph, Image } from 'theme-ui'
 
 import { OutboundLink } from 'components/link'
-import SECASLogo from 'images/SECAS-logo-bw.svg'
+import SECASLogo from 'images/SECAS_logo.svg'
 
 const Credits = () => (
   <>
@@ -10,11 +10,7 @@ const Credits = () => (
     <Box as="section">
       <Flex sx={{ flexWrap: 'wrap', gap: '1rem' }}>
         <Box sx={{ flex: '0 0 auto' }}>
-          <Image
-            src={SECASLogo}
-            sx={{ width: '120px', height: '142px' }}
-            alt="SECAS logo"
-          />
+          <Image src={SECASLogo} sx={{ width: '64px' }} alt="SECAS logo" />
         </Box>
         <Box sx={{ flex: '1 1 auto', width: ['100%', '264px'] }}>
           <Paragraph sx={{ fontSize: 1 }}>
