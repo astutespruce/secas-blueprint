@@ -542,15 +542,10 @@ table td.highlight-col {
   page-break-before: always;
 }
 
-img.logo {
-  margin-right: 12pt;
-  display: block;
-  width: 64px;
-}
-
 .cover-logo {
-  width: 150px;
-  height: 178px;
+  width: 220px;
+  height: 52px;
+  margin-right: 18pt;
 }
 
 .cover-footer {
