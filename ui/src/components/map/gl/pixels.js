@@ -4,45 +4,6 @@ import { indexBy, setIntersection, sum } from 'util/data'
 
 const TILE_SIZE = 512
 
-/**
- * Read a single pixel from a texture created from a PNG tile image into a
- * single uint32 value (RGB value only, alpha is ignored).
- * @param {*} texture - WebGL texture
- * @param {*} offsetX - offset x value into image
- * @param {*} offsetY - offset y value into image
- * @returns uint32 value
- */
-const readPixelToUint32 = (texture, offsetX, offsetY) => {
-  // console.log('readPixelToUint32', texture, offsetX, offsetY)
-
-  // read R,G,B, ignoring alpha
-  let pixel = null
-  const buffer = texture.device.createBuffer({ byteLength: 4 })
-  try {
-    const cmd = texture.device.createCommandEncoder()
-    cmd.copyTextureToBuffer({
-      source: texture,
-      width: 1,
-      height: 1,
-      origin: [offsetX, offsetY],
-      destination: buffer,
-    })
-    cmd.finish()
-    pixel = buffer.readSyncWebGL()
-  } finally {
-    buffer.destroy()
-  }
-
-  // decode to uint32, ignoring alpha value, which will be 0 for NODATA / empty tiles or 255
-  const [r, g, b] = pixel
-
-  const value = (r << 16) | (g << 8) | b
-
-  // console.debug('read pixel', [...pixel], '=>', value)
-
-  return value
-}
-
 const getTileID = (
   zoom,
   mercX,
@@ -199,9 +160,41 @@ export const extractPixelData = (
     data: { images },
   } = tile
 
-  const pixelValues = images.map((image) =>
-    readPixelToUint32(image, offsetX, offsetY)
-  )
+  const {
+    __deck: { device },
+  } = map
+
+  let pixels = null
+  // read all pixels into a single buffer; each 4 bytes corresponds
+  // to the R,G,B,A values of a given tile
+  const buffer = device.createBuffer({ byteLength: 4 * images.length })
+  const cmd = device.createCommandEncoder()
+  try {
+    images.forEach((texture, i) => {
+      cmd.copyTextureToBuffer({
+        source: texture,
+        width: 1,
+        height: 1,
+        origin: [offsetX, offsetY],
+        destination: buffer,
+        byteOffset: i * 4,
+      })
+    })
+
+    cmd.finish()
+    pixels = buffer.readSyncWebGL()
+  } finally {
+    buffer.destroy()
+    cmd.destroy()
+  }
+
+  const pixelValues = []
+  for (let i = 0; i < images.length; i += 1) {
+    // ignore alpha values
+    const value =
+      (pixels[i * 4] << 16) | (pixels[i * 4 + 1] << 8) | pixels[i * 4 + 2]
+    pixelValues.push(value)
+  }
 
   // decode pixel values
   const {
