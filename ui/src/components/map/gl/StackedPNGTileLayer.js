@@ -48,12 +48,10 @@ export default class StackedPNGTileLayer extends TileLayer {
       shaders: {
         vs: vertexShader,
         fs: fragmentShader
-
           .replace(
             '<NUM_LAYERS>',
             sum(encodingSchemes.map((e) => e.length)).toString()
           )
-
           .replace('// <FILTER_EXPR>', getFilterExpr(encodingSchemes)),
       },
       // following variables change over time and are updated via updateState
