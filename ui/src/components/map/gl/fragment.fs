@@ -32,7 +32,6 @@ uniform sampler2D layer8;
 // encoded filters, with a bit set to 1 for each value that is present in the
 // set of activated filters.  -1 indicates no filtering for that layer.
 // NOTE: array size is filled from JS since this can't be dynamic in the shader
-// TODO: can this be an int instead?  May need to make an int8 array in JS
 uniform int filterValues[<NUM_LAYERS>];
 
 // return 32-bit integer from vector components
