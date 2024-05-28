@@ -18,7 +18,7 @@ import {
 import { useMapData } from 'components/data'
 import { useBreakpoints } from 'components/layout'
 import { useSearch } from 'components/search'
-import { hasWindow, isLocalDev } from 'util/dom'
+import { isLocalDev } from 'util/dom'
 import { indexBy } from 'util/data'
 import { useIsEqualEffect, useEventHandler } from 'util/hooks'
 import CrosshairsIcon from 'images/CrosshairsIcon.svg'
@@ -38,7 +38,10 @@ import { siteMetadata } from '../../../gatsby-config'
 
 const { mapboxToken, hidePixelLayerToggle } = siteMetadata
 
-if (!mapboxToken) {
+if (mapboxToken) {
+  // Token must be set before constructing map
+  mapboxgl.accessToken = mapboxToken
+} else {
   // eslint-disable-next-line no-console
   console.error(
     'ERROR: Mapbox token is required in gatsby-config.js siteMetadata'
@@ -204,16 +207,8 @@ const Map = () => {
 
   useEffect(
     () => {
-      // if there is no window, we cannot render this component
-      if (!hasWindow) {
-        return null
-      }
-
       const { bounds, maxBounds, minZoom, maxZoom } = config
       const { center, zoom } = getCenterAndZoom(mapNode.current, bounds, 0)
-
-      // Token must be set before constructing map
-      mapboxgl.accessToken = mapboxToken
 
       const map = new mapboxgl.Map({
         container: mapNode.current,
@@ -232,7 +227,7 @@ const Map = () => {
       }
 
       map.on('load', () => {
-        // due to styling components loading at different types, the containing
+        // due to styling components loading at different times, the containing
         // nodes don't always have height set; force larger view
         if (isLocalDev) {
           map.resize()
@@ -253,6 +248,7 @@ const Map = () => {
               id: 'pixelLayers',
               beforeId: beforeLayer,
               refinementStrategy: 'no-overlap',
+              debounceTime: 10, // slightly debounce tile requests during major zoom / pan events
               layers: pixelLayers,
               extent: bounds,
               maxRequests: 20, // because these are on HTTP/2, we can fetch many at once
@@ -263,7 +259,6 @@ const Map = () => {
             }),
           ],
         })
-
         map.addControl(deckGLOverlay)
 
         map.once('idle', () => {
@@ -420,6 +415,86 @@ const Map = () => {
     [isMobile, setMapData]
   )
 
+  // use a callback to actually update the layers, since may style may still
+  // be loading
+  const updateVisibleLayers = () => {
+    const { current: map } = mapRef
+
+    mapIsDrawingRef.current = true
+
+    const isVisible = isRenderLayerVisibleRef.current
+    const pixelLayer = map.getLayer('pixelLayers').implementation
+
+    // toggle layer visibility
+    if (mapMode === 'unit') {
+      map.setLayoutProperty('unit-fill', 'visibility', 'visible')
+      map.setLayoutProperty('unit-outline', 'visibility', 'visible')
+      map.setLayoutProperty(
+        'blueprint',
+        'visibility',
+        isVisible ? 'visible' : 'none'
+      )
+      map.setLayoutProperty('ownership', 'visibility', 'none')
+      map.setLayoutProperty('subregions', 'visibility', 'none')
+
+      // disable pixel layer event listener
+      pixelLayer.deck.setProps({
+        onAfterRender: () => {}, // no-op
+      })
+      setPixelLayerProps(map, {
+        visible: false,
+        filters: null, // reset filters (also reset in parent state)
+        data: { visible: false },
+      })
+
+      updateMapIsDrawing()
+
+      return
+    }
+    // pixel identify / filter modes
+    const activeFilters = filtersRef.current
+    if (mapMode === 'pixel') {
+      // enable pixel layer event listener
+      pixelLayer.deck.setProps({
+        onAfterRender: deckGLHandler.handler,
+      })
+
+      // immediately try to retrieve pixel data if in pixel mode
+      if (map.getZoom() >= minPixelLayerZoom) {
+        map.once('idle', getPixelData)
+      }
+    } else {
+      // disable pixel layer event listener
+      pixelLayer.deck.setProps({
+        onAfterRender: () => {}, // no-op
+      })
+    }
+
+    map.setLayoutProperty('unit-fill', 'visibility', 'none')
+    map.setLayoutProperty('unit-outline', 'visibility', 'none')
+    // reset selected outline
+    map.setFilter('unit-outline-highlight', ['==', 'id', Infinity])
+
+    map.setLayoutProperty('blueprint', 'visibility', 'none')
+
+    map.setLayoutProperty('ownership', 'visibility', 'visible')
+    map.setLayoutProperty('subregions', 'visibility', 'visible')
+    setPixelLayerProps(map, {
+      visible: true,
+      filters: activeFilters,
+      // have to use opacity to hide so that pixel mode still works when hidden
+      opacity: isVisible ? 0.7 : 0,
+      // data prop is used to force loading of tiles if they aren't already loaded
+      data: { visible: true },
+    })
+
+    if (mapMode === 'filter') {
+      map.once('idle', updateVisibleSubregions)
+    }
+
+    updateMapIsDrawing()
+  }
+
   // handler for changed mapMode
   useEffect(
     () => {
@@ -427,80 +502,6 @@ const Map = () => {
 
       if (!isLoaded) return
       const { current: map } = mapRef
-
-      // use a callback to actually update the layers, since may style may still
-      // be loading
-      const updateVisibleLayers = () => {
-        mapIsDrawingRef.current = true
-        updateMapIsDrawing()
-
-        const isVisible = isRenderLayerVisibleRef.current
-        const pixelLayer = map.getLayer('pixelLayers').implementation
-
-        // toggle layer visibility
-        if (mapMode === 'unit') {
-          map.setLayoutProperty('unit-fill', 'visibility', 'visible')
-          map.setLayoutProperty('unit-outline', 'visibility', 'visible')
-          map.setLayoutProperty(
-            'blueprint',
-            'visibility',
-            isVisible ? 'visible' : 'none'
-          )
-          map.setLayoutProperty('ownership', 'visibility', 'none')
-          map.setLayoutProperty('subregions', 'visibility', 'none')
-
-          // disable pixel layer event listener
-          pixelLayer.deck.setProps({
-            onAfterRender: () => {}, // no-op
-          })
-          setPixelLayerProps(map, {
-            visible: false,
-            filters: null, // reset filters (also reset in parent state)
-            data: { visible: false },
-          })
-        } else {
-          const activeFilters = filtersRef.current
-          if (mapMode === 'pixel') {
-            // enable pixel layer event listener
-            pixelLayer.deck.setProps({
-              onAfterRender: deckGLHandler.handler,
-            })
-
-            // immediately try to retrieve pixel data if in pixel mode
-            if (map.getZoom() >= minPixelLayerZoom) {
-              map.once('idle', getPixelData)
-            }
-          } else {
-            // disable pixel layer event listener
-            pixelLayer.deck.setProps({
-              onAfterRender: () => {}, // no-op
-            })
-          }
-
-          map.setLayoutProperty('unit-fill', 'visibility', 'none')
-          map.setLayoutProperty('unit-outline', 'visibility', 'none')
-          map.setLayoutProperty('blueprint', 'visibility', 'none')
-
-          // reset selected outline
-          map.setFilter('unit-outline-highlight', ['==', 'id', Infinity])
-
-          map.setLayoutProperty('ownership', 'visibility', 'visible')
-          map.setLayoutProperty('subregions', 'visibility', 'visible')
-          setPixelLayerProps(map, {
-            visible: true,
-            filters: activeFilters,
-            // have to use opacity to hide so that pixel mode still works when hidden
-            opacity: isVisible ? 0.7 : 0,
-            // TODO: do we still need data prop?  E.g., when toggling to visible to force tiles to load
-            // data prop is used to force deeper reloading of tiles
-            data: { visible: true },
-          })
-
-          if (mapMode === 'filter') {
-            map.once('idle', updateVisibleSubregions)
-          }
-        }
-      }
 
       if (!map.isStyleLoaded()) {
         map.once('idle', updateVisibleLayers)
@@ -510,6 +511,7 @@ const Map = () => {
 
         return
       }
+
       // stop any transitions underway
       map.stop()
 

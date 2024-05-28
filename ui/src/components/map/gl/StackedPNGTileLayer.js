@@ -1,6 +1,7 @@
 import { TileLayer, _getURLFromTemplate } from '@deck.gl/geo-layers'
 import { load } from '@loaders.gl/core'
 import { ImageLoader } from '@loaders.gl/images'
+import { dequal as deepEqual } from 'dequal'
 
 import { sum } from 'util/data'
 
@@ -23,7 +24,12 @@ import { createPNGTexture, createPaletteTexture } from './texture'
  * @returns
  */
 const fetchImage = async (device, url, signal, skip = false) => {
-  const data = skip ? null : await load(url, ImageLoader, { fetch: { signal } })
+  const data = skip
+    ? null
+    : await load(url, ImageLoader, {
+        image: { type: 'imagebitmap' },
+        fetch: { signal },
+      })
 
   // always create a texture, which can be empty if there is no data
   return createPNGTexture(device, data)
@@ -71,15 +77,22 @@ export default class StackedPNGTileLayer extends TileLayer {
 
     const newState = {}
     const {
-      props: { layers, filters: newFilters, renderLayer: newRenderLayer },
-      oldProps: { renderLayer: oldRenderLayer },
+      props: {
+        layers,
+        renderLayer: newRenderLayer,
+        filters: newFilters = null,
+      },
+      oldProps: { renderLayer: oldRenderLayer, filters: oldFilters = null },
     } = props
 
-    // TODO: only do this if it changes
-    newState.filterValues = getFilterValues(
-      layers.map(({ encoding }) => encoding),
-      newFilters || {}
-    )
+    // only update filters when they've changed
+    if (!deepEqual(oldFilters, newFilters)) {
+      newState.filterValues = getFilterValues(
+        layers.map(({ encoding }) => encoding),
+        newFilters || {}
+      )
+    }
+
     // only update render target when these are different
     if (oldRenderLayer && newRenderLayer.id !== oldRenderLayer.id) {
       const { device } = this.context
@@ -119,11 +132,58 @@ export default class StackedPNGTileLayer extends TileLayer {
     )
 
     const images = await Promise.all(imageRequests)
+
     return { images }
   }
 
+  renderLayers() {
+    // prescreen to make sure all visible tiles are loaded before having them render
+    const allLoaded = this.state.tileset.tiles
+      .filter((tile) => this.state.tileset.isTileVisible(tile))
+      .every((tile) => tile.isLoaded)
+
+    return this.state.tileset.tiles.map((tile) => {
+      if (!allLoaded) {
+        // nothing to show until all are loaded, but have to return existing layers
+        // for existing tiles
+        return tile.layers
+      }
+
+      const subLayerProps = this.getSubLayerPropsByTile(tile)
+      if (!tile.isLoaded && !tile.content) {
+        // nothing to show
+      } else if (!tile.layers) {
+        // cache the rendered layer in the tile
+        const layer = this.renderSubLayers({
+          ...this.props,
+          ...this.getSubLayerProps({
+            id: tile.id,
+            updateTriggers: this.props.updateTriggers,
+          }),
+          data: tile.content,
+          _offset: 0,
+          tile,
+        })
+        if (layer) {
+          tile.layers = [layer.clone({ tile, ...subLayerProps })]
+        } else {
+          tile.layers = []
+        }
+      } else if (
+        subLayerProps &&
+        tile.layers[0] &&
+        Object.keys(subLayerProps).some(
+          (propName) =>
+            tile.layers[0].props[propName] !== subLayerProps[propName]
+        )
+      ) {
+        tile.layers = tile.layers.map((layer) => layer.clone(subLayerProps))
+      }
+      return tile.layers
+    })
+  }
+
   renderSubLayers(props) {
-    // console.log('render sub layers', props)
     if (!props.visible) {
       return null
     }
@@ -157,6 +217,6 @@ export default class StackedPNGTileLayer extends TileLayer {
 StackedPNGTileLayer.layerName = 'StackedPNGTileLayer'
 StackedPNGTileLayer.defaultProps = {
   ...TileLayer.defaultProps,
-  filters: {},
+  filters: null,
   pickable: false,
 }
