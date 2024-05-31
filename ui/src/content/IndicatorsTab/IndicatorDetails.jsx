@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Box, Paragraph, Flex, Text, Heading, Image } from 'theme-ui'
+import { Box, Flex, Text, Heading, Image } from 'theme-ui'
 import { Reply } from '@emotion-icons/fa-solid'
 
 import { OutboundLink } from 'components/link'

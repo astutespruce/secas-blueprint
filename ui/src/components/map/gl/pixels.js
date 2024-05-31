@@ -1,50 +1,13 @@
 /* eslint-disable no-bitwise */
 
-import { readPixelsToArray } from '@luma.gl/core'
-import GL from '@luma.gl/constants'
-
 import { indexBy, setIntersection, sum } from 'util/data'
 
-const TILE_SIZE = 512
+const TILE_SIZE = 512 // physical tile size (layer tile size may be set differently to increase resolution)
 
-/**
- * Read a single pixel from a texture created from a PNG tile image into a
- * single uint32 value (RGB value only, alpha is ignored).
- * @param {*} texture - WebGL texture
- * @param {*} offsetX - offset x value into image
- * @param {*} offsetY - offset y value into image
- * @returns uint32 value
- */
-export const readPixelToUint32 = (texture, offsetX, offsetY) => {
-  const pixel = readPixelsToArray(texture, {
-    sourceX: offsetX,
-    sourceY: offsetY,
-    sourceFormat: GL.RGBA,
-    sourceWidth: 1,
-    sourceHeight: 1,
-    sourceType: GL.UNSIGNED_BYTE,
-  })
-
-  // decode to uint32, ignoring alpha value, which will be 0 for NODATA / empty tiles or 255
-  const [r, g, b] = pixel
-
-  const value = (r << 16) | (g << 8) | b
-
-  // console.debug('read pixel', [...pixel], '=>', value)
-
-  return value
-}
-
-const getTileID = (
-  zoom,
-  mercX,
-  mercY,
-  minZoom,
-  maxZoom,
-  tileSize = TILE_SIZE
-) => {
+const getTileID = (zoom, mercX, mercY, minZoom, maxZoom, tileSize) => {
   // zoom adapted from: https://github.com/visgl/deck.gl/blob/8.7-release/modules/geo-layers/src/tile-layer/utils.js::getTileIndices
   let z = Math.round(zoom + Math.log2(TILE_SIZE / tileSize))
+
   // clip to [minZoom, maxZoom]
   if (Number.isFinite(minZoom) && z < minZoom) {
     z = minZoom
@@ -60,7 +23,7 @@ const getTileID = (
   }
 }
 
-export const getTile = (map, screenPoint, layer) => {
+const getTile = (map, screenPoint, layer) => {
   // resolve the StackedPNGTileLayer; layers[1:n] are StackedPNGLayers
   const tileLayer = layer.implementation.deck.layerManager.layers[0]
   const {
@@ -80,11 +43,10 @@ export const getTile = (map, screenPoint, layer) => {
   )
 
   // rescale Mercator coordinates to tile coords
-  const scale = (2 ** tileID.z * TILE_SIZE) / tileSize
-  const offsetX = Math.floor((mercX * scale - tileID.x) * tileSize)
-  const offsetY = Math.floor((mercY * scale - tileID.y) * tileSize)
+  const scale = (2 ** tileID.z * tileSize) / tileSize
+  const offsetX = Math.floor((mercX * scale - tileID.x) * TILE_SIZE)
+  const offsetY = Math.floor((mercY * scale - tileID.y) * TILE_SIZE)
 
-  // const searchID = `${tileID.x}-${tileID.y}-${tileID.z}`
   const { z: searchZ, x: searchX, y: searchY } = tileID
 
   // tileset.selectedTiles  contain all tiles at current zoom level
@@ -186,16 +148,46 @@ export const extractPixelData = (
     return null
   }
 
-  // console.debug('tile', tile)
-
   // images are at tile.data.images
   const {
     data: { images },
   } = tile
 
-  const pixelValues = images.map((image) =>
-    readPixelToUint32(image, offsetX, offsetY)
-  )
+  const {
+    __deck: { device },
+  } = map
+
+  let pixels = null
+  // read all pixels into a single buffer; each 4 bytes corresponds
+  // to the R,G,B,A values of a given tile
+  const buffer = device.createBuffer({ byteLength: 4 * images.length })
+  const cmd = device.createCommandEncoder()
+  try {
+    images.forEach((texture, i) => {
+      cmd.copyTextureToBuffer({
+        source: texture,
+        width: 1,
+        height: 1,
+        origin: [offsetX, offsetY],
+        destination: buffer,
+        byteOffset: i * 4,
+      })
+    })
+
+    cmd.finish()
+    pixels = buffer.readSyncWebGL()
+  } finally {
+    buffer.destroy()
+    cmd.destroy()
+  }
+
+  const pixelValues = []
+  for (let i = 0; i < images.length; i += 1) {
+    // ignore alpha values
+    const value =
+      (pixels[i * 4] << 16) | (pixels[i * 4 + 1] << 8) | pixels[i * 4 + 2]
+    pixelValues.push(value)
+  }
 
   // decode pixel values
   const {

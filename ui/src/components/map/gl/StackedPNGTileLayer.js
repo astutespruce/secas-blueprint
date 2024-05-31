@@ -1,8 +1,7 @@
 import { TileLayer, _getURLFromTemplate } from '@deck.gl/geo-layers'
 import { load } from '@loaders.gl/core'
-import { Texture2D } from '@luma.gl/core'
 import { ImageLoader } from '@loaders.gl/images'
-import GL from '@luma.gl/constants'
+import { dequal as deepEqual } from 'dequal'
 
 import { sum } from 'util/data'
 
@@ -14,30 +13,26 @@ import fragmentShader from 'raw-loader!./fragment.fs'
 
 import { getFilterExpr, getFilterValues } from './filters'
 import StackedPNGLayer from './StackedPNGLayer'
+import { createPNGTexture, createPaletteTexture } from './texture'
 
 /**
  * Fetch a tile image asynchronously and load into a GL texture
  * @param {Object} gl - WebGL context
  * @param {String} url - url of tile
+ * @param {Object} signal - fetch signal, will set aborted to abort fetch
+ * @param {bool} skip - skip loading tile data (e.g,. out of viewport)
  * @returns
  */
-const fetchImage = async (gl, url, skip = false) => {
-  const data = skip ? null : await load(url, ImageLoader)
+const fetchImage = async (device, url, signal, skip = false) => {
+  const data = skip
+    ? null
+    : await load(url, ImageLoader, {
+        image: { type: 'imagebitmap' },
+        fetch: { signal },
+      })
 
   // always create a texture, which can be empty if there is no data
-  return new Texture2D(gl, {
-    data,
-    format: GL.RGBA,
-    dataFormat: GL.RGBA,
-    type: GL.UNSIGNED_BYTE,
-    parameters: {
-      [GL.TEXTURE_MIN_FILTER]: GL.NEAREST,
-      [GL.TEXTURE_MAG_FILTER]: GL.NEAREST,
-      [GL.TEXTURE_WRAP_S]: GL.CLAMP_TO_EDGE,
-      [GL.TEXTURE_WRAP_T]: GL.CLAMP_TO_EDGE,
-    },
-    mipmaps: false,
-  })
+  return createPNGTexture(device, data)
 }
 
 /**
@@ -48,7 +43,8 @@ export default class StackedPNGTileLayer extends TileLayer {
   initializeState() {
     super.initializeState()
 
-    const { layers } = this.props
+    const { device } = this.context
+    const { layers, filters, renderLayer } = this.props
 
     const encodingSchemes = layers.map(({ encoding }) => encoding)
 
@@ -64,12 +60,54 @@ export default class StackedPNGTileLayer extends TileLayer {
           )
           .replace('// <FILTER_EXPR>', getFilterExpr(encodingSchemes)),
       },
+      // following variables change over time and are updated via updateState
+      filterValues: getFilterValues(
+        layers.map(({ encoding }) => encoding),
+        filters || {}
+      ),
+      renderTarget: {
+        ...renderLayer,
+        palette: createPaletteTexture(device, renderLayer.colors),
+      },
     })
   }
 
-  async getTileData(tile) {
-    const { gl } = this.context
+  updateState(props) {
+    super.updateState(props)
 
+    const newState = {}
+    const {
+      props: {
+        layers,
+        renderLayer: newRenderLayer,
+        filters: newFilters = null,
+      },
+      oldProps: { renderLayer: oldRenderLayer, filters: oldFilters = null },
+    } = props
+
+    // only update filters when they've changed
+    if (!deepEqual(oldFilters, newFilters)) {
+      newState.filterValues = getFilterValues(
+        layers.map(({ encoding }) => encoding),
+        newFilters || {}
+      )
+    }
+
+    // only update render target when these are different
+    if (oldRenderLayer && newRenderLayer.id !== oldRenderLayer.id) {
+      const { device } = this.context
+      newState.renderTarget = {
+        ...newRenderLayer,
+        palette: createPaletteTexture(device, newRenderLayer.colors),
+      }
+    }
+
+    if (Object.keys(newState).length > 0) {
+      this.setState(newState)
+    }
+  }
+
+  async getTileData(tile) {
     // prevent fetching tiles if layer is not visible
     if (!this.props.visible) {
       return { images: null }
@@ -77,45 +115,98 @@ export default class StackedPNGTileLayer extends TileLayer {
 
     const {
       bbox: { west, south, east, north },
+      signal,
     } = tile
 
     const imageRequests = this.props.layers.map(
       ({ url, bounds: [xmin, ymin, xmax, ymax] }) => {
         // intersect tile bounds and layer bounds and skip if no overlap
         const skip = west > xmax || east < xmin || south > ymax || north < ymin
-        return fetchImage(gl, _getURLFromTemplate(url, tile), skip)
+        return fetchImage(
+          this.context.device,
+          _getURLFromTemplate(url, tile),
+          signal,
+          skip
+        )
       }
     )
 
     const images = await Promise.all(imageRequests)
+
     return { images }
   }
 
+  renderLayers() {
+    // prescreen to make sure all visible tiles are loaded before having them render
+    const allLoaded = this.state.tileset.tiles
+      .filter((tile) => this.state.tileset.isTileVisible(tile))
+      .every((tile) => tile.isLoaded)
+
+    return this.state.tileset.tiles.map((tile) => {
+      if (!allLoaded) {
+        // nothing to show until all are loaded, but have to return existing layers
+        // for existing tiles
+        return tile.layers
+      }
+
+      const subLayerProps = this.getSubLayerPropsByTile(tile)
+      if (!tile.isLoaded && !tile.content) {
+        // nothing to show
+      } else if (!tile.layers) {
+        // cache the rendered layer in the tile
+        const layer = this.renderSubLayers({
+          ...this.props,
+          ...this.getSubLayerProps({
+            id: tile.id,
+            updateTriggers: this.props.updateTriggers,
+          }),
+          data: tile.content,
+          _offset: 0,
+          tile,
+        })
+        if (layer) {
+          tile.layers = [layer.clone({ tile, ...subLayerProps })]
+        } else {
+          tile.layers = []
+        }
+      } else if (
+        subLayerProps &&
+        tile.layers[0] &&
+        Object.keys(subLayerProps).some(
+          (propName) =>
+            tile.layers[0].props[propName] !== subLayerProps[propName]
+        )
+      ) {
+        tile.layers = tile.layers.map((layer) => layer.clone(subLayerProps))
+      }
+      return tile.layers
+    })
+  }
+
   renderSubLayers(props) {
-    const { shaders } = this.state
+    if (!props.visible) {
+      return null
+    }
+
+    const { shaders, renderTarget, filterValues } = this.state
+
     const {
-      tile: {
-        bbox: { west, south, east, north },
-      },
-      layers,
+      tile: { boundingBox },
       data: { images } = {},
-      filters,
-      renderTarget,
     } = props
 
     if (images === null) {
       return null
     }
 
-    // TODO: figure out how to hoist this to state or memoize it:
-    const filterValues = getFilterValues(
-      layers.map(({ encoding }) => encoding),
-      filters || {}
-    )
-
     return new StackedPNGLayer(props, {
       shaders,
-      bounds: [west, south, east, north],
+      bounds: [
+        boundingBox[0][0],
+        boundingBox[0][1],
+        boundingBox[1][0],
+        boundingBox[1][1],
+      ],
       images,
       filterValues,
       renderTarget,
@@ -126,6 +217,6 @@ export default class StackedPNGTileLayer extends TileLayer {
 StackedPNGTileLayer.layerName = 'StackedPNGTileLayer'
 StackedPNGTileLayer.defaultProps = {
   ...TileLayer.defaultProps,
-  filters: {},
+  filters: null,
   pickable: false,
 }

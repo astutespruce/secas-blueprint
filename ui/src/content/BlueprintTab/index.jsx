@@ -3,10 +3,10 @@ import PropTypes from 'prop-types'
 import { Box, Heading, Text } from 'theme-ui'
 
 import {
-  useBlueprintPriorities,
-  useCorridors,
-  useSubregions,
-} from 'components/data'
+  blueprint as allPriorities,
+  corridors as corridorCategories,
+  subregions as subregionInfo,
+} from 'config'
 import { OutboundLink } from 'components/link'
 import NeedHelp from 'content/NeedHelp'
 import { ifNull, setIntersection, sortByFunc } from 'util/data'
@@ -23,9 +23,6 @@ const BlueprintTab = ({
   subregions,
   outsideSEPercent,
 }) => {
-  const { all: allPriorities } = useBlueprintPriorities()
-  const corridorCategories = useCorridors()
-  const { subregions: subregionInfo } = useSubregions()
   const marineSubregions = useMemo(
     () =>
       new Set(

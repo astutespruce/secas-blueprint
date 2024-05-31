@@ -1,5 +1,5 @@
-import { Texture2D } from '@luma.gl/core'
-import GL from '@luma.gl/constants'
+// import { Texture2D } from '@luma.gl/webgl'
+import { GL } from '@luma.gl/constants'
 
 /**
  * Convert hex string to RGBA array
@@ -41,38 +41,52 @@ const makeRGBAPalette = (colors) => {
 }
 
 /**
- * Create a WebGL texture from a palette of [R,G,B,A, ...]
+ * Create a WebGL texture from an array of hex colors
  * values
- * @param {*} gl - WebGL context
- * @param {Uint8Array} palette - palette array of [R,G,B,A, ...] values
+ * @param {*} device - WebGL device
+ * @param {Array} colors - array of hex colors
  * @returns WebGL texture
  */
-const createTextureFromPalette = (gl, palette) =>
-  new Texture2D(gl, {
-    width: palette.length / 4,
-    height: 1,
-    data: palette,
-    format: GL.RGBA,
-    dataFormat: GL.RGBA,
-    type: GL.UNSIGNED_BYTE,
-    parameters: {
-      [GL.TEXTURE_MIN_FILTER]: GL.NEAREST,
-      [GL.TEXTURE_MAG_FILTER]: GL.NEAREST,
-      [GL.TEXTURE_WRAP_S]: GL.CLAMP_TO_EDGE,
-      [GL.TEXTURE_WRAP_T]: GL.CLAMP_TO_EDGE,
-    },
-    mipmaps: false,
-  })
-
-export const createRenderTarget = (gl, pixelLayer, colors) => {
+export const createPaletteTexture = (device, colors) => {
   // IMPORTANT: palette must always include as its first entry a color for nodata
   const palette = makeRGBAPalette([
     null, // nodata value
     ...colors,
   ])
-
-  return {
-    palette: createTextureFromPalette(gl, palette),
-    ...pixelLayer,
-  }
+  return device.createTexture({
+    data: palette,
+    width: palette.length / 4,
+    height: 1,
+    format: 'rgba8unorm',
+    dataFormat: GL.RGBA,
+    type: GL.UNSIGNED_BYTE,
+    sampler: {
+      minFilter: 'nearest',
+      magFilter: 'nearest',
+      addressModeU: 'clamp-to-edge',
+      addressModeV: 'clamp-to-edge',
+    },
+    mipmaps: false,
+  })
 }
+
+/**
+ * Create a texture from a PNG image data
+ * @param {*} device - WebGL device
+ * @param {*} data - PNG data or null
+ * @returns WebGL texture
+ */
+export const createPNGTexture = (device, data) =>
+  device.createTexture({
+    data,
+    format: 'rgba8unorm',
+    dataFormat: GL.RGBA,
+    type: GL.UNSIGNED_BYTE,
+    sampler: {
+      minFilter: 'nearest',
+      magFilter: 'nearest',
+      addressModeU: 'clamp-to-edge',
+      addressModeV: 'clamp-to-edge',
+    },
+    mipmaps: false,
+  })

@@ -7,15 +7,14 @@ import React, {
 } from 'react'
 import PropTypes from 'prop-types'
 
-import { useIndicators } from 'components/data/Indicators'
+import { indicators } from 'config'
 import { indexBy, range } from 'util/data'
 import { logGAEvent } from 'util/log'
+import { renderLayersIndex } from 'components/map/pixelLayers'
 
 const Context = createContext()
 
 export const Provider = ({ children }) => {
-  const { indicators } = useIndicators()
-
   const [
     {
       mapMode,
@@ -75,7 +74,7 @@ export const Provider = ({ children }) => {
       mapMode: 'unit', // filter, pixel, or unit
       data: null,
       selectedIndicator: null,
-      renderLayer: null,
+      renderLayer: renderLayersIndex.blueprint,
       filters: initFilters,
       visibleSubregions: new Set(),
     }
@@ -147,9 +146,8 @@ export const Provider = ({ children }) => {
     }
   }, [])
 
-  // renderLayer is null or an object: {id, label, colors, categories}
+  // renderLayer is an object: {id, label, colors, categories}
   // id is  the id in pixelLayers.js encoding for that layer
-  // pass null to reset to Blueprint
   const setRenderLayer = useCallback((newRenderLayer) => {
     setState((prevState) => ({
       ...prevState,

@@ -1,3 +1,15 @@
+import {
+  blueprint,
+  blueprintCategories,
+  corridors,
+  ecosystems,
+  indicatorsIndex,
+  urban,
+  slrDepth,
+  slrNodata,
+} from 'config'
+import { indexBy, sortByFunc } from 'util/data'
+
 import { siteMetadata } from '../../../gatsby-config'
 
 const { tileHost } = siteMetadata
@@ -347,3 +359,100 @@ pixelLayers.forEach(({ encoding }, textureIndex) => {
     pixelLayerIndex[id] = { textureIndex, bits, offset, valueShift }
   })
 })
+
+const coreLayers = [
+  {
+    id: 'blueprint',
+    label: 'Blueprint priority',
+    valueLabel: 'for a connected network of lands and waters', // used in legend
+    // sort colors in ascending value; blueprint is in descending order
+    colors: blueprint
+      .map(({ color, value }) => (value === 0 ? null : color))
+      .reverse(),
+    categories: blueprintCategories,
+    layer: pixelLayerIndex.blueprint,
+  },
+  {
+    id: 'corridors',
+    label: 'Hubs and corridors',
+    colors: corridors
+      .slice()
+      .sort(sortByFunc('value'))
+      .map(({ color }) => color),
+    categories: corridors
+      .filter(({ value }) => value > 0)
+      .map(({ value, label, color }) => ({
+        value,
+        label,
+        color,
+        type: 'fill',
+      })),
+    layer: pixelLayerIndex.corridors,
+  },
+]
+
+const threatLayers = [
+  {
+    id: 'urban',
+    label: 'Probability of urbanization by 2060',
+    colors: urban.map(({ color }) => color),
+    categories: urban.filter(({ color }) => color !== null),
+    layer: pixelLayerIndex.urban,
+  },
+  {
+    id: 'slr',
+    label: 'Flooding extent by projected sea-level rise',
+    colors: slrDepth.concat(slrNodata).map(({ color }) => color),
+    categories: slrDepth
+      .concat(slrNodata.filter(({ value }) => value !== 13))
+      .map(({ label, ...rest }, i) => ({
+        ...rest,
+        label:
+          /* eslint-disable-next-line no-nested-ternary */
+          i === 1 ? `${label} foot` : i <= 10 ? `${label} feet` : label,
+        outlineWidth: 1,
+        outlineColor: 'grey.5',
+      })),
+    layer: pixelLayerIndex.slr,
+  },
+]
+
+const layers = coreLayers.concat(threatLayers)
+
+export const renderLayerGroups = [
+  {
+    id: 'core',
+    label: 'Priorities',
+    layers: coreLayers,
+  },
+  {
+    id: 'threats',
+    label: 'Threats',
+    layers: threatLayers,
+  },
+]
+
+ecosystems.forEach(
+  ({ id: groupId, label: groupLabel, indicators: groupIndicators }) => {
+    const group = {
+      id: groupId,
+      label: `${groupLabel} indicators`,
+      layers: groupIndicators.map((id) => {
+        const { label, values, valueLabel } = indicatorsIndex[id]
+        return {
+          id,
+          label,
+          colors: values.map(({ color }) => color),
+          categories: values.filter(({ color }) => color !== null).reverse(),
+          valueLabel,
+          layer: pixelLayerIndex[id],
+        }
+      }),
+    }
+
+    renderLayerGroups.push(group)
+    layers.push(...group.layers)
+  }
+)
+
+export const renderLayersIndex = indexBy(layers, 'id')

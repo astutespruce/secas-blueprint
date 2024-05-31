@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Box, Flex, Text } from 'theme-ui'
 
-import { useUrban } from 'components/data'
+import { urban as urbanCategories } from 'config'
 import { ResponsiveChart, UrbanChart } from 'components/chart'
 import { OutboundLink } from 'components/link'
 
@@ -32,8 +32,6 @@ const DataSource = () => (
 )
 
 const Urban = ({ type, urban, subregions }) => {
-  const urbanCategories = useUrban()
-
   if (type === 'pixel') {
     if (urban === null) {
       return (

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import { Box, Text } from 'theme-ui'
 
-import { useSLR } from 'components/data'
+import { slrNodata } from 'config'
 import { OutboundLink } from 'components/link'
 import { LineChart } from 'components/chart'
 import { formatPercent } from 'util/format'
@@ -24,13 +24,11 @@ const DataSource = () => (
 
 // SLR depth levels are in feet above current mean sea level: 0...10
 const SLR = ({ type, depth, nodata }) => {
-  const { nodata: nodataCategories } = useSLR()
-
   if (type === 'pixel') {
     if (nodata !== null) {
       return (
         <Box>
-          <Text>{nodataCategories[nodata].label}.</Text>
+          <Text>{slrNodata[nodata].label}.</Text>
           <DataSource />
         </Box>
       )
@@ -38,7 +36,7 @@ const SLR = ({ type, depth, nodata }) => {
     if (depth === null) {
       return (
         <Box>
-          <Text sx={{ color: 'grey.8' }}>{nodataCategories[2].label}.</Text>
+          <Text sx={{ color: 'grey.8' }}>{slrNodata[2].label}.</Text>
           <DataSource />
         </Box>
       )
@@ -74,14 +72,14 @@ const SLR = ({ type, depth, nodata }) => {
       if ((type === 'pixel' && nodata === i) || nodata[i] >= 99) {
         return (
           <Box>
-            <Text sx={{ color: 'grey.8' }}>{nodataCategories[i].label}.</Text>
+            <Text sx={{ color: 'grey.8' }}>{slrNodata[i].label}.</Text>
             <DataSource />
           </Box>
         )
       }
       if (nodata[i] > 1) {
         nodataItems.push(
-          `${nodataCategories[i].label
+          `${slrNodata[i].label
             .toLowerCase()
             .replace(/this area is/g, '')
             .replace(/for this area/g, '')
@@ -94,7 +92,7 @@ const SLR = ({ type, depth, nodata }) => {
   if (!(depth && depth.length > 0)) {
     return (
       <Box>
-        <Text sx={{ color: 'grey.8' }}>{nodataCategories[2].label}.</Text>
+        <Text sx={{ color: 'grey.8' }}>{slrNodata[2].label}.</Text>
         <DataSource />
       </Box>
     )

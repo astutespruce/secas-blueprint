@@ -63,7 +63,8 @@ const Filter = ({
     logGAEvent('set-filter-values', {
       filter: id,
       values: `${id}:${Object.entries(newActiveValues)
-        .filter(([k, v]) => v)
+        /* eslint-disable-next-line no-unused-vars */
+        .filter(([_, v]) => v)
         .map(([k]) => k.toString())
         .join(',')}`,
     })

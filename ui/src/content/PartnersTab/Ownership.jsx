@@ -3,17 +3,15 @@ import PropTypes from 'prop-types'
 import { Box, Flex, Text } from 'theme-ui'
 import { Check } from '@emotion-icons/fa-solid'
 
+import { ownership as ownershipCategories } from 'config'
 import { PercentBarChart } from 'components/chart'
-import { useOwnership } from 'components/data'
 import { sum } from 'util/data'
 
 const Ownership = ({ type, ownership }) => {
-  const { ownership: OWNERSHIP } = useOwnership()
-
   // handle empty ownership information
-  const bars = OWNERSHIP.map((category) => ({
+  const bars = ownershipCategories.map((category) => ({
     ...category,
-    percent: ownership ? ownership[category.id] || 0 : 0,
+    percent: ownership ? ownership[category.value] || 0 : 0,
     color: 'grey.9',
   }))
 
@@ -23,7 +21,7 @@ const Ownership = ({ type, ownership }) => {
     const remainder = 100 - total
     if (remainder > 0) {
       bars.push({
-        id: 'not_conserved',
+        value: 'not_conserved',
         label: 'Not conserved',
         color: 'grey.5',
         percent: remainder,
@@ -32,9 +30,9 @@ const Ownership = ({ type, ownership }) => {
 
     return (
       <Box sx={{ ml: '0.5rem', mt: '0.5rem' }}>
-        {bars.map(({ id, label, percent }) => (
+        {bars.map(({ value, label, percent }) => (
           <Flex
-            key={id}
+            key={value}
             sx={{
               alignItems: 'baseline',
               justifyContent: 'space-between',
@@ -68,7 +66,11 @@ const Ownership = ({ type, ownership }) => {
   }
 
   return bars.map((bar) => (
-    <PercentBarChart key={bar.id} {...bar} sx={{ mt: '0.5rem', mb: '1rem' }} />
+    <PercentBarChart
+      key={bar.value}
+      {...bar}
+      sx={{ mt: '0.5rem', mb: '1rem' }}
+    />
   ))
 }
 

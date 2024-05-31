@@ -1,3 +1,4 @@
+#version 300 es
 #define SHADER_NAME stackedpng_fragment_shader
 
 #ifdef GL_FRAGMENT_PRECISION_HIGH
@@ -6,15 +7,16 @@ precision highp float;
 precision mediump float;
 #endif
 
-varying vec2 vTexCoord;
+in vec2 vTexCoord;
+out vec4 fragColor;
 
 // uniforms for rendering the output after filtering
 uniform float opacity;
 uniform int renderLayerTextureIndex;
-uniform float renderLayerOffset;
-uniform float renderLayerBits;
+uniform int renderLayerOffset;
+uniform int renderLayerBits;
 uniform sampler2D renderLayerPalette;
-uniform float renderLayerPaletteSize;
+uniform int renderLayerPaletteSize;
 
 // uniforms for textures for each layer
 uniform sampler2D layer0;
@@ -30,72 +32,36 @@ uniform sampler2D layer8;
 // encoded filters, with a bit set to 1 for each value that is present in the
 // set of activated filters.  -1 indicates no filtering for that layer.
 // NOTE: array size is filled from JS since this can't be dynamic in the shader
-uniform float filterValues[<NUM_LAYERS>];
+uniform int filterValues[<NUM_LAYERS>];
 
-// return 32-bit integer(ish)
-float rgbToInt32(vec3 v) {
-  // equivalent of (r << 16) + (g << 8) + b
-  return (v.r * 65536.) + (v.g * 256.) + v.b;
+// return 32-bit integer from vector components
+int rgbToInt32(ivec3 v) {
+  return (v.r << 16) + (v.g << 8) + v.b;
 }
 
-bool isOdd(float v) { return (v - (floor(v * 0.5) * 2.0)) > 0.5; }
-
-// bitwise and (32 bit) adapted from:
-// https://gist.github.com/EliCDavis/f35a9e4afb8e1c9ae94cce8f3c2c9b9a
-float bitwise_and(float v1, float v2) {
-  float byte_val = 1.0;
-  float result = 0.0;
-
-  // iterate over each bit, stop when either bit is 0
-  for (int i = 0; i < 32; i++) {
-    if (v1 == 0.0 || v2 == 0.0) {
-      return result;
-    }
-
-    float both_bytes_1 = isOdd(v1) && isOdd(v2) ? 1.0 : 0.0;
-
-    result += both_bytes_1 * byte_val;
-    v1 = floor(v1 / 2.0);
-    v2 = floor(v2 / 2.0);
-    byte_val *= 2.0;
-  }
-  return result;
+int bitmask(int bits) {
+  return int(pow(2., float(bits))) - 1;
 }
 
-// shift v num bits right
-float rshift(float v, float num) {
-  return (num == 0.0) ? v : floor(v / pow(2.0, num));
-}
-
-// shift v num bits left
-float lshift(float v, float num) {
-  return (num == 0.0) ? v : v * pow(2.0, num);
-}
-
-// calculate bitmask for extracting number of bits from an integer (using
-// floating point math)
-float bitmask(float bits) { return pow(2.0, bits) - 1.0; }
-
-bool matchValue(float valueRGB, float offset, float numBits,
-                float filterValue) {
-  float value = bitwise_and(rshift(valueRGB, offset), bitmask(numBits));
+bool matchValue(int valueRGB, int offset, int numBits, int filterValue) {
+  int value = (valueRGB >> offset) & bitmask(numBits);
 
   // use left shift to set the bit in the value position to 1
   // then use bitwise AND to verify that value is also turned on in active
   // filters. If the value is 0, then value is not present in active filters.
-  return bitwise_and(filterValue, lshift(1.0, value)) > 0.0;
+  return (filterValue & (1 << value)) > 0;
 }
 
 void main(void) {
-  float valueRGB0 = rgbToInt32(texture2D(layer0, vTexCoord).rgb * 255.0);
-  float valueRGB1 = rgbToInt32(texture2D(layer1, vTexCoord).rgb * 255.0);
-  float valueRGB2 = rgbToInt32(texture2D(layer2, vTexCoord).rgb * 255.0);
-  float valueRGB3 = rgbToInt32(texture2D(layer3, vTexCoord).rgb * 255.0);
-  float valueRGB4 = rgbToInt32(texture2D(layer4, vTexCoord).rgb * 255.0);
-  float valueRGB5 = rgbToInt32(texture2D(layer5, vTexCoord).rgb * 255.0);
-  float valueRGB6 = rgbToInt32(texture2D(layer6, vTexCoord).rgb * 255.0);
-  float valueRGB7 = rgbToInt32(texture2D(layer7, vTexCoord).rgb * 255.0);
-  float valueRGB8 = rgbToInt32(texture2D(layer8, vTexCoord).rgb * 255.0);
+  int valueRGB0 = rgbToInt32(ivec3(texture(layer0, vTexCoord).rgb * 255.));
+  int valueRGB1 = rgbToInt32(ivec3(texture(layer1, vTexCoord).rgb * 255.));
+  int valueRGB2 = rgbToInt32(ivec3(texture(layer2, vTexCoord).rgb * 255.));
+  int valueRGB3 = rgbToInt32(ivec3(texture(layer3, vTexCoord).rgb * 255.));
+  int valueRGB4 = rgbToInt32(ivec3(texture(layer4, vTexCoord).rgb * 255.));
+  int valueRGB5 = rgbToInt32(ivec3(texture(layer5, vTexCoord).rgb * 255.));
+  int valueRGB6 = rgbToInt32(ivec3(texture(layer6, vTexCoord).rgb * 255.));
+  int valueRGB7 = rgbToInt32(ivec3(texture(layer7, vTexCoord).rgb * 255.));
+  int valueRGB8 = rgbToInt32(ivec3(texture(layer8, vTexCoord).rgb * 255.));
 
   // canRender is True where all filters are either not set or value is one
   // of active filter values
@@ -105,7 +71,7 @@ void main(void) {
 
   // bool canRender = true;
 
-  float valueRGB;
+  int valueRGB;
   if (renderLayerTextureIndex == 0) {
     valueRGB = valueRGB0;
   }
@@ -127,19 +93,11 @@ void main(void) {
     valueRGB = valueRGB8;
   }
 
-  float renderValue = bitwise_and(rshift(valueRGB, renderLayerOffset),
-                                  bitmask(renderLayerBits));
+  int renderValue = (valueRGB >> renderLayerOffset) & bitmask(renderLayerBits);
+  fragColor = texelFetch(renderLayerPalette, ivec2(renderValue, 0), 0);
 
-  // subtracting 0.1 from layer palette size is required to get this to work
-  // properly on multiple graphics cards
-  vec4 color =
-      texture2D(renderLayerPalette,
-                vec2(renderValue / (renderLayerPaletteSize - 0.1), 0.5));
-
-  color.a = color.a * opacity;
+  fragColor.a = fragColor.a * opacity;
   if (!canRender) {
-    color.a = 0.0;
+    fragColor.a = 0.0;
   }
-
-  gl_FragColor = color;
 }

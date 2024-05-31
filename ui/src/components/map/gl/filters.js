@@ -15,7 +15,7 @@ export const getFilterExpr = (encodingSchemes) => {
     const expressions = []
     layers.forEach(({ offset, bits }) => {
       expressions.push(
-        `\n((filterValues[${i}] < 0.0) || matchValue(valueRGB${textureIndex}, ${offset}.0, ${bits}.0, filterValues[${i}]))`
+        `\n((filterValues[${i}] < 0) || matchValue(valueRGB${textureIndex}, ${offset}, ${bits}, filterValues[${i}]))`
       )
       i += 1
     })
@@ -59,5 +59,6 @@ export const getFilterValues = (encodingSchemes, filters) => {
       }
     })
   })
+
   return filterValues
 }
