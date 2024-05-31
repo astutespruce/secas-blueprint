@@ -76,7 +76,7 @@ def get_dataset(zip):
     if filename.endswith(".shp"):
         missing = []
         for ext in (".prj", ".shx"):
-            if not (filename.replace(".shp", ext) in files):
+            if filename.replace(".shp", ext) not in files:
                 missing.append(ext)
 
         if missing:
@@ -98,7 +98,7 @@ def get_dataset(zip):
     # Validate that that layer has at least one feature
     num_features = read_info(dataset, layers[0, 0])["features"]
     if num_features == 0:
-        log.error(f"Upload data source does not contain any features")
+        log.error("Upload data source does not contain any features")
         raise ValueError("data source must contain at least one feature")
 
     return filename, layers[0, 0]

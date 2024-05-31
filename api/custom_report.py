@@ -14,7 +14,7 @@ from api.settings import LOGGING_LEVEL, TEMP_DIR, CUSTOM_REPORT_MAX_ACRES
 from api.stats.custom_area import get_custom_area_results
 from api.progress import set_progress
 
-from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES
+from analysis.constants import DATA_CRS, GEO_CRS
 from analysis.lib.geometry import dissolve
 
 log = logging.getLogger(__name__)

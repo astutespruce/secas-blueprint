@@ -43,3 +43,6 @@ watchfiles = "^0.21.0"
 # numpy and Cython are required to execute setup.py to build Cython extensions
 requires = ["poetry-core>=1.0.0", "setuptools", "wheel", "numpy", "Cython"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+exclude = ['.scratch']

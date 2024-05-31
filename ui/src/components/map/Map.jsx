@@ -688,7 +688,10 @@ const Map = () => {
             map.addLayer(layer, beforeLayer)
           })
 
-          map.addLayer(pixelLayer, beforeLayer)
+          if (!map.getLayer('pixelLayers')) {
+            // pixel layer appears to now be retained on style change
+            map.addLayer(pixelLayer, beforeLayer)
+          }
         })
       }
 

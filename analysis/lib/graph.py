@@ -59,7 +59,7 @@ class DirectedGraph(object):
         groups = []
         seen = set()
         for node in self.adj_matrix.keys():
-            if not node in seen:
+            if node not in seen:
                 # add current node with all descendants
                 adj_nodes = {node} | self.descendants(node)
                 seen.update(adj_nodes)
@@ -96,7 +96,7 @@ class DirectedGraph(object):
                 nodes = next_nodes
                 next_nodes = set()
                 for next_node in nodes:
-                    if not next_node in out:
+                    if next_node not in out:
                         out.add(next_node)
                         next_nodes.update(self.adj_matrix.get(next_node, []))
             return out

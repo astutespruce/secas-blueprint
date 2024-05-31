@@ -1,10 +1,8 @@
-from base64 import b64encode
 from datetime import date, datetime, timezone
 from io import BytesIO
 from pathlib import Path
 import sys
 
-import weasyprint
 from weasyprint import HTML, default_url_fetcher
 from jinja2 import Environment, FileSystemLoader
 

@@ -6,7 +6,6 @@ from progress.bar import Bar
 import numpy as np
 import pandas as pd
 import rasterio
-from rasterio.enums import Resampling
 from rasterio.windows import get_data_window, Window, transform as transform_for_window
 import geopandas as gp
 import shapely
@@ -21,7 +20,7 @@ from analysis.constants import (
     SLR_NODATA_VALUES,
     DATA_CRS,
 )
-from analysis.lib.raster import write_raster, add_overviews, shift_window, clip_window
+from analysis.lib.raster import write_raster, shift_window, clip_window
 
 data_dir = Path("data/inputs")
 indicators_dir = data_dir / "indicators"

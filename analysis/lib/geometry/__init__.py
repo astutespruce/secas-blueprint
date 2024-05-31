@@ -1,3 +1,5 @@
+# ruff: noqa
+
 from analysis.lib.geometry.aggregate import (
     dissolve,
     find_contiguous_groups,

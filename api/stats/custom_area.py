@@ -1,14 +1,12 @@
 from pathlib import Path
-from time import time
 
 import geopandas as gp
 import numpy as np
 import shapely
 
-from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES
-from analysis.lib.geometry import to_crs
+from analysis.constants import M2_ACRES
 from analysis.lib.stats.blueprint import summarize_blueprint_in_aoi
-from analysis.lib.stats.ownership import get_lta_search_info, summarize_ownership_in_aoi
+from analysis.lib.stats.ownership import summarize_ownership_in_aoi
 from analysis.lib.stats.parca import get_parcas_for_aoi
 from analysis.lib.stats.rasterized_geometry import RasterizedGeometry
 from analysis.lib.stats.slr import summarize_slr_in_aoi

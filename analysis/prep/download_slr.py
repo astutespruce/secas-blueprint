@@ -122,7 +122,7 @@ async def download(urls, out_dir):
             asyncio.ensure_future(download_state_chunk(client, url, out_dir))
             for url in urls
         ]
-        completed = await asyncio.gather(*tasks)
+        await asyncio.gather(*tasks)
 
 
 out_dir = Path("source_data/slr")

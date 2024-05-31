@@ -1,6 +1,5 @@
 from copy import deepcopy
 from pathlib import Path
-from time import time
 
 import pandas as pd
 import rasterio

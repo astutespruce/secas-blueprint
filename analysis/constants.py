@@ -83,7 +83,7 @@ URBAN_YEARS = [2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100]
 # Classified Urban 2060
 # NOTE: value 5 is not urbanized
 URBAN = json.loads(open(json_dir / "urban.json").read())
-URBAN_COLORS = {e["value"]: e["color"] for e in URBAN if not e["color"] is None}
+URBAN_COLORS = {e["value"]: e["color"] for e in URBAN if e["color"] is not None}
 URBAN_LEGEND = URBAN
 
 # depth in 1 foot increments from 0
