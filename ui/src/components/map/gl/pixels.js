@@ -2,18 +2,12 @@
 
 import { indexBy, setIntersection, sum } from 'util/data'
 
-const TILE_SIZE = 512
+const TILE_SIZE = 512 // physical tile size (layer tile size may be set differently to increase resolution)
 
-const getTileID = (
-  zoom,
-  mercX,
-  mercY,
-  minZoom,
-  maxZoom,
-  tileSize = TILE_SIZE
-) => {
+const getTileID = (zoom, mercX, mercY, minZoom, maxZoom, tileSize) => {
   // zoom adapted from: https://github.com/visgl/deck.gl/blob/8.7-release/modules/geo-layers/src/tile-layer/utils.js::getTileIndices
   let z = Math.round(zoom + Math.log2(TILE_SIZE / tileSize))
+
   // clip to [minZoom, maxZoom]
   if (Number.isFinite(minZoom) && z < minZoom) {
     z = minZoom
@@ -49,11 +43,10 @@ const getTile = (map, screenPoint, layer) => {
   )
 
   // rescale Mercator coordinates to tile coords
-  const scale = (2 ** tileID.z * TILE_SIZE) / tileSize
-  const offsetX = Math.floor((mercX * scale - tileID.x) * tileSize)
-  const offsetY = Math.floor((mercY * scale - tileID.y) * tileSize)
+  const scale = (2 ** tileID.z * tileSize) / tileSize
+  const offsetX = Math.floor((mercX * scale - tileID.x) * TILE_SIZE)
+  const offsetY = Math.floor((mercY * scale - tileID.y) * TILE_SIZE)
 
-  // const searchID = `${tileID.x}-${tileID.y}-${tileID.z}`
   const { z: searchZ, x: searchX, y: searchY } = tileID
 
   // tileset.selectedTiles  contain all tiles at current zoom level

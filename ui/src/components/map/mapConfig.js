@@ -78,12 +78,7 @@ export const layers = [
     type: 'raster',
     minzoom: 3,
     paint: {
-      'raster-opacity': {
-        stops: [
-          [10, 0.8],
-          [12, 0.6],
-        ],
-      },
+      'raster-opacity': 0.7,
     },
   },
   {

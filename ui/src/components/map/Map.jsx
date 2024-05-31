@@ -256,6 +256,7 @@ const Map = () => {
               filters: null,
               visible: false,
               renderLayer,
+              tileSize: 512,
             }),
           ],
         })
