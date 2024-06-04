@@ -120,29 +120,6 @@ def window_overlaps(window, dataset):
     return False
 
 
-def boundless_raster_geometry_mask(dataset, shapes, bounds, all_touched=False):
-    """Alternative to rasterio.mask::raster_geometry_mask that allows boundless
-    reads from raster data sources.
-
-    Parameters
-    ----------
-    dataset : open rasterio dataset
-    shapes : list-like of geometry objects that provide __geo_interface__
-    bounds : list-like of [xmin, ymin, xmax, ymax]
-    all_touched : bool, optional (default: False)
-    """
-
-    window = get_window(dataset, bounds)
-
-    transform = dataset.window_transform(window)
-    out_shape = (int(window.height), int(window.width))
-    mask = geometry_mask(
-        shapes, transform=transform, out_shape=out_shape, all_touched=all_touched
-    )
-
-    return mask, transform, window
-
-
 def create_lowres_mask(
     filename,
     outfilename,
