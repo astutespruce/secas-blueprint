@@ -33,9 +33,7 @@ def dissolve(df, by, grid_size=None, agg=None, allow_multi=True, op="union"):
     else:
         agg = dict()
 
-    agg["geometry"] = lambda g: union_or_combine(
-        g.values.data, grid_size=grid_size, op=op
-    )
+    agg["geometry"] = lambda g: union_or_combine(g.values, grid_size=grid_size, op=op)
 
     dissolved = gp.GeoDataFrame(
         df.groupby(by).agg(agg).reset_index(), geometry="geometry", crs=df.crs
