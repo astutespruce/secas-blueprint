@@ -247,6 +247,7 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
     df = pd.read_excel(
         indicators_dir / "Blueprint 2023 Indicator Thresholds.xlsx",
         sheet_name=sheet_name,
+        engine="calamine",
     ).rename(
         columns={
             "Indicator": "label",

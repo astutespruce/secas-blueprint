@@ -27,7 +27,11 @@ const DataSource = () => (
     <OutboundLink to="https://cnr.ncsu.edu/geospatial/">
       Center for Geospatial Analytics
     </OutboundLink>
-    , NC State University.
+    , NC State University. To explore maps of additional time periods,{' '}
+    <OutboundLink to="https://www.arcgis.com/apps/mapviewer/index.html?webmap=3d2eadbfd0b347eca3dcb927e9778dd9">
+      click here
+    </OutboundLink>
+    .
   </Text>
 )
 
