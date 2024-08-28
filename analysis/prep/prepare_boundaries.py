@@ -1,5 +1,6 @@
 import math
 from pathlib import Path
+import warnings
 
 from affine import Affine
 import geopandas as gp
@@ -13,6 +14,9 @@ import shapely
 from analysis.constants import DATA_CRS, SECAS_STATES, MASK_RESOLUTION
 from analysis.lib.geometry import make_valid, to_dict_all, to_dict
 from analysis.lib.raster import write_raster, add_overviews, create_lowres_mask
+
+warnings.filterwarnings("ignore", message=".*Measured 3D MultiPolygon.*")
+warnings.filterwarnings("ignore", message=".*polygon with more than 100 parts.*")
 
 NODATA = 255
 
@@ -29,19 +33,20 @@ out_dir.mkdir(exist_ok=True, parents=True)
 
 ### Extract subregions that define where to expect certain indicators
 # sort by Hilbert distance so that they are geographically ordered
-subregion_df = read_dataframe(
-    src_dir / "blueprint/SoutheastBlueprint2023Subregions.shp", columns=["SubRgn"]
-).rename(columns={"SubRgn": "subregion"})
+subregion_df = (
+    read_dataframe(
+        src_dir / "blueprint/SoutheastBlueprint2023Subregions.shp",
+        columns=["SubRgn"],
+        use_arrow=True,
+    )
+    .rename(columns={"SubRgn": "subregion"})
+    .sort_values(by="geometry")
+)
 subregion_df["marine"] = subregion_df.subregion.isin(
     ["Atlantic Marine", "Gulf of Mexico"]
 )
-subregion_df["hilbert"] = subregion_df.hilbert_distance()
 subregion_df = (
-    subregion_df.sort_values(by="hilbert")
-    .drop(columns=["hilbert"])
-    .reset_index(drop=True)
-    .reset_index()
-    .rename(columns={"index": "value"})
+    subregion_df.reset_index(drop=True).reset_index().rename(columns={"index": "value"})
 )
 
 subregion_df["geometry"] = shapely.make_valid(subregion_df.geometry.values)
@@ -49,15 +54,17 @@ subregion_df["geometry"] = shapely.make_valid(subregion_df.geometry.values)
 subregion_df.to_feather(out_dir / "subregions.feather")
 write_dataframe(subregion_df, bnd_dir / "subregions.fgb")
 
-subregion_df[['value', 'subregion', 'marine']].to_json(constants_dir / 'subregions.json', orient='records')
+subregion_df[["value", "subregion", "marine"]].to_json(
+    constants_dir / "subregions.json", orient="records"
+)
 
 ### Extract Blueprint extent
 print("Extracting SE Blueprint extent")
-with rasterio.open(src_dir / "blueprint/SoutheastBlueprint2023Extent.tif") as src:
+with rasterio.open(src_dir / "blueprint/SEBlueprintExtent2024.tif") as src:
     nodata = int(src.nodata)
     data = src.read(1)
 
-    # uncomment to recalculate
+    # # uncomment to recalculate
     # window = windows.get_data_window(data, nodata=nodata)
     # print(window)
 
@@ -156,9 +163,10 @@ with rasterio.open(src_dir / "blueprint/SoutheastBlueprint2023Extent.tif") as sr
 state_list = ",".join(f"'{state}'" for state in SECAS_STATES)
 states = (
     read_dataframe(
-        src_dir / "boundaries/tl_2022_us_state.zip",
+        src_dir / "boundaries/tl_2023_us_state.zip",
         columns=["STATEFP", "STUSPS", "NAME"],
         where=f""""STUSPS" in ({state_list})""",
+        use_arrow=True,
     )
     .rename(columns={"NAME": "state", "STUSPS": "id"})
     .to_crs(DATA_CRS)
@@ -169,9 +177,10 @@ states.to_feather(out_dir / "states.feather")
 fips_list = ",".join(f"'{fips}'" for fips in states.STATEFP.unique())
 counties = (
     read_dataframe(
-        src_dir / "boundaries/tl_2022_us_county.zip",
+        src_dir / "boundaries/tl_2023_us_county.zip",
         columns=["STATEFP", "GEOID", "NAME", "geometry"],
         where=f""""STATEFP" in ({fips_list})""",
+        use_arrow=True,
     )
     .rename(columns={"GEOID": "FIPS", "NAME": "county"})
     .to_crs(DATA_CRS)

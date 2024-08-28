@@ -83,25 +83,22 @@ async def summarize_blueprint_in_aoi(
     if progress_callback is not None:
         await progress_callback(20)
 
-    # empty dict indicates no hubs / corridors present
-    corridors = {}
+    # empty list indicates no hubs / corridors present
+    corridors = []
 
     # 0 is not hub / corridor, so ignore that for determining presence
     if corridor_acres[1:].max() > 0:
         # only keep the ones that are present
-        corridor_values = [
+        corridors = [
             {
                 **e,
                 "acres": corridor_acres[i],
                 "percent": 100 * corridor_acres[i] / rasterized_geometry.acres,
             }
             for i, e in enumerate(pluck(CORRIDORS, ["label", "value", "color", "type"]))
-            if corridor_acres[i]
         ]
         # sort so that value 0 goes to end
-        corridor_values = sorted(corridor_values, key=lambda x: x["value"] or 99)
-        corridor_types = set(v["type"] for v in corridor_values if v["value"] > 0)
-        corridors = {"entries": corridor_values, "types": corridor_types}
+        corridors = sorted(corridors, key=lambda x: x["value"] or 99)
 
     indicators_present = []
     for indicator in INDICATORS:
@@ -359,24 +356,20 @@ def get_blueprint_unit_results(results_dir, unit):
 
     cols = [c for c in blueprint_results.index if c.startswith("corridors_")]
     corridor_acres = blueprint_results[cols].values
-    corridors = {}
+    corridors = []
 
-    # ignore 0 (not a hub / corridor)
     if corridor_acres[1:].max() > 0:
         # only keep the ones that are present
-        corridor_values = [
+        corridors = [
             {
                 **e,
                 "acres": corridor_acres[i],
                 "percent": 100 * corridor_acres[i] / unit.rasterized_acres,
             }
             for i, e in enumerate(pluck(CORRIDORS, ["label", "value", "color", "type"]))
-            if corridor_acres[i]
         ]
         # sort so that value 0 goes to end
-        corridor_values = sorted(corridor_values, key=lambda x: x["value"] or 99)
-        corridor_types = set(v["type"] for v in corridor_values if v["value"] > 0)
-        corridors = {"entries": corridor_values, "types": corridor_types}
+        corridors = sorted(corridors, key=lambda x: x["value"] or 99)
 
     # only check areas of indicators actually present in summaries for unit type
     check_indicators = [

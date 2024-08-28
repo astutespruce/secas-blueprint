@@ -86,7 +86,7 @@
       },
       {
         "value": 3,
-        "label": ">70-80 natural landcover",
+        "label": ">70-80% natural landcover",
         "color": "#7090A1"
       },
       {
@@ -104,7 +104,9 @@
     "captionLabel": "Caribbean natural landcover in floodplains",
     "goodThreshold": 4,
     "url": "https://secas-fws.hub.arcgis.com/maps/10b1722decbb4e7ea497108777b85264/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "f_caribbeannetworkcomplexity",
@@ -114,7 +116,7 @@
     "values": [
       {
         "value": 0,
-        "label": "Not identified as a floodplain",
+        "label": "Not identified as floodplain",
         "color": null
       },
       {
@@ -142,7 +144,9 @@
     "captionLabel": "Caribbean network complexity",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/d4c056954bfe4e9aa2c7c603aa1593b1/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "f_caribbeanpermeablesurface",
@@ -175,7 +179,9 @@
     "captionLabel": "Caribbean permeable surface",
     "goodThreshold": 4,
     "url": "https://secas-fws.hub.arcgis.com/maps/e6075d1afa7e4cf0ad00f00b2033c81c/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "f_gulfmigratoryfishconnectivity",
@@ -204,21 +210,24 @@
     "goodThreshold": 1,
     "url": "https://secas-fws.hub.arcgis.com/maps/3bb0ba3e460a4c8b9f1970ba83fc4dca/about",
     "subregions": [
+      "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
       "East Gulf Coastal Plain",
       "Mid East Gulf Coastal Plain",
-      "Mississippi Alluvial Valley"
+      "Mississippi Alluvial Valley",
+      "Piedmont",
+      "South Appalachians"
     ]
   },
   {
     "id": "f_imperiledaquaticspecies",
     "filename": "ImperiledAquaticSpecies.tif",
     "label": "Imperiled aquatic species",
-    "description": "This indicator measures the number of aquatic animal Species of Greatest Conservation Need (SGCN) observed within each 12-digit HUC subwatershed, including fish, mussels, snails, crayfish, and amphibians. SGCN are identified in State Wildlife Action Plans as most in need of conservation action. This indicator captures patterns of rare and endemic aquatic species diversity. It originates from state Natural Heritage Program data collected by the Southeast Aquatic Resources Partnership and applies to the Environmental Protection Agency's estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood (also known as the 1% annual chance flood).",
+    "description": "This indicator measures the number of aquatic animal Regional Species of Greatest Conservation Need (RSGCN) observed within each 12-digit HUC subwatershed, including fish, mussels, snails, crayfish, and amphibians. RSGCN are regional priority species derived from the list of SGCN identified in Southeast State Wildlife Action Plans as most in need of need of conservation action. RSGCN were chosen based on consistent criteria, such as level of conservation concern, regional stewardship responsibility, and ecological significance. This indicator originates from state Natural Heritage Program data collected by the Southeast Aquatic Resources Partnership and applies to the Environmental Protection Agency's estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood (also known as the 1% annual chance flood).",
     "values": [
       {
         "value": 0,
-        "label": "Not identified as a floodplain (excluding West Virginia)",
+        "label": "Not identified as a floodplain",
         "color": null
       },
       {
@@ -267,10 +276,10 @@
         "color": "#081D58"
       }
     ],
-    "valueLabel": "Number of aquatic animal Species of Greatest Conservation Need observed",
+    "valueLabel": "Number of aquatic animal Regional Species of Greatest Conservation Need (RSGCN) observed",
     "captionLabel": "imperiled aquatic species",
     "goodThreshold": null,
-    "url": "https://secas-fws.hub.arcgis.com/maps/b8c3a9c98a884a6b82cd70a904931a9c/about",
+    "url": "",
     "subregions": [
       "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
@@ -335,7 +344,7 @@
     "valueLabel": "Percent natural landcover within the estimated floodplain, by catchment",
     "captionLabel": "natural landcover in floodplains",
     "goodThreshold": 4,
-    "url": "https://secas-fws.hub.arcgis.com/maps/9a908b4b3a8443bea1fca74261d7938f/about",
+    "url": "",
     "subregions": [
       "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
@@ -410,7 +419,7 @@
     "valueLabel": "Number of connected stream size classes",
     "captionLabel": "network complexity",
     "goodThreshold": 4,
-    "url": "https://secas-fws.hub.arcgis.com/maps/29903714287a430f8cf71e3e42dccbcc/about",
+    "url": "",
     "subregions": [
       "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
@@ -462,10 +471,10 @@
         "color": "#0000E0"
       }
     ],
-    "valueLabel": "Percent of catchment permeable ",
+    "valueLabel": "Percent of catchment permeable",
     "captionLabel": "permeable surface",
     "goodThreshold": 4,
-    "url": "https://secas-fws.hub.arcgis.com/maps/fws::permeable-surface-southeast-blueprint-indicator-2023/about",
+    "url": "",
     "subregions": [
       "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
@@ -491,53 +500,10 @@
     ]
   },
   {
-    "id": "f_westvirginiaimperiledaquaticspecies",
-    "filename": "WestVirginiaImperiledAquaticSpecies.tif",
-    "label": "West Virginia imperiled aquatic species",
-    "description": "This indicator counts the number of aquatic species within each 12-digit HUC subwatershed in West Virginia that are listed as G1 (globally critically imperiled), G2 (globally imperiled), or threatened/endangered under the U.S. Endangered Species Act. This indicator captures patterns of rare and endemic aquatic species diversity. It fills a key gap in the imperiled aquatic species indicator, which does not yet cover West Virginia. This indicator originates from the Environmental Protection Agency's EnviroAtlas data.",
-    "values": [
-      {
-        "value": 0,
-        "label": "Not identified as a floodplain",
-        "color": null
-      },
-      {
-        "value": 1,
-        "label": "0 species",
-        "color": "#FFFFC0"
-      },
-      {
-        "value": 2,
-        "label": "1 species",
-        "color": "#E9F898"
-      },
-      {
-        "value": 3,
-        "label": "2 species",
-        "color": "#BBE9A1"
-      },
-      {
-        "value": 4,
-        "label": "3 species",
-        "color": "#73CDB8"
-      },
-      {
-        "value": 5,
-        "label": "4+ species",
-        "color": "#39B5C4"
-      }
-    ],
-    "valueLabel": "Number of aquatic imperiled (G1/G2) or threatened/endangered animal species observed",
-    "captionLabel": "west virginia imperiled aquatic species",
-    "goodThreshold": null,
-    "url": "https://secas-fws.hub.arcgis.com/maps/a9e4a9964bb9464bbf620195133a43f0/about",
-    "subregions": ["North Appalachians"]
-  },
-  {
     "id": "m_atlanticcoralandhardbottom",
     "filename": "AtlanticCoralandHardbottom.tif",
     "label": "Atlantic coral & hardbottom",
-    "description": "This indicator predicts the presence of coral and hardbottom in the Atlantic ocean based on direct observations, known locations of human-created structures like artificial reefs, and predictive models. The models use hardbottom observations and a suite of environmental predictors including measures of depth, seafloor topography and substrate, oceanography, and geography. Hardbottom provides an anchor for important seafloor habitats such as deep-sea corals, plants, and sponges, providing valuable structure that supports a wide range of invertebrate and fish species. This indicator combines data from The Nature Conservancy's South Atlantic Bight Marine Assessment and multiple National Oceanic and Atmospheric Administration datasets (deep-sea coral observations, shipwrecks, artificial reefs, and two projects predicting hardbottom distribution).",
+    "description": "This indicator predicts the presence of coral and hardbottom in the Atlantic Ocean based on direct observations, distribution models, and known locations of artificial reefs and shipwrecks. The models use hardbottom observations and a suite of environmental predictors including measures of depth, seafloor topography and substrate, oceanography, and geography. Hardbottom provides an anchor for important seafloor habitats such as deep-sea corals, plants, and sponges, providing valuable structure that supports a wide range of invertebrate and fish species. This indicator combines data from multiple sources, including The Nature Conservancy's South Atlantic Bight Marine Assessment, several National Oceanic and Atmospheric Administration datasets, Florida state data, and more.",
     "values": [
       {
         "value": 0,
@@ -546,49 +512,49 @@
       },
       {
         "value": 1,
-        "label": "Lowest probability of hardbottom (≤20th percentile)",
+        "label": "Medium probability of hardbottom (>40th-60th percentile)",
         "color": "#FFCABF"
       },
       {
         "value": 2,
-        "label": "Low probability of hardbottom (>20th-40th percentile)",
+        "label": "High probability of hardbottom (>60th-80th percentile)",
         "color": "#FFB2A3"
       },
       {
         "value": 3,
-        "label": "Medium probability of hardbottom (>40th-60th percentile)",
+        "label": "Highest probability of hardbottom (>80th percentile)",
         "color": "#F49C91"
       },
       {
         "value": 4,
-        "label": "High probability of hardbottom(>60th-80th percentile)",
+        "label": "Predicted cold-water coral mounds (Blake Plateau)",
         "color": "#C38CA7"
       },
       {
         "value": 5,
-        "label": "Highest probability of hardbottom (>80th percentile)",
+        "label": "Shipwrecks",
         "color": "#848ABF"
       },
       {
         "value": 6,
-        "label": "Predicted cold water coral mounds (Blake Plateau)",
+        "label": "Artificial reefs",
         "color": "#3A85C4"
       },
       {
         "value": 7,
-        "label": "Confirmed natural or human-created hardbottom (shipwrecks, artificial reefs)",
+        "label": "Confirmed natural hardbottom",
         "color": "#1776BB"
       },
       {
         "value": 8,
-        "label": "Confirmed coral",
+        "label": "Confirmed hardbottom-associated species (corals, sponges)",
         "color": "#0060A6"
       }
     ],
     "valueLabel": "",
     "captionLabel": "Atlantic coral & hardbottom",
     "goodThreshold": null,
-    "url": "https://secas-fws.hub.arcgis.com/maps/87bb82c4993e4a2baaa17b3aa77e8631/about",
+    "url": "",
     "subregions": [
       "Atlantic Coastal Plain",
       "Atlantic Marine",
@@ -604,35 +570,38 @@
     "values": [
       {
         "value": 1,
-        "label": "Lowest predicted genus richness (0-1)",
+        "label": "Lowest genus richness (0-1)",
         "color": "#EB9EA7"
       },
       {
         "value": 2,
-        "label": "Low predicted genus richness (>1-2)",
+        "label": "Low genus richness (>1-2)",
         "color": "#D67689"
       },
       {
         "value": 3,
-        "label": "Medium predicted genus richness (>2-3)",
+        "label": "Medium genus richness (>2-3)",
         "color": "#BA526F"
       },
       {
         "value": 4,
-        "label": "High predicted genus richness (>3-4)",
+        "label": "High genus richness (>3-4)",
         "color": "#913857"
       },
       {
         "value": 5,
-        "label": "Highest predicted genus richness (>4)",
+        "label": "Highest genus richness (>4)",
         "color": "#67223F"
       }
     ],
-    "valueLabel": "",
+    "valueLabel": "Level of predicted average genus richness",
     "captionLabel": "Atlantic deep-sea coral richness",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/43113a697188432c8bf8f99099b35396/about",
-    "subregions": ["Atlantic Marine", "Gulf of Mexico"]
+    "subregions": [
+      "Atlantic Marine",
+      "Gulf of Mexico"
+    ]
   },
   {
     "id": "m_atlanticestuarinefishhabitat",
@@ -870,7 +839,9 @@
     "captionLabel": "Caribbean beach habitat",
     "goodThreshold": 2,
     "url": "https://secas-fws.hub.arcgis.com/maps/1622a316b6bf4c8293284c98e1000dae/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "m_caribbeancoastalshorelinecondition",
@@ -893,7 +864,9 @@
     "captionLabel": "Caribbean coastal shoreline condition",
     "goodThreshold": 1,
     "url": "https://secas-fws.hub.arcgis.com/maps/52049e30b212477093df581f2a5cb381/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "m_caribbeanfishhotspots",
@@ -903,35 +876,37 @@
     "values": [
       {
         "value": 0,
-        "label": "Low predicted fish density/diversity (no coral, mangrove, or dense seagrass present within 600 m of one other)",
+        "label": "Low density/diversity (no coral, mangrove, or dense seagrass present within 600 m of one other)",
         "color": null
       },
       {
         "value": 1,
-        "label": "Medium predicted fish density/diversity (either mangrove and coral, mangrove and dense seagrass, or coral and dense seagrass present within 600 m)",
+        "label": "Medium density/diversity (either mangrove and coral, mangrove and dense seagrass, or coral and dense seagrass present within 600 m)",
         "color": "#B29EDA"
       },
       {
         "value": 2,
-        "label": "High predicted fish density/diversity (mangrove, coral, and dense seagrass all present within 600 m",
+        "label": "High density/diversity (mangrove, coral, and dense seagrass all present within 600 m)",
         "color": "#BB75BE"
       },
       {
         "value": 3,
-        "label": "Very high predicted fish density/diversity (either mangrove and coral, mangrove and dense seagrass, or coral and dense seagrass present within 300 m)",
+        "label": "Very high density/diversity (either mangrove and coral, mangrove and dense seagrass, or coral and dense seagrass present within 300 m)",
         "color": "#BA4E92"
       },
       {
         "value": 4,
-        "label": "Highest predicted fish density/diversity (mangrove, coral, and dense seagrass all present within 300 m)",
+        "label": "Highest density/diversity (mangrove, coral, and dense seagrass all present within 300 m)",
         "color": "#A93154"
       }
     ],
-    "valueLabel": "",
+    "valueLabel": "Level of predicted fish density and diversity",
     "captionLabel": "Caribbean fish hotspots",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/72ffc219c52140c8bef5ad612cbb4728/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "m_caribbeanfishnurseryhabitat",
@@ -954,7 +929,9 @@
     "captionLabel": "Caribbean fish nursery habitat",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/43c6c44d5eec41e78587c60a323d6f15/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "m_caribbeanseagrass",
@@ -1002,7 +979,9 @@
     "captionLabel": "Caribbean seagrass",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/19b5282bf8f54c83b0109075c698ba91/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "m_caribbeanshallowhardbottomandcoral",
@@ -1045,7 +1024,9 @@
     "captionLabel": "Caribbean shallow hardbottom and coral",
     "goodThreshold": 3,
     "url": "https://secas-fws.hub.arcgis.com/maps/b7d6f168736f4a66a1330ae85bfe8046/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "m_coastalshorelinecondition",
@@ -1150,7 +1131,7 @@
     "id": "m_gulfcoralandhardbottom",
     "filename": "GulfCoralandHardbottom.tif",
     "label": "Gulf coral & hardbottom",
-    "description": "This indicator predicts the presence of coral and hardbottom in the Gulf of Mexico based on direct observations, acoustic surveys, designated Coral Habitat Areas of Particular Concern, and known locations of human-created structures like artificial reefs. Hardbottom provides an anchor for important seafloor habitats such as deep-sea corals, plants, and sponges, providing valuable structure that supports a wide range of invertebrate and fish species. Hardbottom is also sometimes associated with diverse chemosynthetic communities supported by bacteria that feed off of hydrocarbon seeps. This indicator combines data from multiple sources, including Bureau of Ocean Energy Management seismic water bottom anomalies, usSEABED sediments, several National Oceanic and Atmospheric Administration datasets, and more.",
+    "description": "This indicator predicts the presence of coral and hardbottom in the Gulf of Mexico based on direct observations, acoustic surveys, and known locations of artificial reefs and shipwrecks. Hardbottom provides an anchor for important seafloor habitats such as deep-sea corals, plants, and sponges, providing valuable structure that supports a wide range of invertebrate and fish species. Hardbottom is also sometimes associated with diverse chemosynthetic communities supported by micro-organisms that feed off of hydrocarbon seeps. This indicator combines data from multiple sources, including Bureau of Ocean Energy Management seismic water bottom anomalies, usSEABED sediment data, several National Oceanic and Atmospheric Administration datasets, various state layers, and more.",
     "values": [
       {
         "value": 0,
@@ -1165,35 +1146,39 @@
       {
         "value": 2,
         "label": "Rock (coarse resolution)",
-        "color": "#FFA998"
+        "color": "#FFAE9E"
       },
       {
         "value": 3,
-        "label": "Coral Habitat Area of Particular Concern (HAPC)",
-        "color": "#CE8DA0"
+        "label": "Probable natural hardbottom (fine resolution)",
+        "color": "#E49496"
       },
       {
         "value": 4,
-        "label": "Predicted hardbottom (fine resolution)",
-        "color": "#768BC2"
+        "label": "Shipwrecks",
+        "color": "#A889B8"
       },
       {
         "value": 5,
-        "label": "Confirmed human-created hardbottom (shipwrecks, artificial reefs, decommissioned oil and gas platforms)",
-        "color": "#1F7CC0"
+        "label": "Artificial reefs",
+        "color": "#5388C4"
       },
       {
         "value": 6,
-        "label": "Confirmed hardbottom-associated species (corals, patch reef, chemosynthetic communities, or other organisms)",
+        "label": "Confirmed natural hardbottom",
+        "color": "#1A79BD"
+      },
+      {
+        "value": 7,
+        "label": "Confirmed hardbottom-associated species (e.g., corals, sponges, patch reef, chemosynthetic communities)",
         "color": "#0060A6"
       }
     ],
     "valueLabel": "",
     "captionLabel": "Gulf coral & hardbottom",
     "goodThreshold": null,
-    "url": "https://secas-fws.hub.arcgis.com/maps/d2820454193444ceb019865dc9545bb7/about",
+    "url": "",
     "subregions": [
-      "Atlantic Marine",
       "Central Gulf Coastal Plain",
       "East Gulf Coastal Plain",
       "Florida Peninsula",
@@ -1211,35 +1196,37 @@
     "values": [
       {
         "value": 1,
-        "label": "Lowest predicted average genus richness (0-1)",
+        "label": "Lowest genus richness (0-1)",
         "color": "#EB9EA7"
       },
       {
         "value": 2,
-        "label": "Low predicted average genus richness (>1-3)",
+        "label": "Low genus richness (>1-3)",
         "color": "#D67689"
       },
       {
         "value": 3,
-        "label": "Medium predicted average genus richness (>3-5)",
+        "label": "Medium genus richness (>3-5)",
         "color": "#BA526F"
       },
       {
         "value": 4,
-        "label": "High predicted average genus richness (>5-7)",
+        "label": "High genus richness (>5-7)",
         "color": "#913857"
       },
       {
         "value": 5,
-        "label": "Highest predicted average genus richness (>7)",
+        "label": "Highest genus richness (>7)",
         "color": "#67223F"
       }
     ],
-    "valueLabel": "",
+    "valueLabel": "Level of predicted average genus richness",
     "captionLabel": "Gulf deep-sea coral richness",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/ccf4843485d848989951fbb5d3e530be/about",
-    "subregions": ["Gulf of Mexico"]
+    "subregions": [
+      "Gulf of Mexico"
+    ]
   },
   {
     "id": "m_gulfmarinemammals",
@@ -1330,12 +1317,12 @@
       },
       {
         "value": 1,
-        "label": "≤60th percentile",
+        "label": "≤65th percentile",
         "color": "#EBB698"
       },
       {
         "value": 2,
-        "label": ">60th-70th percentile",
+        "label": ">65th-70th percentile",
         "color": "#CF9270"
       },
       {
@@ -1357,7 +1344,7 @@
     "valueLabel": "Percentile of importance for sea turtle index species (across larger analysis area)",
     "captionLabel": "Gulf sea turtles",
     "goodThreshold": null,
-    "url": "https://secas-fws.hub.arcgis.com/maps/154ccf741a7e4cc19f2c93b29abe9233/about",
+    "url": "",
     "subregions": [
       "Central Gulf Coastal Plain",
       "East Gulf Coastal Plain",
@@ -1396,12 +1383,16 @@
     "url": "https://secas-fws.hub.arcgis.com/maps/1d076b5ffc164689afba7a09b054faea/about",
     "subregions": [
       "Atlantic Coastal Plain",
+      "Atlantic Marine",
       "Central Gulf Coastal Plain",
       "East Gulf Coastal Plain",
       "Florida Peninsula",
       "Gulf Coastal Prairies",
+      "Gulf of Mexico",
       "Mid East Gulf Coastal Plain",
-      "Mississippi Alluvial Valley"
+      "Mississippi Alluvial Valley",
+      "Piedmont",
+      "West Gulf Coastal Plain"
     ]
   },
   {
@@ -1455,7 +1446,10 @@
     "captionLabel": "marine highly migratory fish",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/8d893f24147a47f7bb48f8071c2d3a6a/about",
-    "subregions": ["Atlantic Marine", "Gulf of Mexico"]
+    "subregions": [
+      "Atlantic Marine",
+      "Gulf of Mexico"
+    ]
   },
   {
     "id": "m_resilientcoastalsites",
@@ -1502,7 +1496,7 @@
     "valueLabel": "",
     "captionLabel": "resilient coastal sites",
     "goodThreshold": null,
-    "url": "https://secas-fws.hub.arcgis.com/maps/fws::resilient-coastal-sites-southeast-blueprint-indicator-2023/about",
+    "url": "https://secas-fws.hub.arcgis.com/maps/fws::resilient-coastal-sites-southeast-blueprint-indicator/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
@@ -1583,7 +1577,11 @@
     "captionLabel": "South Atlantic beach birds",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/7ba82b4fdf53416f83ff1b01cabe0c5d/about",
-    "subregions": ["Atlantic Coastal Plain", "Florida Peninsula"]
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Atlantic Marine",
+      "Florida Peninsula"
+    ]
   },
   {
     "id": "m_southatlanticmaritimeforest",
@@ -1608,8 +1606,7 @@
     "url": "https://secas-fws.hub.arcgis.com/maps/50cf7d1f057e4c61afaea65c882b372b/about",
     "subregions": [
       "Atlantic Coastal Plain",
-      "East Gulf Coastal Plain",
-      "Florida Peninsula"
+      "East Gulf Coastal Plain"
     ]
   },
   {
@@ -1645,7 +1642,56 @@
       "Florida Peninsula",
       "Gulf Coastal Prairies",
       "Mid East Gulf Coastal Plain",
-      "Mississippi Alluvial Valley"
+      "Mississippi Alluvial Valley",
+      "Piedmont",
+      "Texas Blackland Prairies",
+      "West Gulf Coastal Plain"
+    ]
+  },
+  {
+    "id": "t_amphibianandreptileareas",
+    "filename": "AmphibianandReptileAreas.tif",
+    "label": "Amphibian & reptile areas",
+    "description": "This indicator represents Priority Amphibian and Reptile Conservation Areas (PARCAs) across the Southeast. PARCA is an expert-driven, nonregulatory designation that includes places capable of supporting viable amphibian and reptile populations, places occupied by rare or imperiled species, and places rich in biodiversity or species unique to that geographic area (i.e., endemism). Reptiles and amphibians are a critical part of the Southeast region's rich biodiversity and many populations are declining in the face of threats like habitat loss, invasive species, and climate change. The PARCA dataset is maintained by the Amphibian and Reptile Conservancy and does not yet include Virginia or Kentucky.",
+    "values": [
+      {
+        "value": 0,
+        "label": "Not a PARCA (excluding Kentucky and Virginia)",
+        "color": null
+      },
+      {
+        "value": 1,
+        "label": "Priority Amphibian and Reptile Conservation Area (PARCA)",
+        "color": "#38A800"
+      }
+    ],
+    "valueLabel": "",
+    "captionLabel": "amphibian & reptile areas",
+    "goodThreshold": null,
+    "url": "",
+    "subregions": [
+      "Atlantic Coastal Plain",
+      "Central Gulf Coastal Plain",
+      "Chihuahuan Deserts",
+      "East Gulf Coastal Plain",
+      "Edwards Plateau",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "Gulf of Mexico",
+      "High Plains and Tablelands",
+      "Interior Plateau",
+      "Mid East Gulf Coastal Plain",
+      "Mississippi Alluvial Valley",
+      "North Appalachians",
+      "North Missouri",
+      "Ouachita",
+      "Ozarks and Plains",
+      "Piedmont",
+      "Plains and Timbers",
+      "South Appalachians",
+      "South Texas Plains",
+      "Texas Blackland Prairies",
+      "West Gulf Coastal Plain"
     ]
   },
   {
@@ -1694,7 +1740,9 @@
     "captionLabel": "Caribbean greenways & trails",
     "goodThreshold": 4,
     "url": "https://secas-fws.hub.arcgis.com/maps/b9bc4120389443ddb1ab41e69a18c1ce/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_caribbeanhabitatpatchsizelargeislands",
@@ -1737,7 +1785,9 @@
     "captionLabel": "Caribbean habitat patch size (large islands)",
     "goodThreshold": 3,
     "url": "https://secas-fws.hub.arcgis.com/maps/ff01e3820aee415d9bba555d05b8cc14/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_caribbeanhabitatpatchsizesmallislands",
@@ -1775,7 +1825,9 @@
     "captionLabel": "Caribbean habitat patch size (small islands)",
     "goodThreshold": 3,
     "url": "https://secas-fws.hub.arcgis.com/maps/20e82f19b78f40bca8df9a7713a515eb/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_caribbeanislandhabitat",
@@ -1828,7 +1880,9 @@
     "captionLabel": "Caribbean island habitat",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/dca9fcb28ec34a6e98aa43227e21b871/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_caribbeankarsthabitat",
@@ -1861,13 +1915,15 @@
     "captionLabel": "Caribbean karst habitat",
     "goodThreshold": 3,
     "url": "https://secas-fws.hub.arcgis.com/maps/5177f53c3d4a4fae8cf7e3d541b58160/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_caribbeanlandscapecondition",
     "filename": "CaribbeanLandscapeCondition.tif",
     "label": "Caribbean landscape condition",
-    "description": "This indicator for the U.S. Caribbean represents natural areas with limited human alteration while also considering the natural landcover of the surrounding landscape. Examples of human alteration include urban development and intense agricultural use. The degree of naturalness across the landscape is a key ecological condition for sustaining species and ecosystem services that are sensitive to habitat fragmentation at multiple scales. This indicator uses LANDFIRE landcover and ideas from the Florida Critical Lands and Waters Identification Project's approach for evaluating landscape integrity.",
+    "description": "This indicator for the U.S. Caribbean represents natural areas with limited human alteration while also considering the naturalness of the surrounding landscape. Examples of human alteration include urban development and intense agricultural use. The degree of naturalness across the landscape is a key ecological condition for sustaining species and ecosystem services that are sensitive to habitat fragmentation at multiple scales. This indicator uses LANDFIRE landcover and ideas from the Florida Critical Lands and Waters Identification Project's approach for evaluating landscape integrity.",
     "values": [
       {
         "value": 1,
@@ -1899,7 +1955,9 @@
     "captionLabel": "Caribbean landscape condition",
     "goodThreshold": 4,
     "url": "https://secas-fws.hub.arcgis.com/maps/651cacf61f51448a8df2df5fced53f66/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_caribbeanlowurbanhistoriclandscapes",
@@ -1927,7 +1985,9 @@
     "captionLabel": "Caribbean low-urban historic landscapes",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/bb6f52c0a3f34311a0eb2b2bbcd211d3/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_caribbeanreforestationpotential",
@@ -1965,7 +2025,9 @@
     "captionLabel": "Caribbean reforestation potential",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/53136c4fb806443d8e7062060612d9aa/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_caribbeanurbanparksize",
@@ -2013,7 +2075,9 @@
     "captionLabel": "Caribbean urban park size",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/ab02184458e045fc9142c84a2ac8e2c3/about",
-    "subregions": ["Caribbean"]
+    "subregions": [
+      "Caribbean"
+    ]
   },
   {
     "id": "t_eastcoastalplainopenpinebirds",
@@ -2125,7 +2189,7 @@
     "id": "t_firefrequency",
     "filename": "FireFrequency.tif",
     "label": "Fire frequency",
-    "description": "This indicator uses remote sensing to estimate the number of times an area has been burned from 2013 to 2021. Many Southeastern ecosystems rely on regular, low-intensity fires to maintain habitat, encourage native plant growth, and reduce wildfire risk. This indicator combines burned area layers from U.S. Geological Survey Landsat data and the inter-agency Monitoring Trends in Burn Severity program. Landsat-based fire predictions within the range of longleaf pine are also available through <a href='https://landscapepartnership.org/key-issues/wildland-fire/fire-mapping/regional-fire-mapping/se-firemap/se-firemap-version-1-0' target='_blank'>Southeast FireMap</a>.",
+    "description": "This indicator uses remote sensing to estimate the number of times an area has been burned from 2013 to 2021. Many Southeastern ecosystems rely on regular, low-intensity fires to maintain habitat, encourage native plant growth, and reduce wildfire risk. This indicator combines burned area layers from U.S. Geological Survey Landsat data and the inter-agency Monitoring Trends in Burn Severity program. Landsat-based fire predictions within the range of longleaf pine are also available through Southeast FireMap.",
     "values": [
       {
         "value": 0,
@@ -2177,47 +2241,78 @@
     ]
   },
   {
-    "id": "t_greatplainsperennialgrasslands",
-    "filename": "GreatPlainsPerennialGrasslands.tif",
-    "label": "Great Plains perennial grasslands",
-    "description": "This indicator measures the percent of perennial forbs and perennial grass to evaluate grassland condition across the Great Plains. Grasslands in this area with a high percentage of perennials are less likely to be impacted by woody encroachment, less susceptible to non-native annual grasses, and more likely to support important plants, birds, and pollinators. This indicator originates from Rangeland Analysis Platform vegetation cover data.",
+    "id": "t_grasslandsandsavannas",
+    "filename": "GrasslandsAndSavannas.tif",
+    "label": "Grasslands and savannas",
+    "description": "This indicator represents grasslands and savannas in the southeastern United States, which support important plants, reptiles, amphibians, mammals, birds, and pollinators. It considers known grassland and savanna locations, likely locations managed for biodiversity, and surrounding pollinator buffers. It also incorporates other potential grassland and savanna locations within natural and altered landscapes, and restoration opportunities within historic locations based on past fire intervals and historic ecosystem predictions. This indicator combines data from multiple sources, including the Southeastern Grasslands Institute, the National Land Cover Database, LANDFIRE biophysical settings, Oklahoma and Texas ecological systems maps, and more.",
     "values": [
       {
+        "value": 0,
+        "label": "Not identified as grassland/savanna",
+        "color": null
+      },
+      {
         "value": 1,
-        "label": "0-20% perennial forbs and perennial grass",
-        "color": "#FFF9C4"
+        "label": "Historic grassland/savanna",
+        "color": "#FFFFC0"
       },
       {
         "value": 2,
-        "label": "21-40% perennial forbs and perennial grass",
-        "color": "#E1EA62"
+        "label": "Potential grassland/savanna in more altered landscape",
+        "color": "#E4F4AE"
       },
       {
         "value": 3,
-        "label": "41-60% perennial forbs and perennial grass",
-        "color": "#AFB42B"
+        "label": "Potential grassland/savanna in mostly natural landscape",
+        "color": "#A4D98E"
       },
       {
         "value": 4,
-        "label": "61-80% perennial forbs and perennial grass",
-        "color": "#6A7514"
+        "label": "Pollinator buffer around known or likely grassland/savanna",
+        "color": "#5EB269"
       },
       {
         "value": 5,
-        "label": "81-100% perennial forbs and perennial grass",
-        "color": "#2D3606"
+        "label": "Likely grassland/savanna ≤10 acres",
+        "color": "#41AB5D"
+      },
+      {
+        "value": 6,
+        "label": "Likely grassland/savanna >10 acres",
+        "color": "#115E36"
+      },
+      {
+        "value": 7,
+        "label": "Known grassland/savanna",
+        "color": "#023827"
       }
     ],
     "valueLabel": "",
-    "captionLabel": "Great Plains perennial grasslands",
-    "goodThreshold": null,
-    "url": "https://secas-fws.hub.arcgis.com/maps/fws::great-plains-perennial-grasslands-southeast-blueprint-indicator-2023/about",
+    "captionLabel": "grasslands and savannas",
+    "goodThreshold": 5,
+    "url": "",
     "subregions": [
+      "Atlantic Coastal Plain",
+      "Central Gulf Coastal Plain",
+      "Chihuahuan Deserts",
+      "East Gulf Coastal Plain",
       "Edwards Plateau",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
       "High Plains and Tablelands",
+      "Interior Plateau",
+      "Mid East Gulf Coastal Plain",
+      "Mississippi Alluvial Valley",
+      "North Appalachians",
+      "North Missouri",
+      "Ouachita",
+      "Ozarks and Plains",
+      "Piedmont",
       "Plains and Timbers",
+      "South Appalachians",
       "South Texas Plains",
-      "Texas Blackland Prairies"
+      "Texas Blackland Prairies",
+      "West Gulf Coastal Plain"
     ]
   },
   {
@@ -2228,7 +2323,7 @@
     "values": [
       {
         "value": 0,
-        "label": "Not identified as a trail, sidewalk, or other path",
+        "label": "Not identified as trail, sidewalk, or other path",
         "color": null
       },
       {
@@ -2325,7 +2420,7 @@
     "valueLabel": "",
     "captionLabel": "intact habitat cores",
     "goodThreshold": 1,
-    "url": "https://secas-fws.hub.arcgis.com/maps/cd9bf9cb7cb545ce96cbc154a4fdc214/about",
+    "url": "",
     "subregions": [
       "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
@@ -2351,54 +2446,68 @@
     ]
   },
   {
-    "id": "t_interiorsoutheastgrasslands",
-    "filename": "InteriorSoutheastGrasslands.tif",
-    "label": "Interior Southeast grasslands",
-    "description": "This indicator represents grasslands in the interior southeastern United States, which support important plants, birds, and pollinators. It includes grasslands with and without trees that are historically maintained by geology (e.g., outcrops, glades, and barrens), fire (e.g., Piedmont prairies), and/or the regular violent flooding on the banks of high-energy rivers known as “riverscour” (e.g, riverscour prairies). Known grasslands receive the highest scores, followed by bumble bee habitat buffers around known sites, areas in potentially compatible management, and restoration opportunities within grassland geology. This indicator combines data from multiple sources, including the Southeastern Grasslands Institute, Central Hardwoods Joint Venture, Rangeland Analysis Platform, and more.",
+    "id": "t_landscapecondition",
+    "filename": "LandscapeCondition.tif",
+    "label": "Landscape condition",
+    "description": "This indicator represents natural areas with limited human alteration while also considering the naturalness of the surrounding landscape. Examples of human alteration include urban development and intense agricultural use. The degree of naturalness across the landscape is a key ecological condition for sustaining species and ecosystem services that are sensitive to habitat fragmentation at multiple scales. This indicator uses the National Land Cover Dataset, various data on grasslands, mines, and quarries, and ideas from the Florida Critical Lands and Waters Identification Project's approach for evaluating landscape integrity.",
     "values": [
       {
-        "value": 0,
-        "label": "Grassland less likely",
-        "color": null
-      },
-      {
         "value": 1,
-        "label": "Grassland geology",
-        "color": "#FAFDCA"
+        "label": "Heavily altered landscape",
+        "color": "#F4E6C8"
       },
       {
         "value": 2,
-        "label": "Potentially compatible management outside of grassland geology (undeveloped powerline right-of-way or perennial forbs and grasses)",
-        "color": "#C5E799"
+        "label": "Altered landscape",
+        "color": "#E1D0AA"
       },
       {
         "value": 3,
-        "label": "Potentially compatible management within grassland geology (undeveloped powerline right-of-way or perennial forbs and grasses)",
-        "color": "#67BE70"
+        "label": "Partly natural landscape",
+        "color": "#B8BC91"
       },
       {
         "value": 4,
-        "label": "Known grassland buffer",
-        "color": "#1E8041"
+        "label": "Mostly natural landscape",
+        "color": "#8C9971"
       },
       {
         "value": 5,
-        "label": "Known grassland",
-        "color": "#004529"
+        "label": "Natural landscape",
+        "color": "#616B4B"
+      },
+      {
+        "value": 6,
+        "label": "Very natural landscape",
+        "color": "#434932"
       }
     ],
     "valueLabel": "",
-    "captionLabel": "Interior Southeast grasslands",
-    "goodThreshold": null,
-    "url": "https://secas-fws.hub.arcgis.com/maps/fws::interior-southeast-grasslands-southeast-blueprint-indicator-2023/about",
+    "captionLabel": "landscape condition",
+    "goodThreshold": 4,
+    "url": "",
     "subregions": [
+      "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
+      "Chihuahuan Deserts",
+      "East Gulf Coastal Plain",
+      "Edwards Plateau",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
       "Interior Plateau",
       "Mid East Gulf Coastal Plain",
+      "Mississippi Alluvial Valley",
       "North Appalachians",
+      "North Missouri",
+      "Ouachita",
       "Ozarks and Plains",
       "Piedmont",
-      "South Appalachians"
+      "Plains and Timbers",
+      "South Appalachians",
+      "South Texas Plains",
+      "Texas Blackland Prairies",
+      "West Gulf Coastal Plain"
     ]
   },
   {
@@ -2409,7 +2518,7 @@
     "values": [
       {
         "value": 0,
-        "label": "Score 0 (not a priority)",
+        "label": "Not a priority (score = 0)",
         "color": null
       },
       {
@@ -2469,6 +2578,7 @@
     "url": "https://secas-fws.hub.arcgis.com/maps/eb58a600736d44b6bdaaa029e2149397/about",
     "subregions": [
       "Central Gulf Coastal Plain",
+      "Gulf Coastal Prairies",
       "Mississippi Alluvial Valley",
       "West Gulf Coastal Plain"
     ]
@@ -2578,6 +2688,7 @@
     "goodThreshold": 2,
     "url": "https://secas-fws.hub.arcgis.com/maps/ba3d0db90f81404c8401cd40460d37d3/about",
     "subregions": [
+      "Chihuahuan Deserts",
       "Edwards Plateau",
       "High Plains and Tablelands",
       "Plains and Timbers"
@@ -2633,7 +2744,7 @@
     "valueLabel": "",
     "captionLabel": "resilient terrestrial sites",
     "goodThreshold": null,
-    "url": "https://secas-fws.hub.arcgis.com/maps/fws::resilient-terrestrial-sites-southeast-blueprint-indicator-2023/about",
+    "url": "https://secas-fws.hub.arcgis.com/maps/fws::resilient-terrestrial-sites-southeast-blueprint-indicator/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
@@ -2659,36 +2770,6 @@
     ]
   },
   {
-    "id": "t_southatlanticamphibianandreptileareas",
-    "filename": "SouthAtlanticAmphibianandReptileAreas.tif",
-    "label": "South Atlantic amphibian & reptile areas",
-    "description": "This indicator represents Priority Amphibian and Reptile Conservation Areas (PARCAs) in the South Atlantic. PARCA is an expert-driven, nonregulatory designation that includes places capable of supporting viable amphibian and reptile populations, places occupied by rare or imperiled species, and places rich in biodiversity or species unique to that geographic area (i.e., endemism). Reptiles and amphibians are a critical part of the Southeast region's rich biodiversity and many populations are declining in the face of threats like habitat loss, invasive species, and climate change.",
-    "values": [
-      {
-        "value": 0,
-        "label": "Not a Priority Amphibian and Reptile Conservation Area (PARCA)",
-        "color": null
-      },
-      {
-        "value": 1,
-        "label": "Priority Amphibian and Reptile Conservation Area (PARCA)",
-        "color": "#38A800"
-      }
-    ],
-    "valueLabel": "",
-    "captionLabel": "South Atlantic amphibian & reptile areas",
-    "goodThreshold": null,
-    "url": "https://secas-fws.hub.arcgis.com/maps/6b9c4e03c92b477c8cdcb53bdedb4587/about",
-    "subregions": [
-      "Atlantic Coastal Plain",
-      "East Gulf Coastal Plain",
-      "Florida Peninsula",
-      "North Appalachians",
-      "Piedmont",
-      "South Appalachians"
-    ]
-  },
-  {
     "id": "t_southatlanticforestbirds",
     "filename": "SouthAtlanticForestBirds.tif",
     "label": "South Atlantic forest birds",
@@ -2696,41 +2777,42 @@
     "values": [
       {
         "value": 0,
-        "label": "Less potential for presence of forest bird index species",
+        "label": "Less potential",
         "color": null
       },
       {
         "value": 1,
-        "label": "Very small patches or near open areas (potential for presence of wood thrush, whip-poor-will, red-headed woodpecker, Chuck-will's widow, or American woodcock)",
+        "label": "Very small patches or near open areas (potential for wood thrush, whip-poor-will, red-headed woodpecker, Chuck-will's widow, or American woodcock)",
         "color": "#F9D6B5"
       },
       {
         "value": 2,
-        "label": "Small patches often near water (potential for presence of hooded warbler or Kentucky warbler)",
+        "label": "Small patches often near water (potential for hooded warbler or Kentucky warbler)",
         "color": "#F09587"
       },
       {
         "value": 3,
-        "label": "Medium patches (potential for presence of Acadian flycatcher)",
+        "label": "Medium patches (potential for Acadian flycatcher)",
         "color": "#D86D74"
       },
       {
         "value": 4,
-        "label": "Large patches often near water (potential for presence of Northern parula, black-throated green warbler, or prothonotary warbler)",
+        "label": "Large patches often near water (potential for Northern parula, black-throated green warbler, or Prothonotary warbler)",
         "color": "#AE4963"
       },
       {
         "value": 5,
-        "label": "Very large patches near water (potential for presence of Swainson's warbler)",
+        "label": "Very large patches near water (potential for Swainson's warbler)",
         "color": "#70284B"
       }
     ],
-    "valueLabel": "",
+    "valueLabel": "Potential for presence of forest bird index species",
     "captionLabel": "South Atlantic forest birds",
     "goodThreshold": 2,
     "url": "https://secas-fws.hub.arcgis.com/maps/a466de8174964bce8de87495b4595436/about",
     "subregions": [
       "Atlantic Coastal Plain",
+      "Atlantic Marine",
       "East Gulf Coastal Plain",
       "Florida Peninsula",
       "Mid East Gulf Coastal Plain",
@@ -2764,12 +2846,12 @@
     "valueLabel": "",
     "captionLabel": "South Atlantic low-urban historic landscapes",
     "goodThreshold": null,
-    "url": "https://secas-fws.hub.arcgis.com/maps/fws::south-atlantic-low-urban-historic-landscapes-southeast-blueprint-indicator-2023/about",
+    "url": "https://secas-fws.hub.arcgis.com/maps/fws::south-atlantic-low-urban-historic-landscapes-southeast-blueprint-indicator/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "East Gulf Coastal Plain",
-      "North Appalachians",
-      "Piedmont"
+      "Piedmont",
+      "South Appalachians"
     ]
   },
   {
@@ -2786,26 +2868,31 @@
       {
         "value": 1,
         "label": "5 to <10 acre urban park",
-        "color": "#E8BCC5"
+        "color": "#FFFFBE"
       },
       {
         "value": 2,
         "label": "10 to <30 acre urban park",
-        "color": "#D07AB6"
+        "color": "#E8BCC5"
       },
       {
         "value": 3,
         "label": "30 to <50 acre urban park",
-        "color": "#A55199"
+        "color": "#D07AB6"
       },
       {
         "value": 4,
         "label": "50 to <75 acre urban park",
-        "color": "#6D2373"
+        "color": "#A55199"
       },
       {
         "value": 5,
         "label": "75+ acre urban park",
+        "color": "#6D2373"
+      },
+      {
+        "value": 6,
+        "label": NaN,
         "color": "#350242"
       }
     ],
@@ -2815,13 +2902,13 @@
     "url": "https://secas-fws.hub.arcgis.com/maps/4f558e55c0b34763936e40dd54298523/about",
     "subregions": [
       "Atlantic Coastal Plain",
-      "Atlantic Marine",
       "Central Gulf Coastal Plain",
       "Chihuahuan Deserts",
       "East Gulf Coastal Plain",
       "Edwards Plateau",
       "Florida Peninsula",
       "Gulf Coastal Prairies",
+      "Gulf of Mexico",
       "High Plains and Tablelands",
       "Interior Plateau",
       "Mid East Gulf Coastal Plain",
@@ -2846,7 +2933,7 @@
     "values": [
       {
         "value": 0,
-        "label": "Not suitable (score =0)",
+        "label": "Not suitable (score = 0)",
         "color": null
       },
       {
@@ -2894,7 +2981,7 @@
     "values": [
       {
         "value": 0,
-        "label": "Too small and isolated to support a population of any species or not an upland pine patch",
+        "label": "Pine patch too small and isolated to support a population of any species or not an upland pine patch",
         "color": null
       },
       {
@@ -2914,7 +3001,7 @@
       },
       {
         "value": 4,
-        "label": "Large enough to support a population of 1 species",
+        "label": "Large enough to a population of 1 species",
         "color": "#CD238F"
       },
       {
@@ -2947,7 +3034,7 @@
     "values": [
       {
         "value": 0,
-        "label": "Not identified as suitable habitat (within TX and LA)",
+        "label": "Not identified as suitable (within TX and LA)",
         "color": null
       },
       {

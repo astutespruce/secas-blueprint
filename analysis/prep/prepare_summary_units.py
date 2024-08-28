@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import warnings
 
 from progress.bar import Bar
 import geopandas as gp
@@ -13,6 +14,8 @@ import shapely
 from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES, SECAS_HUC2
 from analysis.lib.geometry import make_valid, to_dict
 from analysis.lib.raster import write_raster, add_overviews, get_window
+
+warnings.filterwarnings("ignore", message=".*polygon with more than 100 parts.*")
 
 
 src_dir = Path("source_data")

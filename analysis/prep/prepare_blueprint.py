@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+import re
 
 from affine import Affine
 import numpy as np
@@ -8,8 +9,6 @@ from pyogrio import read_dataframe
 import rasterio
 from rasterio.features import rasterize
 from rasterio import windows
-from rasterio.enums import Resampling
-from rasterio.vrt import WarpedVRT
 import shapely
 
 from analysis.constants import MASK_RESOLUTION, CORRIDORS, BLUEPRINT
@@ -64,7 +63,7 @@ if not outfilename.exists():
     colormap = {e["value"]: hex_to_uint8(e["color"]) for e in BLUEPRINT}
     colormap[0] = (255, 255, 255, 0)
 
-    with rasterio.open(src_dir / "Blueprint2023.tif") as src:
+    with rasterio.open(src_dir / "Blueprint2024.tif") as src:
         nodata = int(src.nodata)
 
         read_window = shift_window(
@@ -110,27 +109,21 @@ if not outfilename.exists():
     print("Extracting hubs and corridors")
 
     print("Reading hubs and making valid")
-    inland_hubs = read_dataframe(
-        src_dir / "hubs_corridors/ContinentalInlandHubs2023.shp",
+    continental_hubs = read_dataframe(
+        src_dir / "hubs_corridors/ContinentalHubs2024.shp",
         columns=[],
         use_arrow=True,
     ).explode(ignore_index=True)
-    inland_hubs["value"] = 1
-    marine_hubs = read_dataframe(
-        src_dir / "hubs_corridors/ContinentalEstuarineAndMarineHubs2023.shp",
-        columns=[],
-        use_arrow=True,
-    ).explode(ignore_index=True)
-    marine_hubs["value"] = 3
+    continental_hubs["value"] = 1
+
     caribbean_hubs = read_dataframe(
         src_dir / "hubs_corridors/CaribbeanHubs2023.shp",
         columns=[],
         use_arrow=True,
     ).explode(ignore_index=True)
-    caribbean_hubs["value"] = 5
+    caribbean_hubs["value"] = 1
 
-    # sort so that inland hubs get rasterized last (on top)
-    hubs = pd.concat([inland_hubs, marine_hubs, caribbean_hubs], ignore_index=True)
+    hubs = pd.concat([continental_hubs, caribbean_hubs], ignore_index=True)
 
     ix = ~shapely.is_valid(hubs.geometry.values)
     hubs.loc[ix, "geometry"] = shapely.buffer(hubs.loc[ix].geometry.values, 0)
@@ -141,15 +134,12 @@ if not outfilename.exists():
     )
 
     with rasterio.open(
-        src_dir / "hubs_corridors/ContinentalInlandCorridors2023.tif"
-    ) as inland, rasterio.open(
-        src_dir / "hubs_corridors/ContinentalMarineCorridors2023.tif"
-    ) as marine, rasterio.open(
+        src_dir / "hubs_corridors/ContinentalCorridors2024.tif"
+    ) as continental, rasterio.open(
         src_dir / "hubs_corridors/CaribbeanCorridors2023.tif"
     ) as caribbean:
         # consolidate all values into a single raster, writing hubs over corridors
         # see values in corridors.json
-        # NOTE: per guidance from Amy K., always stack inland on top of marine
 
         data = np.zeros(shape=(extent.shape), dtype="uint8")
 
@@ -166,36 +156,21 @@ if not outfilename.exists():
         caribbean_corridors_data = caribbean.read(
             1, window=carribean_window, boundless=True
         )
-        data[caribbean_corridors_data == np.uint8(1)] = np.uint8(6)
+        data[caribbean_corridors_data == np.uint8(1)] = np.uint8(2)
         del caribbean_corridors_data
 
-        print("Reading marine corridors")
-        # Marine corridors are at 90m; resample them to 30m
-        with WarpedVRT(
-            marine,
-            width=extent.width,
-            height=extent.height,
-            nodata=marine.nodata,
-            transform=extent.transform,
-            resampling=Resampling.nearest,
-        ) as vrt:
-            marine_corridors_data = vrt.read()[0]
-
-        data[marine_corridors_data == np.uint8(1)] = np.uint8(4)
-        del marine_corridors_data
-
-        print("Reading inland corridors")
+        print("Reading continental corridors")
         # Inland corridors are at 30m snapped to blueprint extent
         inland_window = shift_window(
             windows.Window(
                 col_off=0, row_off=0, width=extent.width, height=extent.height
             ),
             extent.transform,
-            inland.transform,
+            continental.transform,
         )
-        inland_corridors_data = inland.read(1, window=inland_window)
-        data[inland_corridors_data == np.uint8(1)] = np.uint8(2)
-        del inland_corridors_data
+        continental_corridors_data = continental.read(1, window=inland_window)
+        data[continental_corridors_data == np.uint8(1)] = np.uint8(2)
+        del continental_corridors_data
 
         print("Rasterizing hubs")
         _ = rasterize(
@@ -209,7 +184,7 @@ if not outfilename.exists():
         data[extent_data == np.uint8(extent.nodata)] = np.uint8(255)
         del extent_data
 
-        print("Writing corridors...")
+        print("Writing hubs & corridors...")
         write_raster(
             outfilename,
             data,
@@ -245,13 +220,14 @@ ecosystems = []
 merged = None
 for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
     df = pd.read_excel(
-        indicators_dir / "Blueprint 2023 Indicator Thresholds.xlsx",
+        indicators_dir / "Blueprint 2024 Indicator Thresholds.xlsx",
         sheet_name=sheet_name,
         engine="calamine",
     ).rename(
         columns={
             "Indicator": "label",
-            "2023 Indicator values": "values",
+            "Legend sub-header": "valueLabel",
+            "2024 abbreviated indicator values": "valueLabels",
             '2023 Blueprint Explorer "Good" threshold': "goodThreshold",
             "2023 Indicator descriptions": "description",
             "Hub Link": "url",
@@ -297,6 +273,9 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
         df.loc[ix].goodThreshold.str.extract("(\d)").astype("uint8").values[:, 0]
     )
 
+    df["url"] = df.url.fillna("")
+    df["valueLabel"] = df.valueLabel.fillna("").str.strip().replace("N/A", "")
+
     # extract caption label; this is lowercase name except when includes placename
     places = [
         "Atlantic",
@@ -312,10 +291,26 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
     ]
     df["captionLabel"] = df.label
     ix = ~df.label.apply(lambda x: any(x.startswith(p) for p in places))
-    df.loc[ix, "captionLabel"] = df.label.str.lower()
+    df.loc[ix, "captionLabel"] = df.loc[ix].label.str.lower()
 
-    df["values"] = None
-    df["valueLabel"] = ""
+    def parse_values(text):
+        out = {}
+        for part in (
+            text.replace("\r", "")
+            .replace("<=", "≤")
+            .replace(">=", "≥")
+            .replace("’", "'")
+            .replace("–", "-")
+            .strip()
+            .split("\n")
+        ):
+            value, label = re.match("(\d+)\s*=\s*(.+)", part).groups()
+            out[int(value)] = label.strip()
+
+        return out
+
+    df["valueLabels"] = df["valueLabels"].apply(parse_values)
+    df["values"] = None  # filled below
 
     df = df[
         [
@@ -323,6 +318,7 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
             "filename",
             "label",
             "description",
+            "valueLabels",
             "values",
             "valueLabel",
             "captionLabel",
@@ -351,17 +347,16 @@ for index, indicator_row in indicator_df.iterrows():
     filename = indicator_row.filename
 
     # read data tables and extract indicator values
-    df = read_dataframe(indicators_dir / f"{filename}.vat.dbf")
+    df = read_dataframe(indicators_dir / f"{filename}.vat.dbf", use_arrow=True)
 
     # columns not named consistently; standardize them
     desc_col = [c for c in df.columns if c.lower().startswith("desc")][0]
     red_col = [c for c in df.columns if c.lower() == "red"][0]
     green_col = [c for c in df.columns if c.lower() == "green"][0]
     blue_col = [c for c in df.columns if c.lower() == "blue"][0]
-    df = df.rename(
+    df = df.drop(columns=[desc_col]).rename(
         columns={
             "Value": "value",
-            desc_col: "label",
             red_col: "red",
             green_col: "green",
             blue_col: "blue",
@@ -369,270 +364,7 @@ for index, indicator_row in indicator_df.iterrows():
     )
     df[["red", "green", "blue"]] = df[["red", "green", "blue"]].astype("uint8")
 
-    df["label"] = (
-        df["label"]
-        .apply(lambda x: x.split("=", 1)[1].strip() if "=" in x else x)
-        .str.replace("<=", "≤")
-        .str.replace(">=", "≥")
-        .str.replace("’", "'")
-        .str.replace("–", "-")
-        .str.strip()
-    )
-
-    # shorten labels for some indicators
-    if filename == "MississippiAlluvialValleyForestBirds_Protection.tif":
-        indicator_df.at[index, "valueLabel"] = (
-            "Priority of forest breeding bird habitat patch for future protection"
-        )
-
-        df["label"] = (
-            df["label"]
-            .str.replace(
-                "Not a priority (score =0)", "Score 0 (not a priority)", regex=False
-            )
-            .str.replace(
-                "Low priority (score >0-10)", "Score >0-10 (low priority)", regex=False
-            )
-            .str.replace(
-                "Highest priority forest breeding bird habitat patch for future protection (score >90-100)",
-                "Score >90-100 (highest priority)",
-                regex=False,
-            )
-        )
-        ix = df["label"].str.startswith("(") & df["label"].str.endswith(")")
-        df.loc[ix, "label"] = df.loc[ix, "label"].str.strip("()").str.title()
-
-    elif filename == "MississippiAlluvialValleyForestBirds_Reforestation.tif":
-        indicator_df.at[index, "valueLabel"] = (
-            "Likelihood that reforestation will contribute to forest breeding bird habitat needs"
-        )
-
-        df["label"] = (
-            df["label"]
-            .str.replace(
-                "Reforestation least likely to contribute to forest breeding bird habitat needs",
-                "Least likely",
-            )
-            .str.replace(
-                "Reforestation less likely to contribute to forest breeding bird habitat needs",
-                "Less likely",
-            )
-            .str.replace(
-                "Reforestation more likely to contribute to forest breeding bird habitat needs",
-                "More likely",
-            )
-            .str.replace(
-                "Reforestation most likely to contribute to forest breeding bird habitat needs",
-                "Most likely",
-            )
-        )
-    elif filename == "EastCoastalPlainOpenPineBirds.tif":
-        indicator_df.at[index, "valueLabel"] = (
-            "Priority for open pine conservation for focal bird species"
-        )
-        df["label"] = df["label"].str.replace(
-            "High priority for open pine conservation for focal bird species (Bachman's sparrow, red-cockaded woodpecker, Henslow's sparrow, red-headed woodpecker, Northern bobwhite, and brown-headed nuthatch)",
-            "High priority",
-        )
-    elif filename == "EquitableAccessToPotentialParks.tif":
-        indicator_df.at[index, "valueLabel"] = (
-            "Priority for a new park that would create nearby equitable access"
-        )
-        df["label"] = df["label"].str.replace(
-            " for a new park that would create nearby equitable access", ""
-        )
-    elif filename == "WestCoastalPlainandOuachitasForestedWetlandBirds.tif":
-        indicator_df.at[index, "valueLabel"] = (
-            "Habitat suitability for forested wetland bird umbrella species"
-        )
-        df["label"] = (
-            df["label"]
-            .str.replace(
-                "High habitat suitability for forested wetland bird umbrella species (Acadian flycatcher, Kentucky warbler, yellow-throated warbler, prothonotary warbler, red-shouldered hawk)",
-                "High habitat suitability",
-            )
-            .str.replace(" for forested wetland bird umbrella species", "")
-        )
-
-    elif filename == "WestCoastalPlainandOuachitasOpenPineBirds.tif":
-        indicator_df.at[index, "valueLabel"] = (
-            "Ability of pine patch to support a population of umbrella bird species if managed in open condition"
-        )
-        df["label"] = (
-            df["label"]
-            .str.replace(" if managed in open condition", "")
-            .str.replace("umbrella bird ", "")
-            .str.replace(
-                " (brown-headed nuthatch, Bachman's sparrow, red-cockaded woodpecker)",
-                "",
-            )
-            .str.replace("Pine patch ", "")
-            .str.capitalize()
-        )
-
-    elif filename == "WestGulfCoastMottledDuckNesting.tif":
-        indicator_df.at[index, "valueLabel"] = (
-            "Percentile of suitable mottled duck nesting habitat"
-        )
-        df["label"] = (
-            df["label"]
-            .str.replace(" of suitable mottled duck nesting habitat", "")
-            .str.replace(" mottled duck nesting", "")
-        )
-
-    elif filename in (
-        "NaturalLandcoverInFloodplains.tif",
-        "CaribbeanNaturalLandcoverInFloodplains.tif",
-    ):
-        indicator_df.at[index, "valueLabel"] = (
-            "Percent natural landcover within the estimated floodplain, by catchment"
-        )
-        df["label"] = (
-            df["label"]
-            .str.replace(
-                " natural habitat within the estimated floodplain, by catchment", ""
-            )
-            .str.replace(
-                " natural landcover within the estimated floodplain, by catchment", ""
-            )
-        )
-        df.loc[df["value"] != 0, "label"] += " natural landcover"
-
-    elif filename == "ImperiledAquaticSpecies.tif":
-        indicator_df.at[index, "valueLabel"] = (
-            "Number of aquatic animal Species of Greatest Conservation Need observed"
-        )
-        df["label"] = (
-            df["label"]
-            .str.replace(
-                "aquatic animal Species of Greatest Conservation Need (SGCN) observed",
-                "species",
-            )
-            .str.replace("aquatic animal SGCN observed", "species")
-        )
-
-    elif filename == "WestVirginiaImperiledAquaticSpecies.tif":
-        indicator_df.at[index, "valueLabel"] = (
-            "Number of aquatic imperiled (G1/G2) or threatened/endangered animal species observed"
-        )
-        df["label"] = df["label"].str.replace(
-            "aquatic imperiled (G1/G2) or threatened/endangered animal species observed",
-            "species",
-        )
-
-    elif filename == "AtlanticMarineBirds.tif":
-        indicator_df.at[index, "valueLabel"] = (
-            "Percentile of importance for marine bird index species (across the full East Coast study area)"
-        )
-        df["label"] = (
-            df["label"]
-            .str.replace(
-                " of importance for marine bird index species (across the full East Coast study area)",
-                "",
-            )
-            .str.replace(" of importance", "")
-        )
-
-    elif filename == "AtlanticMarineMammals.tif":
-        indicator_df.at[index, "valueLabel"] = (
-            "Percentile of importance for marine mammal index species (across the full East Coast study area)"
-        )
-        df["label"] = (
-            df["label"]
-            .str.replace(
-                " of importance for marine mammal index species (across the full East Coast study area)",
-                "",
-            )
-            .str.replace(" of importance", "")
-        )
-
-    elif filename == "GulfMarineMammals.tif":
-        indicator_df.at[index, "valueLabel"] = (
-            "Percentile of importance for marine mammal index species (across larger analysis area)"
-        )
-        df["label"] = (
-            df["label"]
-            .str.replace(
-                " of importance for marine mammal index species (across larger analysis area)",
-                "",
-            )
-            .str.replace(" of importance", "")
-        )
-
-    elif filename == "GulfSeaTurtles.tif":
-        indicator_df.at[index, "valueLabel"] = (
-            "Percentile of importance for sea turtle index species (across larger analysis area)"
-        )
-        df["label"] = (
-            df["label"]
-            .str.replace(
-                " of importance for sea turtle index species (across larger analysis area)",
-                "",
-            )
-            .str.replace(" of importance", "")
-        )
-
-    elif filename == "MarineHighlyMigratoryFish.tif":
-        indicator_df.at[index, "valueLabel"] = (
-            "Percentile of importance for bluefin and skipjack tuna or blue shark"
-        )
-        df["label"] = (
-            df["label"]
-            .str.replace(
-                " of importance for bluefin tuna and skipjack tuna or blue shark", ""
-            )
-            .str.replace(" of importance", "")
-        )
-
-    elif filename == "SouthAtlanticBeachBirds.tif":
-        indicator_df.at[index, "valueLabel"] = (
-            "Percentile of importance for beach bird index species (American oystercatcher, Wilson's plover, least tern, piping plover)"
-        )
-        df["label"] = (
-            df["label"]
-            .str.replace(
-                "Open water or not identified as important for bird index species",
-                "Open water or not identified as a priority",
-            )
-            .str.replace(
-                " of importance for bird index species (American oystercatcher, Wilson's plover, least tern, piping plover)",
-                "",
-            )
-            .str.replace(" of importance for bird index species", "")
-            .str.replace(" of importance", "")
-        )
-
-    elif filename in ("PermeableSurface.tif", "CaribbeanPermeableSurface.tif"):
-        df["label"] = (
-            df["label"]
-            .str.replace(" of catchment or small island", "")
-            .str.replace(" of catchment", "")
-        )
-
-        if filename == "PermeableSurface.tif":
-            indicator_df.at[index, "valueLabel"] = "Percent of catchment permeable "
-        elif filename == "CaribbeanPermeableSurface.tif":
-            indicator_df.at[index, "valueLabel"] = (
-                "Percent of catchment or small island permeable"
-            )
-
-    elif filename == "NetworkComplexity.tif":
-        indicator_df.at[index, "valueLabel"] = "Number of connected stream size classes"
-        df["label"] = (
-            df["label"]
-            .str.replace("connected stream classes", "size classes")
-            .str.replace("connected stream class", "size class")
-        )
-
-    elif filename == "CaribbeanNetworkComplexity.tif":
-        indicator_df.at[index, "valueLabel"] = "Number of connected stream size classes"
-        df["label"] = (
-            df["label"]
-            .str.replace("connected stream classes", "size classes")
-            .str.replace("connected stream class", "size class")
-        )
-
-    #######################
+    df["label"] = df["value"].map(indicator_row.valueLabels)
 
     df["color"] = (
         df[["red", "green", "blue"]]
@@ -647,7 +379,7 @@ for index, indicator_row in indicator_df.iterrows():
         orient="records"
     )
 
-indicator_df = indicator_df.sort_values(by="id")
+indicator_df = indicator_df.sort_values(by="id").drop(columns=["valueLabels"])
 
 
 ################################################################################

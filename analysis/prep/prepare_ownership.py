@@ -1,6 +1,7 @@
 from pathlib import Path
 import warnings
 
+import pandas as pd
 import geopandas as gp
 from pyogrio import read_dataframe, write_dataframe
 import shapely
@@ -8,18 +9,41 @@ import shapely
 from analysis.constants import SECAS_STATES
 from analysis.lib.geometry import make_valid
 
-# suppress warnings about writing to feather
-warnings.filterwarnings("ignore", message=".*initial implementation of Parquet.*")
+warnings.filterwarnings("ignore", message=".*polygon with more than 100 parts.*")
+
 
 src_dir = Path("source_data/ownership")
 data_dir = Path("data")
 out_dir = data_dir / "inputs/boundaries"  # used as inputs for other steps
 
-filename = src_dir / "pad_us3.0.gpkg"
-layer = "PADUS3_0Combined_Proclamation_Marine_Fee_Designation_Easement"
-
 
 bnd_df = gp.read_feather(out_dir / "se_boundary.feather", columns=["geometry"])
+
+### Read WMAs in Oklahoma from v3.0; most of these are missing from v4.0
+# NOTE: this should be fixed in v5.0
+# there are several duplicates; we drop them
+ok_wma = (
+    read_dataframe(
+        src_dir / "pad_us3.0.gpkg",
+        layer="PADUS3_0Combined_Proclamation_Marine_Fee_Designation_Easement",
+        columns=[
+            "Category",
+            "State_Nm",
+            "Own_Type",
+            "GAP_Sts",
+            "Loc_Nm",
+            "Loc_Own",
+            "Loc_Ds",
+            "Agg_Src",
+            "Des_Tp",
+        ],
+        where="State_Nm = 'OK' AND Loc_Ds = 'State Wildlife Management Area'",
+        use_arrow=True,
+    )
+    .drop_duplicates()
+    .drop(columns=["Loc_Ds"])
+)
+
 
 ### Protected areas (PAD-US)
 print("Processing PAD-US lands...")
@@ -27,8 +51,8 @@ print("Processing PAD-US lands...")
 # read specific states; data are already in EPSG:5070
 states = ",".join(f"'{s}'" for s in SECAS_STATES + ["UNKF"])
 df = read_dataframe(
-    filename,
-    layer=layer,
+    src_dir / "pad_us4.0.gpkg",
+    layer="PADUS4_0Combined_Proclamation_Marine_Fee_Designation_Easement",
     columns=[
         "Category",
         "State_Nm",
@@ -40,7 +64,10 @@ df = read_dataframe(
         "Des_Tp",
     ],
     where=f"State_Nm in ({states})",
+    use_arrow=True,
 )
+
+df = pd.concat([df, ok_wma], ignore_index=True).drop_duplicates()
 
 # drop BOEM lease block groups
 df = df.loc[df.Agg_Src != "USGS_PADUS2_0Marine_BOEM_Block_Dissolve"].drop(
@@ -65,6 +92,6 @@ df = df.explode(ignore_index=True)
 df = df.loc[shapely.get_type_id(df.geometry.values) == 3].reset_index(drop=True)
 
 
-# Use FGB for more optimal reading by area of interest
+# Use FGB (instead of Feather) for more optimal reading by area of interest
 print("Writing files")
 write_dataframe(df, out_dir / "ownership.fgb")
