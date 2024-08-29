@@ -2323,7 +2323,7 @@
     "values": [
       {
         "value": 0,
-        "label": "Not identified as trail, sidewalk, or other path",
+        "label": "Not identified as a trail, sidewalk, or other path",
         "color": null
       },
       {
@@ -2518,7 +2518,7 @@
     "values": [
       {
         "value": 0,
-        "label": "Not a priority (score = 0)",
+        "label": "Score 0 (not a priority)",
         "color": null
       },
       {
@@ -2862,37 +2862,37 @@
     "values": [
       {
         "value": 0,
-        "label": "<5 acre urban park or not identified as an urban park",
+        "label": "Not identified as an urban park",
         "color": null
       },
       {
         "value": 1,
-        "label": "5 to <10 acre urban park",
+        "label": "<5 acre urban park",
         "color": "#FFFFBE"
       },
       {
         "value": 2,
-        "label": "10 to <30 acre urban park",
+        "label": "5 to <10 acre urban park",
         "color": "#E8BCC5"
       },
       {
         "value": 3,
-        "label": "30 to <50 acre urban park",
+        "label": "10 to <30 acre urban park",
         "color": "#D07AB6"
       },
       {
         "value": 4,
-        "label": "50 to <75 acre urban park",
+        "label": "30 to <50 acre urban park",
         "color": "#A55199"
       },
       {
         "value": 5,
-        "label": "75+ acre urban park",
+        "label": "50 to <75 acre urban park",
         "color": "#6D2373"
       },
       {
         "value": 6,
-        "label": NaN,
+        "label": "75+ acre urban park",
         "color": "#350242"
       }
     ],
