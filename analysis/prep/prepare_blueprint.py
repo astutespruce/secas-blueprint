@@ -354,9 +354,10 @@ for index, indicator_row in indicator_df.iterrows():
     red_col = [c for c in df.columns if c.lower() == "red"][0]
     green_col = [c for c in df.columns if c.lower() == "green"][0]
     blue_col = [c for c in df.columns if c.lower() == "blue"][0]
-    df = df.drop(columns=[desc_col]).rename(
+    df = df.rename(
         columns={
             "Value": "value",
+            desc_col: "label",
             red_col: "red",
             green_col: "green",
             blue_col: "blue",
@@ -364,7 +365,21 @@ for index, indicator_row in indicator_df.iterrows():
     )
     df[["red", "green", "blue"]] = df[["red", "green", "blue"]].astype("uint8")
 
-    df["label"] = df["value"].map(indicator_row.valueLabels)
+    # by default, use the value labels from the GeoTIFF files, but override where
+    # necessary from indicators_df
+    if indicator_row.valueLabel:
+        df["label"] = df["value"].map(indicator_row.valueLabels)
+
+    else:
+        df["label"] = (
+            df["label"]
+            .apply(lambda x: x.split("=", 1)[1].strip() if "=" in x else x)
+            .str.replace("<=", "≤")
+            .str.replace(">=", "≥")
+            .str.replace("’", "'")
+            .str.replace("–", "-")
+            .str.strip()
+        )
 
     df["color"] = (
         df[["red", "green", "blue"]]
