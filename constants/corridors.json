@@ -8,13 +8,13 @@
   },
   {
     "value": 1,
-    "color": "#154F4A",
+    "color": "#3A3A3A",
     "label": "Hubs",
     "description": "In the continental Southeast, hubs are large patches (~5,000+ acres) of highest priority Blueprint areas and/or protected lands.  In the Caribbean, hubs are large patches (~500+ acres) of highest priority Blueprint areas and/or protected lands."
   },
   {
     "value": 2,
-    "color": "#8EB6B0",
+    "color": "#858585",
     "label": "Corridors",
     "description": "Corridors connect those hubs across the shortest distance possible while also routing through as much Blueprint priority as possible."
   }

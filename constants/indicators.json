@@ -56,11 +56,10 @@
     "goodThreshold": 7,
     "url": "https://secas-fws.hub.arcgis.com/maps/65c222610313470b999f342ebf56c859/about",
     "subregions": [
+      "Appalachians",
       "Atlantic Coastal Plain",
       "Florida Peninsula",
-      "North Appalachians",
-      "Piedmont",
-      "South Appalachians"
+      "Piedmont"
     ]
   },
   {
@@ -210,13 +209,11 @@
     "goodThreshold": 1,
     "url": "https://secas-fws.hub.arcgis.com/maps/3bb0ba3e460a4c8b9f1970ba83fc4dca/about",
     "subregions": [
+      "Appalachians",
       "Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
       "East Gulf Coastal Plain",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "Piedmont",
-      "South Appalachians"
+      "Piedmont"
     ]
   },
   {
@@ -281,8 +278,8 @@
     "goodThreshold": null,
     "url": "",
     "subregions": [
+      "Appalachians",
       "Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
       "Chihuahuan Deserts",
       "East Gulf Coastal Plain",
       "Edwards Plateau",
@@ -290,15 +287,12 @@
       "Gulf Coastal Prairies",
       "High Plains and Tablelands",
       "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Appalachians",
       "North Missouri",
       "Ouachita",
       "Ozarks and Plains",
       "Piedmont",
       "Plains and Timbers",
-      "South Appalachians",
       "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
@@ -346,8 +340,8 @@
     "goodThreshold": 4,
     "url": "",
     "subregions": [
+      "Appalachians",
       "Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
       "Chihuahuan Deserts",
       "East Gulf Coastal Plain",
       "Edwards Plateau",
@@ -355,15 +349,12 @@
       "Gulf Coastal Prairies",
       "High Plains and Tablelands",
       "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Appalachians",
       "North Missouri",
       "Ouachita",
       "Ozarks and Plains",
       "Piedmont",
       "Plains and Timbers",
-      "South Appalachians",
       "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
@@ -421,8 +412,8 @@
     "goodThreshold": 4,
     "url": "",
     "subregions": [
+      "Appalachians",
       "Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
       "Chihuahuan Deserts",
       "East Gulf Coastal Plain",
       "Edwards Plateau",
@@ -430,15 +421,12 @@
       "Gulf Coastal Prairies",
       "High Plains and Tablelands",
       "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Appalachians",
       "North Missouri",
       "Ouachita",
       "Ozarks and Plains",
       "Piedmont",
       "Plains and Timbers",
-      "South Appalachians",
       "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
@@ -476,8 +464,8 @@
     "goodThreshold": 4,
     "url": "",
     "subregions": [
+      "Appalachians",
       "Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
       "Chihuahuan Deserts",
       "East Gulf Coastal Plain",
       "Edwards Plateau",
@@ -485,15 +473,12 @@
       "Gulf Coastal Prairies",
       "High Plains and Tablelands",
       "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Appalachians",
       "North Missouri",
       "Ouachita",
       "Ozarks and Plains",
       "Piedmont",
       "Plains and Timbers",
-      "South Appalachians",
       "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
@@ -556,10 +541,10 @@
     "goodThreshold": null,
     "url": "",
     "subregions": [
+      "Atlantic",
       "Atlantic Coastal Plain",
-      "Atlantic Marine",
       "Florida Peninsula",
-      "Gulf of Mexico"
+      "South Florida Marine"
     ]
   },
   {
@@ -599,8 +584,8 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/43113a697188432c8bf8f99099b35396/about",
     "subregions": [
-      "Atlantic Marine",
-      "Gulf of Mexico"
+      "Atlantic",
+      "South Florida Marine"
     ]
   },
   {
@@ -660,11 +645,11 @@
     "goodThreshold": 7,
     "url": "https://secas-fws.hub.arcgis.com/maps/660c18d241f04ca695e1667f9b5b3d49/about",
     "subregions": [
+      "Atlantic",
       "Atlantic Coastal Plain",
-      "Atlantic Marine",
       "Florida Peninsula",
-      "Gulf of Mexico",
-      "Piedmont"
+      "Piedmont",
+      "South Florida Marine"
     ]
   },
   {
@@ -734,10 +719,10 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/aa34bc46ff534c89aab65d7d749087fb/about",
     "subregions": [
+      "Atlantic",
       "Atlantic Coastal Plain",
-      "Atlantic Marine",
       "Florida Peninsula",
-      "Gulf of Mexico"
+      "South Florida Marine"
     ]
   },
   {
@@ -807,10 +792,10 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/e58767bd7b7c4a8c9bf586d169f1593f/about",
     "subregions": [
+      "Atlantic",
       "Atlantic Coastal Plain",
-      "Atlantic Marine",
       "Florida Peninsula",
-      "Gulf of Mexico"
+      "South Florida Marine"
     ]
   },
   {
@@ -1066,11 +1051,9 @@
     "url": "https://secas-fws.hub.arcgis.com/maps/d75e310afae54c03b32a2a2699a2e5d7/about",
     "subregions": [
       "Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
       "East Gulf Coastal Plain",
       "Florida Peninsula",
       "Gulf Coastal Prairies",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley"
     ]
   },
@@ -1116,15 +1099,14 @@
     "goodThreshold": 4,
     "url": "https://secas-fws.hub.arcgis.com/maps/f916234cccff4c01a828e3232b8b2abd/about",
     "subregions": [
+      "Atlantic",
       "Atlantic Coastal Plain",
-      "Atlantic Marine",
-      "Central Gulf Coastal Plain",
       "East Gulf Coastal Plain",
       "Florida Peninsula",
+      "Gulf",
       "Gulf Coastal Prairies",
-      "Gulf of Mexico",
-      "Mid East Gulf Coastal Plain",
-      "Mississippi Alluvial Valley"
+      "Mississippi Alluvial Valley",
+      "South Florida Marine"
     ]
   },
   {
@@ -1179,13 +1161,12 @@
     "goodThreshold": null,
     "url": "",
     "subregions": [
-      "Central Gulf Coastal Plain",
       "East Gulf Coastal Plain",
       "Florida Peninsula",
+      "Gulf",
       "Gulf Coastal Prairies",
-      "Gulf of Mexico",
-      "Mid East Gulf Coastal Plain",
-      "Mississippi Alluvial Valley"
+      "Mississippi Alluvial Valley",
+      "South Florida Marine"
     ]
   },
   {
@@ -1225,7 +1206,8 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/ccf4843485d848989951fbb5d3e530be/about",
     "subregions": [
-      "Gulf of Mexico"
+      "Gulf",
+      "South Florida Marine"
     ]
   },
   {
@@ -1295,13 +1277,12 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/3b1b20bfde1e4a359131a0251dc6d617/about",
     "subregions": [
-      "Central Gulf Coastal Plain",
       "East Gulf Coastal Plain",
       "Florida Peninsula",
+      "Gulf",
       "Gulf Coastal Prairies",
-      "Gulf of Mexico",
-      "Mid East Gulf Coastal Plain",
-      "Mississippi Alluvial Valley"
+      "Mississippi Alluvial Valley",
+      "South Florida Marine"
     ]
   },
   {
@@ -1346,13 +1327,12 @@
     "goodThreshold": null,
     "url": "",
     "subregions": [
-      "Central Gulf Coastal Plain",
       "East Gulf Coastal Plain",
       "Florida Peninsula",
+      "Gulf",
       "Gulf Coastal Prairies",
-      "Gulf of Mexico",
-      "Mid East Gulf Coastal Plain",
-      "Mississippi Alluvial Valley"
+      "Mississippi Alluvial Valley",
+      "South Florida Marine"
     ]
   },
   {
@@ -1382,16 +1362,15 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/1d076b5ffc164689afba7a09b054faea/about",
     "subregions": [
+      "Atlantic",
       "Atlantic Coastal Plain",
-      "Atlantic Marine",
-      "Central Gulf Coastal Plain",
       "East Gulf Coastal Plain",
       "Florida Peninsula",
+      "Gulf",
       "Gulf Coastal Prairies",
-      "Gulf of Mexico",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
       "Piedmont",
+      "South Florida Marine",
       "West Gulf Coastal Plain"
     ]
   },
@@ -1447,8 +1426,9 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/8d893f24147a47f7bb48f8071c2d3a6a/about",
     "subregions": [
-      "Atlantic Marine",
-      "Gulf of Mexico"
+      "Atlantic",
+      "Gulf",
+      "South Florida Marine"
     ]
   },
   {
@@ -1499,11 +1479,9 @@
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::resilient-coastal-sites-southeast-blueprint-indicator/about",
     "subregions": [
       "Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
       "East Gulf Coastal Plain",
       "Florida Peninsula",
       "Gulf Coastal Prairies",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
       "West Gulf Coastal Plain"
     ]
@@ -1526,14 +1504,12 @@
     "url": "https://secas-fws.hub.arcgis.com/maps/b93aaabad9b44e30a2a656313d5282e6/about",
     "subregions": [
       "Atlantic Coastal Plain",
-      "Atlantic Marine",
-      "Central Gulf Coastal Plain",
       "East Gulf Coastal Plain",
       "Florida Peninsula",
+      "Gulf",
       "Gulf Coastal Prairies",
-      "Gulf of Mexico",
-      "Mid East Gulf Coastal Plain",
-      "Mississippi Alluvial Valley"
+      "Mississippi Alluvial Valley",
+      "South Florida Marine"
     ]
   },
   {
@@ -1578,8 +1554,8 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/7ba82b4fdf53416f83ff1b01cabe0c5d/about",
     "subregions": [
+      "Atlantic",
       "Atlantic Coastal Plain",
-      "Atlantic Marine",
       "Florida Peninsula"
     ]
   },
@@ -1637,11 +1613,9 @@
     "url": "https://secas-fws.hub.arcgis.com/maps/802eb4993d0d4904ac360823c99b4b7a/about",
     "subregions": [
       "Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
       "East Gulf Coastal Plain",
       "Florida Peninsula",
       "Gulf Coastal Prairies",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
       "Piedmont",
       "Texas Blackland Prairies",
@@ -1670,25 +1644,23 @@
     "goodThreshold": null,
     "url": "",
     "subregions": [
+      "Appalachians",
       "Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
       "Chihuahuan Deserts",
       "East Gulf Coastal Plain",
       "Edwards Plateau",
       "Florida Peninsula",
+      "Gulf",
       "Gulf Coastal Prairies",
-      "Gulf of Mexico",
       "High Plains and Tablelands",
       "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Appalachians",
       "North Missouri",
       "Ouachita",
       "Ozarks and Plains",
       "Piedmont",
       "Plains and Timbers",
-      "South Appalachians",
+      "South Florida Marine",
       "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
@@ -2121,13 +2093,11 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/78717a5537ba434299d69d5dce038022/about",
     "subregions": [
+      "Appalachians",
       "Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
       "East Gulf Coastal Plain",
       "Florida Peninsula",
-      "Mid East Gulf Coastal Plain",
-      "Piedmont",
-      "South Appalachians"
+      "Piedmont"
     ]
   },
   {
@@ -2162,8 +2132,8 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/0f44447ccc2b4968ae61e239bbfbeeda/about",
     "subregions": [
+      "Appalachians",
       "Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
       "Chihuahuan Deserts",
       "East Gulf Coastal Plain",
       "Edwards Plateau",
@@ -2171,15 +2141,12 @@
       "Gulf Coastal Prairies",
       "High Plains and Tablelands",
       "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Appalachians",
       "North Missouri",
       "Ouachita",
       "Ozarks and Plains",
       "Piedmont",
       "Plains and Timbers",
-      "South Appalachians",
       "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
@@ -2217,8 +2184,8 @@
     "goodThreshold": 2,
     "url": "https://secas-fws.hub.arcgis.com/maps/1d8eb7be82b34236a74f9888ced2d603/about",
     "subregions": [
+      "Appalachians",
       "Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
       "Chihuahuan Deserts",
       "East Gulf Coastal Plain",
       "Edwards Plateau",
@@ -2226,15 +2193,12 @@
       "Gulf Coastal Prairies",
       "High Plains and Tablelands",
       "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Appalachians",
       "North Missouri",
       "Ouachita",
       "Ozarks and Plains",
       "Piedmont",
       "Plains and Timbers",
-      "South Appalachians",
       "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
@@ -2292,8 +2256,8 @@
     "goodThreshold": 5,
     "url": "",
     "subregions": [
+      "Appalachians",
       "Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
       "Chihuahuan Deserts",
       "East Gulf Coastal Plain",
       "Edwards Plateau",
@@ -2301,15 +2265,12 @@
       "Gulf Coastal Prairies",
       "High Plains and Tablelands",
       "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Appalachians",
       "North Missouri",
       "Ouachita",
       "Ozarks and Plains",
       "Piedmont",
       "Plains and Timbers",
-      "South Appalachians",
       "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
@@ -2367,8 +2328,8 @@
     "goodThreshold": 4,
     "url": "https://secas-fws.hub.arcgis.com/maps/16a21210f4494f33a7a8fa3c69aeaabc/about",
     "subregions": [
+      "Appalachians",
       "Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
       "Chihuahuan Deserts",
       "East Gulf Coastal Plain",
       "Edwards Plateau",
@@ -2376,15 +2337,12 @@
       "Gulf Coastal Prairies",
       "High Plains and Tablelands",
       "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Appalachians",
       "North Missouri",
       "Ouachita",
       "Ozarks and Plains",
       "Piedmont",
       "Plains and Timbers",
-      "South Appalachians",
       "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
@@ -2422,8 +2380,8 @@
     "goodThreshold": 1,
     "url": "",
     "subregions": [
+      "Appalachians",
       "Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
       "Chihuahuan Deserts",
       "East Gulf Coastal Plain",
       "Edwards Plateau",
@@ -2431,15 +2389,12 @@
       "Gulf Coastal Prairies",
       "High Plains and Tablelands",
       "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Appalachians",
       "North Missouri",
       "Ouachita",
       "Ozarks and Plains",
       "Piedmont",
       "Plains and Timbers",
-      "South Appalachians",
       "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
@@ -2487,8 +2442,8 @@
     "goodThreshold": 4,
     "url": "",
     "subregions": [
+      "Appalachians",
       "Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
       "Chihuahuan Deserts",
       "East Gulf Coastal Plain",
       "Edwards Plateau",
@@ -2496,15 +2451,12 @@
       "Gulf Coastal Prairies",
       "High Plains and Tablelands",
       "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Appalachians",
       "North Missouri",
       "Ouachita",
       "Ozarks and Plains",
       "Piedmont",
       "Plains and Timbers",
-      "South Appalachians",
       "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
@@ -2577,7 +2529,7 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/eb58a600736d44b6bdaaa029e2149397/about",
     "subregions": [
-      "Central Gulf Coastal Plain",
+      "East Gulf Coastal Plain",
       "Gulf Coastal Prairies",
       "Mississippi Alluvial Valley",
       "West Gulf Coastal Plain"
@@ -2650,7 +2602,7 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/a8d1a484128e4b6e8361c4ccf82b6ec4/about",
     "subregions": [
-      "Central Gulf Coastal Plain",
+      "East Gulf Coastal Plain",
       "Gulf Coastal Prairies",
       "Mississippi Alluvial Valley",
       "West Gulf Coastal Plain"
@@ -2746,8 +2698,8 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::resilient-terrestrial-sites-southeast-blueprint-indicator/about",
     "subregions": [
+      "Appalachians",
       "Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
       "Chihuahuan Deserts",
       "East Gulf Coastal Plain",
       "Edwards Plateau",
@@ -2755,15 +2707,12 @@
       "Gulf Coastal Prairies",
       "High Plains and Tablelands",
       "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Appalachians",
       "North Missouri",
       "Ouachita",
       "Ozarks and Plains",
       "Piedmont",
       "Plains and Timbers",
-      "South Appalachians",
       "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
@@ -2811,14 +2760,12 @@
     "goodThreshold": 2,
     "url": "https://secas-fws.hub.arcgis.com/maps/a466de8174964bce8de87495b4595436/about",
     "subregions": [
+      "Appalachians",
+      "Atlantic",
       "Atlantic Coastal Plain",
-      "Atlantic Marine",
       "East Gulf Coastal Plain",
       "Florida Peninsula",
-      "Mid East Gulf Coastal Plain",
-      "North Appalachians",
-      "Piedmont",
-      "South Appalachians"
+      "Piedmont"
     ]
   },
   {
@@ -2850,8 +2797,7 @@
     "subregions": [
       "Atlantic Coastal Plain",
       "East Gulf Coastal Plain",
-      "Piedmont",
-      "South Appalachians"
+      "Piedmont"
     ]
   },
   {
@@ -2901,25 +2847,23 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/4f558e55c0b34763936e40dd54298523/about",
     "subregions": [
+      "Appalachians",
       "Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
       "Chihuahuan Deserts",
       "East Gulf Coastal Plain",
       "Edwards Plateau",
       "Florida Peninsula",
+      "Gulf",
       "Gulf Coastal Prairies",
-      "Gulf of Mexico",
       "High Plains and Tablelands",
       "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Appalachians",
       "North Missouri",
       "Ouachita",
       "Ozarks and Plains",
       "Piedmont",
       "Plains and Timbers",
-      "South Appalachians",
+      "South Florida Marine",
       "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
@@ -3093,7 +3037,7 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/b062fbced69d4f30baa1ab423d55d4b7/about",
     "subregions": [
-      "Central Gulf Coastal Plain",
+      "East Gulf Coastal Plain",
       "Gulf Coastal Prairies",
       "Mississippi Alluvial Valley",
       "Texas Blackland Prairies",

@@ -21,7 +21,7 @@ def get_parcas_for_aoi(df):
     Returns
     -------
     list or None
-        list of {"name": <name>, "description": <>}
+        list of {"name": <name>, "description": <description>}
 
     """
     parca_df = gp.read_feather(parca_filename).set_index("parca_id")
@@ -31,8 +31,9 @@ def get_parcas_for_aoi(df):
     parcas = (
         parca_df[["name", "description"]]
         .take(tree.query(df.geometry.values, predicate="intersects")[1])
-        .groupby(level=0)
+        .groupby("name")
         .first()
+        .reset_index()
         .sort_values(by="name")
         .to_dict(orient="records")
     )

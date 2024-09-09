@@ -35,7 +35,7 @@ out_dir.mkdir(exist_ok=True, parents=True)
 # sort by Hilbert distance so that they are geographically ordered
 subregion_df = (
     read_dataframe(
-        src_dir / "blueprint/SoutheastBlueprint2023Subregions.shp",
+        src_dir / "blueprint/SEBlueprintSubregions2024.shp",
         columns=["SubRgn"],
         use_arrow=True,
     )
@@ -43,7 +43,7 @@ subregion_df = (
     .sort_values(by="geometry")
 )
 subregion_df["marine"] = subregion_df.subregion.isin(
-    ["Atlantic Marine", "Gulf of Mexico"]
+    ["Atlantic", "Gulf", "South Florida Marine"]
 )
 subregion_df = (
     subregion_df.reset_index(drop=True).reset_index().rename(columns={"index": "value"})
@@ -195,17 +195,40 @@ counties.to_feather(out_dir / "counties.feather")
 ### PARCAs (Amphibian & reptile aras)
 # already in EPSG:5070
 print("Processing PARCAs...")
+
 df = (
+    read_dataframe(
+        src_dir / "boundaries/PublicPARCAsOnly.gdb",
+        columns=["PARCA", "Description"],
+        use_arrow=True,
+    )
+    .to_crs(DATA_CRS)
+    .rename(columns={"PARCA": "name", "Description": "description"})
+)
+df["parca_id"] = df.index.values
+df["geometry"] = shapely.force_2d(df.geometry.values)
+
+
+# Keep Neuse Tar River from previous, per direction from Hilary on 8/30/2024
+prev = (
     read_dataframe(
         src_dir / "boundaries/SouthAtlanticPARCAs.gdb",
         columns=["FID", "Name", "Description"],
-        force_2d=True,
+        where="""Name = 'Neuse Tar River'""",
+        use_arrow=True,
     )
     .to_crs(DATA_CRS)
     .rename(columns={"FID": "parca_id", "Name": "name", "Description": "description"})
     .explode(ignore_index=True)
 )
+prev["parca_id"] += 200
+prev["geometry"] = shapely.force_2d(prev.geometry.values)
 
+df = pd.concat([df, prev], ignore_index=True)
+df["name"] = df.name.str.strip()
+df["description"] = df.description.str.strip()
+
+df = df.explode(ignore_index=True)
 df["geometry"] = make_valid(df.geometry.values)
 
 write_dataframe(df, bnd_dir / "parca.fgb")

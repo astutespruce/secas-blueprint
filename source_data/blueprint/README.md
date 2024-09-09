@@ -1,6 +1,6 @@
-# Southeast Conservation Blueprint - 2023
+# Southeast Conservation Blueprint - 2024
 
-Data were downloaded 9/27/2023 from: USFWS MS Teams internal site.
+Data were downloaded 9/5/2024 from USFWS MS Teams internal site.
 
 A separate XLSX file containing indicator descriptions and other details was
-provided directly by USFWS staff on 9/20/2023.
+downloaded from USFWS MS Teams internal site on 9/5/2024.

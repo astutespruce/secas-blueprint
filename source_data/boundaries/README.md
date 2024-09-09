@@ -17,5 +17,6 @@ Keister on 11/27/2023.
 
 ## Priority Amphibian and Reptile Conservation Areas (PARCAs)
 
-These were provided previously by USFWS staff as part of the South Atlantic
-Simple Viewer.
+These were provided via email by Hilary Morris on 9/4/2024. Use the name and
+description for "Neuse Tar River PARCA" from the previous PARCA data that was
+limited to the South Atlantic.
