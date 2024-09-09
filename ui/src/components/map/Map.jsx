@@ -613,13 +613,7 @@ const Map = () => {
       }
 
       const updateStyle = () => {
-        const {
-          style: {
-            _layers: {
-              pixelLayers: { implementation: pixelLayer },
-            },
-          },
-        } = map
+        const pixelLayer = map.getLayer('pixelLayers')
 
         map.setStyle(`mapbox://styles/mapbox/${styleID}`)
 

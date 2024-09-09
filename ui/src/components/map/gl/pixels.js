@@ -191,9 +191,7 @@ export const extractPixelData = (
 
   // decode pixel values
   const {
-    implementation: {
-      props: { layers },
-    },
+    props: { layers },
   } = layer
 
   const data = {}
