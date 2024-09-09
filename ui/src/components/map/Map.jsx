@@ -134,12 +134,7 @@ const Map = () => {
     const layer = map.getLayer('pixelLayers')
     // don't fetch data if layer is not yet available or is not visible
     if (
-      !(
-        layer &&
-        layer.implementation &&
-        layer.implementation.deck &&
-        layer.implementation.deck.layerManager.layers[0].props.visible
-      )
+      !(layer && layer.deck && layer.deck.layerManager.layers[0].props.visible)
     ) {
       return
     }
@@ -246,6 +241,7 @@ const Map = () => {
           layers: [
             new StackedPNGTileLayer({
               id: 'pixelLayers',
+              interleaved: true,
               beforeId: beforeLayer,
               refinementStrategy: 'no-overlap',
               debounceTime: 10, // slightly debounce tile requests during major zoom / pan events
@@ -292,7 +288,7 @@ const Map = () => {
 
         // enable event listener for renderer
         if (mapMode === 'pixel') {
-          map.getLayer('pixelLayers').implementation.deck.setProps({
+          map.getLayer('pixelLayers').deck.setProps({
             onAfterRender: deckGLHandler.handler,
           })
         }
@@ -424,7 +420,7 @@ const Map = () => {
     mapIsDrawingRef.current = true
 
     const isVisible = isRenderLayerVisibleRef.current
-    const pixelLayer = map.getLayer('pixelLayers').implementation
+    const pixelLayer = map.getLayer('pixelLayers')
 
     // toggle layer visibility
     if (mapMode === 'unit') {

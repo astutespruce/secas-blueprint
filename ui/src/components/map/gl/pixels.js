@@ -25,7 +25,7 @@ const getTileID = (zoom, mercX, mercY, minZoom, maxZoom, tileSize) => {
 
 const getTile = (map, screenPoint, layer) => {
   // resolve the StackedPNGTileLayer; layers[1:n] are StackedPNGLayers
-  const tileLayer = layer.implementation.deck.layerManager.layers[0]
+  const tileLayer = layer.deck.layerManager.layers[0]
   const {
     props: { minZoom, maxZoom, tileSize },
     state: { tileset },
