@@ -9,7 +9,7 @@ import {
 } from 'config'
 import { OutboundLink } from 'components/link'
 import NeedHelp from 'content/NeedHelp'
-import { ifNull, setIntersection, sortByFunc } from 'util/data'
+import { ifNull, sortByFunc } from 'util/data'
 
 import BlueprintChart from './BlueprintChart'
 import CorridorsChart from './CorridorsChart'
@@ -63,32 +63,19 @@ const BlueprintTab = ({
     }
   }
 
-  // filter legend for corridors based on which ones are present
-  const filterCorridors = ({ type: corridorType }) => {
-    switch (corridorType) {
-      case 'caribbean': {
-        return corridorsPresent.caribbean || subregions.has('Caribbean')
+  const availableCorridorCategories = corridorCategories
+    .filter(({ value }) => value > 0 || type === 'pixel')
+    .map(({ description, ...rest }) => {
+      if (description) {
+        const parts = description.split('  ')
+        return {
+          ...rest,
+          description: subregions.has('Caribbean') ? parts[1] : parts[0],
+        }
       }
-      case 'marine': {
-        return (
-          corridorsPresent.marine ||
-          setIntersection(subregions, marineSubregions).size > 0
-        )
-      }
-      case 'inland': {
-        return (
-          corridorsPresent.inland ||
-          (type === 'subwatershed' && !subregions.has('Caribbean')) ||
-          (type === 'pixel' &&
-            setIntersection(subregions, marineSubregions).size === 0 &&
-            !subregions.has('Caribbean'))
-        )
-      }
-      default: {
-        return type === 'pixel'
-      }
-    }
-  }
+
+      return rest
+    })
 
   return (
     <Box sx={{ py: '2rem', pl: '1rem', pr: '2rem' }}>
@@ -145,7 +132,9 @@ const BlueprintTab = ({
 
         {outsideSEPercent < 100 ? (
           <CorridorCategories
-            categories={corridorCategories.filter(filterCorridors)}
+            // given a summary unit or pixel, there will only ever be continental
+            // or caribben corridors possible
+            categories={availableCorridorCategories}
             value={type === 'pixel' ? ifNull(corridors, 0) : null}
           />
         ) : null}

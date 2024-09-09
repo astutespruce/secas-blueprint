@@ -412,7 +412,7 @@ for index, indicator_row in indicator_df.iterrows():
 
             nodata = int(src.nodata)
 
-            # read data, standardize NODATA, and clip to data extent
+            # read data, standardize NODATA, and clip to data extent (not necessarily Blueprint extent)
             data = src.read(1)
             data = np.where(data == nodata, NODATA, data)
             data_window = windows.get_data_window(data, nodata=NODATA)

@@ -31,6 +31,8 @@ const FiltersTab = () => {
           {
             id: 'blueprint',
             label: 'Blueprint priority',
+            description:
+              'The Blueprint identifies priority areas based on a suite of natural and cultural resource indicators representing terrestrial, freshwater, and marine ecosystems.',
             values: blueprint
               .slice()
               .sort(sortByFunc('value'))
@@ -66,7 +68,7 @@ const FiltersTab = () => {
               }))
               .concat(slrNodata),
             description:
-              'Sea level rise estimates derived from the NOAA sea-level rise inundation data',
+              'Sea level rise estimates derived from the NOAA sea-level rise inundation data.',
           },
         ],
         ecosystems: rawEcosystems.map(
