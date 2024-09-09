@@ -10,7 +10,6 @@
 /analysis/lib/*.c
 /analysis/lib/*.so
 
-/source_data_2023/*
 /source_data/ARCHIVE*
 /source_data/blueprint/*
 /source_data/boundaries/*
