@@ -42,7 +42,7 @@ from analysis.lib.attribute_encoding import (
     encode_blueprint,
     encode_ownership_protection,
 )
-from analysis.lib.stats.ownership import get_lta_search_info
+
 
 # ignore future warning about concat; this is because we join to empty data frames
 # with the full summary unit index
@@ -98,18 +98,19 @@ huc12["subregions"] = huc12.subregions.apply(
     lambda x: ",".join(str(subregions[s]) for s in x)
 )
 
+# NO LONGER USED
 ### Encode center / radius as x,y,radius(miles)
-center, lta_search_radius = get_lta_search_info(
-    huc12[["minx", "miny", "maxx", "maxy"]].values
-)
-center = center.round(5)
-lta_search_df = pd.DataFrame(center, index=huc12.index, columns=["x", "y"]).astype(
-    "str"
-)
-lta_search_df["miles"] = lta_search_radius.astype("str")
-lta_search = lta_search_df.apply(lambda row: ",".join(row.values), axis=1).rename(
-    "lta_search"
-)
+# center, lta_search_radius = get_lta_search_info(
+#     huc12[["minx", "miny", "maxx", "maxy"]].values
+# )
+# center = center.round(5)
+# lta_search_df = pd.DataFrame(center, index=huc12.index, columns=["x", "y"]).astype(
+#     "str"
+# )
+# lta_search_df["miles"] = lta_search_radius.astype("str")
+# lta_search = lta_search_df.apply(lambda row: ",".join(row.values), axis=1).rename(
+#     "lta_search"
+# )
 
 
 ### Southeast Blueprint
@@ -195,7 +196,7 @@ protection = encode_ownership_protection(protection_results, "GAP_Sts").rename(
 huc12 = (
     huc12[["geometry", "name", "subregions", "type"]]
     .join(huc12[["acres", "rasterized_acres", "outside_se"]].round().astype("int"))
-    .join(lta_search, how="left")
+    # .join(lta_search, how="left")
     .join(blueprint, how="left")
     .join(slr, how="left")
     .join(urban, how="left")
@@ -286,7 +287,7 @@ out = pd.concat(
 
 for col in (
     [
-        "lta_search",
+        # "lta_search",
         "ownership",
         "protection",
         "urban",

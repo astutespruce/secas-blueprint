@@ -115,9 +115,6 @@ def create_report(maps, results, name=None, area_type="custom"):
         "area_type": area_type,
         "title": title,
         "subtitle": subtitle,
-        # URL in report is hardcoded to SECAS Blueprint page to avoid issues
-        # with migrating Explorer between different hostnames
-        "url": "https://secassoutheast.org/blueprint",
         "maps": maps,
         "legends": legends,
         "ownership_acres": ownership_acres,

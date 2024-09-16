@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from analysis.lib.stats.blueprint import get_blueprint_unit_results
-from analysis.lib.stats.ownership import get_lta_search_info, get_ownership_unit_results
+from analysis.lib.stats.ownership import get_ownership_unit_results
 from analysis.lib.stats.parca import get_parca_results
 from analysis.lib.stats.urban import get_urban_unit_results
 from analysis.lib.stats.slr import get_slr_unit_results
@@ -63,12 +63,13 @@ def get_summary_unit_results(unit_type, unit_id):
         "bounds": bounds,
     }
 
-    if unit_type == "huc12":
-        center, lta_search_radius = get_lta_search_info(
-            df[["minx", "miny", "maxx", "maxy"]].values
-        )
-        results["center"] = center[0]
-        results["lta_search_radius"] = lta_search_radius[0]
+    # NO LONGER USED
+    # if unit_type == "huc12":
+    #     center, lta_search_radius = get_lta_search_info(
+    #         df[["minx", "miny", "maxx", "maxy"]].values
+    #     )
+    #     results["center"] = center[0]
+    #     results["lta_search_radius"] = lta_search_radius[0]
 
     blueprint_results = get_blueprint_unit_results(results_dir, unit)
     if blueprint_results is not None:

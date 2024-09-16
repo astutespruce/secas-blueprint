@@ -13,7 +13,6 @@ from analysis.constants import (
     GEO_CRS,
     DATA_CRS,
     M_MILES,
-    LTA_SEARCH_RADIUS_BINS,
 )
 from analysis.lib.geometry import to_crs
 from analysis.lib.stats.summary_units import read_unit_from_feather
@@ -332,41 +331,42 @@ def get_ownership_unit_results(results_dir, unit):
     return results
 
 
-def get_lta_search_info(bounds):
-    """Calculate geographic center and search radius in miles (binned to match
-    website) to search against Land Trust Alliance website.
+# NO LONGER USED
+# def get_lta_search_info(bounds):
+#     """Calculate geographic center and search radius in miles (binned to match
+#     website) to search against Land Trust Alliance website.
 
-    Parameters
-    ----------
-    bounds : ndarray of shape (n, 4), in GEO_CRS
+#     Parameters
+#     ----------
+#     bounds : ndarray of shape (n, 4), in GEO_CRS
 
-    Returns
-    -------
-    ndarray of shape (n, 2), ndarray of shape (n,)
-        centers in long, lat and search distance in miles
-    """
-    boxes = to_crs(shapely.box(*bounds.T), GEO_CRS, DATA_CRS)
-    centers = np.dstack(
-        [(bounds[:, 0] + bounds[:, 2]) / 2, (bounds[:, 1] + bounds[:, 3]) / 2]
-    )[0]
+#     Returns
+#     -------
+#     ndarray of shape (n, 2), ndarray of shape (n,)
+#         centers in long, lat and search distance in miles
+#     """
+#     boxes = to_crs(shapely.box(*bounds.T), GEO_CRS, DATA_CRS)
+#     centers = np.dstack(
+#         [(bounds[:, 0] + bounds[:, 2]) / 2, (bounds[:, 1] + bounds[:, 3]) / 2]
+#     )[0]
 
-    extent_radius = (
-        shapely.distance(
-            shapely.get_point(shapely.get_exterior_ring(boxes), 0),
-            shapely.centroid(boxes),
-        )
-        * M_MILES
-    )
+#     extent_radius = (
+#         shapely.distance(
+#             shapely.get_point(shapely.get_exterior_ring(boxes), 0),
+#             shapely.centroid(boxes),
+#         )
+#         * M_MILES
+#     )
 
-    indexes = np.clip(
-        np.digitize(extent_radius, LTA_SEARCH_RADIUS_BINS),
-        0,
-        len(LTA_SEARCH_RADIUS_BINS) - 1,
-    )
+#     indexes = np.clip(
+#         np.digitize(extent_radius, LTA_SEARCH_RADIUS_BINS),
+#         0,
+#         len(LTA_SEARCH_RADIUS_BINS) - 1,
+#     )
 
-    return (
-        centers,
-        pd.Series(indexes)
-        .map({i: v for i, v in enumerate(LTA_SEARCH_RADIUS_BINS)})
-        .values,
-    )
+#     return (
+#         centers,
+#         pd.Series(indexes)
+#         .map({i: v for i, v in enumerate(LTA_SEARCH_RADIUS_BINS)})
+#         .values,
+#     )

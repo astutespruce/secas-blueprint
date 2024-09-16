@@ -378,6 +378,7 @@ for index, indicator_row in indicator_df.iterrows():
             .str.replace(">=", "≥")
             .str.replace("’", "'")
             .str.replace("–", "-")
+            .str.replace("10ac", "10 acres")
             .str.strip()
         )
 

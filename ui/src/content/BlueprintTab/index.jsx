@@ -65,16 +65,17 @@ const BlueprintTab = ({
 
   const availableCorridorCategories = corridorCategories
     .filter(({ value }) => value > 0 || type === 'pixel')
-    .map(({ description, ...rest }) => {
-      if (description) {
+    .map(({ value, description, ...rest }) => {
+      if (value === 1 && description) {
         const parts = description.split('  ')
         return {
           ...rest,
+          value,
           description: subregions.has('Caribbean') ? parts[1] : parts[0],
         }
       }
 
-      return rest
+      return { ...rest, value, description }
     })
 
   return (

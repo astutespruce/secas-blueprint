@@ -12,7 +12,7 @@ from rasterio import windows
 import shapely
 
 from analysis.constants import DATA_CRS, SECAS_STATES, MASK_RESOLUTION
-from analysis.lib.geometry import make_valid, to_dict_all, to_dict
+from analysis.lib.geometry import make_valid, to_dict_all, to_dict, dissolve
 from analysis.lib.raster import write_raster, add_overviews, create_lowres_mask
 
 warnings.filterwarnings("ignore", message=".*Measured 3D MultiPolygon.*")
@@ -35,28 +35,29 @@ out_dir.mkdir(exist_ok=True, parents=True)
 # sort by Hilbert distance so that they are geographically ordered
 subregion_df = (
     read_dataframe(
-        src_dir / "blueprint/SEBlueprintSubregions2024.shp",
-        columns=["SubRgn"],
+        src_dir / "blueprint/SEBlueprintSubregions2024ForArchive.shp",
+        columns=["SubRgn_II"],
         use_arrow=True,
     )
-    .rename(columns={"SubRgn": "subregion"})
+    .rename(columns={"SubRgn_II": "subregion"})
+    .explode(ignore_index=True)
     .sort_values(by="geometry")
 )
+
+subregion_df["geometry"] = shapely.make_valid(
+    shapely.force_2d(subregion_df.geometry.values)
+)
+
+subregion_df = (
+    dissolve(subregion_df, by="subregion")
+    .reset_index()
+    .rename(columns={"index": "value"})
+)
+
 subregion_df["marine"] = subregion_df.subregion.isin(
     ["Atlantic", "Gulf", "South Florida Marine"]
 )
-subregion_df = (
-    subregion_df.reset_index(drop=True).reset_index().rename(columns={"index": "value"})
-)
 
-subregion_df["geometry"] = shapely.make_valid(subregion_df.geometry.values)
-
-subregion_df.to_feather(out_dir / "subregions.feather")
-write_dataframe(subregion_df, bnd_dir / "subregions.fgb")
-
-subregion_df[["value", "subregion", "marine"]].to_json(
-    constants_dir / "subregions.json", orient="records"
-)
 
 ### Extract Blueprint extent
 print("Extracting SE Blueprint extent")
@@ -101,6 +102,20 @@ with rasterio.open(src_dir / "blueprint/SEBlueprintExtent2024.tif") as src:
     bnd_df.to_feather(out_dir / "se_boundary.feather")
     write_dataframe(bnd_df, data_dir / "boundaries/se_boundary.fgb")
 
+    ### Clip subregions to the boundary
+    shapely.prepare(bnd_geom)
+    contained = shapely.contains_properly(bnd_geom, subregion_df.geometry.values)
+    subregion_df.loc[~contained, "geometry"] = shapely.intersection(
+        bnd_geom, subregion_df.loc[~contained].geometry.values
+    )
+
+    subregion_df.to_feather(out_dir / "subregions.feather")
+    write_dataframe(subregion_df, bnd_dir / "subregions.fgb")
+
+    subregion_df[["value", "subregion", "marine"]].to_json(
+        constants_dir / "subregions.json", orient="records"
+    )
+
     ### Rasterize subregions to 480m resolution to check against indicators
     subregion_transform = Affine(
         a=MASK_RESOLUTION,
@@ -130,7 +145,7 @@ with rasterio.open(src_dir / "blueprint/SEBlueprintExtent2024.tif") as src:
     # this mask is used for NLCD and urban, which are currently limited to
     # the contiguous Southeast (so it is also a smaller size but same origin)
     inland_subregions = subregion_df.loc[
-        ~subregion_df.subregion.isin(["Atlantic Marine", "Gulf of Mexico", "Caribbean"])
+        ~(subregion_df.marine | (subregion_df.subregion == "Caribbean"))
     ].copy()
     shapes = to_dict_all(inland_subregions.geometry.values)
     bounds = inland_subregions.total_bounds

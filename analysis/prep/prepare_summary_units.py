@@ -112,6 +112,7 @@ conus = read_dataframe(
     src_dir
     / "summary_units/hex/EPA_Hexagons_40km_Unioned_w_GoMMAPPS_Hegagons_40km.shp",
     columns=["HEXID", "HEXID_1"],
+    use_arrow=True,
 ).to_crs(DATA_CRS)
 conus["id"] = conus[["HEXID", "HEXID_1"]].max(axis=1)
 conus = conus.drop(columns=["HEXID", "HEXID_1"])
@@ -119,6 +120,7 @@ conus = conus.drop(columns=["HEXID", "HEXID_1"])
 caribbean = read_dataframe(
     src_dir / "summary_units/hex/VIPR_Hexagons_DoNOTexactlyMatchEPAHexes.shp",
     columns=[],
+    use_arrow=True,
 ).to_crs(DATA_CRS)
 caribbean["id"] = caribbean.index + conus.id.max() + 1
 
