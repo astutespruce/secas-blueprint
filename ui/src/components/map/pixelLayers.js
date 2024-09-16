@@ -47,7 +47,7 @@ export const pixelLayers = [
     ...pixelLayerSourceConfig,
     id: 'pixels1',
     url: `${tileHost}/services/se_pixel_layers_1/tiles/{z}/{x}/{y}.png`,
-    bounds: [-108.0227, 23.78806, -74.172, 41.58053],
+    bounds: [-108.0227, 23.73322, -74.0301, 41.58035],
     encoding: [
       {
         id: 'f_naturallandcoverinfloodplains',
@@ -73,7 +73,8 @@ export const pixelLayers = [
     ...pixelLayerSourceConfig,
     id: 'pixels2',
     url: `${tileHost}/services/se_pixel_layers_2/tiles/{z}/{x}/{y}.png`,
-    bounds: [-104.02594, 25.61165, -88.12292, 37.43785],
+    // bounds: [-104.02594, 25.61165, -88.12292, 37.43785],
+    bounds: [-98.53344, 22.37943, -70.38168, 40.66711],
     encoding: [
       {
         id: 'f_atlanticmigratoryfishhabitat',
@@ -114,7 +115,7 @@ export const pixelLayers = [
     ...pixelLayerSourceConfig,
     id: 'pixels3',
     url: `${tileHost}/services/se_pixel_layers_3/tiles/{z}/{x}/{y}.png`,
-    bounds: [-96.19012, 23.87306, -74.14382, 41.58098],
+    bounds: [-108.0227, 22.4353, -70.06457, 41.58092],
     encoding: [
       {
         id: 'm_atlanticcoralandhardbottom',
@@ -150,7 +151,7 @@ export const pixelLayers = [
     ...pixelLayerSourceConfig,
     id: 'pixels4',
     url: `${tileHost}/services/se_pixel_layers_4/tiles/{z}/{x}/{y}.png`,
-    bounds: [-98.78124, 22.37943, -70.45039, 40.46617],
+    bounds: [-108.0227, 23.78806, -74.172, 41.58053],
     encoding: [
       { id: 't_grasslandsandsavannas', offset: 0, bits: 4, valueShift: 1 },
       { id: 't_greenwaysandtrails', offset: 4, bits: 4, valueShift: 1 },
@@ -184,7 +185,7 @@ export const pixelLayers = [
     ...pixelLayerSourceConfig,
     id: 'pixels5',
     url: `${tileHost}/services/se_pixel_layers_5/tiles/{z}/{x}/{y}.png`,
-    bounds: [-98.58603, 16.97285, -59.75763, 35.67848],
+    bounds: [-98.26575, 17.10476, -57.73155, 40.36863],
     encoding: [
       {
         id: 'm_coastalshorelinecondition',
@@ -214,7 +215,7 @@ export const pixelLayers = [
     ...pixelLayerSourceConfig,
     id: 'pixels6',
     url: `${tileHost}/services/se_pixel_layers_6/tiles/{z}/{x}/{y}.png`,
-    bounds: [-84.0406, 22.37943, -70.45003, 39.62234],
+    bounds: [-67.97848, 16.97285, -64.29697, 19.34715],
     encoding: [
       {
         id: 'f_caribbeannaturallandcoverinfloodplains',
@@ -302,7 +303,7 @@ export const pixelLayers = [
     ...pixelLayerSourceConfig,
     id: 'pixels8',
     url: `${tileHost}/services/se_pixel_layers_8/tiles/{z}/{x}/{y}.png`,
-    bounds: [-67.97848, 16.97285, -64.29697, 19.34715],
+    bounds: [-98.06131, 23.8289, -74.46062, 40.3564],
     encoding: [
       {
         id: 'f_gulfmigratoryfishconnectivity',
