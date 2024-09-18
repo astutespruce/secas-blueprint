@@ -20,7 +20,7 @@ module.exports = {
     sentryENV: process.env.GATSBY_SENTRY_ENV || 'development',
     googleAnalyticsId: process.env.GATSBY_GOOGLE_ANALYTICS_ID,
     mapboxToken: process.env.GATSBY_MAPBOX_API_TOKEN,
-    hidePixelLayerToggle: process.env.GATSBY_HIDE_PIXEL_LAYER_TOGGLE || 0,
+    isStagingEnv: process.env.GATSBY_ENV === 'staging',
   },
   flags: {
     FAST_DEV: true,

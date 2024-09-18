@@ -1,11 +1,14 @@
 import React from 'react'
-import { Box, Paragraph } from 'theme-ui'
+import { Alert, Box, Paragraph } from 'theme-ui'
 import { withPrefix } from 'gatsby'
 
 import { useBreakpoints } from 'components/layout'
 import { OutboundLink } from 'components/link'
 
 import Instructions from './Instructions'
+import { siteMetadata } from '../../../gatsby-config'
+
+const { isStagingEnv } = siteMetadata
 
 const Intro = () => {
   const breakpoint = useBreakpoints()
@@ -14,6 +17,13 @@ const Intro = () => {
   return (
     <>
       <Box as="section">
+        {isStagingEnv ? (
+          <Alert sx={{ mb: '1rem', bg: 'orange' }}>
+            WARNING: this is a test version of this application used for
+            verifying recent changes; it is not intended for general use.
+          </Alert>
+        ) : null}
+
         <Paragraph>
           The Southeast Conservation Blueprint is the primary product of the{' '}
           <OutboundLink to="https://secassoutheast.org/">
