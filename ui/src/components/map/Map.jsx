@@ -36,7 +36,7 @@ import { getCenterAndZoom } from './viewport'
 
 import { siteMetadata } from '../../../gatsby-config'
 
-const { mapboxToken, hidePixelLayerToggle } = siteMetadata
+const { mapboxToken } = siteMetadata
 
 if (mapboxToken) {
   // Token must be set before constructing map
@@ -796,9 +796,7 @@ const Map = () => {
                 isVisible={isRenderLayerVisible}
                 onToggleVisibility={handleToggleRenderLayerVisible}
               />
-              {mapMode !== 'unit' && !hidePixelLayerToggle ? (
-                <LayerToggle />
-              ) : null}
+              {mapMode !== 'unit' ? <LayerToggle /> : null}
 
               <FindLocation />
             </>
