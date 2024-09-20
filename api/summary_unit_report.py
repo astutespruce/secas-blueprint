@@ -33,6 +33,13 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
             "Unit id is not valid (not an existing subwatershed or marine hex grid ID)"
         )
 
+    name = results["name"]
+    print("unit type", unit_type)
+    if unit_type == "marine_hex":
+        name = "Marine " + name.replace(":", " ")
+
+    filename = f"Southeast Blueprint Summary Report - {name}.pdf"
+
     await set_progress(
         ctx["redis"], ctx["job_id"], 50, "Creating maps (this might take a while)"
     )
@@ -88,4 +95,4 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
 
     log.debug(f"Created PDF at: {name}")
 
-    return name, errors
+    return name, filename, errors

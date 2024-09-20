@@ -279,7 +279,7 @@ async def job_status_endpoint(job_id: str):
 
         try:
             # this re-raises the underlying exception raised in the worker
-            filename, errors = await job.result()
+            filename, out_filename, errors = await job.result()
 
             if info.success:
                 return {
@@ -317,15 +317,15 @@ async def report_pdf_endpoint(job_id: str):
             raise HTTPException(status_code=400, detail="Job not complete")
 
         info = await job.result_info()
+
         if not info.success:
             raise HTTPException(
                 status_code=400, detail="Job failed, cannot return results"
             )
 
-        path, errors = info.result
-        name = info.kwargs.get("name", None) or "Southeast Blueprint Summary Report"
+        path, out_filename, errors = info.result
 
-        return FileResponse(path, filename=f"{name}.pdf", media_type="application/pdf")
+        return FileResponse(path, filename=out_filename, media_type="application/pdf")
 
     finally:
         await redis.close()
