@@ -272,8 +272,7 @@ const HelpPage = ({
           AND logic, which means that in order for a pixel to display on the
           map, it must meet all the selected criteria. If you filter by layers
           that do not co-occur at the same location, such as estuarine coastal
-          condition and Great Plains perennial grasslands, nothing will display
-          on the map.
+          condition and plays, nothing will display on the map.
         </Paragraph>
         <Grid columns={[0, 2]} gap={4} sx={{ mt: '3rem' }}>
           <Box>
@@ -318,10 +317,9 @@ const HelpPage = ({
           sx={{
             mt: '1rem',
             img: {
-              width: '250px',
+              width: '178px',
               border: '1px solid',
               borderColor: 'grey.4',
-              boxShadow: `1px 1px 3px #000`,
             },
           }}
         >
