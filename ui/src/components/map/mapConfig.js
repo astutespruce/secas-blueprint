@@ -2,7 +2,7 @@ import { hasWindow } from 'util/dom'
 
 import { siteMetadata } from '../../../gatsby-config'
 
-let { rawTileHost } = siteMetadata
+let { tileHost: rawTileHost } = siteMetadata
 
 if (hasWindow && !rawTileHost) {
   rawTileHost = `//${window.location.host}`
