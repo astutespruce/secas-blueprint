@@ -10,9 +10,7 @@ import {
 } from 'config'
 import { indexBy, sortByFunc } from 'util/data'
 
-import { siteMetadata } from '../../../gatsby-config'
-
-const { tileHost } = siteMetadata
+import { tileHost } from './mapConfig'
 
 const pixelLayerSourceConfig = { tileSize: 512, minzoom: 3, maxzoom: 14 }
 
