@@ -15,7 +15,8 @@ const invalidInputCSS = {
   borderWidth: '1px 0.5rem 1px 1px',
 }
 
-const hasCoordsRegex = /(\d+)[\s\w°'"-.]*,[\s\w°'"-.]*(\d+)/g
+const hasCoordsRegex =
+  /(?<lat>(\d+)[\s\w°'"-.]*)[, ]+(?<lon>[\s\w°'"-.]*(\d+))/g
 
 const parseValue = (value, isLatitude = false) => {
   const directionMatch = /[NSEW]/g.exec(value)
@@ -92,11 +93,17 @@ const parseValue = (value, isLatitude = false) => {
 }
 
 const parseLatLon = (value) => {
-  if (value.search(hasCoordsRegex) === -1) {
+  const match = hasCoordsRegex.exec(value)
+
+  // reset so that global regex works each time
+  hasCoordsRegex.lastIndex = 0
+
+  if (match === null || match.index === -1) {
     return { isValid: false }
   }
 
-  const [rawLat, rawLon] = value.toUpperCase().split(',')
+  // const [rawLat, rawLon] = value.toUpperCase().split(',')
+  const { lat: rawLat, lon: rawLon } = match.groups
   if (rawLat === undefined || rawLon === undefined) {
     return {
       isValid: false,
