@@ -16,7 +16,7 @@ const invalidInputCSS = {
 }
 
 const hasCoordsRegex =
-  /(?<lat>(\d+)[\s\w°'"-.]*)[, ]+(?<lon>[\s\w°'"-.]*(\d+))/g
+  /(?<lat>(\d+)[\s\w°'"\-.]*)[, ]+(?<lon>[\s\w°'"\-.]*(\d+))/g
 
 const parseValue = (value, isLatitude = false) => {
   const directionMatch = /[NSEW]/g.exec(value)
