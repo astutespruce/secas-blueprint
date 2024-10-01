@@ -10,11 +10,21 @@ The API is implemented in Python and provides summary reports for pre-defined su
 
 ## Development
 
-Python dependencies are managed using `poetry`. First, install poetry, then
-`poetry install` to install most of them.
+Python dependencies are managed using `uv`. First,
+[install uv](https://docs.astral.sh/uv/), then:
 
-`pymgl` requires extra steps on Arm64 architectures because no wheel is yet available.
-It is currently built locally in a sibling folder and added as a wheel here.
+```bash
+uv venv .venv --python 3.12
+<source it according to your shell, e.g., source .venv/bin/activate.fish>
+uv sync --extras dev
+```
+
+To update the requirements.txt file used to build these dependencies into the API
+Docker container for deployment, run:
+
+```bash
+uv pip compile pyproject.toml -o ../secas-docker/docker/api/secas-blueprint-requirements.txt
+```
 
 ### Other dependencies
 
@@ -23,7 +33,7 @@ On MacOS, install other dependencies:
 - `brew install gdal`
 - `brew install pango`
 
-For Macos M1 (Arm64), you also need to setup a symlink for one of the libraries
+For Macos M1 (Arm64), you also may need to setup a symlink for one of the libraries
 to be found:
 
 ```

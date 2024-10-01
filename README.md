@@ -4,7 +4,7 @@ This application provides a simple user interface for exploring the
 [SECAS Southeast Conservation Blueprint](http://secassoutheast.org/blueprint).
 
 This tool is available at
-[https://blueprint.geoplatform.gov/southeast/](https://blueprint.geoplatform.gov/southeast/).
+[https://apps.fws.gov/southeastblueprint/](https://apps.fws.gov/southeastblueprint/).
 
 ## Local development
 

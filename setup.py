@@ -1,7 +1,6 @@
 import builtins
-import os
 import sys
-from setuptools import setup, Extension
+from setuptools import setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext as _build_ext
 
 # Skip Cython build if not available
@@ -43,27 +42,8 @@ if "clean" not in sys.argv:
         # define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
     )
 
-
-description = "SECAS Southeast Conservation Blueprint Explorer"
-
-if os.path.exists("README.md"):
-    long_description = open("README.md").read()
-else:
-    long_description = description
-
 setup(
-    name="secas-blueprint",
-    version="0.5.0",
-    url="https://github.com/astutespruce/secas-blueprint",
-    license="MIT",
-    author="Brendan C. Ward",
-    author_email="bcward@astutespruce.com",
-    description=description,
-    long_description_content_type="text/markdown",
-    long_description=long_description,
+    packages=find_packages(),
     cmdclass={"build_ext": build_ext},
-    setup_requires=["numpy"],
-    install_requires=["numpy>=1.13"],
-    python_requires=">=3",
     ext_modules=ext_modules,
 )
