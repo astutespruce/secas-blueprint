@@ -102,7 +102,6 @@ const parseLatLon = (value) => {
     return { isValid: false }
   }
 
-  // const [rawLat, rawLon] = value.toUpperCase().split(',')
   const { lat: rawLat, lon: rawLon } = match.groups
   if (rawLat === undefined || rawLon === undefined) {
     return {
