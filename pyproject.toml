@@ -29,6 +29,7 @@ dependencies = [
     "numpy",
     "pandas",
     "Pillow",
+    "progress",
     # NOTE: pyarrow 17 appears to have an error with registering the FileSystemFactory
     "pyarrow==16",
     "pymgl",
@@ -37,6 +38,8 @@ dependencies = [
     "python-dotenv",
     "python-multipart",
     "rasterio",
+    # NOTE: redis 5.1 introduced changes that break arq
+    "redis[hiredis]==5.0.0",
     "sentry-sdk",
     "shapely",
     "uvicorn",
@@ -44,15 +47,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = [
-    "cython",
-    "httpx[http2]",
-    "progress",
-    "ruff",
-    "setuptools",
-    "watchgod",
-    "watchfiles",
-]
+dev = ["cython", "httpx[http2]", "ruff", "setuptools", "watchgod", "watchfiles"]
+
+[tool.setuptools.packages.find]
+include = ["analysis", "api"]
 
 [tool.ruff]
 exclude = ['.scratch']
