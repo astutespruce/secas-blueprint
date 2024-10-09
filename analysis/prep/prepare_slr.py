@@ -157,7 +157,7 @@ for infile in sorted(
     # NOTE: newer SLR layers have 1/2 foot increments: *_slr_1_0ft
     # older ones have 1 foot increments: *_slr_1ft
     slr_layers = {}
-    for layer in [l[0] for l in list_layers(infile) if "_slr_" in l[0]]:
+    for layer in [l[0] for l in list_layers(infile) if "_slr_" in l[0]]:  # noqa: E741
         suffix = layer.split("_slr_")[1]
         ft = int(re.findall("\d+", suffix)[0])
         if "_" in suffix:
@@ -168,7 +168,8 @@ for infile in sorted(
             slr_layers[ft] = layer
 
     slr_layers = [
-        l[1] for l in sorted(slr_layers.items(), key=lambda x: x[0], reverse=True)
+        l[1]
+        for l in sorted(slr_layers.items(), key=lambda x: x[0], reverse=True)  # noqa: E741
     ]
 
     # calculate the outer bounds and dimensions

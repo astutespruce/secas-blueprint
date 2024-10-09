@@ -2,6 +2,7 @@ import asyncio
 from pathlib import Path
 from time import time
 
+from progress.bar import Bar
 from pyogrio import read_dataframe
 
 from analysis.constants import DATA_CRS, GEO_CRS
@@ -30,7 +31,17 @@ for state in states.NAME.values:
     start = time()
 
     df = states.loc[states.NAME == state]
-    results = get_custom_area_results(df)
+
+    bar = Bar("Summarizing rasters", max=100, suffix="%(percent)d%%")
+
+    async def progress_callback(percent):
+        bar.next(percent)
+
+    print("Calculating results...")
+    task = get_custom_area_results(df, progress_callback=progress_callback)
+    results = asyncio.run(task)
+
+    bar.finish()
 
     # compile indicator IDs across all ecosystems
     indicators = []
@@ -60,7 +71,7 @@ for state in states.NAME.values:
     pdf = create_report(maps=maps, results=results, name=state)
 
     with open(
-        out_dir / f"{state.replace(' ', '_')}_Blueprint2023_report.pdf", "wb"
+        out_dir / f"{state.replace(' ', '_')}_Blueprint2024_report.pdf", "wb"
     ) as out:
         out.write(pdf)
 

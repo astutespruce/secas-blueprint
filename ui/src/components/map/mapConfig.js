@@ -1,6 +1,14 @@
+import { hasWindow } from 'util/dom'
+
 import { siteMetadata } from '../../../gatsby-config'
 
-const { tileHost } = siteMetadata
+let { tileHost: rawTileHost } = siteMetadata
+
+if (hasWindow && !rawTileHost) {
+  rawTileHost = `//${window.location.host}`
+}
+
+export const tileHost = rawTileHost
 
 export const mapConfig = {
   // NOTE: these are not the data bounds, but ideal bounds to leave enough room

@@ -30,17 +30,19 @@ import pandas as pd
 
 from analysis.constants import (
     GEO_CRS,
-    CORRIDORS,
-    BLUEPRINT,
-    INDICATORS,
     SLR_DEPTH_BINS,
     SLR_NODATA_COLS,
     NLCD_INDEXES,
     NLCD_YEARS,
     URBAN_YEARS,
 )
-from analysis.lib.attribute_encoding import encode_values, delta_encode_values
-from analysis.lib.stats.ownership import get_lta_search_info
+from analysis.lib.attribute_encoding import (
+    encode_values,
+    delta_encode_values,
+    encode_blueprint,
+    encode_ownership_protection,
+)
+
 
 # ignore future warning about concat; this is because we join to empty data frames
 # with the full summary unit index
@@ -48,107 +50,6 @@ warnings.filterwarnings(
     "ignore",
     message=".*The behavior of array concatenation with empty entries is deprecated.*",
 )
-
-
-def encode_ownership_protection(df, field):
-    """Calculate dictionary-encoded values for land ownership or protection
-
-    For example:
-        FED:<fed_percent * 10>,LOC: <loc_percent * 10>, ...
-
-    Parameters
-    ----------
-    df : DataFrame
-        must include field, "acres", "total_acres"
-    field : str
-        name of field to dictionary encode
-
-    Returns
-    -------
-    Series
-    """
-    # calculate percent * 10% (percent at 1 decimal place)
-    df["percent"] = (1000 * df.acres / df.total_acres).round().astype("uint")
-    # drop anything that rounded to 0%
-    df = df.loc[df.percent > 0].copy()
-
-    return pd.Series(
-        (df[field] + ":" + df.percent.astype("str"))
-        .groupby(level=0)
-        .apply(lambda r: ",".join(v for v in r))
-    )
-
-
-def encode_blueprint(df):
-    """Encode Blueprint, Corridors, and Indicators
-
-    Parameters
-    ----------
-    df : DataFrame
-        must include "rasterized_acres"
-
-    Returns
-    -------
-    DataFrame
-    """
-    blueprint_cols = [f"blueprint_{v['value']}" for v in BLUEPRINT]
-    blueprint = encode_values(
-        df[blueprint_cols],
-        df.rasterized_acres,
-        1000,
-    ).rename("blueprint")
-
-    corridor_cols = [f"corridors_{v['value']}" for v in CORRIDORS]
-    corridors = encode_values(
-        df[corridor_cols],
-        df.rasterized_acres,
-        1000,
-    ).rename("corridors")
-
-    # only check areas of indicators actually present in summaries for unit type
-    check_indicators = {
-        e["id"]: e for e in INDICATORS if f"{e['id']}_outside" in df.columns
-    }
-
-    # NOTE: serialized indicator ID is its position in full indicators list
-    # join to empty data frame to have full index
-    indicators = df[[]]
-    for i, id in enumerate([i["id"] for i in INDICATORS]):
-        if id not in check_indicators:
-            continue
-
-        indicator = check_indicators[id]
-        values = indicator["values"]
-        cols = [f"{id}_value_{v['value']}" for v in values]
-        indicator_acres = df[cols]
-        total_acres = indicator_acres.sum(axis=1)
-
-        # drop any entries where they are not present or are only 0 values for
-        # indicators with 0 values
-        indicator_acres = indicator_acres.loc[
-            (total_acres > 0)
-            & ~(
-                (values[0]["value"] == 0) & (indicator_acres[cols[1:]].max(axis=1) == 0)
-            )
-        ]
-
-        if len(indicator_acres) == 0:
-            continue
-
-        indicator_acres = indicator_acres.join(df.rasterized_acres)
-        encoded = encode_values(
-            indicator_acres[cols], indicator_acres.rasterized_acres, 1000
-        ).rename(i)
-
-        indicators = indicators.join(encoded, how="left")
-
-    indicators = (
-        indicators.fillna("")
-        .apply(lambda row: ",".join((f"{k}:{v}" for k, v in row.items() if v)), axis=1)
-        .rename("indicators")
-    )
-
-    return pd.DataFrame(blueprint).join(corridors).join(indicators)
 
 
 data_dir = Path("data")
@@ -197,18 +98,19 @@ huc12["subregions"] = huc12.subregions.apply(
     lambda x: ",".join(str(subregions[s]) for s in x)
 )
 
+# NO LONGER USED
 ### Encode center / radius as x,y,radius(miles)
-center, lta_search_radius = get_lta_search_info(
-    huc12[["minx", "miny", "maxx", "maxy"]].values
-)
-center = center.round(5)
-lta_search_df = pd.DataFrame(center, index=huc12.index, columns=["x", "y"]).astype(
-    "str"
-)
-lta_search_df["miles"] = lta_search_radius.astype("str")
-lta_search = lta_search_df.apply(lambda row: ",".join(row.values), axis=1).rename(
-    "lta_search"
-)
+# center, lta_search_radius = get_lta_search_info(
+#     huc12[["minx", "miny", "maxx", "maxy"]].values
+# )
+# center = center.round(5)
+# lta_search_df = pd.DataFrame(center, index=huc12.index, columns=["x", "y"]).astype(
+#     "str"
+# )
+# lta_search_df["miles"] = lta_search_radius.astype("str")
+# lta_search = lta_search_df.apply(lambda row: ",".join(row.values), axis=1).rename(
+#     "lta_search"
+# )
 
 
 ### Southeast Blueprint
@@ -294,7 +196,7 @@ protection = encode_ownership_protection(protection_results, "GAP_Sts").rename(
 huc12 = (
     huc12[["geometry", "name", "subregions", "type"]]
     .join(huc12[["acres", "rasterized_acres", "outside_se"]].round().astype("int"))
-    .join(lta_search, how="left")
+    # .join(lta_search, how="left")
     .join(blueprint, how="left")
     .join(slr, how="left")
     .join(urban, how="left")
@@ -385,7 +287,7 @@ out = pd.concat(
 
 for col in (
     [
-        "lta_search",
+        # "lta_search",
         "ownership",
         "protection",
         "urban",

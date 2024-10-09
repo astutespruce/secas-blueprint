@@ -70,8 +70,9 @@ print(
     "\n\n------------------------------------------------\nCreating state tiles\n------------------------------------------------\n"
 )
 df = read_dataframe(
-    "zip://source_data/boundaries/tl_2022_us_state.zip/tl_2022_us_state.shp",
+    "zip://source_data/boundaries/tl_2023_us_state.zip/tl_2023_us_state.shp",
     columns=["STATEFP"],
+    use_arrow=True,
 ).to_crs(GEO_CRS)
 
 infilename = tmp_dir / "states.fgb"
@@ -96,7 +97,7 @@ tilesets = []
 print("creating ownership tiles")
 df = read_dataframe(
     data_dir / "inputs/boundaries/ownership.fgb",
-    ["geometry", "Own_Type", "GAP_Sts", "Loc_Nm", "Loc_Own"],
+    columns=["geometry", "Own_Type", "GAP_Sts", "Loc_Nm", "Loc_Own"],
     use_arrow=True,
 ).to_crs(GEO_CRS)
 

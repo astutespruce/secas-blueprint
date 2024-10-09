@@ -46,8 +46,8 @@ const PartnersTab = ({
       <OutboundLink to="https://www.usgs.gov/programs/gap-analysis-project/science/pad-us-data-download">
         Protected Areas Database of the United States
       </OutboundLink>{' '}
-      (PAD-US v3.0) and include Fee, Designation, Easement, Marine, and
-      Proclamation (Dept. of Defense lands only) boundaries. Note: PAD-US v3.0
+      (PAD-US v4.0 and v3.0) and include Fee, Designation, Easement, Marine, and
+      Proclamation (Dept. of Defense lands only) boundaries. Note: PAD-US
       includes protected areas that may overlap within a given area; this may
       cause the area within and between protection categories to be greater than
       the actual ground area.

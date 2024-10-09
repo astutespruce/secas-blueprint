@@ -19,7 +19,7 @@ body {
   }
 
   @bottom-left {
-    content: 'Created {{date}} using {{url}}';
+    content: 'Created {{date}} using the Southeast Conservation Blueprint Explorer';
     font-size: 10pt;
     color: #aaaaaa;
   }

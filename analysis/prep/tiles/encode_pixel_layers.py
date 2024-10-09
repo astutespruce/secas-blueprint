@@ -103,6 +103,13 @@ df["value_shift"] = (df.min_value == 0).astype("uint8")
 df["max_value"] += df.value_shift
 df["bits"] = df.max_value.apply(lambda x: ceil(log2(max(x, 2) + EPS)))
 
+df["bounds"] = df.src.apply(lambda x: x.bounds)
+df["box"] = df.bounds.apply(lambda x: shapely.box(*x))
+
+# DEBUG: look at spatial overlap within groups
+# write_dataframe(gp.GeoDataFrame(df[['box']].reset_index(),geometry='box', crs=DATA_CRS), '/tmp/indicator_boxes.fgb')
+
+
 # # export for manual review and assignment of groups
 # # (enable when updating encoding)
 # tmp = df[["bits"]].copy()
@@ -122,8 +129,7 @@ df = df.join(grouped.group)
 df["orig_pos"] = np.arange(len(df))
 df = df.sort_values(by=["group", "orig_pos"])
 
-df["bounds"] = df.src.apply(lambda x: x.bounds)
-df["box"] = df.bounds.apply(lambda x: shapely.box(*x))
+
 # DEBUG: look at spatial overlap within groups
 # write_dataframe(gp.GeoDataFrame(df[['group', 'box']].reset_index(),geometry='box', crs=DATA_CRS), '/tmp/boxes.fgb')
 

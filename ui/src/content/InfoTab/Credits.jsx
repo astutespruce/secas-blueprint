@@ -15,7 +15,7 @@ const Credits = () => (
         <Box sx={{ flex: '1 1 auto', width: ['100%', '264px'] }}>
           <Paragraph sx={{ fontSize: 1 }}>
             <b>Citation:</b> Southeast Conservation Adaptation Strategy (SECAS).
-            2023. Southeast Conservation Blueprint 2023.{' '}
+            2024. Southeast Conservation Blueprint 2024.{' '}
             <OutboundLink to="http://secassoutheast.org/blueprint">
               http://secassoutheast.org/blueprint
             </OutboundLink>

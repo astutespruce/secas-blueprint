@@ -6,7 +6,6 @@ import sys
 from weasyprint import HTML, default_url_fetcher
 from jinja2 import Environment, FileSystemLoader
 
-from api.settings import SITE_URL
 from analysis.constants import (
     BLUEPRINT,
     CORRIDORS,
@@ -94,10 +93,7 @@ def create_report(maps, results, name=None, area_type="custom"):
     }
 
     if "corridors" in results:
-        # show legend entries only for types that are present
-        legends["corridors"] = [
-            e for e in CORRIDORS if e["type"] in results["corridors"]["types"]
-        ] + CORRIDORS[:1]
+        legends["corridors"] = CORRIDORS[1:]
 
     if "urban" in results:
         legends["urban"] = URBAN_LEGEND
@@ -119,7 +115,6 @@ def create_report(maps, results, name=None, area_type="custom"):
         "area_type": area_type,
         "title": title,
         "subtitle": subtitle,
-        "url": SITE_URL,
         "maps": maps,
         "legends": legends,
         "ownership_acres": ownership_acres,

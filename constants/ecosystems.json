@@ -5,6 +5,7 @@
     "color": "#f2f8ec",
     "borderColor": "#d8eac7",
     "indicators": [
+      "t_amphibianandreptileareas",
       "t_caribbeangreenwaysandtrails",
       "t_caribbeanhabitatpatchsizelargeislands",
       "t_caribbeanhabitatpatchsizesmallislands",
@@ -17,15 +18,14 @@
       "t_eastcoastalplainopenpinebirds",
       "t_equitableaccesstopotentialparks",
       "t_firefrequency",
-      "t_greatplainsperennialgrasslands",
+      "t_grasslandsandsavannas",
       "t_greenwaysandtrails",
       "t_intacthabitatcores",
-      "t_interiorsoutheastgrasslands",
+      "t_landscapecondition",
       "t_mississippialluvialvalleyforestbirdsprotection",
       "t_mississippialluvialvalleyforestbirdsreforestation",
       "t_playas",
       "t_resilientterrestrialsites",
-      "t_southatlanticamphibianandreptileareas",
       "t_southatlanticforestbirds",
       "t_southatlanticlowurbanhistoriclandscapes",
       "t_urbanparksize",
@@ -48,8 +48,7 @@
       "f_imperiledaquaticspecies",
       "f_naturallandcoverinfloodplains",
       "f_networkcomplexity",
-      "f_permeablesurface",
-      "f_westvirginiaimperiledaquaticspecies"
+      "f_permeablesurface"
     ]
   },
   {

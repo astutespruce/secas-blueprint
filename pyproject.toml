@@ -1,47 +1,56 @@
-[tool.poetry]
-name = "secas-blueprint"
-version = "1.1.0"
-description = ""
-authors = ["Brendan Ward <bcward@astutespruce.com>"]
-license = "MIT"
-packages = [{ include = "analysis" }]
-
-[tool.poetry.dependencies]
-python = "^3.10"
-geopandas = "^1.0.1"
-affine = "^2.4.0"
-aiofiles = "^24.1.0"
-fastapi = "^0.111.1"
-Jinja2 = "^3.1.4"
-numpy = "^2.0.1"
-pandas = "^2.2.2"
-Pillow = "^10.4.0"
-python-dotenv = "^1.0.1"
-python-multipart = "^0.0.9"
-rasterio = "^1.3.10"
-sentry-sdk = "^2.12.0"
-uvicorn = "^0.30.3"
-weasyprint = "^62.3"
-pyarrow = "^17.0.0"
-arq = "^0.26.0"
-shapely = "^2.0.5"
-pyogrio = "^0.9.0"
-gunicorn = "^22.0.0"
-pymgl = "^0.4.0"
-
-[tool.poetry.group.dev.dependencies]
-ruff = "^0.5.5"
-cython = "^3.0.10"
-httpx = {extras = ["http2"], version = "^0.27.0"}
-watchgod = "^0.8.2"
-progress = "^1.6"
-watchfiles = "^0.22.0"
-python-calamine = "^0.2.3"
-
 [build-system]
-# numpy and Cython are required to execute setup.py to build Cython extensions
-requires = ["poetry-core>=1.0.0", "setuptools", "wheel", "numpy", "Cython"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools", "Cython>=0.29", "numpy"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "secas-blueprint"
+version = "1.2.0"
+description = "SECAS Southeast Conservation Blueprint Explorer"
+readme = "README.md"
+authors = [{ name = "Brendan C. Ward", email = "bcward@astutespruce.com" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: GIS",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "affine",
+    "aiofiles",
+    "arq",
+    "fastapi",
+    "geopandas",
+    "gunicorn",
+    "Jinja2",
+    "numpy",
+    "pandas",
+    "Pillow",
+    "progress",
+    # NOTE: pyarrow 17 appears to have an error with registering the FileSystemFactory
+    "pyarrow==16",
+    "pymgl",
+    "pyogrio",
+    "python-calamine",
+    "python-dotenv",
+    "python-multipart",
+    "rasterio",
+    # NOTE: redis 5.1 introduced changes that break arq
+    "redis[hiredis]==5.0.0",
+    "sentry-sdk",
+    "shapely",
+    "uvicorn",
+    "weasyprint",
+]
+
+[project.optional-dependencies]
+dev = ["cython", "httpx[http2]", "ruff", "setuptools", "watchgod", "watchfiles"]
+
+[tool.setuptools.packages.find]
+include = ["analysis", "api"]
 
 [tool.ruff]
 exclude = ['.scratch']

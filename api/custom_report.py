@@ -48,6 +48,12 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
         Raised if bounds are too large or if area of interest doesn't overalap SA region
     """
 
+    filename = (
+        f"Southeast Blueprint Summary Report - {name}.pdf"
+        if name
+        else "Southeast Blueprint Summary Report.pdf"
+    )
+
     errors = []
 
     await set_progress(ctx["redis"], ctx["job_id"], 0, "Preparing area of interest")
@@ -159,4 +165,4 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
 
     log.debug(f"Created PDF at: {name}")
 
-    return name, errors
+    return name, filename, errors

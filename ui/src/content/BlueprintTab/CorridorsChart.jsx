@@ -31,8 +31,7 @@ const CorridorsChart = ({ categories, corridors, outsideSEPercent }) => {
     <Box>
       <Paragraph sx={{ color: 'grey.8', fontSize: 1 }}>
         The Blueprint uses a least-cost path connectivity analysis to identify
-        corridors that link hubs across the shortest distance possible, while
-        also routing through as much Blueprint priority as possible.
+        corridors that link hubs.
       </Paragraph>
       <Flex sx={{ alignItems: 'center', mt: '2rem' }}>
         <PieChart

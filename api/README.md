@@ -1,4 +1,4 @@
-# Southeast Conservation Blueprint Simple Viewer - API
+# Southeast Conservation Blueprint Explorer - API
 
 ## Overview
 

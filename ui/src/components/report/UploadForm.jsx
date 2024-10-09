@@ -179,9 +179,8 @@ const UploadForm = ({ onFileChange, onCreateReport }) => {
                 sx={{ fontSize: 0, color: 'grey.8', px: '1rem', mt: '0.5rem' }}
               >
                 Note: your files must be in a zip file, and can include only one
-                shapefile or Feature Class, and must represent a relatively
-                small area (full extent must be less than 5 million acres). For
-                help analyzing larger areas, please{' '}
+                shapefile or Feature Class, and should represent a relatively
+                small area. For help analyzing larger areas, please{' '}
                 <ContactModal>
                   <Text sx={linkCSS}>contact us</Text>
                 </ContactModal>
@@ -270,10 +269,9 @@ const UploadForm = ({ onFileChange, onCreateReport }) => {
           sx={{
             mt: '1rem',
             img: {
-              width: '250px',
+              width: '178px',
               border: '1px solid',
               borderColor: 'grey.4',
-              boxShadow: `1px 1px 3px #000`,
             },
           }}
         >
