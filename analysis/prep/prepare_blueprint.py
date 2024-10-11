@@ -133,11 +133,14 @@ if not outfilename.exists():
         .sort_values(by="value", ascending=False)
     )
 
-    with rasterio.open(
-        src_dir / "hubs_corridors/ContinentalCorridors2024.tif"
-    ) as continental, rasterio.open(
-        src_dir / "hubs_corridors/CaribbeanCorridors2023.tif"
-    ) as caribbean:
+    with (
+        rasterio.open(
+            src_dir / "hubs_corridors/ContinentalCorridors2024.tif"
+        ) as continental,
+        rasterio.open(
+            src_dir / "hubs_corridors/CaribbeanCorridors2023.tif"
+        ) as caribbean,
+    ):
         # consolidate all values into a single raster, writing hubs over corridors
         # see values in corridors.json
 
@@ -270,7 +273,7 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
     df.loc[df.goodThreshold.str.lower().str.contains("no"), "goodThreshold"] = None
     ix = df.goodThreshold.notnull()
     df.loc[ix, "goodThreshold"] = (
-        df.loc[ix].goodThreshold.str.extract("(\d)").astype("uint8").values[:, 0]
+        df.loc[ix].goodThreshold.str.extract(r"(\d)").astype("uint8").values[:, 0]
     )
 
     df["url"] = df.url.fillna("")
@@ -304,7 +307,7 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
             .strip()
             .split("\n")
         ):
-            value, label = re.match("(\d+)\s*=\s*(.+)", part).groups()
+            value, label = re.match(r"(\d+)\s*=\s*(.+)", part).groups()
             out[int(value)] = label.strip()
 
         return out
