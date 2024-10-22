@@ -116,6 +116,8 @@ const pollJob = async (jobId, onProgress) => {
     const {
       status = null,
       progress = null,
+      queue_position: queuePosition = null,
+      elapsed_time: elapsedTime = null,
       message = null,
       errors = null,
       detail: error = null, // error message
@@ -135,8 +137,15 @@ const pollJob = async (jobId, onProgress) => {
       return { result: `${apiHost}${result}`, errors }
     }
 
-    if (progress != null) {
-      onProgress({ progress, message, errors })
+    if (status === 'queued' || status === 'in_progress' || progress !== null) {
+      onProgress({
+        status,
+        progress: progress || 0,
+        queuePosition: queuePosition || 0,
+        elapsedTime: elapsedTime || null,
+        message,
+        errors,
+      })
     }
 
     // sleep

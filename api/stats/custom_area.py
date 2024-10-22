@@ -18,13 +18,11 @@ bnd_dir = data_dir / "boundaries"
 subregions_filename = bnd_dir / "subregions.feather"
 
 
-async def get_custom_area_results(df, max_acres=None, progress_callback=None):
+async def get_custom_area_results(df, progress_callback=None):
     """Calculate statistics for custom area
 
     df : GeoDataFrame
         expected to only have one row representing the analysis area
-    max_area : float (in acres)
-        If not None, will raise error if geometry area is greater than this value
     progress_callback : async function
         If not None, is an async function that is called with the percent that
         this task is complete
@@ -38,11 +36,6 @@ async def get_custom_area_results(df, max_acres=None, progress_callback=None):
 
     geometry = df.geometry.values[0]
     acres = shapely.area(geometry) * M2_ACRES
-
-    if max_acres is not None and acres > max_acres:
-        raise DataError(
-            f"Your area of interest is too large ({acres:,.0f} acres); it must be < {max_acres:,.0f} acres"
-        )
 
     subregion_df = gp.read_feather(
         subregions_filename, columns=["subregion", "geometry"]

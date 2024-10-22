@@ -25,13 +25,19 @@ REDIS_PORT = os.getenv("REDIS_PORT", 6379)
 SENTRY_DSN = os.getenv("SENTRY_DSN")
 SENTRY_ENV = os.getenv("SENTRY_ENV")
 
-REDIS = RedisSettings(host=REDIS_HOST, port=REDIS_PORT)
+REDIS = RedisSettings(
+    host=REDIS_HOST, port=REDIS_PORT, retry_on_timeout=True, conn_timeout=2
+)
 
 REDIS_QUEUE = "southeast"
 
 MAP_RENDER_THREADS = int(os.getenv("MAP_RENDER_THREADS", 2))
 MAX_JOBS = int(os.getenv("MAX_JOBS", 2))
 CUSTOM_REPORT_MAX_ACRES = int(os.getenv("CUSTOM_REPORT_MAX_ACRES", 50000000))
+
+
+MAX_POLYGONS = int(os.getenv("MAX_POLYGONS", 5000))
+MAX_VERTICES = int(os.getenv("MAX_VERTICES", 2500000))
 
 # retain files for 24 hours to aid troubleshooting
 FILE_RETENTION = 86400

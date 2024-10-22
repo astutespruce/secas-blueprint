@@ -12,10 +12,11 @@ import {
   Paragraph,
 } from 'theme-ui'
 import {
-  Download,
   CheckCircle,
+  Download,
   ExclamationTriangle,
 } from '@emotion-icons/fa-solid'
+import { Clock } from '@emotion-icons/fa-regular'
 
 import { OutboundLink } from 'components/link'
 import { captureException, logGAEvent } from 'util/log'
@@ -28,11 +29,24 @@ const { contactEmail } = config.siteMetadata
 
 const UploadContainer = () => {
   const [
-    { reportURL, progress, message, errors, error, inProgress },
+    {
+      reportURL,
+      status,
+      progress,
+      queuePosition,
+      elapsedTime,
+      message,
+      errors,
+      error,
+      inProgress,
+    },
     setState,
   ] = useState({
     reportURL: null,
+    status: null,
     progress: 0,
+    queuePosition: 0,
+    elapsedTime: null,
     message: null,
     errors: null, // non-fatal errors
     inProgress: false,
@@ -45,6 +59,8 @@ const UploadContainer = () => {
       ...prevState,
       inProgress: true,
       progress: 0,
+      queuePosition: 0,
+      elapsedTime: null,
       message: null,
       errors: null,
       error: null,
@@ -67,14 +83,23 @@ const UploadContainer = () => {
         file,
         name,
         ({
+          status: nextStatus,
           progress: nextProgress,
+          queuePosition: nextQueuePosition,
+          elapsedTime: nextElapsedTime,
           message: nextMessage = null,
           errors: nextErrors = null,
         }) => {
           setState(
             ({ message: prevMessage, errors: prevErrors, ...prevState }) => ({
               ...prevState,
+              status: nextStatus,
+              inProgress:
+                nextStatus === 'in_progress' ||
+                (nextStatus === 'queued' && nextElapsedTime < 5),
               progress: nextProgress,
+              queuePosition: nextQueuePosition,
+              elapsedTime: nextElapsedTime,
               message: nextMessage || prevMessage,
               errors: nextErrors || prevErrors,
             })
@@ -89,7 +114,10 @@ const UploadContainer = () => {
         setState((prevState) => ({
           ...prevState,
           inProgress: false,
+          status: null,
           progress: 0,
+          queuePosition: 0,
+          elapsedTime: null,
           message: null,
           errors: null,
           error: uploadError,
@@ -103,7 +131,10 @@ const UploadContainer = () => {
       // upload and processing completed successfully
       setState((prevState) => ({
         ...prevState,
+        status: null,
         progress: 100,
+        queuePosition: 0,
+        elapsedTime: null,
         message: null,
         errors: finalErrors, // there may be non-fatal errors (e.g., errors rendering maps)
         inProgress: false,
@@ -119,7 +150,10 @@ const UploadContainer = () => {
       setState((prevState) => ({
         ...prevState,
         inProgress: false,
+        status: null,
         progress: 0,
+        queuePosition: 0,
+        elapsedTime: null,
         message: null,
         errors: null,
         error: '', // no meaningful error to show to user, but needs to be non-null
@@ -130,15 +164,30 @@ const UploadContainer = () => {
   const handleReset = useCallback(() => {
     setState((prevState) => ({
       ...prevState,
+      status: null,
       progress: 0,
+      queuePosition: 0,
+      elapsedTime: null,
       reportURL: null,
       error: null,
     }))
   }, [])
 
-  return (
-    <Container sx={{ py: '2rem' }}>
-      {reportURL != null ? (
+  if (error !== null) {
+    return (
+      <Container sx={{ py: '2rem' }}>
+        <UploadError error={error} handleClearError={handleReset} />
+        <Divider />
+        <Flex sx={{ justifyContent: 'center' }}>
+          <Button onClick={handleReset}>Try again?</Button>
+        </Flex>
+      </Container>
+    )
+  }
+
+  if (reportURL !== null) {
+    return (
+      <Container sx={{ py: '2rem' }}>
         <Box sx={{ mb: '6rem' }}>
           <Heading as="h3" sx={{ mb: '0.5rem' }}>
             <CheckCircle
@@ -216,43 +265,67 @@ const UploadContainer = () => {
             <Button onClick={handleReset}>Create another report?</Button>
           </Flex>
         </Box>
-      ) : (
-        <>
-          {inProgress ? (
-            <>
-              <Heading as="h3" sx={{ mb: '0.5rem' }}>
-                {message ? `${message}...` : 'Creating report...'}
-              </Heading>
+      </Container>
+    )
+  }
 
-              <Flex sx={{ alignItems: 'center' }}>
-                <Progress
-                  variant="styles.progress"
-                  max={100}
-                  value={progress}
-                />
-                <Text sx={{ ml: '1rem' }}>{progress}%</Text>
-              </Flex>
-            </>
-          ) : (
-            <>
-              {error != null ? (
-                <>
-                  <UploadError error={error} handleClearError={handleReset} />
-                  <Divider />
-                  <Flex sx={{ justifyContent: 'center' }}>
-                    <Button onClick={handleReset}>Try again?</Button>
-                  </Flex>
-                </>
-              ) : (
-                <UploadForm
-                  onFileChange={handleReset}
-                  onCreateReport={handleCreateReport}
-                />
-              )}
-            </>
-          )}
-        </>
-      )}
+  if (inProgress) {
+    return (
+      <Container sx={{ py: '2rem' }}>
+        <Heading as="h3" sx={{ mb: '0.5rem' }}>
+          {message ? `${message}...` : 'Creating report...'}
+        </Heading>
+
+        <Flex sx={{ alignItems: 'center' }}>
+          <Progress variant="styles.progress" max={100} value={progress} />
+          <Text sx={{ ml: '1rem' }}>{progress}%</Text>
+        </Flex>
+      </Container>
+    )
+  }
+
+  if (status === 'queued') {
+    return (
+      <Container sx={{ py: '2rem' }}>
+        <Flex
+          sx={{ alignItems: 'center', gap: '1rem', mt: '1rem', mb: '0.5rem' }}
+        >
+          <Box sx={{ color: 'grey.9' }}>
+            <Clock size="2rem" />
+          </Box>
+          <Heading as="h2">
+            {message
+              ? `${message}...`
+              : 'Waiting for other jobs to complete...'}
+          </Heading>
+        </Flex>
+
+        <Text sx={{ fontSize: 3 }}>
+          The server is currently working on reports that have already been
+          submitted and it will start working on your report as soon as
+          possible.
+          <br />
+          <br />
+          {queuePosition > 0
+            ? `Waiting on ${queuePosition} other report${queuePosition > 1 ? 's' : ''} to complete`
+            : 'Your report is next in line'}
+          .
+          <br />
+          <br />
+          {elapsedTime !== null
+            ? `You have been waiting for ${Math.floor(elapsedTime / 60)} minutes and ${(elapsedTime - Math.floor(elapsedTime / 60) * 60).toString().padStart(2, '0')} seconds.`
+            : null}
+        </Text>
+      </Container>
+    )
+  }
+
+  return (
+    <Container sx={{ py: '2rem' }}>
+      <UploadForm
+        onFileChange={handleReset}
+        onCreateReport={handleCreateReport}
+      />
     </Container>
   )
 }

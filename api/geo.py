@@ -2,6 +2,8 @@ import logging
 
 from pyogrio import list_layers, read_info
 
+from api.settings import MAX_POLYGONS
+
 
 log = logging.getLogger(__name__)
 
@@ -95,10 +97,17 @@ def get_dataset(zip):
         log.error(f"Upload data source is not a polygon: {layers[0,1]}")
         raise ValueError("data source must be a Polygon type")
 
-    # Validate that that layer has at least one feature
+    # Validate that that layer has at least one feature but doesn't have too many
+    # features
     num_features = read_info(dataset, layers[0, 0])["features"]
     if num_features == 0:
         log.error("Upload data source does not contain any features")
         raise ValueError("data source must contain at least one feature")
+
+    elif num_features > MAX_POLYGONS:
+        log.error("Upload data source contains too many features")
+        raise ValueError(
+            f"data source contains too many features: {num_features:,} (must be <{MAX_POLYGONS:,}).  Please select a smaller subset of features or preprocess this dataset to reduce the number of individual features (e.g., dissolve adjacent boundaries)."
+        )
 
     return filename, layers[0, 0]

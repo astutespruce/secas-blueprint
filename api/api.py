@@ -1,13 +1,14 @@
+from datetime import datetime
 import logging
 from pathlib import Path
 from secrets import compare_digest
 import shutil
 import tempfile
+import time
 from typing import Optional
 from zipfile import ZipFile
 
 import arq
-
 from arq.jobs import Job, JobStatus
 from fastapi import (
     FastAPI,
@@ -22,7 +23,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.security.api_key import APIKeyQuery, APIKey
 from fastapi.requests import Request
-from fastapi.responses import Response, FileResponse
+from fastapi.responses import Response, FileResponse, JSONResponse
+from redis.exceptions import TimeoutError
 import sentry_sdk
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
@@ -74,7 +76,12 @@ async def catch_exceptions_middleware(request: Request, call_next):
 
     except Exception as ex:
         log.error(f"Error processing request: {ex}")
-        return Response("Internal server error", status_code=500)
+        return JSONResponse(
+            {
+                "detail": "unexpected error processing this report.  The server may be experiencing above normal requests or other problems.  Please try again in a few minutes."
+            },
+            status_code=500,
+        )
 
 
 if ENABLE_CORS:
@@ -256,50 +263,100 @@ async def job_status_endpoint(job_id: str):
         {"status": "...", "progress": 0-100, "result": "...only if complete...", "detail": "...only if failed..."}
     """
 
-    redis = await arq.create_pool(REDIS)
-
-    try:
-        job = Job(job_id, redis=redis, _queue_name=REDIS_QUEUE)
-        status = await job.status()
-
-        if status == JobStatus.not_found:
-            raise HTTPException(status_code=404, detail="Job not found")
-
-        if status != JobStatus.complete:
-            progress, message, errors = await get_progress(redis, job_id)
-
-            return {
-                "status": status,
-                "progress": progress,
-                "message": message,
-                "errors": errors,
-            }
-
-        info = await job.result_info()
+    # loop until return or hit number of retries
+    retry = 0
+    while retry <= 5:
+        redis = None
 
         try:
-            # this re-raises the underlying exception raised in the worker
-            filename, out_filename, errors = await job.result()
+            redis = await arq.create_pool(REDIS)
 
-            if info.success:
+            job = Job(job_id, redis=redis, _queue_name=REDIS_QUEUE)
+            status = await job.status()
+
+            if status == JobStatus.not_found:
+                raise HTTPException(
+                    status_code=404,
+                    detail="Job not found; it may have been cancelled, timed out, or the server restarted.  Please try again.",
+                )
+
+            if status == JobStatus.queued:
+                job_info = await job.info()
+                elapsed_time = (
+                    datetime.now(tz=job_info.enqueue_time.tzinfo)
+                    - job_info.enqueue_time
+                )
+
+                queued = [
+                    j[0]
+                    for j in sorted(
+                        [
+                            (job.job_id, job.enqueue_time)
+                            for job in await redis.queued_jobs(queue_name=REDIS_QUEUE)
+                        ],
+                        key=lambda x: x[1],
+                    )
+                ]
+
                 return {
-                    "status": "success",
-                    "result": f"/api/reports/results/{job_id}",
+                    "status": status,
+                    "progress": 0,
+                    "queue_position": queued.index(job_id),
+                    "elapsed_time": elapsed_time.seconds,
+                }
+
+            if status != JobStatus.complete:
+                progress, message, errors = await get_progress(redis, job_id)
+
+                return {
+                    "status": status,
+                    "progress": progress,
+                    "message": message,
                     "errors": errors,
                 }
 
-        except DataError as ex:
-            message = str(ex)
+            info = await job.result_info()
 
-        except Exception as ex:
-            log.error(ex)
-            message = "Internal server error"
-            raise HTTPException(status_code=500, detail="Internal server error")
+            try:
+                # this re-raises the underlying exception raised in the worker
+                filename, out_filename, errors = await job.result()
 
-        return {"status": "failed", "detail": message}
+                if info.success:
+                    return {
+                        "status": "success",
+                        "result": f"/api/reports/results/{job_id}",
+                        "errors": errors,
+                    }
 
-    finally:
-        await redis.close()
+            except DataError as ex:
+                message = str(ex)
+
+            # raise timeout to outer retry loop
+            except TimeoutError as ex:
+                raise ex
+
+            except Exception as ex:
+                log.error(ex)
+                message = "Internal server error"
+                raise HTTPException(
+                    status_code=500,
+                    detail="Internal server error",
+                )
+
+            return {"status": "failed", "detail": message}
+
+        # in case we hit a Redis timeout while polling job status, make sure we don't break until connection cannot be re-established
+        except TimeoutError as ex:
+            retry += 1
+            log.error(f"Redis connection timeout, retry {retry}")
+            time.sleep(1)
+
+            if retry >= 5:
+                raise ex
+
+        finally:
+            if redis is not None:
+                await redis.close()
 
 
 @app.get("/api/reports/results/{job_id}")
@@ -311,7 +368,10 @@ async def report_pdf_endpoint(job_id: str):
         status = await job.status()
 
         if status == JobStatus.not_found:
-            raise HTTPException(status_code=404, detail="Job not found")
+            raise HTTPException(
+                status_code=404,
+                detail="Job not found; it may have been cancelled, timed out, or the server restarted.  Please try again.",
+            )
 
         if status != JobStatus.complete:
             raise HTTPException(status_code=400, detail="Job not complete")
@@ -320,7 +380,8 @@ async def report_pdf_endpoint(job_id: str):
 
         if not info.success:
             raise HTTPException(
-                status_code=400, detail="Job failed, cannot return results"
+                status_code=400,
+                detail="Job failed, cannot return results.  Please contact us to report an issue.",
             )
 
         path, out_filename, errors = info.result

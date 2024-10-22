@@ -10,11 +10,17 @@ import shapely
 from api.errors import DataError
 from api.report.map import render_maps
 from api.report import create_report
-from api.settings import LOGGING_LEVEL, TEMP_DIR, CUSTOM_REPORT_MAX_ACRES
+from api.settings import (
+    LOGGING_LEVEL,
+    TEMP_DIR,
+    CUSTOM_REPORT_MAX_ACRES,
+    MAX_POLYGONS,
+    MAX_VERTICES,
+)
 from api.stats.custom_area import get_custom_area_results
 from api.progress import set_progress
 
-from analysis.constants import DATA_CRS, GEO_CRS
+from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES, STANDARD_RESOLUTION
 from analysis.lib.geometry import dissolve
 
 log = logging.getLogger(__name__)
@@ -60,25 +66,64 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
 
     path = f"/vsizip/{zip_filename}/{dataset}"
 
-    df = read_dataframe(path, layer=layer, columns=[], force_2d=True).to_crs(DATA_CRS)
+    df = (
+        read_dataframe(path, layer=layer, columns=[], force_2d=True)
+        .to_crs(DATA_CRS)
+        .explode(ignore_index=True)
+    )
+
+    df = df.loc[df.geometry.type == "Polygon"].copy()
+
+    # reject any areas that are too large
+    area = df.area
+    approx_acres = area.sum() * M2_ACRES
+    if approx_acres > CUSTOM_REPORT_MAX_ACRES:
+        raise DataError(
+            f"Your area of interest is too large ({approx_acres:,.0f} acres); it must be < {CUSTOM_REPORT_MAX_ACRES:,.0f} acres"
+        )
+
+    # reject any areas that are too complex: too many individual features or too many vertices
+    if len(df) > 1000:
+        log.error("Upload data source contains too many polygons")
+        raise DataError(
+            f"data source contains too many individual polygons: {len(df):,} (must be <{MAX_POLYGONS:,}).  Please select a smaller subset of polygons or preprocess this dataset to reduce the number of individual polygons (e.g., dissolve adjacent boundaries)."
+        )
+
+    num_vertices = shapely.get_num_coordinates(df.geometry.values).sum()
+    if num_vertices > MAX_VERTICES:
+        log.error("Upload data source contains too many coordinates")
+        raise DataError(
+            f"data source appears to be too complex and contains too many coordinates: {num_vertices:,} (total coordinates must be <{MAX_VERTICES:,}).  Please select a smaller subset of polygons preprocess this dataset to reduce the number of coordinates (e.g., dissolve adjacent boundaries, simplify polygons, etc)."
+        )
+
+    # make sure that the polygons are big enough to be useful
+    pct_too_small = (
+        100 * (area < (STANDARD_RESOLUTION * STANDARD_RESOLUTION)).sum() / len(df)
+    )
+    if pct_too_small >= 10:
+        log.error("Upload data source contains too many small polygons")
+        raise DataError(
+            f"{pct_too_small:.0f}% of the polygons in the data source are less than a single 30x30m pixel; these will not provide useful results.  Please filter these out of your dataset and try again."
+        )
+
     df["geometry"] = shapely.make_valid(df.geometry.values)
+    df = df.explode(ignore_index=True)
 
     # check for non-polygon results of making valid and strip them out
     geom_types = np.unique(shapely.get_type_id(df.geometry.values))
     if set(geom_types) - {3, 6}:
-        df = df.explode(ignore_index=True)
         df = df.loc[shapely.get_type_id(df.geometry.values) == 3].copy()
         print("Found non-polygon geometries; stripping them out")
 
         if len(df) == 0:
-            raise ValueError(
+            raise DataError(
                 "No valid area boundaries available for analysis after making geometries valid.  This means that one or more of your features has an invalid geometry.  Please clean up your data and try again."
             )
 
     if len(df) > 1:
         try:
             df["group"] = 1
-            df = dissolve(df.explode(ignore_index=True), by="group")
+            df = dissolve(df, by="group")
 
         except Exception:
             raise DataError(
@@ -100,9 +145,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
             "Calculating results (this might take a while)",
         )
 
-    results = await get_custom_area_results(
-        df, max_acres=CUSTOM_REPORT_MAX_ACRES, progress_callback=progress_callback
-    )
+    results = await get_custom_area_results(df, progress_callback=progress_callback)
 
     if results is None:
         raise DataError(

@@ -1,4 +1,11 @@
+import logging
+import time
+
+from redis.exceptions import TimeoutError
+
 from api.settings import JOB_TIMEOUT
+
+log = logging.getLogger("api")
 
 
 JOB_PREFIX = "arq:job-progress:"
@@ -21,9 +28,21 @@ async def set_progress(redis, job_id, progress=0, message="", errors=None):
 
     error_str = ",".join(errors) if errors else ""
 
-    await redis.setex(
-        f"{JOB_PREFIX}{job_id}", EXPIRATION, f"{progress}|{message}|{error_str}"
-    )
+    retry = 0
+    while retry <= 5:
+        try:
+            await redis.setex(
+                f"{JOB_PREFIX}{job_id}", EXPIRATION, f"{progress}|{message}|{error_str}"
+            )
+            return
+
+        except TimeoutError as ex:
+            retry += 1
+            if retry >= 5:
+                raise ex
+
+            log.error(f"Redis connection timeout in set_progress, retry {retry}")
+            time.sleep(2)
 
 
 async def get_progress(redis, job_id):
@@ -39,12 +58,25 @@ async def get_progress(redis, job_id):
     (int, str, list)
         tuple of progress percent, message, errors
     """
-    progress = await redis.get(f"{JOB_PREFIX}{job_id}")
 
-    if progress is None:
-        return 0, "", []
+    retry = 0
+    while retry <= 5:
+        try:
+            progress = await redis.get(f"{JOB_PREFIX}{job_id}")
 
-    progress, message, errors = progress.decode("UTF8").split("|")
-    errors = errors.split(",") if errors else []
+            if progress is None:
+                return 0, "", []
 
-    return int(progress), message, errors
+            progress, message, errors = progress.decode("UTF8").split("|")
+            errors = errors.split(",") if errors else []
+
+            return int(progress), message, errors
+
+        except TimeoutError as ex:
+            retry += 1
+
+            if retry >= 5:
+                raise ex
+
+            log.error(f"Redis connection timeout in get_progress, retry {retry}")
+            time.sleep(2)

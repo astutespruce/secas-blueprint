@@ -38,7 +38,12 @@ def poll_until_done(job_id, current=0, max=100):
         print(f"Failed: {json['detail']}")
         return
 
-    print(f"Progress: {progress}, message: {message}, errors: {errors}")
+    status_info = (
+        f' ({json.get("queue_position")} ahead in queue)' if status == "queued" else ""
+    )
+    print(
+        f"status: {status}{status_info}, progress: {progress}, message: {message}, errors: {errors}"
+    )
 
     current += 1
     if current == max:
@@ -102,7 +107,7 @@ def test_huc12_report(huc12_id):
 
 if __name__ == "__main__":
     # test_upload_file("examples/api/napoleonville.zip")
-    test_upload_file("examples/api/test_base_flm.zip")
+    test_upload_file("examples/api/NCPotentialCOAs_allBlueprint.zip")
 
     # test_huc12_report("0")
 
