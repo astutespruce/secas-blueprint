@@ -83,7 +83,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
         )
 
     # reject any areas that are too complex: too many individual features or too many vertices
-    if len(df) > 1000:
+    if len(df) > MAX_POLYGONS:
         log.error("Upload data source contains too many polygons")
         raise DataError(
             f"data source contains too many individual polygons: {len(df):,} (must be <{MAX_POLYGONS:,}).  Please select a smaller subset of polygons or preprocess this dataset to reduce the number of individual polygons (e.g., dissolve adjacent boundaries)."
