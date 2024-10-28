@@ -61,6 +61,7 @@ def get_summary_unit_results(unit_type, unit_id):
         "outside_se_acres": unit.outside_se,
         "outside_se_percent": 100 * unit.outside_se / unit.rasterized_acres,
         "bounds": bounds,
+        "subregions": unit.subregions,
     }
 
     # NO LONGER USED
