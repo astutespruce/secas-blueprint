@@ -10,8 +10,7 @@ import {
   ContactTab,
   BlueprintTab,
   IndicatorsTab,
-  ThreatsTab,
-  PartnersTab,
+  MoreInfoTab,
 } from 'content'
 
 const TabContent = ({ tab, mapData }) => {
@@ -95,20 +94,13 @@ const TabContent = ({ tab, mapData }) => {
         />
       )
     }
-    case 'selected-threats': {
+    case 'selected-more-info': {
       return (
-        <ThreatsTab
+        <MoreInfoTab
           type={type}
           slr={slr}
           urban={urban}
           subregions={subregions}
-        />
-      )
-    }
-    case 'selected-partners': {
-      return (
-        <PartnersTab
-          type={type}
           ownership={ownership}
           protection={protection}
           protectedAreas={protectedAreas}

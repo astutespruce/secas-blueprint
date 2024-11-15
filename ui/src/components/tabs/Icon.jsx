@@ -12,12 +12,11 @@ import {
   SearchLocation,
   QuestionCircle,
   Envelope,
-  ExclamationCircle,
   ChartPie,
   Tasks,
   SlidersH,
-  UserFriends,
   Compass,
+  ChartLine,
 } from '@emotion-icons/fa-solid'
 
 const Icon = ({ name, ...props }) => {
@@ -44,11 +43,8 @@ const Icon = ({ name, ...props }) => {
     case 'selected-indicators': {
       return <Tasks {...props} />
     }
-    case 'selected-threats': {
-      return <ExclamationCircle {...props} />
-    }
-    case 'selected-partners': {
-      return <UserFriends {...props} />
+    case 'selected-more-info': {
+      return <ChartLine {...props} />
     }
     case 'latlong': {
       return <Compass {...props} />

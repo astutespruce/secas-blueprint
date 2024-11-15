@@ -4,10 +4,7 @@ import { Box } from 'theme-ui'
 
 import { Tabs as BaseTabs } from 'components/tabs'
 
-const defaultTabs = [
-  { id: 'info', label: 'Info' },
-  // { id: 'find', label: 'Find Location' },
-]
+const defaultTabs = [{ id: 'info', label: 'Info' }]
 
 const filterTabs = [
   { id: 'filter', label: 'Filter the Blueprint' },
@@ -17,8 +14,7 @@ const filterTabs = [
 const unitTabs = [
   { id: 'selected-priorities', label: 'Priorities' },
   { id: 'selected-indicators', label: 'Indicators' },
-  { id: 'selected-threats', label: 'Threats' },
-  { id: 'selected-partners', label: 'Partners' },
+  { id: 'selected-more-info', label: 'More info' },
 ]
 
 const Tabs = ({ tab, mapMode, hasMapData, onChange }) => {

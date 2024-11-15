@@ -4,8 +4,7 @@ import FindLocationTab from './FindLocationTab'
 import ContactTab from './ContactTab'
 import BlueprintTab from './BlueprintTab'
 import IndicatorsTab from './IndicatorsTab'
-import ThreatsTab from './ThreatsTab'
-import PartnersTab from './PartnersTab'
+import MoreInfoTab from './MoreInfoTab'
 
 export {
   InfoTab,
@@ -14,6 +13,5 @@ export {
   ContactTab,
   BlueprintTab,
   IndicatorsTab,
-  ThreatsTab,
-  PartnersTab,
+  MoreInfoTab,
 }
