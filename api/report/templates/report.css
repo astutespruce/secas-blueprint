@@ -84,6 +84,10 @@ footer {
   content: target-counter(attr(target), page);
 }
 
+#TableOfContents .tocsubsection {
+  margin-left: 24pt;
+}
+
 #TableOfContents li {
   display: flex;
   justify-content: space-between;

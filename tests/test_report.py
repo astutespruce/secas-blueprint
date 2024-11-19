@@ -101,7 +101,7 @@ aois = [
     # {"name": "FL test", "path": "EvergladesHeadwaterComplex_APPTYPE_0"},
     # {"name": "Guild Tracts", "path": "GuildTracts"}
     # {"name": "Florida Panhandle Boundary", "path": "FL_panhadle_boundary"},
-    {"name": "Dell Murphy wetlands", "path": "Dell Murphy wetlands"},
+    # {"name": "Dell Murphy wetlands", "path": "Dell Murphy wetlands"},
     # {"name": "TRB GA", "path": "TRB_GA"},
     # {"name": "Florida 5 Star County Boundary", "path": "FL_5StarCounty_Boundary"}
     # {"name": "Cumberland Plateau Focus Area", "path": "NFWF_Cumberland_Fund_TN"}
@@ -118,7 +118,7 @@ aois = [
     # {"name": "Quincy, FL area", "path": "Quincy"},
     # {"name": "Doyle Springs, TN area", "path": "DoyleSprings"},
     # {"name": "Cave Spring, VA area", "path": "CaveSpring"},
-    # {"name": "South Atlantic Offshore", "path": "SAOffshore"},
+    {"name": "South Atlantic Offshore", "path": "SAOffshore"},
     # {"name": "Florida Offshore", "path": "FLOffshore"},
     # {"name": "Razor", "path": "Razor"},
     # {"name":"Single Test Area", "path": "SingleTest"}
@@ -129,10 +129,10 @@ for aoi in aois:
     path = aoi["path"]
     print(f"Creating report for {name}...")
 
+    filename = Path("examples") / f"{path}.shp"
+
     start = time()
-    df = read_dataframe(f"examples/{path}.shp", columns=[], force_2d=True).to_crs(
-        DATA_CRS
-    )
+    df = read_dataframe(filename, columns=[], force_2d=True).to_crs(DATA_CRS)
     df["geometry"] = shapely.make_valid(df.geometry.values)
     df["group"] = 1
     df = dissolve(df.explode(ignore_index=True), by="group")

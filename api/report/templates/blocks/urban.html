@@ -1,5 +1,5 @@
 <div class="no-break">
-    <h3 id="Urban">Urban growth</h3>
+    <h3 id="Urban">Urban Growth</h3>
 
     <p>
         The FUTURES urban growth model predicts the likelihood that an area will
@@ -48,13 +48,13 @@
                 {% endif %}
             </div>
         </div>
-        <p>
+        <!-- <p>
             <br />
             {{results.urban.entries[0].percent|format_percent}}% of this
             area is already urban in 2021, and an additional
             {{results.urban.nonzero_urban_2060_percent|format_percent}}%
             has at least a moderate probability of urbanizing by 2060.
-        </p>
+        </p> -->
 
     {% else %}
         <div class="map-placeholder text-center">
@@ -121,12 +121,21 @@
 
         </tbody>
     </table>
-</div>
 
-{% if results.urban.percent_increase_by_2060 %}
-    <p class="no-break">
-    By 2060, the size of the urban footprint is projected to increase
-        <b>{{results.urban.percent_increase_by_2060|format_number}}%</b>
-        over 2021 levels.
+    <p class="no-break"></p>
+        <br />
+        {{results.urban.entries[0].percent|format_percent}}% of this
+        area is already urban in 2021, and an additional
+        {{results.urban.nonzero_urban_2060_percent|format_percent}}%
+        has at least a moderate probability of urbanizing by 2060.
+        <br />
+        <br />
+        {% if results.urban.percent_increase_by_2060 %}
+            By 2060, the size of the urban footprint is projected to increase
+            <b>{{results.urban.percent_increase_by_2060|format_number}}%</b>
+            over 2021 levels.
+        {% endif %}
+        <br />
+        <br />
     </p>
-{% endif %}
+</div>
