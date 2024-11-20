@@ -59,18 +59,12 @@ async def summarize_urban_in_aoi(rasterized_geometry, progress_callback=None):
         with rasterio.open(urban_filename.format(year=year)) as src:
             urban_acres = rasterized_geometry.get_acres_by_bin(src, bins)
 
-        total_urban_acres = urban_acres.sum()
-        outside_urban_acres = (
-            rasterized_geometry.acres
-            - rasterized_geometry.outside_se_acres
-            - total_urban_acres
-        )
-        if outside_urban_acres < 1e-6:
-            outside_urban_acres = 0
+        # total urbanization is sum of acres by probability bin * probability
+        total_projected_acres = (urban_acres * PROBABILITIES).sum()
 
         if year == 2030:
             # extract area already urban (in index 51)
-            already_urban_acres = urban_acres[51]
+            already_urban_acres = urban_acres[51].item()
             urban_results.append(
                 {
                     "label": "Urban in 2021",
@@ -79,34 +73,57 @@ async def summarize_urban_in_aoi(rasterized_geometry, progress_callback=None):
                 }
             )
         elif year == 2060:
-            # amount of additional urbanization by 2060 for any probability
-            # is the sum of area in all pixels >0  and not already urban
-            nonzero_urban_2060_acres = urban_acres[1:51].sum()
+            urban_2060_acres = total_projected_acres
+            # IMPORTANT: nonzero_urban_2060_percent is for ANY pixel > 0 probability
+            # that is not already urbanized (51), so it does not use the projected acres
+            nonzero_urban_2060_percent = (
+                100 * urban_acres[1:51].sum() / rasterized_geometry.acres
+            )
 
-        # total urbanization is sum of acres by probability bin * probability
-        projected_acres = (urban_acres * PROBABILITIES).sum()
+        elif year == 2100:
+            urban_2100_acres = total_projected_acres
+
         urban_results.append(
             {
                 "year": year,
                 "label": f"{year} projected extent",
-                "acres": projected_acres,
-                "percent": 100 * projected_acres / rasterized_geometry.acres,
+                "acres": total_projected_acres,
+                "percent": 100 * total_projected_acres / rasterized_geometry.acres,
             }
         )
 
         if progress_callback is not None:
             await progress_callback(100 * (i + 1) / len(URBAN_YEARS))
 
-    noturban_2100_acres = urban_acres[0]  # set to 2100 by last loop
+    # IMPORTANT: available urban acres is based on everywhere that pixels were
+    # available for urban data, not based on difference of total area vs urbanized
+    # and nonurbanized areas due to projections
+    available_urban_acres = urban_acres.sum()
+
+    # sum of projected nonzero urban acres
+    noturban_2100_acres = available_urban_acres - urban_2100_acres
+    if noturban_2100_acres < 1e-6:
+        noturban_2100_acres = 0
+
+    outside_urban_acres = (
+        rasterized_geometry.acres
+        - rasterized_geometry.outside_se_acres
+        - available_urban_acres
+    )
+    if outside_urban_acres < 1e-6:
+        outside_urban_acres = 0
 
     results = {
         "entries": urban_results,
-        "total_urban_acres": total_urban_acres,
+        "available_urban_acres": available_urban_acres,
         "outside_urban_acres": outside_urban_acres,
         "outside_urban_percent": 100 * outside_urban_acres / rasterized_geometry.acres,
-        "nonzero_urban_2060_percent": 100
-        * nonzero_urban_2060_acres
-        / rasterized_geometry.acres,
+        "nonzero_urban_2060_percent": nonzero_urban_2060_percent,
+        "percent_increase_by_2060": 100
+        * (urban_2060_acres - already_urban_acres)
+        / already_urban_acres
+        if already_urban_acres > 0
+        else 0,
         "noturban_2100_acres": noturban_2100_acres,
         "noturban_2100_percent": 100 * noturban_2100_acres / rasterized_geometry.acres,
     }
@@ -152,15 +169,20 @@ def summarize_urban_by_units_grid(df, units_grid, out_dir):
         )
 
         # total urbanization is sum of acres by probability bin * probability
-        projected_acres = (urban_acres * PROBABILITIES).sum(axis=1)
+        total_projected_acres = (urban_acres * PROBABILITIES).sum(axis=1)
 
     already_urban_acres = urban_acres[:, 51]
-    total_urban_acres = urban_acres.sum(axis=1)
-    outside_urban_acres = df.rasterized_acres - df.outside_se - total_urban_acres
+    available_urban_acres = urban_acres.sum(axis=1)
+    outside_urban_acres = df.rasterized_acres - df.outside_se - available_urban_acres
     outside_urban_acres[outside_urban_acres < 1e-6] = 0
 
     urban = pd.DataFrame(
-        {"urban_2021": already_urban_acres, f"urban_proj_{year}": projected_acres},
+        {
+            "available_urban_acres": available_urban_acres,
+            "outside_urban_acres": outside_urban_acres,
+            "urban_2021_acres": already_urban_acres,
+            f"urban_proj_{year}_acres": total_projected_acres,
+        },
         index=df.index,
     )
 
@@ -179,18 +201,20 @@ def summarize_urban_by_units_grid(df, units_grid, out_dir):
                 * cellsize
             )
 
-            if year == 2060:
-                # amount of additional urbanization by 2060 for any probability
-                # is the sum of area in all pixels >0  and not already urban
-                nonzero_urban_2060_acres = urban_acres[:, 1:51].sum(axis=1)
-
             # total urbanization is sum of acres by probability bin * probability
-            urban[f"urban_proj_{year}"] = (urban_acres * PROBABILITIES).sum(axis=1)
+            total_projected_acres = (urban_acres * PROBABILITIES).sum(axis=1)
 
-    urban["total_urban_acres"] = total_urban_acres
-    urban["nonzero_urban_2060"] = nonzero_urban_2060_acres
-    urban["noturban_2100"] = urban_acres[:, 0]  # set to 2100 by last loop
-    urban["outside_urban"] = outside_urban_acres
+            if year == 2060:
+                # IMPORTANT: nonzero_urban_2060_percent is for ANY pixel > 0 probability
+                # that is not already urbanized (51), so it does not use the projected acres
+                urban["nonzero_urban_2060_acres"] = urban_acres[:, 1:51].sum(axis=1)
+
+            elif year == 2100:
+                noturban_2100_acres = available_urban_acres - total_projected_acres
+                noturban_2100_acres[noturban_2100_acres < 1e-6] = 0
+                urban["noturban_2100_acres"] = noturban_2100_acres
+
+            urban[f"urban_proj_{year}_acres"] = total_projected_acres
 
     # if nothing is urban / projected to urbanize by 2100, return None
     if urban_acres[:, 1:].max() == 0:
@@ -217,7 +241,7 @@ def get_urban_unit_results(results_dir, unit):
                 "acres": <acres>,
                 "percent": <percent>
             }, ... <for current urban, projected urban, and area not urbanized by 2100 (if any)>],
-            "total_urban_acres": <total urban acres>,
+            "available_urban_acres": <total urban acres>,
             "outside_urban_acres": <acres outside this dataset but within SE>,
             "outside_urban_percent": <percent outside this dataset but within SE>,
             "noturban_2100_acres": <acres not urbanized by 2100>,
@@ -234,16 +258,16 @@ def get_urban_unit_results(results_dir, unit):
     entries = [
         {
             "label": "Urban in 2021",
-            "acres": urban_results.urban_2021,
-            "percent": 100 * urban_results.urban_2021 / unit.rasterized_acres,
+            "acres": urban_results.urban_2021_acres,
+            "percent": 100 * urban_results.urban_2021_acres / unit.rasterized_acres,
         }
     ] + [
         {
             "year": year,
             "label": f"{year} projected extent",
-            "acres": urban_results[f"urban_proj_{year}"],
+            "acres": urban_results[f"urban_proj_{year}_acres"],
             "percent": 100
-            * urban_results[f"urban_proj_{year}"]
+            * urban_results[f"urban_proj_{year}_acres"]
             / unit.rasterized_acres,
         }
         for year in URBAN_YEARS
@@ -251,16 +275,21 @@ def get_urban_unit_results(results_dir, unit):
 
     return {
         "entries": entries,
-        "total_urban_acres": urban_results.total_urban_acres,
-        "outside_urban_acres": urban_results.outside_urban,
+        "available_urban_acres": urban_results.available_urban_acres,
+        "outside_urban_acres": urban_results.outside_urban_acres,
         "outside_urban_percent": 100
-        * urban_results.outside_urban
+        * urban_results.outside_urban_acres
         / unit.rasterized_acres,
         "nonzero_urban_2060_percent": 100
-        * urban_results.nonzero_urban_2060
+        * urban_results.nonzero_urban_2060_acres
         / unit.rasterized_acres,
-        "noturban_2100_acres": urban_results.noturban_2100,
+        "percent_increase_by_2060": 100
+        * (urban_results.urban_proj_2060_acres - urban_results.urban_2021_acres)
+        / urban_results.urban_2021_acres
+        if urban_results.urban_2021_acres > 0
+        else 0,
+        "noturban_2100_acres": urban_results.noturban_2100_acres,
         "noturban_2100_percent": 100
-        * urban_results.noturban_2100
+        * urban_results.noturban_2100_acres
         / unit.rasterized_acres,
     }
