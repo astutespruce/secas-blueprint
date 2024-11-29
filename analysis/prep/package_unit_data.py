@@ -160,7 +160,7 @@ for year in NLCD_YEARS:
 nlcd_results = nlcd_results[[str(year) for year in NLCD_YEARS]]
 
 # UI is limited to 2030 - 2060
-cols = ["id"] + [f"urban_proj_{year}" for year in URBAN_YEARS[:4]]
+cols = ["id"] + [f"urban_proj_{year}_acres" for year in URBAN_YEARS[:4]]
 urban_results = pd.read_feather(results_dir / "urban.feather", columns=cols).set_index(
     "id"
 )
