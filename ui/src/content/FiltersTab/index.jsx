@@ -22,7 +22,7 @@ const FiltersTab = () => {
   const { filters, setFilters, visibleSubregions } = useMapData()
 
   // nest indicators under ecosystems
-  const { priorities, threats, ecosystems } = useMemo(
+  const { priorities, otherInfo, ecosystems } = useMemo(
     () => {
       const indicators = indexBy(rawIndicators, 'id')
 
@@ -47,7 +47,17 @@ const FiltersTab = () => {
               'The Blueprint uses a least-cost path connectivity analysis to identify corridors that link hubs across the shortest distance possible, while also routing through as much Blueprint priority as possible.',
           },
         ],
-        threats: [
+        ecosystems: rawEcosystems.map(
+          ({ indicators: ecosystemIndicators, ...ecosystem }) => ({
+            ...ecosystem,
+            indicators: ecosystemIndicators.map((id) => ({
+              ...indicators[id],
+              // sort indicator values in descending order
+              values: indicators[id].values.slice().reverse(),
+            })),
+          })
+        ),
+        otherInfo: [
           {
             id: 'urban',
             label: 'Probability of urbanization by 2060',
@@ -71,16 +81,6 @@ const FiltersTab = () => {
               'Sea level rise estimates derived from the NOAA sea-level rise inundation data.',
           },
         ],
-        ecosystems: rawEcosystems.map(
-          ({ indicators: ecosystemIndicators, ...ecosystem }) => ({
-            ...ecosystem,
-            indicators: ecosystemIndicators.map((id) => ({
-              ...indicators[id],
-              // sort indicator values in descending order
-              values: indicators[id].values.slice().reverse(),
-            })),
-          })
-        ),
       }
     },
 
@@ -136,21 +136,7 @@ const FiltersTab = () => {
           filters={filters}
           onChange={setFilters}
         />
-        <FilterGroup
-          id="threats"
-          label="Filter by threats"
-          color="#f3c6a830"
-          borderColor="#f3c6a891"
-          entries={threats.map((threat) => ({
-            ...threat,
-            canBeVisible:
-              [...visibleSubregions].filter(
-                (name) => !subregionsIndex[name].marine
-              ).length > 0,
-          }))}
-          filters={filters}
-          onChange={setFilters}
-        />
+
         {ecosystems.map((ecosystem) => (
           <FilterGroup
             key={ecosystem.id}
@@ -168,6 +154,22 @@ const FiltersTab = () => {
             onChange={setFilters}
           />
         ))}
+
+        <FilterGroup
+          id="otherInfo"
+          label="More filters"
+          color="#f3c6a830"
+          borderColor="#f3c6a891"
+          entries={otherInfo.map((entry) => ({
+            ...entry,
+            canBeVisible:
+              [...visibleSubregions].filter(
+                (name) => !subregionsIndex[name].marine
+              ).length > 0,
+          }))}
+          filters={filters}
+          onChange={setFilters}
+        />
       </Flex>
     </>
   )

@@ -364,7 +364,7 @@ const coreLayers = [
   },
 ]
 
-const threatLayers = [
+const otherInfoLayers = [
   {
     id: 'urban',
     label: 'Probability of urbanization by 2060',
@@ -390,18 +390,13 @@ const threatLayers = [
   },
 ]
 
-const layers = coreLayers.concat(threatLayers)
+const layers = coreLayers.concat(otherInfoLayers)
 
 export const renderLayerGroups = [
   {
     id: 'core',
     label: 'Priorities',
     layers: coreLayers,
-  },
-  {
-    id: 'threats',
-    label: 'Threats',
-    layers: threatLayers,
   },
 ]
 
@@ -427,5 +422,11 @@ ecosystems.forEach(
     layers.push(...group.layers)
   }
 )
+
+renderLayerGroups.push({
+  id: 'otherInfo',
+  label: 'More information',
+  layers: otherInfoLayers,
+})
 
 export const renderLayersIndex = indexBy(layers, 'id')

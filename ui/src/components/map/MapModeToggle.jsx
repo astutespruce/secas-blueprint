@@ -101,7 +101,7 @@ const MapModeToggle = ({ belowMinZoom, isMobile }) => {
             onClick={handlePixelClick}
           >
             <Tooltip
-              content="Show values at a specific point for the Blueprint, indicators, threats, and more"
+              content="Show values at a specific point for the Blueprint, indicators, and other contextual information"
               direction="bottom"
               maxWidth="240px"
               fontSize={0}

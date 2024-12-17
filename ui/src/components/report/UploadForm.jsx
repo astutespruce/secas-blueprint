@@ -214,9 +214,9 @@ const UploadForm = ({ onFileChange, onCreateReport }) => {
             <Paragraph>
               Upload a zipped shapefile or ESRI File Geodatabase Feature Class
               containing your area of interest to generate a detailed PDF report
-              of the Blueprint, underlying indicators, and landscape-level
-              threats for your area of interest. It includes a map and summary
-              table for every indicator present in the area, as well as
+              of the Blueprint, underlying indicators, and other contextual
+              information for your area of interest. It includes a map and
+              summary table for every indicator present in the area, as well as
               additional information about urbanization and sea-level rise.
               <br />
               <br />
@@ -242,7 +242,9 @@ const UploadForm = ({ onFileChange, onCreateReport }) => {
               people with disabilities. In the meantime, to request an
               accessible PDF or other assistance, please contact Hilary Morris
               at{' '}
-              <a href="mailto:hilary_morris@fws.gov">hilary_morris@fws.gov</a>.
+              <a href="mailto:hilary_morris@fws.gov">
+                hilary_morris@fws.gov
+              </a>.
               <br />
               <br />
               You can help us improve the Blueprint and this report by helping
