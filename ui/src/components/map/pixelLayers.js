@@ -392,7 +392,8 @@ const otherInfoLayers = [
   {
     id: 'wildfireRisk',
     label: 'Wildfire likelihood',
-    colors: wildfireRisk.map(({ color }) => color).reverse(),
+    colors: wildfireRisk.map(({ color }) => color),
+    // sort in descending order
     categories: wildfireRisk.filter(({ color }) => color !== null).reverse(),
     layer: pixelLayerIndex.wildfireRisk,
   },
