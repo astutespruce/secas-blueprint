@@ -35,6 +35,7 @@ from analysis.constants import (
     NLCD_INDEXES,
     NLCD_YEARS,
     URBAN_YEARS,
+    WILDFIRE_RISK,
 )
 from analysis.lib.attribute_encoding import (
     encode_values,
@@ -134,11 +135,11 @@ slr_results = (
 depth_cols = [f"depth_{d}" for d in SLR_DEPTH_BINS]
 
 slr_depth = delta_encode_values(
-    slr_results[depth_cols], huc12.rasterized_acres.loc[slr_results.index], 1000
+    slr_results[depth_cols], slr_results.rasterized_acres, 1000
 ).rename("slr_depth")
 
 slr_nodata = encode_values(
-    slr_results[SLR_NODATA_COLS], huc12.rasterized_acres.loc[slr_results.index], 1000
+    slr_results[SLR_NODATA_COLS], slr_results.rasterized_acres, 1000
 ).rename("slr_nodata")
 
 slr = pd.DataFrame(slr_depth).join(slr_nodata)
@@ -166,10 +167,26 @@ urban_results = pd.read_feather(results_dir / "urban.feather", columns=cols).set
 )
 
 urban_results = nlcd_results.join(urban_results).fillna(0)
+cols = urban_results.columns
+urban_results = urban_results.join(huc12.rasterized_acres)
 
 urban = delta_encode_values(
-    urban_results, huc12.rasterized_acres.loc[urban_results.index], 1000
+    urban_results[cols], urban_results.rasterized_acres, 1000
 ).rename("urban")
+
+
+### Wildfire risk
+print("Encoding wildfire risk")
+cols = [f"wildfire_risk_{e['value']}" for e in WILDFIRE_RISK]
+wildfire_risk_results = (
+    pd.read_feather(results_dir / "wildfire_risk.feather", columns=["id"] + cols)
+    .set_index("id")
+    .join(huc12.rasterized_acres)
+)
+wildfire_risk = encode_values(
+    wildfire_risk_results[cols], wildfire_risk_results.rasterized_acres, 1000
+).rename("wildfire_risk")
+
 
 ### Ownership / protection
 # Dictionary encode ownership and protection
@@ -200,6 +217,7 @@ huc12 = (
     .join(blueprint, how="left")
     .join(slr, how="left")
     .join(urban, how="left")
+    .join(wildfire_risk, how="left")
     .join(ownership, how="left")
     .join(protection, how="left")
 )

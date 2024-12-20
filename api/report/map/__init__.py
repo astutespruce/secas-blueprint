@@ -19,6 +19,7 @@ from analysis.constants import (
     URBAN_COLORS,
     SLR_LEGEND,
     INDICATORS_INDEX,
+    WILDFIRE_RISK_COLORS,
 )
 from api.settings import MAP_RENDER_THREADS
 
@@ -33,6 +34,7 @@ blueprint_filename = src_dir / "blueprint.tif"
 corridors_filename = src_dir / "corridors.tif"
 urban_filename = src_dir / "threats/urban/urban_2060_binned.tif"
 slr_filename = src_dir / "threats/slr/slr.tif"
+wildfire_risk_filename = src_dir / "threats/wildfire_risk/wildfire_risk.tif"
 indicators_dir = src_dir / "indicators"
 
 
@@ -76,6 +78,7 @@ async def render_raster_maps(
     corridors=False,
     urban=False,
     slr=False,
+    wildfire_risk=False,
 ):
     """Asynchronously render Raster maps.
 
@@ -94,6 +97,8 @@ async def render_raster_maps(
         if True, will render urban map
     slr : bool (default False)
         if True, will render SLR map
+    wildfire_risk : bool (default False)
+        if True, will render wildfire_risk map
 
     Returns
     -------
@@ -138,6 +143,10 @@ async def render_raster_maps(
         colors = {e["value"]: e["color"] for i, e in enumerate(SLR_LEGEND)}
         task_args.append(("slr", slr_filename, colors))
 
+    if wildfire_risk:
+        colors = WILDFIRE_RISK_COLORS
+        task_args.append(("wildfire_risk", wildfire_risk_filename, colors))
+
     # NOTE: have to have handle on pending or task loop gets closed too soon
     completed, pending = await asyncio.wait(
         [
@@ -163,6 +172,7 @@ async def render_maps(
     corridors=False,
     urban=False,
     slr=False,
+    wildfire_risk=False,
     ownership=False,
     protection=False,
     add_mask=False,
@@ -186,6 +196,8 @@ async def render_maps(
         If True, urban will be rendered.
     slr : bool, optional (default: False)
         If True, sea level rise will be rendered.
+    wildfire_risk : bool, optional (default: False)
+        If True, wildfire risk will be rendered.
     ownership : bool, optional (default: False)
         If True, ownership will be rendered.
     protection : bool, optional (default: False)
@@ -270,6 +282,7 @@ async def render_maps(
         corridors,
         urban,
         slr,
+        wildfire_risk,
     )
 
     maps.update(raster_maps)

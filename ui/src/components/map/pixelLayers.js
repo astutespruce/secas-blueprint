@@ -303,21 +303,19 @@ export const pixelLayers = [
     url: `${tileHost}/services/se_pixel_layers_8/tiles/{z}/{x}/{y}.png`,
     bounds: [-98.06131, 23.8289, -74.46062, 40.3564],
     encoding: [
+      { id: 'wildfire_risk', offset: 0, bits: 3, valueShift: 1 },
+      { id: 'ownership', offset: 3, bits: 4, valueShift: 0 },
+      { id: 'protection', offset: 7, bits: 3, valueShift: 0 },
       {
         id: 'f_gulfmigratoryfishconnectivity',
-        offset: 0,
+        offset: 10,
         bits: 2,
         valueShift: 1,
       },
-      {
-        id: 'm_estuarinecoastalcondition',
-        offset: 2,
-        bits: 3,
-        valueShift: 1,
-      },
+      { id: 'm_estuarinecoastalcondition', offset: 12, bits: 3, valueShift: 1 },
       {
         id: 't_eastcoastalplainopenpinebirds',
-        offset: 5,
+        offset: 15,
         bits: 3,
         valueShift: 1,
       },

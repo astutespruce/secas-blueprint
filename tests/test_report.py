@@ -79,7 +79,8 @@ aois = [
     # {"name": "test", "path": "TestRect"},
     # {"name": "test", "path": "test_base_flm"},
     # {"name": "SLR test area", "path": "fl_slr_test"},
-    # {"name": "Test", "path": "030902030700"}
+    # {"name": "Test Watershed", "path": "030203020102"}
+    # {"name": "Dry Tortugas", "path": "030902030700"},
     # {"name": "Yazoo Watershed, MS", "path": "YazooUse"},
     # {"name": "Weyerhaeuser (Andrews)", "path": "Weyerhaeuser_Andrews"},
     # {"name": "Greenway Priority 123 Merge", "path": "Greenway_priority123_Merge_Diss"},
@@ -118,10 +119,10 @@ aois = [
     # {"name": "Quincy, FL area", "path": "Quincy"},
     # {"name": "Doyle Springs, TN area", "path": "DoyleSprings"},
     # {"name": "Cave Spring, VA area", "path": "CaveSpring"},
-    {"name": "South Atlantic Offshore", "path": "SAOffshore"},
+    # {"name": "South Atlantic Offshore", "path": "SAOffshore"},
     # {"name": "Florida Offshore", "path": "FLOffshore"},
     # {"name": "Razor", "path": "Razor"},
-    # {"name":"Single Test Area", "path": "SingleTest"}
+    # {"name": "Single Test Area", "path": "SingleTest"},
 ]
 
 for aoi in aois:
@@ -186,6 +187,7 @@ for aoi in aois:
             corridors="corridors" in results,
             urban="urban" in results,
             slr="slr" in results,
+            wildfire_risk="wildfire_risk" in results,
             ownership="ownership" in results,
             protection="protection" in results,
             add_mask=results["acres"] >= 1e9,
@@ -213,13 +215,14 @@ for aoi in aois:
 ## Create reports for summary units
 ids = {
     "huc12": [
+        # "030203020102",
         # "030502100102",  # duplicate PARCA bug
         # "020403030502",
         # "051402060702",
         #     #     # "050500030804"  # in WV
-        #     #     # "030902030700"  # in base blueprint but missing SLR (Dry Tortugas)
+        # "030902030700"  # in base blueprint but missing SLR (Dry Tortugas)
         #     #     # "031002010205",  # in base blueprint but with SLR present
-        #     #     #     #     #     # "210100070101",  # in Caribbean
+        # "210100070101",  # in Caribbean
         #     #     # "031101020903",  # Florida with inland marine indicators
         #     #     #     #     #     # "031102050805",  # Florida gulf coast
         #     #     # "030902061101"  # area with SLR not modeled
@@ -263,6 +266,7 @@ for unit_type in ids:
                 corridors="corridors" in results,
                 urban="urban" in results,
                 slr="slr" in results,
+                wildfire_risk="wildfire_risk" in results,
                 ownership="ownership" in results,
                 protection="protection" in results,
             )

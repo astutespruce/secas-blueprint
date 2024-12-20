@@ -142,6 +142,16 @@ NLCD_INDEXES = {i: e for i, e in enumerate(NLCD_CODES.values())}
 NLCD_COLORS = landcover_colormap = {k: v["color"] for k, v in NLCD_INDEXES.items()}
 NLCD_LEGEND = list(NLCD_CODES.values())
 
+# cutoff points for None, Low, Low-moderate, Moderate, Moderate-high, High (used value >1 to ensure works properly)
+WILDFIRE_RISK_BINS = [0, 0.0001, 0.0004642, 0.0046416, 0.0215443, 2]
+
+WILDFIRE_RISK = json.loads(open(json_dir / "wildfire_risk.json").read())
+WILDFIRE_RISK_COLORS = {
+    entry["value"]: entry["color"]
+    for entry in WILDFIRE_RISK
+    if entry.get("color", None) is not None
+}
+
 # NO LONGER USED
 # in miles
 # LTA_SEARCH_RADIUS_BINS = [

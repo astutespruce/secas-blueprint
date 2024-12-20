@@ -1,0 +1,38 @@
+[
+  {
+    "value": 0,
+    "label": "None",
+    "description": "0 probability",
+    "color": null
+  },
+  {
+    "value": 1,
+    "label": "Low",
+    "description": "≤0.0001 probability",
+    "color": "#fff0cf"
+  },
+  {
+    "value": 2,
+    "label": "Low-moderate",
+    "description": ">0.0001-0.0004642 probability",
+    "color": "#fdca94"
+  },
+  {
+    "value": 3,
+    "label": "Moderate",
+    "description": ">0.0004642-0.0046416 probability",
+    "color": "#f26d4b"
+  },
+  {
+    "value": 4,
+    "label": "Moderate-high",
+    "description": ">0.0046416-0.0215443",
+    "color": "#c91d13"
+  },
+  {
+    "value": 5,
+    "label": "High",
+    "description": ">0.0215443",
+    "color": "#7f0000"
+  }
+]

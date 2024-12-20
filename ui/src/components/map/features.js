@@ -168,6 +168,7 @@ export const unpackFeatureData = (
     'slrDepth',
     'slrNodata',
     'urban',
+    'wildfireRisk',
   ]
   scaledColumns.forEach((c) => {
     values[c] = values[c] ? applyFactor(values[c], 0.1) : []

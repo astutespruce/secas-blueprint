@@ -9,11 +9,13 @@ import Ownership from './Ownership'
 import Protection from './Protection'
 import SLR from './SLR'
 import Urban from './Urban'
+import WildfireRisk from './WildfireRisk'
 
 const MoreInfoTab = ({
   type,
   slr,
   urban,
+  wildfireRisk,
   subregions,
   ownership,
   protection,
@@ -31,7 +33,7 @@ const MoreInfoTab = ({
           fontSize: 1,
         }}
       >
-        No information on threats is available for marine units.
+        No additional information is available for marine units.
       </Paragraph>
     )
   }
@@ -52,6 +54,19 @@ const MoreInfoTab = ({
           <Heading as="h3">Sea Level Rise</Heading>
         </Flex>
         <SLR type={type} {...slr} />
+      </Box>
+
+      <Divider variant="styles.hr.light" sx={{ my: '3rem' }} />
+
+      <Box as="section">
+        <Flex sx={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
+          <Heading as="h3">Wildfire Likelihood</Heading>
+        </Flex>
+        <WildfireRisk
+          type={type}
+          wildfireRisk={wildfireRisk}
+          subregions={subregions}
+        />
       </Box>
 
       <Divider variant="styles.hr.light" sx={{ my: '3rem' }} />
@@ -94,14 +109,14 @@ const MoreInfoTab = ({
         than the actual ground area.
       </Text>
 
-      {ltaSearch && ltaSearch.length ? (
+      {/* Not currently used */}
+      {/* {ltaSearch && ltaSearch.length ? (
         <>
           <Divider variant="styles.hr.light" sx={{ my: '3rem' }} />
 
           <Box as="section">
             <Heading as="h3">Nearby land trusts</Heading>
             <Paragraph sx={{ fontSize: 1 }}>
-              {/* NOTE: the search parameters are in y,x order */}
               <OutboundLink
                 to={`https://landtrustalliance.org/land-trusts/explore?nearby=false&location=${
                   ltaSearch[1]
@@ -114,7 +129,7 @@ const MoreInfoTab = ({
             </Paragraph>
           </Box>
         </>
-      ) : null}
+      ) : null} */}
 
       <NeedHelp />
     </Box>
@@ -137,6 +152,10 @@ MoreInfoTab.propTypes = {
     PropTypes.arrayOf(PropTypes.number),
     PropTypes.number,
   ]),
+  wildfireRisk: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.number),
+    PropTypes.number,
+  ]),
   subregions: PropTypes.object,
   ownership: PropTypes.objectOf(PropTypes.number),
   protection: PropTypes.objectOf(PropTypes.number),
@@ -152,6 +171,7 @@ MoreInfoTab.propTypes = {
 MoreInfoTab.defaultProps = {
   slr: null,
   urban: null,
+  wildfireRisk: null,
   subregions: null,
   ownership: null,
   protection: null,

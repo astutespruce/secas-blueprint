@@ -13,6 +13,7 @@ from analysis.lib.stats.ownership import summarize_ownership_by_units
 from analysis.lib.stats.parca import summarize_parcas_by_units
 from analysis.lib.stats.slr import summarize_slr_by_units_grid
 from analysis.lib.stats.urban import summarize_urban_by_units_grid
+from analysis.lib.stats.wildfire_risk import summarize_wildfire_risk_by_units_grid
 
 data_dir = Path("data")
 bnd_dir = data_dir / "boundaries"
@@ -56,7 +57,7 @@ with rasterio.open(huc12_raster_filename) as units_dataset:
     # SLR is available for inland continental and Caribbean
     summarize_slr_by_units_grid(units_df, units_grid, out_dir)
 
-    # NLCD and urbanization are only available in inland continental part of
+    # NLCD, urbanization, and wildfire risk are only available in inland continental part of
     # Blueprint, not Caribbean
     tree = shapely.STRtree(units_df.geometry.values)
     ix = ~units_df.index.isin(
@@ -75,6 +76,9 @@ with rasterio.open(huc12_raster_filename) as units_dataset:
 
     # Summarize current / projected urbanization
     summarize_urban_by_units_grid(units_df.loc[ix], units_grid, out_dir)
+
+    # Summarize wildfire risk
+    summarize_wildfire_risk_by_units_grid(units_df.loc[ix], units_grid, out_dir)
 
 
 print(f"Processed {len(units_df):,} zones in {(time() - start) / 60.0:.2f}m")

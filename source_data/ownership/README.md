@@ -30,3 +30,10 @@ sqlite3 source_data/ownership/pad_us4.0.gpkg 'create index state_idx on PADUS4_0
 ## Data processing
 
 Processed using `analysis/prep/prepare_ownership.py.
+
+Data for Wildlife Management Areas in Oklahoma are missing from PAD-US 4.0. These are extracted from PAD-US 3.0 and
+merged in.
+
+Data on ownership and protection are rasterized to match the Blueprint. The data are sorted into the same order as the
+[PAD-US 4.0 dataset for statistical summary](https://www.sciencebase.gov/catalog/item/652d4ebbd34e44db0e2ee458) prior to
+rasterizing them.

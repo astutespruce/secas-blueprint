@@ -19,19 +19,30 @@ from analysis.constants import (
     SLR_DEPTH_BINS,
     SLR_NODATA_VALUES,
     DATA_CRS,
+    WILDFIRE_RISK,
+    OWNERSHIP,
+    PROTECTION,
 )
 from analysis.lib.raster import write_raster, shift_window, clip_window
 
-data_dir = Path("data/inputs")
-indicators_dir = data_dir / "indicators"
+data_dir = Path("data")
+inputs_dir = data_dir / "inputs"
+indicators_dir = inputs_dir / "indicators"
 out_dir = Path("data/for_tiles")
 
-bnd_filename = data_dir / "boundaries/se_boundary.feather"
-extent_filename = data_dir / "boundaries/blueprint_extent.tif"
-blueprint_filename = data_dir / "blueprint.tif"
-corridors_filename = data_dir / "corridors.tif"
-urban_filename = data_dir / "threats/urban/urban_2060_binned.tif"
-slr_filename = data_dir / "threats/slr/slr.tif"
+bnd_filename = inputs_dir / "boundaries/se_boundary.feather"
+extent_filename = inputs_dir / "boundaries/blueprint_extent.tif"
+blueprint_filename = inputs_dir / "blueprint.tif"
+corridors_filename = inputs_dir / "corridors.tif"
+urban_filename = inputs_dir / "threats/urban/urban_2060_binned.tif"
+slr_filename = inputs_dir / "threats/slr/slr.tif"
+wildfire_risk_filename = inputs_dir / "threats/wildfire_risk/wildfire_risk.tif"
+ownership_filename = data_dir / "boundaries/ownership.tif"
+protection_filename = data_dir / "boundaries/protection.tif"
+
+ownership_values = list(OWNERSHIP.values())
+protection_values = list(PROTECTION.values())
+
 
 # very small amount added to numbers to make sure that log2 gives us current number of bytes
 EPS = 1e-6
@@ -73,18 +84,39 @@ core = pd.DataFrame(
             "max_value": CORRIDORS[-1]["value"],
         },
         {
-            "ecosystem": "threat",
+            "ecosystem": "otherInfo",
             "id": "urban",
             "filename": urban_filename,
             "min_value": URBAN[0]["value"],
             "max_value": URBAN[-1]["value"],
         },
         {
-            "ecosystem": "threat",
+            "ecosystem": "otherInfo",
             "id": "slr",
             "filename": slr_filename,
             "min_value": SLR_DEPTH_BINS[0],
             "max_value": SLR_NODATA_VALUES[-1]["value"],
+        },
+        {
+            "ecosystem": "otherInfo",
+            "id": "wildfire_risk",
+            "filename": wildfire_risk_filename,
+            "min_value": WILDFIRE_RISK[0]["value"],
+            "max_value": WILDFIRE_RISK[-1]["value"],
+        },
+        {
+            "ecosystem": "otherInfo",
+            "id": "ownership",
+            "filename": ownership_filename,
+            "min_value": ownership_values[0]["code"],
+            "max_value": ownership_values[-1]["code"],
+        },
+        {
+            "ecosystem": "otherInfo",
+            "id": "protection",
+            "filename": protection_filename,
+            "min_value": protection_values[0]["code"],
+            "max_value": protection_values[-1]["code"],
         },
     ]
 )
