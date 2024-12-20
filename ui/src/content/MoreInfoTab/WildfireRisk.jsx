@@ -41,8 +41,6 @@ const WildfireRisk = ({ type, wildfireRisk, subregions }) => {
         <Flex sx={{ justifyContent: 'space-between' }}>
           <Text sx={{ color: 'grey.8' }}>Wildfire likelihood:</Text>
         </Flex>
-        TODO:
-        {/* <UrbanCategories categories={urbanCategories} value={urban} /> */}
         <Box sx={{ ml: '0.5rem', mt: '0.5rem' }}>
           {wildfireRiskCategories.map(({ value, label }) => (
             <Flex

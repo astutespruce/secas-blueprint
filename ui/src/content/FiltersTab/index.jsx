@@ -11,6 +11,9 @@ import {
   urban,
   slrDepth,
   slrNodata,
+  wildfireRisk,
+  ownership,
+  protection,
 } from 'config'
 import { useMapData } from 'components/data'
 import { indexBy, sortByFunc, setIntersection } from 'util/data'
@@ -79,6 +82,33 @@ const FiltersTab = () => {
               .concat(slrNodata),
             description:
               'Sea level rise estimates derived from the NOAA sea-level rise inundation data.',
+          },
+          {
+            id: 'wildfireRisk',
+            label: 'Wildfire likelihood',
+            values: wildfireRisk,
+            description:
+              'Wildfire likelihood data derived from the Wildfire Risk to Communities project by the USDA Forest Service.',
+          },
+          {
+            id: 'ownership',
+            label: 'Conserved lands ownership',
+            values: ownership.map(({ code, ...rest }) => ({
+              ...rest,
+              value: code,
+            })),
+            description:
+              'Ownership information is derived from the Protected Areas Database of the United States (PAD-US v4.0 and v3.0).  Note: protected areas are sorted in priority order and only the highest priority is visible for a given pixel when there are overlapping ownership categories.',
+          },
+          {
+            id: 'protection',
+            label: 'Protection status',
+            values: protection.map(({ code, ...rest }) => ({
+              ...rest,
+              value: code,
+            })),
+            description:
+              'Protection status information is derived from the Protected Areas Database of the United States (PAD-US v4.0 and v3.0).  Note: protected areas are sorted in priority order and only the highest priority is visible for a given pixel when there are overlapping protection status categories.',
           },
         ],
       }

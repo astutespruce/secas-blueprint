@@ -99,7 +99,7 @@ core = pd.DataFrame(
         },
         {
             "ecosystem": "otherInfo",
-            "id": "wildfire_risk",
+            "id": "wildfireRisk",
             "filename": wildfire_risk_filename,
             "min_value": WILDFIRE_RISK[0]["value"],
             "max_value": WILDFIRE_RISK[-1]["value"],

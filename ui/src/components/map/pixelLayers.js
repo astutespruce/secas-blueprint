@@ -7,6 +7,9 @@ import {
   urban,
   slrDepth,
   slrNodata,
+  wildfireRisk,
+  ownership,
+  protection,
 } from 'config'
 import { indexBy, sortByFunc } from 'util/data'
 
@@ -303,7 +306,7 @@ export const pixelLayers = [
     url: `${tileHost}/services/se_pixel_layers_8/tiles/{z}/{x}/{y}.png`,
     bounds: [-98.06131, 23.8289, -74.46062, 40.3564],
     encoding: [
-      { id: 'wildfire_risk', offset: 0, bits: 3, valueShift: 1 },
+      { id: 'wildfireRisk', offset: 0, bits: 3, valueShift: 1 },
       { id: 'ownership', offset: 3, bits: 4, valueShift: 0 },
       { id: 'protection', offset: 7, bits: 3, valueShift: 0 },
       {
@@ -385,6 +388,31 @@ const otherInfoLayers = [
         outlineColor: 'grey.5',
       })),
     layer: pixelLayerIndex.slr,
+  },
+  {
+    id: 'wildfireRisk',
+    label: 'Wildfire likelihood',
+    colors: wildfireRisk.map(({ color }) => color).reverse(),
+    categories: wildfireRisk.filter(({ color }) => color !== null).reverse(),
+    layer: pixelLayerIndex.wildfireRisk,
+  },
+  {
+    id: 'ownership',
+    label: 'Conserved lands ownership',
+    colors: ownership.map(({ color }) => color),
+    categories: ownership
+      .filter(({ color }) => color !== null)
+      .map(({ code, ...rest }) => ({ ...rest, value: code })),
+    layer: pixelLayerIndex.ownership,
+  },
+  {
+    id: 'protection',
+    label: 'Protection status',
+    colors: protection.map(({ color }) => color),
+    categories: protection
+      .filter(({ color }) => color !== null)
+      .map(({ code, ...rest }) => ({ ...rest, value: code })),
+    layer: pixelLayerIndex.protection,
   },
 ]
 
