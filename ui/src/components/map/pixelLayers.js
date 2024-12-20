@@ -304,7 +304,7 @@ export const pixelLayers = [
     ...pixelLayerSourceConfig,
     id: 'pixels8',
     url: `${tileHost}/services/se_pixel_layers_8/tiles/{z}/{x}/{y}.png`,
-    bounds: [-98.06131, 23.8289, -74.46062, 40.3564],
+    bounds: [-108.0227, 16.98923, -57.08541, 41.58111],
     encoding: [
       { id: 'wildfireRisk', offset: 0, bits: 3, valueShift: 1 },
       { id: 'ownership', offset: 3, bits: 4, valueShift: 0 },
