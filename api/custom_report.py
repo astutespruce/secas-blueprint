@@ -97,13 +97,15 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
         )
 
     # make sure that the polygons are big enough to be useful
-    pct_too_small = (
-        100 * (area < (STANDARD_RESOLUTION * STANDARD_RESOLUTION)).sum() / len(df)
-    )
-    if pct_too_small >= 10:
-        log.error("Upload data source contains too many small polygons")
+    too_small_ix = area < (STANDARD_RESOLUTION * STANDARD_RESOLUTION)
+    pct_too_small = 100 * area[too_small_ix].sum() / area.sum()
+
+    if pct_too_small >= 50:
+        log.error(
+            f"Upload data source has {pct_too_small}% of the total area in polygons less than a single 30x30m pixel"
+        )
         raise DataError(
-            f"{pct_too_small:.0f}% of the polygons in the data source are less than a single 30x30m pixel; these will not provide useful results.  Please filter these out of your dataset and try again."
+            f"{pct_too_small:.0f}% of the total area in the data source is in polygons less than a single 30x30m pixel; these will not provide useful results.  Please filter these out of your dataset and try again."
         )
 
     df["geometry"] = shapely.make_valid(df.geometry.values)
