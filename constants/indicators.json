@@ -2189,7 +2189,7 @@
   {
     "id": "t_equitableaccesstopotentialparks",
     "filename": "EquitableAccessToPotentialParks.tif",
-    "label": "Equitable access to potential parks",
+    "label": "Potential access to parks",
     "description": "This cultural resource indicator prioritizes places to create new parks that would fill gaps in equitable access to open space within socially vulnerable communities in urban areas. It identifies areas where residents currently lack access to parks within a 10-minute walk (accounting for walkable road networks and access barriers like highways and fences), then prioritizes based on park need using demographic and environmental metrics. Parks help improve public health, foster a conservation ethic by providing opportunities for people to connect with nature, and support critical ecosystem services. This indicator originates from the Trust for Public Land's ParkServe park priority areas and the Center for Disease Control's Social Vulnerability Index.",
     "values": [
       {
@@ -2214,7 +2214,7 @@
       }
     ],
     "valueLabel": "Priority for a new park that would create nearby equitable access",
-    "captionLabel": "equitable access to potential parks",
+    "captionLabel": "potential access to parks",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::equitable-access-to-potential-parks-southeast-blueprint-indicator-2023/about",
     "subregions": [
