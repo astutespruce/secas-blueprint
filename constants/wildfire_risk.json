@@ -1,38 +1,57 @@
 [
   {
     "value": 0,
-    "label": "None",
-    "description": "0 probability",
+    "label": "Not predicted to experience wildfire (0% probability)",
     "color": null
   },
   {
     "value": 1,
-    "label": "Low",
-    "description": "≤0.0001 probability",
-    "color": "#fff0cf"
+    "label": "Low (>0 - 0.01% probability)",
+    "color": "#FFFFBE"
   },
   {
     "value": 2,
-    "label": "Low-moderate",
-    "description": ">0.0001-0.0004642 probability",
-    "color": "#fdca94"
+    "label": "Low-moderate (>0.01 - 0.02154% probability)",
+    "color": "#FED976"
   },
   {
     "value": 3,
-    "label": "Moderate",
-    "description": ">0.0004642-0.0046416 probability",
-    "color": "#f26d4b"
+    "label": "Low-moderate (>0.02154 - 0.04642% probability)",
+    "color": "#FED976"
   },
   {
     "value": 4,
-    "label": "Moderate-high",
-    "description": ">0.0046416-0.0215443",
-    "color": "#c91d13"
+    "label": "Moderate (>0.04642 - 0.1% probability)",
+    "color": "#FD8D3C"
   },
   {
     "value": 5,
-    "label": "High",
-    "description": ">0.0215443",
-    "color": "#7f0000"
+    "label": "Moderate (>0.1 - 0.21544% probability)",
+    "color": "#FD8D3C"
+  },
+  {
+    "value": 6,
+    "label": "Moderate (>0.21544 - 0.46416% probability)",
+    "color": "#FD8D3C"
+  },
+  {
+    "value": 7,
+    "label": "Moderate-high (>0.46416 - 1% probability)",
+    "color": "#E31A1C"
+  },
+  {
+    "value": 8,
+    "label": "Moderate-high (>1 - 2.15443% probability)",
+    "color": "#E31A1C"
+  },
+  {
+    "value": 9,
+    "label": "High (>2.15443 - 4.64159% probability)",
+    "color": "#800026"
+  },
+  {
+    "value": 10,
+    "label": "High (>4.64159% probability)",
+    "color": "#800026"
   }
 ]

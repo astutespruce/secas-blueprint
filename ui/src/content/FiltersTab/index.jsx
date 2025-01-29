@@ -85,7 +85,7 @@ const FiltersTab = () => {
           },
           {
             id: 'wildfireRisk',
-            label: 'Wildfire likelihood',
+            label: 'Wildfire likelihood (annual burn probability)',
             values: wildfireRisk,
             description:
               'Wildfire likelihood data derived from the Wildfire Risk to Communities project by the USDA Forest Service.',

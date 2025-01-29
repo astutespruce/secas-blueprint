@@ -2,18 +2,20 @@
     <h3 id="WildfireRisk">Wildfire Likelihood</h3>
 
     <p>
-        Wildfire likelihood is based on fire behavior modeling across thousands
-        of simulations of possible fire seasons. In each simulation, factors
-        contributing to the probability of a fire occurring, including weather,
-        topography, and ignitions are varied based on patterns derived from
-        observations in recent decades. Wildfire likelihood is not predictive
-        and does not reflect any currently forecasted weather or fire danger
-        conditions.
-        <br />
-        <br />
-        To explore additional wildfire risk information, please see the
-        <a href="https://wildfirerisk.org/">Wildfire Risk to Communities</a>
-        website.
+        Wildfire likelihood data originate from the Wildfire Risk to Communities
+        project developed by the U.S. Forest Service. This layer depicts the
+        probability of wildfire burning in a specific location in any given
+        year. Annual burn probabilities in the United States range from 0-14%,
+        but do not exceed 8% in the Southeast. Wildfire likelihood is based on
+        fire behavior modeling across thousands of simulations of possible fire
+        seasons. In each simulation, factors contributing to the probability of
+        a fire occurring (such as weather, topography, and ignitions) vary based
+        on patterns derived from observations in recent decades. Wildfire
+        likelihood is not predictive and does not reflect any forecasted future
+        weather or fire danger conditions. It also does not say anything about
+        the intensity of fire if it occurs. To explore additional wildfire risk
+        information, please see the <a href="https://wildfirerisk.org/">Wildfire
+        Risk to Communities</a> website.
     </p>
 
     {% if maps.wildfire_risk %}
@@ -33,7 +35,7 @@
             </div>
 
             <div class="legend">
-                <div class="legend-header">Wildfire likelihood</div>
+                <div class="legend-header">Wildfire likelihood (annual burn probability)</div>
                 {% for item in legends.wildfire_risk %}
                     <div class="legend-element flex align-center">
                         <div class="legend-patch" style="background: {{item.color}}"></div>
@@ -59,7 +61,7 @@
 <div class="no-break">
 
     <div class="caption">
-        Table {{table.counter}}: Extent of wildfire likelihood category {% if name %} within {{name}}{% else %} in this area{% endif %}.
+        Table {{table.counter}}: Area in each wildfire probability category{% if name %} within {{name}}{% else %} in this area{% endif %}.
         Values from the
         <a href="https://wildfirerisk.org/">Wildire Risk To Communities</a>
         project developed by the USDA Forest Service.
@@ -70,7 +72,7 @@
     <table class="centered">
         <thead>
             <tr>
-                <th class="label" scope="col">Likelihood</th>
+                <th class="label" scope="col">Wildfire likelihood (annual burn probability)</th>
                 <th class="acres" scope="col">Acres</th>
                 <th class="percent" scope="col">Percent of Area</th>
             </tr>

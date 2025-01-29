@@ -56,6 +56,7 @@ for state in states.NAME.values:
         corridors="corridors" in results,
         urban="urban" in results,
         slr="slr" in results,
+        wildfire_risk="wildfire_risk" in results,
         ownership="ownership" in results,
         protection="protection" in results,
         add_mask=True,

@@ -142,8 +142,6 @@ NLCD_INDEXES = {i: e for i, e in enumerate(NLCD_CODES.values())}
 NLCD_COLORS = landcover_colormap = {k: v["color"] for k, v in NLCD_INDEXES.items()}
 NLCD_LEGEND = list(NLCD_CODES.values())
 
-# cutoff points for None, Low, Low-moderate, Moderate, Moderate-high, High (used value >1 to ensure works properly)
-WILDFIRE_RISK_BINS = [0, 0.0001, 0.0004642, 0.0046416, 0.0215443, 2]
 
 WILDFIRE_RISK = json.loads(open(json_dir / "wildfire_risk.json").read())
 WILDFIRE_RISK_COLORS = {
@@ -151,6 +149,36 @@ WILDFIRE_RISK_COLORS = {
     for entry in WILDFIRE_RISK
     if entry.get("color", None) is not None
 }
+# NOTE: we use a simplified legend for this instead of all detailed categories;
+# saved in descending probability order
+WILDFIRE_RISK_LEGEND = [
+    dict([key, value])
+    for key, value in
+    (
+        # this dict used to preserve original order and only keep unique label / colors
+        dict(
+            (("label", e["label"].split(" (")[0]), ("color", e["color"]))
+            for e in WILDFIRE_RISK
+        ).items()
+    )
+][::-1]
+
+# precise cutoff points for the categories listed in wildfire_risk.json
+# NOTE: the final value is >1 to ensure that bin extends well beyond observed max
+WILDFIRE_RISK_BINS = [
+    0,
+    0.0001,
+    0.0002154,
+    0.0004642,
+    0.001,
+    0.0021544,
+    0.0046416,
+    0.01,
+    0.0215443,
+    0.0464159,
+    2,
+]
+
 
 # NO LONGER USED
 # in miles

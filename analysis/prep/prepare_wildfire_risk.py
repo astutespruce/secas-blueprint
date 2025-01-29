@@ -97,16 +97,11 @@ with rasterio.open(vrt_filename) as src:
         dtype="float32",
     )
 
-    # TODO: read in smaller windows and bin by window, then mask
-    # data = vrt.read()[0]
     for window in Bar("Processing wildfire risk", max=len(windows)).iter(windows):
         data = vrt.read(window=window)[0]
         mask = bnd_raster.read(1, window=window)
 
         binned = np.digitize(data, bins=WILDFIRE_RISK_BINS, right=True).astype("uint8")
-        # FIXME: remove
-        # binned[(data == src.nodata)] = NODATA
-        # FIXME: enable
         binned[(data == src.nodata) | (mask == 0)] = NODATA
 
         out[window.toslices()] = binned

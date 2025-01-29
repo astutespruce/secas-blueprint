@@ -306,19 +306,24 @@ export const pixelLayers = [
     url: `${tileHost}/services/se_pixel_layers_8/tiles/{z}/{x}/{y}.png`,
     bounds: [-108.0227, 16.98923, -57.08541, 41.58111],
     encoding: [
-      { id: 'wildfireRisk', offset: 0, bits: 3, valueShift: 1 },
-      { id: 'ownership', offset: 3, bits: 4, valueShift: 0 },
-      { id: 'protection', offset: 7, bits: 3, valueShift: 0 },
+      { id: 'wildfireRisk', offset: 0, bits: 4, valueShift: 1 },
+      { id: 'ownership', offset: 4, bits: 4, valueShift: 0 },
+      { id: 'protection', offset: 8, bits: 3, valueShift: 0 },
       {
         id: 'f_gulfmigratoryfishconnectivity',
-        offset: 10,
+        offset: 11,
         bits: 2,
         valueShift: 1,
       },
-      { id: 'm_estuarinecoastalcondition', offset: 12, bits: 3, valueShift: 1 },
+      {
+        id: 'm_estuarinecoastalcondition',
+        offset: 13,
+        bits: 3,
+        valueShift: 1,
+      },
       {
         id: 't_eastcoastalplainopenpinebirds',
-        offset: 15,
+        offset: 16,
         bits: 3,
         valueShift: 1,
       },
@@ -365,12 +370,20 @@ const coreLayers = [
   },
 ]
 
+// FIXME:
+window.wildfireRisk = wildfireRisk
+
 const otherInfoLayers = [
   {
     id: 'urban',
     label: 'Probability of urbanization by 2060',
     colors: urban.map(({ color }) => color),
-    categories: urban.filter(({ color }) => color !== null),
+    categories: urban.map(({ color, ...rest }) => ({
+      ...rest,
+      color: color || '#FFFFFF',
+      outlineWidth: 1,
+      outlineColor: 'grey.5',
+    })),
     layer: pixelLayerIndex.urban,
   },
   {
@@ -391,10 +404,25 @@ const otherInfoLayers = [
   },
   {
     id: 'wildfireRisk',
-    label: 'Wildfire likelihood',
+    label: 'Wildfire likelihood (annual burn probability)',
     colors: wildfireRisk.map(({ color }) => color),
     // sort in descending order
-    categories: wildfireRisk.filter(({ color }) => color !== null).reverse(),
+    // NOTE: this uses a custom legend for simple label values, not the full
+    // set of categories
+    categories: Object.values(
+      Object.fromEntries(
+        wildfireRisk
+          .map(({ label, color, ...rest }) => ({
+            label: label.split(' (')[0],
+            color: color || '#FFFFFF',
+            outlineWidth: 1,
+            outlineColor: 'grey.5',
+            ...rest,
+          }))
+          .map((item) => [item.label, item])
+          .reverse()
+      )
+    ),
     layer: pixelLayerIndex.wildfireRisk,
   },
   {

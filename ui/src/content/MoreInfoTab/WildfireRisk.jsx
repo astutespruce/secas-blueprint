@@ -92,7 +92,7 @@ const WildfireRisk = ({ type, wildfireRisk, subregions }) => {
   return (
     <>
       <Text sx={{ color: 'grey.8' }}>
-        Extent of wildfire probability by category within this subwatershed:
+        Area in each wildfire probability category within this subwatershed:
       </Text>
       {bars.map((bar) => (
         <PercentBarChart

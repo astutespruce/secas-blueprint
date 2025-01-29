@@ -72,8 +72,8 @@ export const Provider = ({ children }) => {
 
     initFilters.wildfireRisk = {
       enabled: false,
-      // values 0-5
-      activeValues: Object.fromEntries(range(0, 6).map((v) => [v, true])),
+      // values 0-10
+      activeValues: Object.fromEntries(range(0, 11).map((v) => [v, true])),
     }
 
     initFilters.ownership = {
