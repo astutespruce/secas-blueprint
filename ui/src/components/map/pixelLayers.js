@@ -370,9 +370,6 @@ const coreLayers = [
   },
 ]
 
-// FIXME:
-window.wildfireRisk = wildfireRisk
-
 const otherInfoLayers = [
   {
     id: 'urban',
