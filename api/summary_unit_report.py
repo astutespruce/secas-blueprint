@@ -56,6 +56,7 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
         corridors="corridors" in results,
         urban="urban" in results,
         slr="slr" in results and results["slr"].get("na", False) is not True,
+        wildfire_risk="wildfire_risk" in results,
         ownership="ownership" in results,
         protection="protection" in results,
     )

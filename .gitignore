@@ -18,6 +18,8 @@
 /source_data/slr/*
 /source_data/urban/*
 /source_data/summary_units/*
+/source_data/wildfire_risk/*
+
 
 /data/*
 /examples/*

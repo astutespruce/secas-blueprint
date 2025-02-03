@@ -27,7 +27,7 @@ import { unpackFeatureData } from './features'
 import FindLocation from './FindLocation'
 import { extractPixelData, StackedPNGTileLayer } from './gl'
 import { mapConfig as config, sources, layers } from './mapConfig'
-import { pixelLayers } from './pixelLayers'
+import { pixelLayers, renderLayersIndex } from './pixelLayers'
 import { Legend } from './legend'
 import LayerToggle from './LayerToggle'
 import MapModeToggle from './MapModeToggle'
@@ -702,6 +702,9 @@ const Map = () => {
     belowMinZoom = currentZoom < minSummaryZoom
   }
 
+  const displayLayer =
+    mapMode === 'unit' ? renderLayersIndex.blueprint : renderLayer
+
   return (
     <Box
       sx={{
@@ -780,9 +783,9 @@ const Map = () => {
           {!isMobile ? (
             <>
               <Legend
-                title={renderLayer.label}
-                subtitle={renderLayer.valueLabel}
-                categories={renderLayer.categories}
+                title={displayLayer.label}
+                subtitle={displayLayer.valueLabel}
+                categories={displayLayer.categories}
                 isVisible={isRenderLayerVisible}
                 onToggleVisibility={handleToggleRenderLayerVisible}
               />

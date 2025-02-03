@@ -243,6 +243,9 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
         .replace(")", "")
         .replace("&", "and")
         .replace(" ", "")
+        # FIXME: remove for Blueprint 2025 (temporary alias to existing ID)
+        # IMPORTANT: this requires hand-editing ecosystems.json to be in correct order for new name
+        .replace("PotentialAccessToParks", "EquitableAccessToPotentialParks")
     )
 
     ecosystem_id = sheet_name.lower().split(" ")[-1][:1]

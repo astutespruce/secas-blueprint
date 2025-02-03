@@ -11,7 +11,7 @@ from analysis.lib.stats.parca import get_parcas_for_aoi
 from analysis.lib.stats.rasterized_geometry import RasterizedGeometry
 from analysis.lib.stats.slr import summarize_slr_in_aoi
 from analysis.lib.stats.urban import summarize_urban_in_aoi
-from api.errors import DataError
+from analysis.lib.stats.wildfire_risk import summarize_wildfire_risk_in_aoi
 
 data_dir = Path("data/inputs")
 bnd_dir = data_dir / "boundaries"
@@ -111,6 +111,13 @@ async def get_custom_area_results(df, progress_callback=None):
 
     if progress_callback is not None:
         await progress_callback(90)
+
+    wildfire_risk = summarize_wildfire_risk_in_aoi(rasterized_geometry)
+    if wildfire_risk is not None:
+        results["wildfire_risk"] = wildfire_risk
+
+    if progress_callback is not None:
+        await progress_callback(95)
 
     # start = time()
     ownership_info = summarize_ownership_in_aoi(df, total_acres=acres)

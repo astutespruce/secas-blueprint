@@ -46,6 +46,7 @@ const TabContent = ({ tab, mapData }) => {
     indicators,
     slr,
     urban,
+    wildfireRisk,
     ownership,
     protection,
     protectedAreas,
@@ -100,6 +101,7 @@ const TabContent = ({ tab, mapData }) => {
           type={type}
           slr={slr}
           urban={urban}
+          wildfireRisk={wildfireRisk}
           subregions={subregions}
           ownership={ownership}
           protection={protection}

@@ -9,9 +9,10 @@ import protection from '../../constants/protection.json'
 import rawSLR from '../../constants/slr.json'
 import subregions from '../../constants/subregions.json'
 import urban from '../../constants/urban.json'
+import wildfireRisk from '../../constants/wildfire_risk.json'
 
 // export unmodified values directly
-export { ecosystems, ownership, protection, subregions, urban }
+export { ecosystems, ownership, protection, subregions, urban, wildfireRisk }
 
 // Sort by descending value
 export const blueprint = rawBlueprint.sort(

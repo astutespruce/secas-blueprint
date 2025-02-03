@@ -13,6 +13,7 @@ from analysis.constants import (
     SLR_LEGEND,
     OWNERSHIP,
     PROTECTION,
+    WILDFIRE_RISK_LEGEND,
 )
 from api.report.format import format_number, format_percent
 
@@ -100,6 +101,9 @@ def create_report(maps, results, name=None, area_type="custom"):
 
     if "slr" in results:
         legends["slr"] = SLR_LEGEND
+
+    if "wildfire_risk" in results:
+        legends["wildfire_risk"] = WILDFIRE_RISK_LEGEND
 
     if "ownership" in results:
         legends["ownership"] = list(OWNERSHIP.values())

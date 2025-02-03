@@ -13,6 +13,13 @@
     {% include "blocks/no_slr.html" %}
 {% endif %}
 
+{% if results.wildfire_risk %}
+    {% include "blocks/wildfire_risk.html" %}
+{% else %}
+    {% include "blocks/no_wildfire_risk.html" %}
+{% endif %}
+
+
 {% if results.ownership and results.protection %}
     {% include "blocks/ownership.html" %}
 

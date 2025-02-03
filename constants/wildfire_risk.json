@@ -1,0 +1,57 @@
+[
+  {
+    "value": 0,
+    "label": "Not predicted to experience wildfire (0% probability)",
+    "color": null
+  },
+  {
+    "value": 1,
+    "label": "Low (>0 - 0.01% probability)",
+    "color": "#FFFFBE"
+  },
+  {
+    "value": 2,
+    "label": "Low-moderate (>0.01 - 0.02154% probability)",
+    "color": "#FED976"
+  },
+  {
+    "value": 3,
+    "label": "Low-moderate (>0.02154 - 0.04642% probability)",
+    "color": "#FED976"
+  },
+  {
+    "value": 4,
+    "label": "Moderate (>0.04642 - 0.1% probability)",
+    "color": "#FD8D3C"
+  },
+  {
+    "value": 5,
+    "label": "Moderate (>0.1 - 0.21544% probability)",
+    "color": "#FD8D3C"
+  },
+  {
+    "value": 6,
+    "label": "Moderate (>0.21544 - 0.46416% probability)",
+    "color": "#FD8D3C"
+  },
+  {
+    "value": 7,
+    "label": "Moderate-high (>0.46416 - 1% probability)",
+    "color": "#E31A1C"
+  },
+  {
+    "value": 8,
+    "label": "Moderate-high (>1 - 2.15443% probability)",
+    "color": "#E31A1C"
+  },
+  {
+    "value": 9,
+    "label": "High (>2.15443 - 4.64159% probability)",
+    "color": "#800026"
+  },
+  {
+    "value": 10,
+    "label": "High (>4.64159% probability)",
+    "color": "#800026"
+  }
+]

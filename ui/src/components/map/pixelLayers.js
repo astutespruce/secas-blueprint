@@ -7,6 +7,9 @@ import {
   urban,
   slrDepth,
   slrNodata,
+  wildfireRisk,
+  ownership,
+  protection,
 } from 'config'
 import { indexBy, sortByFunc } from 'util/data'
 
@@ -301,23 +304,26 @@ export const pixelLayers = [
     ...pixelLayerSourceConfig,
     id: 'pixels8',
     url: `${tileHost}/services/se_pixel_layers_8/tiles/{z}/{x}/{y}.png`,
-    bounds: [-98.06131, 23.8289, -74.46062, 40.3564],
+    bounds: [-108.0227, 16.98923, -57.08541, 41.58111],
     encoding: [
+      { id: 'wildfireRisk', offset: 0, bits: 4, valueShift: 1 },
+      { id: 'ownership', offset: 4, bits: 4, valueShift: 0 },
+      { id: 'protection', offset: 8, bits: 3, valueShift: 0 },
       {
         id: 'f_gulfmigratoryfishconnectivity',
-        offset: 0,
+        offset: 11,
         bits: 2,
         valueShift: 1,
       },
       {
         id: 'm_estuarinecoastalcondition',
-        offset: 2,
+        offset: 13,
         bits: 3,
         valueShift: 1,
       },
       {
         id: 't_eastcoastalplainopenpinebirds',
-        offset: 5,
+        offset: 16,
         bits: 3,
         valueShift: 1,
       },
@@ -369,7 +375,12 @@ const otherInfoLayers = [
     id: 'urban',
     label: 'Probability of urbanization by 2060',
     colors: urban.map(({ color }) => color),
-    categories: urban.filter(({ color }) => color !== null),
+    categories: urban.map(({ color, ...rest }) => ({
+      ...rest,
+      color: color || '#FFFFFF',
+      outlineWidth: 1,
+      outlineColor: 'grey.5',
+    })),
     layer: pixelLayerIndex.urban,
   },
   {
@@ -387,6 +398,47 @@ const otherInfoLayers = [
         outlineColor: 'grey.5',
       })),
     layer: pixelLayerIndex.slr,
+  },
+  {
+    id: 'wildfireRisk',
+    label: 'Wildfire likelihood (annual burn probability)',
+    colors: wildfireRisk.map(({ color }) => color),
+    // sort in descending order
+    // NOTE: this uses a custom legend for simple label values, not the full
+    // set of categories
+    categories: Object.values(
+      Object.fromEntries(
+        wildfireRisk
+          .map(({ label, color, ...rest }) => ({
+            label: label.split(' (')[0],
+            color: color || '#FFFFFF',
+            outlineWidth: 1,
+            outlineColor: 'grey.5',
+            ...rest,
+          }))
+          .map((item) => [item.label, item])
+          .reverse()
+      )
+    ),
+    layer: pixelLayerIndex.wildfireRisk,
+  },
+  {
+    id: 'ownership',
+    label: 'Conserved lands ownership',
+    colors: ownership.map(({ color }) => color),
+    categories: ownership
+      .filter(({ color }) => color !== null)
+      .map(({ code, ...rest }) => ({ ...rest, value: code })),
+    layer: pixelLayerIndex.ownership,
+  },
+  {
+    id: 'protection',
+    label: 'Protection status',
+    colors: protection.map(({ color }) => color),
+    categories: protection
+      .filter(({ color }) => color !== null)
+      .map(({ code, ...rest }) => ({ ...rest, value: code })),
+    layer: pixelLayerIndex.protection,
   },
 ]
 

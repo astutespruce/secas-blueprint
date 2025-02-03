@@ -56,6 +56,7 @@ for aoi_name in aoi_names:
         corridors="corridors" in results,
         urban="urban" in results,
         slr="slr" in results,
+        wildfire_risk="wildfire_risk" in results,
         ownership="ownership" in results,
         protection="protection" in results,
     )
@@ -112,6 +113,7 @@ for summary_type in ids:
             corridors="corridors" in results,
             urban="urban" in results,
             slr="slr" in results,
+            wildfire_risk="wildfire_risk" in results,
             ownership="ownership" in results,
             protection="protection" in results,
         )

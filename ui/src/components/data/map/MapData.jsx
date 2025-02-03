@@ -7,7 +7,7 @@ import React, {
 } from 'react'
 import PropTypes from 'prop-types'
 
-import { indicators } from 'config'
+import { indicators, ownership, protection } from 'config'
 import { indexBy, range } from 'util/data'
 import { logGAEvent } from 'util/log'
 import { renderLayersIndex } from 'components/map/pixelLayers'
@@ -68,6 +68,31 @@ export const Provider = ({ children }) => {
       enabled: false,
       // hardcoded values to capture depth + nodata (values 0-13)
       activeValues: Object.fromEntries(range(0, 14).map((v) => [v, true])),
+    }
+
+    initFilters.wildfireRisk = {
+      enabled: false,
+      // values 0-10
+      activeValues: Object.fromEntries(range(0, 11).map((v) => [v, true])),
+    }
+
+    initFilters.ownership = {
+      enabled: false,
+      // all values excluding areas outside protected areas (0)
+      activeValues: Object.fromEntries(
+        range(1, ownership[ownership.length - 1].code + 1).map((v) => [v, true])
+      ),
+    }
+
+    initFilters.protection = {
+      enabled: false,
+      // all values
+      activeValues: Object.fromEntries(
+        range(1, protection[protection.length - 1].code + 1).map((v) => [
+          v,
+          true,
+        ])
+      ),
     }
 
     return {

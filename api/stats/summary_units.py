@@ -6,6 +6,7 @@ from analysis.lib.stats.parca import get_parca_results
 from analysis.lib.stats.urban import get_urban_unit_results
 from analysis.lib.stats.slr import get_slr_unit_results
 from analysis.lib.stats.summary_units import read_unit_from_feather
+from analysis.lib.stats.wildfire_risk import get_wildfire_risk_unit_results
 
 data_dir = Path("data")
 
@@ -90,5 +91,9 @@ def get_summary_unit_results(unit_type, unit_id):
         urban_results = get_urban_unit_results(results_dir, unit)
         if urban_results is not None:
             results["urban"] = urban_results
+
+        wildfire_risk_results = get_wildfire_risk_unit_results(results_dir, unit)
+        if wildfire_risk_results is not None:
+            results["wildfire_risk"] = wildfire_risk_results
 
     return results
