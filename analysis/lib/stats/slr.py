@@ -290,12 +290,15 @@ def get_slr_unit_results(results_dir, unit):
         if slr_results[col] > 0
     ]
 
-    projections = {
-        SLR_PROJ_SCENARIOS[scenario]: [
-            slr_results[f"{year}_{scenario}"].round(2) for year in SLR_YEARS
-        ]
-        for scenario in SLR_PROJ_SCENARIOS
-    }
+    projections = None
+
+    if pd.notnull(slr_results[f"{SLR_YEARS[0]}_{list(SLR_PROJ_SCENARIOS.keys())[0]}"]):
+        projections = {
+            SLR_PROJ_SCENARIOS[scenario]: [
+                slr_results[f"{year}_{scenario}"].round(2) for year in SLR_YEARS
+            ]
+            for scenario in SLR_PROJ_SCENARIOS
+        }
 
     return {
         "depth": depth,

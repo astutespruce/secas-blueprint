@@ -100,43 +100,52 @@
     </div>
 
     <!-- Projection table: -->
-    <div class="no-break">
-        <div class="caption">
-            Table {{table.counter}}: Projected sea level rise by decade{% if name %} within {{name}}{% else %} in this area{% endif %}.
-            Values are based on area-weighted averages of decadal projections for
-            1-degree grid cells that overlap this area
-            based on <a href="https://oceanservice.noaa.gov/hazards/sealevelrise/sealevelrise-tech-report.html">NOAA's 2022 Sea Level Rise Report</a>.
-            2060 corresponds to the <a href="https://secassoutheast.org/our-goal">SECAS goal</a>: a 10% or greater improvement in the health, function, and connectivity of Southeastern ecosystems by 2060.
+     {% if results.slr.projections is not none %}
+        <div class="no-break">
+            <div class="caption">
+                Table {{table.counter}}: Projected sea level rise by decade{% if name %} within {{name}}{% else %} in this area{% endif %}.
+                Values are based on area-weighted averages of decadal projections for
+                1-degree grid cells that overlap this area
+                based on <a href="https://oceanservice.noaa.gov/hazards/sealevelrise/sealevelrise-tech-report.html">NOAA's 2022 Sea Level Rise Report</a>.
+                2060 corresponds to the <a href="https://secassoutheast.org/our-goal">SECAS goal</a>: a 10% or greater improvement in the health, function, and connectivity of Southeastern ecosystems by 2060.
+            </div>
+            {% set table.counter=table.counter+1 %}
+
+            <table class="centered">
+                <thead>
+                    <tr>
+                        <th>SLR Scenario</th>
+                        {% for year in range(2020, 2105, 10) %}
+                            <th scope="col" {% if year == 2060 %}class="highlight-col"{% endif %}>{{year}} (ft)</th>
+                        {% endfor %}
+
+                    </tr>
+                </thead>
+                <tbody>
+
+                {% for scenario in results.slr.projections %}
+                    <tr>
+                        <td>{{scenario}}</td>
+                        {% for value in  results.slr.projections[scenario] %}
+                            <td {% if loop.index == 5 %}class="highlight-col"{% endif %}>
+                                {% if value == 0 %}
+                                    0
+                                {% else %}
+                                    {{value|format_number}}
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         </div>
-        {% set table.counter=table.counter+1 %}
 
-        <table class="centered">
-            <thead>
-                <tr>
-                    <th>SLR Scenario</th>
-                    {% for year in range(2020, 2105, 10) %}
-                        <th scope="col" {% if year == 2060 %}class="highlight-col"{% endif %}>{{year}} (ft)</th>
-                    {% endfor %}
+    {% else %}
 
-                </tr>
-            </thead>
-            <tbody>
+        <p>
+            Projected sea level rise by decade is not available for this area.
+        </p>
 
-            {% for scenario in results.slr.projections %}
-                <tr>
-                    <td>{{scenario}}</td>
-                    {% for value in  results.slr.projections[scenario] %}
-                        <td {% if loop.index == 5 %}class="highlight-col"{% endif %}>
-                            {% if value == 0 %}
-                                0
-                            {% else %}
-                                {{value|format_number}}
-                            {% endif %}
-                        </td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    {% endif %}
 </section>
