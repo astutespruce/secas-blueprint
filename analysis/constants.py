@@ -178,14 +178,3 @@ WILDFIRE_RISK_BINS = [
     0.0464159,
     2,
 ]
-
-
-# NO LONGER USED
-# in miles
-# LTA_SEARCH_RADIUS_BINS = [
-#     25,
-#     50,
-#     100,
-#     250,
-#     500,
-# ]

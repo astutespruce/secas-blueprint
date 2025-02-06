@@ -19,8 +19,8 @@ const MoreInfoTab = ({
   subregions,
   ownership,
   protection,
-  ltaSearch,
   protectedAreas,
+  totalProtectedPercent,
 }) => {
   if (type !== 'pixel' && type !== 'subwatershed') {
     return (
@@ -73,7 +73,11 @@ const MoreInfoTab = ({
 
       <Box as="section">
         <Heading as="h3">Conserved Areas Ownership</Heading>
-        <Ownership type={type} ownership={ownership} />
+        <Ownership
+          type={type}
+          ownership={ownership}
+          totalProtectedPercent={totalProtectedPercent}
+        />
       </Box>
 
       <Divider variant="styles.hr.light" sx={{ my: '3rem' }} />
@@ -109,28 +113,6 @@ const MoreInfoTab = ({
         than the actual ground area.
       </Text>
 
-      {/* Not currently used */}
-      {/* {ltaSearch && ltaSearch.length ? (
-        <>
-          <Divider variant="styles.hr.light" sx={{ my: '3rem' }} />
-
-          <Box as="section">
-            <Heading as="h3">Nearby land trusts</Heading>
-            <Paragraph sx={{ fontSize: 1 }}>
-              <OutboundLink
-                to={`https://landtrustalliance.org/land-trusts/explore?nearby=false&location=${
-                  ltaSearch[1]
-                }%2C${ltaSearch[0]}&radius=${ltaSearch[2] * 1609.34}`}
-              >
-                Click here
-              </OutboundLink>{' '}
-              to search for land trusts within {ltaSearch[2]} miles of this area
-              on the Land Trust Alliance website.
-            </Paragraph>
-          </Box>
-        </>
-      ) : null} */}
-
       <NeedHelp />
     </Box>
   )
@@ -159,13 +141,13 @@ MoreInfoTab.propTypes = {
   subregions: PropTypes.object,
   ownership: PropTypes.objectOf(PropTypes.number),
   protection: PropTypes.objectOf(PropTypes.number),
-  ltaSearch: PropTypes.arrayOf(PropTypes.number),
   protectedAreas: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string,
       owner: PropTypes.string,
     })
   ),
+  totalProtectedPercent: PropTypes.number,
 }
 
 MoreInfoTab.defaultProps = {
@@ -175,8 +157,8 @@ MoreInfoTab.defaultProps = {
   subregions: null,
   ownership: null,
   protection: null,
-  ltaSearch: null,
   protectedAreas: null, // only present in pixel mode
+  totalProtectedPercent: 0,
 }
 
 export default MoreInfoTab

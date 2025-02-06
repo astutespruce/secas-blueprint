@@ -65,14 +65,6 @@ def get_summary_unit_results(unit_type, unit_id):
         "subregions": unit.subregions,
     }
 
-    # NO LONGER USED
-    # if unit_type == "huc12":
-    #     center, lta_search_radius = get_lta_search_info(
-    #         df[["minx", "miny", "maxx", "maxy"]].values
-    #     )
-    #     results["center"] = center[0]
-    #     results["lta_search_radius"] = lta_search_radius[0]
-
     blueprint_results = get_blueprint_unit_results(results_dir, unit)
     if blueprint_results is not None:
         results.update(blueprint_results)

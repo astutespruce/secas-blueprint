@@ -50,7 +50,7 @@ const TabContent = ({ tab, mapData }) => {
     ownership,
     protection,
     protectedAreas,
-    ltaSearch,
+    totalProtectedPercent,
   } = mapData
 
   if (isLoading) {
@@ -106,7 +106,7 @@ const TabContent = ({ tab, mapData }) => {
           ownership={ownership}
           protection={protection}
           protectedAreas={protectedAreas}
-          ltaSearch={ltaSearch}
+          totalProtectedPercent={totalProtectedPercent}
         />
       )
     }

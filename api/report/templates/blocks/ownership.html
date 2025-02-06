@@ -84,4 +84,19 @@
             {% endfor %}
         </tbody>
     </table>
+
+
+    {% if results['total_protected_acres'] is not none %}
+        <p class="no-break">
+            <br />
+            {{results.total_protected_percent|format_percent}}%
+            ({{results.total_protected_acres|format_number}} acres) of this area
+            is conserved under any of the ownership categories above.
+            Note: this calculation flattens overlapping areas so that a given
+            area is only counted once; this means that the percentages in the
+            table for each ownership category will not necessarily add to up to
+            the total provided here because a given area can be in more than one
+            category.
+        </p>
+    {% endif %}
 </section>

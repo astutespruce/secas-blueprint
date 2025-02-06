@@ -99,20 +99,6 @@ huc12["subregions"] = huc12.subregions.apply(
     lambda x: ",".join(str(subregions[s]) for s in x)
 )
 
-# NO LONGER USED
-### Encode center / radius as x,y,radius(miles)
-# center, lta_search_radius = get_lta_search_info(
-#     huc12[["minx", "miny", "maxx", "maxy"]].values
-# )
-# center = center.round(5)
-# lta_search_df = pd.DataFrame(center, index=huc12.index, columns=["x", "y"]).astype(
-#     "str"
-# )
-# lta_search_df["miles"] = lta_search_radius.astype("str")
-# lta_search = lta_search_df.apply(lambda row: ",".join(row.values), axis=1).rename(
-#     "lta_search"
-# )
-
 
 ### Southeast Blueprint
 # convert integer percents * 10, and pack into pipe-delimited string
@@ -209,6 +195,15 @@ protection = encode_ownership_protection(protection_results, "GAP_Sts").rename(
     "protection"
 )
 
+total_protected = (
+    pd.read_feather(results_dir / "total_protected.feather")
+    .set_index("id")
+    .join(huc12.acres.rename("total_acres"), how="inner")
+)
+total_protected["total_protected_percent"] = (
+    100 * total_protected.acres / total_protected.total_acres
+).astype("uint8")
+
 
 huc12 = (
     huc12[["geometry", "name", "subregions", "type"]]
@@ -220,6 +215,7 @@ huc12 = (
     .join(wildfire_risk, how="left")
     .join(ownership, how="left")
     .join(protection, how="left")
+    .join(total_protected.total_protected_percent, how="left")
 )
 
 
@@ -286,12 +282,23 @@ protection = encode_ownership_protection(protection_results, "GAP_Sts").rename(
     "protection"
 )
 
+total_protected = (
+    pd.read_feather(results_dir / "total_protected.feather")
+    .set_index("id")
+    .join(huc12.acres.rename("total_acres"), how="inner")
+)
+total_protected["total_protected_percent"] = (
+    100 * total_protected.acres / total_protected.total_acres
+).astype("uint8")
+
+
 marine = (
     marine[["geometry", "name", "subregions", "type"]]
     .join(marine[["acres", "rasterized_acres", "outside_se"]].round().astype("int"))
     .join(blueprint, how="left")
     .join(ownership, how="left")
     .join(protection, how="left")
+    .join(total_protected.total_protected_percent, how="left")
 )
 
 ##################################
@@ -305,7 +312,6 @@ out = pd.concat(
 
 for col in (
     [
-        # "lta_search",
         "ownership",
         "protection",
         "urban",
@@ -314,6 +320,8 @@ for col in (
     + slr.columns.tolist()
 ):
     out[col] = out[col].fillna("")
+
+out["total_protected_percent"] = out.total_protected_percent.fillna(0).astype("uint8")
 
 
 out.to_feather(out_dir / "summary_units.feather")

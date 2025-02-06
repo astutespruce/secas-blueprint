@@ -201,12 +201,6 @@ export const unpackFeatureData = (
     values.protection = {}
   }
 
-  if (values.ltaSearch) {
-    values.ltaSearch = values.ltaSearch.split(',').map((v) => parseFloat(v))
-  } else {
-    values.ltaSearch = null
-  }
-
   // rename specific fields for easier use later
   values.unitType = values.type
   values.unitAcres = values.acres

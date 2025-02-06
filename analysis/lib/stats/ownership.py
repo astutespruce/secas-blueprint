@@ -1,20 +1,12 @@
 from pathlib import Path
 
 import geopandas as gp
-import numpy as np
 import pandas as pd
 from pyogrio import read_dataframe
 import shapely
 
-from analysis.constants import (
-    M2_ACRES,
-    OWNERSHIP,
-    PROTECTION,
-    GEO_CRS,
-    DATA_CRS,
-    M_MILES,
-)
-from analysis.lib.geometry import to_crs
+from analysis.constants import M2_ACRES, OWNERSHIP, PROTECTION
+from analysis.lib.geometry import dissolve
 from analysis.lib.stats.summary_units import read_unit_from_feather
 
 
@@ -214,6 +206,18 @@ def summarize_ownership_in_aoi(df, total_acres):
     results["protected_areas"] = by_area.to_dict(orient="records")
     results["num_protected_areas"] = len(by_area)
 
+    # calculate total non-overlapping protected area
+    ownership["group"] = 1
+    total_protected_acres = (
+        shapely.area(dissolve(ownership.explode(), by="group").geometry.values)
+        * M2_ACRES
+    ).sum()
+
+    results["total_protected_acres"] = total_protected_acres.item()
+    results["total_protected_percent"] = (
+        100 * total_protected_acres.item() / total_acres
+    )
+
     return results
 
 
@@ -242,6 +246,7 @@ def summarize_ownership_by_units(df, out_dir):
         .round()
         .reset_index()
     )
+    by_owner.to_feather(out_dir / "ownership.feather")
 
     by_protection = (
         ownership[["GAP_Sts", "acres"]]
@@ -251,9 +256,14 @@ def summarize_ownership_by_units(df, out_dir):
         .round()
         .reset_index()
     )
-
-    by_owner.to_feather(out_dir / "ownership.feather")
     by_protection.to_feather(out_dir / "protection.feather")
+
+    # calculate total non-overlapping protected area
+    total_protected = dissolve(ownership.explode(), by=index_name)
+    total_protected["acres"] = (
+        shapely.area(total_protected.geometry.values) * M2_ACRES
+    ).astype("float32")
+    total_protected[["id", "acres"]].to_feather(out_dir / "total_protected.feather")
 
 
 def get_ownership_unit_results(results_dir, unit):
@@ -328,45 +338,15 @@ def get_ownership_unit_results(results_dir, unit):
     # lists of protected areas omitted for summary units; these are often too long
     # and not useful
 
+    # read total protected area
+    total_protected = read_unit_from_feather(
+        results_dir / "total_protected.feather", unit.name
+    )
+    if len(total_protected) > 0:
+        total_protected_acres = total_protected.acres.values[0]
+        results["total_protected_acres"] = total_protected_acres.item()
+        results["total_protected_percent"] = (
+            100 * total_protected_acres.item() / unit.acres
+        )
+
     return results
-
-
-# NO LONGER USED
-# def get_lta_search_info(bounds):
-#     """Calculate geographic center and search radius in miles (binned to match
-#     website) to search against Land Trust Alliance website.
-
-#     Parameters
-#     ----------
-#     bounds : ndarray of shape (n, 4), in GEO_CRS
-
-#     Returns
-#     -------
-#     ndarray of shape (n, 2), ndarray of shape (n,)
-#         centers in long, lat and search distance in miles
-#     """
-#     boxes = to_crs(shapely.box(*bounds.T), GEO_CRS, DATA_CRS)
-#     centers = np.dstack(
-#         [(bounds[:, 0] + bounds[:, 2]) / 2, (bounds[:, 1] + bounds[:, 3]) / 2]
-#     )[0]
-
-#     extent_radius = (
-#         shapely.distance(
-#             shapely.get_point(shapely.get_exterior_ring(boxes), 0),
-#             shapely.centroid(boxes),
-#         )
-#         * M_MILES
-#     )
-
-#     indexes = np.clip(
-#         np.digitize(extent_radius, LTA_SEARCH_RADIUS_BINS),
-#         0,
-#         len(LTA_SEARCH_RADIUS_BINS) - 1,
-#     )
-
-#     return (
-#         centers,
-#         pd.Series(indexes)
-#         .map({i: v for i, v in enumerate(LTA_SEARCH_RADIUS_BINS)})
-#         .values,
-#     )
