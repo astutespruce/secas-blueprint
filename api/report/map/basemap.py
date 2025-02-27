@@ -1,3 +1,5 @@
+import json
+
 from PIL import Image
 from pymgl import Map
 
@@ -22,7 +24,7 @@ def get_basemap_image(center, zoom, width, height):
     """
 
     try:
-        img_data = Map(
+        map = Map(
             "mapbox://styles/mapbox/light-v9",
             width,
             height,
@@ -31,7 +33,25 @@ def get_basemap_image(center, zoom, width, height):
             zoom=zoom,
             provider="mapbox",
             token=MAPBOX_ACCESS_TOKEN,
-        ).renderBuffer()
+        )
+
+        map.load()
+
+        # hide Gulf of Mexico label
+        map.setFilter(
+            "marine-label-md-pt",
+            json.dumps(
+                [
+                    "all",
+                    ["==", "$type", "Point"],
+                    ["in", "labelrank", 2, 3],
+                    ["!=", "name", "Gulf of Mexico"],
+                ]
+            ),
+        )
+
+        img_data = map.renderBuffer()
+
         return Image.frombytes("RGBA", (width, height), img_data), None
 
     except Exception as ex:

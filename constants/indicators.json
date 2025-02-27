@@ -190,7 +190,7 @@
     "id": "f_gulfmigratoryfishconnectivity",
     "filename": "GulfMigratoryFishConnectivity.tif",
     "label": "Gulf migratory fish connectivity",
-    "description": "This indicator captures how far upstream migratory fish in the Gulf of Mexico have been observed. How far upstream migratory fish can travel reflects not just the presence of dams and other barriers, but also the presence of measures like fish ladders that allow specific species to access habitat upstream of dams. This indicator originates from The Nature Conservancy's Southeast Aquatic Connectivity Assessment Project and applies to the Environmental Protection Agency's estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood (also known as the 1% annual chance flood).",
+    "description": "This indicator captures how far upstream migratory fish in the Gulf of America have been observed. How far upstream migratory fish can travel reflects not just the presence of dams and other barriers, but also the presence of measures like fish ladders that allow specific species to access habitat upstream of dams. This indicator originates from The Nature Conservancy's Southeast Aquatic Connectivity Assessment Project and applies to the Environmental Protection Agency's estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood (also known as the 1% annual chance flood).",
     "values": [
       {
         "value": 0,
@@ -1162,7 +1162,7 @@
     "id": "m_gulfcoralandhardbottom",
     "filename": "GulfCoralandHardbottom.tif",
     "label": "Gulf coral & hardbottom",
-    "description": "This indicator predicts the presence of coral and hardbottom in the Gulf of Mexico based on direct observations, acoustic surveys, and known locations of artificial reefs and shipwrecks. Hardbottom provides an anchor for important seafloor habitats such as deep-sea corals, plants, and sponges, providing valuable structure that supports a wide range of invertebrate and fish species. Hardbottom is also sometimes associated with diverse chemosynthetic communities supported by micro-organisms that feed off of hydrocarbon seeps. This indicator combines data from multiple sources, including Bureau of Ocean Energy Management seismic water bottom anomalies, usSEABED sediment data, several National Oceanic and Atmospheric Administration datasets, various state layers, and more.",
+    "description": "This indicator predicts the presence of coral and hardbottom in the Gulf of America based on direct observations, acoustic surveys, and known locations of artificial reefs and shipwrecks. Hardbottom provides an anchor for important seafloor habitats such as deep-sea corals, plants, and sponges, providing valuable structure that supports a wide range of invertebrate and fish species. Hardbottom is also sometimes associated with diverse chemosynthetic communities supported by micro-organisms that feed off of hydrocarbon seeps. This indicator combines data from multiple sources, including Bureau of Ocean Energy Management seismic water bottom anomalies, usSEABED sediment data, several National Oceanic and Atmospheric Administration datasets, various state layers, and more.",
     "values": [
       {
         "value": 0,
@@ -1224,7 +1224,7 @@
     "id": "m_gulfdeepseacoralrichness",
     "filename": "GulfDeepSeaCoralRichness.tif",
     "label": "Gulf deep-sea coral richness",
-    "description": "This indicator measures the number of different deep-sea coral genera predicted to occur in the Gulf of Mexico at depths of 50 m or below. It is based on coral observations and a suite of environmental predictors including measures of depth, seafloor topography and substrate, oceanography, and geography. This indicator combines probability models for 28 deep-sea coral genera to predict overall richness. Deep-sea corals provide valuable habitat structure that supports a wide range of invertebrate and fish species, and higher coral diversity typically creates more complex habitats occupied by more species. This indicator originates from a National Oceanic and Atmospheric Administration project characterizing the spatial distributions of deep-sea corals and chemosynthetic communities in the U.S. Gulf of Mexico.",
+    "description": "This indicator measures the number of different deep-sea coral genera predicted to occur in the Gulf of America at depths of 50 m or below. It is based on coral observations and a suite of environmental predictors including measures of depth, seafloor topography and substrate, oceanography, and geography. This indicator combines probability models for 28 deep-sea coral genera to predict overall richness. Deep-sea corals provide valuable habitat structure that supports a wide range of invertebrate and fish species, and higher coral diversity typically creates more complex habitats occupied by more species. This indicator originates from a National Oceanic and Atmospheric Administration project characterizing the spatial distributions of deep-sea corals and chemosynthetic communities in the U.S. Gulf.",
     "values": [
       {
         "value": 1,
@@ -1265,7 +1265,7 @@
     "id": "m_gulfmarinemammals",
     "filename": "GulfMarineMammals.tif",
     "label": "Gulf marine mammals",
-    "description": "This indicator identifies important areas in the Gulf of Mexico for dolphins and whales. It incorporates monthly density predictions for 13 marine mammal species or species groups (Atlantic spotted dolphin, beaked whales, blackfish [which includes killer whale, melon-headed whale, false killer whale, pygmy killer whale], bottlenose dolphin, Bryde's whale, clymene dolphin, pantropical spotted dolphin, pilot whales, pygmy/dwarf sperm whales, Rice's whale, Risso's dolphin, sperm whale, spinner dolphin) based on sightings from boat-based and aerial surveys and data on oceanographic conditions. It uses marine mammal models developed by the National Oceanic and Atmospheric Administration as part of the Gulf of Mexico Marine Assessment Program for Protected Species (GoMMAPPS).",
+    "description": "This indicator identifies important areas in the Gulf of America for dolphins and whales. It incorporates monthly density predictions for 13 marine mammal species or species groups (Atlantic spotted dolphin, beaked whales, blackfish [which includes killer whale, melon-headed whale, false killer whale, pygmy killer whale], bottlenose dolphin, Bryde's whale, clymene dolphin, pantropical spotted dolphin, pilot whales, pygmy/dwarf sperm whales, Rice's whale, Risso's dolphin, sperm whale, spinner dolphin) based on sightings from boat-based and aerial surveys and data on oceanographic conditions. It uses marine mammal models developed by the National Oceanic and Atmospheric Administration as part of the Gulf of Mexico Marine Assessment Program for Protected Species (GoMMAPPS).",
     "values": [
       {
         "value": 0,
@@ -1342,7 +1342,7 @@
     "id": "m_gulfseaturtles",
     "filename": "GulfSeaTurtles.tif",
     "label": "Gulf sea turtles",
-    "description": "This indicator identifies important areas in the Gulf of Mexico for sea turtles. It incorporates monthly density predictions for four species (green, Kemp's ridley, leatherback, and loggerhead sea turtles) based on sightings from boat-based and aerial surveys and data on oceanographic conditions. It uses sea turtle models developed by the National Oceanic and Atmospheric Administration as part of the Gulf of Mexico Marine Assessment Program for Protected Species (GoMMAPPS).",
+    "description": "This indicator identifies important areas in the Gulf of America for sea turtles. It incorporates monthly density predictions for four species (green, Kemp's ridley, leatherback, and loggerhead sea turtles) based on sightings from boat-based and aerial surveys and data on oceanographic conditions. It uses sea turtle models developed by the National Oceanic and Atmospheric Administration as part of the Gulf of Mexico Marine Assessment Program for Protected Species (GoMMAPPS).",
     "values": [
       {
         "value": 0,
@@ -1437,7 +1437,7 @@
     "id": "m_marinehighlymigratoryfish",
     "filename": "MarineHighlyMigratoryFish.tif",
     "label": "Marine highly migratory fish",
-    "description": "This indicator identifies important foraging and spawning areas for highly migratory fish in the Atlantic Ocean and Gulf of Mexico. It uses physical capture and satellite tag observations, remote sensing of environmental variables, and physical oceanographic data to analyze the habitat preferences of three species (skipjack tuna, bluefin tuna, and blue shark) at various life stages. It originates from European Commission Joint Research Centre global fish models.",
+    "description": "This indicator identifies important foraging and spawning areas for highly migratory fish in the Atlantic Ocean and Gulf of America. It uses physical capture and satellite tag observations, remote sensing of environmental variables, and physical oceanographic data to analyze the habitat preferences of three species (skipjack tuna, bluefin tuna, and blue shark) at various life stages. It originates from European Commission Joint Research Centre global fish models.",
     "values": [
       {
         "value": 1,
@@ -1553,7 +1553,7 @@
     "id": "m_seagrass",
     "filename": "Seagrass.tif",
     "label": "Seagrass",
-    "description": "This indicator represents the presence of seagrass in the Atlantic Ocean and Gulf of Mexico. Seagrasses provide food and habitat for a range of marine and estuarine wildlife, including fish, sea turtles, shrimp, crabs, oysters, and more. They also produce oxygen, filter water, control erosion, and buffer storms. Seagrasses serve as an important indicator of the overall health of coastal ecosystems because they are sensitive to water quality and require sufficiently clear water for sunlight to penetrate. This indicator originates from the National Oceanic and Atmospheric Administration's Marine Cadastre.",
+    "description": "This indicator represents the presence of seagrass in the Atlantic Ocean and Gulf of America. Seagrasses provide food and habitat for a range of marine and estuarine wildlife, including fish, sea turtles, shrimp, crabs, oysters, and more. They also produce oxygen, filter water, control erosion, and buffer storms. Seagrasses serve as an important indicator of the overall health of coastal ecosystems because they are sensitive to water quality and require sufficiently clear water for sunlight to penetrate. This indicator originates from the National Oceanic and Atmospheric Administration's Marine Cadastre.",
     "values": [
       {
         "value": 1,

@@ -221,6 +221,31 @@ const Map = () => {
         map.addControl(new mapboxgl.NavigationControl(), 'top-right')
       }
 
+      map.on('style.load', () => {
+        // hide Gulf of Mexico
+        if (map.style._layers['marine-label-md-pt']) {
+          map.setFilter('marine-label-md-pt', [
+            'all',
+            ['==', '$type', 'Point'],
+            ['in', 'labelrank', 2, 3],
+            ['!=', 'name', 'Gulf of Mexico'],
+          ])
+        } else if (map.style._layers['water-point-label']) {
+          map.setFilter('water-point-label', [
+            'all',
+            [
+              'match',
+              ['get', 'class'],
+              // remove 'sea'; this category includes the gulf
+              ['ocean', 'reservoir', 'water'],
+              true,
+              false,
+            ],
+            ['==', ['geometry-type'], 'Point'],
+          ])
+        }
+      })
+
       map.on('load', () => {
         // due to styling components loading at different times, the containing
         // nodes don't always have height set; force larger view
@@ -618,6 +643,29 @@ const Map = () => {
         map.setStyle(`mapbox://styles/mapbox/${styleID}`)
 
         map.once('style.load', () => {
+          // hide Gulf of Mexico
+          if (map.style._layers['marine-label-md-pt']) {
+            map.setFilter('marine-label-md-pt', [
+              'all',
+              ['==', '$type', 'Point'],
+              ['in', 'labelrank', 2, 3],
+              ['!=', 'name', 'Gulf of Mexico'],
+            ])
+          } else if (map.style._layers['water-point-label']) {
+            map.setFilter('water-point-label', [
+              'all',
+              [
+                'match',
+                ['get', 'class'],
+                // remove 'sea'; this category includes the gulf
+                ['ocean', 'reservoir', 'water'],
+                true,
+                false,
+              ],
+              ['==', ['geometry-type'], 'Point'],
+            ])
+          }
+
           const {
             sources: styleSources,
             layers: styleLayers,

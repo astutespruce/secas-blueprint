@@ -167,14 +167,14 @@ const BlueprintTab = ({
               <OutboundLink to="https://www.sciencebase.gov/catalog/item/5ba9378fe4b08583a5ca0937">
                 U.S. Environmental Protection Agency
               </OutboundLink>{' '}
-              and extended into the Gulf of Mexico by the{' '}
+              and extended into the Gulf of America by the{' '}
               <OutboundLink to="https://www.boem.gov/gommapps">
                 Gulf of Mexico Marine Assessment Program for Protected Species
               </OutboundLink>{' '}
-              (GoMMAPPS). Gulf of Mexico hexagons provided by the NOAA Southeast
-              Fisheries Science Center. Similar hexagons were generated in the
-              U.S. Caribbean for internal use by the Southeast Conservation
-              Adaptation Strategy (2023).
+              (GoMMAPPS). Gulf of America hexagons provided by the NOAA
+              Southeast Fisheries Science Center. Similar hexagons were
+              generated in the U.S. Caribbean for internal use by the Southeast
+              Conservation Adaptation Strategy (2023).
             </>
           )}
         </Box>
