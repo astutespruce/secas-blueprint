@@ -29,7 +29,7 @@
 
     {% if results.num_protected_areas %}
         {% include "blocks/protected_areas_list.html" %}
-    {% elif results.ownership and area_type != "custom" %}
+    {% elif results.ownership and area_type == "custom" %}
         {% include "blocks/no_protected_areas_list.html" %}
     {% endif %}
 
