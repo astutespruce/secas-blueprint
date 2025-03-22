@@ -7,7 +7,7 @@ import React, {
 } from 'react'
 import PropTypes from 'prop-types'
 
-import { indicators, ownership, protection } from 'config'
+import { indicators } from 'config'
 import { indexBy, range } from 'util/data'
 import { logGAEvent } from 'util/log'
 import { renderLayersIndex } from 'components/map/pixelLayers'
@@ -78,21 +78,8 @@ export const Provider = ({ children }) => {
 
     initFilters.ownership = {
       enabled: false,
-      // all values excluding areas outside protected areas (0)
-      activeValues: Object.fromEntries(
-        range(1, ownership[ownership.length - 1].code + 1).map((v) => [v, true])
-      ),
-    }
-
-    initFilters.protection = {
-      enabled: false,
-      // all values
-      activeValues: Object.fromEntries(
-        range(1, protection[protection.length - 1].code + 1).map((v) => [
-          v,
-          true,
-        ])
-      ),
+      // values 0-1
+      activeValues: { 0: false, 1: true },
     }
 
     return {

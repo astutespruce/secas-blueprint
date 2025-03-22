@@ -12,7 +12,6 @@ from analysis.constants import (
     URBAN_LEGEND,
     SLR_LEGEND,
     OWNERSHIP,
-    PROTECTION,
     WILDFIRE_RISK_LEGEND,
 )
 from api.report.format import format_number, format_percent
@@ -85,9 +84,6 @@ def create_report(maps, results, name=None, area_type="custom"):
     title = "Southeast Conservation Blueprint Summary"
     subtitle = f"for {name}" if name is not None else ""
 
-    ownership_acres = sum([e["acres"] for e in results.get("ownership", [])])
-    protection_acres = sum([e["acres"] for e in results.get("protection", [])])
-
     legends = {
         # sort Blueprint descending order
         "blueprint": BLUEPRINT[::-1]
@@ -106,10 +102,7 @@ def create_report(maps, results, name=None, area_type="custom"):
         legends["wildfire_risk"] = WILDFIRE_RISK_LEGEND
 
     if "ownership" in results:
-        legends["ownership"] = list(OWNERSHIP.values())
-
-    if "protection" in results:
-        legends["protection"] = list(PROTECTION.values())
+        legends["ownership"] = OWNERSHIP[::-1]
 
     context = {
         "date": date.today().strftime("%m/%d/%Y"),
@@ -121,8 +114,6 @@ def create_report(maps, results, name=None, area_type="custom"):
         "subtitle": subtitle,
         "maps": maps,
         "legends": legends,
-        "ownership_acres": ownership_acres,
-        "protection_acres": protection_acres,
         "results": results,
         # have to flip the crosshatch horizontally due to bug in WeasyPrint
         "flip_crosshatch": sys.platform == "darwin",

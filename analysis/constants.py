@@ -69,11 +69,11 @@ INDICATORS = json.loads(open(json_dir / "indicators.json").read())
 INDICATORS_INDEX = {indicator["id"]: indicator for indicator in INDICATORS}
 
 
-OWNERSHIP = {
-    e["value"]: e for e in json.loads(open(json_dir / "ownership.json").read())
-}
-PROTECTION = {
-    e["value"]: e for e in json.loads(open(json_dir / "protection.json").read())
+OWNERSHIP = json.loads(open(json_dir / "ownership.json").read())
+OWNERSHIP_COLORS = {
+    entry["value"]: entry["color"]
+    for entry in OWNERSHIP
+    if entry.get("color", None) is not None
 }
 
 

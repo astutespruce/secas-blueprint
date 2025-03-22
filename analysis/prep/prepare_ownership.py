@@ -9,10 +9,10 @@ import rasterio
 from rasterio.features import rasterize
 import shapely
 
-from analysis.constants import SECAS_STATES, OWNERSHIP, PROTECTION
+from analysis.constants import SECAS_STATES, OWNERSHIP, MASK_RESOLUTION
 from analysis.lib.colors import hex_to_uint8
-from analysis.lib.geometry import make_valid, to_dict
-from analysis.lib.raster import write_raster, add_overviews
+from analysis.lib.geometry import make_valid, to_dict_all, dissolve
+from analysis.lib.raster import write_raster, add_overviews, create_lowres_mask
 
 warnings.filterwarnings("ignore", message=".*polygon with more than 100 parts.*")
 
@@ -41,16 +41,12 @@ ok_wma = (
         columns=[
             "Category",
             "State_Nm",
-            "Own_Type",
-            "GAP_Sts",
-            "Loc_Nm",
+            "Unit_Nm",
             "Loc_Own",
-            "Loc_Ds",
+            "Own_Name",
             "Agg_Src",
             "Des_Tp",
-            # used for sorting
-            "IUCN_Cat",
-            "Pub_Access",
+            "Loc_Ds",
         ],
         where="State_Nm = 'OK' AND Loc_Ds = 'State Wildlife Management Area'",
         use_arrow=True,
@@ -71,15 +67,11 @@ df = read_dataframe(
     columns=[
         "Category",
         "State_Nm",
-        "Own_Type",
-        "GAP_Sts",
-        "Loc_Nm",
+        "Unit_Nm",
         "Loc_Own",
+        "Own_Name",
         "Agg_Src",
         "Des_Tp",
-        # used for sorting
-        "IUCN_Cat",
-        "Pub_Access",
     ],
     where=f"State_Nm in ({states})",
     use_arrow=True,
@@ -110,83 +102,84 @@ df = df.explode(ignore_index=True)
 df = df.loc[shapely.get_type_id(df.geometry.values) == 3].reset_index(drop=True)
 
 
+# use more friendly attributes
+df = df.rename(columns={"Unit_Nm": "name", "Loc_Own": "owner"})
+
+
+# cleanup names where easy
+df["name"] = df.name.str.replace(".Wilderness Area", " (Wilderness Area)", regex=False)
+
+
+df.loc[(df.owner == "Fee") & (df.Own_Name == "FWS"), "owner"] = (
+    "US Fish and Wildlife Service"
+)
+
+df["owner"] = (
+    df.owner.replace("UNK", "")
+    .str.replace("Unknown", "", regex=False, case=False)
+    .replace("Unspecified", "")
+    .replace("USDA FOREST SERVICE", "USDA Forest Service")
+    .replace("NPS", "National Park Service")
+    .replace("Private Owner", "Private")
+    .replace("Private Owners", "Private")
+    .replace("NGO", "Non-Governmental Organization")
+    .replace("UNITED STATES ARMY", "US Army")
+    .str.replace(
+        "United States of America", "US Federal Government", regex=False, case=False
+    )
+    .replace("United Sates of America", "US Federal Government")
+    .replace("US Govt", "US Federal Government")
+    .replace("United States Govt", "US Federal Government")
+    .replace("US Goverment", "US Federal Government")
+    .replace("USA", "US Federal Government")
+    .replace("US Military Department", "US Department of Defence")
+    # seriously Army Corps of Engineers, standardize your protected area ownership label!
+    .replace("Corps of Engineers", "US Army Corps of Engineers")
+    .replace("U S ARMY CORP OF ENGINEERS", "US Army Corps of Engineers")
+    .replace("Army Corps of Engineers", "US Army Corps of Engineers")
+    .replace("U.S. Army Corps of Engineers", "US Army Corps of Engineers")
+    .replace("UNITED STATES ARMY CORPS OF ENGINEERS", "US Army Corps of Engineers")
+    .replace("US Army Corp of Engineers", "US Army Corps of Engineers")
+    .replace("US Corp of Engineers", "US Army Corps of Engineers")
+    .replace("US Corps of Engineers", "US Army Corps of Engineers")
+    .replace("US Engineer Corps", "US Army Corps of Engineers")
+    .replace("US Engineers Corps", "US Army Corps of Engineers")
+    .replace("USA Corp of Engineers", "US Army Corps of Engineers")
+    .replace("USA CORP OF ENGINEERS", "US Army Corps of Engineers")
+    .replace("US Military", "US Department of Defence")
+    .replace("US DOE", "US Department of Energy")
+    .replace("US", "US Federal Government")
+    .replace("Fed", "US Federal Government")
+    .replace("JNT", "Joint ownership")
+    .replace("PVT", "Private")
+    .replace("STAT", "State")
+    .replace("TRIB", "Tribal")
+    .replace("CONSERVATION EASE", "Conservation easement")
+)
+
+
+print("Dissolving overlapping features with same name / ownership")
+df = dissolve(df, by=["name", "owner"])
+
+
+df.owner.drop_duplicates().to_csv("/tmp/names.csv", index=False)
+
+
 # Use FGB (instead of Feather) for more optimal reading by area of interest
 print("Writing files")
-write_dataframe(
-    df.drop(
-        columns=[
-            "IUCN_Cat",
-            "Pub_Access",
-        ]
-    ),
-    out_dir / "ownership.fgb",
-)
+write_dataframe(df[["name", "owner", "geometry"]], out_dir / "ownership.fgb")
 
 
 ################################################################################
-### Sort (in ascending priority) and rasterize
+### Rasterize to protected (1) or not (0)
 ################################################################################
 
-# save the original order
-df["orig_order"] = df.index.values
-
-# use sort of IUCN categories from script here: https://www.sciencebase.gov/catalog/item/652d4ebbd34e44db0e2ee458
-iucn_sort = {
-    "Ia": 0,
-    "Ib": 1,
-    "II": 2,
-    "III": 3,
-    "IV": 4,
-    "V": 5,
-    "VI": 6,
-    "Other Conservation Area": 7,
-    "Unassigned": 8,
-}
-df["iucn_sort"] = df.IUCN_Cat.map(iucn_sort)
-
-pub_access_sort = {"XA": 0, "RA": 1, "OA": 2, "UK": 3}
-df["pub_access_sort"] = df.Pub_Access.map(pub_access_sort)
-
-# sort marine areas lower, these are not included in the flattened stats datasets from PAD-US
-df["marine_sort"] = 0
-df.loc[df.Category == "Marine", "marine_sort"] = 1
-
-# sort in ascending order first
-df = df.sort_values(
-    by=["marine_sort", "iucn_sort", "pub_access_sort", "orig_order"]
-).reset_index(drop=True)
-
-# find any lower order polygons completely contained within higher order ones
-tree = shapely.STRtree(df.geometry.values)
-left, right = tree.query(df.geometry.values, predicate="contains_properly")
-pairs = pd.DataFrame({"outer": df.index.take(left), "inner": df.index.take(right)})
-drop_ix = pairs.loc[pairs.outer < pairs.inner].inner.unique()
-df = df.loc[~df.index.isin(drop_ix)].reset_index(drop=True)
-
-ownership = pd.DataFrame(OWNERSHIP.values()).rename(columns={"code": "ownership_code"})
+ownership = pd.DataFrame(OWNERSHIP)
 ownership_colormap = (
-    ownership.set_index("ownership_code")
+    ownership.set_index("value")
     .color.apply(lambda x: hex_to_uint8(x) + (255,) if x else (255, 255, 255, 0))
     .to_dict()
 )
-
-protection = pd.DataFrame(PROTECTION.values()).rename(
-    columns={"code": "protection_code"}
-)
-protection_colormap = (
-    protection.set_index("protection_code")
-    .color.apply(lambda x: hex_to_uint8(x) + (255,) if x else (255, 255, 255, 0))
-    .to_dict()
-)
-
-df = (
-    df.join(ownership.ownership_code, on="Own_Type")
-    .join(protection.protection_code, on="GAP_Sts")
-    .reset_index()
-)
-
-# reverse sort so that highest-priority features get rasterized last, on top
-df = df.sort_values(by="index", ascending=False)
 
 # use the SE Blueprint extent grid to derive the master offset coordinates
 # so that everything is correctly aligned
@@ -198,23 +191,23 @@ align_ul = np.take(extent.transform, [2, 5]).tolist()
 
 print("Rasterizing ownership")
 data = rasterize(
-    df.apply(lambda row: (to_dict(row.geometry), row.ownership_code), axis=1),
+    to_dict_all(df.geometry.values),
     transform=extent.transform,
     out_shape=extent.shape,
     fill=0,
+    default_value=1,
     dtype="uint8",
 )
 
+data = np.where(extent_data == 1, data, NODATA)
 
-data = np.where(extent_data == 1, data, 0)
-
-outfilename = data_dir / "boundaries/ownership.tif"
+outfilename = out_dir / "ownership.tif"
 write_raster(
     outfilename,
     data,
     extent.transform,
     crs=extent.crs,
-    nodata=0,
+    nodata=NODATA,
 )
 
 del data
@@ -224,30 +217,9 @@ with rasterio.open(outfilename, "r+") as out:
 
 add_overviews(outfilename)
 
-
-print("Rasterizing protection")
-data = rasterize(
-    df.apply(lambda row: (to_dict(row.geometry), row.protection_code), axis=1),
-    transform=extent.transform,
-    out_shape=extent.shape,
-    fill=0,
-    dtype="uint8",
-)
-
-data = np.where(extent_data == 1, data, 0)
-
-outfilename = data_dir / "boundaries/protection.tif"
-write_raster(
+create_lowres_mask(
     outfilename,
-    data,
-    extent.transform,
-    crs=extent.crs,
-    nodata=0,
+    out_dir / "ownership_mask.tif",
+    resolution=MASK_RESOLUTION,
+    ignore_zero=False,
 )
-
-del data
-
-with rasterio.open(outfilename, "r+") as out:
-    out.write_colormap(1, protection_colormap)
-
-add_overviews(outfilename)

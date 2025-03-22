@@ -5,63 +5,82 @@ import { Check } from '@emotion-icons/fa-solid'
 
 import { ownership as ownershipCategories } from 'config'
 import { PercentBarChart } from 'components/chart'
-import { sum } from 'util/data'
-import { formatPercent } from 'util/format'
+import { OutboundLink } from 'components/link'
 
-const Ownership = ({ type, ownership, totalProtectedPercent }) => {
+const DataSource = () => (
+  <Text sx={{ mt: '3rem', color: 'grey.8', fontSize: 1 }}>
+    Conserved areas are derived from the{' '}
+    <OutboundLink to="https://www.usgs.gov/programs/gap-analysis-project/science/pad-us-data-download">
+      Protected Areas Database of the United States
+    </OutboundLink>{' '}
+    (PAD-US v4.0 and v3.0) and include Fee, Designation, Easement, Marine, and
+    Proclamation (Dept. of Defense lands only) boundaries.
+  </Text>
+)
+
+const Ownership = ({ type, ownership, protectedAreas }) => {
   // handle empty ownership information
   const bars = ownershipCategories.map((category) => ({
     ...category,
     percent: ownership ? ownership[category.value] || 0 : 0,
-    color: 'grey.9',
+    color: 'grey.8',
   }))
 
   if (type === 'pixel') {
-    const total = sum(bars.map(({ percent }) => Math.min(percent, 100)))
-
-    const remainder = 100 - total
-    if (remainder > 0) {
-      bars.push({
-        value: 'not_conserved',
-        label: 'Not conserved',
-        color: 'grey.5',
-        percent: remainder,
-      })
-    }
-
+    // show ownership with checkmarks
     return (
-      <Box sx={{ ml: '0.5rem', mt: '0.5rem' }}>
-        {bars.map(({ value, label, percent }) => (
-          <Flex
-            key={value}
-            sx={{
-              alignItems: 'baseline',
-              justifyContent: 'space-between',
-              pl: '0.5rem',
-              borderBottom: '1px solid',
-              borderBottomColor: 'grey.2',
-              pb: '0.25rem',
-              '&:not(:first-of-type)': {
-                mt: '0.25rem',
-              },
-            }}
-          >
-            <Text
+      <Box>
+        <Box sx={{ ml: '0.5rem', mt: '0.5rem' }}>
+          {ownershipCategories.map(({ value, label }) => (
+            <Flex
+              key={value}
               sx={{
-                flex: '1 1 auto',
-                color: percent > 0 ? 'text' : 'grey.8',
-                fontWeight: percent > 0 ? 'bold' : 'normal',
+                alignItems: 'baseline',
+                justifyContent: 'space-between',
+                pl: '0.5rem',
+                borderBottom: '1px solid',
+                borderBottomColor: 'grey.2',
+                pb: '0.25rem',
+                '&:not(:first-of-type)': {
+                  mt: '0.25rem',
+                },
               }}
             >
-              {label}
+              <Text
+                sx={{
+                  flex: '1 1 auto',
+                  color: value === ownership ? 'text' : 'grey.8',
+                  fontWeight: value === ownership ? 'bold' : 'normal',
+                }}
+              >
+                {label}
+              </Text>
+              {value === ownership ? (
+                <Box sx={{ flex: '0 0 auto' }}>
+                  <Check size="1em" />
+                </Box>
+              ) : null}
+            </Flex>
+          ))}
+        </Box>
+
+        {protectedAreas && protectedAreas.length > 0 ? (
+          <Box as="section" sx={{ mt: '1rem', ml: '0.75rem' }}>
+            <Text sx={{ fontWeight: 'bold' }}>
+              Conserved areas at this location
             </Text>
-            {percent > 0 ? (
-              <Box sx={{ flex: '0 0 auto' }}>
-                <Check size="1em" />
-              </Box>
-            ) : null}
-          </Flex>
-        ))}
+            <Box as="ul" sx={{ mt: '0.5rem', ml: '1rem' }}>
+              {protectedAreas.map(({ name, owner }, i) => (
+                /* eslint-disable-next-line react/no-array-index-key */
+                <li key={`${name}_${owner}_${i}`}>
+                  {name || 'Name unknown'} {owner ? ` (${owner})` : null}
+                </li>
+              ))}
+            </Box>
+          </Box>
+        ) : null}
+
+        <DataSource />
       </Box>
     )
   }
@@ -75,27 +94,29 @@ const Ownership = ({ type, ownership, totalProtectedPercent }) => {
           sx={{ mt: '0.5rem', mb: '1rem' }}
         />
       ))}
-      <Text sx={{ mt: '3rem', color: 'grey.8', fontSize: 1 }}>
-        {formatPercent(totalProtectedPercent)}% of this area is conserved under
-        any of the ownership categories above. Note: this calculation flattens
-        overlapping areas so that a given area is only counted once; this means
-        that the percentages in the table for each ownership category will not
-        necessarily add to up to the total provided here because a given area
-        can be in more than one category.
-      </Text>
+
+      <DataSource />
     </>
   )
 }
 
 Ownership.propTypes = {
   type: PropTypes.string.isRequired,
-  ownership: PropTypes.objectOf(PropTypes.number),
-  totalProtectedPercent: PropTypes.number,
+  ownership: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.number),
+    PropTypes.number,
+  ]),
+  protectedAreas: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string,
+      owner: PropTypes.string,
+    })
+  ),
 }
 
 Ownership.defaultProps = {
-  ownership: {},
-  totalProtectedPercent: 0,
+  ownership: [],
+  protectedAreas: null,
 }
 
 export default Ownership

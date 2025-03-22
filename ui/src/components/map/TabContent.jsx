@@ -48,9 +48,7 @@ const TabContent = ({ tab, mapData }) => {
     urban,
     wildfireRisk,
     ownership,
-    protection,
     protectedAreas,
-    totalProtectedPercent,
   } = mapData
 
   if (isLoading) {
@@ -104,9 +102,7 @@ const TabContent = ({ tab, mapData }) => {
           wildfireRisk={wildfireRisk}
           subregions={subregions}
           ownership={ownership}
-          protection={protection}
           protectedAreas={protectedAreas}
-          totalProtectedPercent={totalProtectedPercent}
         />
       )
     }

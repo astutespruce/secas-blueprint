@@ -23,16 +23,6 @@ const BlueprintTab = ({
   subregions,
   outsideSEPercent,
 }) => {
-  const marineSubregions = useMemo(
-    () =>
-      new Set(
-        subregionInfo
-          .filter(({ marine }) => marine)
-          .map(({ subregion }) => subregion)
-      ),
-    []
-  )
-
   // Note: incoming priorities are in descending order but percents
   // are stored in ascending order
   const priorityCategories = allPriorities

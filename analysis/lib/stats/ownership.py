@@ -3,34 +3,40 @@ from pathlib import Path
 import geopandas as gp
 import pandas as pd
 from pyogrio import read_dataframe
+import rasterio
 import shapely
 
-from analysis.constants import M2_ACRES, OWNERSHIP, PROTECTION
-from analysis.lib.geometry import dissolve
+from analysis.constants import M2_ACRES, OWNERSHIP
+from analysis.lib.raster import summarize_raster_by_units_grid
 from analysis.lib.stats.summary_units import read_unit_from_feather
 
 
 src_dir = Path("data/inputs/boundaries")
-ownership_filename = src_dir / "ownership.fgb"
-ownership_columns = ["GAP_Sts", "Own_Type", "Loc_Own", "Loc_Nm"]
+filename = src_dir / "ownership.tif"
+mask_filename = src_dir / "ownership_mask.tif"
+boundary_filename = src_dir / "ownership.fgb"
+columns = ["name", "owner"]
+
+BINS = range(0, len(OWNERSHIP))
+LABELS = {e["value"]: e["label"] for e in OWNERSHIP}
 
 
 def extract_ownership(df, use_bbox=False):
     """Extract intersection with ownership data
 
-    Parameters
-    ----------
+        Parameters
+        ----------
     df : GeoDataFrame
         area of interest
     use_bbox : bool, optional (default: False)
         if True, will filter ownership by bounds of df when reading features
 
-    Returns
-    -------
-    GeoDataFrame
-        indexed on index of df (multiple records per index value); includes
-        geometry field with the geometric intersection and acres calculated from
-        that field
+        Returns
+        -------
+        GeoDataFrame
+            indexed on index of df (multiple records per index value); includes
+            geometry field with the geometric intersection and acres calculated from
+            that field
 
     """
 
@@ -38,8 +44,8 @@ def extract_ownership(df, use_bbox=False):
 
     # Note: no need to explode(), geometries are already single-part
     ownership = read_dataframe(
-        ownership_filename,
-        columns=ownership_columns + ["geometry"],
+        boundary_filename,
+        columns=columns + ["geometry"],
         bbox=tuple(df.total_bounds) if use_bbox else None,
         # TODO: enable use_arrow once fixed in pyogrio
         use_arrow=not use_bbox,
@@ -101,8 +107,8 @@ def extract_ownership(df, use_bbox=False):
 
     # aggregate to multipolygons based on ownership columns
     ownership = gp.GeoDataFrame(
-        pairs.join(ownership[ownership_columns], on="index_right")
-        .groupby([index_name] + ownership_columns)
+        pairs.join(ownership[columns], on="index_right")
+        .groupby([index_name] + columns)
         .agg({"geometry": shapely.multipolygons})
         .reset_index()
         .set_index(index_name),
@@ -115,155 +121,133 @@ def extract_ownership(df, use_bbox=False):
     return ownership
 
 
-def summarize_ownership_in_aoi(df, total_acres):
-    """Get ownership and protection levels and other statistics for the DataFrame
+def summarize_ownership_in_aoi(rasterized_geometry, df):
+    """Calculate area in protected areas
 
     Parameters
     ----------
+    rasterized_geometry : RasterizedGeometry
     df : GeoDataFrame
-    total_acres : float
+        area of interest
 
     Returns
     -------
-    dict
+    dict or None
         {
-            "ownership": [
-                {
-                    "label": <ownership type label>,
-                    "acres": <acres of overlap>,
-                    "percent" <percent of overlap>
-                }
-            ],
-            "protection": [
-                {
-                    "label": <protection type label>,
-                    "acres": <acres of overlap>,
-                    "percent" <percent of overlap>
-                }
-            ],
-            "protected_areas" [<top 25 protected area names and areas>],
-            "num_protected_areas": <total number protected areas>
+            "entries": [{"value": <>, "label": <>, "acres": <>, "percent": <>}, ...],
+            "total_ownership_acres": <total_acres>,
+            "outside_ownership_acres": <nodata acres>,
+            "outside_ownership_percent": <nodata percent>,
+            "protected_areas": [{"name": <>, "owner": <>, "acres": <>}],
+            "num_protected_areas": <number of protected areas>
         }
     """
 
-    ownership = extract_ownership(df, use_bbox=True)
+    # prescreen to make sure data are present
+    with rasterio.open(mask_filename) as src:
+        if not rasterized_geometry.detect_data(src):
+            return None
 
-    if ownership is None or len(ownership) == 0:
-        return None
+    with rasterio.open(filename) as src:
+        ownership_acres = rasterized_geometry.get_acres_by_bin(src, bins=BINS)
 
-    results = dict()
-
-    by_owner = (
-        ownership[["Own_Type", "acres"]]
-        .groupby(by="Own_Type")
-        .acres.sum()
-        .astype("float32")
-        .to_dict()
+    total_acres = ownership_acres.sum()
+    nodata_acres = (
+        rasterized_geometry.acres - rasterized_geometry.outside_se_acres - total_acres
     )
-    # use the native order of OWNERSHIP to drive order of results
-    results["ownership"] = [
+
+    if nodata_acres < 1e-6:
+        nodata_acres = 0
+
+    entries = [
         {
-            "label": value["label"],
-            "acres": by_owner[key],
-            "percent": 100 * by_owner[key] / total_acres,
+            "value": i,
+            "label": LABELS[i],
+            "acres": acres.item(),
+            "percent": (100 * acres / rasterized_geometry.acres).item(),
         }
-        for key, value in OWNERSHIP.items()
-        if key in by_owner
+        for i, acres in enumerate(ownership_acres)
     ]
 
-    by_protection = (
-        ownership[["GAP_Sts", "acres"]]
-        .groupby(by="GAP_Sts")
-        .acres.sum()
-        .astype("float32")
-        .to_dict()
-    )
-    # use the native order of PROTECTION to drive order of results
-    results["protection"] = [
-        {
-            "label": value["label"],
-            "acres": by_protection[key],
-            "percent": 100 * by_protection[key] / total_acres,
-        }
-        for key, value in PROTECTION.items()
-        if key in by_protection
-    ]
+    protected_areas = []
+    num_protected_areas = 0
 
-    # only list areas >= 1 acre
-    by_area = (
-        ownership.loc[ownership.acres >= 1][["Loc_Nm", "Loc_Own", "acres"]]
-        .groupby(by=["Loc_Nm", "Loc_Own"])
-        .acres.sum()
-        .astype("float32")
-        .round()
-        .reset_index()
-        .rename(columns={"Loc_Nm": "name", "Loc_Own": "owner"})
-        .sort_values(by="acres", ascending=False)
-    ).head(25)
-    by_area.loc[by_area.name == "", "name"] = "Unknown name"
-    by_area.loc[by_area.owner == "", "owner"] = "Unknown owner"
+    ownership_records = extract_ownership(df, use_bbox=True)
+    if ownership_records is not None:
+        # only list areas >= 1 acre
+        by_area = (
+            ownership_records.loc[ownership_records.acres >= 1][
+                ["name", "owner", "acres"]
+            ]
+            .groupby(by=["name", "owner"])
+            .acres.sum()
+            .astype("float32")
+            .round()
+            .reset_index()
+            .sort_values(by="acres", ascending=False)
+        ).head(25)
+        by_area.loc[by_area.name == "", "name"] = "Unknown name"
 
-    results["protected_areas"] = by_area.to_dict(orient="records")
-    results["num_protected_areas"] = len(by_area)
+        protected_areas = by_area.to_dict(orient="records")
+        num_protected_areas = len(by_area)
 
-    # calculate total non-overlapping protected area
-    ownership["group"] = 1
-    total_protected_acres = (
-        shapely.area(dissolve(ownership.explode(), by="group").geometry.values)
-        * M2_ACRES
-    ).sum()
-
-    results["total_protected_acres"] = total_protected_acres.item()
-    results["total_protected_percent"] = (
-        100 * total_protected_acres.item() / total_acres
-    )
-
-    return results
+    return {
+        "entries": entries,
+        "total_ownership_acres": total_acres,
+        "outside_ownership_acres": nodata_acres,
+        "outside_ownership_percent": 100 * nodata_acres / rasterized_geometry.acres,
+        "protected_areas": protected_areas,
+        "num_protected_areas": num_protected_areas,
+    }
 
 
-def summarize_ownership_by_units(df, out_dir):
+def summarize_ownership_by_units(df, units_grid, out_dir):
     """Calculate overlap with ownership and protection
 
     Parameters
     ----------
     df : GeoDataFrame
         contains unit boundaries, indexed by id
+    units_grid : SummaryUnitGrid instance
     out_dir : str
     """
     print("Calculating overlap with land ownership and protection")
 
-    index_name = df.index.name
-    ownership = extract_ownership(df, use_bbox=False)
+    if (
+        not len(df.columns.intersection({"value", "rasterized_acres", "outside_se"}))
+        == 3
+    ):
+        raise ValueError(
+            "GeoDataFrame for summary must include value, rasterized_acres, outside_se columns"
+        )
 
-    if df is None:
-        return
+    with rasterio.open(filename) as value_dataset:
+        cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
 
-    by_owner = (
-        ownership[["Own_Type", "acres"]]
-        .groupby([index_name, "Own_Type"])
-        .acres.sum()
-        .astype("float32")
-        .round()
-        .reset_index()
+        ownership_acres = (
+            summarize_raster_by_units_grid(
+                df,
+                units_grid,
+                value_dataset,
+                bins=BINS,
+                progress_label="Summarizing ownership",
+            )
+            * cellsize
+        )
+
+    total_acres = ownership_acres.sum(axis=1)
+    nodata_acres = df.rasterized_acres - df.outside_se - total_acres
+    nodata_acres[nodata_acres < 1e-6] = 0
+
+    ownership = pd.DataFrame(
+        ownership_acres,
+        columns=[f"ownership_{v}" for v in BINS],
+        index=df.index,
     )
-    by_owner.to_feather(out_dir / "ownership.feather")
+    ownership["total_ownership_acres"] = total_acres
+    ownership["outside_ownership_acres"] = nodata_acres
 
-    by_protection = (
-        ownership[["GAP_Sts", "acres"]]
-        .groupby([index_name, "GAP_Sts"])
-        .acres.sum()
-        .astype("float32")
-        .round()
-        .reset_index()
-    )
-    by_protection.to_feather(out_dir / "protection.feather")
-
-    # calculate total non-overlapping protected area
-    total_protected = dissolve(ownership.explode(), by=index_name)
-    total_protected["acres"] = (
-        shapely.area(total_protected.geometry.values) * M2_ACRES
-    ).astype("float32")
-    total_protected[["id", "acres"]].to_feather(out_dir / "total_protected.feather")
+    ownership.reset_index().to_feather(out_dir / "ownership.feather")
 
 
 def get_ownership_unit_results(results_dir, unit):
@@ -278,75 +262,47 @@ def get_ownership_unit_results(results_dir, unit):
 
     Returns
     -------
-    dict
+    dict or None
         {
-            "ownership": [{"label": <label>, "acres": <acres>, "percent": <percent>, ...}],
-            "protection": [{"label": <label>, "acres": <acres>, "percent": <percent>, ...}],
+            "entries": [{"value": <>, "label": <>, "acres": <>, "percent": <>}, ...],
+            "total_ownership_acres": <total_acres>,
+            "outside_ownership_acres": <nodata acres>,
+            "outside_ownership_percent": <nodata percent>,
+            "protected_areas": [{"name": <>, "owner": <>, "acres": <>}],
+            "num_protected_areas": <number of protected areas>
         }
-
-        ownership or protection keys will be absent if there is not data of that type
     """
 
-    results = {}
-
-    # read ownership / protection (may be empty)
+    # read ownership / protection (may be empty for unit)
     ownership_results = read_unit_from_feather(
         results_dir / "ownership.feather", unit.name
     )
 
-    if len(ownership_results) > 0:
-        ownerships_present = ownership_results.Own_Type.unique()
-        # use the native order of OWNERSHIP to drive order of results
-        results["ownership"] = [
-            {
-                "value": value["value"],
-                "label": value["label"],
-                "acres": ownership_results.loc[ownership_results.Own_Type == key]
-                .iloc[0]
-                .acres,
-                "percent": 100
-                * ownership_results.loc[ownership_results.Own_Type == key].iloc[0].acres
-                / unit.acres,
-            }
-            for key, value in OWNERSHIP.items()
-            if key in ownerships_present
-        ]
+    if len(ownership_results) == 0:
+        return None
 
-    protection_results = read_unit_from_feather(
-        results_dir / "protection.feather", unit.name
-    )
-    if len(protection_results) > 0:
-        protection_present = protection_results.GAP_Sts.unique()
-        # use the native order of PROTECTION to drive order of results
-        results["protection"] = [
-            {
-                "value": value["value"],
-                "label": value["label"],
-                "acres": protection_results.loc[protection_results.GAP_Sts == key]
-                .iloc[0]
-                .acres,
-                "percent": 100
-                * protection_results.loc[protection_results.GAP_Sts == key]
-                .iloc[0]
-                .acres
-                / unit.acres,
-            }
-            for key, value in PROTECTION.items()
-            if key in protection_present
-        ]
+    ownership_results = ownership_results.iloc[0]
 
-    # lists of protected areas omitted for summary units; these are often too long
-    # and not useful
+    cols = [c for c in ownership_results.index if c.startswith("ownership_")]
+    ownership_acres = ownership_results[cols].values
 
-    # read total protected area
-    total_protected = read_unit_from_feather(
-        results_dir / "total_protected.feather", unit.name
-    )
-    if len(total_protected) > 0:
-        total_protected_acres = total_protected.acres.values[0]
-        results["total_protected_acres"] = total_protected_acres.item()
-        results["total_protected_percent"] = (
-            100 * total_protected_acres.item() / unit.acres
-        )
+    ownership = [
+        {
+            "value": entry["value"],
+            "label": entry["label"],
+            "acres": ownership_acres[entry["value"]].item(),
+            "percent": (
+                100 * ownership_acres[entry["value"]] / unit.rasterized_acres
+            ).item(),
+        }
+        for entry in OWNERSHIP
+    ]
 
-    return results
+    return {
+        "entries": ownership,
+        "total_ownership_acres": ownership_results.total_ownership_acres,
+        "outside_ownership_acres": (ownership_results.outside_ownership_acres).item(),
+        "outside_ownership_percent": (
+            100 * ownership_results.outside_ownership_acres / unit.rasterized_acres
+        ).item(),
+    }

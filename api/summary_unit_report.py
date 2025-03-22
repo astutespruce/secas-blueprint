@@ -58,7 +58,6 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
         slr="slr" in results and results["slr"].get("na", False) is not True,
         wildfire_risk="wildfire_risk" in results,
         ownership="ownership" in results,
-        protection="protection" in results,
     )
 
     if map_errors:

@@ -69,7 +69,9 @@ def get_summary_unit_results(unit_type, unit_id):
     if blueprint_results is not None:
         results.update(blueprint_results)
 
-    results.update(get_ownership_unit_results(results_dir, unit))
+    ownership_results = get_ownership_unit_results(results_dir, unit)
+    if ownership_results is not None:
+        results["ownership"] = ownership_results
 
     if unit_type == "huc12":
         parca_results = get_parca_results(results_dir, unit)

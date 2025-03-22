@@ -94,10 +94,11 @@ print(
 
 tilesets = []
 
+# NOTE: ownership tiles are only used in pixel mode to reveal the ownership at that location
 print("creating ownership tiles")
 df = read_dataframe(
     data_dir / "inputs/boundaries/ownership.fgb",
-    columns=["geometry", "Own_Type", "GAP_Sts", "Loc_Nm", "Loc_Own"],
+    columns=["geometry", "name", "owner"],
     use_arrow=True,
 ).to_crs(GEO_CRS)
 

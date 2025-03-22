@@ -12,7 +12,7 @@ parca_filename = src_dir / "parca.feather"
 
 
 def get_parcas_for_aoi(df):
-    """Get ownership and protection levels and other statistics for the DataFrame
+    """Get list of PARCAs for the DataFrame
 
     Parameters
     ----------
@@ -42,7 +42,7 @@ def get_parcas_for_aoi(df):
 
 
 def summarize_parcas_by_units(df, out_dir):
-    """Calculate overlap with ownership and protection
+    """Calculate overlap with PARCAs
 
     Parameters
     ----------

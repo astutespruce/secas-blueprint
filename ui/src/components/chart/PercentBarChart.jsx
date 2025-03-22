@@ -7,7 +7,6 @@ import PropTypes from 'prop-types'
 
 import { Box, Flex, Progress, Text, jsx } from 'theme-ui'
 
-import theme from 'theme'
 import { formatPercent } from 'util/format'
 
 const PercentBarChart = ({ label, percent, color, ...props }) => (
@@ -51,7 +50,7 @@ PercentBarChart.propTypes = {
 }
 
 PercentBarChart.defaultProps = {
-  color: theme.colors.primary,
+  color: 'grey.8',
   percent: 0,
 }
 

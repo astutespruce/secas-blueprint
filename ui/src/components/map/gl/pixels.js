@@ -259,37 +259,21 @@ export const extractPixelData = (
     }
   }
 
-  // extract ownership info
-  const ownership = {}
-  const protection = {}
+  // extract protected areas from vector tiles
   const protectedAreas = []
   const ownershipFeatures = features.filter(
     ({ layer: { id } }) => id === 'ownership'
   )
   if (ownershipFeatures.length > 0) {
-    ownershipFeatures.forEach(
-      ({
-        properties: {
-          Loc_Own: owner,
-          GAP_Sts: gapStatus,
-          Loc_Nm: areaName,
-          Own_Type: orgType,
-        },
-      }) => {
-        // hardcode in percent
-        ownership[orgType] = 100
-        protection[gapStatus] = 100
-        protectedAreas.push({ name: areaName, owner })
-      }
-    )
+    ownershipFeatures.forEach(({ properties: { name, owner } }) => {
+      protectedAreas.push({ name, owner })
+    })
   }
 
   return {
     subregions,
     outsideSEPercent: 0,
     ...data,
-    ownership,
-    protection,
     protectedAreas,
   }
 }

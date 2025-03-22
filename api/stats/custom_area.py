@@ -120,10 +120,10 @@ async def get_custom_area_results(df, progress_callback=None):
         await progress_callback(95)
 
     # start = time()
-    ownership_info = summarize_ownership_in_aoi(df, total_acres=acres)
+    ownership = summarize_ownership_in_aoi(rasterized_geometry, df)
     # print(f"ownership elapsed: {time() - start:.4f}s")
-    if ownership_info is not None:
-        results.update(ownership_info)
+    if ownership is not None:
+        results["ownership"] = ownership
 
     if progress_callback is not None:
         await progress_callback(99)

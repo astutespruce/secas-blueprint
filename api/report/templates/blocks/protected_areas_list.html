@@ -2,15 +2,15 @@
     <h3 id="ProtectedAreas" style="margin-bottom: 2pt;">Protected Areas</h3>
 
     <ul>
-        {% for entry in results.protected_areas %}
+        {% for entry in results.ownership.protected_areas %}
             <li>
-                {{entry.name}} ({{entry.owner}}{% if entry.owner %}; {% endif %}{{entry.acres|format_number}} acres)
+                {{entry.name}} ({% if entry.owner %}{{entry.owner}}; {% endif %}{{entry.acres|format_number}} acres)
             </li>
         {% endfor %}
 
-        {% if results.num_protected_areas > 25 %}
+        {% if results.ownership.num_protected_areas > 25 %}
             <li>
-                ... and {{(results.num_protected_areas - 25)|format_number}} more protected areas ...
+                ... and {{(results.ownership.num_protected_areas - 25)|format_number}} more protected areas ...
             </li>
         {% endif %}
     </ul>

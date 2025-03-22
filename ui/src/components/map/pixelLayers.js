@@ -9,7 +9,6 @@ import {
   slrNodata,
   wildfireRisk,
   ownership,
-  protection,
 } from 'config'
 import { indexBy, sortByFunc } from 'util/data'
 
@@ -307,23 +306,17 @@ export const pixelLayers = [
     bounds: [-108.0227, 16.98923, -57.08541, 41.58111],
     encoding: [
       { id: 'wildfireRisk', offset: 0, bits: 4, valueShift: 1 },
-      { id: 'ownership', offset: 4, bits: 4, valueShift: 0 },
-      { id: 'protection', offset: 8, bits: 3, valueShift: 0 },
+      { id: 'ownership', offset: 4, bits: 2, valueShift: 1 },
       {
         id: 'f_gulfmigratoryfishconnectivity',
-        offset: 11,
+        offset: 6,
         bits: 2,
         valueShift: 1,
       },
-      {
-        id: 'm_estuarinecoastalcondition',
-        offset: 13,
-        bits: 3,
-        valueShift: 1,
-      },
+      { id: 'm_estuarinecoastalcondition', offset: 8, bits: 3, valueShift: 1 },
       {
         id: 't_eastcoastalplainopenpinebirds',
-        offset: 16,
+        offset: 11,
         bits: 3,
         valueShift: 1,
       },
@@ -424,21 +417,10 @@ const otherInfoLayers = [
   },
   {
     id: 'ownership',
-    label: 'Conserved lands ownership',
+    label: 'Conserved areas',
     colors: ownership.map(({ color }) => color),
-    categories: ownership
-      .filter(({ color }) => color !== null)
-      .map(({ code, ...rest }) => ({ ...rest, value: code })),
+    categories: ownership.filter(({ color }) => color !== null),
     layer: pixelLayerIndex.ownership,
-  },
-  {
-    id: 'protection',
-    label: 'Protection status',
-    colors: protection.map(({ color }) => color),
-    categories: protection
-      .filter(({ color }) => color !== null)
-      .map(({ code, ...rest }) => ({ ...rest, value: code })),
-    layer: pixelLayerIndex.protection,
   },
 ]
 

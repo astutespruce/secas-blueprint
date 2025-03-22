@@ -165,6 +165,7 @@ export const unpackFeatureData = (
   const scaledColumns = [
     'blueprint',
     'corridors',
+    'ownership',
     'slrDepth',
     'slrNodata',
     'urban',
@@ -184,22 +185,6 @@ export const unpackFeatureData = (
     indicatorInfo,
     values.subregions
   )
-
-  if (values.ownership) {
-    Object.keys(values.ownership).forEach((k) => {
-      values.ownership[k] *= 0.1
-    })
-  } else {
-    values.ownership = {}
-  }
-
-  if (values.protection) {
-    Object.keys(values.protection).forEach((k) => {
-      values.protection[k] *= 0.1
-    })
-  } else {
-    values.protection = {}
-  }
 
   // rename specific fields for easier use later
   values.unitType = values.type

@@ -58,7 +58,6 @@ for state in states.NAME.values:
         slr="slr" in results,
         wildfire_risk="wildfire_risk" in results,
         ownership="ownership" in results,
-        protection="protection" in results,
         add_mask=True,
     )
 
