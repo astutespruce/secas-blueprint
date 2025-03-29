@@ -1,4 +1,0 @@
-[
-  { "value": 0, "label": "Not within a conserved area", "color": null },
-  { "value": 1, "label": "Within a conserved area", "color": "#359935" }
-]

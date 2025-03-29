@@ -9,7 +9,7 @@ import rasterio
 from rasterio.features import rasterize
 import shapely
 
-from analysis.constants import SECAS_STATES, OWNERSHIP, MASK_RESOLUTION
+from analysis.constants import SECAS_STATES, PROTECTED_AREAS, MASK_RESOLUTION
 from analysis.lib.colors import hex_to_uint8
 from analysis.lib.geometry import make_valid, to_dict_all, dissolve
 from analysis.lib.raster import write_raster, add_overviews, create_lowres_mask
@@ -18,7 +18,7 @@ warnings.filterwarnings("ignore", message=".*polygon with more than 100 parts.*"
 
 NODATA = 255
 
-src_dir = Path("source_data/ownership")
+src_dir = Path("source_data/protected_areas")
 data_dir = Path("data")
 out_dir = data_dir / "inputs/boundaries"  # used as inputs for other steps
 constants_dir = Path("constants")
@@ -167,16 +167,16 @@ df.owner.drop_duplicates().to_csv("/tmp/names.csv", index=False)
 
 # Use FGB (instead of Feather) for more optimal reading by area of interest
 print("Writing files")
-write_dataframe(df[["name", "owner", "geometry"]], out_dir / "ownership.fgb")
+write_dataframe(df[["name", "owner", "geometry"]], out_dir / "protected_areas.fgb")
 
 
 ################################################################################
 ### Rasterize to protected (1) or not (0)
 ################################################################################
 
-ownership = pd.DataFrame(OWNERSHIP)
-ownership_colormap = (
-    ownership.set_index("value")
+protected_areas = pd.DataFrame(PROTECTED_AREAS)
+protected_areas_colormap = (
+    protected_areas.set_index("value")
     .color.apply(lambda x: hex_to_uint8(x) + (255,) if x else (255, 255, 255, 0))
     .to_dict()
 )
@@ -189,7 +189,7 @@ extent_data = extent.read(1)
 align_ul = np.take(extent.transform, [2, 5]).tolist()
 
 
-print("Rasterizing ownership")
+print("Rasterizing protected areas")
 data = rasterize(
     to_dict_all(df.geometry.values),
     transform=extent.transform,
@@ -201,7 +201,7 @@ data = rasterize(
 
 data = np.where(extent_data == 1, data, NODATA)
 
-outfilename = out_dir / "ownership.tif"
+outfilename = out_dir / "protected_areas.tif"
 write_raster(
     outfilename,
     data,
@@ -213,13 +213,13 @@ write_raster(
 del data
 
 with rasterio.open(outfilename, "r+") as out:
-    out.write_colormap(1, ownership_colormap)
+    out.write_colormap(1, protected_areas_colormap)
 
 add_overviews(outfilename)
 
 create_lowres_mask(
     outfilename,
-    out_dir / "ownership_mask.tif",
+    out_dir / "protected_areas_mask.tif",
     resolution=MASK_RESOLUTION,
     ignore_zero=False,
 )

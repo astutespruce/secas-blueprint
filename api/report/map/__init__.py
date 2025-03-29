@@ -14,7 +14,7 @@ from .util import pad_bounds, get_center, merge_maps, to_png_bytes
 from analysis.constants import (
     BLUEPRINT_COLORS,
     CORRIDORS_COLORS,
-    OWNERSHIP_COLORS,
+    PROTECTED_AREAS_COLORS,
     URBAN_COLORS,
     SLR_LEGEND,
     INDICATORS_INDEX,
@@ -31,7 +31,7 @@ PADDING = 5
 src_dir = Path("data/inputs")
 blueprint_filename = src_dir / "blueprint.tif"
 corridors_filename = src_dir / "corridors.tif"
-ownership_filename = src_dir / "boundaries/ownership.tif"
+protected_areas_filename = src_dir / "boundaries/protected_areas.tif"
 urban_filename = src_dir / "threats/urban/urban_2060_binned.tif"
 slr_filename = src_dir / "threats/slr/slr.tif"
 wildfire_risk_filename = src_dir / "threats/wildfire_risk/wildfire_risk.tif"
@@ -79,7 +79,7 @@ async def render_raster_maps(
     urban=False,
     slr=False,
     wildfire_risk=False,
-    ownership=False,
+    protected_areas=False,
 ):
     """Asynchronously render Raster maps.
 
@@ -100,8 +100,8 @@ async def render_raster_maps(
         if True, will render SLR map
     wildfire_risk : bool (default False)
         if True, will render wildfire_risk map
-    ownership : bool (default False)
-        if True, will render ownership map
+    protected_areas : bool (default False)
+        if True, will render protected_areas map
 
     Returns
     -------
@@ -150,9 +150,9 @@ async def render_raster_maps(
         colors = WILDFIRE_RISK_COLORS
         task_args.append(("wildfire_risk", wildfire_risk_filename, colors))
 
-    if ownership:
-        colors = OWNERSHIP_COLORS
-        task_args.append(("ownership", ownership_filename, colors))
+    if protected_areas:
+        colors = PROTECTED_AREAS_COLORS
+        task_args.append(("protected_areas", protected_areas_filename, colors))
 
     # NOTE: have to have handle on pending or task loop gets closed too soon
     completed, pending = await asyncio.wait(
@@ -180,7 +180,7 @@ async def render_maps(
     urban=False,
     slr=False,
     wildfire_risk=False,
-    ownership=False,
+    protected_areas=False,
     add_mask=False,
 ):
     """Render maps for locator and each raster dataset that overlaps with area
@@ -204,8 +204,8 @@ async def render_maps(
         If True, sea level rise will be rendered.
     wildfire_risk : bool, optional (default: False)
         If True, wildfire risk will be rendered.
-    ownership : bool, optional (default: False)
-        If True, ownership will be rendered.
+    protected_areas : bool, optional (default: False)
+        If True, protected areas will be rendered.
     add_mask : bool, optional (default: False)
         If True, will add a light transparent mask outside geometry
 
@@ -267,7 +267,7 @@ async def render_maps(
         urban,
         slr,
         wildfire_risk,
-        ownership,
+        protected_areas,
     )
 
     maps.update(raster_maps)

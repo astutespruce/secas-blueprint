@@ -82,35 +82,6 @@ def delta_encode_values(df, total, scale=100):
     )
 
 
-def encode_ownership_protection(df, field):
-    """Calculate dictionary-encoded values for land ownership or protection
-
-    For example:
-        FED:<fed_percent * 10>,LOC: <loc_percent * 10>, ...
-
-    Parameters
-    ----------
-    df : DataFrame
-        must include field, "acres", "total_acres"
-    field : str
-        name of field to dictionary encode
-
-    Returns
-    -------
-    Series
-    """
-    # calculate percent * 10% (percent at 1 decimal place)
-    df["percent"] = (1000 * df.acres / df.total_acres).round().astype("uint")
-    # drop anything that rounded to 0%
-    df = df.loc[df.percent > 0].copy()
-
-    return pd.Series(
-        (df[field] + ":" + df.percent.astype("str"))
-        .groupby(level=0)
-        .apply(lambda r: ",".join(v for v in r))
-    )
-
-
 def encode_blueprint(df):
     """Encode Blueprint, Corridors, and Indicators
 

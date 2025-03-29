@@ -6,7 +6,7 @@ import shapely
 
 from analysis.constants import M2_ACRES
 from analysis.lib.stats.blueprint import summarize_blueprint_in_aoi
-from analysis.lib.stats.ownership import summarize_ownership_in_aoi
+from analysis.lib.stats.protected_areas import summarize_protected_areas_in_aoi
 from analysis.lib.stats.parca import get_parcas_for_aoi
 from analysis.lib.stats.rasterized_geometry import RasterizedGeometry
 from analysis.lib.stats.slr import summarize_slr_in_aoi
@@ -77,11 +77,9 @@ async def get_custom_area_results(df, progress_callback=None):
             # blueprint progress scales between 5 and 60% of total progress
             await progress_callback(5 + int(round((percent / 100) * 55)))
 
-    # start = time()
     blueprint = await summarize_blueprint_in_aoi(
         rasterized_geometry, subregions, progress_callback=blueprint_progress_callback
     )
-    # print(f"blueprint elapsed: {time() - start:.4f}s")
     results.update(blueprint)
 
     if progress_callback is not None:
@@ -92,20 +90,16 @@ async def get_custom_area_results(df, progress_callback=None):
             # urban progress scales between 60 and 80% of total progress
             await progress_callback(60 + int(round((percent / 100) * 20)))
 
-    # start = time()
     urban = await summarize_urban_in_aoi(
         rasterized_geometry, progress_callback=urban_progress_callback
     )
-    # print(f"urban elapsed: {time() - start:.4f}s")
     if urban is not None:
         results["urban"] = urban
 
     if progress_callback is not None:
         await progress_callback(80)
 
-    # start = time()
     slr = summarize_slr_in_aoi(rasterized_geometry, geometry=geometry)
-    # print(f"slr elapsed: {time() - start:.4f}s")
     if slr is not None:
         results["slr"] = slr
 
@@ -119,11 +113,9 @@ async def get_custom_area_results(df, progress_callback=None):
     if progress_callback is not None:
         await progress_callback(95)
 
-    # start = time()
-    ownership = summarize_ownership_in_aoi(rasterized_geometry, df)
-    # print(f"ownership elapsed: {time() - start:.4f}s")
-    if ownership is not None:
-        results["ownership"] = ownership
+    protected_areas = summarize_protected_areas_in_aoi(rasterized_geometry, df)
+    if protected_areas is not None:
+        results["protected_areas"] = protected_areas
 
     if progress_callback is not None:
         await progress_callback(99)

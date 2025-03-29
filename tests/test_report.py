@@ -188,7 +188,7 @@ for aoi in aois:
             urban="urban" in results,
             slr="slr" in results,
             wildfire_risk="wildfire_risk" in results,
-            ownership="ownership" in results,
+            protected_areas="protected_areas" in results,
             add_mask=results["acres"] >= 1e9,
         )
 
@@ -223,7 +223,7 @@ ids = {
         # "031002010205",  # in base blueprint but with SLR present
         # "210100070101",  # in Caribbean
         #     #     # "031101020903",  # Florida with inland marine indicators
-        #     #     #     #     #     # "031102050805",  # Florida gulf coast
+        # "031102050805",  # Florida gulf coast
         #     #     # "030902061101"  # area with SLR not modeled
         #     "030102051002"  # area with both marine and inland hubs / corridors
     ],
@@ -266,7 +266,7 @@ for unit_type in ids:
                 urban="urban" in results,
                 slr="slr" in results,
                 wildfire_risk="wildfire_risk" in results,
-                ownership="ownership" in results,
+                protected_areas="protected_areas" in results,
             )
             maps, scale, errors = asyncio.run(task)
 

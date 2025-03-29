@@ -87,32 +87,32 @@ create_tileset(
     col_types=get_col_types(df),
 )
 
-### Create ownership and subregion tiles
+### Create protected areas and subregion tiles
 print(
     "\n\n------------------------------------------------\nCreating protected areas and subregion tiles\n------------------------------------------------\n"
 )
 
 tilesets = []
 
-# NOTE: ownership tiles are only used in pixel mode to reveal the ownership at that location
-print("creating ownership tiles")
+# NOTE: protected areas tiles are only used in pixel mode to reveal the protected areas name and owner at that location
+print("creating protected areas tiles")
 df = read_dataframe(
-    data_dir / "inputs/boundaries/ownership.fgb",
+    data_dir / "inputs/boundaries/protected_areas.fgb",
     columns=["geometry", "name", "owner"],
     use_arrow=True,
 ).to_crs(GEO_CRS)
 
-infilename = tmp_dir / "ownership.fgb"
+infilename = tmp_dir / "protected_areas.fgb"
 write_dataframe(df, infilename)
 
-outfilename = tmp_dir / "se_ownership.mbtiles"
+outfilename = tmp_dir / "protected_areas.mbtiles"
 tilesets.append(outfilename)
 create_tileset(
     infilename,
     outfilename,
     minzoom=4,
     maxzoom=14,
-    layer_id="ownership",
+    layer_id="protectedAreas",
     col_types=get_col_types(df),
 )
 

@@ -4,14 +4,14 @@ import rawBlueprint from '../../constants/blueprint.json'
 import rawCorridors from '../../constants/corridors.json'
 import ecosystems from '../../constants/ecosystems.json'
 import rawIndicators from '../../constants/indicators.json'
-import ownership from '../../constants/ownership.json'
+import protectedAreas from '../../constants/protected_areas.json'
 import rawSLR from '../../constants/slr.json'
 import subregions from '../../constants/subregions.json'
 import urban from '../../constants/urban.json'
 import wildfireRisk from '../../constants/wildfire_risk.json'
 
 // export unmodified values directly
-export { ecosystems, ownership, subregions, urban, wildfireRisk }
+export { ecosystems, protectedAreas, subregions, urban, wildfireRisk }
 
 // Sort by descending value
 export const blueprint = rawBlueprint.sort(

@@ -76,7 +76,7 @@ export const Provider = ({ children }) => {
       activeValues: Object.fromEntries(range(0, 11).map((v) => [v, true])),
     }
 
-    initFilters.ownership = {
+    initFilters.protectedAreas = {
       enabled: false,
       // values 0-1
       activeValues: { 0: false, 1: true },

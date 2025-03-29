@@ -20,7 +20,7 @@ from analysis.constants import (
     SLR_NODATA_VALUES,
     DATA_CRS,
     WILDFIRE_RISK,
-    OWNERSHIP,
+    PROTECTED_AREAS,
 )
 from analysis.lib.raster import write_raster, shift_window, clip_window
 
@@ -36,7 +36,7 @@ corridors_filename = inputs_dir / "corridors.tif"
 urban_filename = inputs_dir / "threats/urban/urban_2060_binned.tif"
 slr_filename = inputs_dir / "threats/slr/slr.tif"
 wildfire_risk_filename = inputs_dir / "threats/wildfire_risk/wildfire_risk.tif"
-ownership_filename = inputs_dir / "boundaries/ownership.tif"
+protected_areas_filename = inputs_dir / "boundaries/protected_areas.tif"
 
 
 # very small amount added to numbers to make sure that log2 gives us current number of bytes
@@ -101,10 +101,10 @@ core = pd.DataFrame(
         },
         {
             "ecosystem": "otherInfo",
-            "id": "ownership",
-            "filename": ownership_filename,
-            "min_value": OWNERSHIP[0]["value"],
-            "max_value": OWNERSHIP[-1]["value"],
+            "id": "protectedAreas",
+            "filename": protected_areas_filename,
+            "min_value": PROTECTED_AREAS[0]["value"],
+            "max_value": PROTECTED_AREAS[-1]["value"],
         },
     ]
 )

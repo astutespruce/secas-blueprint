@@ -236,7 +236,7 @@ const DownloadModal = ({ id, type, onClose }) => {
           Create and download a Blueprint summary report for this area. This
           detailed report includes maps and analysis of the Blueprint priorities
           and each indicator present in this area, as well as potential threats
-          and information about land ownership and partners.
+          and protected areas.
         </Paragraph>
         <Text sx={{ mt: '1rem' }}>
           Note: we have made every possible effort to ensure that the

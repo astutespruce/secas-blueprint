@@ -11,7 +11,7 @@ from analysis.constants import (
     CORRIDORS,
     URBAN_LEGEND,
     SLR_LEGEND,
-    OWNERSHIP,
+    PROTECTED_AREAS,
     WILDFIRE_RISK_LEGEND,
 )
 from api.report.format import format_number, format_percent
@@ -101,8 +101,8 @@ def create_report(maps, results, name=None, area_type="custom"):
     if "wildfire_risk" in results:
         legends["wildfire_risk"] = WILDFIRE_RISK_LEGEND
 
-    if "ownership" in results:
-        legends["ownership"] = OWNERSHIP[::-1]
+    if "protected_areas" in results:
+        legends["protected_areas"] = PROTECTED_AREAS[::-1]
 
     context = {
         "date": date.today().strftime("%m/%d/%Y"),

@@ -141,11 +141,11 @@ const Map = () => {
 
     const { lng: longitude, lat: latitude } = map.getCenter()
 
-    // If ownership isn't loaded yet, schedule a callback once tiles are loaded
+    // If protected areas tiles aren't loaded yet, schedule a callback once tiles are loaded
     if (
       !(
-        map.style._otherSourceCaches.ownership &&
-        map.style._otherSourceCaches.ownership.loaded()
+        map.style._otherSourceCaches.protectedAreas &&
+        map.style._otherSourceCaches.protectedAreas.loaded()
       )
     ) {
       setMapData({
@@ -305,7 +305,7 @@ const Map = () => {
             data: { visible: true },
           })
 
-          map.setLayoutProperty('ownership', 'visibility', 'visible')
+          map.setLayoutProperty('protectedAreas', 'visibility', 'visible')
           map.setLayoutProperty('subregions', 'visibility', 'visible')
 
           map.once('idle', getPixelData)
@@ -456,7 +456,7 @@ const Map = () => {
         'visibility',
         isVisible ? 'visible' : 'none'
       )
-      map.setLayoutProperty('ownership', 'visibility', 'none')
+      map.setLayoutProperty('protectedAreas', 'visibility', 'none')
       map.setLayoutProperty('subregions', 'visibility', 'none')
 
       // disable pixel layer event listener
@@ -499,7 +499,7 @@ const Map = () => {
 
     map.setLayoutProperty('blueprint', 'visibility', 'none')
 
-    map.setLayoutProperty('ownership', 'visibility', 'visible')
+    map.setLayoutProperty('protectedAreas', 'visibility', 'visible')
     map.setLayoutProperty('subregions', 'visibility', 'visible')
     setPixelLayerProps(map, {
       visible: true,
@@ -706,7 +706,7 @@ const Map = () => {
                   visibility: 'none',
                 }
               }
-              if (l.id === 'ownership' || l.id === 'subregions') {
+              if (l.id === 'protectedAreas' || l.id === 'subregions') {
                 layer.layout = {
                   visibility: 'visible',
                 }

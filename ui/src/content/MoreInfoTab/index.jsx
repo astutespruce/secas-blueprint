@@ -4,7 +4,7 @@ import { Box, Flex, Divider, Heading } from 'theme-ui'
 
 import NeedHelp from 'content/NeedHelp'
 
-import Ownership from './Ownership'
+import ProtectedAreas from './ProtectedAreas'
 import SLR from './SLR'
 import Urban from './Urban'
 import WildfireRisk from './WildfireRisk'
@@ -15,8 +15,9 @@ const MoreInfoTab = ({
   urban,
   wildfireRisk,
   subregions,
-  ownership,
   protectedAreas,
+  protectedAreasList,
+  numProtectedAreas,
 }) => (
   <Box sx={{ py: '2rem', pl: '1rem', pr: '2rem' }}>
     {type === 'pixel' || type === 'subwatershed' ? (
@@ -61,11 +62,12 @@ const MoreInfoTab = ({
     ) : null}
 
     <Box as="section">
-      <Heading as="h3">Conserved Areas</Heading>
-      <Ownership
+      <Heading as="h3">Protected Areas</Heading>
+      <ProtectedAreas
         type={type}
-        ownership={ownership}
         protectedAreas={protectedAreas}
+        protectedAreasList={protectedAreasList}
+        numProtectedAreas={numProtectedAreas}
       />
     </Box>
 
@@ -94,16 +96,12 @@ MoreInfoTab.propTypes = {
     PropTypes.number,
   ]),
   subregions: PropTypes.object,
-  ownership: PropTypes.oneOfType([
+  protectedAreas: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.number),
     PropTypes.number,
   ]),
-  protectedAreas: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string,
-      owner: PropTypes.string,
-    })
-  ),
+  protectedAreasList: PropTypes.arrayOf(PropTypes.string),
+  numProtectedAreas: PropTypes.number,
 }
 
 MoreInfoTab.defaultProps = {
@@ -111,8 +109,9 @@ MoreInfoTab.defaultProps = {
   urban: null,
   wildfireRisk: null,
   subregions: null,
-  ownership: null,
-  protectedAreas: null, // only present in pixel mode
+  protectedAreas: null,
+  protectedAreasList: null,
+  numProtectedAreas: 0,
 }
 
 export default MoreInfoTab

@@ -136,6 +136,10 @@ export const unpackFeatureData = (
         return [key, null]
       }
 
+      if (key === 'protectedAreasList') {
+        return [key, value ? value.split('|') : []]
+      }
+
       if (value.indexOf('^') !== -1) {
         return [key, parseDeltaEncodedValues(value)]
       }
@@ -165,7 +169,7 @@ export const unpackFeatureData = (
   const scaledColumns = [
     'blueprint',
     'corridors',
-    'ownership',
+    'protectedAreas',
     'slrDepth',
     'slrNodata',
     'urban',

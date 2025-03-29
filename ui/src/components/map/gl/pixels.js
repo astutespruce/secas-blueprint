@@ -222,7 +222,7 @@ export const extractPixelData = (
 
   // extract info from feature data
   const features = map.queryRenderedFeatures(screenPoint, {
-    layers: ['ownership', 'subregions'],
+    layers: ['protectedAreas', 'subregions'],
   })
 
   const [{ properties: { subregion } } = { properties: {} }] = features.filter(
@@ -260,13 +260,17 @@ export const extractPixelData = (
   }
 
   // extract protected areas from vector tiles
-  const protectedAreas = []
-  const ownershipFeatures = features.filter(
-    ({ layer: { id } }) => id === 'ownership'
+  const protectedAreasList = []
+  const protectedAreasFeatures = features.filter(
+    ({ layer: { id } }) => id === 'protectedAreas'
   )
-  if (ownershipFeatures.length > 0) {
-    ownershipFeatures.forEach(({ properties: { name, owner } }) => {
-      protectedAreas.push({ name, owner })
+  if (protectedAreasFeatures.length > 0) {
+    protectedAreasFeatures.forEach(({ properties: { name, owner } }) => {
+      if (owner) {
+        protectedAreasList.push(`${name} (${owner})`)
+      } else {
+        protectedAreasList.push(name)
+      }
     })
   }
 
@@ -274,6 +278,7 @@ export const extractPixelData = (
     subregions,
     outsideSEPercent: 0,
     ...data,
-    protectedAreas,
+    protectedAreasList,
+    numProtectedAreas: protectedAreasList.length,
   }
 }

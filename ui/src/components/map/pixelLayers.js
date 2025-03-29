@@ -8,7 +8,7 @@ import {
   slrDepth,
   slrNodata,
   wildfireRisk,
-  ownership,
+  protectedAreas,
 } from 'config'
 import { indexBy, sortByFunc } from 'util/data'
 
@@ -306,7 +306,7 @@ export const pixelLayers = [
     bounds: [-108.0227, 16.98923, -57.08541, 41.58111],
     encoding: [
       { id: 'wildfireRisk', offset: 0, bits: 4, valueShift: 1 },
-      { id: 'ownership', offset: 4, bits: 2, valueShift: 1 },
+      { id: 'protectedAreas', offset: 4, bits: 2, valueShift: 1 },
       {
         id: 'f_gulfmigratoryfishconnectivity',
         offset: 6,
@@ -416,11 +416,11 @@ const otherInfoLayers = [
     layer: pixelLayerIndex.wildfireRisk,
   },
   {
-    id: 'ownership',
-    label: 'Conserved areas',
-    colors: ownership.map(({ color }) => color),
-    categories: ownership.filter(({ color }) => color !== null),
-    layer: pixelLayerIndex.ownership,
+    id: 'protectedAreas',
+    label: 'Protected areas',
+    colors: protectedAreas.map(({ color }) => color),
+    categories: protectedAreas.filter(({ color }) => color !== null),
+    layer: pixelLayerIndex.protectedAreas,
   },
 ]
 

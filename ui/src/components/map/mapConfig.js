@@ -51,11 +51,11 @@ export const sources = {
 }
 
 export const layers = [
-  // ownership and subregions is added with no fill in order to detect features in pixel mode
+  // protected areas and subregions are added with no fill in order to detect features in pixel mode
   {
-    id: 'ownership',
+    id: 'protectedAreas',
     source: 'pixelFeatures',
-    'source-layer': 'ownership',
+    'source-layer': 'protectedAreas',
     type: 'fill',
     minzoom: 5,
     layout: {

@@ -6,7 +6,7 @@ Source data are stored in `source_data`; see associated README files for data so
 
 1. `prepare_boundaries.py`: Prepare SE region boundary and mask for analysis and mapping
 2. `prepare_summary_units.py`: Compile and prepare summary units (HUC12, marine hexes) for analysis and mapping
-3. `prepare_ownership.py`: Prepare PAD-US ownership and protection data for analysis and mapping
+3. `prepare_protected_areas.py`: Prepare PAD-US protected areas data for analysis and mapping
 4. `prepare_blueprint.py`: Prepare SE Blueprint, corridors, and indicators for analysis and mapping
 5. `prepare_slr.py`: Prepare SLR data
 6. `prepare_urban.py` Prepare urbanization data
