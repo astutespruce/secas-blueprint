@@ -165,11 +165,11 @@ export const extractPixelData = (
   try {
     images.forEach((texture, i) => {
       cmd.copyTextureToBuffer({
-        source: texture,
+        sourceTexture: texture,
         width: 1,
         height: 1,
         origin: [offsetX, offsetY],
-        destination: buffer,
+        destinationBuffer: buffer,
         byteOffset: i * 4,
       })
     })

@@ -21,7 +21,7 @@
     "camelcase": "^8.0.0",
     "d3-scale": "^4.0.2",
     "d3-shape": "^3.0.1",
-    "deck.gl": "9.0",
+    "deck.gl": "^9.1.8",
     "dequal": "^2.0.2",
     "dotenv": "^16.4.7",
     "gatsby": "^5.14.1",

@@ -100,7 +100,7 @@
     <!-- only show list if there was any overlap with protected areas -->
     {% if results.protected_areas['entries'][1].acres > 0 %}
     <div class="no-break">
-        <h4 style="margin-bottom: 2pt;">Protected areas:</h4>
+        <h4 style="margin-bottom: 2pt;">Protected areas at this location:</h4>
         {% if results.protected_areas.num_protected_areas %}
             <ul>
                 {% for entry in results.protected_areas.protected_areas %}
