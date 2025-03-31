@@ -18,9 +18,8 @@ const DataSource = ({ addOverlapNote = false }) => (
     {addOverlapNote ? (
       <>
         Areas are listed based on name, ownership, and boundary information in
-        PAD-US, which may include overlapping areas as well as the same area
-        multiple times with slightly different name, ownership, and boundary
-        information.
+        the Protected Areas Database of the United States, which may include
+        overlapping and duplicate areas.
       </>
     ) : null}
   </Text>
