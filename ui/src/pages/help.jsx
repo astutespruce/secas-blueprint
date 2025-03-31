@@ -115,7 +115,7 @@ const HelpPage = ({
         <Paragraph>
           This mode allows you to select a subwatershed or marine hexagon and
           view data summaries and charts for the Blueprint, indicators, threats,
-          and land ownership.
+          and protected areas.
         </Paragraph>
 
         <Grid columns={[0, 2]} gap={4} sx={{ mt: '2rem' }}>

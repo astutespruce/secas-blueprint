@@ -16,9 +16,6 @@ into caret-delimited strings:
 
 Areas where there were no values present were converted to empty strings.  Areas
 where there was no change from the baseline just include the baseline.
-
-Values that could have multiple key:value entries (ownership, protection) are dictionary-encoded:
-FED:<fed_%>,LOC:<loc_%>,...
 """
 
 from pathlib import Path
@@ -34,6 +31,7 @@ from analysis.constants import (
     SLR_NODATA_COLS,
     NLCD_INDEXES,
     NLCD_YEARS,
+    PROTECTED_AREAS,
     URBAN_YEARS,
     WILDFIRE_RISK,
 )
@@ -41,7 +39,6 @@ from analysis.lib.attribute_encoding import (
     encode_values,
     delta_encode_values,
     encode_blueprint,
-    encode_ownership_protection,
 )
 
 
@@ -174,48 +171,47 @@ wildfire_risk = encode_values(
 ).rename("wildfire_risk")
 
 
-### Ownership / protection
-# Dictionary encode ownership and protection
-print("Encoding ownership / protection...")
-ownership_results = (
-    pd.read_feather(results_dir / "ownership.feather")
+### Protected areas
+print("Encoding protected areas")
+cols = [f"protected_areas_{e['value']}" for e in PROTECTED_AREAS]
+protected_areas_results = (
+    pd.read_feather(results_dir / "protected_areas.feather")
     .set_index("id")
-    .join(huc12.acres.rename("total_acres"), how="inner")
+    .join(huc12.rasterized_acres)
 )
-ownership = encode_ownership_protection(ownership_results, "Own_Type").rename(
-    "ownership"
-)
+protected_areas = encode_values(
+    protected_areas_results[cols], protected_areas_results.rasterized_acres, 1000
+).rename("protected_areas")
 
-protection_results = (
-    pd.read_feather(results_dir / "protection.feather")
-    .set_index("id")
-    .join(huc12.acres.rename("total_acres"), how="inner")
-)
-protection = encode_ownership_protection(protection_results, "GAP_Sts").rename(
-    "protection"
-)
 
-total_protected = (
-    pd.read_feather(results_dir / "total_protected.feather")
-    .set_index("id")
-    .join(huc12.acres.rename("total_acres"), how="inner")
+protected_areas_list = pd.read_feather(
+    results_dir / "protected_areas_list.feather", columns=["id", "name", "owner"]
 )
-total_protected["total_protected_percent"] = (
-    100 * total_protected.acres / total_protected.total_acres
-).astype("uint8")
+ix = protected_areas_list.owner != ""
+protected_areas_list.loc[ix, "name"] += " (" + protected_areas_list.loc[ix].owner + ")"
+num_protected_areas = (
+    protected_areas_list.groupby("id").size().rename("num_protected_areas")
+)
+protected_areas_list = (
+    protected_areas_list.groupby("id")
+    .name.apply(list)
+    # take the top 5
+    .apply(lambda x: x[:5])
+    .apply("|".join)
+    .rename("protected_areas_list")
+)
 
 
 huc12 = (
     huc12[["geometry", "name", "subregions", "type"]]
     .join(huc12[["acres", "rasterized_acres", "outside_se"]].round().astype("int"))
-    # .join(lta_search, how="left")
     .join(blueprint, how="left")
     .join(slr, how="left")
     .join(urban, how="left")
     .join(wildfire_risk, how="left")
-    .join(ownership, how="left")
-    .join(protection, how="left")
-    .join(total_protected.total_protected_percent, how="left")
+    .join(protected_areas, how="left")
+    .join(protected_areas_list, how="left")
+    .join(num_protected_areas, how="left")
 )
 
 
@@ -260,45 +256,43 @@ blueprint_results = (
 blueprint = encode_blueprint(blueprint_results)
 
 
-### Ownership / protection
-# Dictionary encode ownership and protection
-
-print("Encoding ownership / protection...")
-ownership_results = (
-    pd.read_feather(results_dir / "ownership.feather")
+### Protected areas
+print("Encoding protected areas...")
+cols = [f"protected_areas_{e['value']}" for e in PROTECTED_AREAS]
+protected_areas_results = (
+    pd.read_feather(results_dir / "protected_areas.feather")
     .set_index("id")
-    .join(marine.acres.rename("total_acres"), how="inner")
+    .join(marine.rasterized_acres)
 )
-ownership = encode_ownership_protection(ownership_results, "Own_Type").rename(
-    "ownership"
-)
+protected_areas = encode_values(
+    protected_areas_results[cols], protected_areas_results.rasterized_acres, 1000
+).rename("protected_areas")
 
-protection_results = (
-    pd.read_feather(results_dir / "protection.feather")
-    .set_index("id")
-    .join(marine.acres.rename("total_acres"), how="inner")
+protected_areas_list = pd.read_feather(
+    results_dir / "protected_areas_list.feather", columns=["id", "name", "owner"]
 )
-protection = encode_ownership_protection(protection_results, "GAP_Sts").rename(
-    "protection"
+ix = protected_areas_list.owner != ""
+protected_areas_list.loc[ix, "name"] += " (" + protected_areas_list.loc[ix].owner + ")"
+num_protected_areas = (
+    protected_areas_list.groupby("id").size().rename("num_protected_areas")
 )
-
-total_protected = (
-    pd.read_feather(results_dir / "total_protected.feather")
-    .set_index("id")
-    .join(huc12.acres.rename("total_acres"), how="inner")
+protected_areas_list = (
+    protected_areas_list.groupby("id")
+    .name.apply(list)
+    # take the top 5
+    .apply(lambda x: x[:5])
+    .apply("|".join)
+    .rename("protected_areas_list")
 )
-total_protected["total_protected_percent"] = (
-    100 * total_protected.acres / total_protected.total_acres
-).astype("uint8")
 
 
 marine = (
     marine[["geometry", "name", "subregions", "type"]]
     .join(marine[["acres", "rasterized_acres", "outside_se"]].round().astype("int"))
     .join(blueprint, how="left")
-    .join(ownership, how="left")
-    .join(protection, how="left")
-    .join(total_protected.total_protected_percent, how="left")
+    .join(protected_areas, how="left")
+    .join(protected_areas_list, how="left")
+    .join(num_protected_areas, how="left")
 )
 
 ##################################
@@ -311,17 +305,13 @@ out = pd.concat(
 
 
 for col in (
-    [
-        "ownership",
-        "protection",
-        "urban",
-    ]
+    ["protected_areas", "protected_areas_list", "urban"]
     + blueprint.columns.tolist()
     + slr.columns.tolist()
 ):
     out[col] = out[col].fillna("")
 
-out["total_protected_percent"] = out.total_protected_percent.fillna(0).astype("uint8")
+out["num_protected_areas"] = out.num_protected_areas.fillna(0).astype("uint16")
 
 
 out.to_feather(out_dir / "summary_units.feather")

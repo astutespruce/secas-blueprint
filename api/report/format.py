@@ -48,6 +48,9 @@ def format_percent(number):
     if number == 0:
         return "0"
 
+    if number == 100:
+        return "100"
+
     if number < 0.1:
         return "<0.1"
 

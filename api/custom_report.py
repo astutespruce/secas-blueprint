@@ -173,8 +173,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
         urban="urban" in results,
         slr="slr" in results and results["slr"].get("na", False) is not True,
         wildfire_risk="wildfire_risk" in results,
-        ownership="ownership" in results,
-        protection="protection" in results,
+        protected_areas="protected_areas" in results,
         add_mask=results["acres"] >= 10000000,
     )
 

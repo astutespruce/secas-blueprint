@@ -136,6 +136,10 @@ export const unpackFeatureData = (
         return [key, null]
       }
 
+      if (key === 'protectedAreasList') {
+        return [key, value ? value.split('|') : []]
+      }
+
       if (value.indexOf('^') !== -1) {
         return [key, parseDeltaEncodedValues(value)]
       }
@@ -165,6 +169,7 @@ export const unpackFeatureData = (
   const scaledColumns = [
     'blueprint',
     'corridors',
+    'protectedAreas',
     'slrDepth',
     'slrNodata',
     'urban',
@@ -184,22 +189,6 @@ export const unpackFeatureData = (
     indicatorInfo,
     values.subregions
   )
-
-  if (values.ownership) {
-    Object.keys(values.ownership).forEach((k) => {
-      values.ownership[k] *= 0.1
-    })
-  } else {
-    values.ownership = {}
-  }
-
-  if (values.protection) {
-    Object.keys(values.protection).forEach((k) => {
-      values.protection[k] *= 0.1
-    })
-  } else {
-    values.protection = {}
-  }
 
   // rename specific fields for easier use later
   values.unitType = values.type

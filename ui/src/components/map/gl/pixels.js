@@ -165,11 +165,11 @@ export const extractPixelData = (
   try {
     images.forEach((texture, i) => {
       cmd.copyTextureToBuffer({
-        source: texture,
+        sourceTexture: texture,
         width: 1,
         height: 1,
         origin: [offsetX, offsetY],
-        destination: buffer,
+        destinationBuffer: buffer,
         byteOffset: i * 4,
       })
     })
@@ -222,7 +222,7 @@ export const extractPixelData = (
 
   // extract info from feature data
   const features = map.queryRenderedFeatures(screenPoint, {
-    layers: ['ownership', 'subregions'],
+    layers: ['protectedAreas', 'subregions'],
   })
 
   const [{ properties: { subregion } } = { properties: {} }] = features.filter(
@@ -259,37 +259,26 @@ export const extractPixelData = (
     }
   }
 
-  // extract ownership info
-  const ownership = {}
-  const protection = {}
-  const protectedAreas = []
-  const ownershipFeatures = features.filter(
-    ({ layer: { id } }) => id === 'ownership'
+  // extract protected areas from vector tiles
+  const protectedAreasList = []
+  const protectedAreasFeatures = features.filter(
+    ({ layer: { id } }) => id === 'protectedAreas'
   )
-  if (ownershipFeatures.length > 0) {
-    ownershipFeatures.forEach(
-      ({
-        properties: {
-          Loc_Own: owner,
-          GAP_Sts: gapStatus,
-          Loc_Nm: areaName,
-          Own_Type: orgType,
-        },
-      }) => {
-        // hardcode in percent
-        ownership[orgType] = 100
-        protection[gapStatus] = 100
-        protectedAreas.push({ name: areaName, owner })
+  if (protectedAreasFeatures.length > 0) {
+    protectedAreasFeatures.forEach(({ properties: { name, owner } }) => {
+      if (owner) {
+        protectedAreasList.push(`${name} (${owner})`)
+      } else {
+        protectedAreasList.push(name)
       }
-    )
+    })
   }
 
   return {
     subregions,
     outsideSEPercent: 0,
     ...data,
-    ownership,
-    protection,
-    protectedAreas,
+    protectedAreasList,
+    numProtectedAreas: protectedAreasList.length,
   }
 }

@@ -21,7 +21,7 @@ const WildfireRisk = ({ type, wildfireRisk, subregions }) => {
   const bars = wildfireRiskCategories.map((category) => ({
     ...category,
     percent: wildfireRisk ? wildfireRisk[category.value] || 0 : 0,
-    color: 'grey.9',
+    color: 'grey.8',
   }))
 
   if (type === 'pixel') {

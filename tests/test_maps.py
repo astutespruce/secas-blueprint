@@ -57,8 +57,7 @@ for aoi_name in aoi_names:
         urban="urban" in results,
         slr="slr" in results,
         wildfire_risk="wildfire_risk" in results,
-        ownership="ownership" in results,
-        protection="protection" in results,
+        protected_areas="protected_areas" in results,
     )
 
     maps, scale, errors = asyncio.run(task)
@@ -114,8 +113,7 @@ for summary_type in ids:
             urban="urban" in results,
             slr="slr" in results,
             wildfire_risk="wildfire_risk" in results,
-            ownership="ownership" in results,
-            protection="protection" in results,
+            protected_areas="protected_areas" in results,
         )
         maps, scale, errors = asyncio.run(task)
 

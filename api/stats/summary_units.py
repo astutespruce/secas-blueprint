@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from analysis.lib.stats.blueprint import get_blueprint_unit_results
-from analysis.lib.stats.ownership import get_ownership_unit_results
+from analysis.lib.stats.protected_areas import get_protected_areas_unit_results
 from analysis.lib.stats.parca import get_parca_results
 from analysis.lib.stats.urban import get_urban_unit_results
 from analysis.lib.stats.slr import get_slr_unit_results
@@ -69,7 +69,9 @@ def get_summary_unit_results(unit_type, unit_id):
     if blueprint_results is not None:
         results.update(blueprint_results)
 
-    results.update(get_ownership_unit_results(results_dir, unit))
+    protected_areas_results = get_protected_areas_unit_results(results_dir, unit)
+    if protected_areas_results is not None:
+        results["protected_areas"] = protected_areas_results
 
     if unit_type == "huc12":
         parca_results = get_parca_results(results_dir, unit)

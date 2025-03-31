@@ -9,7 +9,7 @@ from analysis.lib.raster import SummaryUnitGrid
 
 from analysis.lib.stats.blueprint import summarize_blueprint_by_units_grid
 from analysis.lib.stats.nlcd import summarize_nlcd_by_units_grid
-from analysis.lib.stats.ownership import summarize_ownership_by_units
+from analysis.lib.stats.protected_areas import summarize_protected_areas_by_units
 from analysis.lib.stats.parca import summarize_parcas_by_units
 from analysis.lib.stats.slr import summarize_slr_by_units_grid
 from analysis.lib.stats.urban import summarize_urban_by_units_grid
@@ -45,40 +45,40 @@ print("Reading HUC12 grid")
 with rasterio.open(huc12_raster_filename) as units_dataset:
     units_grid = SummaryUnitGrid(units_dataset, units_df.total_bounds)
 
-    # Summarize Blueprint
-    summarize_blueprint_by_units_grid(units_df, units_grid, out_dir, marine=False)
+    # # Summarize Blueprint
+    # summarize_blueprint_by_units_grid(units_df, units_grid, out_dir, marine=False)
 
-    # Summarize parcas
-    summarize_parcas_by_units(units_df, out_dir)
+    # # Summarize parcas
+    # summarize_parcas_by_units(units_df, out_dir)
 
-    # Summarize ownership
-    summarize_ownership_by_units(units_df, out_dir)
+    # Summarize protected areas
+    summarize_protected_areas_by_units(units_df, units_grid, out_dir)
 
-    # SLR is available for inland continental and Caribbean
-    summarize_slr_by_units_grid(units_df, units_grid, out_dir)
+    # # SLR is available for inland continental and Caribbean
+    # summarize_slr_by_units_grid(units_df, units_grid, out_dir)
 
-    # NLCD, urbanization, and wildfire risk are only available in inland continental part of
-    # Blueprint, not Caribbean
-    tree = shapely.STRtree(units_df.geometry.values)
-    ix = ~units_df.index.isin(
-        units_df.index.values.take(
-            tree.query(
-                subregion_df.loc[subregion_df.subregion == "Caribbean"].geometry.values[
-                    0
-                ],
-                predicate="intersects",
-            )
-        )
-    )
+    # # NLCD, urbanization, and wildfire risk are only available in inland continental part of
+    # # Blueprint, not Caribbean
+    # tree = shapely.STRtree(units_df.geometry.values)
+    # ix = ~units_df.index.isin(
+    #     units_df.index.values.take(
+    #         tree.query(
+    #             subregion_df.loc[subregion_df.subregion == "Caribbean"].geometry.values[
+    #                 0
+    #             ],
+    #             predicate="intersects",
+    #         )
+    #     )
+    # )
 
-    # Summarize NLCD
-    summarize_nlcd_by_units_grid(units_df.loc[ix], units_grid, out_dir)
+    # # Summarize NLCD
+    # summarize_nlcd_by_units_grid(units_df.loc[ix], units_grid, out_dir)
 
-    # Summarize current / projected urbanization
-    summarize_urban_by_units_grid(units_df.loc[ix], units_grid, out_dir)
+    # # Summarize current / projected urbanization
+    # summarize_urban_by_units_grid(units_df.loc[ix], units_grid, out_dir)
 
-    # Summarize wildfire risk
-    summarize_wildfire_risk_by_units_grid(units_df.loc[ix], units_grid, out_dir)
+    # # Summarize wildfire risk
+    # summarize_wildfire_risk_by_units_grid(units_df.loc[ix], units_grid, out_dir)
 
 
 print(f"Processed {len(units_df):,} zones in {(time() - start) / 60.0:.2f}m")
@@ -104,11 +104,11 @@ print("Reading marine hex grid")
 with rasterio.open(marine_raster_filename) as units_dataset:
     units_grid = SummaryUnitGrid(units_dataset, units_df.total_bounds)
 
-    # Summarize Blueprint
-    summarize_blueprint_by_units_grid(units_df, units_grid, out_dir, marine=True)
+    # # Summarize Blueprint
+    # summarize_blueprint_by_units_grid(units_df, units_grid, out_dir, marine=True)
 
-    # Summarize ownership
-    summarize_ownership_by_units(units_df, out_dir)
+    # Summarize protected areas
+    summarize_protected_areas_by_units(units_df, units_grid, out_dir)
 
 
 print(f"Processed {len(units_df):,} zones in {(time() - start) / 60.0:.2f}m")

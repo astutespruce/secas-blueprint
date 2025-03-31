@@ -20,21 +20,10 @@
 {% endif %}
 
 
-{% if results.ownership and results.protection %}
-    {% include "blocks/ownership.html" %}
-
-    <div class="page-break"></div>
-
-    {% include "blocks/protection.html" %}
-
-    {% if results.num_protected_areas %}
-        {% include "blocks/protected_areas_list.html" %}
-    {% elif results.ownership and area_type == "custom" %}
-        {% include "blocks/no_protected_areas_list.html" %}
-    {% endif %}
-
+{% if results.protected_areas %}
+    {% include "blocks/protected_areas.html" %}
 {% else %}
-    {% include "blocks/no_ownership.html" %}
+    {% include "blocks/no_protected_areas.html" %}
 {% endif %}
 
 </section>

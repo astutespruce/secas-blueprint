@@ -7,7 +7,7 @@ are converted to vector tiles for use in the frontend or for PDF maps.
 
 Summary units are first prepared for tiling using `analysis/prep/package_unit_data.py`,
 which creates a Feather file with encoded attributes for the Blueprint,
-hubs & corridors, indicators, sea-level rise, urbanization, and ownership.
+hubs & corridors, indicators, sea-level rise, urbanization, and protected areas.
 
 Vector tiles are then created using `analysis/prep/tiles/create_vector_tiles.py`.
 

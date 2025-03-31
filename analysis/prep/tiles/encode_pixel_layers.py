@@ -20,8 +20,7 @@ from analysis.constants import (
     SLR_NODATA_VALUES,
     DATA_CRS,
     WILDFIRE_RISK,
-    OWNERSHIP,
-    PROTECTION,
+    PROTECTED_AREAS,
 )
 from analysis.lib.raster import write_raster, shift_window, clip_window
 
@@ -37,11 +36,7 @@ corridors_filename = inputs_dir / "corridors.tif"
 urban_filename = inputs_dir / "threats/urban/urban_2060_binned.tif"
 slr_filename = inputs_dir / "threats/slr/slr.tif"
 wildfire_risk_filename = inputs_dir / "threats/wildfire_risk/wildfire_risk.tif"
-ownership_filename = data_dir / "boundaries/ownership.tif"
-protection_filename = data_dir / "boundaries/protection.tif"
-
-ownership_values = list(OWNERSHIP.values())
-protection_values = list(PROTECTION.values())
+protected_areas_filename = inputs_dir / "boundaries/protected_areas.tif"
 
 
 # very small amount added to numbers to make sure that log2 gives us current number of bytes
@@ -106,27 +101,15 @@ core = pd.DataFrame(
         },
         {
             "ecosystem": "otherInfo",
-            "id": "ownership",
-            "filename": ownership_filename,
-            "min_value": ownership_values[0]["code"],
-            "max_value": ownership_values[-1]["code"],
-        },
-        {
-            "ecosystem": "otherInfo",
-            "id": "protection",
-            "filename": protection_filename,
-            "min_value": protection_values[0]["code"],
-            "max_value": protection_values[-1]["code"],
+            "id": "protectedAreas",
+            "filename": protected_areas_filename,
+            "min_value": PROTECTED_AREAS[0]["value"],
+            "max_value": PROTECTED_AREAS[-1]["value"],
         },
     ]
 )
 
-df = pd.concat(
-    [
-        core,
-        indicators,
-    ]
-).set_index("id")
+df = pd.concat([core, indicators]).set_index("id")
 df["src"] = df.filename.apply(lambda x: rasterio.open(x))
 df["nodata"] = df.src.apply(lambda src: int(src.nodata))
 

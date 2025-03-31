@@ -52,13 +52,13 @@ def read_cache(path):
 
 ### Create reports for an AOI
 aois = [
-    # {"name": "Gulf_SECAS_CBRS_Polygons", "path": "Gulf_SECAS_CBRS_Polygons"},
+    {"name": "Gulf_SECAS_CBRS_Polygons", "path": "Gulf_SECAS_CBRS_Polygons"},
     # {"name": "Caribbean_SECAS_CBRS_Polygons", "path": "Caribbean_SECAS_CBRS_Polygons"},
     # {"name": "Atlantic_SECAS_CBRS_Polygons", "path": "Atlantic_SECAS_CBRS_Polygons"},
     # {"name": "SECAS_CBRS_Polygons", "path": "SECAS_CBRS_Polygons"},
     # {"name": "", "path": "large_poly"}
     # {"name": "", "path": "no_urban"}
-    # {"name": "GA Sentinal Landscapes: Fort Benning Area", "path": "benareautm_polygon"},
+    {"name": "GA Sentinal Landscapes: Fort Benning Area", "path": "benareautm_polygon"},
     # {
     #     "name": "GA Sentinal Landscapes: Coastal Area",
     #     "path": "coastareautm_polygon",
@@ -188,8 +188,7 @@ for aoi in aois:
             urban="urban" in results,
             slr="slr" in results,
             wildfire_risk="wildfire_risk" in results,
-            ownership="ownership" in results,
-            protection="protection" in results,
+            protected_areas="protected_areas" in results,
             add_mask=results["acres"] >= 1e9,
         )
 
@@ -221,10 +220,10 @@ ids = {
         # "051402060702",
         #     #     # "050500030804"  # in WV
         # "030902030700"  # in base blueprint but missing SLR (Dry Tortugas)
-        #     #     # "031002010205",  # in base blueprint but with SLR present
+        # "031002010205",  # in base blueprint but with SLR present
         # "210100070101",  # in Caribbean
         #     #     # "031101020903",  # Florida with inland marine indicators
-        #     #     #     #     #     # "031102050805",  # Florida gulf coast
+        # "031102050805",  # Florida gulf coast
         #     #     # "030902061101"  # area with SLR not modeled
         #     "030102051002"  # area with both marine and inland hubs / corridors
     ],
@@ -267,8 +266,7 @@ for unit_type in ids:
                 urban="urban" in results,
                 slr="slr" in results,
                 wildfire_risk="wildfire_risk" in results,
-                ownership="ownership" in results,
-                protection="protection" in results,
+                protected_areas="protected_areas" in results,
             )
             maps, scale, errors = asyncio.run(task)
 
