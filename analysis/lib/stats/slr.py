@@ -115,14 +115,47 @@ def summarize_slr_in_aoi(rasterized_geometry, geometry):
     # intersect with 1-degree pixels; there should always be data available if
     # there are SLR depth data
     df = gp.read_feather(proj_filename)
-    tree = shapely.STRtree(df.geometry.values)
-    df = df.iloc[tree.query(geometry, predicate="intersects")].copy()
 
-    # calculate area-weighted means
-    intersection_area = shapely.area(shapely.intersection(df.geometry.values, geometry))
-    area_factor = intersection_area / intersection_area.sum()
+    parts = shapely.get_parts(geometry)
+    left, right = shapely.STRtree(df.geometry.values).query(
+        parts, predicate="intersects"
+    )
 
-    projections = df[SLR_PROJ_COLUMNS].multiply(area_factor, axis=0).sum().round(2)
+    pairs = pd.DataFrame(
+        {
+            "slr_index": df.index.values.take(right),
+            "slr_geometry": df.geometry.values.take(right),
+            "aoi_geometry": parts.take(left),
+        }
+    )
+    shapely.prepare(pairs.slr_geometry.values)
+    shapely.prepare(pairs.aoi_geometry.values)
+    slr_contains_ix = shapely.contains_properly(
+        pairs.slr_geometry.values, pairs.aoi_geometry.values
+    )
+    pairs.loc[slr_contains_ix, "geometry"] = pairs.loc[
+        slr_contains_ix
+    ].aoi_geometry.values
+    aoi_contains_ix = ~slr_contains_ix & shapely.contains_properly(
+        pairs.aoi_geometry.values, pairs.slr_geometry.values
+    )
+    pairs.loc[aoi_contains_ix, "geometry"] = pairs.loc[
+        aoi_contains_ix
+    ].slr_geometry.values
+
+    ix = ~(slr_contains_ix | aoi_contains_ix)
+    pairs.loc[ix, "geometry"] = shapely.intersection(
+        pairs.loc[ix].aoi_geometry.values, pairs.loc[ix].slr_geometry.values
+    )
+    pairs["area"] = shapely.area(pairs.geometry.values)
+    total_area = pairs.area.sum()
+
+    # calculate area-weighted mean
+    area_factor = (
+        pairs[["slr_index", "area"]].groupby("slr_index").area.sum() / total_area
+    ).rename("area_factor")
+    df = df.join(area_factor, how="inner")
+    projections = df[SLR_PROJ_COLUMNS].multiply(df.area_factor, axis=0).sum().round(2)
 
     projections = {
         SLR_PROJ_SCENARIOS[scenario]: [
