@@ -2216,7 +2216,7 @@
     "valueLabel": "Priority for a new park that would create nearby equitable access",
     "captionLabel": "potential access to parks",
     "goodThreshold": null,
-    "url": "https://secas-fws.hub.arcgis.com/maps/fws::equitable-access-to-potential-parks-southeast-blueprint-indicator-2023/about",
+    "url": "https://secas-fws.hub.arcgis.com/maps/fws::potential-access-to-parks-southeast-blueprint-indicator/about",
     "subregions": [
       "Central Atlantic Coastal Plain",
       "Central Gulf Coastal Plain",
