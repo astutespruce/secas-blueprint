@@ -12,8 +12,13 @@ const config = {
 			fallback: 'index.html',
 			precompress: false,
 			strict: true
-		})
-		// alias: {}
+		}),
+		paths: {
+			base: process.env.DEPLOY_PATH || ''
+		},
+		alias: {
+			$images: 'src/images'
+		}
 	}
 };
 

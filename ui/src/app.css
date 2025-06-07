@@ -20,6 +20,7 @@
 	--link: oklch(0.5324 0.148986 249.5606);
 
 	/* NOTE: values less than 8 do not meet contrast ratio guidelines for text */
+	--white: oklch(1 0 0);
 	--grey-0: oklch(0.9824 0.0013 286.38);
 	--grey-1: oklch(0.9479 0.0025 228.79);
 	--grey-2: oklch(0.9083 0.0052 247.88);
@@ -116,7 +117,7 @@
 	--color-blue-8: var(--blue-8);
 	--color-blue-9: var(--blue-9);
 
-	/* used by Dialog */
+	--color-white: var(--white);
 	--color-black: var(--black);
 
 	--radius-sm: calc(var(--radius) - 4px);
@@ -186,4 +187,14 @@
 			@apply underline;
 		}
 	}
+
+	hr {
+		@apply mt-12 mb-12 border-grey-3;
+	}
+}
+
+@utility container {
+	max-width: 960px;
+	margin-inline: auto;
+	padding-inline: 2rem;
 }
