@@ -15,19 +15,19 @@ body {
   @top-left {
     content: '{{title}} {{subtitle}}';
     font-size: 10pt;
-    color: #aaaaaa;
+    color: #555568;
   }
 
   @bottom-left {
     content: 'Created {{date}} using the Southeast Conservation Blueprint Explorer';
     font-size: 10pt;
-    color: #aaaaaa;
+    color: #555568;
   }
 
   @bottom-right {
     content: 'Page ' counter(page) ' of ' counter(pages);
     font-size: 10pt;
-    color: #666;
+    color: #555568;
     text-align: right;
   }
 }
@@ -131,11 +131,6 @@ p {
   font-size: 12pt;
 }
 
-p.note {
-  font-size: small;
-  color: #7e8b96;
-}
-
 section {
   page-break-before: always;
 }
@@ -226,7 +221,7 @@ table td.level {
   border-top: none;
   border-bottom: none;
   font-size: 10pt;
-  color: #666;
+  color: #555568;
 }
 
 table th.threshold {
@@ -238,7 +233,7 @@ table th.threshold {
 table td.threshold {
   border: none;
   font-size: 10pt;
-  color: #666;
+  color: #555568;
 }
 
 table td.threshold.good {
@@ -336,7 +331,7 @@ table td.highlight-col {
   width: 100%;
   height: 64pt;
   background: #eeeeee;
-  color: #aaaaaa;
+  color: #555568;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -362,7 +357,7 @@ table td.highlight-col {
   width: 100pt;
   height: 64pt;
   background: #eeeeee;
-  color: #aaaaaa;
+  color: #555568;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -398,13 +393,13 @@ table td.highlight-col {
   position: absolute;
   bottom: -12px;
   font-size: 8pt;
-  color: #666;
+  color: #555568;
 }
 
 .scalebar .label {
   margin-left: 4pt;
   font-size: 8pt;
-  color: #666;
+  color: #555568;
   flex: 0 0 auto;
 }
 
@@ -438,7 +433,7 @@ table td.highlight-col {
 }
 
 .light {
-  color: #767676;
+  color: #555568;
 }
 
 .legend {
@@ -496,7 +491,7 @@ table td.highlight-col {
 }
 
 .indicator-absent {
-  color: #666;
+  color: #555568;
 }
 
 .indicator-description {
@@ -527,12 +522,12 @@ table td.highlight-col {
 
 .indicator-header-ecosystem {
   font-size: 14px;
-  color: #666;
+  color: #555568;
 }
 
 .indicator-area {
   font-size: 14px;
-  color: #666;
+  color: #555568;
 }
 
 .ecosystem-icon {

@@ -139,13 +139,8 @@ def create_report(maps, results, name=None, area_type="custom"):
     # with open("/tmp/test.html", "w") as out:
     #     out.write(template.render(**context))
 
-    kwargs = {}
-
-    # TODO: enable pdf/ua once accessibility features have been fixed in Weasyprint
-    # kwargs["variant"] = "pdf/ua-1"
-
     pdf = HTML(
         BytesIO((template.render(**context)).encode()), url_fetcher=url_fetcher
-    ).write_pdf(**kwargs)
+    ).write_pdf(pdf_variant="pdf/ua-1")
 
     return pdf
