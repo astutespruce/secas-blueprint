@@ -120,6 +120,10 @@
 	--color-white: var(--white);
 	--color-black: var(--black);
 
+	--color-secondary: var(--grey-1);
+	--color-secondary-foreground: var(--secondary-grey-8);
+	--color-destructive: var(--error);
+
 	--radius-sm: calc(var(--radius) - 4px);
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-lg: var(--radius);
@@ -130,8 +134,7 @@
 	--color-popover: var(--popover);
 	--color-popover-foreground: var(--popover-foreground);
 
-	--color-secondary: var(--secondary);
-	--color-secondary-foreground: var(--secondary-foreground);
+
 	--color-muted: var(--muted);
 
 	--color-accent-foreground: var(--accent-foreground);
@@ -181,7 +184,6 @@
 	}
 
 	a {
-		/* FIXME: theme primary blue */
 		@apply text-link visited:text-link;
 		&:hover {
 			@apply underline;
@@ -196,5 +198,5 @@
 @utility container {
 	max-width: 960px;
 	margin-inline: auto;
-	padding-inline: 2rem;
+	@apply px-2 md:px-0;
 }

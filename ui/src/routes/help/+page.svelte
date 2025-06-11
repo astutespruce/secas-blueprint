@@ -16,6 +16,13 @@
 		</h1>
 	</div>
 </div>
+<div class="text-sm text-grey-8 text-right pr-1">
+	Photo: Black Skimmers, <a
+		href="https://www.flickr.com/photos/usfwssoutheast/26871026541/"
+		target="_blank"
+		class="text-grey-8">U.S. Fish and Wildlife Service Southeast Region</a
+	>
+</div>
 
 <div class="container text-lg pt-4 pb-16 [&_img]:border [&_img]:border-grey-2">
 	<h2 class="text-4xl">Summarize data:</h2>
@@ -70,7 +77,7 @@
 		and more by drilling into a single 30 meter pixel, the smallest unit of the Blueprint analysis.
 	</p>
 
-	<div class="grid grid-cols-2 gap-8 mt-16">
+	<div class="grid grid-cols-0 md:grid-cols-2 gap-8 mt-16">
 		<div class="flex-col justify-center">
 			<p>
 				Choose <b>View point data</b> from the button bar above the map. The crosshairs in the
@@ -88,7 +95,7 @@
 		</div>
 	</div>
 
-	<div class="grid grid-cols-[1fr_2fr] mt-16 gap-8">
+	<div class="grid grid-cols-0 md:grid-cols-[1fr_2fr] mt-16 gap-8">
 		<div>
 			<enhanced:img
 				src="$images/help-point-data-tabs.png"
@@ -129,7 +136,7 @@
 		threats.
 	</p>
 
-	<div class="grid grid-cols-2 gap-8 mt-16">
+	<div class="grid grid-cols-0 md:grid-cols-2 gap-8 mt-16">
 		<div class="flex flex-col justify-center">
 			<p>
 				Choose <b>Filter the Blueprint</b> from the button bar above the map.
@@ -151,7 +158,7 @@
 		and plays, nothing will display on the map.
 	</p>
 
-	<div class="grid grid-cols-2 gap-8 mt-16">
+	<div class="grid grid-cols-0 md:grid-cols-2 gap-8 mt-16">
 		<div>
 			<enhanced:img
 				src="$images/help-filter-before.png"
@@ -183,7 +190,7 @@
 		Examples of what is inside:
 	</p>
 
-	<div class="grid grid-cols-5 mt-2 gap-4">
+	<div class="grid grid-cols-2 md:grid-cols-5 mt-2 gap-4">
 		<enhanced:img src="$images/report/report_sm_1.png" alt="Tool report example screenshot 1" />
 		<enhanced:img src="$images/report/report_sm_2.png" alt="Tool report example screenshot 2" />
 		<enhanced:img src="$images/report/report_sm_3.png" alt="Tool report example screenshot 3" />
@@ -200,7 +207,7 @@
 		click the button in the upper right of the map to display the list of available layers.
 	</p>
 
-	<div class="grid grid-cols-[1.5fr_1fr] gap-8 mt-16">
+	<div class="grid grid-cols-0 md:grid-cols-[1.5fr_1fr] gap-8 mt-16">
 		<div>
 			<enhanced:img src="$images/help-toggle-layers-button.png" alt="Shows toggle layers button" />
 		</div>
@@ -235,7 +242,7 @@
 		</div>
 	</div>
 
-	<div class="grid grid-cols-3 gap-8 mt-16">
+	<div class="grid grid-cols-0 md:grid-cols-3 gap-8 mt-16">
 		<div class="flex flex-col justify-center">
 			<p>
 				You can search by place name or address, or enter latitude and longitude coordinates

@@ -19,7 +19,7 @@
 			<br />
 			<br />
 			Please reach out to
-			<a href="http://secassoutheast.org/staff"> Blueprint user support staff</a>.
+			<a href="http://secassoutheast.org/staff" target="_blank"> Blueprint user support staff</a>.
 		</p>
 	</Content>
 </Root>
