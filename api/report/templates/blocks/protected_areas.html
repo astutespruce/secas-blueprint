@@ -56,15 +56,13 @@
 
     <div class="page-break"></div>
 
-    <div class="caption">
-        Table {{table.counter}}: Extent of protected areas {% if name %} within {{name}}{% else %} in this area{% endif %}.
-        Protected areas are derived from the <a href="https://www.usgs.gov/programs/gap-analysis-project/science/pad-us-data-download">Protected Areas Database of the United States</a> (PAD-US v4.0 and v3.0)
-        and include Fee, Designation, Easement, Marine, and Proclamation (Dept. of Defense lands only) boundaries.
-    </div>
-
-    {% set table.counter=table.counter+1 %}
-
     <table class="centered">
+        <caption>
+            Table {{table.counter}}: Extent of protected areas {% if name %} within {{name}}{% else %} in this area{% endif %}.
+            Protected areas are derived from the <a href="https://www.usgs.gov/programs/gap-analysis-project/science/pad-us-data-download">Protected Areas Database of the United States</a> (PAD-US v4.0 and v3.0)
+            and include Fee, Designation, Easement, Marine, and Proclamation (Dept. of Defense lands only) boundaries.
+            {% set table.counter=table.counter+1 %}
+        </caption>
         <thead>
             <tr>
                 <th class="label" scope="col">Protected area status</th>

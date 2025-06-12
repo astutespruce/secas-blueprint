@@ -65,43 +65,40 @@
 
     <section>
 
-    {% with number=table.counter,label="Extent of hubs and corridors" %}
-        {% include "elements/table_caption.html" %}
-    {% endwith %}
-    {% set table.counter=table.counter+1 %}
-
     <table class="centered">
-    <thead>
-    <tr>
-        <th class="label" scope="col">Type</th>
-        <th class="acres" scope="col">Acres</th>
-        <th class="percent" scope="col">Percent of Area</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for entry in results.corridors %}
-        <tr>
-            <td class="label">{{entry.label}}</td>
-            <td class="acres">{{entry.acres|format_number}}</td>
-            <td class="percent">{{entry.percent|format_percent}}%</td>
-        </tr>
-    {% endfor %}
+        <caption>
+            Table {{table.counter}}: Extent of hubs and corridors{% if name %} within {{name}}{% endif %}.
+            {% set table.counter=table.counter+1 %}
+        </caption>
+        <thead>
+            <tr>
+                <th class="label" scope="col">Type</th>
+                <th class="acres" scope="col">Acres</th>
+                <th class="percent" scope="col">Percent of Area</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in results.corridors %}
+                <tr>
+                    <td class="label">{{entry.label}}</td>
+                    <td class="acres">{{entry.acres|format_number}}</td>
+                    <td class="percent">{{entry.percent|format_percent}}%</td>
+                </tr>
+            {% endfor %}
 
-    {% if results.outside_se_acres > 0 %}
-        <tr class="remainder-row">
-            <td class="label">Outside Southeast Blueprint</td>
-            <td class="acres">{{results.outside_se_acres|format_number}}</td>
-            <td class="percent">{{results.outside_se_percent|format_percent}}%</td>
-        </tr>
-    {% endif %}
+            {% if results.outside_se_acres > 0 %}
+                <tr class="remainder-row">
+                    <td class="label">Outside Southeast Blueprint</td>
+                    <td class="acres">{{results.outside_se_acres|format_number}}</td>
+                    <td class="percent">{{results.outside_se_percent|format_percent}}%</td>
+                </tr>
+            {% endif %}
 
-    <tr class="total-row">
-        <td class="label align-right">Total area</td>
-        <td class="acres">{{results.rasterized_acres|format_number}}</td>
-        <td class="percent">100%</td>
-    </tr>
-    </tbody>
+            <tr class="total-row">
+                <td class="label align-right">Total area</td>
+                <td class="acres">{{results.rasterized_acres|format_number}}</td>
+                <td class="percent">100%</td>
+            </tr>
+        </tbody>
     </table>
-
-
 </section>

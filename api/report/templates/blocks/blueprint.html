@@ -63,12 +63,11 @@
 
 <div class="spacer"></div>
 
-{% with number=table.counter,label="Extent of each Blueprint priority category" %}
-    {% include "elements/table_caption.html" %}
-{% endwith %}
-{% set table.counter=table.counter+1 %}
-
 <table class="centered">
+    <caption>
+        Table {{table.counter}}: Extent of each Blueprint priority category{% if name %} within {{name}}{% endif %}.
+        {% set table.counter=table.counter+1 %}
+    </caption>
     <thead>
         <tr>
             <th class="label" scope="col">Priority Category</th>

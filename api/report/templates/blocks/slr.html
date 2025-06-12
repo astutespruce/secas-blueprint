@@ -59,13 +59,12 @@
     <!-- Inundation depth table: -->
 
     <div class="no-break">
-        <div class="caption">
-            Table {{table.counter}}: Extent of flooding by projected average highest daily tide due to sea level rise{% if name %} within {{name}}{% else %} in this area{% endif %}.
-            Values from the <a href="https://coast.noaa.gov/slrdata/">NOAA sea-level rise inundation data</a>.
-        </div>
-        {% set table.counter=table.counter+1 %}
-
         <table class="centered">
+            <caption>
+                Table {{table.counter}}: Extent of flooding by projected average highest daily tide due to sea level rise{% if name %} within {{name}}{% else %} in this area{% endif %}.
+                Values from the <a href="https://coast.noaa.gov/slrdata/">NOAA sea-level rise inundation data</a>.
+                {% set table.counter=table.counter+1 %}
+            </caption>
             <thead>
                 <tr>
                     <th class="label" scope="col">Feet of sea-level rise</th>
@@ -102,16 +101,15 @@
     <!-- Projection table: -->
      {% if results.slr.projections is not none %}
         <div class="no-break">
-            <div class="caption">
-                Table {{table.counter}}: Projected sea level rise by decade{% if name %} within {{name}}{% else %} in this area{% endif %}.
-                Values are based on area-weighted averages of decadal projections for
-                1-degree grid cells that overlap this area
-                based on <a href="https://oceanservice.noaa.gov/hazards/sealevelrise/sealevelrise-tech-report.html">NOAA's 2022 Sea Level Rise Report</a>.
-                2060 corresponds to the <a href="https://secassoutheast.org/our-goal">SECAS goal</a>: a 10% or greater improvement in the health, function, and connectivity of Southeastern ecosystems by 2060.
-            </div>
-            {% set table.counter=table.counter+1 %}
-
             <table class="centered">
+                <caption>
+                    Table {{table.counter}}: Projected sea level rise by decade{% if name %} within {{name}}{% else %} in this area{% endif %}.
+                    Values are based on area-weighted averages of decadal projections for
+                    1-degree grid cells that overlap this area
+                    based on <a href="https://oceanservice.noaa.gov/hazards/sealevelrise/sealevelrise-tech-report.html">NOAA's 2022 Sea Level Rise Report</a>.
+                    2060 corresponds to the <a href="https://secassoutheast.org/our-goal">SECAS goal</a>: a 10% or greater improvement in the health, function, and connectivity of Southeastern ecosystems by 2060.
+                    {% set table.counter=table.counter+1 %}
+                </caption>
                 <thead>
                     <tr>
                         <th>SLR Scenario</th>

@@ -52,7 +52,7 @@ def read_cache(path):
 
 ### Create reports for an AOI
 aois = [
-    {"name": "Gulf_SECAS_CBRS_Polygons", "path": "Gulf_SECAS_CBRS_Polygons"},
+    # {"name": "Gulf_SECAS_CBRS_Polygons", "path": "Gulf_SECAS_CBRS_Polygons"},
     # {"name": "Caribbean_SECAS_CBRS_Polygons", "path": "Caribbean_SECAS_CBRS_Polygons"},
     # {"name": "Atlantic_SECAS_CBRS_Polygons", "path": "Atlantic_SECAS_CBRS_Polygons"},
     # {"name": "SECAS_CBRS_Polygons", "path": "SECAS_CBRS_Polygons"},
@@ -142,7 +142,7 @@ for aoi in aois:
     print(
         f"Area of extent: {extent_area:,.0f} acres",
     )
-    print(f"Area of geometry: {df.area.sum() *M2_ACRES:,.0f} acres")
+    print(f"Area of geometry: {df.area.sum() * M2_ACRES:,.0f} acres")
 
     ### calculate results, data must be in DATA_CRS
     bar = Bar("Summarizing rasters", max=100, suffix="%(percent)d%%")

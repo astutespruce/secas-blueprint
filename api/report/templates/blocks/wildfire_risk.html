@@ -59,17 +59,14 @@
 </div>
 
 <div class="no-break">
-
-    <div class="caption">
-        Table {{table.counter}}: Area in each wildfire probability category{% if name %} within {{name}}{% else %} in this area{% endif %}.
-        Values from the
-        <a href="https://wildfirerisk.org/">Wildire Risk To Communities</a>
-        project developed by the USDA Forest Service.
-    </div>
-
-    {% set table.counter=table.counter+1 %}
-
     <table class="centered">
+        <caption>
+            Table {{table.counter}}: Area in each wildfire probability category{% if name %} within {{name}}{% else %} in this area{% endif %}.
+            Values from the
+            <a href="https://wildfirerisk.org/">Wildire Risk To Communities</a>
+            project developed by the USDA Forest Service.
+            {% set table.counter=table.counter+1 %}
+        </caption>
         <thead>
             <tr>
                 <th class="label" scope="col">Wildfire likelihood (annual burn probability)</th>

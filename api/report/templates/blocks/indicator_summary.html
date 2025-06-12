@@ -3,12 +3,12 @@
 
     {% for ecosystem in results.ecosystems %}
         <div class="no-break">
-            <div class="caption">
-                Table {{table.counter}}: {{ecosystem.label}} indicators.
-            </div>
-            {% set table.counter=table.counter+1 %}
-
             <table class="centered">
+                <caption>
+                    Table {{table.counter}}: {{ecosystem.label}} indicators.
+                    {% set table.counter=table.counter+1 %}
+                </caption>
+
                 <thead>
                     <tr>
                         <th class="label" style="width: 100%;" scope="col">Indicator</th>
@@ -19,11 +19,7 @@
                     {% for indicator in ecosystem.indicator_summary %}
                         <tr>
                         {% if indicator.present %}
-                            <td class="label">
-                                <a href="#{{indicator.id}}">
-                                    <div>{{indicator.label}}</div>
-                                </a>
-                            </td>
+                            <td class="label"><a href="#{{indicator.id}}">{{indicator.label}}</a></td>
                             <td>&check;</td>
                         {% else %}
                             <td class="label indicator-absent">{{indicator.label}}</td>
