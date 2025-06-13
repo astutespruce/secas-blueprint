@@ -2,11 +2,9 @@
 	import CheckCircle from '~icons/fa-solid/check-circle'
 	import Download from '~icons/fa-solid/download'
 	import ExclamationTriangle from '~icons/fa-solid/exclamation-triangle'
-	import { Root, Title, Description } from '$lib/components/ui/alert'
+	import { Root, Description } from '$lib/components/ui/alert'
 	import { Button } from '$lib/components/ui/button'
-	import { siteMetadata } from '$lib/meta'
-
-	const { contactEmail } = siteMetadata
+	import { CONTACT_EMAIL } from '$lib/env'
 
 	const { reportURL, errors, onReset } = $props()
 </script>
@@ -33,7 +31,7 @@
 					{/each}
 				</ul>
 				<p class="mt-4">
-					Please try again. If that does not work, please <a href={`mailto:${contactEmail}`}
+					Please try again. If that does not work, please <a href={`mailto:${CONTACT_EMAIL}`}
 						>contact us</a
 					>.
 				</p>

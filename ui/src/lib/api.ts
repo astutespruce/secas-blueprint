@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-import { hasWindow } from '$lib/util/dom'
+import { browser } from '$app/environment'
 import { captureException } from '$lib/util/log'
 import { API_TOKEN, API_HOST } from '$lib/env'
 
@@ -9,7 +9,7 @@ const pollInterval = 1000 // milliseconds; 1 second
 const jobTimeout = 600000 // milliseconds; 10 minutes
 const failedFetchLimit = 5
 
-if (hasWindow && !apiHost) {
+if (browser && !apiHost) {
 	apiHost = `//${window.location.host}`
 }
 

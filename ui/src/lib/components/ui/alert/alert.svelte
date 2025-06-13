@@ -6,7 +6,7 @@
 		variants: {
 			variant: {
 				default: '',
-				destructive: 'text-destructive bg-destructive/5'
+				destructive: 'text-destructive bg-destructive/5 border-destructive'
 			}
 		},
 		defaultVariants: {

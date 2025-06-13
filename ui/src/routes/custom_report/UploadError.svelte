@@ -2,15 +2,13 @@
 	import ExclamationTriangle from '~icons/fa-solid/exclamation-triangle'
 	import { Button } from '$lib/components/ui/button'
 	import { Root, Title, Description } from '$lib/components/ui/alert'
-	import { siteMetadata } from '$lib/meta'
-
-	const { contactEmail } = siteMetadata
+	import { CONTACT_EMAIL } from '$lib/env'
 
 	const { error, onReset } = $props()
 </script>
 
 <div class="container mt-8">
-	<Root variant="destructive" class="border-error flex gap-4">
+	<Root variant="destructive" class="flex gap-4">
 		<ExclamationTriangle width="2rem" height="2rem" class="flex-none" />
 		<div>
 			<Title class="text-2xl">Uh oh! There was an error!</Title>
@@ -20,7 +18,7 @@
 						The server says {error}
 					{:else}
 						Please try again. If that does not work, try a different file or <a
-							href={`mailto:${contactEmail}`}>contact us</a
+							href={`mailto:${CONTACT_EMAIL}`}>contact us</a
 						>.
 					{/if}
 				</p>

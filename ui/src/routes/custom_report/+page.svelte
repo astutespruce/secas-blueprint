@@ -6,9 +6,9 @@
 	import Progress from './Progress.svelte'
 	import Queued from './Queued.svelte'
 	import UploadForm from './UploadForm.svelte'
-	import type { StateType, UploadResultType, ProgressCallbackType } from './types'
+	import type { ReportState, UploadResult, ProgressCallback } from './types'
 
-	const initState: StateType = {
+	const initState: ReportState = {
 		reportURL: null,
 		status: null,
 		progress: 0,
@@ -20,7 +20,7 @@
 		error: null // if error is non-null, it indicates there was an error
 	}
 
-	let state: StateType = $state(initState)
+	let state: ReportState = $state(initState)
 
 	const handleUpload = async (areaName: string, file: File) => {
 		console.log('do upload', areaName, file)
@@ -49,7 +49,7 @@
 				error: uploadError,
 				result,
 				errors: finalErrors
-			}: UploadResultType = await uploadFile(
+			}: UploadResult = await uploadFile(
 				file,
 				areaName,
 				({
@@ -59,7 +59,7 @@
 					elapsedTime: nextElapsedTime,
 					message: nextMessage = null,
 					errors: nextErrors = null
-				}: ProgressCallbackType) => {
+				}: ProgressCallback) => {
 					state = {
 						...state,
 						status: nextStatus,

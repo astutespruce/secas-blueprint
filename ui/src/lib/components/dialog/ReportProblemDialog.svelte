@@ -1,10 +1,8 @@
 <script lang="ts">
-	import { siteMetadata } from '$lib/meta';
-	import { Root, Trigger, Content, Header, Title } from '$lib/components/ui/dialog';
+	import { CONTACT_EMAIL } from '$lib/env'
+	import { Root, Trigger, Content, Header, Title } from '$lib/components/ui/dialog'
 
-	const { contactEmail, title } = siteMetadata;
-
-	let { children } = $props();
+	let { children } = $props()
 </script>
 
 <Root>
@@ -25,11 +23,11 @@
 			<br />
 			<b>email</b>:{' '}
 			<a
-				href={`mailto:${contactEmail}?subject=${title} Support (SE Blueprint Explorer) - report a problem`}
+				href={`mailto:${CONTACT_EMAIL}?subject=SE Blueprint Explorer Support - report a problem`}
 				target="_blank"
 				rel="noopener noreferrer"
 			>
-				{contactEmail}
+				{CONTACT_EMAIL}
 			</a>
 		</p>
 	</Content>

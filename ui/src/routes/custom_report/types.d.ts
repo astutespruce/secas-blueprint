@@ -1,4 +1,4 @@
-export interface StateType {
+export type ReportState = {
 	reportURL: string | null
 	status: string | null
 	progress: number
@@ -10,13 +10,13 @@ export interface StateType {
 	error?: string | null // if error is non-null, it indicates there was an error
 }
 
-export interface UploadResultType {
+export type UploadResult = {
 	error?: string
 	result?: string
 	errors?: string[]
 }
 
-export interface ProgressCallbackType {
+export type ProgressCallback = {
 	status: string
 	progress: number
 	queuePosition?: number

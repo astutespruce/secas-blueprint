@@ -28,6 +28,7 @@ data_dir = Path("data")
 inputs_dir = data_dir / "inputs"
 indicators_dir = inputs_dir / "indicators"
 out_dir = Path("data/for_tiles")
+constants_dir = Path("constants")
 
 bnd_filename = inputs_dir / "boundaries/se_boundary.feather"
 extent_filename = inputs_dir / "boundaries/blueprint_extent.tif"
@@ -169,7 +170,7 @@ df[["group", "position", "offset", "bits", "value_shift"]].reset_index().to_feat
 
 # save encoding JSON for frontend
 for group in groups:
-    with open(out_dir / f"se_pixel_layers_{group}.json", "w") as out:
+    with open(constants_dir / f"pixel_layers_{group}.json", "w") as out:
         _ = out.write(
             df.loc[df.group == group, ["offset", "bits", "value_shift"]]
             .rename(columns={"value_shift": "valueShift"})

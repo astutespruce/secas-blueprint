@@ -1,11 +1,14 @@
 <script>
-	import { page } from '$app/state';
-	import { siteMetadata } from '$lib/meta';
+	import { browser } from '$app/environment'
+	import { page } from '$app/state'
+	import { CONTACT_EMAIL } from '$lib/env'
 
-	const { contactEmail } = siteMetadata;
+	console.error(page.status)
+	console.error(page.error)
 
-	console.error(page.status);
-	console.error(page.error);
+	if (page.status !== 404 && browser && window.Sentry) {
+		window.Sentry.captureException(page.error)
+	}
 </script>
 
 <svelte:head>
@@ -38,7 +41,7 @@
 		<h2 class="text-3xl">There was an unexpected error</h2>
 		<div class="mt-4 text-xl">
 			Please try again in a few minutes. If that still doesn't work, please
-			<a href={`mailto:${contactEmail}`}> let us know</a>!
+			<a href={`mailto:${CONTACT_EMAIL}`}> let us know</a>!
 		</div>
 	</div>
 {/if}
