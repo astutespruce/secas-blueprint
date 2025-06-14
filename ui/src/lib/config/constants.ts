@@ -40,6 +40,8 @@ export {
 	pixelLayers8
 }
 
+export const subregionsIndex = indexBy(subregions, 'subregion')
+
 // Sort by descending value
 export const blueprint = rawBlueprint.sort(({ value: leftValue }, { value: rightValue }) =>
 	rightValue > leftValue ? 1 : -1

@@ -37,6 +37,10 @@ export type MapData = {
 	renderLayer: any | null // FIXME:
 	filters: Filters
 	visibleSubregions: Set<string>
+
+	// setFilters: Function
+	// resetFilters: Function
+	// setVisibleSubregions: Function
 }
 
 export type PixelLayerBounds = {

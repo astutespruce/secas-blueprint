@@ -1,6 +1,6 @@
 <script lang="ts">
 	import sourceSansPro from '@fontsource/source-sans-pro/files/source-sans-pro-latin-400-normal.woff2?url'
-	import sourceSansProBold from '@fontsource/source-sans-pro/files/source-sans-pro-latin-700-normal.woff2?url'
+	import sourceSansProBold from '@fontsource/source-sans-pro/files/source-sans-pro-latin-900-normal.woff2?url'
 
 	import { Analytics, Footer, Header } from '$lib/components/layout'
 

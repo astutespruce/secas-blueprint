@@ -1,6 +1,6 @@
 @import '@fontsource/source-sans-pro/400.css';
 @import '@fontsource/source-sans-pro/400-italic.css';
-@import '@fontsource/source-sans-pro/700.css';
+@import '@fontsource/source-sans-pro/900.css';
 
 @import 'tailwindcss';
 
@@ -43,6 +43,12 @@
 	--blue-7: oklch(0.6272 0.1112 241.1);
 	--blue-8: oklch(0.5273 0.0914 241.52);
 	--blue-9: oklch(0.3673 0.0593 239.59);
+
+	--group-priorities: oklch(0.2934 0.134 329.64);
+	--group-other: oklch(0.8584 0.0653 55.36);
+	--group-freshwater: oklch(0.898 0.041 231.02);
+	--group-marine: oklch(0.8352 0.085 284.41);
+	--group-terrestrial: oklch(0.9144 0.0503 129.63);
 
 	/* defaults below */
 	--radius: 0.625rem;
@@ -180,7 +186,7 @@
 	h2,
 	h3,
 	h4 {
-		font-weight: 700;
+		font-weight: 900;
 	}
 
 	a {

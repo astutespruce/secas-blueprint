@@ -1,13 +1,13 @@
 <script>
-	import { base } from '$app/paths';
+	import { base } from '$app/paths'
 
-	import FileUpload from '~icons/fa-solid/file-upload';
-	import QuestionCircle from '~icons/fa-solid/question-circle';
+	import FileUpload from '~icons/fa-solid/file-upload'
+	import QuestionCircle from '~icons/fa-solid/question-circle'
 
 	// TODO: fetch mobile state, mapdata state from context
 </script>
 
-<header class="flex-none leading-none drop-shadow-md drop-shadow-black z-10">
+<header class="flex-none leading-none drop-shadow-sm drop-shadow-black z-10">
 	<!-- desktop header -->
 	<div class="hidden sm:flex flex-auto justify-between items-center gap-3 pl-2 pr-4 py-1">
 		<a href={`${base}/`} class="lg:flex gap-1.5 flex-wrap items-center hover:no-underline">
