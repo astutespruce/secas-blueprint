@@ -38,6 +38,8 @@ export type MapData = {
 	filters: Filters
 	visibleSubregions: Set<string>
 
+	isLoading: boolean
+
 	// setFilters: Function
 	// resetFilters: Function
 	// setVisibleSubregions: Function

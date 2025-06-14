@@ -3,11 +3,14 @@
 	import { defaultFilters } from '$lib/config/filters'
 	import { renderLayersIndex } from '$lib/config/pixelLayers'
 	import type { MapData } from '$lib/types'
+	import { MobileTabs } from '$lib/components/layout'
 	import { InfoTab, FiltersTab } from '$lib/components/tabs'
+	import { Map } from '$lib/components/map'
 	import { cn } from '$lib/utils'
 
 	let mapData: MapData = $state({
 		mapMode: 'unit', // filter, pixel, or unit
+		isLoading: false,
 		data: null,
 		selectedIndicator: null,
 		renderLayer: renderLayersIndex.blueprint,
@@ -22,7 +25,7 @@
 	let contentNode: Element | null = $state(null)
 
 	// TODO: if mobile, tab is map, which really just means that map is on top
-	let tab = $state('info')
+	let tab = $state('map')
 	const handleTabChange = (newTab: string) => {
 		tab = newTab
 		// scroll content to top
@@ -59,6 +62,14 @@
 		</div>
 
 		<!-- map -->
-		<div class="flex-auto bg-blue-1 h-full w-full">TODO: map</div>
+		<!-- <div class="flex-auto bg-blue-1 h-full w-full">TODO: map</div> -->
+		<Map />
 	</div>
+
+	<!-- mobile bottom tabs	-->
+	<MobileTabs
+		{tab}
+		hasMapData={mapData.data !== null && !mapData.isLoading}
+		onChange={handleTabChange}
+	/>
 </div>

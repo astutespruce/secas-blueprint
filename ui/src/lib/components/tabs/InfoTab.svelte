@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { DEPLOY_ENV } from '$lib/env'
+	import TimesCircle from '~icons/fa-solid/times-circle'
 	import { Root as Alert } from '$lib/components/ui/alert'
 	import SECASLogo from '$images/SECAS_logo.svg'
 
@@ -55,11 +56,70 @@
 		</li>
 	</ul>
 
-	<p class="text-lg mt-2">
+	<p class="hidden md:block text-lg mt-2">
 		<a href="/help" target="_blank" rel="noreferrer">
 			Read instructions on how to use this viewer
 		</a>.
 	</p>
+
+	<div class="md:hidden">
+		<hr class="my-6" />
+		<h2 class="text-2xl">How To Use This Viewer</h2>
+		<h3 class="text-xl">Subwatershed and marine hexagon details:</h3>
+		<p class="mt-1 text-lg">
+			Choose <b>Summary data</b> from the button bar below the map. Click on any subwatershed or
+			marine hexagon for details. You may need to zoom in futher to select an area.
+			<br />
+			<br />
+			Use the tabs in the bottom bar to navigate the different types of summary information available.
+			<br />
+			<br />
+			On the indicators tab, you can see which indicators are present in that area. Click on an indicator
+			for more information and to see the range of values that occur there.
+			<br />
+			<br />
+			To unselect the area, click on the <TimesCircle
+				class="size-4.5 mx-1 text-grey-8 inline-block"
+			/> button in the top bar.
+		</p>
+
+		<h3 class="text-xl mt-10">Pixel-level details:</h3>
+		<p class="text-lg mt-1">
+			Choose <b>View point data</b> from the button bar below the map. The crosshairs in the center
+			of the map will pinpoint a specific place and show details for that location in the sidebar.
+			You may have to zoom in for the crosshairs to appear. Zoom in further to choose a more precise
+			location, especially in areas that are highly pixelated.
+			<br />
+			<br />
+			Use the tabs in the bottom bar to navigate the different types of point-level information available
+			for priorities, indicators, threats, and partners.
+			<br />
+			<br />
+			The indicators tab shows the pixel value for each indicator present at that point. Click on an
+			indicator for more information about it.
+			<br />
+			<br />
+			Note: this approach uses pixels that have been resampled and reprojected for each zoom level. This
+			means that the values shown in the tool may not exactly match the Blueprint and indicator data
+			for that specific ground location, especially in areas of high variability in the data. To view
+			and / or download more precise spatial data, please visit the{' '}
+			<a href="https://secas-fws.hub.arcgis.com/pages/blueprint" target="_blank">
+				Blueprint page of the SECAS Atlas
+			</a>
+			<br />
+			<br />
+			To unselect the pixel, click on the <TimesCircle
+				class="size-4.5 mx-1 text-grey-8 inline-block"
+			/> button in top bar.
+		</p>
+		<h3 class="text-xl mt-10">To find a specific area:</h3>
+		<p class="text-lg mt-1">
+			Use the <b>Find Location</b> tab at the bottom to search for a place by name. When you tap on
+			a place to select it from the list, it will show a marker at that location on the map.
+			<br />
+			You can also choose to add a marker at your current location (if allowed by your device).
+		</p>
+	</div>
 
 	<hr class="my-8" />
 

@@ -57,7 +57,9 @@
 </div>
 
 <div class="h-full overflow-y-auto">
-	{#if hasVisibleFilters}
+	{#if mapData.isLoading}
+		<div class="mt-4 text-center text-xl text-grey-8">Loading...</div>
+	{:else if hasVisibleFilters}
 		<div class="flex flex-col overflow-y-auto flex-auto h-full relative">
 			<div class="px-4 py-2 leading-tight text-grey-8">
 				Filters can help you find the part of the Blueprint that aligns with your mission, interest,
@@ -130,7 +132,7 @@
 			<FilterGroup
 				id="otherInfo"
 				label="More filters"
-				icon={BlueprintIcon}
+				icon={OtherInfoIcon}
 				color="bg-(--group-other)/20"
 				borderColor="border-(--group-other)/60"
 				entries={otherInfoFilters.map((entry) => ({
@@ -142,9 +144,11 @@
 			/>
 		</div>
 	{:else}
-		<div class="py-8 pl-4 pr-8 flex items-center gap-4">
-			<ExclamationTriangle width="2em" height="2em" class="flex-none text-[orange]" />
-			<div class="flex-auto text-grey-8 font-bold">No filters are available for this area.</div>
+		<div class="py-8 pl-4 pr-8 flex justify-center">
+			<div class="flex items-center gap-2">
+				<ExclamationTriangle class="size-6 flex-none text-[orange]" />
+				<div class="flex-auto text-grey-8 text-lg">No filters are available for this area.</div>
+			</div>
 		</div>
 	{/if}
 </div>

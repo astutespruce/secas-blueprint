@@ -8,13 +8,18 @@
 </script>
 
 <header class="flex-none leading-none drop-shadow-sm drop-shadow-black z-10">
-	<!-- desktop header -->
-	<div class="hidden sm:flex flex-auto justify-between items-center gap-3 pl-2 pr-4 py-1">
+	<div class="sm:flex flex-auto justify-between items-center gap-3 pl-2 pr-4 py-1">
 		<a href={`${base}/`} class="lg:flex gap-1.5 flex-wrap items-center hover:no-underline">
-			<h1 class="m-0 leading-none text-[1rem] lg:text-2xl">Southeast</h1>
-			<h1 class="m-0 text-2xl leading-none">Conservation Blueprint Explorer</h1>
+			<h1
+				class="m-0 font-normal md:font-bold leading-none text-[0.8rem] md:text-[1rem] lg:text-2xl"
+			>
+				Southeast
+			</h1>
+			<h1 class="m-0 font-normal md:font-bold text-lg md:text-2xl leading-none">
+				Conservation Blueprint Explorer
+			</h1>
 		</a>
-		<div class="flex-none flex gap-3 lg:gap-5">
+		<div class="hidden flex-none md:flex gap-3 lg:gap-5">
 			<a
 				href="/help"
 				target="_blank"
@@ -33,9 +38,6 @@
 			</a>
 		</div>
 	</div>
-
-	<!-- mobile header -->
-	<div class="flex sm:hidden">TODO: mobile header</div>
 </header>
 
 <style>
