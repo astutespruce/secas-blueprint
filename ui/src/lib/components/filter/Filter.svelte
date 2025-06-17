@@ -9,8 +9,6 @@
 
 	import { logGAEvent } from '$lib/util/log'
 
-	// TODO: tooltip
-
 	const {
 		id,
 		label,

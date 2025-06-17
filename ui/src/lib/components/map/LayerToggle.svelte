@@ -1,2 +1,70 @@
 <script lang="ts">
+	import EyeIcon from '~icons/fa-solid/eye'
+	import EyeSlashIcon from '~icons/fa-solid/eye-slash'
+	import LayerGroupIcon from '~icons/fa-solid/layer-group'
+	import { Root, Trigger, Content, Header, Title } from '$lib/components/ui/dialog'
+	import { renderLayerGroups, renderLayersIndex } from '$lib/config/pixelLayers'
+	import { logGAEvent } from '$lib/util/log'
+	import { cn } from '$lib/utils'
+
+	let { renderLayer } = $props()
+
+	const handleSetRenderLayer = (id: string) => () => {
+		// TODO: verify this works!
+		renderLayer = renderLayersIndex[id]
+		logGAEvent('set-render-layer', {
+			layer: id
+		})
+	}
+
+	const handleKeyDown =
+		(id: string) =>
+		({ key }: { key: string }) => {
+			if (key === 'Enter') {
+				renderLayer = renderLayersIndex[id]
+				logGAEvent('set-render-layer', {
+					layer: id
+				})
+			}
+		}
+
+	const isActiveLayer = (id: string) => renderLayer && renderLayer.id === id
 </script>
+
+<Root>
+	<Trigger>
+		<LayerGroupIcon
+			class="absolute top-[160px] right-[8px] w-8 h-8 p-[6px] text-grey-9 bg-white cursor-pointer shadow-md shadow-grey-5 pointer-events-auto border-2 border-grey-5 rounded-sm"
+		/>
+	</Trigger>
+	<Content class="pt-4 pb-6">
+		<Header class="border-b pb-4 border-b-grey-3">
+			<Title class="text-3xl">Choose layer to show on map</Title>
+		</Header>
+		<div class="overflow-y-auto max-h-[400px]">
+			{#each renderLayerGroups as { id: groupId, label: groupLabel, layers }}
+				<div class="not-first:mt-2 not-first:pt-2 not-first:border-t not-first:border-t-grey-1">
+					{#if groupLabel}
+						<h4 class="text-xl not-first:mt-8">{groupLabel}</h4>
+					{/if}
+					{#each layers as { id, label }}
+						<div
+							class="flex items-top cursor-pointer gap-2 grey-8"
+							onclick={handleSetRenderLayer(id)}
+							onkeydown={handleKeyDown(id)}
+							role="button"
+							tabindex={0}
+						>
+							{#if isActiveLayer(id)}
+								<EyeIcon class="text-foreground size-4 mt-1" />
+							{:else}
+								<EyeSlashIcon class="text-grey-8 size-4 mt-1" />
+							{/if}
+							<div class={cn({ 'font-bold': isActiveLayer(id) })}>{label}</div>
+						</div>
+					{/each}
+				</div>
+			{/each}
+		</div>
+	</Content>
+</Root>

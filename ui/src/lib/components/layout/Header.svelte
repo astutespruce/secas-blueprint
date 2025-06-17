@@ -7,7 +7,7 @@
 	// TODO: fetch mobile state, mapdata state from context
 </script>
 
-<header class="flex-none leading-none drop-shadow-sm drop-shadow-black z-10">
+<header class="flex-none leading-none drop-shadow-sm drop-shadow-black z-10000">
 	<div class="sm:flex flex-auto justify-between items-center gap-3 pl-2 pr-4 py-1">
 		<a href={`${base}/`} class="lg:flex gap-1.5 flex-wrap items-center hover:no-underline">
 			<h1

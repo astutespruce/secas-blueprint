@@ -32,12 +32,13 @@
 			{#snippet child({ props })}
 				<div
 					class={cn(
-						'z-50 size-0 rotate-45 border-8 border-transparent',
-						'data-[side=top]:translate-x-1/2 data-[side=top]:translate-y-[calc(-50%_+_2px)]',
-						'data-[side=bottom]:-translate-y-[calc(-50%_+_1px)] data-[side=bottom]:translate-x-1/2',
-						'data-[side=right]:translate-x-[calc(50%_+_2px)] data-[side=right]:translate-y-1/2',
-						'data-[side=left]:translate-y-[calc(50%_-_3px)]',
+						'z-50 size-0 border-8 border-transparent',
+						// 'data-[side=top]:translate-x-1/2 data-[side=top]:translate-y-[calc(-50%_+_2px)]',
+						// 'data-[side=bottom]:-translate-y-[calc(-50%_+_1px)] data-[side=bottom]:translate-x-1/2',
+						// 'data-[side=right]:translate-x-[calc(50%_+_2px)] data-[side=right]:translate-y-1/2',
+						// 'data-[side=left]:translate-y-[calc(50%_-_3px)]',
 						'data-[side=right]:border-r-grey-9 data-[side=right]:border-b-grey-9',
+						'data-[side=bottom]:border-t-grey-9 data-[side=right]:border-l-grey-9',
 						arrowClasses
 					)}
 					{...props}

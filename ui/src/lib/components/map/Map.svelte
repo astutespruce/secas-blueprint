@@ -21,10 +21,10 @@
 	import { extractPixelData, StackedPNGTileLayer } from './gl'
 	import { Legend } from './legend'
 	import { mapConfig as config, sources, layers } from '$lib/config/map'
-	import { mapboxgl } from './mapbox'
 	import { pixelLayers, renderLayersIndex } from '$lib/config/pixelLayers'
 	import LayerToggle from './LayerToggle.svelte'
-	import MapModeToggle from './MapModeToggle.svelte'
+	import { mapboxgl } from './mapbox'
+	import { ModeToggle } from './mode'
 	import StyleToggle from './StyleToggle.svelte'
 	import { getCenterAndZoom } from './viewport'
 
@@ -452,14 +452,14 @@
 			isVisible={isRenderLayerVisible}
 			onToggleLayerVisibility={handleToggleRenderLayerVisible}
 		/>
-		<!--
+
 		{#if mapMode !== 'unit'}
-			<LayerToggle />
+			<LayerToggle renderLayer={mapData.renderLayer} />
 		{/if}
 
-		<FindLocation />
+		<!-- <FindLocation /> -->
 
-		<MapModeToggle {map} {isMobile} {belowMinZoom} /> -->
+		<ModeToggle mapMode={mapData.mapMode} {belowMinZoom} />
 
 		<StyleToggle onChange={handleBasemapChange} />
 	{/if}

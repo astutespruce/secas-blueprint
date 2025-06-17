@@ -26,7 +26,7 @@
 </script>
 
 <div
-	class="absolute text-grey-9 bg-white cursor-pointer bottom-[40px] lg:bottom-[24px] right-[10px] border border-grey-5 rounded-sm shadow-md shadow-grey-6 max-w-[210px] select-none"
+	class="absolute text-grey-9 bg-white cursor-pointer bottom-[40px] lg:bottom-[24px] right-[10px] border border-grey-5 rounded-sm shadow-md shadow-grey-6 max-w-[210px] select-none hidden md:block"
 	onclick={toggleVisibility}
 	onkeydown={handleKeyDown}
 	role="button"
