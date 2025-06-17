@@ -83,3 +83,11 @@ export type PixelLayer = {
 	}[]
 	layer: PixelLayerIndexItem
 }
+
+export type Bounds = [number, number, number, number]
+export type MapConfig = {
+	bounds: Bounds
+	maxBounds: Bounds
+	minZoom: number
+	maxZoom: number
+}

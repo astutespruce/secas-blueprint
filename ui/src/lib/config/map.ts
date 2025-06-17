@@ -1,5 +1,6 @@
 import { browser } from '$app/environment'
 import { TILE_HOST } from '$lib/env'
+import type { MapConfig } from '$lib/types'
 
 export let tileHost = TILE_HOST
 
@@ -7,7 +8,7 @@ if (browser && !tileHost) {
 	tileHost = `//${window.location.host}`
 }
 
-export const mapConfig = {
+export const mapConfig: MapConfig = {
 	// NOTE: these are not the data bounds, but ideal bounds to leave enough room
 	// east of Puerto Rico for the legend
 	bounds: [-106.93611462308955, 14.65662961734786, -48.85555906753385, 43.47207027673693],
