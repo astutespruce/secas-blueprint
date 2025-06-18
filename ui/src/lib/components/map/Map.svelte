@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { getContext } from 'svelte'
-
 	import { MapboxOverlay } from '@deck.gl/mapbox'
-	// TODO: debounced callback; svelte alternative to use-debounce
 
 	import CrosshairsIcon from '$images/CrosshairsIcon.svg'
 	import Spinner from '~icons/fa-solid/spinner'
@@ -12,7 +10,7 @@
 		indicators as indicatorInfo,
 		subregionIndex
 	} from '$lib/config/constants'
-	import type { MapData } from '$lib/types'
+	import type { LocationData, MapData } from '$lib/types'
 	import { indexBy } from '$lib/util/data'
 	import { debounce, eventHandler } from '$lib/util/func'
 
@@ -29,8 +27,12 @@
 	import { getCenterAndZoom } from './viewport'
 
 	let map: mapboxgl.Map
+	let marker: mapboxgl.Marker | null = null
+
 	const mapData: MapData = getContext('map-data')
 	const { data, mapMode, renderLayer, filters, setData, setVisibleSubregions } = mapData
+
+	const locationData: LocationData = getContext('location-data')
 
 	let isLoaded: boolean = $state(false)
 	let isRenderLayerVisible: boolean = $state(true)
@@ -414,6 +416,27 @@
 		}
 	}
 
+	$effect(() => {
+		if (!isLoaded) {
+			return
+		}
+
+		if (locationData.location !== null) {
+			const {
+				location: { latitude, longitude }
+			} = locationData
+			map.jumpTo({ center: [longitude, latitude], zoom: 12 })
+			if (!marker) {
+				marker = new mapboxgl.Marker().setLngLat([longitude, latitude]).addTo(map)
+			} else {
+				marker?.setLngLat([longitude, latitude])
+			}
+		} else {
+			marker?.remove()
+			marker = null
+		}
+	})
+
 	const belowMinZoom = $derived(
 		mapData.mapMode === 'pixel'
 			? currentZoom < minPixelLayerZoom
@@ -457,7 +480,7 @@
 			<LayerToggle renderLayer={mapData.renderLayer} />
 		{/if}
 
-		<!-- <FindLocation /> -->
+		<FindLocation />
 
 		<ModeToggle mapMode={mapData.mapMode} {belowMinZoom} />
 

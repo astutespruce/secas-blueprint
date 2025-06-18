@@ -91,3 +91,12 @@ export type MapConfig = {
 	minZoom: number
 	maxZoom: number
 }
+
+export type Coordinate = {
+	latitude: number
+	longitude: number
+}
+
+export type LocationData = {
+	location: Coordinate | null
+}

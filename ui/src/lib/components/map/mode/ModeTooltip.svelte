@@ -9,7 +9,7 @@
 	<Root disableHoverableContent>
 		<Trigger
 			class={cn(
-				'p-2 not-first:ml-[2px] first:rounded-l-md last:rounded-r-md leading-none min-w-[6em] cursor-pointer',
+				'text-sm md:text-md p-2 not-first:ml-[2px] first:rounded-l-md last:rounded-r-md leading-none min-w-[6em] cursor-pointer',
 				className
 			)}
 			onclick={onClick}

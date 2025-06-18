@@ -38,7 +38,7 @@
 		{#each tabs as { id, label, icon: Icon }}
 			<Button
 				class={cn(
-					'flex flex-col gap-0 items-center justify-center text-center flex-grow p-2 h-full select-none rounded-none text-grey-1 text-[10px]',
+					'flex flex-col gap-0 items-center justify-center text-center flex-grow p-2 h-10 select-none rounded-none text-grey-1 text-[10px]',
 					{
 						'text-white': id === tab,
 						'bg-blue-9': id === tab

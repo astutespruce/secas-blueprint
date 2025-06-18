@@ -7,7 +7,7 @@
 	const isStaging = DEPLOY_ENV === 'staging'
 </script>
 
-<div class="overflow-y-auto px-4 h-full pt-2 pb-8">
+<section class="overflow-y-auto px-4 h-full pt-2 pb-8">
 	{#if isStaging}
 		<Alert variant="destructive" class="text-md my-4">
 			<b>WARNING</b>: this is a test version of this application used for verifying recent changes;
@@ -145,4 +145,4 @@
 			Southeast Conservation Adaptation Strategy
 		</a>.
 	</p>
-</div>
+</section>

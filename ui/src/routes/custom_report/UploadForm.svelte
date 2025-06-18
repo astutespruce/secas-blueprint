@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fromEvent as getFilesFromEvent } from 'file-selector'
-	import { superForm, fileProxy, defaults, setError } from 'sveltekit-superforms'
+	import { superForm, fileProxy, defaults } from 'sveltekit-superforms'
 	import { zodClient } from 'sveltekit-superforms/adapters'
 	import { zod } from 'sveltekit-superforms/adapters'
 	import { z } from 'zod'
