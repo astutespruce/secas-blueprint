@@ -7,13 +7,9 @@
 	import { Button } from '$lib/components/ui/button'
 	import { hasGeolocation } from '$lib/util/dom'
 	import type { LocationData } from '$lib/types'
+	import { cn } from '$lib/utils'
 
-	const navigatorOptions = {
-		enableHighAccuracy: false,
-		maximumAge: 0,
-		timeout: 6000
-	}
-
+	const { class: className, onSetLocation } = $props()
 	let isError: boolean = $state(false)
 	let isPending: boolean = $state(false)
 	const locationData: LocationData = getContext('location-data')
@@ -29,24 +25,29 @@
 					latitude,
 					longitude
 				}
+				onSetLocation()
 			},
 			(err) => {
 				isError = true
 				isPending = false
 				console.error(err)
 			},
-			navigatorOptions
+			{
+				enableHighAccuracy: false,
+				maximumAge: 0,
+				timeout: 6000
+			}
 		)
 	}
 </script>
 
-<section class="flex flex-col h-full justify-between overflow-y-auto pt-4 pb-8">
+<section class={cn('flex flex-col h-full justify-between overflow-y-auto pt-4 pb-8', className)}>
 	<div class="flex-auto">
 		<h3 class="mb-2 pl-4 pr-8 text-xl">Find a location on the map</h3>
 		<div
 			class="[&_.search-input-container]:px-4 [&_.search-input-container]:py-2 [&_.search-input-container]:bg-grey-1"
 		>
-			<Search />
+			<Search onSelect={onSetLocation} />
 		</div>
 	</div>
 

@@ -22,14 +22,11 @@ export const eventHandler = (delay: number) => {
 
 	const once = (callback: Function) => {
 		// ignore any prior callbacks
-		console.log('once called')
 		onceCallback = callback
 	}
 
 	const handler = debounce(() => {
-		console.log('debounce ended')
 		if (onceCallback) {
-			console.log('once callback called')
 			onceCallback()
 			onceCallback = null
 		}

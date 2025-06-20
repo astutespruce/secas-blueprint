@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getContext } from 'svelte'
+	import { getContext, untrack } from 'svelte'
 	import { MapboxOverlay } from '@deck.gl/mapbox'
 
 	import CrosshairsIcon from '$images/CrosshairsIcon.svg'
@@ -10,7 +10,10 @@
 		indicators as indicatorInfo,
 		subregionIndex
 	} from '$lib/config/constants'
-	import type { LocationData, MapData } from '$lib/types'
+	import { mapConfig as config, sources, layers } from '$lib/config/map'
+	import { pixelLayers, renderLayersIndex } from '$lib/config/pixelLayers'
+	import type { MapData } from '$lib/components/map'
+	import type { LocationData, PixelLayer } from '$lib/types'
 	import { indexBy } from '$lib/util/data'
 	import { debounce, eventHandler } from '$lib/util/func'
 
@@ -18,8 +21,7 @@
 	import FindLocation from './FindLocation.svelte'
 	import { extractPixelData, StackedPNGTileLayer } from './gl'
 	import { Legend } from './legend'
-	import { mapConfig as config, sources, layers } from '$lib/config/map'
-	import { pixelLayers, renderLayersIndex } from '$lib/config/pixelLayers'
+
 	import LayerToggle from './LayerToggle.svelte'
 	import { mapboxgl } from './mapbox'
 	import { ModeToggle } from './mode'
@@ -30,14 +32,13 @@
 	let marker: mapboxgl.Marker | null = null
 
 	const mapData: MapData = getContext('map-data')
-	const { data, mapMode, renderLayer, filters, setData, setVisibleSubregions } = mapData
-
 	const locationData: LocationData = getContext('location-data')
 
 	let isLoaded: boolean = $state(false)
 	let isRenderLayerVisible: boolean = $state(true)
 	let currentZoom: number = $state(3)
 	let highlightId: number | string | undefined = $state()
+	let renderLayer: PixelLayer = $state.raw(renderLayersIndex.blueprint)
 
 	// mapIsDrawing is used to show the spinner; it only gets set via a deounced callback to prevent short duration flashes
 	let mapIsDrawing: boolean = $state(false)
@@ -57,7 +58,7 @@
 	const minPixelLayerZoom = 7 // minimum reasonable zoom for getting pixel data
 	const minSummaryZoom = layers.filter(({ id }) => id === 'unit-outline')[0].minzoom
 
-	const setPixelLayerProps = (map, newProps) => {
+	const setPixelLayerProps = (newProps) => {
 		if (!map) return
 
 		// this happens in hot reload
@@ -72,12 +73,151 @@
 		})
 	}
 
-	const getPixelData = () => {
-		// TODO: implement
-	}
+	const getPixelData = debounce(() => {
+		if (mapData.mapMode !== 'pixel' || !map) {
+			return
+		}
 
-	const updateVisibleSubregions = () => {
-		// TODO: implement
+		if (currentZoom < minPixelLayerZoom) {
+			mapData.setData(null)
+			return
+		}
+
+		const layer = map.getLayer('pixelLayers')
+		// don't fetch data if layer is not yet available or is not visible
+		if (!(layer && layer.deck && layer.deck.layerManager.layers[0].props.visible)) {
+			return
+		}
+
+		const { lng: longitude, lat: latitude } = map.getCenter()
+
+		// If protected areas tiles aren't loaded yet, schedule a callback once tiles are loaded
+		if (
+			!(
+				map.style._otherSourceCaches.protectedAreas &&
+				map.style._otherSourceCaches.protectedAreas.loaded()
+			)
+		) {
+			mapData.setData({
+				type: 'pixel',
+				location: {
+					longitude,
+					latitude
+				},
+				isLoading: true
+			})
+			map.once('idle', () => {
+				getPixelData()
+			})
+		}
+
+		const pixelData = extractPixelData(map, map.getCenter(), layer, ecosystemInfo, indicatorInfo)
+
+		if (pixelData === null) {
+			// tile data not yet loaded for correct zoom, try again after next deckGL
+			// render pass
+			deckGLHandler.once(() => {
+				getPixelData()
+			})
+		}
+
+		mapData.setData({
+			type: 'pixel',
+			location: {
+				longitude,
+				latitude
+			},
+			isLoading: pixelData === null,
+			...(pixelData || {})
+		})
+	}, 10)
+
+	const updateVisibleSubregions = debounce(() => {
+		if (mapData.mapMode !== 'filter' || !map) {
+			return
+		}
+
+		const subregions = map
+			.queryRenderedFeatures(null, { layers: ['subregions'] })
+			.map(({ properties: { subregion } }) => subregion)
+
+		mapData.visibleSubregions = new Set(subregions)
+	}, 10)
+
+	// use a callback to actually update the layers, since may style may still
+	// be loading
+	const updateVisibleLayers = () => {
+		mapIsDrawing = true
+
+		const isVisible = isRenderLayerVisible
+		const pixelLayer = map.getLayer('pixelLayers')
+
+		// toggle layer visibility
+		if (mapData.mapMode === 'unit') {
+			map.setLayoutProperty('unit-fill', 'visibility', 'visible')
+			map.setLayoutProperty('unit-outline', 'visibility', 'visible')
+			map.setLayoutProperty('blueprint', 'visibility', isVisible ? 'visible' : 'none')
+			map.setLayoutProperty('protectedAreas', 'visibility', 'none')
+			map.setLayoutProperty('subregions', 'visibility', 'none')
+
+			// disable pixel layer event listener
+			pixelLayer!.deck!.setProps({
+				onAfterRender: () => {} // no-op
+			})
+			setPixelLayerProps({
+				visible: false,
+				filters: null, // reset filters (also reset in parent state)
+				data: { visible: false }
+			})
+
+			updateMapIsDrawing()
+
+			return
+		}
+		// pixel identify / filter modes
+		else if (mapData.mapMode === 'pixel') {
+			// enable pixel layer event listener
+			pixelLayer!.deck!.setProps({
+				onAfterRender: deckGLHandler.handler
+			})
+
+			// immediately try to retrieve pixel data if in pixel mode
+			if (map.getZoom() >= minPixelLayerZoom) {
+				map.once('idle', () => {
+					getPixelData()
+				})
+			}
+		} else if (mapData.mapMode === 'filter') {
+			// disable pixel layer event listener
+			pixelLayer!.deck!.setProps({
+				onAfterRender: () => {} // no-op
+			})
+		}
+
+		map.setLayoutProperty('unit-fill', 'visibility', 'none')
+		map.setLayoutProperty('unit-outline', 'visibility', 'none')
+		// reset selected outline
+		map.setFilter('unit-outline-highlight', ['==', 'id', Infinity])
+		map.setLayoutProperty('blueprint', 'visibility', 'none')
+		map.setLayoutProperty('protectedAreas', 'visibility', 'visible')
+		map.setLayoutProperty('subregions', 'visibility', 'visible')
+
+		if (mapData.mapMode === 'filter') {
+			map.once('idle', () => {
+				updateVisibleSubregions()
+			})
+		}
+
+		setPixelLayerProps({
+			visible: true,
+			filters: mapData.activeFilterValues,
+			// have to use opacity to hide so that pixel mode still works when hidden
+			opacity: isVisible ? 0.7 : 0,
+			// data prop is used to force loading of tiles if they aren't already loaded
+			data: { visible: true }
+		})
+
+		updateMapIsDrawing()
 	}
 
 	const hideGulfOfMexico = () => {
@@ -130,13 +270,6 @@
 		map.on('style.load', hideGulfOfMexico)
 
 		map.on('load', () => {
-			// FIXME: remove
-			// due to styling components loading at different times, the containing
-			// nodes don't always have height set; force larger view
-			// if (isLocalDev) {
-			// 	map.resize()
-			// }
-
 			// add sources
 			Object.entries(sources).forEach(([id, source]) => {
 				// @ts-ignore
@@ -180,28 +313,34 @@
 			})
 
 			// if map is initialized in pixel or filter mode
-			if (mapMode === 'pixel' || mapMode === 'filter') {
+			if (mapData.mapMode === 'pixel' || mapData.mapMode === 'filter') {
 				map.setLayoutProperty('unit-fill', 'visibility', 'none')
 				map.setLayoutProperty('unit-outline', 'visibility', 'none')
 				map.setLayoutProperty('blueprint', 'visibility', 'none')
-
-				setPixelLayerProps(map, {
-					visible: true,
-					filters: null,
-					data: { visible: true }
-				})
-
 				map.setLayoutProperty('protectedAreas', 'visibility', 'visible')
 				map.setLayoutProperty('subregions', 'visibility', 'visible')
 
-				map.once('idle', getPixelData)
+				map.once('idle', () => {
+					setPixelLayerProps({
+						visible: true,
+						filters: null,
+						data: { visible: true }
+					})
+					map.once('idle', () => {
+						getPixelData()
+					})
+				})
 			}
 
 			// enable event listener for renderer
-			if (mapMode === 'pixel') {
+			if (mapData.mapMode === 'pixel') {
 				// @ts-ignore
 				map.getLayer('pixelLayers')!.deck!.setProps({
 					onAfterRender: deckGLHandler.handler
+				})
+			} else if (mapData.mapMode === 'filter') {
+				map.once('idle', () => {
+					updateVisibleSubregions()
 				})
 			}
 
@@ -246,7 +385,7 @@
 			})
 
 			if (!(features && features.length > 0)) {
-				mapData.data = null
+				mapData.setData(null)
 				// TODO: resize on mobile
 				// if (isMobile) {
 				// 	map.resize()
@@ -259,7 +398,7 @@
 			// highlight selected
 			map.setFilter('unit-outline-highlight', ['==', 'id', properties!.id])
 
-			mapData.data = unpackFeatureData(properties, ecosystemInfo, indicatorInfo, subregionIndex)
+			mapData.setData(unpackFeatureData(properties, ecosystemInfo, indicatorInfo, subregionIndex))
 			// TODO: resize on mobile
 			// if (isMobile) {
 			// 	map.resize()
@@ -324,7 +463,7 @@
 		} else {
 			// have to toggle opacity not visibility so that pixel-level identify
 			// still works
-			setPixelLayerProps(map, { opacity: isRenderLayerVisible ? 0.7 : 0 })
+			setPixelLayerProps({ opacity: isRenderLayerVisible ? 0.7 : 0 })
 		}
 	}
 
@@ -373,7 +512,7 @@
 
 					const layer = { ...l }
 
-					if (mapMode !== 'unit') {
+					if (mapData.mapMode !== 'unit') {
 						if (l.id === 'blueprint' || l.id === 'unit-fill' || l.id === 'unit-outline') {
 							layer.layout = {
 								visibility: 'none'
@@ -390,9 +529,9 @@
 								visibility: 'none'
 							}
 						}
-						if (l.id === 'unit-outline-highlight' && mapData !== null) {
+						if (l.id === 'unit-outline-highlight' && mapData.data !== null) {
 							// re-highlight selected layer
-							layer.filter = ['==', 'id', data.id]
+							layer.filter = ['==', 'id', mapData.data.id]
 						}
 					}
 
@@ -416,8 +555,16 @@
 		}
 	}
 
+	const handleSetRenderLayer = (newRenderLayer: PixelLayer) => {
+		renderLayer = newRenderLayer
+		setPixelLayerProps({ renderLayer: $state.snapshot(renderLayer) })
+	}
+
+	// effect for setting a location
 	$effect(() => {
-		if (!isLoaded) {
+		locationData.location
+
+		if (!untrack(() => isLoaded)) {
 			return
 		}
 
@@ -437,6 +584,54 @@
 		}
 	})
 
+	// effect for updates to mapMode
+	$effect(() => {
+		mapData.mapMode
+
+		if (!untrack(() => isLoaded)) {
+			return
+		}
+
+		if (!map.isStyleLoaded()) {
+			map.once('idle', () => {
+				updateVisibleLayers()
+			})
+
+			// stop any transitions underway
+			map.stop()
+
+			return
+		}
+
+		// stop any transitions underway
+		map.stop()
+
+		updateVisibleLayers()
+	})
+
+	// effect for changed mapData to reset boundary highlight
+	$effect(() => {
+		if (!untrack(() => isLoaded)) {
+			return
+		}
+
+		if (mapData.mapMode === 'unit' && mapData.data === null) {
+			map.setFilter('unit-outline-highlight', ['==', 'id', Infinity])
+		}
+	})
+
+	// effect for update to filters
+	$effect(() => {
+		// NOTE: have to specifically mark activeFilterValues to trigger this effect
+		mapData.activeFilterValues
+
+		if (!untrack(() => isLoaded)) {
+			return
+		}
+
+		setPixelLayerProps({ filters: mapData.activeFilterValues })
+	})
+
 	const belowMinZoom = $derived(
 		mapData.mapMode === 'pixel'
 			? currentZoom < minPixelLayerZoom
@@ -444,7 +639,7 @@
 	)
 
 	const displayLayer = $derived(
-		mapData.mapMode === 'unit' ? renderLayersIndex.blueprint : mapData.renderLayer
+		mapData.mapMode === 'unit' ? renderLayersIndex.blueprint : renderLayer
 	)
 </script>
 
@@ -459,7 +654,7 @@
 		</div>
 	{/if}
 
-	{#if mapMode === 'pixel' && currentZoom >= minPixelLayerZoom}
+	{#if mapData.mapMode === 'pixel' && currentZoom >= minPixelLayerZoom}
 		<img
 			src={CrosshairsIcon}
 			alt="Crosshairs icon"
@@ -476,13 +671,13 @@
 			onToggleLayerVisibility={handleToggleRenderLayerVisible}
 		/>
 
-		{#if mapMode !== 'unit'}
-			<LayerToggle renderLayer={mapData.renderLayer} />
+		{#if mapData.mapMode !== 'unit'}
+			<LayerToggle {renderLayer} onSetRenderLayer={handleSetRenderLayer} />
 		{/if}
 
 		<FindLocation />
 
-		<ModeToggle mapMode={mapData.mapMode} {belowMinZoom} />
+		<ModeToggle {belowMinZoom} />
 
 		<StyleToggle onChange={handleBasemapChange} />
 	{/if}

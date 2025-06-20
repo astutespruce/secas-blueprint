@@ -222,4 +222,5 @@ export const histogram = (a) =>
  * @param {Set} b
  * @returns Set
  */
-export const setIntersection = (a, b) => new Set([...a].filter((v) => b.has(v)))
+export const setIntersection = (a: Set<any>, b: Set<any>) =>
+	a.size === 0 || b.size === 0 ? new Set() : new Set([...a].filter((v) => b.has(v)))

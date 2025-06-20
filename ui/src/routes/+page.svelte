@@ -1,36 +1,57 @@
 <script lang="ts">
-	import { getContext, setContext } from 'svelte'
+	import { setContext } from 'svelte'
 	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query'
 
 	import { defaultFilters } from '$lib/config/filters'
 	import { renderLayersIndex } from '$lib/config/pixelLayers'
-	import type { LocationData, MapData } from '$lib/types'
+	import type { LocationData } from '$lib/types'
 	import { MobileTabs } from '$lib/components/layout'
-	import { Map } from '$lib/components/map'
-	import { InfoTab, FiltersTab, FindLocationTab } from '$lib/components/tabs'
+	import { Map, MapData } from '$lib/components/map'
+	import { ContactTab, FiltersTab, FindLocationTab, InfoTab } from '$lib/components/tabs'
 	import { cn } from '$lib/utils'
 
-	let mapData: MapData = $state({
-		mapMode: 'unit', // filter, pixel, or unit
-		isLoading: false,
-		data: null,
-		selectedIndicator: null,
-		renderLayer: renderLayersIndex.blueprint,
-		filters: defaultFilters,
-		visibleSubregions: new Set()
-	})
+	let innerWidth: number | null = $state(null)
+
+	const mapData = new MapData()
 	setContext('map-data', mapData)
+	$inspect('mapData', mapData)
 
 	let locationData: LocationData = $state({ location: null })
-	$inspect('location', locationData)
 	setContext('location-data', locationData)
 
 	// TODO: may not need this, may be able to have every tab scroll itself instead
 	let contentNode: Element | null = $state(null)
 
-	// TODO: if mobile, tab is map, which really just means that map is on top
-	// TODO: need responsive hook that if in map mode on mobile and made wider, sidebar reappears
-	let tab = $state('find')
+	// default tabs: info, filter, map (mobile), find (mobile), contact (mobile)
+	// data tabs: mobile-selected-map (mobile), selected-priorities, selected-indicators, selected-more-info
+	let tab = $state('info')
+
+	$effect(() => {
+		if (innerWidth === null) {
+			return
+		}
+
+		const isMobile = innerWidth <= 768
+		if (!isMobile) {
+			if (tab === 'map' || tab === 'find' || tab === 'contact') {
+				// reset to info tab on desktop
+				tab = 'info'
+			}
+			// TODO: mobile-selected-map
+			else if (mapData.mapMode === 'filter' && tab !== 'filter') {
+				tab = 'filter'
+			} else if (tab === 'filter' && mapData.mapMode !== 'filter') {
+				// FIXME: based on data present
+				tab = 'info'
+			}
+		}
+	})
+
+	const handleSetLocation = () => {
+		if (tab === 'find' && !!locationData.location) {
+			tab = 'map'
+		}
+	}
 
 	const handleTabChange = (newTab: string) => {
 		tab = newTab
@@ -45,6 +66,8 @@
 	<title>Southeast Conservation Blueprint Explorer</title>
 </svelte:head>
 
+<svelte:window bind:innerWidth />
+
 <QueryClientProvider client={new QueryClient()}>
 	<div class="flex flex-col h-full flex-auto">
 		<div class="flex h-full flex-auto overflow-y-hidden relative">
@@ -58,25 +81,18 @@
 					}
 				)}
 			>
-				{#if tab === 'info'}
-					<InfoTab />
-				{:else if tab === 'filter'}
-					<FiltersTab />
-				{:else if tab == 'find'}
-					<FindLocationTab />
-				{:else}
-					TODO: other tab content
-				{/if}
+				<InfoTab class={tab === 'info' ? '' : 'hidden'} />
+				<FiltersTab class={tab === 'filter' ? '' : 'hidden'} />
+				<FindLocationTab onSetLocation={handleSetLocation} class={tab === 'find' ? '' : 'hidden'} />
+				<ContactTab class={tab === 'contact' ? '' : 'hidden'} />
+
+				<!-- TODO: other tab content -->
 			</div>
 
 			<Map />
 		</div>
 
 		<!-- mobile bottom tabs	-->
-		<MobileTabs
-			{tab}
-			hasMapData={mapData.data !== null && !mapData.isLoading}
-			onChange={handleTabChange}
-		/>
+		<MobileTabs {tab} onChange={handleTabChange} />
 	</div>
 </QueryClientProvider>

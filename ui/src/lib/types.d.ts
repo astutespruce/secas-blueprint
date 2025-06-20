@@ -30,21 +30,6 @@ type Filters = {
 	[key: string]: Filter
 }
 
-export type MapData = {
-	mapMode: string
-	data: any | null // FIXME:
-	selectedIndicator: any | null // FIXME:
-	renderLayer: any | null // FIXME:
-	filters: Filters
-	visibleSubregions: Set<string>
-
-	isLoading: boolean
-
-	// setFilters: Function
-	// resetFilters: Function
-	// setVisibleSubregions: Function
-}
-
 export type PixelLayerBounds = {
 	[key: number]: [number, number, number, number]
 }

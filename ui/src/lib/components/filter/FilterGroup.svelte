@@ -1,11 +1,7 @@
 <script lang="ts">
 	import Filter from './Filter.svelte'
 
-	const { id, icon, label, color, borderColor, entries, filters, onChange } = $props()
-
-	const visibleEntries = entries.filter(
-		({ id: entryId, canBeVisible }) => canBeVisible || filters[entryId].enabled
-	)
+	const { id, icon, label, color, borderColor, entries, onChange } = $props()
 </script>
 
 <div class="w-full flex-none">
@@ -21,12 +17,10 @@
 
 	<!-- filters list -->
 	<div class="mb-4">
-		{#if visibleEntries.length > 0}
-			{#each visibleEntries as entry}
-				<Filter {...entry} {...filters[entry.id]} {onChange} />
-			{/each}
+		{#each entries as entry}
+			<Filter {...entry} {...filters[entry.id]} {onChange} />
 		{:else}
 			<if class="mt-4 text-grey-8 text-center"> no filters available for this area </if>
-		{/if}
+		{/each}
 	</div>
 </div>

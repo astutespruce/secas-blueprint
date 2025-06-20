@@ -23,11 +23,9 @@
 	const { label, icon } = $derived(styles[index === 0 ? 1 : 0])
 </script>
 
-<div class="">
-	<Button
-		onclick={handleToggle}
-		class="absolute z-[999] overflow-hidden right-[10px] md:right-auto md:left-[10px] top-[14px] md:top-auto md:bottom-[40px] w-[40px] md:w-[64px] h-[40px] md:h-[64px] rounded-full border md:border-2 border-white shadow-lg shadow-grey-8 ring-1 ring-grey-4 p-0 "
-	>
-		<img src={icon} alt={label} class="w-full h-full" />
-	</Button>
-</div>
+<Button
+	onclick={handleToggle}
+	class="absolute z-1 overflow-hidden right-[10px] md:right-auto md:left-[10px] top-[14px] md:top-auto md:bottom-[40px] w-[40px] md:w-[64px] h-[40px] md:h-[64px] rounded-full border md:border-2 border-white shadow-lg shadow-grey-8 ring-1 ring-grey-4 p-0 "
+>
+	<img src={icon} alt={label} class="w-full h-full" />
+</Button>

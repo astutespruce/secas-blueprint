@@ -1,16 +1,20 @@
 <script lang="ts">
-	import InfoIcon from '~icons/fa-solid/info-circle'
-	import MapIcon from '~icons/fa-solid/map'
-	import SearchIcon from '~icons/fa-solid/search-location'
-	import QuestionIcon from '~icons/fa-solid/question-circle'
+	import { getContext } from 'svelte'
+
 	import EnvelopeIcon from '~icons/fa-solid/envelope'
-	import PieChartIcon from '~icons/fa-solid/chart-pie'
-	import TasksIcon from '~icons/fa-solid/tasks'
+	import FilterIcon from '~icons/fa-solid/filter'
+	import InfoIcon from '~icons/fa-solid/info-circle'
 	import LineChartIcon from '~icons/fa-solid/chart-line'
+	import MapIcon from '~icons/fa-solid/map'
+	import PieChartIcon from '~icons/fa-solid/chart-pie'
+	import SearchIcon from '~icons/fa-solid/search-location'
+	import TasksIcon from '~icons/fa-solid/tasks'
 	import { Button } from '$lib/components/ui/button'
+	import { MapData } from '$lib/components/map'
 	import { cn } from '$lib/utils'
 
-	const { tab, hasMapData, onChange } = $props()
+	const mapData: MapData = getContext('map-data')
+	const { tab, onChange } = $props()
 
 	const defaultTabs = [
 		{ id: 'info', label: 'Info', icon: InfoIcon },
@@ -26,7 +30,19 @@
 		{ id: 'selected-more-info', label: 'More info', icon: LineChartIcon }
 	]
 
-	const tabs = hasMapData ? dataTabs : defaultTabs
+	const filterTabs = [
+		{ id: 'map', label: 'Map', icon: MapIcon },
+		{ id: 'filter', label: 'Filter', icon: FilterIcon }
+	]
+
+	let tabs = $derived.by(() => {
+		if (mapData.mapMode === 'filter') {
+			return filterTabs
+		} else if (mapData.data !== null && !mapData.data.isLoading) {
+			return dataTabs
+		}
+		return defaultTabs
+	})
 
 	const handleClick = (id: string) => () => {
 		onChange(id)

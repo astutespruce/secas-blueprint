@@ -3,11 +3,14 @@
 	import TimesCircle from '~icons/fa-solid/times-circle'
 	import { Root as Alert } from '$lib/components/ui/alert'
 	import SECASLogo from '$images/SECAS_logo.svg'
+	import { cn } from '$lib/utils'
 
 	const isStaging = DEPLOY_ENV === 'staging'
+
+	const { class: className } = $props()
 </script>
 
-<section class="overflow-y-auto px-4 h-full pt-2 pb-8">
+<section class={cn('overflow-y-auto px-4 h-full pt-2 pb-8', className)}>
 	{#if isStaging}
 		<Alert variant="destructive" class="text-md my-4">
 			<b>WARNING</b>: this is a test version of this application used for verifying recent changes;

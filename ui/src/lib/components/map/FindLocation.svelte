@@ -55,10 +55,9 @@
 	}
 
 	const handleWindowClick = () => {
-		if (isFocused) {
-			showOptions = false
-			isFocused = false
-		}
+		showOptions = false
+		isFocused = false
+		mode = prevMode
 	}
 
 	$effect(() => {
@@ -82,7 +81,7 @@
 
 <div
 	class={cn(
-		'hidden md:block absolute p-[6px] text-grey-9 bg-white pointer-events-auto rounded-[0.25rem] border-2 border-grey-2 shadow-md shadow-grey-5 user-select-none z-[2001] top-0 right-0 w-[150px]',
+		'hidden md:block absolute p-[6px] text-grey-9 bg-white pointer-events-auto rounded-[0.25rem] border-2 border-grey-2 shadow-md shadow-grey-5 user-select-none z-2 top-0 right-0 w-[150px]',
 		{
 			'w-[290px]': isFocused || showOptions
 		}

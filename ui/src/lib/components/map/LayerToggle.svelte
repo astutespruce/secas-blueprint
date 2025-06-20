@@ -7,11 +7,10 @@
 	import { logGAEvent } from '$lib/util/log'
 	import { cn } from '$lib/utils'
 
-	let { renderLayer } = $props()
+	const { renderLayer, onSetRenderLayer } = $props()
 
 	const handleSetRenderLayer = (id: string) => () => {
-		// TODO: verify this works!
-		renderLayer = renderLayersIndex[id]
+		onSetRenderLayer(renderLayersIndex[id])
 		logGAEvent('set-render-layer', {
 			layer: id
 		})
@@ -21,20 +20,20 @@
 		(id: string) =>
 		({ key }: { key: string }) => {
 			if (key === 'Enter') {
-				renderLayer = renderLayersIndex[id]
+				onSetRenderLayer(renderLayersIndex[id])
 				logGAEvent('set-render-layer', {
 					layer: id
 				})
 			}
 		}
 
-	const isActiveLayer = (id: string) => renderLayer && renderLayer.id === id
+	const isActiveLayer = (id: string) => renderLayer?.id === id
 </script>
 
 <Root>
 	<Trigger>
 		<LayerGroupIcon
-			class="absolute top-[160px] right-[8px] w-8 h-8 p-[6px] text-grey-9 bg-white cursor-pointer shadow-md shadow-grey-5 pointer-events-auto border-2 border-grey-5 rounded-sm"
+			class="absolute top-[70px] md:top-[160px] right-[12px] md:right-[8px] w-9 h-9 md:w-8 md:h-8 p-[6px] text-grey-9 bg-white cursor-pointer shadow-md shadow-grey-5 pointer-events-auto border-2 border-grey-5 rounded-sm"
 		/>
 	</Trigger>
 	<Content class="pt-4 pb-6">
