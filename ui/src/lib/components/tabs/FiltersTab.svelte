@@ -25,8 +25,8 @@
 	const mapData: MapData = getContext('map-data')
 
 	type FilterVisibilityStub = {
-		id: string
 		canBeVisible: boolean
+		enabled: boolean
 	}
 
 	let { priorityFilters, terrestrialFilters, freshwaterFilters, marineFilters, otherInfoFilters } =
@@ -35,46 +35,77 @@
 				priorityFilters: rawPriorityFilters
 					.map((entry) => ({
 						...entry,
+						...mapData.filters[entry.id],
 						canBeVisible: mapData.visibleSubregions.size > 0
 					}))
 					.filter(
-						({ id, canBeVisible }: FilterVisibilityStub) =>
-							canBeVisible || mapData.filters[id].enabled
+						({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled // mapData.filters[id].enabled
 					),
 
 				terrestrialFilters: ecosystemFilters.t.indicators
-					.map(({ subregions: indicatorSubregions, ...rest }: { subregions: Set<string> }) => ({
-						...rest,
-						canBeVisible: setIntersection(indicatorSubregions, mapData.visibleSubregions).size > 0
-					}))
+					.map(
+						({
+							id,
+							subregions: indicatorSubregions,
+							...rest
+						}: {
+							id: string
+							subregions: Set<string>
+						}) => ({
+							id,
+							...rest,
+							...mapData.filters[id],
+							canBeVisible: setIntersection(indicatorSubregions, mapData.visibleSubregions).size > 0
+						})
+					)
 					.filter(
-						({ id, canBeVisible }: FilterVisibilityStub) =>
-							canBeVisible || mapData.filters[id].enabled
+						({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled // mapData.filters[id].enabled
 					),
 
 				freshwaterFilters: ecosystemFilters.f.indicators
-					.map(({ subregions: indicatorSubregions, ...rest }: { subregions: Set<string> }) => ({
-						...rest,
-						canBeVisible: setIntersection(indicatorSubregions, mapData.visibleSubregions).size > 0
-					}))
+					.map(
+						({
+							id,
+							subregions: indicatorSubregions,
+							...rest
+						}: {
+							id: string
+							subregions: Set<string>
+						}) => ({
+							id,
+							...rest,
+							...mapData.filters[id],
+							canBeVisible: setIntersection(indicatorSubregions, mapData.visibleSubregions).size > 0
+						})
+					)
 					.filter(
-						({ id, canBeVisible }: FilterVisibilityStub) =>
-							canBeVisible || mapData.filters[id].enabled
+						({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled // mapData.filters[id].enabled
 					),
 
 				marineFilters: ecosystemFilters.m.indicators
-					.map(({ subregions: indicatorSubregions, ...rest }: { subregions: Set<string> }) => ({
-						...rest,
-						canBeVisible: setIntersection(indicatorSubregions, mapData.visibleSubregions).size > 0
-					}))
+					.map(
+						({
+							id,
+							subregions: indicatorSubregions,
+							...rest
+						}: {
+							id: string
+							subregions: Set<string>
+						}) => ({
+							id,
+							...rest,
+							...mapData.filters[id],
+							canBeVisible: setIntersection(indicatorSubregions, mapData.visibleSubregions).size > 0
+						})
+					)
 					.filter(
-						({ id, canBeVisible }: FilterVisibilityStub) =>
-							canBeVisible || mapData.filters[id].enabled
+						({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled // mapData.filters[id].enabled
 					),
 
 				otherInfoFilters: rawOtherInfoFilters
 					.map((entry) => ({
 						...entry,
+						...mapData.filters[entry.id],
 						canBeVisible:
 							(entry.id !== 'urban' &&
 								entry.id !== 'wildfireRisk' &&
@@ -83,7 +114,7 @@
 							((entry.id === 'urban' || entry.id === 'wildfireRisk') &&
 								[...mapData.visibleSubregions].filter((s) => s !== 'Caribbean').length > 0)
 					}))
-					.filter(({ id, canBeVisible }) => canBeVisible || mapData.filters[id].enabled)
+					.filter(({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled) // mapData.filters[id].enabled)
 			}
 		})
 

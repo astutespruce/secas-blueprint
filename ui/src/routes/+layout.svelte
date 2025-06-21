@@ -23,10 +23,10 @@
 <Analytics />
 
 <div class="flex flex-col h-full w-full overflow-none">
-	<Header />
+	<!-- <Header />
 
-	<div class="h-full w-full flex-auto overflow-auto">
-		{@render children()}
-	</div>
-	<Footer />
+	<div class="h-full w-full flex-auto overflow-auto"> -->
+	{@render children()}
+	<!-- </div>
+	<Footer /> -->
 </div>

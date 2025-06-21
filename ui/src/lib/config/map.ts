@@ -11,7 +11,10 @@ if (browser && !tileHost) {
 export const mapConfig: MapConfig = {
 	// NOTE: these are not the data bounds, but ideal bounds to leave enough room
 	// east of Puerto Rico for the legend
-	bounds: [-106.93611462308955, 14.65662961734786, -48.85555906753385, 43.47207027673693],
+	// bounds: [-106.93611462308955, 14.65662961734786, -48.85555906753385, 43.47207027673693],
+	// FIXME:
+	bounds: [-90.48508728921513, 31.26228744904597, -89.39964140377695, 31.899777691031517],
+
 	maxBounds: [-180, -80, 180, 80],
 	minZoom: 3,
 	maxZoom: 14

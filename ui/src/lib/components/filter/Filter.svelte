@@ -129,7 +129,7 @@
 					</div>
 				{/each}
 			{:else}
-				<div class="flex gap-1 items-center text-grey-8">
+				<div class="flex gap-1 items-center justify-center text-grey-8">
 					<ExclamationTriangle width="1em" height="1em" />
 					not visible in this area
 				</div>

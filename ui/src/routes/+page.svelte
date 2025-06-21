@@ -1,16 +1,20 @@
 <script lang="ts">
-	import { setContext } from 'svelte'
+	import { setContext, untrack } from 'svelte'
 	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query'
 
-	import { defaultFilters } from '$lib/config/filters'
-	import { renderLayersIndex } from '$lib/config/pixelLayers'
 	import type { LocationData } from '$lib/types'
-	import { MobileTabs } from '$lib/components/layout'
+	import {
+		Footer,
+		Header,
+		MobileDetailsHeader,
+		MobileTabs,
+		SidebarDetailsHeader
+	} from '$lib/components/layout'
 	import { Map, MapData } from '$lib/components/map'
 	import { ContactTab, FiltersTab, FindLocationTab, InfoTab } from '$lib/components/tabs'
 	import { cn } from '$lib/utils'
 
-	let innerWidth: number | null = $state(null)
+	let isMobile: boolean = $state(false)
 
 	const mapData = new MapData()
 	setContext('map-data', mapData)
@@ -23,26 +27,32 @@
 	let contentNode: Element | null = $state(null)
 
 	// default tabs: info, filter, map (mobile), find (mobile), contact (mobile)
-	// data tabs: mobile-selected-map (mobile), selected-priorities, selected-indicators, selected-more-info
-	let tab = $state('info')
+	// data tabs: map (mobile), selected-priorities, selected-indicators, selected-more-info
+	let tab = $state('info') // will be set to map if detected on mobile in attachment below
+	let prevMobileTab: string | null = $state(null)
 
+	// TODO: this might need to be $effect.pre
 	$effect(() => {
-		if (innerWidth === null) {
-			return
-		}
+		tab
+		isMobile
+		mapData.mapMode
+		mapData.data
 
-		const isMobile = innerWidth <= 768
-		if (!isMobile) {
-			if (tab === 'map' || tab === 'find' || tab === 'contact') {
-				// reset to info tab on desktop
-				tab = 'info'
+		// on mobile, no need to change tabs based on selection / deselection of data
+		// or changing map mode
+		if (isMobile) {
+			if (mapData.data === null && tab.startsWith('selected-')) {
+				tab = 'map'
 			}
-			// TODO: mobile-selected-map
-			else if (mapData.mapMode === 'filter' && tab !== 'filter') {
+		} else {
+			if (mapData.data === null && tab.startsWith('selected-')) {
+				tab = 'info'
+			} else if (mapData.mapMode === 'filter' && tab !== 'filter') {
 				tab = 'filter'
 			} else if (tab === 'filter' && mapData.mapMode !== 'filter') {
-				// FIXME: based on data present
-				tab = 'info'
+				tab = mapData.data !== null ? 'selected-priorities' : 'info'
+			} else if (tab === 'info' && mapData.data !== null) {
+				tab = 'selected-priorities'
 			}
 		}
 	})
@@ -60,39 +70,95 @@
 			contentNode.scrollTop = 0
 		}
 	}
+
+	const handleWindowMatchMediaChange = ({ matches: nextIsMobile }: { matches: boolean }) => {
+		let nextTab = tab
+
+		if (isMobile && !nextIsMobile) {
+			prevMobileTab = tab
+
+			// switched from mobile to desktop; if on any of the mobile-only tabs, switch to info
+			if (tab === 'map' || tab === 'find' || tab === 'contact') {
+				// reset to info tab (default) on desktop
+				nextTab = 'info'
+			}
+		} else if (!isMobile && nextIsMobile) {
+			// switched from desktop to mobile
+			if (tab === 'info') {
+				// reset to map tab (default) on mobile
+				nextTab = prevMobileTab || 'map'
+			}
+		}
+
+		isMobile = nextIsMobile
+		tab = nextTab
+	}
+
+	const windowMediaQueryHandler = (w: Window) => {
+		// match tailwind "md" breakpoint
+		const mediaQueryList = w.matchMedia('(max-width:768px)')
+
+		// set mobile default tab on init
+		if (mediaQueryList.matches && untrack(() => tab) === 'info') {
+			tab = 'map'
+		}
+
+		isMobile = mediaQueryList.matches
+		mediaQueryList.addEventListener('change', handleWindowMatchMediaChange)
+
+		return () => {
+			mediaQueryList.removeEventListener('change', handleWindowMatchMediaChange)
+		}
+	}
 </script>
 
 <svelte:head>
 	<title>Southeast Conservation Blueprint Explorer</title>
 </svelte:head>
 
-<svelte:window bind:innerWidth />
+<svelte:window {@attach windowMediaQueryHandler} />
 
 <QueryClientProvider client={new QueryClient()}>
-	<div class="flex flex-col h-full flex-auto">
-		<div class="flex h-full flex-auto overflow-y-hidden relative">
-			<!-- sidebar -->
-			<div
-				bind:this={contentNode}
-				class={cn(
-					'md:block h-full bg-white grow shrink-0 basis-full md:basis-[360px] lg:basis-[468px] w-max-[100%] md:w-max-[360px] lg:w-max-[468px] flex-col overflow-hidden absolute md:relative left-0 right-0 top-0 bottom-0 z-[10000] md:z-[1] md:border-r-2 border-r-grey-3',
-					{
-						hidden: tab === 'map'
-					}
-				)}
-			>
-				<InfoTab class={tab === 'info' ? '' : 'hidden'} />
-				<FiltersTab class={tab === 'filter' ? '' : 'hidden'} />
-				<FindLocationTab onSetLocation={handleSetLocation} class={tab === 'find' ? '' : 'hidden'} />
-				<ContactTab class={tab === 'contact' ? '' : 'hidden'} />
+	<Header hasData={mapData && mapData.data !== null} />
+	{#if isMobile && mapData && mapData.data}
+		<MobileDetailsHeader {...mapData.data} onClose={() => mapData.setData(null)} />
+	{/if}
 
-				<!-- TODO: other tab content -->
+	<div class="h-full w-full flex-auto overflow-auto">
+		<div class="flex flex-col h-full flex-auto">
+			<div class="flex h-full flex-auto overflow-y-hidden relative">
+				<!-- sidebar -->
+				<div
+					bind:this={contentNode}
+					class={cn(
+						'md:block h-full bg-white grow shrink-0 basis-full md:basis-[360px] lg:basis-[468px] w-max-[100%] md:w-max-[360px] lg:w-max-[468px] flex-col overflow-hidden absolute md:relative left-0 right-0 top-0 bottom-0 z-[10000] md:z-[1] md:border-r-2 border-r-grey-3',
+						{
+							hidden: tab === 'map'
+						}
+					)}
+				>
+					<InfoTab class={tab === 'info' ? '' : 'hidden'} />
+					<FiltersTab class={tab === 'filter' ? '' : 'hidden'} />
+					<FindLocationTab
+						onSetLocation={handleSetLocation}
+						class={tab === 'find' ? '' : 'hidden'}
+					/>
+					<ContactTab class={tab === 'contact' ? '' : 'hidden'} />
+
+					<!-- desktop details header -->
+					{#if !isMobile && mapData.data !== null}
+						<SidebarDetailsHeader />
+					{/if}
+
+					<!-- TODO: other tab content -->
+				</div>
+
+				<Map />
 			</div>
 
-			<Map />
+			<!-- mobile bottom tabs	-->
+			<MobileTabs {tab} onChange={handleTabChange} />
 		</div>
-
-		<!-- mobile bottom tabs	-->
-		<MobileTabs {tab} onChange={handleTabChange} />
 	</div>
+	<Footer />
 </QueryClientProvider>

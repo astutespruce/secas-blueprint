@@ -1,12 +1,9 @@
 <script lang="ts">
 	import { uploadFile } from '$lib/api'
 	import { captureException, logGAEvent } from '$lib/util/log'
-	import Done from './Done.svelte'
-	import UploadError from './UploadError.svelte'
-	import Progress from './Progress.svelte'
-	import Queued from './Queued.svelte'
-	import UploadForm from './UploadForm.svelte'
-	import type { ReportState, UploadResult, ProgressCallback } from './types'
+	import { Footer, Header } from '$lib/components/layout'
+	import { Done, Progress, Queued, ReportError, UploadForm } from '$lib/components/report'
+	import type { ReportState, ReportJobResult, ProgressCallback } from '$lib/components/report/types'
 
 	const initState: ReportState = {
 		reportURL: null,
@@ -20,13 +17,12 @@
 		error: null // if error is non-null, it indicates there was an error
 	}
 
-	let state: ReportState = $state(initState)
+	let reportState: ReportState = $state(initState)
 
 	const handleUpload = async (areaName: string, file: File) => {
-		console.log('do upload', areaName, file)
-
-		state = {
-			...state,
+		reportState = {
+			...reportState,
+			status: '',
 			inProgress: true,
 			progress: 0,
 			queuePosition: 0,
@@ -49,7 +45,7 @@
 				error: uploadError,
 				result,
 				errors: finalErrors
-			}: UploadResult = await uploadFile(
+			}: ReportJobResult = await uploadFile(
 				file,
 				areaName,
 				({
@@ -60,8 +56,8 @@
 					message: nextMessage = null,
 					errors: nextErrors = null
 				}: ProgressCallback) => {
-					state = {
-						...state,
+					reportState = {
+						...reportState,
 						status: nextStatus,
 						inProgress:
 							nextStatus === 'in_progress' ||
@@ -69,8 +65,8 @@
 						progress: nextProgress,
 						queuePosition: nextQueuePosition,
 						elapsedTime: nextElapsedTime,
-						message: nextMessage || state.message,
-						errors: nextErrors || state.errors
+						message: nextMessage || reportState.message,
+						errors: nextErrors || reportState.errors
 					}
 				}
 			)
@@ -79,8 +75,8 @@
 				// eslint-disable-next-line no-console
 				console.error(uploadError)
 
-				state = {
-					...state,
+				reportState = {
+					...reportState,
 					inProgress: false,
 					status: null,
 					progress: 0,
@@ -98,8 +94,8 @@
 			}
 
 			// upload and processing completed successfully
-			state = {
-				...state,
+			reportState = {
+				...reportState,
 				status: null,
 				progress: 100,
 				queuePosition: 0,
@@ -116,8 +112,8 @@
 			// eslint-disable-next-line no-console
 			console.error('Caught unhandled error from uploadFile', ex)
 
-			state = {
-				...state,
+			reportState = {
+				...reportState,
 				inProgress: false,
 				status: null,
 				progress: 0,
@@ -132,7 +128,7 @@
 	}
 
 	const handleReset = () => {
-		state = initState
+		reportState = initState
 	}
 </script>
 
@@ -149,40 +145,52 @@
 	}}
 />
 
-<div class="relative z-0 w-full overflow-hidden h-56">
-	<div class="z-1 absolute top-[-20%]">
-		<enhanced:img
-			src="$images/26871026541_48a8096dd9_o.jpg"
-			class="h-auto min-w-[720px] object-cover brightness-60"
-			alt=""
+<Header />
+
+<div class="h-full w-full flex-auto overflow-auto">
+	<div class="relative z-0 w-full overflow-hidden h-56">
+		<div class="z-1 absolute top-[-20%]">
+			<enhanced:img
+				src="$images/26871026541_48a8096dd9_o.jpg"
+				class="h-auto min-w-[720px] object-cover brightness-60"
+				alt=""
+			/>
+		</div>
+		<div class="container mt-14">
+			<h1 class="text-7xl relative text-white z-2 text-shadow-sm text-shadow-black">
+				Create a custom Blueprint report
+			</h1>
+		</div>
+	</div>
+	<div class="text-sm text-grey-8 text-right pr-1">
+		Photo: Black Skimmers, <a
+			href="https://www.flickr.com/photos/usfwssoutheast/26871026541/"
+			target="_blank"
+			class="text-grey-8">U.S. Fish and Wildlife Service Southeast Region</a
+		>
+	</div>
+
+	{#if reportState.error !== null}
+		<ReportError error={reportState.error} onReset={handleReset} class="mt-8" />
+	{:else if reportState.reportURL !== null}
+		<Done
+			reportURL={reportState.reportURL}
+			errors={reportState.errors}
+			onReset={handleReset}
+			class="mt-8"
 		/>
-	</div>
-	<div class="container mt-14">
-		<h1 class="text-7xl relative text-white z-2 text-shadow-sm text-shadow-black">
-			Create a custom Blueprint report
-		</h1>
-	</div>
-</div>
-<div class="text-sm text-grey-8 text-right pr-1">
-	Photo: Black Skimmers, <a
-		href="https://www.flickr.com/photos/usfwssoutheast/26871026541/"
-		target="_blank"
-		class="text-grey-8">U.S. Fish and Wildlife Service Southeast Region</a
-	>
+	{:else if reportState.inProgress}
+		<Progress message={reportState.message} progress={reportState.progress} class="mt-4" />
+	{:else if reportState.status === 'queued'}
+		<Queued
+			message={reportState.message}
+			queuePosition={reportState.queuePosition}
+			elapsedTime={reportState.elapsedTime}
+			class="mt-8"
+		/>
+	{:else}
+		<UploadForm onSubmit={handleUpload} />
+	{/if}
 </div>
 
-{#if state.error !== null}
-	<UploadError error={state.error} onReset={handleReset} />
-{:else if state.reportURL !== null}
-	<Done reportURL={state.reportURL} errors={state.errors} onReset={handleReset} />
-{:else if state.inProgress}
-	<Progress message={state.message} progress={state.progress} />
-{:else if state.status === 'queued'}
-	<Queued
-		message={state.message}
-		queuePosition={state.queuePosition}
-		elapsedTime={state.elapsedTime}
-	/>
-{:else}
-	<UploadForm onSubmit={handleUpload} />
-{/if}
+<Footer />

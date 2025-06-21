@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { Progress } from '$lib/components/ui/progress'
+	import { cn } from '$lib/utils'
 
-	const { message, progress } = $props()
+	const { message, progress, class: className = '' } = $props()
 </script>
 
-<div class="container mt-4 py-4">
+<div class={cn('container py-4', className)}>
 	<h3 class="text-2xl">
 		{#if message}
 			{message}...

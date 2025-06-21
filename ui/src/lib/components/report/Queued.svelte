@@ -1,10 +1,11 @@
 <script>
 	import Clock from '~icons/fa-solid/clock'
+	import { cn } from '$lib/utils'
 
-	const { message, queuePosition, elapsedTime } = $props()
+	const { message, queuePosition, elapsedTime, class: className = '' } = $props()
 </script>
 
-<div class="container mt-8">
+<div class={cn('container', className)}>
 	<div class="flex items-center gap-4">
 		<Clock width="2rem" height="2rem" />
 		<h2 class="text-2xl">

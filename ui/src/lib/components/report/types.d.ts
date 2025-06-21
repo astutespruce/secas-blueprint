@@ -10,7 +10,7 @@ export type ReportState = {
 	error?: string | null // if error is non-null, it indicates there was an error
 }
 
-export type UploadResult = {
+export type ReportJobResult = {
 	error?: string
 	result?: string
 	errors?: string[]

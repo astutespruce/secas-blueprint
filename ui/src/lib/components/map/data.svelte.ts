@@ -4,8 +4,7 @@ import { logGAEvent } from '$lib/util/log'
 import type { Filter, Filters } from '$lib/types'
 
 export class MapData {
-	// FIXME: unit
-	#mapMode: string = $state('filter') // one of: unit, pixel, filter
+	#mapMode: string = $state('unit') // one of: unit, pixel, filter
 	#data: any | null = $state.raw(null) // FIXME: typing
 	#selectedIndicator: any | null = $state.raw(null) // FIXME: typing
 	#filters: Filters = $state.raw(defaultFilters)
@@ -15,6 +14,9 @@ export class MapData {
 				.filter(([_, { enabled }]) => enabled)
 				.map(([id, { activeValues }]) => [id, activeValues])
 		)
+	)
+	#numEnabledFilters = $derived.by(
+		() => Object.values(this.#filters).filter(({ enabled }) => enabled).length
 	)
 	#visibleSubregions: Set<string> = $state.raw(new Set())
 	#filtersLoading: boolean = $state(true) // set to false on first set of visible subregions
@@ -65,7 +67,7 @@ export class MapData {
 	}
 
 	get numEnabledFilters() {
-		return Object.values(this.#filters).filter(({ enabled }) => enabled).length
+		return this.#numEnabledFilters
 	}
 
 	get hasVisibleFilters() {
@@ -80,11 +82,6 @@ export class MapData {
 	}
 
 	get activeFilterValues() {
-		// return Object.fromEntries(
-		// 	Object.entries(this.#filters)
-		// 		.filter(([_, { enabled }]) => enabled)
-		// 		.map(([id, { activeValues }]) => [id, activeValues])
-		// )
 		return this.#activeFilterValues
 	}
 

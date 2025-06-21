@@ -5,11 +5,12 @@
 	import { Root, Description } from '$lib/components/ui/alert'
 	import { Button } from '$lib/components/ui/button'
 	import { CONTACT_EMAIL } from '$lib/env'
+	import { cn } from '$lib/utils'
 
-	const { reportURL, errors, onReset } = $props()
+	const { reportURL = null, errors, onReset = null, class: className = '' } = $props()
 </script>
 
-<div class="container mt-8">
+<div class={cn('container', className)}>
 	<h3 class="flex items-center gap-4 text-3xl">
 		<CheckCircle width="2rem" height="2rem" class="text-ok" />
 
@@ -39,24 +40,26 @@
 		</Root>
 	{/if}
 
-	<p class="my-8 text-xl">
-		Your report should download automatically. You can also click the link below to download your
-		report.
-	</p>
+	<p class="mt-8 text-xl">Your report should download automatically.</p>
 
-	<div class="text-xl">
-		<a href={reportURL} target="_blank">
-			<div class="flex gap-4 items-center">
-				<Download width="1rem" height="1rem" />
+	{#if reportURL !== null}
+		<p>You can also click this link download your report:</p>
+		<div class="text-xl">
+			<a href={reportURL} target="_blank">
+				<div class="flex gap-4 items-center">
+					<Download width="1rem" height="1rem" />
 
-				Download report
-			</div>
-		</a>
-	</div>
+					Download report
+				</div>
+			</a>
+		</div>
+	{/if}
 
-	<hr />
+	{#if onReset}
+		<hr />
 
-	<div class="flex justify-center">
-		<Button onclick={onReset} class="text-xl">Create another report?</Button>
-	</div>
+		<div class="flex justify-center">
+			<Button onclick={onReset} class="text-xl">Create another report?</Button>
+		</div>
+	{/if}
 </div>

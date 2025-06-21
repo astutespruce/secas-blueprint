@@ -24,7 +24,7 @@
 	]
 
 	const dataTabs = [
-		{ id: 'mobile-selected-map', label: 'Map', icon: MapIcon },
+		{ id: 'map', label: 'Map', icon: MapIcon },
 		{ id: 'selected-priorities', label: 'Priorities', icon: PieChartIcon },
 		{ id: 'selected-indicators', label: 'Indicators', icon: TasksIcon },
 		{ id: 'selected-more-info', label: 'More info', icon: LineChartIcon }

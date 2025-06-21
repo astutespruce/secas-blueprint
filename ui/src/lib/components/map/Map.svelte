@@ -45,12 +45,15 @@
 	// delayedMapIsDrawing is toggled immediately when map enters drawing state and is used in callback to determine if should toggle mapIsDrawing
 	let delayedMapIsDrawing: boolean = $state(false)
 
-	// TODO: location from search
-
 	const deckGLHandler = eventHandler(50)
 	const updateMapIsDrawing = debounce(() => {
 		mapIsDrawing = delayedMapIsDrawing
 	}, 1500)
+
+	// resize map to handle layout shift on mobile
+	const resizeMap = debounce(() => {
+		map.resize()
+	}, 10)
 
 	// layer in Mapbox Light that we want to come AFTER our layers here
 	const beforeLayer = 'waterway-label'
@@ -80,6 +83,7 @@
 
 		if (currentZoom < minPixelLayerZoom) {
 			mapData.setData(null)
+			resizeMap()
 			return
 		}
 
@@ -106,6 +110,7 @@
 				},
 				isLoading: true
 			})
+			resizeMap()
 			map.once('idle', () => {
 				getPixelData()
 			})
@@ -130,6 +135,7 @@
 			isLoading: pixelData === null,
 			...(pixelData || {})
 		})
+		resizeMap()
 	}, 10)
 
 	const updateVisibleSubregions = debounce(() => {
@@ -386,10 +392,7 @@
 
 			if (!(features && features.length > 0)) {
 				mapData.setData(null)
-				// TODO: resize on mobile
-				// if (isMobile) {
-				// 	map.resize()
-				// }
+				resizeMap()
 				return
 			}
 
@@ -399,10 +402,7 @@
 			map.setFilter('unit-outline-highlight', ['==', 'id', properties!.id])
 
 			mapData.setData(unpackFeatureData(properties, ecosystemInfo, indicatorInfo, subregionIndex))
-			// TODO: resize on mobile
-			// if (isMobile) {
-			// 	map.resize()
-			// }
+			resizeMap()
 		})
 
 		// Highlight units on mouseover
@@ -452,8 +452,6 @@
 			map?.remove()
 		}
 	}
-
-	// TODO: effects for changed map mode, mapData, etc
 
 	const handleToggleRenderLayerVisible = () => {
 		if (!map) return
@@ -611,6 +609,9 @@
 
 	// effect for changed mapData to reset boundary highlight
 	$effect(() => {
+		mapData.mapMode
+		mapData.data
+
 		if (!untrack(() => isLoaded)) {
 			return
 		}

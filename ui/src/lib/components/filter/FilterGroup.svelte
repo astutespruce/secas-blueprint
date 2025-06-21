@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Filter from './Filter.svelte'
 
-	const { id, icon, label, color, borderColor, entries, onChange } = $props()
+	const { icon, label, color, borderColor, entries, onChange } = $props()
 </script>
 
 <div class="w-full flex-none">
@@ -18,9 +18,9 @@
 	<!-- filters list -->
 	<div class="mb-4">
 		{#each entries as entry}
-			<Filter {...entry} {...filters[entry.id]} {onChange} />
+			<Filter {...entry} {onChange} />
 		{:else}
-			<if class="mt-4 text-grey-8 text-center"> no filters available for this area </if>
+			<div class="mt-4 text-grey-8 text-center">no filters available for this area</div>
 		{/each}
 	</div>
 </div>
