@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { Root, Trigger, Content, Header, Title } from '$lib/components/ui/dialog';
+	import { Root, Trigger, Content, Header, Title } from '$lib/components/ui/dialog'
+	import { cn } from '$lib/utils'
 
-	let { children } = $props();
+	let { children, triggerClass = '' } = $props()
 </script>
 
 <Root>
-	<Trigger>
+	<Trigger class={cn(triggerClass)}>
 		{@render children()}
 	</Trigger>
 	<Content class="pt-4 pb-6">

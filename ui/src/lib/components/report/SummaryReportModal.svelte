@@ -10,7 +10,7 @@
 	import ReportError from './ReportError.svelte'
 	import type { ReportState, ReportJobResult, ProgressCallback } from './types'
 
-	let open: boolean = $state(true)
+	let open: boolean = $state(false)
 
 	const initState: ReportState = {
 		reportURL: null,

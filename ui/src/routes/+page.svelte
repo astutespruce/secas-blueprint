@@ -11,7 +11,15 @@
 		SidebarDetailsHeader
 	} from '$lib/components/layout'
 	import { Map, MapData } from '$lib/components/map'
-	import { ContactTab, FiltersTab, FindLocationTab, InfoTab } from '$lib/components/tabs'
+	import {
+		ContactTab,
+		FiltersTab,
+		FindLocationTab,
+		IndicatorsTab,
+		InfoTab,
+		MoreInfoTab,
+		PrioritiesTab
+	} from '$lib/components/tabs'
 	import { cn } from '$lib/utils'
 
 	let isMobile: boolean = $state(false)
@@ -31,7 +39,6 @@
 	let tab = $state('info') // will be set to map if detected on mobile in attachment below
 	let prevMobileTab: string | null = $state(null)
 
-	// TODO: this might need to be $effect.pre
 	$effect(() => {
 		tab
 		isMobile
@@ -131,12 +138,16 @@
 				<div
 					bind:this={contentNode}
 					class={cn(
-						'md:block h-full bg-white grow shrink-0 basis-full md:basis-[360px] lg:basis-[468px] w-max-[100%] md:w-max-[360px] lg:w-max-[468px] flex-col overflow-hidden absolute md:relative left-0 right-0 top-0 bottom-0 z-[10000] md:z-[1] md:border-r-2 border-r-grey-3',
+						'md:flex h-full bg-white grow shrink-0 basis-full md:basis-[360px] lg:basis-[468px] w-max-[100%] md:w-max-[360px] lg:w-max-[468px] flex-col overflow-hidden absolute md:relative left-0 right-0 top-0 bottom-0 z-[10000] md:z-[1] md:border-r-2 border-r-grey-3',
 						{
 							hidden: tab === 'map'
 						}
 					)}
 				>
+					{#if !isMobile && mapData.data !== null}
+						<SidebarDetailsHeader {tab} onTabChange={handleTabChange} />
+					{/if}
+
 					<InfoTab class={tab === 'info' ? '' : 'hidden'} />
 					<FiltersTab class={tab === 'filter' ? '' : 'hidden'} />
 					<FindLocationTab
@@ -145,12 +156,20 @@
 					/>
 					<ContactTab class={tab === 'contact' ? '' : 'hidden'} />
 
-					<!-- desktop details header -->
-					{#if !isMobile && mapData.data !== null}
-						<SidebarDetailsHeader />
+					<!-- selected data tabs -->
+					<!-- type={mapData.data.type}
+							blueprint={mapData.data.blueprint}
+							corridors={mapData.data.corridors}
+							subregions={mapData.data.subregions}
+							outsideSEPercent={mapData.data.outsideSEPercent} -->
+					{#if mapData.data !== null}
+						<PrioritiesTab
+							class={tab === 'selected-priorities' ? '' : 'hidden'}
+							{...mapData.data}
+						/>
+						<IndicatorsTab class={tab === 'selected-indicators' ? '' : 'hidden'} />
+						<MoreInfoTab class={tab === 'selected-more-info' ? '' : 'hidden'} />
 					{/if}
-
-					<!-- TODO: other tab content -->
 				</div>
 
 				<Map />
