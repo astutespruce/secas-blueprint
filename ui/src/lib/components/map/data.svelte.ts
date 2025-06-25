@@ -36,7 +36,6 @@ export class MapData {
 	}
 
 	setData(data: any | null) {
-		console.log('setData', data)
 		// TODO: typing
 		this.#data = data
 		if (data === null) {

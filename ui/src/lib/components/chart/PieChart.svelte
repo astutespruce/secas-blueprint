@@ -31,7 +31,6 @@
 	// adapted from https://github.com/toomuchdesign/react-minimal-pie-chart
 	const entries = $derived.by(() => {
 		const total = sum(categories.map(({ value }: { value: number }) => value))
-		console.log('total', total)
 		let prevAngle = 0
 		return categories.map(({ value, ...rest }: { value: number }) => {
 			const degrees = (360 * value) / total

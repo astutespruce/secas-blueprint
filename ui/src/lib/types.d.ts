@@ -85,3 +85,8 @@ export type Coordinate = {
 export type LocationData = {
 	location: Coordinate | null
 }
+
+export type Point = {
+	x: number
+	y: number
+}

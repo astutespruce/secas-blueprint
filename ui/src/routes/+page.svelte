@@ -166,7 +166,7 @@
 							class={tab === 'selected-indicators' ? '' : 'hidden'}
 							{...mapData.data}
 						/>
-						<MoreInfoTab class={tab === 'selected-more-info' ? '' : 'hidden'} />
+						<MoreInfoTab class={tab === 'selected-more-info' ? '' : 'hidden'} {...mapData.data} />
 					{/if}
 				</div>
 
