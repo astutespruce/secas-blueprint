@@ -157,17 +157,15 @@
 					<ContactTab class={tab === 'contact' ? '' : 'hidden'} />
 
 					<!-- selected data tabs -->
-					<!-- type={mapData.data.type}
-							blueprint={mapData.data.blueprint}
-							corridors={mapData.data.corridors}
-							subregions={mapData.data.subregions}
-							outsideSEPercent={mapData.data.outsideSEPercent} -->
 					{#if mapData.data !== null}
 						<PrioritiesTab
 							class={tab === 'selected-priorities' ? '' : 'hidden'}
 							{...mapData.data}
 						/>
-						<IndicatorsTab class={tab === 'selected-indicators' ? '' : 'hidden'} />
+						<IndicatorsTab
+							class={tab === 'selected-indicators' ? '' : 'hidden'}
+							{...mapData.data}
+						/>
 						<MoreInfoTab class={tab === 'selected-more-info' ? '' : 'hidden'} />
 					{/if}
 				</div>
