@@ -21,7 +21,7 @@ import { createPNGTexture, createPaletteTexture } from './texture'
  * @param {bool} skip - skip loading tile data (e.g,. out of viewport)
  * @returns
  */
-const fetchImage = async (device, url, signal, skip = false) => {
+const fetchImage = async (device: any, url: string, signal: any, skip = false) => {
 	const data = skip
 		? null
 		: await load(url, ImageLoader, {
@@ -42,8 +42,9 @@ export default class StackedPNGTileLayer extends TileLayer {
 		super.initializeState()
 
 		const { device } = this.context
+		// @ts-ignore
 		const { layers, filters, renderLayer } = this.props
-
+		// @ts-ignore
 		const encodingSchemes = layers.map(({ encoding }) => encoding)
 
 		this.setState({
@@ -166,11 +167,13 @@ export default class StackedPNGTileLayer extends TileLayer {
 		})
 	}
 
+	// @ts-ignore
 	renderSubLayers(props) {
 		if (!props.visible) {
 			return null
 		}
 
+		// @ts-ignore
 		const { shaders, renderTarget, filterValues } = this.state
 
 		const {
@@ -183,6 +186,7 @@ export default class StackedPNGTileLayer extends TileLayer {
 		}
 
 		return new StackedPNGLayer(props, {
+			// @ts-ignore
 			shaders,
 			bounds: [boundingBox[0][0], boundingBox[0][1], boundingBox[1][0], boundingBox[1][1]],
 			images,

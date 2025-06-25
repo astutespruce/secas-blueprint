@@ -22,6 +22,7 @@
 <section class={cn('flex-auto overflow-y-auto h-full', className)}>
 	{#if mapData.selectedIndicator && !!indicators.indicators[mapData.selectedIndicator]}
 		<IndicatorDetails
+			{type}
 			{...indicators.indicators[mapData.selectedIndicator]}
 			{outsideSEPercent}
 			{rasterizedAcres}

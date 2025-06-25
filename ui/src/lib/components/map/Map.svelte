@@ -144,7 +144,9 @@
 		}
 
 		const subregions = map
+			// @ts-ignore
 			.queryRenderedFeatures(null, { layers: ['subregions'] })
+			// @ts-ignore
 			.map(({ properties: { subregion } }) => subregion)
 
 		mapData.visibleSubregions = new Set(subregions)
@@ -167,6 +169,7 @@
 			map.setLayoutProperty('subregions', 'visibility', 'none')
 
 			// disable pixel layer event listener
+			// @ts-ignore
 			pixelLayer!.deck!.setProps({
 				onAfterRender: () => {} // no-op
 			})
@@ -183,6 +186,7 @@
 		// pixel identify / filter modes
 		else if (mapData.mapMode === 'pixel') {
 			// enable pixel layer event listener
+			// @ts-ignore
 			pixelLayer!.deck!.setProps({
 				onAfterRender: deckGLHandler.handler
 			})
@@ -195,6 +199,7 @@
 			}
 		} else if (mapData.mapMode === 'filter') {
 			// disable pixel layer event listener
+			// @ts-ignore
 			pixelLayer!.deck!.setProps({
 				onAfterRender: () => {} // no-op
 			})
@@ -290,7 +295,7 @@
 				layers: [
 					new StackedPNGTileLayer({
 						id: 'pixelLayers',
-						// interleaved: true,
+						interleaved: true,
 						beforeId: beforeLayer,
 						refinementStrategy: 'no-overlap',
 						debounceTime: 10, // slightly debounce tile requests during major zoom / pan events
@@ -301,7 +306,8 @@
 						filters: null,
 						visible: false,
 						renderLayer,
-						tileSize: 512
+						tileSize: 512,
+						useWebGL2: true
 					})
 				]
 			})

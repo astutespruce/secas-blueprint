@@ -36,7 +36,7 @@ export class MapData {
 	}
 
 	setData(data: any | null) {
-		// TODO: typing
+		console.log('set map data', data)
 		this.#data = data
 		if (data === null) {
 			this.#selectedIndicator = null

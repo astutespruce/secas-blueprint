@@ -1,10 +1,19 @@
 /* eslint-disable no-bitwise */
+import type { Map, Point, Layer, LngLatLike } from 'mapbox-gl'
 
 import { indexBy, setIntersection, sum } from '$lib/util/data'
+import type { IndicatorValue, Indicator } from '$lib/types'
 
 const TILE_SIZE = 512 // physical tile size (layer tile size may be set differently to increase resolution)
 
-const getTileID = (zoom, mercX, mercY, minZoom, maxZoom, tileSize) => {
+const getTileID = (
+	zoom: number,
+	mercX: number,
+	mercY: number,
+	minZoom: number,
+	maxZoom: number,
+	tileSize: number
+) => {
 	// zoom adapted from: https://github.com/visgl/deck.gl/blob/8.7-release/modules/geo-layers/src/tile-layer/utils.js::getTileIndices
 	let z = Math.round(zoom + Math.log2(TILE_SIZE / tileSize))
 
@@ -23,8 +32,9 @@ const getTileID = (zoom, mercX, mercY, minZoom, maxZoom, tileSize) => {
 	}
 }
 
-const getTile = (map, screenPoint, layer) => {
+const getTile = (map: Map, screenPoint: Point, layer: Layer) => {
 	// resolve the StackedPNGTileLayer; layers[1:n] are StackedPNGLayers
+	// @ts-ignore
 	const tileLayer = layer.deck.layerManager.layers[0]
 	const {
 		props: { minZoom, maxZoom, tileSize },
@@ -44,7 +54,8 @@ const getTile = (map, screenPoint, layer) => {
 
 	// tileset.selectedTiles  contain all tiles at current zoom level
 	const [tile] = tileset.selectedTiles.filter(
-		({ index: { z, x, y } }) => z === searchZ && x === searchX && y === searchY
+		({ index: { z, x, y } }: { index: { z: number; x: number; y: number } }) =>
+			z === searchZ && x === searchX && y === searchY
 	)
 	return {
 		tile: tile || null,
@@ -53,17 +64,17 @@ const getTile = (map, screenPoint, layer) => {
 	}
 }
 
-const extractIndicators = (data, ecosystemInfo, indicatorInfo, subregions) => {
+const extractIndicators = (data, ecosystemInfo, indicatorInfo, subregions: Set<string>) => {
 	const ecosystemIndex = indexBy(ecosystemInfo, 'id')
 
 	// only show indicators that are either present or likely present based on
 	// subregion
 	let indicators = indicatorInfo
-		.filter(({ id, subregions: indicatorSubregions }) => {
+		.filter(({ id, subregions: indicatorSubregions }: { id: string; subregions: Set<string> }) => {
 			const present = data[id] !== undefined && data[id] !== null
 			return present || setIntersection(indicatorSubregions, subregions).size > 0
 		})
-		.map(({ id, values: valuesInfo, ...indicator }) => {
+		.map(({ id, values: valuesInfo, ...indicator }: { id: string; values: IndicatorValue[] }) => {
 			const present = data[id] !== undefined && data[id] !== null
 
 			const values = valuesInfo.map(({ value, ...rest }) => ({
@@ -84,14 +95,17 @@ const extractIndicators = (data, ecosystemInfo, indicatorInfo, subregions) => {
 	// aggregate these up by ecosystems for ecosystems that are present
 	const ecosystemsPresent = new Set(
 		indicators
-			.filter(({ values }) => sum(values.map(({ percent }) => percent)) > 0)
-			.map(({ ecosystem: { id } }) => id)
+			.filter(
+				({ values }: { values: [{ percent: number }] }) =>
+					sum(values.map(({ percent }: { percent: number }) => percent)) > 0
+			)
+			.map(({ ecosystem: { id } }: { ecosystem: { id: string } }) => id)
 	)
 
 	indicators = indexBy(indicators, 'id')
 
 	const ecosystems = ecosystemInfo
-		.filter(({ id }) => ecosystemsPresent.has(id))
+		.filter(({ id }: { id: string }) => ecosystemsPresent.has(id))
 		.map(
 			({
 				id: ecosystemId,
@@ -100,6 +114,12 @@ const extractIndicators = (data, ecosystemInfo, indicatorInfo, subregions) => {
 				borderColor,
 				indicators: ecosystemIndicators,
 				...rest
+			}: {
+				id: string
+				label: string
+				color: string
+				borderColor: string
+				indicators: string[]
 			}) => {
 				const indicatorsPresent = ecosystemIndicators.filter(
 					(indicatorId) => indicators[indicatorId]
@@ -121,7 +141,13 @@ const extractIndicators = (data, ecosystemInfo, indicatorInfo, subregions) => {
 	return { ecosystems, indicators }
 }
 
-export const extractPixelData = (map, point, layer, ecosystemInfo, indicatorInfo) => {
+export const extractPixelData = (
+	map: Map,
+	point: LngLatLike,
+	layer: Layer,
+	ecosystemInfo,
+	indicatorInfo
+) => {
 	const screenPoint = map.project(point)
 
 	const { tile, offsetX, offsetY } = getTile(map, screenPoint, layer)
@@ -139,6 +165,7 @@ export const extractPixelData = (map, point, layer, ecosystemInfo, indicatorInfo
 	} = tile
 
 	const {
+		// @ts-ignore
 		__deck: { device }
 	} = map
 
@@ -148,7 +175,7 @@ export const extractPixelData = (map, point, layer, ecosystemInfo, indicatorInfo
 	const buffer = device.createBuffer({ byteLength: 4 * images.length })
 	const cmd = device.createCommandEncoder()
 	try {
-		images.forEach((texture, i) => {
+		images.forEach((texture, i: number) => {
 			cmd.copyTextureToBuffer({
 				sourceTexture: texture,
 				width: 1,
@@ -166,7 +193,7 @@ export const extractPixelData = (map, point, layer, ecosystemInfo, indicatorInfo
 		cmd.destroy()
 	}
 
-	const pixelValues = []
+	const pixelValues: number[] = []
 	for (let i = 0; i < images.length; i += 1) {
 		// ignore alpha values
 		const value = (pixels[i * 4] << 16) | (pixels[i * 4 + 1] << 8) | pixels[i * 4 + 2]
@@ -175,6 +202,7 @@ export const extractPixelData = (map, point, layer, ecosystemInfo, indicatorInfo
 
 	// decode pixel values
 	const {
+		// @ts-ignore
 		props: { layers }
 	} = layer
 
@@ -189,14 +217,26 @@ export const extractPixelData = (map, point, layer, ecosystemInfo, indicatorInfo
 			return
 		}
 
-		encoding.forEach(({ id, offset, bits, valueShift = 0 }) => {
-			let value = (pixelValue >> offset) & (2 ** bits - 1)
-			// if value is 0, it is NODATA
-			if (value > 0) {
-				value -= valueShift
-				data[id] = value
+		encoding.forEach(
+			({
+				id,
+				offset,
+				bits,
+				valueShift = 0
+			}: {
+				id: string
+				offset: number
+				bits: number
+				valueShift: number
+			}) => {
+				let value = (pixelValue >> offset) & (2 ** bits - 1)
+				// if value is 0, it is NODATA
+				if (value > 0) {
+					value -= valueShift
+					data[id] = value
+				}
 			}
-		})
+		)
 	})
 
 	// if data is empty, then pixel is is outside blueprint area
@@ -209,16 +249,20 @@ export const extractPixelData = (map, point, layer, ecosystemInfo, indicatorInfo
 		layers: ['protectedAreas', 'subregions']
 	})
 
+	// @ts-ignore
 	const [{ properties: { subregion } } = { properties: {} }] = features.filter(
+		// @ts-ignore
 		({ layer: { id } }) => id === 'subregions'
 	)
 
 	const subregions = new Set([subregion])
 
 	// unpack indicators and ecosystems
+	// @ts-ignore
 	data.indicators = extractIndicators(data, ecosystemInfo, indicatorInfo, subregions)
 
 	// extract SLR
+	// @ts-ignore
 	if (data.slr !== undefined && data.slr !== null) {
 		if (data.slr <= 10) {
 			data.slr = {
@@ -239,9 +283,11 @@ export const extractPixelData = (map, point, layer, ecosystemInfo, indicatorInfo
 	}
 
 	// extract protected areas from vector tiles
-	const protectedAreasList = []
+	const protectedAreasList: string[] = []
+	// @ts-ignore
 	const protectedAreasFeatures = features.filter(({ layer: { id } }) => id === 'protectedAreas')
 	if (protectedAreasFeatures.length > 0) {
+		// @ts-ignore
 		protectedAreasFeatures.forEach(({ properties: { name, owner } }) => {
 			if (owner) {
 				protectedAreasList.push(`${name} (${owner})`)

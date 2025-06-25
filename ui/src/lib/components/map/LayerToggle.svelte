@@ -33,7 +33,8 @@
 <Root>
 	<Trigger>
 		<LayerGroupIcon
-			class="absolute top-[70px] md:top-[160px] right-[12px] md:right-[8px] w-9 h-9 md:w-8 md:h-8 p-[6px] text-grey-9 bg-white cursor-pointer shadow-md shadow-grey-5 pointer-events-auto border-2 border-grey-5 rounded-sm"
+			class="absolute top-[70px] md:top-[160px] right-[12px] md:right-[8px] w-9 h-9 md:w-8 md:h-8 p-[6px] text-grey-9 bg-white cursor-pointer  pointer-events-auto rounded-sm"
+			style="box-shadow:0 0 0 2px #0000001a;"
 		/>
 	</Trigger>
 	<Content class="pt-4 pb-6">

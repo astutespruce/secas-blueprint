@@ -1,4 +1,4 @@
-import { indexBy, range } from '$lib/util/data'
+import { indexBy } from '$lib/util/data'
 import type { Indicator } from '$lib/types'
 
 import rawBlueprint from '$constants/blueprint.json'
@@ -39,6 +39,8 @@ export {
 	pixelLayers7,
 	pixelLayers8
 }
+
+export const ecosystemIndex = indexBy(ecosystems, 'id')
 
 export const subregionsIndex = indexBy(subregions, 'subregion')
 

@@ -1,4 +1,4 @@
-type IndicatorValue = {
+export type IndicatorValue = {
 	value: number
 	label: string
 	color: string | null
@@ -17,7 +17,7 @@ export type Indicator = {
 	pos: number
 }
 
-type ActiveValues = {
+export type ActiveValues = {
 	[key: number]: boolean
 }
 
@@ -34,7 +34,7 @@ export type PixelLayerBounds = {
 	[key: number]: [number, number, number, number]
 }
 
-interface PixelLayerEncoding {
+export interface PixelLayerEncoding {
 	id: string
 	offset: number
 	bits: number

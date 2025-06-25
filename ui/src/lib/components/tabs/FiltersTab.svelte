@@ -14,12 +14,13 @@
 	import { setIntersection } from '$lib/util/data'
 	import type { Filter } from '$lib/types'
 	import { cn } from '$lib/utils'
+	import { ecosystemIndex } from '$lib/config/constants'
 	import {
 		priorityFilters as rawPriorityFilters,
 		ecosystemFilters,
 		otherInfoFilters as rawOtherInfoFilters
 	} from '$lib/config/filters'
-	import FilterGroup from '../filter/FilterGroup.svelte'
+	import { FilterGroup } from '$lib/components/filter'
 
 	const { class: className } = $props()
 	const mapData: MapData = getContext('map-data')
@@ -157,51 +158,46 @@
 				</div>
 
 				<FilterGroup
-					id="priorities"
 					label="Filter by priorities"
 					icon={BlueprintIcon}
-					color="bg-(--group-priorities)/5"
-					borderColor="border-(--group-priorities)/20"
+					color="#4d004b0d"
+					borderColor="#4d004b2b"
 					entries={priorityFilters}
 					onChange={handleFilterChange}
 				/>
 
 				<FilterGroup
-					id="t"
 					label="Filter by terrestrial indicators"
 					icon={TerrestrialIcon}
-					color="bg-(--group-terrestrial)/30"
-					borderColor="border-(--group-terrestrial)"
+					color={ecosystemIndex.t.color}
+					borderColor={ecosystemIndex.t.borderColor}
 					entries={terrestrialFilters}
 					onChange={handleFilterChange}
 				/>
 
 				<FilterGroup
-					id="f"
 					label="Filter by freshwater indicators"
 					icon={FreshwaterIcon}
-					color="bg-(--group-freshwater)/20"
-					borderColor="border-(--group-freshwater)"
+					color={ecosystemIndex.f.color}
+					borderColor={ecosystemIndex.f.borderColor}
 					entries={freshwaterFilters}
 					onChange={handleFilterChange}
 				/>
 
 				<FilterGroup
-					id="m"
 					label="Filter by coastal & marine indicators"
 					icon={MarineIcon}
-					color="bg-(--group-marine)/15"
-					borderColor="border-(--group-marine)"
+					color={ecosystemIndex.m.color}
+					borderColor={ecosystemIndex.m.borderColor}
 					entries={marineFilters}
 					onChange={handleFilterChange}
 				/>
 
 				<FilterGroup
-					id="otherInfo"
 					label="More filters"
 					icon={OtherInfoIcon}
-					color="bg-(--group-other)/20"
-					borderColor="border-(--group-other)/60"
+					color="#f3c6a830"
+					borderColor="#f3c6a891"
 					entries={otherInfoFilters}
 					onChange={handleFilterChange}
 				/>

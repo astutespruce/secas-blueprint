@@ -2,6 +2,8 @@
 	import { setContext, untrack } from 'svelte'
 	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query'
 
+	import ExclamationTriangleIcon from '~icons/fa-solid/exclamation-triangle'
+
 	import type { LocationData } from '$lib/types'
 	import {
 		Footer,
@@ -26,7 +28,6 @@
 
 	const mapData = new MapData()
 	setContext('map-data', mapData)
-	$inspect('mapData', mapData)
 
 	let locationData: LocationData = $state({ location: null })
 	setContext('location-data', locationData)
@@ -158,15 +159,26 @@
 
 					<!-- selected data tabs -->
 					{#if mapData.data !== null}
-						<PrioritiesTab
-							class={tab === 'selected-priorities' ? '' : 'hidden'}
-							{...mapData.data}
-						/>
-						<IndicatorsTab
-							class={tab === 'selected-indicators' ? '' : 'hidden'}
-							{...mapData.data}
-						/>
-						<MoreInfoTab class={tab === 'selected-more-info' ? '' : 'hidden'} {...mapData.data} />
+						{#if mapData.data.isLoading}
+							<div class="mt-8 text-center text-lg text-grey-8">Loading...</div>
+						{:else if mapData.data.blueprint === undefined || mapData.data.blueprint === null}
+							<div class="flex gap-2 items-center mt-8 px-4">
+								<ExclamationTriangleIcon class="size-6 flex-none text-accent" />
+								<text class="text-grey-8 flex-auto font-bold">
+									No pixel-level details are available for this area.
+								</text>
+							</div>
+						{:else}
+							<PrioritiesTab
+								class={tab === 'selected-priorities' ? '' : 'hidden'}
+								{...mapData.data}
+							/>
+							<IndicatorsTab
+								class={tab === 'selected-indicators' ? '' : 'hidden'}
+								{...mapData.data}
+							/>
+							<MoreInfoTab class={tab === 'selected-more-info' ? '' : 'hidden'} {...mapData.data} />
+						{/if}
 					{/if}
 				</div>
 

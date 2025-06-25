@@ -21,8 +21,7 @@
 		values,
 		valueLabel,
 		outsideSEPercent,
-		icon,
-		class: className = ''
+		icon
 	} = $props()
 
 	const mapData: MapData = getContext('map-data')

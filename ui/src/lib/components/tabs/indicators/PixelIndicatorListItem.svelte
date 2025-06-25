@@ -31,7 +31,7 @@
 			}
 		: () => {}}
 	class={cn(
-		'cursor-default shadow-none px-4 pt-4 pb-6 relative not-first:border-t-2 border-t-grey-1 group',
+		'block text-left cursor-default bg-white hover:bg-white w-full shadow-none rounded-none px-4 pt-4 pb-6 relative not-first:border-t-2 border-t-grey-1 h-auto group',
 		{
 			'cursor-pointer hover:bg-grey-0': !isZeroValue
 		}
@@ -41,16 +41,18 @@
 		class={cn('text-lg text-grey-8', {
 			'text-primary font-bold': !isZeroValue
 		})}
-	></div>
+	>
+		{indicator.label}
+	</div>
 
 	<IndicatorPixelValueChart {...indicator} {isPresent} {currentValue} {isZeroValue} />
 
 	{#if !isZeroValue}
 		<div
-			class="text-primary font-sm text-center absolute bottom-0 top-0 left-0 right-0 hidden group-hover:block"
+			class="text-primary leading-none font-sm text-center absolute bottom-1 left-0 right-0 hidden group-hover:block"
 		>
-			<div class="md:hidden">tap</div>
-			<div class="hidden md:block">click</div>
+			<span class="md:hidden">tap</span>
+			<span class="hidden md:inline">click</span>
 			for more details
 		</div>
 	{/if}

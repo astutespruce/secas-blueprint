@@ -11,7 +11,7 @@
 {/if}
 
 <div
-	class={cn('flex items-center mt-2', {
+	class={cn('flex items-center mt-2 relative', {
 		'mt-5': !!goodThreshold,
 		'opacity-25': isZeroValue
 	})}
@@ -35,14 +35,17 @@
 				})}
 			>
 				{#if value === goodThreshold}
-					<div class="absolute text-sm border-l-dashed border-l-grey-6 w-[94px] t-[-1.2rem]">
+					<div
+						class="absolute text-grey-8 text-xs border-l border-dashed border-l-grey-6 w-[94px] top-[-1.2rem]"
+					>
 						&rarr; good condition
 					</div>
 				{/if}
 
+				<!-- marker -->
 				{#if percent === 100}
 					<div
-						class="absolute l-[50%] t-[0.8rem] -ml-2 border-b-[0.6rem] border-b-grey-9 border-r-[0.5rem] border-r-transparent border-l-[0.5rem] border-l-transparent"
+						class="absolute left-[50%] -ml-2 top-3.5 border-b-[0.6rem] border-b-grey-9 border-r-[0.5rem] border-r-transparent border-l-[0.5rem] border-l-transparent"
 					></div>
 				{/if}
 			</div>
