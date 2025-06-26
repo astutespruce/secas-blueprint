@@ -62,37 +62,41 @@
 </script>
 
 <div class="flex flex-col h-full overflow-hidden">
-	<Button
-		class="shadow-none rounded-none flex justify-between items-center py-4 md:py-2 pl-1 pr-4 border-b text-foreground text-wrap whitespace-break-spaces h-auto gap-4"
+	<div
+		class="border-b p-1"
 		style={`background-color:${ecosystem.color}; border-color:${ecosystem.borderColor};`}
-		onclick={() => (mapData.selectedIndicator = null)}
 	>
-		<div class="flex items-start">
-			<ReplyIcon class="size-3 flex-none text-grey-7" />
-			<div class="flex gap-2 flex-auto items-center">
-				<img
-					src={icon}
-					alt={`${ecosystem.label} icon`}
-					class="flex-none size-10 bg-white rounded-full block"
-				/>
-				<div class="flex flex-col leading-tight items-start text-left">
-					<div class="font-sm color-grey-8">
-						{ecosystem.label}
+		<Button
+			class="shadow-none rounded-none bg-transparent hover:bg-transparent w-full flex justify-between items-center pl-1 pr-4 text-foreground text-wrap whitespace-break-spaces h-auto gap-4 py-1"
+			onclick={() => (mapData.selectedIndicator = null)}
+		>
+			<div class="flex items-start">
+				<ReplyIcon class="size-3 flex-none text-grey-7" />
+				<div class="flex gap-2 flex-auto items-center">
+					<img
+						src={icon}
+						alt={`${ecosystem.label} icon`}
+						class="flex-none size-10 bg-white rounded-full block"
+					/>
+					<div class="flex flex-col leading-tight items-start text-left">
+						<div class="font-sm color-grey-8">
+							{ecosystem.label}
+						</div>
+						<h4 class="text-xl leading-tight">
+							{label}
+						</h4>
 					</div>
-					<h4 class="text-xl leading-tight">
-						{label}
-					</h4>
 				</div>
 			</div>
-		</div>
-		{#if type !== 'pixel'}
-			<div class="flex-none text-grey-8 text-sm text-right leading-tight">
-				<b>{formatPercent(totalIndicatorPercent)}%</b>
-				<br />
-				of area
-			</div>
-		{/if}
-	</Button>
+			{#if type !== 'pixel'}
+				<div class="flex-none text-grey-8 text-sm text-right leading-tight">
+					<b>{formatPercent(totalIndicatorPercent)}%</b>
+					<br />
+					of area
+				</div>
+			{/if}
+		</Button>
+	</div>
 
 	<div class="px-4 pb-4 h-full flex-auto overflow-y-auto">
 		{#if valueLabel}

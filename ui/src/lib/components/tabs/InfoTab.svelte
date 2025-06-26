@@ -10,7 +10,7 @@
 	const { class: className } = $props()
 </script>
 
-<section class={cn('overflow-y-auto px-4 h-full pt-2 pb-8', className)}>
+<section class={cn('overflow-y-auto px-4 h-full pt-4 pb-8', className)}>
 	{#if isStaging}
 		<Alert variant="destructive" class="text-md my-4">
 			<b>WARNING</b>: this is a test version of this application used for verifying recent changes;

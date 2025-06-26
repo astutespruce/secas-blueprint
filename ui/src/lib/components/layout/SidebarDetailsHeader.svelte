@@ -47,12 +47,12 @@
 	{:else}
 		<div class="flex justify-between items-start gap-4 pt-4 pl-4 min-h-[7rem]">
 			<div class="flex-auto">
-				<h3 class="text-2xl leading-none">
+				<h2 class="text-2xl leading-none">
 					{mapData.data.name}{' '}
 					{#if mapData.data.type === 'subwatershed'}
 						<span class="text-sm font-normal">(HUC12)</span>
 					{/if}
-				</h3>
+				</h2>
 				{#if mapData.data.acres !== null}
 					<div class="text-grey-8 text-md">
 						{formatNumber(mapData.data.acres)} acres
@@ -60,6 +60,7 @@
 				{/if}
 			</div>
 			<Button
+				aria-label="unselect summary unit"
 				class="flex-none text-grey-5 hover:text-grey-9 bg-transparent hover:bg-transparent shadow-none rounded-full m-0 p-0 h-6"
 				onclick={() => {
 					mapData.setData(null)
@@ -76,18 +77,19 @@
 
 	<nav class="grid auto-cols-fr grid-flow-col gap-0 items-center border-t-2 border-t-grey-2">
 		{#each tabs as { id, label, icon: Icon }}
-			<Button
-				class={cn(
-					'flex gap-2 items-center justify-center text-center flex-grow p-2 h-10 select-none rounded-none text-grey-9 text-md bg-grey-1 shadow-none hover:bg-grey-1 border-b border-b-grey-3',
-					{
-						'bg-white hover:bg-white border-b-transparent': id === tab
-					}
-				)}
-				onclick={handleTabClick(id)}
+			<div
+				class={cn('p-1 bg-grey-1 border-b border-b-grey-3', {
+					'bg-white hover:bg-white border-b-transparent': id === tab
+				})}
 			>
-				<Icon class="size-6" />
-				{label}
-			</Button>
+				<Button
+					class="w-full flex gap-2 items-center justify-center text-center flex-grow p-2 h-8 select-none rounded-none text-grey-9 text-md bg-transparent hover:bg-transparent shadow-none"
+					onclick={handleTabClick(id)}
+				>
+					<Icon class="size-6" />
+					{label}
+				</Button>
+			</div>
 		{/each}
 	</nav>
 </div>

@@ -192,7 +192,7 @@
 					<DownloadIcon class="size-4" />
 					Download report
 				</Button>
-			{:else if !(reportState.inProgress || reportState.error)}
+			{:else if !reportState.inProgress && reportState.error === null}
 				<Button onclick={handleCreateReport} class="text-lg">Create report</Button>
 			{/if}
 		</div>

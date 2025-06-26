@@ -75,6 +75,7 @@
 			<a
 				href="https://www.arcgis.com/apps/mapviewer/index.html?webmap=3d2eadbfd0b347eca3dcb927e9778dd9"
 				target="_blank"
+				aria-label="link for urbanization ArcGIS Online map"
 			>
 				click here
 			</a>.

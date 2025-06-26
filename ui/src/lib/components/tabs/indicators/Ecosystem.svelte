@@ -20,12 +20,12 @@
 
 <div class="w-full grow shrink-0">
 	<div
-		class="flex items-center justify-between px-4 py-4 md:py-2 border-b border-t"
+		class="flex items-center justify-between px-4 py-2 border-b border-t"
 		style={`background-color: ${color}; border-color: ${borderColor}`}
 	>
 		<div class="flex items-center gap-2">
 			<img src={icon} alt={`${label} icon`} class="flex-none w-8 h-8 bg-white rounded-full" />
-			<h4 class="flex-auto text-xl">{label} indicators</h4>
+			<h3 class="flex-auto text-xl">{label} indicators</h3>
 		</div>
 	</div>
 

@@ -4,7 +4,7 @@
 	const { class: className } = $props()
 </script>
 
-<section class={cn('py-6 pl-4 pr-8', className)}>
+<section class={cn('py-6 pl-4 pr-8 overflow-y-auto h-full', className)}>
 	<h3 class="mb-2 text-xl">Give your feedback to Blueprint staff</h3>
 	<p class="text-lg leading-snug">
 		The Blueprint and its inputs are regularly revised based on input from people like you. Have a

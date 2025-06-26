@@ -27,6 +27,7 @@
 	import { ModeToggle } from './mode'
 	import StyleToggle from './StyleToggle.svelte'
 	import { getCenterAndZoom } from './viewport'
+	import { cn } from '$lib/utils'
 
 	let map: mapboxgl.Map
 	let marker: mapboxgl.Marker | null = null
@@ -273,14 +274,19 @@
 			maxBounds
 		})
 
+		map.addControl(new mapboxgl.NavigationControl(), 'top-right')
+
 		// @ts-ignore
 		window.map = map // for easier debugging and querying via console
-
-		map.addControl(new mapboxgl.NavigationControl(), 'top-right')
 
 		map.on('style.load', hideGulfOfMexico)
 
 		map.on('load', () => {
+			map._canvas.setAttribute(
+				'aria-label',
+				'interactive map showing Southeast Conservation Blueprint'
+			)
+
 			// add sources
 			Object.entries(sources).forEach(([id, source]) => {
 				// @ts-ignore
@@ -577,6 +583,10 @@
 				location: { latitude, longitude }
 			} = locationData
 			map.jumpTo({ center: [longitude, latitude], zoom: 12 })
+			map.once('idle', () => {
+				updateVisibleSubregions()
+			})
+
 			if (!marker) {
 				marker = new mapboxgl.Marker().setLngLat([longitude, latitude]).addTo(map)
 			} else {
@@ -650,7 +660,9 @@
 	)
 </script>
 
-<div class="h-full w-full flex-auto relative">
+<div
+	class="h-full w-full flex-auto relative md:border-l-2 border-l-grey-3 has-focus-visible:border-l-primary overflow-hidden"
+>
 	<div class="h-full w-full" {@attach createMap}></div>
 
 	{#if mapIsDrawing}
@@ -659,9 +671,7 @@
 		>
 			<Spinner class="size-6 animate-spin" />
 		</div>
-	{/if}
-
-	{#if mapData.mapMode === 'pixel' && currentZoom >= minPixelLayerZoom}
+	{:else if mapData.mapMode === 'pixel' && currentZoom >= minPixelLayerZoom}
 		<img
 			src={CrosshairsIcon}
 			alt="Crosshairs icon"
@@ -670,6 +680,15 @@
 	{/if}
 
 	{#if isLoaded}
+		<ModeToggle {belowMinZoom} />
+		<FindLocation />
+		<StyleToggle onChange={handleBasemapChange} />
+		<LayerToggle
+			{renderLayer}
+			onSetRenderLayer={handleSetRenderLayer}
+			class={cn('hidden', { block: mapData.mapMode !== 'unit' })}
+		/>
+
 		<Legend
 			title={displayLayer.label}
 			subtitle={displayLayer.valueLabel}
@@ -677,15 +696,5 @@
 			isVisible={isRenderLayerVisible}
 			onToggleLayerVisibility={handleToggleRenderLayerVisible}
 		/>
-
-		{#if mapData.mapMode !== 'unit'}
-			<LayerToggle {renderLayer} onSetRenderLayer={handleSetRenderLayer} />
-		{/if}
-
-		<FindLocation />
-
-		<ModeToggle {belowMinZoom} />
-
-		<StyleToggle onChange={handleBasemapChange} />
 	{/if}
 </div>

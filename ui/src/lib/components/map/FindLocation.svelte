@@ -4,14 +4,13 @@
 	import { Button } from '$lib/components/ui/button'
 	import { LatLon, Search } from '$lib/components/search'
 	import { cn } from '$lib/utils'
-	import type { LocationData } from '$lib/types'
 
 	let placenameInputNode: HTMLInputElement | null = $state(null)
 	let latLonInputNode: HTMLInputElement | null = $state(null)
 	let showOptions: boolean = $state(false)
 	let mode: string = $state('placename')
 	let prevMode: string = $state('placename')
-	let isFocused: boolean = $state(true)
+	let isFocused: boolean = $state(false)
 
 	const toggleShowOptions = (e: Event) => {
 		e.stopPropagation()
@@ -87,9 +86,10 @@
 		}
 	)}
 >
-	<div class="flex gap-0 items-start">
+	<div class="flex gap-1 items-start">
 		<Button
-			class="flex-none text-grey-8 bg-white p-0 w-4 h-8 border-none shadow-none hover:bg-white"
+			aria-label="toggle search options"
+			class="flex-none text-grey-8 bg-white p-0 w-3 h-8 border-none shadow-none hover:bg-white"
 			onclick={toggleShowOptions}
 		>
 			{#if showOptions}

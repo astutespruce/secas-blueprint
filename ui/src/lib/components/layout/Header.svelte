@@ -19,7 +19,7 @@
 	<div class="sm:flex flex-auto justify-between items-center gap-3 pl-2 pr-4 py-1">
 		<a
 			href={`${base}/`}
-			class="lg:flex gap-1.5 flex-wrap items-center hover:no-underline text-white hover:text-white"
+			class="lg:flex gap-1.5 flex-wrap items-center no-underline text-white hover:text-white focus:outline-2 outline-accent outline-offset-6"
 		>
 			<h1
 				class="m-0 font-normal md:font-bold leading-none text-[0.8rem] md:text-[1rem] lg:text-2xl"
@@ -34,7 +34,7 @@
 			<a
 				href="/help"
 				target="_blank"
-				class="flex gap-1.5 items-center flex-none font-bold text-md bg-transparent hover:bg-black/20 hover:no-underline px-2 py-1.5 border border-white cursor-pointer rounded-sm hover text-white"
+				class="flex gap-1.5 items-center flex-none font-bold text-md bg-transparent hover:bg-black/20 no-underline px-2 py-1.5 border border-white cursor-pointer rounded-sm hover text-white focus:outline-2 focus:outline-accent"
 			>
 				<QuestionCircle />
 				<div class="hidden lg:block">How to use this viewer</div>
@@ -42,7 +42,7 @@
 
 			<a
 				href="/custom_report"
-				class="flex gap-1.5 items-center flex-none font-bold text-md bg-transparent hover:bg-black/20 hover:no-underline px-2 py-1.5 border border-white cursor-pointer rounded-sm text-white"
+				class="flex gap-1.5 items-center flex-none font-bold text-md bg-transparent hover:bg-black/20 no-underline px-2 py-1.5 border border-white cursor-pointer rounded-sm text-white focus:outline-2 focus:outline-accent"
 			>
 				<FileUpload />
 				Upload a shapefile

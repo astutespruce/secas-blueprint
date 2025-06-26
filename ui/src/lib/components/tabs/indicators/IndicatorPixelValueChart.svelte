@@ -5,7 +5,7 @@
 </script>
 
 {#if isPresent && !!valueLabel}
-	<div class="text-sm text-grey-8 leading-tight">
+	<div class="text-sm text-grey-8 leading-tight text-wrap">
 		{valueLabel}
 	</div>
 {/if}
@@ -55,6 +55,6 @@
 	<div class="text-grey-8 font-sm flex-none">High</div>
 </div>
 
-<div class="text-grey-8 font-sm mt-4">
+<div class="text-grey-8 font-sm mt-4 max-w-full text-wrap">
 	Value: {isPresent ? currentValue.label : 'Not present'}
 </div>

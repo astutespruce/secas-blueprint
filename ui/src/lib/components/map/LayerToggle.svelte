@@ -7,7 +7,7 @@
 	import { logGAEvent } from '$lib/util/log'
 	import { cn } from '$lib/utils'
 
-	const { renderLayer, onSetRenderLayer } = $props()
+	const { renderLayer, onSetRenderLayer, class: className = '' } = $props()
 
 	const handleSetRenderLayer = (id: string) => () => {
 		onSetRenderLayer(renderLayersIndex[id])
@@ -31,11 +31,15 @@
 </script>
 
 <Root>
-	<Trigger>
-		<LayerGroupIcon
-			class="absolute top-[70px] md:top-[160px] right-[12px] md:right-[8px] w-9 h-9 md:w-8 md:h-8 p-[6px] text-grey-9 bg-white cursor-pointer  pointer-events-auto rounded-sm"
-			style="box-shadow:0 0 0 2px #0000001a;"
-		/>
+	<Trigger
+		class={cn(
+			'absolute top-[70px] md:top-[160px] right-[12px] md:right-[10px]  p-[6px] text-grey-9 bg-white cursor-pointer  pointer-events-auto rounded-sm focus-visible:outline-2 outline-accent',
+			className
+		)}
+		style="box-shadow:0 0 0 2px #0000001a;"
+		aria-label="show layers popup to choose a different layer to display on the map"
+	>
+		<LayerGroupIcon class="w-6 h-6 md:w-4.5 md:h-4.5" />
 	</Trigger>
 	<Content class="pt-4 pb-6">
 		<Header class="border-b pb-4 border-b-grey-3">

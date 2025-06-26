@@ -32,7 +32,9 @@
 
 	const filterTabs = [
 		{ id: 'map', label: 'Map', icon: MapIcon },
-		{ id: 'filter', label: 'Filter', icon: FilterIcon }
+		{ id: 'filter', label: 'Filter', icon: FilterIcon },
+		{ id: 'find', label: 'Find Location', icon: SearchIcon },
+		{ id: 'contact', label: 'Contact', icon: EnvelopeIcon }
 	]
 
 	let tabs = $derived.by(() => {

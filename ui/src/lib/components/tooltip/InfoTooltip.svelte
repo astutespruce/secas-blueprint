@@ -4,22 +4,13 @@
 	import * as Dialog from '$lib/components/ui/dialog'
 
 	const { title, description } = $props()
-
-	// let open = $state(false)
-
-	// const handleClick = () => {
-	// 	console.log('handleClick')
-	// 	open = true
-	// }
-
-	// $inspect('open state', open)
 </script>
 
 <!-- only show tooltip on desktop version -->
 <div class="hidden md:block">
 	<Tooltip.Provider delayDuration={0}>
 		<Tooltip.Root disableHoverableContent disableCloseOnTriggerClick>
-			<Tooltip.Trigger>
+			<Tooltip.Trigger aria-label="show description of layer">
 				<QuestionCircle
 					width="1.25rem"
 					height="1.25rem"
@@ -41,7 +32,7 @@
 <!-- mobile is a dialog instead -->
 <div class="block md:hidden">
 	<Dialog.Root>
-		<Dialog.Trigger>
+		<Dialog.Trigger aria-label="show description of layer">
 			<QuestionCircle
 				width="1.25rem"
 				height="1.25rem"

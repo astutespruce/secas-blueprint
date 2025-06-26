@@ -23,7 +23,7 @@
 		bind:ref
 		data-slot="dialog-content"
 		class={cn(
-			'bg-background absolute left-[50%] top-[50%] z-[10000] grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200 sm:max-w-lg',
+			'bg-background absolute left-[50%] top-[50%] z-[10000] grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border py-6 pl-6 pr-12 shadow-lg duration-200 sm:max-w-lg',
 			className
 		)}
 		{...restProps}

@@ -158,6 +158,7 @@
 				placeholder={isCompact ? 'Find a place' : 'Find a place by name / address'}
 				onclick={handleClick}
 				onfocus={onFocus}
+				autofocus={false}
 			/>
 			{#if value !== ''}
 				<Button

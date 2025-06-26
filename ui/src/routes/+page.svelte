@@ -151,7 +151,7 @@
 				<div
 					bind:this={contentNode}
 					class={cn(
-						'md:flex h-full bg-white grow shrink-0 basis-full md:basis-[360px] lg:basis-[468px] w-max-[100%] md:w-max-[360px] lg:w-max-[468px] flex-col overflow-hidden absolute md:relative left-0 right-0 top-0 bottom-0 z-[10000] md:z-[1] md:border-r-2 border-r-grey-3',
+						'md:flex h-full bg-white grow shrink-0 basis-full md:basis-[360px] lg:basis-[468px] w-max-[100%] md:w-max-[360px] lg:w-max-[468px] flex-col overflow-hidden absolute md:relative left-0 right-0 top-0 bottom-0 z-[10000] md:z-[1]',
 						{
 							hidden: tab === 'map'
 						}
@@ -162,6 +162,9 @@
 					{/if}
 
 					<InfoTab class={tab === 'info' ? '' : 'hidden'} />
+
+					<!-- primary tabs are hidden via css instead of omitted from template to preserve
+					state of filters and location tabs -->
 					<FiltersTab class={tab === 'filter' ? '' : 'hidden'} />
 					<FindLocationTab
 						onSetLocation={handleSetLocation}
@@ -180,16 +183,12 @@
 									No pixel-level details are available for this area.
 								</text>
 							</div>
-						{:else}
-							<PrioritiesTab
-								class={tab === 'selected-priorities' ? '' : 'hidden'}
-								{...mapData.data}
-							/>
-							<IndicatorsTab
-								class={tab === 'selected-indicators' ? '' : 'hidden'}
-								{...mapData.data}
-							/>
-							<MoreInfoTab class={tab === 'selected-more-info' ? '' : 'hidden'} {...mapData.data} />
+						{:else if tab === 'selected-priorities'}
+							<PrioritiesTab {...mapData.data} />
+						{:else if tab === 'selected-indicators'}
+							<IndicatorsTab {...mapData.data} />
+						{:else if tab === 'selected-more-info'}
+							<MoreInfoTab {...mapData.data} />
 						{/if}
 					{/if}
 				</div>

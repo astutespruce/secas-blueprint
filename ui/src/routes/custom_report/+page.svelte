@@ -157,9 +157,9 @@
 			/>
 		</div>
 		<div class="container mt-14">
-			<h1 class="text-7xl relative text-white z-2 text-shadow-sm text-shadow-black">
+			<h2 class="text-7xl relative text-white z-2 text-shadow-sm text-shadow-black">
 				Create a custom Blueprint report
-			</h1>
+			</h2>
 		</div>
 	</div>
 	<div class="text-sm text-grey-8 text-right pr-1">
