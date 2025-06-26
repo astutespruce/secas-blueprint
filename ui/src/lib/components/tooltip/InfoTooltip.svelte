@@ -1,26 +1,60 @@
 <script lang="ts">
 	import QuestionCircle from '~icons/fa-regular/question-circle'
-	import { Provider, Root, Trigger, Content } from '$lib/components/ui/tooltip'
+	import * as Tooltip from '$lib/components/ui/tooltip'
+	import * as Dialog from '$lib/components/ui/dialog'
 
 	const { title, description } = $props()
+
+	// let open = $state(false)
+
+	// const handleClick = () => {
+	// 	console.log('handleClick')
+	// 	open = true
+	// }
+
+	// $inspect('open state', open)
 </script>
 
-<Provider delayDuration={0}>
-	<Root disableHoverableContent>
-		<Trigger>
+<!-- only show tooltip on desktop version -->
+<div class="hidden md:block">
+	<Tooltip.Provider delayDuration={0}>
+		<Tooltip.Root disableHoverableContent disableCloseOnTriggerClick>
+			<Tooltip.Trigger>
+				<QuestionCircle
+					width="1.25rem"
+					height="1.25rem"
+					class="cursor-pointer text-grey-4 hover:text-grey-9"
+				/>
+			</Tooltip.Trigger>
+			<Tooltip.Content side="right" sideOffset={2} class="pt-2 pb-4 px-3 max-w-[28rem]">
+				<h4 class="text-[1rem]">
+					{title}
+				</h4>
+				<p class="text-[0.9rem] leading-tight">
+					{description}
+				</p>
+			</Tooltip.Content>
+		</Tooltip.Root>
+	</Tooltip.Provider>
+</div>
+
+<!-- mobile is a dialog instead -->
+<div class="block md:hidden">
+	<Dialog.Root>
+		<Dialog.Trigger>
 			<QuestionCircle
 				width="1.25rem"
 				height="1.25rem"
 				class="cursor-pointer text-grey-4 hover:text-grey-9"
 			/>
-		</Trigger>
-		<Content side="right" sideOffset={2} class="pt-2 pb-4 px-3 max-w-[28rem]">
-			<h4 class="text-[1rem]">
-				{title}
-			</h4>
-			<p class="text-[0.9rem] leading-tight">
+		</Dialog.Trigger>
+		<Dialog.Content class="z-[10000]">
+			<Dialog.Header class="border-b pb-2 border-b-grey-3">
+				<Dialog.Title class="text-left text-2xl">{title}</Dialog.Title>
+			</Dialog.Header>
+			<p class="text-md">
 				{description}
 			</p>
-		</Content>
-	</Root>
-</Provider>
+		</Dialog.Content>
+	</Dialog.Root>
+</div>

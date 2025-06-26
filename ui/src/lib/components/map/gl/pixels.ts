@@ -2,7 +2,7 @@
 import type { Map, Point, Layer, LngLatLike } from 'mapbox-gl'
 
 import { indexBy, setIntersection, sum } from '$lib/util/data'
-import type { IndicatorValue, Indicator } from '$lib/types'
+import type { IndicatorValue } from '$lib/types'
 
 const TILE_SIZE = 512 // physical tile size (layer tile size may be set differently to increase resolution)
 

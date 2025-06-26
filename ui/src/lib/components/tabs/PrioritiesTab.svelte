@@ -125,9 +125,9 @@
 			{#each blueprintCategories as { value, label, percent, color, description }}
 				<div
 					class={cn(
-						'flex justify-between items-start gap-2 text-grey-8 border border-transparent py-2 px-4 rounded-[0.5rem] bg-white',
+						'flex justify-between items-start gap-2 text-grey-8 border border-transparent py-2 px-4 rounded-[0.5rem] bg-white not-first:mt-2',
 						{
-							'border-grey-2 shadow-lg text-foregrund': value === blueprintPixelValue
+							'border-grey-2 shadow-md text-foregrund': value === blueprintPixelValue
 						}
 					)}
 				>
@@ -136,7 +136,7 @@
 						style={`background-color:${color}bf;`}
 					></div>
 					<div class="flex-auto">
-						<div class="font-bold leading-none">{label}</div>
+						<div class="font-bold">{label}</div>
 						<div class="text-sm leading-snug">
 							{description} This class covers {percent}% of the Southeast Blueprint geography.
 						</div>
@@ -162,21 +162,21 @@
 			{#each availableCorridorCategories as { value, label, description }}
 				<div
 					class={cn(
-						'flex justify-between items-start gap-2 text-grey-8 border border-transparent py-2 px-4 rounded-[0.5rem] bg-white',
+						'flex justify-between items-start gap-2 text-grey-8 border border-transparent py-2 px-4 rounded-[0.5rem] bg-white not-first:mt-2',
 						{
-							'border-grey-2 shadow-lg text-foregrund': value === blueprintPixelValue
+							'border-grey-2 shadow-md text-foregrund': value === corridors
 						}
 					)}
 				>
 					<div class="flex-auto">
-						<div class="font-bold leading-none">{label}</div>
+						<div class="font-bold">{label}</div>
 						{#if description}
 							<div class="text-sm leading-snug">
 								{description}
 							</div>
 						{/if}
 					</div>
-					{#if value === blueprintPixelValue}
+					{#if value === corridors}
 						<CheckIcon class="flex-none size-4" />
 					{/if}
 				</div>

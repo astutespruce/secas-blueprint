@@ -147,7 +147,7 @@
 			/>
 			<Points
 				points={leftPoints}
-				minX={xAxisTicks[0]}
+				minX={xAxisTicks[0].x}
 				radius={4}
 				fill={colors[0]}
 				baseline={yScale(0)}

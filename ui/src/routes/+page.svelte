@@ -46,22 +46,30 @@
 		mapData.mapMode
 		mapData.data
 
-		// on mobile, no need to change tabs based on selection / deselection of data
-		// or changing map mode
+		let nextTab = tab
+
 		if (isMobile) {
 			if (mapData.data === null && tab.startsWith('selected-')) {
-				tab = 'map'
+				nextTab = 'map'
 			}
 		} else {
 			if (mapData.data === null && tab.startsWith('selected-')) {
-				tab = 'info'
+				nextTab = 'info'
 			} else if (mapData.mapMode === 'filter' && tab !== 'filter') {
-				tab = 'filter'
+				nextTab = 'filter'
 			} else if (tab === 'filter' && mapData.mapMode !== 'filter') {
-				tab = mapData.data !== null ? 'selected-priorities' : 'info'
+				nextTab = mapData.data !== null ? 'selected-priorities' : 'info'
 			} else if (tab === 'info' && mapData.data !== null) {
-				tab = 'selected-priorities'
+				nextTab = 'selected-priorities'
 			}
+		}
+
+		if (nextTab !== tab) {
+			if (nextTab !== 'selected-indicators') {
+				mapData.selectedIndicator = null
+			}
+
+			tab = nextTab
 		}
 	})
 
@@ -73,6 +81,10 @@
 
 	const handleTabChange = (newTab: string) => {
 		tab = newTab
+
+		// reset selected indicator on intentional tab change
+		mapData.selectedIndicator = null
+
 		// scroll content to top
 		if (contentNode) {
 			contentNode.scrollTop = 0

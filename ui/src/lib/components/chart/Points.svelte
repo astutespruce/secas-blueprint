@@ -14,8 +14,6 @@
 	const handleMouseOut = () => {
 		activeIndex = null
 	}
-
-	// const minX = $derived(Math.min(...points.map(({ x }: { x: number }) => x)))
 </script>
 
 <g>

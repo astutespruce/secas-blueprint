@@ -64,21 +64,21 @@
 	</div>
 	<div class="text-xs md:text-sm text-center md:text-left ml-2 leading-none mt-1 md:mt-0">
 		{#if (mapData.mapMode === 'unit' || mapData.mapMode === 'pixel') && belowMinZoom}
-			<div class="md:max-w-[6em]">
+			<div class="lg:max-w-[6em]">
 				Zoom in to select {mapData.mapMode === 'pixel' ? 'a point' : 'an area'}
 			</div>
 		{:else if mapData.mapMode === 'unit'}
-			<div class="md:max-w-[16em]">
+			<div class="lg:max-w-[16em]">
 				Select a subwatershed or marine hexagon to show details
 				<span class="hidden md:inline">in sidebar</span>
 			</div>
 		{:else if mapData.mapMode === 'pixel'}
-			<div class="md:max-w-[16em]">
+			<div class="lg:max-w-[16em]">
 				Pan the map behind the crosshairs to show details
 				<span class="hidden md:inline"> in sidebar</span>
 			</div>
 		{:else if mapData.mapMode === 'filter'}
-			<div class="md:max-w-[18em]">
+			<div class="lg:max-w-[18em]">
 				Select one or more indicators to filter and adjust the range to update the map
 			</div>
 		{/if}

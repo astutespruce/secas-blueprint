@@ -2,7 +2,7 @@
  * Flatten an array of arrays (2D) to an array (1D)
  * @param {Array} records
  */
-export const flatten = (records) =>
+export const flatten = (records: [[]]) =>
 	records.reduce((prev, record) => {
 		prev.push(...record)
 		return prev
@@ -13,8 +13,11 @@ export const flatten = (records) =>
  * @param {Array} records
  * @param {String} field
  */
-export const indexBy = (records, field) =>
-	records.reduce((prev, record) => Object.assign(prev, { [record[field]]: record }), {})
+export const indexBy = (records: { [key: string]: any }, field: string) =>
+	records.reduce(
+		(prev: {}, record: { [key: string]: any }) => Object.assign(prev, { [record[field]]: record }),
+		{}
+	)
 
 /**
  * Resolve a dot notation key into an object into its final value.
@@ -22,7 +25,7 @@ export const indexBy = (records, field) =>
  * @param {Object} item
  * @param {String} key
  */
-export const resolveKey = (item, key) => {
+export const resolveKey = (item: { [key: string]: {} }, key: string): any => {
 	const [cur, remainder] = key.split('.', 2)
 	if (remainder !== undefined) {
 		return resolveKey(item[cur], remainder)
@@ -37,7 +40,7 @@ export const resolveKey = (item, key) => {
  * @param {Array } data
  * @param {String} groupField - name of group field to group by
  */
-export const groupBy = (data, groupField) =>
+export const groupBy = (data: [{ [key: string]: any }], groupField: string) =>
 	data.reduce((prev, d) => {
 		const key = resolveKey(d, groupField)
 		/* eslint-disable-next-line no-param-reassign */
@@ -49,7 +52,7 @@ export const groupBy = (data, groupField) =>
  * Calculate the sum of an array of numbers
  * @param {Array} values - array of numbers
  */
-export const sum = (values) => values.reduce((prev, value) => prev + value, 0)
+export const sum = (values: number[]) => values.reduce((prev, value) => prev + value, 0)
 
 /** Generate an array of values between [min, max)
  * range(10) => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -65,7 +68,7 @@ export const range = (min: number, max: number | null = null) =>
  * Calculate the min and max values for an array of numbers
  * @param {Array} values
  */
-export const extent = (values) => [Math.min(...values), Math.max(...values)]
+export const extent = (values: number[]) => [Math.min(...values), Math.max(...values)]
 
 /**
  * Create a sort function that can be used as input to .sort()
@@ -73,8 +76,8 @@ export const extent = (values) => [Math.min(...values), Math.max(...values)]
  * @param {bool} ascending
  */
 export const sortByFunc =
-	(field, ascending = true) =>
-	(a, b) => {
+	(field: string, ascending: boolean = true) =>
+	(a: { [key: string]: any }, b: { [key: string]: any }) => {
 		if (a[field] < b[field]) {
 			return ascending ? -1 : 1
 		}
@@ -90,7 +93,11 @@ export const sortByFunc =
  * @param {*} b
  * @param {Array} fields - array of objects: {field, ascending}
  */
-const recursiveCompare = (a, b, [{ field, ascending }, ...fields]) => {
+const recursiveCompare = (
+	a: { [key: string]: any },
+	b: { [key: string]: any },
+	[{ field, ascending }, ...fields]: { field: string; ascending: boolean }[]
+) => {
 	if (a[field] < b[field]) {
 		return ascending ? -1 : 1
 	}
@@ -112,9 +119,12 @@ const recursiveCompare = (a, b, [{ field, ascending }, ...fields]) => {
  * For each field that is equal, will recurse into testing the next field
  * @param {Array} fields - array of objects: {field, ascending}
  */
-export const sortByFuncMultiple = (fields) => (a, b) => recursiveCompare(a, b, fields)
+export const sortByFuncMultiple =
+	(fields: { field: string; ascending: boolean }[]) =>
+	(a: { [key: string]: any }, b: { [key: string]: any }) =>
+		recursiveCompare(a, b, fields)
 
-export const applyFactor = (values, factor) => {
+export const applyFactor = (values: number[], factor: number) => {
 	if (!values) return values
 
 	return values.map((v) => v * factor)
@@ -125,7 +135,7 @@ export const applyFactor = (values, factor) => {
  * and bin index as value.
  * @param {*} percents
  */
-export const percentsToAvg = (percents) => {
+export const percentsToAvg = (percents: number[]) => {
 	const total = sum(percents)
 	return sum(percents.map((p, i) => i * (p / total)))
 }
@@ -140,7 +150,7 @@ const nonNumericRegex = /[^0-9|]/
  * "foo|bar" => ["foo", "bar"]
  * @param {String} text
  */
-export const parsePipeEncodedValues = (text) => {
+export const parsePipeEncodedValues = (text: string) => {
 	if (!text) return null
 
 	const parts = text.split('|')
@@ -160,7 +170,7 @@ export const parsePipeEncodedValues = (text) => {
  *
  * @param {String} text
  */
-export const parseDeltaEncodedValues = (text) => {
+export const parseDeltaEncodedValues = (text: string) => {
 	if (!text) return null
 
 	const [baseline, ...deltas] = text.split('^').map((d) => parseInt(d, 10) || 0)
@@ -179,7 +189,7 @@ export const parseDeltaEncodedValues = (text) => {
  * "0:|437|||,1:|438|||" => {0: [0, 437, 0, 0, 0], 1: [0, 438, 0, 0, 0]}
  * @param {String} text
  */
-export const parseDictEncodedValues = (text) => {
+export const parseDictEncodedValues = (text: string) => {
 	if (!text) return null
 
 	// if any of the values are pipe encoded assume they all are
@@ -206,14 +216,14 @@ export const parseDictEncodedValues = (text) => {
 		}, {})
 }
 
-export const ifNull = (value, defaultValue) => (value === null ? defaultValue : value)
+export const ifNull = (value: any, defaultValue: any) => (value === null ? defaultValue : value)
 
 /**
  * Count number of entries for each value
  * @param {Array} a - array of values
  * @returns Object - {key:count, ...}
  */
-export const histogram = (a) =>
+export const histogram = (a: any[]) =>
 	a.reduce((prev, cur) => Object.assign(prev, { [cur]: (prev[cur] || 0) + 1 }), {})
 
 /**

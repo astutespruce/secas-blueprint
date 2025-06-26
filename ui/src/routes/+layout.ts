@@ -1,9 +1,9 @@
-import * as Sentry from '@sentry/svelte';
-import { browser } from '$app/environment';
-import { SENTRY_DSN } from '$lib/env';
+import * as Sentry from '@sentry/svelte'
+import { browser } from '$app/environment'
+import { SENTRY_DSN } from '$lib/env'
 
-export const prerender = true;
-export const ssr = false;
+export const prerender = true
+export const ssr = false
 
 if (browser && typeof SENTRY_DSN !== 'undefined') {
 	Sentry.init({
@@ -14,6 +14,7 @@ if (browser && typeof SENTRY_DSN !== 'undefined') {
 			/^chrome:\/\//i,
 			/^chrome-extension:\/\//i
 		]
-	});
-	window.Sentry = Sentry;
+	})
+	// @ts-ignore
+	window.Sentry = Sentry
 }

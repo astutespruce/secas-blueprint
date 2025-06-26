@@ -85,7 +85,7 @@
 			/>
 
 			<!-- render in reverse order so that tooltips show properly with increasing trends -->
-			<Points {points} minX={xAxisTicks[0]} radius={4} fill="#004da8" baseline={yScale(0)} />
+			<Points {points} minX={xAxisTicks[0].x} radius={4} fill="#004da8" baseline={yScale(0)} />
 		</g>
 	</svg>
 </div>

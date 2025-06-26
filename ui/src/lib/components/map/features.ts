@@ -9,6 +9,7 @@ import {
 	setIntersection,
 	sum
 } from '$lib/util/data'
+import type { IndicatorValue } from '$lib/types'
 
 /**
  * Return true if text is null or an empty string or single quote.
@@ -32,43 +33,63 @@ const isEmpty = (text: string | null) => {
  * @param {Array} indicatorInfo - array of indicator info
  * @param {Array} subregions - array of subregion names
  */
-const extractIndicators = (packedPercents, ecosystemInfo, indicatorInfo, subregions) => {
+const extractIndicators = (
+	packedPercents: string,
+	ecosystemInfo,
+	indicatorInfo,
+	subregions: Set<string>
+) => {
 	const ecosystemIndex = indexBy(ecosystemInfo, 'id')
 
 	// merge incoming packed percents with indicator info
 	let indicators = indicatorInfo
 		// only show indicators that are either present or likely present based on
 		// subregion
-		.filter(({ subregions: indicatorSubregions }, i) => {
+		.filter(({ subregions: indicatorSubregions }: { subregions: Set<string> }, i: number) => {
 			const present = !!packedPercents[i]
 
 			return present || setIntersection(indicatorSubregions, subregions).size > 0
 		})
-		.map(({ pos, values: valuesInfo, ...indicator }) => {
-			const present = !!packedPercents[pos]
+		.map(
+			({
+				id,
+				pos,
+				values: valuesInfo,
+				...indicator
+			}: {
+				id: string
+				pos: number
+				values: IndicatorValue[]
+			}) => {
+				const present = !!packedPercents[pos]
 
-			const percents = present ? applyFactor(packedPercents[pos], 0.1) : []
+				const percents = present ? applyFactor(packedPercents[pos], 0.1) : []
 
-			// merge percent into values
-			const values = valuesInfo.map((value, j) => ({
-				...value,
-				percent: present ? percents[j] : 0
-			}))
+				// merge percent into values
+				const values = valuesInfo.map((value, j) => ({
+					...value,
+					percent: present ? percents[j] : 0
+				}))
 
-			return {
-				percent: percents,
-				...indicator,
-				values,
-				total: Math.min(sum(percents), 100),
-				ecosystem: ecosystemIndex[indicator.id.split('_')[0]]
+				return {
+					percent: percents,
+					...indicator,
+					id,
+					values,
+					total: Math.min(sum(percents), 100),
+					ecosystem: ecosystemIndex[id.split('_')[0]]
+				}
 			}
-		})
+		)
 
 	// aggregate these up by ecosystems for ecosystems that are present
 	const ecosystemsPresent = new Set(
 		indicators
-			.filter(({ values }) => sum(values.map(({ percent }) => percent)) > 0)
-			.map(({ ecosystem: { id } }) => id)
+			.filter(
+				({ values }: { values: [{ percent: number }] }) =>
+					sum(values.map(({ percent }) => percent)) > 0
+			)
+			.map(({ ecosystem: { id } }: { ecosystem: { id: string } }) => id)
 	)
 
 	indicators = indexBy(indicators, 'id')
@@ -111,7 +132,12 @@ const extractIndicators = (packedPercents, ecosystemInfo, indicatorInfo, subregi
  * @param {Array} indicatorInfo - array of indicator info
  * @param {Object} subregionIndex - lookup of subregions by value
  */
-export const unpackFeatureData = (properties, ecosystemInfo, indicatorInfo, subregionIndex) => {
+export const unpackFeatureData = (
+	properties: object,
+	ecosystemInfo,
+	indicatorInfo,
+	subregionIndex
+) => {
 	const values = Object.entries(properties)
 		.map(([rawKey, value]) => {
 			const key = camelCase(rawKey)
