@@ -1,7 +1,7 @@
 {
 	"name": "secas-blueprint",
 	"description": "SECAS Southeast Conservation Blueprint Explorer",
-	"version": "1.2.0",
+	"version": "2.0.0",
 	"author": "Brendan Ward <bcward@astutespruce.com>",
 	"type": "module",
 	"scripts": {

@@ -4,6 +4,8 @@
 *.zip
 /build/*
 /dist/*
+/ui/public/*
+
 
 .env
 
