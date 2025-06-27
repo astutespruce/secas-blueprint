@@ -13,7 +13,7 @@
 	import { mapConfig as config, sources, layers } from '$lib/config/map'
 	import { pixelLayers, renderLayersIndex } from '$lib/config/pixelLayers'
 	import type { MapData } from '$lib/components/map'
-	import type { LocationData, PixelLayer } from '$lib/types'
+	import type { Coordinate, LocationData, PixelLayer } from '$lib/types'
 	import { indexBy } from '$lib/util/data'
 	import { debounce, eventHandler } from '$lib/util/func'
 
@@ -40,6 +40,7 @@
 	let currentZoom: number = $state(3)
 	let highlightId: number | string | undefined = $state()
 	let renderLayer: PixelLayer = $state.raw(renderLayersIndex.blueprint)
+	let prevLocation: Coordinate | null = $state(null)
 
 	// mapIsDrawing is used to show the spinner; it only gets set via a deounced callback to prevent short duration flashes
 	let mapIsDrawing: boolean = $state(false)
@@ -579,6 +580,10 @@
 		}
 
 		if (locationData.location !== null) {
+			if (locationData.location === untrack(() => prevLocation)) {
+				return
+			}
+
 			const {
 				location: { latitude, longitude }
 			} = locationData
@@ -596,6 +601,8 @@
 			marker?.remove()
 			marker = null
 		}
+
+		prevLocation = locationData.location
 	})
 
 	// effect for updates to mapMode

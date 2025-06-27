@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { base } from '$app/paths'
 	import { DEPLOY_ENV } from '$lib/env'
 	import TimesCircle from '~icons/fa-solid/times-circle'
 	import { Root as Alert } from '$lib/components/ui/alert'
@@ -60,7 +61,7 @@
 	</ul>
 
 	<p class="hidden md:block text-lg mt-2">
-		<a href="/help" target="_blank" rel="noreferrer">
+		<a href={`${base}/help`} target="_blank" rel="noreferrer">
 			Read instructions on how to use this viewer
 		</a>.
 	</p>

@@ -32,7 +32,7 @@
 		</a>
 		<div class="hidden flex-none md:flex gap-3 lg:gap-5">
 			<a
-				href="/help"
+				href={`${base}/help`}
 				target="_blank"
 				class="flex gap-1.5 items-center flex-none font-bold text-md bg-transparent hover:bg-black/20 no-underline px-2 py-1.5 border border-white cursor-pointer rounded-sm hover text-white focus:outline-2 focus:outline-accent"
 			>
@@ -41,7 +41,7 @@
 			</a>
 
 			<a
-				href="/custom_report"
+				href={`${base}/custom_report`}
 				class="flex gap-1.5 items-center flex-none font-bold text-md bg-transparent hover:bg-black/20 no-underline px-2 py-1.5 border border-white cursor-pointer rounded-sm text-white focus:outline-2 focus:outline-accent"
 			>
 				<FileUpload />
