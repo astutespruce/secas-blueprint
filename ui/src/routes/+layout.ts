@@ -4,6 +4,7 @@ import { SENTRY_DSN } from '$lib/env'
 
 export const prerender = true
 export const ssr = false
+export const trailingSlash = 'always'
 
 if (browser && typeof SENTRY_DSN !== 'undefined') {
 	Sentry.init({
