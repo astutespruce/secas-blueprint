@@ -3,7 +3,7 @@
 	import { superForm, fileProxy, defaults } from 'sveltekit-superforms'
 	import { zodClient } from 'sveltekit-superforms/adapters'
 	import { zod } from 'sveltekit-superforms/adapters'
-	import { z } from 'zod'
+	import { z } from 'zod/v4-mini'
 
 	import Download from '~icons/fa-solid/download'
 	import ExclamationTriangle from '~icons/fa-solid/exclamation-triangle'
