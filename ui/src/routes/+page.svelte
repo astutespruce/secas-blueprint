@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { setContext, untrack } from 'svelte'
+	import { dev } from '$app/environment'
+	import { assets } from '$app/paths'
 	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query'
 
 	import ExclamationTriangleIcon from '~icons/fa-solid/exclamation-triangle'
@@ -134,6 +136,10 @@
 
 <svelte:head>
 	<title>Southeast Conservation Blueprint Explorer</title>
+	{#if !dev}
+		<!-- only include manifest in productcion build -->
+		<link rel="manifest" href={`${assets}/manifest.webmanifest`} />
+	{/if}
 </svelte:head>
 
 <svelte:window {@attach windowMediaQueryHandler} />

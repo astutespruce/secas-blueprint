@@ -9,7 +9,7 @@
 	<Root disableHoverableContent>
 		<Trigger
 			class={cn(
-				'text-sm md:text-md p-2  first:rounded-l-md last:rounded-r-md leading-none min-w-[6em] cursor-pointer focus-visible:outline-2 outline-accent',
+				'text-sm md:text-[1rem] py-2 px-3  first:rounded-l-md last:rounded-r-md leading-none min-w-[6em] cursor-pointer focus-visible:outline-2 outline-accent',
 				className
 			)}
 			onclick={onClick}
