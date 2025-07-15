@@ -40,13 +40,14 @@
 		</Root>
 	{/if}
 
-	<p class="mt-8 text-xl">Your report should download automatically.</p>
-
 	{#if reportURL !== null}
-		<p>You can also click this link download your report:</p>
-		<div class="text-xl">
+		<p class="mt-12 text-xl">
+			Your report should download automatically. You can also click the link below to download your
+			report.
+		</p>
+		<div class="mt-8">
 			<a href={reportURL} target="_blank">
-				<div class="flex gap-4 items-center">
+				<div class="flex gap-4 items-center text-xl">
 					<Download width="1rem" height="1rem" />
 
 					Download report

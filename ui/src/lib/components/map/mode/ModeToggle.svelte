@@ -79,9 +79,9 @@
 			</div>
 		{:else if mapData.mapMode === 'filter'}
 			<div class="lg:max-w-[18em]">
-				Select data
+				Select data to filter and adjust
 				<span class="hidden md:inline"><br /></span>
-				to filter
+				the range to update the map
 			</div>
 		{/if}
 	</div>
