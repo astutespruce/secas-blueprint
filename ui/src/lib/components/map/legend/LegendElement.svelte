@@ -4,7 +4,7 @@
 	const { label, shortLabel, color, outlineColor } = $props()
 </script>
 
-<div class="flex items-top leading-none gap-1 text-sm not-first:mt-2">
+<div class="flex items-top leading-none gap-1 text-[15px] not-first:mt-2">
 	<div
 		class={cn('flex-none w-5 h-4 rounded-[0.25rem]', { border: !!outlineColor })}
 		style={`background-color:${color}bf;`}

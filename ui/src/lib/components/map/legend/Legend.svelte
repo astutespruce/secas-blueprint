@@ -35,27 +35,29 @@
 	{#if isOpen}
 		<div class="p-2" title="Click to hide legend">
 			<div class="flex items-top justify-between gap-2">
-				<div class="flex-auto font-bold leading-tight">
+				<div class="flex-auto font-bold leading-none text-lg">
 					{title}
-					{#if subtitle}
-						<div class="font-normal text-grey-8 leading-none text-sm">
-							{subtitle}
-						</div>
-					{/if}
 				</div>
 				<Button
-					class="flex-none bg-grey-0 text-foreground border border-grey-7 rounded-sm p-0 leading-none hover:bg-grey-1 w-8 h-8"
+					class="flex-none bg-grey-0 text-foreground border border-grey-7 rounded-sm p-0 leading-none hover:bg-grey-1 w-7 h-7"
 					title={`Click to ${isVisible ? 'hide' : 'show'}`}
 					onclick={toggleLayerVisibility}
 					tabindex={0}
 				>
 					{#if isVisible}
-						<EyeIcon class="size-4" />
+						<EyeIcon class="size-5" />
 					{:else}
-						<EyeSlashIcon class="size-4" />
+						<EyeSlashIcon class="size-5" />
 					{/if}
 				</Button>
 			</div>
+
+			{#if subtitle}
+				<div class="font-normal text-grey-8 leading-none text-[15px] mt-1 mb-3">
+					{subtitle}
+				</div>
+			{/if}
+
 			<div class="mt-2">
 				{#each categories as element}
 					<LegendElement {...element} />
