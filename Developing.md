@@ -4,11 +4,11 @@
 
 This uses a data processing pipeline in Python to prepare all spatial data for use in this application.
 
-The user interface is creating using GatsbyJS as a static web application.
+The user interface is creating using [SvelteJS](https://svelte.dev/) as a static web application.
 
 The API is implemented in Python and provides summary reports for pre-defined summary units and user-defined areas.
 
-## Development
+## Data analysis & API development
 
 Python dependencies are managed using `uv`. First,
 [install uv](https://docs.astral.sh/uv/), then:
@@ -52,6 +52,32 @@ sudo ln -s /opt/homebrew/opt/harfbuzz/lib/libharfbuzz.dylib /usr/local/lib/harfb
 sudo ln -s /opt/homebrew/opt/fontconfig/lib/libfontconfig.1.dylib /usr/local/lib/fontconfig-1
 sudo ln -s /opt/homebrew/opt/pango/lib/libpangoft2-1.0.dylib /usr/local/lib/pangoft2-1.0
 ```
+
+
+## User interface development
+
+The user interface is developed using Javascript, executed in NodeJS during a
+dedicated build step to build the user interface into static assets, which are
+then rendered in the browser.
+
+Install NodeJS using `nvm` using the instructions [here](https://github.com/nvm-sh/nvm).
+The version of NodeJS is specified in `ui/.nvmrc`.
+
+Once `nvm` is installed, activate the correct version of NodeJS using:
+
+```bash
+cd ui
+nvm use
+```
+
+Note: this needs to be done each time an interpreter is opened for development.
+
+The user interface is developed using SvelteJS and Typescript.  While we don't
+strictly require type annotations, we recommend using them where possible, and are
+progressively adding type annotations throughout the codebase.
+
+
+## Other dependencies
 
 Tilesets are created using `tippecanoe` (installed via homebrew) or
 [`rastertiler-rs`](https://github.com/brendan-ward/rastertiler-rs) built from
