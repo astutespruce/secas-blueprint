@@ -82,7 +82,7 @@ def create_report(maps, results, name=None, area_type="custom"):
     """
 
     title = "Southeast Conservation Blueprint Summary"
-    subtitle = f"for {name}" if name is not None else ""
+    subtitle = f"for {name}" if name else ""
 
     legends = {
         # sort Blueprint descending order
