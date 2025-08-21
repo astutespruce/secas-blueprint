@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { fromEvent as getFilesFromEvent } from 'file-selector'
 	import { superForm, fileProxy, defaults } from 'sveltekit-superforms'
-	import { zodClient } from 'sveltekit-superforms/adapters'
-	import { zod } from 'sveltekit-superforms/adapters'
+	import { zod4, zod4Client } from 'sveltekit-superforms/adapters'
 	import { z } from 'zod'
 
 	import Download from '~icons/fa-solid/download'
@@ -25,18 +24,18 @@
 	let isDragValid: boolean | null = $state(null)
 
 	const schema = z.object({
-		areaName: z.string().optional(),
+		areaName: z.string().default('').optional(),
 		file: z
 			.instanceof(File, {
-				message: 'Please select a file'
+				error: 'Please select a file'
 			})
 			.refine((f) => f.size < MAXSIZE_MB * 1e6, `File must be less than ${MAXSIZE_MB} MB`)
 			.refine(({ type: mimeType }) => MIME_TYPES.has(mimeType), 'File must be a ZIP file')
 	})
 
-	const form = superForm(defaults(zod(schema)), {
+	const form = superForm(defaults(zod4(schema)), {
 		SPA: true,
-		validators: zodClient(schema),
+		validators: zod4Client(schema),
 		onUpdate: function ({ form }) {
 			const {
 				valid,
