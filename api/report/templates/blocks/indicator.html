@@ -25,7 +25,7 @@
 
             <div class="legend">
                 {% if indicator.valueLabel %}
-                <div class="legend-header">{{indicator.valueLabel}}</div>
+                    <div class="legend-header">{{indicator.valueLabel}}</div>
                 {% endif %}
                 {% for entry in indicator["values"] %}
                     <div class="legend-element flex {% if (indicator["values"]|length) >5 %}narrow-margin{% endif %}">
@@ -180,11 +180,6 @@
         </table>
     {% endif %}
 </div>
-
-<!-- special case for PARCAs: show specific area info -->
-{% if indicator.id=="t_amphibianandreptileareas" and results["parca"] %}
-    {% include "blocks/parca_details.html" %}
-{% endif %}
 
 <p>
     To learn more and explore the GIS data,

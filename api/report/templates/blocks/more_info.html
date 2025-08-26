@@ -19,6 +19,9 @@
     {% include "blocks/no_wildfire_risk.html" %}
 {% endif %}
 
+{% if results.parcas %}
+    {% include "blocks/parcas.html" %}
+{% endif %}
 
 {% if results.protected_areas %}
     {% include "blocks/protected_areas.html" %}

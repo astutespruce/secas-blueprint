@@ -14,6 +14,7 @@ from .util import pad_bounds, get_center, merge_maps, to_png_bytes
 from analysis.constants import (
     BLUEPRINT_COLORS,
     CORRIDORS_COLORS,
+    PARCA_COLORS,
     PROTECTED_AREAS_COLORS,
     URBAN_COLORS,
     SLR_LEGEND,
@@ -31,11 +32,12 @@ PADDING = 5
 src_dir = Path("data/inputs")
 blueprint_filename = src_dir / "blueprint.tif"
 corridors_filename = src_dir / "corridors.tif"
-protected_areas_filename = src_dir / "boundaries/protected_areas.tif"
-urban_filename = src_dir / "threats/urban/urban_2060_binned.tif"
-slr_filename = src_dir / "threats/slr/slr.tif"
-wildfire_risk_filename = src_dir / "threats/wildfire_risk/wildfire_risk.tif"
 indicators_dir = src_dir / "indicators"
+parcas_filename = src_dir / "boundaries/parcas.tif"
+protected_areas_filename = src_dir / "boundaries/protected_areas.tif"
+slr_filename = src_dir / "threats/slr/slr.tif"
+urban_filename = src_dir / "threats/urban/urban_2060_binned.tif"
+wildfire_risk_filename = src_dir / "threats/wildfire_risk/wildfire_risk.tif"
 
 
 def render_raster_map(bounds, scale, basemap_image, aoi_image, id, path, colors):
@@ -76,10 +78,11 @@ async def render_raster_maps(
     aoi_image,
     indicators,
     corridors=False,
-    urban=False,
-    slr=False,
-    wildfire_risk=False,
+    parcas=False,
     protected_areas=False,
+    slr=False,
+    urban=False,
+    wildfire_risk=False,
 ):
     """Asynchronously render Raster maps.
 
@@ -94,14 +97,16 @@ async def render_raster_maps(
     indicators : list-like of indicator IDs
     corridors : bool (default False)
         if True, will render corridors for Blueprint
-    urban : bool (default False)
-        if True, will render urban map
-    slr : bool (default False)
-        if True, will render SLR map
-    wildfire_risk : bool (default False)
-        if True, will render wildfire_risk map
+    parcas : bool (default False)
+        if True, will render PARCAs
     protected_areas : bool (default False)
         if True, will render protected_areas map
+    slr : bool (default False)
+        if True, will render SLR map
+    urban : bool (default False)
+        if True, will render urban map
+    wildfire_risk : bool (default False)
+        if True, will render wildfire_risk map
 
     Returns
     -------
@@ -133,26 +138,24 @@ async def render_raster_maps(
     if corridors:
         task_args.append(("corridors", corridors_filename, CORRIDORS_COLORS))
 
-    if urban:
-        task_args.append(
-            (
-                "urban_2060",
-                urban_filename,
-                URBAN_COLORS,
-            )
-        )
+    if parcas:
+        colors = PARCA_COLORS
+        task_args.append(("parcas", parcas_filename, colors))
+
+    if protected_areas:
+        colors = PROTECTED_AREAS_COLORS
+        task_args.append(("protected_areas", protected_areas_filename, colors))
 
     if slr:
         colors = {e["value"]: e["color"] for i, e in enumerate(SLR_LEGEND)}
         task_args.append(("slr", slr_filename, colors))
 
+    if urban:
+        task_args.append(("urban_2060", urban_filename, URBAN_COLORS))
+
     if wildfire_risk:
         colors = WILDFIRE_RISK_COLORS
         task_args.append(("wildfire_risk", wildfire_risk_filename, colors))
-
-    if protected_areas:
-        colors = PROTECTED_AREAS_COLORS
-        task_args.append(("protected_areas", protected_areas_filename, colors))
 
     # NOTE: have to have handle on pending or task loop gets closed too soon
     completed, pending = await asyncio.wait(
@@ -177,10 +180,11 @@ async def render_maps(
     summary_unit_id=None,
     indicators=None,
     corridors=False,
-    urban=False,
-    slr=False,
-    wildfire_risk=False,
+    parcas=False,
     protected_areas=False,
+    slr=False,
+    urban=False,
+    wildfire_risk=False,
     add_mask=False,
 ):
     """Render maps for locator and each raster dataset that overlaps with area
@@ -198,14 +202,16 @@ async def render_maps(
         If present, is a list of all indicator IDs to render.
     corridors : bool, optional (default: False)
         If True, corridors will be rendered
-    urban : bool, optional (default: False)
-        If True, urban will be rendered.
-    slr : bool, optional (default: False)
-        If True, sea level rise will be rendered.
-    wildfire_risk : bool, optional (default: False)
-        If True, wildfire risk will be rendered.
+    parcas : bool, optional (default: False)
+        If True, PARCAs will be rendered
     protected_areas : bool, optional (default: False)
         If True, protected areas will be rendered.
+    slr : bool, optional (default: False)
+        If True, sea level rise will be rendered.
+    urban : bool, optional (default: False)
+        If True, urban will be rendered.
+    wildfire_risk : bool, optional (default: False)
+        If True, wildfire risk will be rendered.
     add_mask : bool, optional (default: False)
         If True, will add a light transparent mask outside geometry
 
@@ -262,12 +268,13 @@ async def render_maps(
         scale,
         basemap_image,
         aoi_image,
-        indicators or [],
-        corridors,
-        urban,
-        slr,
-        wildfire_risk,
-        protected_areas,
+        indicators=indicators or [],
+        corridors=corridors,
+        parcas=parcas,
+        protected_areas=protected_areas,
+        slr=slr,
+        urban=urban,
+        wildfire_risk=wildfire_risk,
     )
 
     maps.update(raster_maps)

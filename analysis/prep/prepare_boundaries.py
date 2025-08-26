@@ -4,6 +4,7 @@ import warnings
 
 from affine import Affine
 import geopandas as gp
+import numpy as np
 import pandas as pd
 from pyogrio.geopandas import read_dataframe, write_dataframe
 import rasterio
@@ -11,7 +12,8 @@ from rasterio.features import rasterize, dataset_features
 from rasterio import windows
 import shapely
 
-from analysis.constants import DATA_CRS, SECAS_STATES, MASK_RESOLUTION
+from analysis.constants import DATA_CRS, SECAS_STATES, MASK_RESOLUTION, PARCAS
+from analysis.lib.colors import hex_to_uint8
 from analysis.lib.geometry import make_valid, to_dict_all, to_dict, dissolve
 from analysis.lib.raster import write_raster, add_overviews, create_lowres_mask
 
@@ -30,17 +32,19 @@ out_dir = data_dir / "inputs/boundaries"  # used as inputs for other steps
 bnd_dir.mkdir(exist_ok=True, parents=True)
 out_dir.mkdir(exist_ok=True, parents=True)
 
-
+################################################################################
 ### Extract subregions that define where to expect certain indicators
-# sort by Hilbert distance so that they are geographically ordered
+################################################################################
+
 subregion_df = (
     read_dataframe(
-        src_dir / "blueprint/SEBlueprintSubregions2024ForArchive.shp",
-        columns=["SubRgn_II"],
+        src_dir / "blueprint/SEBlueprintSubregions2025.shp",
+        columns=["SubRgn"],
         use_arrow=True,
     )
-    .rename(columns={"SubRgn_II": "subregion"})
+    .rename(columns={"SubRgn": "subregion"})
     .explode(ignore_index=True)
+    # sort by Hilbert distance so that they are geographically ordered
     .sort_values(by="geometry")
 )
 
@@ -59,9 +63,11 @@ subregion_df["marine"] = subregion_df.subregion.isin(
 )
 
 
+################################################################################
 ### Extract Blueprint extent
+################################################################################
 print("Extracting SE Blueprint extent")
-with rasterio.open(src_dir / "blueprint/SEBlueprintExtent2024.tif") as src:
+with rasterio.open(src_dir / "blueprint/SEBlueprintExtent2025.tif") as src:
     nodata = int(src.nodata)
     data = src.read(1)
 
@@ -82,6 +88,8 @@ with rasterio.open(src_dir / "blueprint/SEBlueprintExtent2024.tif") as src:
         nodata=nodata,
     )
 
+    del data
+
     add_overviews(outfilename)
 
     create_lowres_mask(
@@ -94,11 +102,7 @@ with rasterio.open(src_dir / "blueprint/SEBlueprintExtent2024.tif") as src:
     bnd_geom = pd.Series(dataset_features(src, bidx=1, geographic=False))
     bnd_geom = bnd_geom.apply(lambda x: shapely.geometry.shape(x["geometry"]))
     bnd_geom = shapely.union_all(shapely.make_valid(bnd_geom))
-    bnd_df = gp.GeoDataFrame(
-        geometry=[bnd_geom],
-        index=[0],
-        crs=src.crs,
-    )
+    bnd_df = gp.GeoDataFrame(geometry=[bnd_geom], index=[0], crs=src.crs)
     bnd_df.to_feather(out_dir / "se_boundary.feather")
     write_dataframe(bnd_df, data_dir / "boundaries/se_boundary.fgb")
 
@@ -140,12 +144,16 @@ with rasterio.open(src_dir / "blueprint/SEBlueprintExtent2024.tif") as src:
         crs=src.crs,
         nodata=NODATA,
     )
+    del subregion_data
 
     ### Extract a non-marine mask aligned to the above
     # this mask is used for NLCD and urban, which are currently limited to
     # the contiguous Southeast (so it is also a smaller size but same origin)
     inland_subregions = subregion_df.loc[
-        ~(subregion_df.marine | (subregion_df.subregion == "Caribbean"))
+        ~(
+            subregion_df.marine
+            | subregion_df.subregion.isin(["Puerto Rico", "US Virgin Islands"])
+        )
     ].copy()
     shapes = to_dict_all(inland_subregions.geometry.values)
     bounds = inland_subregions.total_bounds
@@ -170,6 +178,8 @@ with rasterio.open(src_dir / "blueprint/SEBlueprintExtent2024.tif") as src:
         nodata=0,
     )
 
+    del nonmarine_mask
+
     add_overviews(outfilename)
 
 
@@ -178,7 +188,7 @@ with rasterio.open(src_dir / "blueprint/SEBlueprintExtent2024.tif") as src:
 state_list = ",".join(f"'{state}'" for state in SECAS_STATES)
 states = (
     read_dataframe(
-        src_dir / "boundaries/tl_2023_us_state.zip",
+        src_dir / "boundaries/tl_2024_us_state.zip",
         columns=["STATEFP", "STUSPS", "NAME"],
         where=f""""STUSPS" in ({state_list})""",
         use_arrow=True,
@@ -192,7 +202,7 @@ states.to_feather(out_dir / "states.feather")
 fips_list = ",".join(f"'{fips}'" for fips in states.STATEFP.unique())
 counties = (
     read_dataframe(
-        src_dir / "boundaries/tl_2023_us_county.zip",
+        src_dir / "boundaries/tl_2024_us_county.zip",
         columns=["STATEFP", "GEOID", "NAME", "geometry"],
         where=f""""STATEFP" in ({fips_list})""",
         use_arrow=True,
@@ -207,8 +217,10 @@ write_dataframe(counties, bnd_dir / "counties.fgb")
 counties.to_feather(out_dir / "counties.feather")
 
 
+################################################################################
 ### PARCAs (Amphibian & reptile aras)
-# already in EPSG:5070
+################################################################################
+# NOTE: already in EPSG:5070
 print("Processing PARCAs...")
 
 df = (
@@ -248,3 +260,56 @@ df["geometry"] = make_valid(df.geometry.values)
 
 write_dataframe(df, bnd_dir / "parca.fgb")
 df.to_feather(out_dir / "parca.feather")
+
+
+### Rasterize PARCAs to in PARCA (1) or not (0)
+parcas_colormap = (
+    pd.DataFrame(PARCAS)
+    .set_index("value")
+    .color.apply(lambda x: hex_to_uint8(x) + (255,) if x else (255, 255, 255, 0))
+    .to_dict()
+)
+
+# use the contiguous southeast grid to derive the master offset coordinates
+# so that everything is correctly aligned; these do not occur in Caribbean
+# or marine areas
+extent = rasterio.open(out_dir / "contiguous_southeast_inland_mask.tif")
+extent_data = extent.read(1)
+
+align_ul = np.take(extent.transform, [2, 5]).tolist()
+
+
+print("Rasterizing PARCAs")
+data = rasterize(
+    to_dict_all(df.geometry.values),
+    transform=extent.transform,
+    out_shape=extent.shape,
+    fill=0,
+    default_value=1,
+    dtype="uint8",
+)
+
+data = np.where(extent_data == 1, data, NODATA)
+
+outfilename = out_dir / "parcas.tif"
+write_raster(
+    outfilename,
+    data,
+    extent.transform,
+    crs=extent.crs,
+    nodata=NODATA,
+)
+
+del data
+
+with rasterio.open(outfilename, "r+") as out:
+    out.write_colormap(1, parcas_colormap)
+
+add_overviews(outfilename)
+
+create_lowres_mask(
+    outfilename,
+    out_dir / "parcas_mask.tif",
+    resolution=MASK_RESOLUTION,
+    ignore_zero=False,
+)
