@@ -64,3 +64,7 @@ def to_dict(geometry):
 
 # TODO: reimplement in Cython?
 to_dict_all = np.vectorize(to_dict)
+
+
+# TODO: use vectorized approach based on shapely.to_ragged_array and then all
+# looping can happen in

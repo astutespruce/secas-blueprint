@@ -71,9 +71,11 @@ class RasterizedGeometry(object):
             self.pixels = sum(mask.shape_mask.sum() for mask in self.masks)
             self.acres = self.pixels * self.cellsize
 
-            pixels_within_se = sum(
-                mask.get_pixel_count_by_bin(src, bins=[0, 1])[1] for mask in self.masks
-            )
+            count = np.zeros((2,), dtype="uint64")
+            for mask in self.masks:
+                mask.get_pixel_count_by_bin(src, out=count)
+
+            pixels_within_se = count[1]
             self.outside_se_acres = (self.pixels - pixels_within_se) * self.cellsize
 
     def detect_data(self, dataset):
@@ -109,9 +111,11 @@ class RasterizedGeometry(object):
         ndarray
             Total number of pixels for each bin
         """
-        return np.sum(
-            [mask.get_pixel_count_by_bin(dataset, bins) for mask in self.masks], axis=0
-        )
+        count = np.zeros((len(bins),), dtype="uint64")
+        for mask in self.masks:
+            mask.get_pixel_count_by_bin(dataset, out=count)
+
+        return count
 
     def get_acres_by_bin(self, dataset, bins):
         """Get acres in each bin
