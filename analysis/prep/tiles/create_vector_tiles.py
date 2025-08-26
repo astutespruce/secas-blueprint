@@ -70,7 +70,7 @@ print(
     "\n\n------------------------------------------------\nCreating state tiles\n------------------------------------------------\n"
 )
 df = read_dataframe(
-    "zip://source_data/boundaries/tl_2023_us_state.zip/tl_2023_us_state.shp",
+    "zip://source_data/boundaries/tl_2024_us_state.zip/tl_2024_us_state.shp",
     columns=["STATEFP"],
     use_arrow=True,
 ).to_crs(GEO_CRS)

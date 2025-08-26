@@ -39,8 +39,11 @@ uv pip compile -U pyproject.toml -o ../secas-docker/docker/api/secas-blueprint-r
 
 On MacOS, install other dependencies:
 
-- `brew install gdal`
-- `brew install pango`
+
+```bash
+brew install gdal pango redis
+```
+
 
 For Macos M1 (Arm64), you also may need to setup symlinks for some of the libraries
 to be found:

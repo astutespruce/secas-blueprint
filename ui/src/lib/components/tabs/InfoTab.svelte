@@ -133,8 +133,8 @@
 		</div>
 		<div class="flex-auto">
 			<p>
-				<b>Citation:</b> Southeast Conservation Adaptation Strategy (SECAS). 2024. Southeast
-				Conservation Blueprint 2024.{' '}
+				<b>Citation:</b> Southeast Conservation Adaptation Strategy (SECAS). 2025. Southeast
+				Conservation Blueprint 2025.{' '}
 				<a href="http://secassoutheast.org/blueprint" target="_blank">
 					http://secassoutheast.org/blueprint
 				</a>.

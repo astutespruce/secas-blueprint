@@ -71,7 +71,7 @@ for state in states.NAME.values:
     pdf = create_report(maps=maps, results=results, name=state)
 
     with open(
-        out_dir / f"{state.replace(' ', '_')}_Blueprint2024_report.pdf", "wb"
+        out_dir / f"{state.replace(' ', '_')}_Blueprint2025_report.pdf", "wb"
     ) as out:
         out.write(pdf)
 

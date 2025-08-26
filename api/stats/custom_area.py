@@ -38,17 +38,15 @@ async def get_custom_area_results(df, progress_callback=None):
     acres = shapely.area(geometry) * M2_ACRES
 
     subregion_df = gp.read_feather(
-        subregions_filename, columns=["subregion", "geometry"]
+        subregions_filename, columns=["subregion", "region", "geometry"]
     )
     tree = shapely.STRtree(subregion_df.geometry.values)
-    subregions = set(
-        subregion_df.subregion.take(
-            np.unique(tree.query(geometry, predicate="intersects"))
-        )
+    subregion_df = subregion_df.take(
+        np.unique(tree.query(geometry, predicate="intersects"))
     )
 
     # if area does not intersect any of the subregions, there will be no results
-    if len(subregions) == 0:
+    if len(subregion_df) == 0:
         return None
 
     # start = time()
@@ -62,8 +60,11 @@ async def get_custom_area_results(df, progress_callback=None):
     if rasterized_geometry.acres == 0:
         return None
 
+    subregions = set(subregion_df.subregion.unique())
+
     results = {
         "subregions": subregions,
+        "regions": subregion_df.region.unique(),
         "acres": acres,
         "rasterized_acres": rasterized_geometry.acres,
         "outside_se_acres": rasterized_geometry.outside_se_acres,

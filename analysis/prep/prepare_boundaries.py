@@ -58,9 +58,33 @@ subregion_df = (
     .rename(columns={"index": "value"})
 )
 
-subregion_df["marine"] = subregion_df.subregion.isin(
-    ["Atlantic", "Gulf", "South Florida Marine"]
-)
+subregion_df["region"] = subregion_df.subregion.map(
+    {
+        "Appalachians": "continental",
+        "Atlantic": "marine",
+        "Atlantic Coastal Plain": "continental",
+        "Chihuahuan Deserts": "continental",
+        "East Gulf Coastal Plain": "continental",
+        "Edwards Plateau": "continental",
+        "Florida Peninsula": "continental",
+        "Gulf": "marine",
+        "Gulf Coastal Prairies": "continental",
+        "High Plains and Tablelands": "continental",
+        "Interior Plateau": "continental",
+        "Mississippi Alluvial Valley": "continental",
+        "North Missouri": "continental",
+        "Ouachita": "continental",
+        "Ozarks and Plains": "continental",
+        "Piedmont": "continental",
+        "Plains and Timbers": "continental",
+        "Puerto Rico": "caribbean",
+        "South Florida Marine": "marine",
+        "South Texas Plains": "continental",
+        "Texas Blackland Prairies": "continental",
+        "US Virgin Islands": "caribbean",
+        "West Gulf Coastal Plain": "continental",
+    }
+).fillna("continental")
 
 
 ################################################################################
@@ -116,7 +140,7 @@ with rasterio.open(src_dir / "blueprint/SEBlueprintExtent2025.tif") as src:
     subregion_df.to_feather(out_dir / "subregions.feather")
     write_dataframe(subregion_df, bnd_dir / "subregions.fgb")
 
-    subregion_df[["value", "subregion", "marine"]].to_json(
+    subregion_df[["value", "subregion", "region"]].to_json(
         constants_dir / "subregions.json", orient="records"
     )
 
@@ -149,12 +173,7 @@ with rasterio.open(src_dir / "blueprint/SEBlueprintExtent2025.tif") as src:
     ### Extract a non-marine mask aligned to the above
     # this mask is used for NLCD and urban, which are currently limited to
     # the contiguous Southeast (so it is also a smaller size but same origin)
-    inland_subregions = subregion_df.loc[
-        ~(
-            subregion_df.marine
-            | subregion_df.subregion.isin(["Puerto Rico", "US Virgin Islands"])
-        )
-    ].copy()
+    inland_subregions = subregion_df.loc[subregion_df.region == "continental"].copy()
     shapes = to_dict_all(inland_subregions.geometry.values)
     bounds = inland_subregions.total_bounds
     rows = math.ceil((bounds[1] - transform.f) / transform.e)
