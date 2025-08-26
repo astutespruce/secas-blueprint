@@ -56,14 +56,10 @@
     "goodThreshold": 7,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::atlantic-migratory-fish-habitat-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Central Atlantic Coastal Plain",
+      "Appalachians",
+      "Atlantic Coastal Plain",
       "Florida Peninsula",
-      "North Appalachians",
-      "North Atlantic Coastal Plain",
-      "North Piedmont",
-      "South Appalachians",
-      "South Atlantic Coastal Plain",
-      "South Piedmont"
+      "Piedmont"
     ]
   },
   {
@@ -108,7 +104,8 @@
     "goodThreshold": 4,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::caribbean-natural-landcover-in-floodplains-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Caribbean"
+      "Puerto Rico",
+      "US Virgin Islands"
     ]
   },
   {
@@ -148,7 +145,8 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::caribbean-network-complexity-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Caribbean"
+      "Puerto Rico",
+      "US Virgin Islands"
     ]
   },
   {
@@ -183,7 +181,70 @@
     "goodThreshold": 4,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::caribbean-permeable-surface-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Caribbean"
+      "Puerto Rico",
+      "US Virgin Islands"
+    ]
+  },
+  {
+    "id": "f_floodplaininundation",
+    "filename": "FloodplainInundation.tif",
+    "label": "Floodplain inundation",
+    "description": "This indicator uses the frequency of inundation to measure the hydrologic function of the floodplain. In a natural floodplain, water can move freely from mainstem rivers and lakes onto different parts of the floodplain. This cycle of frequent, but not persistent, flooding supports many aquatic species and habitats, like fish, waterfowl and swamp forests. It also provides essential ecosystem services such as nutrient retention and downstream flood control. When parts of the floodplain stay constantly wet or dry, this may signal negative impacts from structures like dikes, dams, and levees, which disconnect waterbodies from their adjacent floodplains. This indicator is based on Sentinel-2 satellite imagery and methods developed by Yvonne Allen of the U.S. Fish and Wildlife Service.",
+    "values": [
+      {
+        "value": 0,
+        "label": "Not identified as a floodplain",
+        "color": null
+      },
+      {
+        "value": 1,
+        "label": "No detected inundation (flooded in 0% of days with available data)",
+        "color": "#DED5C3"
+      },
+      {
+        "value": 2,
+        "label": "Persistent inundation (flooded in 91-100% of days with available data)",
+        "color": "#A2A7A2"
+      },
+      {
+        "value": 3,
+        "label": "Occasional inundation (flooded in 2-5% of days with available data)",
+        "color": "#608895"
+      },
+      {
+        "value": 4,
+        "label": "Regular inundation (flooded in 6-20% of days with available data)",
+        "color": "#2F7185"
+      },
+      {
+        "value": 5,
+        "label": "Frequent inundation (flooded in 21-90% of days with available data)",
+        "color": "#325361"
+      }
+    ],
+    "valueLabel": "Frequency of inundation within the floodplain",
+    "captionLabel": "floodplain inundation",
+    "goodThreshold": 4,
+    "url": "",
+    "subregions": [
+      "Appalachians",
+      "Atlantic Coastal Plain",
+      "Chihuahuan Deserts",
+      "East Gulf Coastal Plain",
+      "Edwards Plateau",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
+      "Interior Plateau",
+      "Mississippi Alluvial Valley",
+      "North Missouri",
+      "Ouachita",
+      "Ozarks and Plains",
+      "Piedmont",
+      "Plains and Timbers",
+      "South Texas Plains",
+      "Texas Blackland Prairies",
+      "West Gulf Coastal Plain"
     ]
   },
   {
@@ -213,13 +274,11 @@
     "goodThreshold": 1,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::gulf-migratory-fish-connectivity-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Central Gulf Coastal Plain",
-      "East Gulf Coastal Plain Sub",
-      "Mid East Gulf Coastal Plain",
+      "Appalachians",
+      "East Gulf Coastal Plain",
+      "Gulf",
       "Mississippi Alluvial Valley",
-      "South Appalachians",
-      "South Atlantic Coastal Plain",
-      "South Piedmont"
+      "Piedmont"
     ]
   },
   {
@@ -284,28 +343,73 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::imperiled-aquatic-species-southeast-blueprint-indicator-2024/about",
     "subregions": [
-      "Central Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
+      "Appalachians",
+      "Atlantic Coastal Plain",
       "Chihuahuan Deserts",
-      "East Gulf Coastal Plain Sub",
+      "East Gulf Coastal Plain",
       "Edwards Plateau",
       "Florida Peninsula",
       "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
       "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Appalachians",
-      "North Atlantic Coastal Plain",
-      "North High Plains and Tablelands",
       "North Missouri",
-      "North Piedmont",
       "Ouachita",
       "Ozarks and Plains",
+      "Piedmont",
       "Plains and Timbers",
-      "South Appalachians",
-      "South Atlantic Coastal Plain",
-      "South High Plains and Tablelands",
-      "South Piedmont",
+      "South Texas Plains",
+      "Texas Blackland Prairies",
+      "West Gulf Coastal Plain"
+    ]
+  },
+  {
+    "id": "f_lakesandreservoirs",
+    "filename": "LakesandReservoirs.tif",
+    "label": "Lakes & reservoirs",
+    "description": "This indicator assesses the condition of lakes and reservoirs based on the amount of natural landcover within the upstream watershed. Higher scores go to lakes and reservoirs with less surrounding urban and agricultural development (including intensive forest management for timber production), which negatively impact drinking water quality and quantity and fish habitat. This indicator uses waterbody and watershed data from the LAGOS-LOCUS dataset, as well as landcover from the National Land Cover Database and LANDFIRE.",
+    "values": [
+      {
+        "value": 0,
+        "label": "Not identified as a lake or reservoir",
+        "color": null
+      },
+      {
+        "value": 1,
+        "label": "Lake or reservoir with high disturbance (>60%) in upstream watershed",
+        "color": "#B2CAFF"
+      },
+      {
+        "value": 2,
+        "label": "Lake or reservoir with medium disturbance (>25-60%) in upstream watershed",
+        "color": "#7B8FBD"
+      },
+      {
+        "value": 3,
+        "label": "Lake or reservoir with low disturbance (0-25%) in upstream watershed",
+        "color": "#43587B"
+      }
+    ],
+    "valueLabel": "",
+    "captionLabel": "lakes & reservoirs",
+    "goodThreshold": 3,
+    "url": "",
+    "subregions": [
+      "Appalachians",
+      "Atlantic Coastal Plain",
+      "Chihuahuan Deserts",
+      "East Gulf Coastal Plain",
+      "Edwards Plateau",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
+      "Interior Plateau",
+      "Mississippi Alluvial Valley",
+      "North Missouri",
+      "Ouachita",
+      "Ozarks and Plains",
+      "Piedmont",
+      "Plains and Timbers",
       "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
@@ -353,28 +457,21 @@
     "goodThreshold": 4,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::natural-landcover-in-floodplains-southeast-blueprint-indicator/about",
     "subregions": [
-      "Central Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
+      "Appalachians",
+      "Atlantic Coastal Plain",
       "Chihuahuan Deserts",
-      "East Gulf Coastal Plain Sub",
+      "East Gulf Coastal Plain",
       "Edwards Plateau",
       "Florida Peninsula",
       "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
       "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Appalachians",
-      "North Atlantic Coastal Plain",
-      "North High Plains and Tablelands",
       "North Missouri",
-      "North Piedmont",
       "Ouachita",
       "Ozarks and Plains",
+      "Piedmont",
       "Plains and Timbers",
-      "South Appalachians",
-      "South Atlantic Coastal Plain",
-      "South High Plains and Tablelands",
-      "South Piedmont",
       "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
@@ -432,28 +529,21 @@
     "goodThreshold": 4,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::network-complexity-southeast-blueprint-indicator-2024/about",
     "subregions": [
-      "Central Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
+      "Appalachians",
+      "Atlantic Coastal Plain",
       "Chihuahuan Deserts",
-      "East Gulf Coastal Plain Sub",
+      "East Gulf Coastal Plain",
       "Edwards Plateau",
       "Florida Peninsula",
       "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
       "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Appalachians",
-      "North Atlantic Coastal Plain",
-      "North High Plains and Tablelands",
       "North Missouri",
-      "North Piedmont",
       "Ouachita",
       "Ozarks and Plains",
+      "Piedmont",
       "Plains and Timbers",
-      "South Appalachians",
-      "South Atlantic Coastal Plain",
-      "South High Plains and Tablelands",
-      "South Piedmont",
       "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
@@ -491,28 +581,21 @@
     "goodThreshold": 4,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::permeable-surface-southeast-blueprint-indicator-2024/about",
     "subregions": [
-      "Central Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
+      "Appalachians",
+      "Atlantic Coastal Plain",
       "Chihuahuan Deserts",
-      "East Gulf Coastal Plain Sub",
+      "East Gulf Coastal Plain",
       "Edwards Plateau",
       "Florida Peninsula",
       "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
       "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Appalachians",
-      "North Atlantic Coastal Plain",
-      "North High Plains and Tablelands",
       "North Missouri",
-      "North Piedmont",
       "Ouachita",
       "Ozarks and Plains",
+      "Piedmont",
       "Plains and Timbers",
-      "South Appalachians",
-      "South Atlantic Coastal Plain",
-      "South High Plains and Tablelands",
-      "South Piedmont",
       "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
@@ -576,10 +659,8 @@
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::atlantic-coral-hardbottom-southeast-blueprint-indicator-2024/about",
     "subregions": [
       "Atlantic",
-      "Central Atlantic Coastal Plain",
+      "Atlantic Coastal Plain",
       "Florida Peninsula",
-      "North Atlantic Coastal Plain",
-      "South Atlantic Coastal Plain",
       "South Florida Marine"
     ]
   },
@@ -682,10 +763,9 @@
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::atlantic-estuarine-fish-habitat-southeast-blueprint-indicator-2023/about",
     "subregions": [
       "Atlantic",
-      "Central Atlantic Coastal Plain",
+      "Atlantic Coastal Plain",
       "Florida Peninsula",
-      "North Atlantic Coastal Plain",
-      "South Atlantic Coastal Plain",
+      "Piedmont",
       "South Florida Marine"
     ]
   },
@@ -757,10 +837,8 @@
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::atlantic-marine-birds-southeast-blueprint-indicator-2023/about",
     "subregions": [
       "Atlantic",
-      "Central Atlantic Coastal Plain",
+      "Atlantic Coastal Plain",
       "Florida Peninsula",
-      "North Atlantic Coastal Plain",
-      "South Atlantic Coastal Plain",
       "South Florida Marine"
     ]
   },
@@ -832,10 +910,8 @@
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::atlantic-marine-mammals-southeast-blueprint-indicator-2023/about",
     "subregions": [
       "Atlantic",
-      "Central Atlantic Coastal Plain",
+      "Atlantic Coastal Plain",
       "Florida Peninsula",
-      "North Atlantic Coastal Plain",
-      "South Atlantic Coastal Plain",
       "South Florida Marine"
     ]
   },
@@ -866,7 +942,8 @@
     "goodThreshold": 2,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::caribbean-beach-habitat-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Caribbean"
+      "Puerto Rico",
+      "US Virgin Islands"
     ]
   },
   {
@@ -891,7 +968,8 @@
     "goodThreshold": 1,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::caribbean-coastal-shoreline-condition-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Caribbean"
+      "Puerto Rico",
+      "US Virgin Islands"
     ]
   },
   {
@@ -931,7 +1009,8 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::caribbean-fish-hotpots-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Caribbean"
+      "Puerto Rico",
+      "US Virgin Islands"
     ]
   },
   {
@@ -956,7 +1035,49 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::caribbean-fish-nursery-habitat-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Caribbean"
+      "Puerto Rico",
+      "US Virgin Islands"
+    ]
+  },
+  {
+    "id": "m_caribbeanmangrovemigration",
+    "filename": "CaribbeanMangroveMigration.tif",
+    "label": "Caribbean mangrove migration",
+    "description": "This indicator represents current and potential future locations of mangroves in the U.S. Caribbean based on land cover and barriers to mangrove migration like slope, elevation, and development. Mangroves serve as essential habitat for migratory birds and economically important fish while also providing ecosystem services like stabilizing shorelines, trapping sediment, and protecting coastal communities from storm surge. This indicator adapts methods from the U.S. Virgin Islands Climate Change Ecosystem-Based Adaptation guidance document and expands the analysis to the full U.S. Caribbean. It uses landcover from the National Oceanic and Atmospheric Administration's Coastal Change Analysis Program as well as slope, elevation, roads, and landcover from LANDFIRE.",
+    "values": [
+      {
+        "value": 0,
+        "label": "Not likely to be current or future mangrove",
+        "color": null
+      },
+      {
+        "value": 1,
+        "label": "Potential future mangrove >1 km from current mangrove",
+        "color": "#CCFFCC"
+      },
+      {
+        "value": 2,
+        "label": "Potential future mangrove 0.5-1 km from current mangrove",
+        "color": "#89EC7E"
+      },
+      {
+        "value": 3,
+        "label": "Potential future mangrove <0.5 km from current mangrove",
+        "color": "#43D837"
+      },
+      {
+        "value": 4,
+        "label": "Current mangrove",
+        "color": "#15B309"
+      }
+    ],
+    "valueLabel": "",
+    "captionLabel": "Caribbean mangrove migration",
+    "goodThreshold": null,
+    "url": "",
+    "subregions": [
+      "Puerto Rico",
+      "US Virgin Islands"
     ]
   },
   {
@@ -1006,7 +1127,8 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::caribbean-seagrass-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Caribbean"
+      "Puerto Rico",
+      "US Virgin Islands"
     ]
   },
   {
@@ -1051,7 +1173,8 @@
     "goodThreshold": 3,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::caribbean-shallow-hardbottom-coral-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Caribbean"
+      "Puerto Rico",
+      "US Virgin Islands"
     ]
   },
   {
@@ -1091,15 +1214,11 @@
     "goodThreshold": 3,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::coastal-shoreline-condition-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Central Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
-      "East Gulf Coastal Plain Sub",
+      "Atlantic Coastal Plain",
+      "East Gulf Coastal Plain",
       "Florida Peninsula",
       "Gulf Coastal Prairies",
-      "Mid East Gulf Coastal Plain",
-      "Mississippi Alluvial Valley",
-      "North Atlantic Coastal Plain",
-      "South Atlantic Coastal Plain"
+      "Mississippi Alluvial Valley"
     ]
   },
   {
@@ -1145,16 +1264,12 @@
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::estuarine-coastal-condition-southeast-blueprint-indicator-2023/about",
     "subregions": [
       "Atlantic",
-      "Central Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
-      "East Gulf Coastal Plain Sub",
+      "Atlantic Coastal Plain",
+      "East Gulf Coastal Plain",
       "Florida Peninsula",
       "Gulf",
       "Gulf Coastal Prairies",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Atlantic Coastal Plain",
-      "South Atlantic Coastal Plain",
       "South Florida Marine"
     ]
   },
@@ -1210,12 +1325,10 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::gulf-coral-hardbottom-southeast-blueprint-indicator/about",
     "subregions": [
-      "Central Gulf Coastal Plain",
-      "East Gulf Coastal Plain Sub",
+      "East Gulf Coastal Plain",
       "Florida Peninsula",
       "Gulf",
       "Gulf Coastal Prairies",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
       "South Florida Marine"
     ]
@@ -1328,12 +1441,10 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::gulf-marine-mammals-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Central Gulf Coastal Plain",
-      "East Gulf Coastal Plain Sub",
+      "East Gulf Coastal Plain",
       "Florida Peninsula",
       "Gulf",
       "Gulf Coastal Prairies",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
       "South Florida Marine"
     ]
@@ -1380,12 +1491,10 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::gulf-sea-turtles-southeast-blueprint-indicator-2024/about",
     "subregions": [
-      "Central Gulf Coastal Plain",
-      "East Gulf Coastal Plain Sub",
+      "East Gulf Coastal Plain",
       "Florida Peninsula",
       "Gulf",
       "Gulf Coastal Prairies",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
       "South Florida Marine"
     ]
@@ -1418,17 +1527,13 @@
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::island-habitat-southeast-blueprint-indicator-2023/about",
     "subregions": [
       "Atlantic",
-      "Central Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
-      "East Gulf Coastal Plain Sub",
+      "Atlantic Coastal Plain",
+      "East Gulf Coastal Plain",
       "Florida Peninsula",
       "Gulf",
       "Gulf Coastal Prairies",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Atlantic Coastal Plain",
-      "North Piedmont",
-      "South Atlantic Coastal Plain",
+      "Piedmont",
       "South Florida Marine",
       "West Gulf Coastal Plain"
     ]
@@ -1497,14 +1602,19 @@
     "description": "This indicator depicts the capacity of coastal habitats to migrate to adjacent lowlands in order to sustain biodiversity and natural services under increasing inundation from sea-level rise. It is based on the physical and condition characteristics of current tidal complexes, their predicted migration space, and surrounding buffer areas. These characteristics include marsh complex size, shared edge with migration space, sediment balance, water quality, natural landcover, landform diversity, and more. This indicator originates from The Nature Conservancy's Resilient Coastal Sites project.",
     "values": [
       {
+        "value": 0,
+        "label": "Sea level rise area",
+        "color": "#9C9C9C"
+      },
+      {
         "value": 1,
         "label": "Least resilient",
-        "color": "#9C551F"
+        "color": "#754017"
       },
       {
         "value": 2,
         "label": "Less resilient",
-        "color": "#BF874B"
+        "color": "#B47F47"
       },
       {
         "value": 3,
@@ -1519,12 +1629,12 @@
       {
         "value": 5,
         "label": "Slightly more resilient",
-        "color": "#A9C276"
+        "color": "#B4CE7D"
       },
       {
         "value": 6,
         "label": "More resilient",
-        "color": "#5E8A3A"
+        "color": "#67973F"
       },
       {
         "value": 7,
@@ -1537,15 +1647,11 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::resilient-coastal-sites-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Central Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
-      "East Gulf Coastal Plain Sub",
+      "Atlantic Coastal Plain",
+      "East Gulf Coastal Plain",
       "Florida Peninsula",
       "Gulf Coastal Prairies",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Atlantic Coastal Plain",
-      "South Atlantic Coastal Plain",
       "West Gulf Coastal Plain"
     ]
   },
@@ -1566,14 +1672,12 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::seagrass-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Central Gulf Coastal Plain",
-      "East Gulf Coastal Plain Sub",
+      "Atlantic Coastal Plain",
+      "East Gulf Coastal Plain",
       "Florida Peninsula",
       "Gulf",
       "Gulf Coastal Prairies",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Atlantic Coastal Plain",
       "South Florida Marine"
     ]
   },
@@ -1620,10 +1724,8 @@
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::south-atlantic-beach-birds-southeast-blueprint-indicator-2023/about",
     "subregions": [
       "Atlantic",
-      "Central Atlantic Coastal Plain",
-      "Florida Peninsula",
-      "North Atlantic Coastal Plain",
-      "South Atlantic Coastal Plain"
+      "Atlantic Coastal Plain",
+      "Florida Peninsula"
     ]
   },
   {
@@ -1648,11 +1750,9 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::south-atlantic-maritime-forest-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Central Atlantic Coastal Plain",
-      "East Gulf Coastal Plain Sub",
-      "Gulf",
-      "North Atlantic Coastal Plain",
-      "South Atlantic Coastal Plain"
+      "Atlantic Coastal Plain",
+      "East Gulf Coastal Plain",
+      "Gulf"
     ]
   },
   {
@@ -1682,67 +1782,12 @@
     "goodThreshold": 1,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::stable-coastal-wetlands-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Central Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
-      "East Gulf Coastal Plain Sub",
+      "Atlantic Coastal Plain",
+      "East Gulf Coastal Plain",
       "Florida Peninsula",
       "Gulf Coastal Prairies",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Atlantic Coastal Plain",
-      "North Piedmont",
-      "South Atlantic Coastal Plain",
-      "Texas Blackland Prairies",
-      "West Gulf Coastal Plain"
-    ]
-  },
-  {
-    "id": "t_amphibianandreptileareas",
-    "filename": "AmphibianandReptileAreas.tif",
-    "label": "Amphibian & reptile areas",
-    "description": "This indicator represents Priority Amphibian and Reptile Conservation Areas (PARCAs) across the Southeast. PARCA is an expert-driven, nonregulatory designation that includes places capable of supporting viable amphibian and reptile populations, places occupied by rare or imperiled species, and places rich in biodiversity or species unique to that geographic area (i.e., endemism). Reptiles and amphibians are a critical part of the Southeast region's rich biodiversity and many populations are declining in the face of threats like habitat loss, invasive species, and climate change. The PARCA dataset is maintained by the Amphibian and Reptile Conservancy and does not yet include Virginia or Kentucky.",
-    "values": [
-      {
-        "value": 0,
-        "label": "Not a PARCA (excluding Kentucky and Virginia)",
-        "color": null
-      },
-      {
-        "value": 1,
-        "label": "Priority Amphibian and Reptile Conservation Area (PARCA)",
-        "color": "#38A800"
-      }
-    ],
-    "valueLabel": "",
-    "captionLabel": "amphibian & reptile areas",
-    "goodThreshold": null,
-    "url": "https://secas-fws.hub.arcgis.com/maps/fws::amphibian-reptile-areas-southeast-blueprint-indicator/about",
-    "subregions": [
-      "Central Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
-      "Chihuahuan Deserts",
-      "East Gulf Coastal Plain Sub",
-      "Edwards Plateau",
-      "Florida Peninsula",
-      "Gulf",
-      "Gulf Coastal Prairies",
-      "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
-      "Mississippi Alluvial Valley",
-      "North Appalachians",
-      "North Atlantic Coastal Plain",
-      "North High Plains and Tablelands",
-      "North Missouri",
-      "North Piedmont",
-      "Ouachita",
-      "Ozarks and Plains",
-      "Plains and Timbers",
-      "South Appalachians",
-      "South Atlantic Coastal Plain",
-      "South Florida Marine",
-      "South High Plains and Tablelands",
-      "South Piedmont",
-      "South Texas Plains",
+      "Piedmont",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
     ]
@@ -1794,7 +1839,8 @@
     "goodThreshold": 4,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::caribbean-greenways-trails-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Caribbean"
+      "Puerto Rico",
+      "US Virgin Islands"
     ]
   },
   {
@@ -1839,7 +1885,7 @@
     "goodThreshold": 3,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::caribbean-habitat-patch-size-large-islands-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Caribbean"
+      "Puerto Rico"
     ]
   },
   {
@@ -1879,7 +1925,8 @@
     "goodThreshold": 3,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::caribbean-habitat-patch-size-small-islands-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Caribbean"
+      "Puerto Rico",
+      "US Virgin Islands"
     ]
   },
   {
@@ -1934,7 +1981,8 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::caribbean-island-habitat-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Caribbean"
+      "Puerto Rico",
+      "US Virgin Islands"
     ]
   },
   {
@@ -1969,7 +2017,8 @@
     "goodThreshold": 3,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::caribbean-karst-habitat-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Caribbean"
+      "Puerto Rico",
+      "US Virgin Islands"
     ]
   },
   {
@@ -2009,7 +2058,8 @@
     "goodThreshold": 4,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::caribbean-landscape-condition-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Caribbean"
+      "Puerto Rico",
+      "US Virgin Islands"
     ]
   },
   {
@@ -2039,7 +2089,8 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::caribbean-low-urban-historic-landscapes-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Caribbean"
+      "Puerto Rico",
+      "US Virgin Islands"
     ]
   },
   {
@@ -2079,7 +2130,8 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::caribbean-reforestation-potential-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Caribbean"
+      "Puerto Rico",
+      "US Virgin Islands"
     ]
   },
   {
@@ -2129,7 +2181,8 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::caribbean-urban-park-size-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Caribbean"
+      "Puerto Rico",
+      "US Virgin Islands"
     ]
   },
   {
@@ -2174,75 +2227,11 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::east-coastal-plain-open-pine-birds-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Central Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
-      "East Gulf Coastal Plain Sub",
+      "Appalachians",
+      "Atlantic Coastal Plain",
+      "East Gulf Coastal Plain",
       "Florida Peninsula",
-      "Mid East Gulf Coastal Plain",
-      "North Atlantic Coastal Plain",
-      "North Piedmont",
-      "South Appalachians",
-      "South Atlantic Coastal Plain",
-      "South Piedmont"
-    ]
-  },
-  {
-    "id": "t_equitableaccesstopotentialparks",
-    "filename": "EquitableAccessToPotentialParks.tif",
-    "label": "Potential access to parks",
-    "description": "This cultural resource indicator prioritizes places to create new parks that would fill gaps in equitable access to open space within socially vulnerable communities in urban areas. It identifies areas where residents currently lack access to parks within a 10-minute walk (accounting for walkable road networks and access barriers like highways and fences), then prioritizes based on park need using demographic and environmental metrics. Parks help improve public health, foster a conservation ethic by providing opportunities for people to connect with nature, and support critical ecosystem services. This indicator originates from the Trust for Public Land's ParkServe park priority areas and the Center for Disease Control's Social Vulnerability Index.",
-    "values": [
-      {
-        "value": 0,
-        "label": "Not identified as a priority (within urban areas)",
-        "color": null
-      },
-      {
-        "value": 1,
-        "label": "Moderate priority",
-        "color": "#DFB8E6"
-      },
-      {
-        "value": 2,
-        "label": "High priority",
-        "color": "#AC66ED"
-      },
-      {
-        "value": 3,
-        "label": "Very high priority",
-        "color": "#700CF2"
-      }
-    ],
-    "valueLabel": "Priority for a new park that would create nearby equitable access",
-    "captionLabel": "potential access to parks",
-    "goodThreshold": null,
-    "url": "https://secas-fws.hub.arcgis.com/maps/fws::potential-access-to-parks-southeast-blueprint-indicator/about",
-    "subregions": [
-      "Central Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
-      "Chihuahuan Deserts",
-      "East Gulf Coastal Plain Sub",
-      "Edwards Plateau",
-      "Florida Peninsula",
-      "Gulf Coastal Prairies",
-      "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
-      "Mississippi Alluvial Valley",
-      "North Appalachians",
-      "North Atlantic Coastal Plain",
-      "North High Plains and Tablelands",
-      "North Missouri",
-      "North Piedmont",
-      "Ouachita",
-      "Ozarks and Plains",
-      "Plains and Timbers",
-      "South Appalachians",
-      "South Atlantic Coastal Plain",
-      "South High Plains and Tablelands",
-      "South Piedmont",
-      "South Texas Plains",
-      "Texas Blackland Prairies",
-      "West Gulf Coastal Plain"
+      "Piedmont"
     ]
   },
   {
@@ -2277,38 +2266,31 @@
     "goodThreshold": 2,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::fire-frequency-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Central Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
+      "Appalachians",
+      "Atlantic Coastal Plain",
       "Chihuahuan Deserts",
-      "East Gulf Coastal Plain Sub",
+      "East Gulf Coastal Plain",
       "Edwards Plateau",
       "Florida Peninsula",
       "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
       "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Appalachians",
-      "North Atlantic Coastal Plain",
-      "North High Plains and Tablelands",
       "North Missouri",
-      "North Piedmont",
       "Ouachita",
       "Ozarks and Plains",
+      "Piedmont",
       "Plains and Timbers",
-      "South Appalachians",
-      "South Atlantic Coastal Plain",
-      "South High Plains and Tablelands",
-      "South Piedmont",
       "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
     ]
   },
   {
-    "id": "t_grasslandsandsavannas",
-    "filename": "GrasslandsAndSavannas.tif",
-    "label": "Grasslands and savannas",
-    "description": "This indicator represents grasslands and savannas in the southeastern United States, which support important plants, reptiles, amphibians, mammals, birds, and pollinators. It considers known grassland and savanna locations, likely locations managed for biodiversity, and surrounding pollinator buffers. It also incorporates other potential grassland and savanna locations within natural and altered landscapes, and restoration opportunities within historic locations based on past fire intervals and historic ecosystem predictions. This indicator combines data from multiple sources, including the Southeastern Grasslands Institute, the National Land Cover Database, LANDFIRE biophysical settings, Oklahoma and Texas ecological systems maps, and more.",
+    "id": "t_grasslandandsavannaextent",
+    "filename": "GrasslandandSavannaExtent.tif",
+    "label": "Grassland & savanna extent",
+    "description": "This indicator represents grasslands and savannas in the southeastern United States, which support important plants, reptiles, amphibians, mammals, birds, and pollinators. It considers known grassland and savanna locations, predicted locations within protected areas, and surrounding pollinator buffers. It also incorporates other potential grassland and savanna locations within natural and altered landscapes, and restoration opportunities within historic locations based on past fire intervals and historic ecosystem predictions. This indicator combines data from multiple sources, including the Southeastern Grasslands Institute, the National Land Cover Database, LANDFIRE, Oklahoma and Texas ecological systems maps, and more.",
     "values": [
       {
         "value": 0,
@@ -2322,12 +2304,12 @@
       },
       {
         "value": 2,
-        "label": "Potential grassland/savanna in more altered landscape",
+        "label": "Potential grassland/savanna outside grassland/savanna hub",
         "color": "#E4F4AE"
       },
       {
         "value": 3,
-        "label": "Potential grassland/savanna in mostly natural landscape",
+        "label": "Potential grassland/savanna in grassland/savanna hub",
         "color": "#A4D98E"
       },
       {
@@ -2338,7 +2320,7 @@
       {
         "value": 5,
         "label": "Likely grassland/savanna ≤10 acres",
-        "color": "#41AB5D"
+        "color": "#258549"
       },
       {
         "value": 6,
@@ -2352,32 +2334,92 @@
       }
     ],
     "valueLabel": "",
-    "captionLabel": "grasslands and savannas",
+    "captionLabel": "grassland & savanna extent",
     "goodThreshold": 5,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::grasslands-savannas-southeast-blueprint-indicator/about",
     "subregions": [
-      "Central Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
+      "Appalachians",
+      "Atlantic Coastal Plain",
       "Chihuahuan Deserts",
-      "East Gulf Coastal Plain Sub",
+      "East Gulf Coastal Plain",
       "Edwards Plateau",
       "Florida Peninsula",
       "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
       "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Appalachians",
-      "North Atlantic Coastal Plain",
-      "North High Plains and Tablelands",
       "North Missouri",
-      "North Piedmont",
       "Ouachita",
       "Ozarks and Plains",
+      "Piedmont",
       "Plains and Timbers",
-      "South Appalachians",
-      "South Atlantic Coastal Plain",
-      "South High Plains and Tablelands",
-      "South Piedmont",
+      "South Texas Plains",
+      "Texas Blackland Prairies",
+      "West Gulf Coastal Plain"
+    ]
+  },
+  {
+    "id": "t_grasslandandsavannarestoration",
+    "filename": "GrasslandandSavannaRestoration.tif",
+    "label": "Grassland & savanna restoration",
+    "description": "This indicator represents potential restoration opportunities for grasslands and savannas within their historic range in the southeastern United States. Grasslands support important plants, reptiles, amphibians, mammals, birds, and pollinators, but have significantly declined from their current extent. It considers proximity to clusters of existing grasslands and savannas, protected areas with management potential, landcover classes with good restoration potential, priority areas for restoration of longleaf and shortleaf pine, and historic grassland and savanna locations. This indicator combines data from multiple sources, including the Southeast Blueprint grassland and savanna extent indicator, the Longleaf Suitability Analysis, shortleaf pine suitability, landcover from the National Land Cover Database and LANDFIRE, and more.",
+    "values": [
+      {
+        "value": 0,
+        "label": "Lowest (not identified as historic grassland/savanna)",
+        "color": null
+      },
+      {
+        "value": 1,
+        "label": "Very low (already known or likely grassland/savanna)",
+        "color": "#FFF9C4"
+      },
+      {
+        "value": 2,
+        "label": "Low (other historic grassland/savanna)",
+        "color": "#EAEE75"
+      },
+      {
+        "value": 3,
+        "label": "Medium (outside a grassland/savanna hub, unprotected landcover with good restoration potential, in a historic patch >10 acres)",
+        "color": "#C3CB3C"
+      },
+      {
+        "value": 4,
+        "label": "High (outside a grassland/savanna hub, in a protected area with management potential, in a historic patch >10 acres)",
+        "color": "#939B21"
+      },
+      {
+        "value": 5,
+        "label": "Very high (in a grassland/savanna hub, unprotected landcover with good restoration potential, in a historic patch >10 acres)",
+        "color": "#5D6811"
+      },
+      {
+        "value": 6,
+        "label": "Highest (in a grassland/savanna hub, in a protected area with management potential, in a historic patch >10 acres)",
+        "color": "#2D3606"
+      }
+    ],
+    "valueLabel": "Restoration priority",
+    "captionLabel": "grassland & savanna restoration",
+    "goodThreshold": null,
+    "url": "",
+    "subregions": [
+      "Appalachians",
+      "Atlantic Coastal Plain",
+      "Chihuahuan Deserts",
+      "East Gulf Coastal Plain",
+      "Edwards Plateau",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
+      "Interior Plateau",
+      "Mississippi Alluvial Valley",
+      "North Missouri",
+      "Ouachita",
+      "Ozarks and Plains",
+      "Piedmont",
+      "Plains and Timbers",
       "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
@@ -2435,28 +2477,145 @@
     "goodThreshold": 4,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::greenways-trails-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Central Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
+      "Appalachians",
+      "Atlantic Coastal Plain",
       "Chihuahuan Deserts",
-      "East Gulf Coastal Plain Sub",
+      "East Gulf Coastal Plain",
       "Edwards Plateau",
       "Florida Peninsula",
       "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
       "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Appalachians",
-      "North Atlantic Coastal Plain",
-      "North High Plains and Tablelands",
       "North Missouri",
-      "North Piedmont",
       "Ouachita",
       "Ozarks and Plains",
+      "Piedmont",
       "Plains and Timbers",
-      "South Appalachians",
-      "South Atlantic Coastal Plain",
-      "South High Plains and Tablelands",
-      "South Piedmont",
+      "South Texas Plains",
+      "Texas Blackland Prairies",
+      "West Gulf Coastal Plain"
+    ]
+  },
+  {
+    "id": "t_imperiledamphibiansandreptiles",
+    "filename": "ImperiledAmphibiansandReptiles.tif",
+    "label": "Imperiled amphibians & reptiles",
+    "description": "This indicator identifies potential habitat to support amphibian and reptile Regional Species of Greatest Conservation Need (RSGCN). Using a rarity-weighted richness approach, it prioritizes places important for species that are restricted to smaller ranges, such as narrow endemics, which are therefore more vulnerable to habitat loss or change. RSGCN are regional priority species derived from the list of SGCN identified in Southeast State Wildlife Action Plans as most in need of need of conservation action. RSGCN were chosen based on consistent criteria, such as level of conservation concern, regional stewardship responsibility, and ecological significance. This indicator uses models from the U.S. Geological Survey Gap Analysis Program that are based on known species ranges, species-habitat relationships, and landcover.",
+    "values": [
+      {
+        "value": 0,
+        "label": "Developed landcover or no potential habitat",
+        "color": null
+      },
+      {
+        "value": 1,
+        "label": "Low importance (below average in larger analysis area)",
+        "color": "#FFFCCD"
+      },
+      {
+        "value": 2,
+        "label": "Medium importance (above average in larger analysis area)",
+        "color": "#FFC8B7"
+      },
+      {
+        "value": 3,
+        "label": "High importance (upper 10-20% of larger analysis area)",
+        "color": "#FF9696"
+      },
+      {
+        "value": 4,
+        "label": "Very high importance (upper 5-10% of larger analysis area)",
+        "color": "#FF667E"
+      },
+      {
+        "value": 5,
+        "label": "Highest importance (top 5% of larger analysis area)",
+        "color": "#FC3255"
+      }
+    ],
+    "valueLabel": "Importance for range-restricted species",
+    "captionLabel": "imperiled amphibians & reptiles",
+    "goodThreshold": null,
+    "url": "",
+    "subregions": [
+      "Appalachians",
+      "Atlantic Coastal Plain",
+      "Chihuahuan Deserts",
+      "East Gulf Coastal Plain",
+      "Edwards Plateau",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
+      "Interior Plateau",
+      "Mississippi Alluvial Valley",
+      "North Missouri",
+      "Ouachita",
+      "Ozarks and Plains",
+      "Piedmont",
+      "Plains and Timbers",
+      "South Texas Plains",
+      "Texas Blackland Prairies",
+      "West Gulf Coastal Plain"
+    ]
+  },
+  {
+    "id": "t_imperiledmammals",
+    "filename": "ImperiledMammals.tif",
+    "label": "Imperiled mammals",
+    "description": "This indicator identifies potential habitat to support mammal Regional Species of Greatest Conservation Need (RSGCN). Using a rarity-weighted richness approach, it prioritizes places important for species that are restricted to smaller ranges, such as narrow endemics, which are therefore more vulnerable to habitat loss or change. RSGCN are regional priority species derived from the list of SGCN identified in Southeast State Wildlife Action Plans as most in need of need of conservation action. RSGCN were chosen based on consistent criteria, such as level of conservation concern, regional stewardship responsibility, and ecological significance. This indicator uses models from the U.S. Geological Survey Gap Analysis Program that are based on known species ranges, species-habitat relationships, and LANDFIRE landcover.",
+    "values": [
+      {
+        "value": 0,
+        "label": "Developed landcover or no potential habitat",
+        "color": null
+      },
+      {
+        "value": 1,
+        "label": "Low importance (below average in larger analysis area)",
+        "color": "#FFDCDC"
+      },
+      {
+        "value": 2,
+        "label": "Medium importance (above average in larger analysis area)",
+        "color": "#E6A4A4"
+      },
+      {
+        "value": 3,
+        "label": "High importance (upper 10-20% of larger analysis area)",
+        "color": "#B66D7A"
+      },
+      {
+        "value": 4,
+        "label": "Very high importance (upper 5-10% of larger analysis area)",
+        "color": "#844F6E"
+      },
+      {
+        "value": 5,
+        "label": "Highest importance (top 5% of larger analysis area)",
+        "color": "#603952"
+      }
+    ],
+    "valueLabel": "Importance for range-restricted species",
+    "captionLabel": "imperiled mammals",
+    "goodThreshold": null,
+    "url": "",
+    "subregions": [
+      "Appalachians",
+      "Atlantic Coastal Plain",
+      "Chihuahuan Deserts",
+      "East Gulf Coastal Plain",
+      "Edwards Plateau",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
+      "Interior Plateau",
+      "Mississippi Alluvial Valley",
+      "North Missouri",
+      "Ouachita",
+      "Ozarks and Plains",
+      "Piedmont",
+      "Plains and Timbers",
       "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
@@ -2494,28 +2653,21 @@
     "goodThreshold": 1,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::intact-habitat-cores-southeast-blueprint-indicator-2024/about",
     "subregions": [
-      "Central Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
+      "Appalachians",
+      "Atlantic Coastal Plain",
       "Chihuahuan Deserts",
-      "East Gulf Coastal Plain Sub",
+      "East Gulf Coastal Plain",
       "Edwards Plateau",
       "Florida Peninsula",
       "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
       "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Appalachians",
-      "North Atlantic Coastal Plain",
-      "North High Plains and Tablelands",
       "North Missouri",
-      "North Piedmont",
       "Ouachita",
       "Ozarks and Plains",
+      "Piedmont",
       "Plains and Timbers",
-      "South Appalachians",
-      "South Atlantic Coastal Plain",
-      "South High Plains and Tablelands",
-      "South Piedmont",
       "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
@@ -2525,7 +2677,7 @@
     "id": "t_landscapecondition",
     "filename": "LandscapeCondition.tif",
     "label": "Landscape condition",
-    "description": "This indicator represents natural areas with limited human alteration while also considering the naturalness of the surrounding landscape. Examples of human alteration include urban development and intense agricultural use. The degree of naturalness across the landscape is a key ecological condition for sustaining species and ecosystem services that are sensitive to habitat fragmentation at multiple scales. This indicator uses the National Land Cover Dataset, various data on grasslands, mines, and quarries, and ideas from the Florida Critical Lands and Waters Identification Project's approach for evaluating landscape integrity.",
+    "description": "This indicator represents natural areas with limited human alteration while also considering the naturalness of the surrounding landscape. Examples of human alteration include urban development and intense agricultural use. The degree of naturalness across the landscape is a key ecological condition for sustaining species and ecosystem services that are sensitive to habitat fragmentation at multiple scales. This indicator combines data from multiple sources, including the National Land Cover Dataset; various data on grasslands, mines, quarries, and reservoirs; ideas from the Florida Critical Lands and Waters Identification Project's approach for evaluating land use intensity; and more.",
     "values": [
       {
         "value": 1,
@@ -2563,28 +2715,21 @@
     "goodThreshold": 4,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::landscape-condition-southeast-blueprint-indicator-2024/about",
     "subregions": [
-      "Central Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
+      "Appalachians",
+      "Atlantic Coastal Plain",
       "Chihuahuan Deserts",
-      "East Gulf Coastal Plain Sub",
+      "East Gulf Coastal Plain",
       "Edwards Plateau",
       "Florida Peninsula",
       "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
       "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Appalachians",
-      "North Atlantic Coastal Plain",
-      "North High Plains and Tablelands",
       "North Missouri",
-      "North Piedmont",
       "Ouachita",
       "Ozarks and Plains",
+      "Piedmont",
       "Plains and Timbers",
-      "South Appalachians",
-      "South Atlantic Coastal Plain",
-      "South High Plains and Tablelands",
-      "South Piedmont",
       "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
@@ -2657,7 +2802,7 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::mississippi-alluvial-valley-forest-birds-protection-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Central Gulf Coastal Plain",
+      "East Gulf Coastal Plain",
       "Gulf Coastal Prairies",
       "Mississippi Alluvial Valley",
       "Ozarks and Plains",
@@ -2731,7 +2876,7 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::mississippi-alluvial-valley-forest-birds-reforestation-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Central Gulf Coastal Plain",
+      "East Gulf Coastal Plain",
       "Gulf Coastal Prairies",
       "Mississippi Alluvial Valley",
       "Ozarks and Plains",
@@ -2772,9 +2917,95 @@
     "subregions": [
       "Chihuahuan Deserts",
       "Edwards Plateau",
-      "North High Plains and Tablelands",
+      "High Plains and Tablelands",
+      "Plains and Timbers"
+    ]
+  },
+  {
+    "id": "t_potentialaccesstoparks",
+    "filename": "PotentialAccessToParks.tif",
+    "label": "Potential access to parks",
+    "description": "This cultural resource indicator prioritizes places to create new parks that would fill gaps in access to open space within socially vulnerable communities in urban areas. It identifies areas where residents currently lack access to parks within a 10-minute walk (accounting for walkable road networks and access barriers like highways and fences), then prioritizes based on park need using demographic and environmental metrics. Parks help improve public health, foster a conservation ethic by providing opportunities for people to connect with nature, and support critical ecosystem services. This indicator originates from the Trust for Public Land's ParkServe park priority areas and the Center for Disease Control's Social Vulnerability Index.",
+    "values": [
+      {
+        "value": 0,
+        "label": "Not identified as a priority (within urban areas)",
+        "color": null
+      },
+      {
+        "value": 1,
+        "label": "Moderate priority",
+        "color": "#DFB8E6"
+      },
+      {
+        "value": 2,
+        "label": "High priority",
+        "color": "#AC66ED"
+      },
+      {
+        "value": 3,
+        "label": "Very high priority",
+        "color": "#700CF2"
+      }
+    ],
+    "valueLabel": "Priority for a new park to serve people who lack nearby park access",
+    "captionLabel": "potential access to parks",
+    "goodThreshold": null,
+    "url": "https://secas-fws.hub.arcgis.com/maps/fws::potential-access-to-parks-southeast-blueprint-indicator/about",
+    "subregions": [
+      "Appalachians",
+      "Atlantic Coastal Plain",
+      "Chihuahuan Deserts",
+      "East Gulf Coastal Plain",
+      "Edwards Plateau",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
+      "Interior Plateau",
+      "Mississippi Alluvial Valley",
+      "North Missouri",
+      "Ouachita",
+      "Ozarks and Plains",
+      "Piedmont",
       "Plains and Timbers",
-      "South High Plains and Tablelands"
+      "South Texas Plains",
+      "Texas Blackland Prairies",
+      "West Gulf Coastal Plain"
+    ]
+  },
+  {
+    "id": "t_puertoricopotentialaccesstoparks",
+    "filename": "PuertoRicoPotentialAccessToParks.tif",
+    "label": "Puerto Rico potential access to parks",
+    "description": "This cultural resource indicator prioritizes places to create new parks that would fill gaps in access to open space within socially vulnerable communities in urban areas in Puerto Rico. It identifies areas where residents currently lack access to parks within a 10-minute walk (accounting for walkable road networks and access barriers like highways and fences), then prioritizes based on park need using demographic and environmental metrics. This indicator originates from the Trust for Public Land's ParkServe park priority areas and the Center for Disease Control's Social Vulnerability Index.",
+    "values": [
+      {
+        "value": 0,
+        "label": "Not identified as a priority (within urban areas)",
+        "color": null
+      },
+      {
+        "value": 1,
+        "label": "Moderate priority",
+        "color": "#DFB8E6"
+      },
+      {
+        "value": 2,
+        "label": "High priority",
+        "color": "#AC66ED"
+      },
+      {
+        "value": 3,
+        "label": "Very high priority",
+        "color": "#700CF2"
+      }
+    ],
+    "valueLabel": "Priority for a new park to serve people who lack nearby park access",
+    "captionLabel": "Puerto Rico potential access to parks",
+    "goodThreshold": null,
+    "url": "",
+    "subregions": [
+      "Puerto Rico"
     ]
   },
   {
@@ -2786,17 +3017,17 @@
       {
         "value": 0,
         "label": "Developed",
-        "color": "#9C9C9C"
+        "color": "#686868"
       },
       {
         "value": 1,
         "label": "Least resilient",
-        "color": "#9C551F"
+        "color": "#754017"
       },
       {
         "value": 2,
         "label": "Less resilient",
-        "color": "#BF874B"
+        "color": "#B47F47"
       },
       {
         "value": 3,
@@ -2811,12 +3042,12 @@
       {
         "value": 5,
         "label": "Slightly more resilient",
-        "color": "#A9C276"
+        "color": "#B4CE7D"
       },
       {
         "value": 6,
         "label": "More resilient",
-        "color": "#5E8A3A"
+        "color": "#67973F"
       },
       {
         "value": 7,
@@ -2829,28 +3060,83 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::resilient-terrestrial-sites-southeast-blueprint-indicator/about",
     "subregions": [
-      "Central Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
+      "Appalachians",
+      "Atlantic Coastal Plain",
       "Chihuahuan Deserts",
-      "East Gulf Coastal Plain Sub",
+      "East Gulf Coastal Plain",
       "Edwards Plateau",
       "Florida Peninsula",
       "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
       "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Appalachians",
-      "North Atlantic Coastal Plain",
-      "North High Plains and Tablelands",
       "North Missouri",
-      "North Piedmont",
       "Ouachita",
       "Ozarks and Plains",
+      "Piedmont",
       "Plains and Timbers",
-      "South Appalachians",
-      "South Atlantic Coastal Plain",
-      "South High Plains and Tablelands",
-      "South Piedmont",
+      "South Texas Plains",
+      "Texas Blackland Prairies",
+      "West Gulf Coastal Plain"
+    ]
+  },
+  {
+    "id": "t_rivercanerestoration",
+    "filename": "RiverCaneRestoration.tif",
+    "label": "River cane restoration",
+    "description": "This indicator represents priority places for river cane restoration and co-stewardship near the lands of federally recognized Tribes. River cane is a bamboo species native to the Southeast. Historically, it was abundant and widespread, forming dense patches called canebrakes that could stretch for miles within the floodplain. Today, it has been reduced to less than 2% of its former extent. River cane not only provides significant habitat value and ecosystem services, but many Southeastern Native American Tribes consider it a cultural keystone species important to the continuity of traditional lifeways. This indicator combines data from multiple sources, including Natural Resources Conservation Service soils data, the Environmental Protection Agency's estimated floodplain, lands of federally recognized Tribes lands from the U.S. Census Bureau, and more.",
+    "values": [
+      {
+        "value": 0,
+        "label": "Not identified as a rivercane restoration/management area",
+        "color": null
+      },
+      {
+        "value": 1,
+        "label": "Potential river cane restoration/management area",
+        "color": "#FFFFBE"
+      },
+      {
+        "value": 2,
+        "label": "Potential river cane restoration/management area on protected land",
+        "color": "#CEC2D8"
+      },
+      {
+        "value": 3,
+        "label": "Potential river cane restoration/management area near Tribal lands",
+        "color": "#9C88DD"
+      },
+      {
+        "value": 4,
+        "label": "Potential river cane restoration/management area on protected land near Tribal lands",
+        "color": "#6358AF"
+      },
+      {
+        "value": 5,
+        "label": "Potential river cane restoration/management area on Tribal land",
+        "color": "#27257A"
+      }
+    ],
+    "valueLabel": "",
+    "captionLabel": "river cane restoration",
+    "goodThreshold": null,
+    "url": "",
+    "subregions": [
+      "Appalachians",
+      "Atlantic Coastal Plain",
+      "Chihuahuan Deserts",
+      "East Gulf Coastal Plain",
+      "Edwards Plateau",
+      "Florida Peninsula",
+      "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
+      "Interior Plateau",
+      "Mississippi Alluvial Valley",
+      "North Missouri",
+      "Ouachita",
+      "Ozarks and Plains",
+      "Piedmont",
+      "Plains and Timbers",
       "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
@@ -2898,17 +3184,12 @@
     "goodThreshold": 2,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::south-atlantic-forest-birds-southeast-blueprint-indicator-2023/about",
     "subregions": [
+      "Appalachians",
       "Atlantic",
-      "Central Atlantic Coastal Plain",
-      "East Gulf Coastal Plain Sub",
+      "Atlantic Coastal Plain",
+      "East Gulf Coastal Plain",
       "Florida Peninsula",
-      "Mid East Gulf Coastal Plain",
-      "North Appalachians",
-      "North Atlantic Coastal Plain",
-      "North Piedmont",
-      "South Appalachians",
-      "South Atlantic Coastal Plain",
-      "South Piedmont"
+      "Piedmont"
     ]
   },
   {
@@ -2938,12 +3219,9 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::south-atlantic-low-urban-historic-landscapes-southeast-blueprint-indicator/about",
     "subregions": [
-      "Central Atlantic Coastal Plain",
-      "East Gulf Coastal Plain Sub",
-      "North Atlantic Coastal Plain",
-      "North Piedmont",
-      "South Atlantic Coastal Plain",
-      "South Piedmont"
+      "Atlantic Coastal Plain",
+      "East Gulf Coastal Plain",
+      "Piedmont"
     ]
   },
   {
@@ -2993,33 +3271,66 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::urban-park-size-southeast-blueprint-indicator-2024/about",
     "subregions": [
-      "Central Atlantic Coastal Plain",
-      "Central Gulf Coastal Plain",
+      "Appalachians",
+      "Atlantic Coastal Plain",
       "Chihuahuan Deserts",
-      "East Gulf Coastal Plain Sub",
+      "East Gulf Coastal Plain",
       "Edwards Plateau",
       "Florida Peninsula",
       "Gulf",
       "Gulf Coastal Prairies",
+      "High Plains and Tablelands",
       "Interior Plateau",
-      "Mid East Gulf Coastal Plain",
       "Mississippi Alluvial Valley",
-      "North Appalachians",
-      "North Atlantic Coastal Plain",
-      "North High Plains and Tablelands",
       "North Missouri",
-      "North Piedmont",
       "Ouachita",
       "Ozarks and Plains",
+      "Piedmont",
       "Plains and Timbers",
-      "South Appalachians",
-      "South Atlantic Coastal Plain",
       "South Florida Marine",
-      "South High Plains and Tablelands",
-      "South Piedmont",
       "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
+    ]
+  },
+  {
+    "id": "t_usvirginislandsimperiledterrestrialspecies",
+    "filename": "USVirginIslandsImperiledTerrestrialSpecies.tif",
+    "label": "U.S. Virgin Islands imperiled terrestrial species",
+    "description": "This indicator identifies potential habitat to support terrestrial species across the U.S. Virgin Islands. It focuses on species of conservation interest like endangered species and Species of Greatest Conservation Need (SGCN), which are identified in each state or territory's Wildlife Action Plan as most in need of need of conservation action. The indicator evaluates overall species richness, but places special emphasis on three narrow endemics that are restricted to very small ranges, which are therefore more vulnerable to habitat loss or change. The data originates from WildMon and the U.S. Fish and Wildlife Service Environmental Conservation Online System (ECOS).",
+    "values": [
+      {
+        "value": 0,
+        "label": "Developed or agriculture",
+        "color": null
+      },
+      {
+        "value": 1,
+        "label": "Low species richness (below average)",
+        "color": "#FFE0E0"
+      },
+      {
+        "value": 2,
+        "label": "Medium species richness (above average)",
+        "color": "#E29387"
+      },
+      {
+        "value": 3,
+        "label": "High species richness (upper 10-30%)",
+        "color": "#BA5140"
+      },
+      {
+        "value": 4,
+        "label": "Very high species richness (top 10%) or presence of species with very small ranges",
+        "color": "#8F0A0A"
+      }
+    ],
+    "valueLabel": "",
+    "captionLabel": "U.S. Virgin Islands imperiled terrestrial species",
+    "goodThreshold": null,
+    "url": "",
+    "subregions": [
+      "US Virgin Islands"
     ]
   },
   {
@@ -3186,11 +3497,11 @@
       }
     ],
     "valueLabel": "Percentile of suitable mottled duck nesting habitat",
-    "captionLabel": "west gulf coast mottled duck nesting",
+    "captionLabel": "West Gulf Coast mottled duck nesting",
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::west-gulf-coast-mottled-duck-nesting-southeast-blueprint-indicator-2023/about",
     "subregions": [
-      "Central Gulf Coastal Plain",
+      "East Gulf Coastal Plain",
       "Gulf Coastal Prairies",
       "Mississippi Alluvial Valley",
       "Texas Blackland Prairies",

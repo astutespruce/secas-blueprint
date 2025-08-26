@@ -63,7 +63,7 @@ if not outfilename.exists():
     colormap = {e["value"]: hex_to_uint8(e["color"]) for e in BLUEPRINT}
     colormap[0] = (255, 255, 255, 0)
 
-    with rasterio.open(src_dir / "Blueprint2024.tif") as src:
+    with rasterio.open(src_dir / "Blueprint2025.tif") as src:
         nodata = int(src.nodata)
 
         read_window = shift_window(
@@ -223,16 +223,16 @@ ecosystems = []
 merged = None
 for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
     df = pd.read_excel(
-        indicators_dir / "Blueprint 2024 Indicator Thresholds.xlsx",
+        indicators_dir / "Blueprint 2025 Indicator Thresholds.xlsx",
         sheet_name=sheet_name,
         engine="calamine",
     ).rename(
         columns={
             "Indicator": "label",
-            "Legend sub-header": "valueLabel",
-            "2024 abbreviated indicator values": "valueLabels",
-            '2023 Blueprint Explorer "Good" threshold': "goodThreshold",
-            "2023 Indicator descriptions": "description",
+            "Legend Subheader": "valueLabel",
+            "Abbreviated indicator values": "valueLabels",
+            'Blueprint Explorer "Good" threshold': "goodThreshold",
+            "Indicator descriptions": "description",
             "Hub Link": "url",
         }
     )
@@ -243,9 +243,7 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
         .replace(")", "")
         .replace("&", "and")
         .replace(" ", "")
-        # FIXME: remove for Blueprint 2025 (temporary alias to existing ID)
-        # IMPORTANT: this requires hand-editing ecosystems.json to be in correct order for new name
-        .replace("PotentialAccessToParks", "EquitableAccessToPotentialParks")
+        .replace(".", "")
     )
 
     ecosystem_id = sheet_name.lower().split(" ")[-1][:1]
@@ -291,9 +289,12 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
         "Great Plains",
         "Interior Southeast",
         "Mississippi Alluvial Valley",
+        "Puerto Rico",
         "South Atlantic",
+        "U.S. Virgin Islands",
         "West Coastal Plain & Ouachitas",
-        "West Gulf Coast" "West Virginia",
+        "West Gulf Coast",
+        "West Virginia",
     ]
     df["captionLabel"] = df.label
     ix = ~df.label.apply(lambda x: any(x.startswith(p) for p in places))

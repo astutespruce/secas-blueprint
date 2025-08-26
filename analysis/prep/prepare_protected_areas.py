@@ -30,40 +30,14 @@ bnd_df = gp.read_feather(out_dir / "se_boundary.feather", columns=["geometry"])
 ### Compile protected areas
 ################################################################################
 
-
-### Read WMAs in Oklahoma from v3.0; most of these are missing from v4.0
-# NOTE: this should be fixed in v5.0
-# there are several duplicates; we drop them
-ok_wma = (
-    read_dataframe(
-        src_dir / "pad_us3.0.gpkg",
-        layer="PADUS3_0Combined_Proclamation_Marine_Fee_Designation_Easement",
-        columns=[
-            "Category",
-            "State_Nm",
-            "Unit_Nm",
-            "Loc_Own",
-            "Own_Name",
-            "Agg_Src",
-            "Des_Tp",
-            "Loc_Ds",
-        ],
-        where="State_Nm = 'OK' AND Loc_Ds = 'State Wildlife Management Area'",
-        use_arrow=True,
-    )
-    .drop_duplicates()
-    .drop(columns=["Loc_Ds"])
-)
-
-
 ### Protected areas (PAD-US)
 print("Processing PAD-US lands...")
 
 # read specific states; data are already in EPSG:5070
 states = ",".join(f"'{s}'" for s in SECAS_STATES + ["UNKF"])
 df = read_dataframe(
-    src_dir / "pad_us4.0.gpkg",
-    layer="PADUS4_0Combined_Proclamation_Marine_Fee_Designation_Easement",
+    src_dir / "pad_us4.1.gpkg",
+    layer="PADUS4_1Combined_Proclamation_Marine_Fee_Designation_Easement",
     columns=[
         "Category",
         "State_Nm",
@@ -77,17 +51,15 @@ df = read_dataframe(
     use_arrow=True,
 )
 
-df = pd.concat([df, ok_wma], ignore_index=True).drop_duplicates()
-
 # drop BOEM lease block groups
-df = df.loc[df.Agg_Src != "USGS_PADUS2_0Marine_BOEM_Block_Dissolve"].drop(
-    columns=["Agg_Src"]
-)
+df = df.loc[~df.Agg_Src.str.contains("_BOEM_")].drop(columns=["Agg_Src"])
 
 # drop proclamation boundaries but retain military lands that only show up as proclamation
 df = df.loc[(df.Category != "Proclamation") | (df.Des_Tp == "MIL")].reset_index(
     drop=True
 )
+
+df = df.drop_duplicates()
 
 
 tree = shapely.STRtree(df.geometry.values)

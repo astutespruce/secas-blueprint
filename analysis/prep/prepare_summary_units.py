@@ -218,7 +218,6 @@ marine = marine.join(pairs, on="id")
 
 
 # rasterize for summary unit analysis, use full extent
-print("Rasterizing geometries")
 tmp_huc12 = pd.DataFrame(huc12[["id", "value", "geometry"]].join(huc12.bounds))
 tmp_huc12["geometry"] = tmp_huc12.geometry.values
 
@@ -229,6 +228,7 @@ with rasterio.open(blueprint_extent_filename) as src:
     extent_data = src.read(1)
     nodata = np.uint(src.nodata)
 
+    print("Rasterizing HUC12s")
     data = rasterize(
         # create tuples of GeoJSON, value
         tmp_huc12.apply(lambda row: (to_dict(row.geometry), row.value), axis=1),
@@ -261,6 +261,7 @@ with rasterio.open(blueprint_extent_filename) as src:
     write_raster(outfilename, data, transform=src.transform, crs=src.crs, nodata=0)
     add_overviews(outfilename)
 
+    print("Rasterizing marine hexes")
     data = rasterize(
         tmp_marine.apply(lambda row: (to_dict(row.geometry), row.value), axis=1),
         (src.height, src.width),
