@@ -275,8 +275,11 @@
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::gulf-migratory-fish-connectivity-southeast-blueprint-indicator-2023/about",
     "subregions": [
       "Appalachians",
+      "Atlantic Coastal Plain",
       "East Gulf Coastal Plain",
+      "Florida Peninsula",
       "Gulf",
+      "Interior Plateau",
       "Mississippi Alluvial Valley",
       "Piedmont"
     ]
@@ -1526,15 +1529,23 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::island-habitat-southeast-blueprint-indicator-2023/about",
     "subregions": [
+      "Appalachians",
       "Atlantic",
       "Atlantic Coastal Plain",
       "East Gulf Coastal Plain",
+      "Edwards Plateau",
       "Florida Peninsula",
       "Gulf",
       "Gulf Coastal Prairies",
+      "Interior Plateau",
       "Mississippi Alluvial Valley",
+      "North Missouri",
+      "Ouachita",
+      "Ozarks and Plains",
       "Piedmont",
+      "Plains and Timbers",
       "South Florida Marine",
+      "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
     ]
   },
@@ -1672,13 +1683,23 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::seagrass-southeast-blueprint-indicator-2023/about",
     "subregions": [
+      "Appalachians",
+      "Atlantic",
       "Atlantic Coastal Plain",
       "East Gulf Coastal Plain",
       "Florida Peninsula",
       "Gulf",
       "Gulf Coastal Prairies",
+      "Interior Plateau",
       "Mississippi Alluvial Valley",
-      "South Florida Marine"
+      "North Missouri",
+      "Ouachita",
+      "Ozarks and Plains",
+      "Piedmont",
+      "Plains and Timbers",
+      "South Florida Marine",
+      "Texas Blackland Prairies",
+      "West Gulf Coastal Plain"
     ]
   },
   {
@@ -1750,9 +1771,14 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::south-atlantic-maritime-forest-southeast-blueprint-indicator-2023/about",
     "subregions": [
+      "Appalachians",
+      "Atlantic",
       "Atlantic Coastal Plain",
       "East Gulf Coastal Plain",
-      "Gulf"
+      "Florida Peninsula",
+      "Gulf",
+      "Interior Plateau",
+      "Piedmont"
     ]
   },
   {
@@ -1782,12 +1808,23 @@
     "goodThreshold": 1,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::stable-coastal-wetlands-southeast-blueprint-indicator-2023/about",
     "subregions": [
+      "Appalachians",
+      "Atlantic",
       "Atlantic Coastal Plain",
       "East Gulf Coastal Plain",
+      "Edwards Plateau",
       "Florida Peninsula",
+      "Gulf",
       "Gulf Coastal Prairies",
+      "Interior Plateau",
       "Mississippi Alluvial Valley",
+      "North Missouri",
+      "Ouachita",
+      "Ozarks and Plains",
       "Piedmont",
+      "Plains and Timbers",
+      "South Florida Marine",
+      "South Texas Plains",
       "Texas Blackland Prairies",
       "West Gulf Coastal Plain"
     ]
@@ -3219,8 +3256,13 @@
     "goodThreshold": null,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::south-atlantic-low-urban-historic-landscapes-southeast-blueprint-indicator/about",
     "subregions": [
+      "Appalachians",
+      "Atlantic",
       "Atlantic Coastal Plain",
       "East Gulf Coastal Plain",
+      "Florida Peninsula",
+      "Gulf",
+      "Interior Plateau",
       "Piedmont"
     ]
   },

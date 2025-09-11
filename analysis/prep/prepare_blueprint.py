@@ -110,14 +110,14 @@ if not outfilename.exists():
 
     print("Reading hubs and making valid")
     continental_hubs = read_dataframe(
-        src_dir / "hubs_corridors/ContinentalHubs2024.shp",
+        src_dir / "hubs_corridors/ContinentalHubs2025.shp",
         columns=[],
         use_arrow=True,
     ).explode(ignore_index=True)
     continental_hubs["value"] = 1
 
     caribbean_hubs = read_dataframe(
-        src_dir / "hubs_corridors/CaribbeanHubs2023.shp",
+        src_dir / "hubs_corridors/CaribbeanHubs2025.shp",
         columns=[],
         use_arrow=True,
     ).explode(ignore_index=True)
@@ -135,10 +135,10 @@ if not outfilename.exists():
 
     with (
         rasterio.open(
-            src_dir / "hubs_corridors/ContinentalCorridors2024.tif"
+            src_dir / "hubs_corridors/ContinentalCorridors2025.tif"
         ) as continental,
         rasterio.open(
-            src_dir / "hubs_corridors/CaribbeanCorridors2023.tif"
+            src_dir / "hubs_corridors/CaribbeanCorridors2025.tif"
         ) as caribbean,
     ):
         # consolidate all values into a single raster, writing hubs over corridors
@@ -149,7 +149,7 @@ if not outfilename.exists():
         print("Reading Caribbean corridors")
         # Caribbean data are limited to Caribbean extent, so use a larger read
         # window to read full extent
-        carribean_window = shift_window(
+        caribbean_window = shift_window(
             windows.Window(
                 col_off=0, row_off=0, width=extent.width, height=extent.height
             ),
@@ -157,7 +157,7 @@ if not outfilename.exists():
             caribbean.transform,
         )
         caribbean_corridors_data = caribbean.read(
-            1, window=carribean_window, boundless=True
+            1, window=caribbean_window, boundless=True
         )
         data[caribbean_corridors_data == np.uint8(1)] = np.uint8(2)
         del caribbean_corridors_data
@@ -171,7 +171,9 @@ if not outfilename.exists():
             extent.transform,
             continental.transform,
         )
-        continental_corridors_data = continental.read(1, window=inland_window)
+        continental_corridors_data = continental.read(
+            1, window=inland_window, boundless=True
+        )
         data[continental_corridors_data == np.uint8(1)] = np.uint8(2)
         del continental_corridors_data
 

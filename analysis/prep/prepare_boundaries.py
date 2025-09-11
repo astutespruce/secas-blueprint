@@ -277,8 +277,8 @@ df["description"] = df.description.str.strip()
 df = df.explode(ignore_index=True)
 df["geometry"] = make_valid(df.geometry.values)
 
-write_dataframe(df, bnd_dir / "parca.fgb")
-df.to_feather(out_dir / "parca.feather")
+write_dataframe(df, bnd_dir / "parcas.fgb")
+df.to_feather(out_dir / "parcas.feather")
 
 
 ### Rasterize PARCAs to in PARCA (1) or not (0)

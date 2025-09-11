@@ -49,7 +49,7 @@ with rasterio.open(huc12_raster_filename) as units_dataset:
     summarize_blueprint_by_units_grid(units_df, units_grid, out_dir, marine=False)
 
     # Summarize parcas
-    summarize_parcas_by_units(units_df, out_dir)
+    summarize_parcas_by_units(units_df, units_grid, out_dir)
 
     # Summarize protected areas
     summarize_protected_areas_by_units(units_df, units_grid, out_dir)

@@ -14,7 +14,7 @@ from analysis.lib.stats.summary_units import read_unit_from_feather
 src_dir = Path("data/inputs/boundaries")
 filename = src_dir / "parcas.tif"
 mask_filename = src_dir / "parcas_mask.tif"
-boundary_filename = src_dir / "parca.feather"
+boundary_filename = src_dir / "parcas.feather"
 
 BINS = range(0, len(PARCAS))
 LABELS = {e["value"]: e["label"] for e in PARCAS}
@@ -175,13 +175,13 @@ def summarize_parcas_by_units(df, units_grid, out_dir):
     parcas["total_parca_acres"] = total_acres
     parcas["outside_parca_acres"] = nodata_acres
 
-    parcas.reset_index().to_feather(out_dir / "parca.feather")
+    parcas.reset_index().to_feather(out_dir / "parcas.feather")
 
     # intersect with polygons
     tmp = df.loc[df.index.isin(parcas.loc[parcas.parca_1 > 0].index.values)].copy()
 
     parca_list = extract_parcas(tmp)
-    parca_list.to_feather(out_dir / "parca_list.feather")
+    parca_list.to_feather(out_dir / "parcas_list.feather")
 
 
 def get_parca_unit_results(results_dir, unit):
@@ -206,7 +206,7 @@ def get_parca_unit_results(results_dir, unit):
         }
     """
 
-    unit_results = read_unit_from_feather(results_dir / "parca.feather", unit.name)
+    unit_results = read_unit_from_feather(results_dir / "parcas.feather", unit.name)
 
     if len(unit_results) == 0:
         return None
@@ -228,7 +228,7 @@ def get_parca_unit_results(results_dir, unit):
         for entry in PARCAS
     ][::-1]
 
-    parcas = read_unit_from_feather(results_dir / "parca_list.feather", unit.name)
+    parcas = read_unit_from_feather(results_dir / "parcas_list.feather", unit.name)
 
     return {
         "entries": parca_results,

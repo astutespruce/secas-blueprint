@@ -65,7 +65,10 @@ def delta_encode_values(df, total, scale=100):
         Contains string for each record with caret-delimited values.  If
         max encoded value across all bins is 0, an empty string is returned instead.
     """
-    scaled = (scale * df.divide(total, axis=0)).round().astype("uint")
+
+    # NOTE: this breaks for uint if series is not always incremental, so we use
+    # int here
+    scaled = (scale * df.divide(total, axis=0)).round().astype("int")
 
     # calculate delta values
     delta = scaled[scaled.columns[1:]].subtract(
