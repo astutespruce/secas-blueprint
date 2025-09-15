@@ -7,7 +7,7 @@
 
 	const YEARS = [2001, 2004, 2006, 2008, 2011, 2013, 2016, 2019, 2021, 2030, 2040, 2050, 2060]
 
-	const { type, urban, subregions } = $props()
+	const { type, urban, regions } = $props()
 </script>
 
 <div>
@@ -38,7 +38,7 @@
 		{/if}
 	{/if}
 	{#if type !== 'pixel'}
-		{#if subregions && subregions.has('Caribbean')}
+		{#if regions && regions.has('caribbean')}
 			<div class="text-grey-8">
 				Projected future urbanization data is not currently available for this area.
 			</div>
@@ -56,7 +56,7 @@
 	{/if}
 
 	<!-- don't show data info in Caribbean -->
-	{#if !(subregions && subregions.has('Caribbean'))}
+	{#if !(regions && regions.has('caribbean'))}
 		<div class="mt-8 text-grey-8 leading-tight">
 			Past and current (2021) urban levels based on developed land cover classes from the
 			<a

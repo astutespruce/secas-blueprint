@@ -21,7 +21,7 @@
 		type,
 		blueprint,
 		corridors,
-		subregions,
+		regions,
 		outsideSEPercent,
 		class: className = ''
 	}: Props = $props()
@@ -73,7 +73,7 @@
 					return {
 						...rest,
 						value,
-						description: subregions.has('Caribbean') ? parts[1] : parts[0]
+						description: regions && regions.has('caribbean') ? parts[1] : parts[0]
 					}
 				}
 
@@ -114,7 +114,7 @@
 </script>
 
 <section class={cn('flex-auto overflow-y-auto h-full p-4', className)}>
-	<h3 class="text-2xl">Southeast Blueprint 2024 Priority</h3>
+	<h3 class="text-2xl">Southeast Blueprint 2025 Priority</h3>
 	<div class="text-grey-9">for a connected network of lands and waters</div>
 	{#if type !== 'pixel'}
 		<PieChart categories={blueprintChartData} class="mt-6 mb-4" />

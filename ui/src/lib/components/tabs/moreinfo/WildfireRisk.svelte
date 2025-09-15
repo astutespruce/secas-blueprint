@@ -4,7 +4,7 @@
 	import { wildfireRisk as categories } from '$lib/config/constants'
 	import { cn } from '$lib/utils'
 
-	const { type, wildfireRisk, subregions } = $props()
+	const { type, wildfireRisk, regions } = $props()
 
 	const bars = $derived(
 		categories.map((category) => ({
@@ -47,24 +47,24 @@
 	{/if}
 
 	{#if type !== 'pixel'}
-		{#if (subregions && subregions.has('Caribbean')) || wildfireRisk === null}
+		{#if (regions && regions.has('caribbean')) || wildfireRisk === null}
 			<div class="text-grey-8">
 				Wildfire likelihood data is not currently available for this area.
 			</div>
+		{:else}
+			<div class="text-grey-8 leading-tight">
+				Area in each wildfire probability category within this subwatershed:
+			</div>
+			<div class="mt-4">
+				{#each bars as bar}
+					<PercentBarChart {...bar} class="mt-2 mb-4" />
+				{/each}
+			</div>
 		{/if}
-
-		<div class="text-grey-8 leading-tight">
-			Area in each wildfire probability category within this subwatershed:
-		</div>
-		<div class="mt-4">
-			{#each bars as bar}
-				<PercentBarChart {...bar} class="mt-2 mb-4" />
-			{/each}
-		</div>
 	{/if}
 
 	<!-- don't show data info in Caribbean -->
-	{#if !(subregions && subregions.has('Caribbean'))}
+	{#if !(regions && regions.has('caribbean'))}
 		<div class="mt-8 text-grey-8 leading-tight">
 			Wildfire likelihood data derived from the{' '}
 			<a href="https://wildfirerisk.org/" target="_blank"> Wildfire Risk to Communities </a>{' '}

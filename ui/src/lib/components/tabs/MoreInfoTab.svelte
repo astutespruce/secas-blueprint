@@ -9,7 +9,7 @@
 		slr,
 		urban,
 		wildfireRisk,
-		subregions,
+		regions,
 		protectedAreas,
 		protectedAreasList,
 		numProtectedAreas,
@@ -19,11 +19,11 @@
 
 <section class={cn('flex-auto overflow-y-auto h-full py-8 pl-4 pr-8', className)}>
 	{#if type === 'pixel' || type === 'subwatershed'}
-		<Urban {type} {urban} {subregions} />
+		<Urban {type} {urban} {regions} />
 
 		<SLR {type} {...slr} />
 
-		<WildfireRisk {type} {wildfireRisk} {subregions} />
+		<WildfireRisk {type} {wildfireRisk} {regions} />
 	{/if}
 
 	<ProtectedAreas {type} {protectedAreas} {protectedAreasList} {numProtectedAreas} />
