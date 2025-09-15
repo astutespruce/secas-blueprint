@@ -15,7 +15,7 @@ Python dependencies are managed using `uv`. First,
 
 ```bash
 uv venv .venv --python 3.12
-<source it according to your shell, e.g., source .venv/bin/activate.fish>
+# <source it according to your shell, e.g., source .venv/bin/activate.fish>
 uv pip install -e [dev].
 ```
 
@@ -39,11 +39,9 @@ uv pip compile -U pyproject.toml -o ../secas-docker/docker/api/secas-blueprint-r
 
 On MacOS, install other dependencies:
 
-
 ```bash
 brew install gdal pango redis
 ```
-
 
 For Macos M1 (Arm64), you also may need to setup symlinks for some of the libraries
 to be found:
@@ -55,7 +53,6 @@ sudo ln -s /opt/homebrew/opt/harfbuzz/lib/libharfbuzz.dylib /usr/local/lib/harfb
 sudo ln -s /opt/homebrew/opt/fontconfig/lib/libfontconfig.1.dylib /usr/local/lib/fontconfig-1
 sudo ln -s /opt/homebrew/opt/pango/lib/libpangoft2-1.0.dylib /usr/local/lib/pangoft2-1.0
 ```
-
 
 ## User interface development
 
@@ -75,10 +72,9 @@ nvm use
 
 Note: this needs to be done each time an interpreter is opened for development.
 
-The user interface is developed using SvelteJS and Typescript.  While we don't
+The user interface is developed using SvelteJS and Typescript. While we don't
 strictly require type annotations, we recommend using them where possible, and are
 progressively adding type annotations throughout the codebase.
-
 
 ## Other dependencies
 

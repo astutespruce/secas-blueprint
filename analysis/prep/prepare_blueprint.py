@@ -19,6 +19,7 @@ from analysis.lib.raster import (
     add_overviews,
     create_lowres_mask,
     shift_window,
+    unique,
 )
 
 
@@ -421,12 +422,43 @@ for index, indicator_row in indicator_df.iterrows():
             print(f"\n-------------------------\nProcessing {indicator_row.label}")
 
             nodata = int(src.nodata)
+            # FIXME: temporary fixes for incorrect NODATA values
+            if indicator_row.id in {
+                "m_seagrass",
+                "f_gulfmigratoryfishconnectivity",
+                "m_caribbeanbeachhabitat",
+                "m_caribbeancoastalshorelinecondition",
+                "m_caribbeanfishnurseryhabitat",
+                "m_islandhabitat",
+                "m_southatlanticmaritimeforest",
+                "m_stablecoastalwetlands",
+                "t_caribbeanlowurbanhistoriclandscapes",
+                "t_southatlanticlowurbanhistoriclandscapes",
+            }:
+                nodata = 3
 
             # read data, standardize NODATA, and clip to data extent (not necessarily Blueprint extent)
             data = src.read(1)
             data = np.where(data == nodata, NODATA, data)
             data_window = windows.get_data_window(data, nodata=NODATA)
             data = data[data_window.toslices()]
+
+            # check value range to make sure all are accounted for above, and raise error on unexpected values
+            values = unique(data)
+            expected_values = set(
+                [e["value"] for e in indicator_row["values"]] + [NODATA]
+            )
+            unexpected = values.difference(expected_values)
+            missing = expected_values.difference(values)
+            if unexpected:
+                raise ValueError(
+                    f"Unexpected values present in {indicator_row.filename}: {','.join([str(v) for v in unexpected])}"
+                )
+            if missing:
+                raise ValueError(
+                    f"Missing expected values from {indicator_row.filename}: {','.join([str(v) for v in missing])}"
+                )
+
             transform = windows.transform(data_window, src.transform)
 
             # all inputs are very closely aligned to Blueprint extent except for

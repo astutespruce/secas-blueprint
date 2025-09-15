@@ -45,6 +45,33 @@ def count_values_inplace(arr, mask, out, nodata):
                     out[value] += c
 
 
+@nb.njit(
+    (nb.uint8[:, :],),
+    fastmath=True,
+    nogil=True,
+    cache=True,
+)
+def unique(arr):
+    """Extract unique values in arr.
+
+    About 2x as fast as np.unique.
+
+    Parameters
+    ----------
+    arr : uint8 ndarray of shape (rows, cols)
+
+    Returns
+    -------
+    set
+    """
+    out = set()
+    for row in nb.prange(arr.shape[0]):
+        for col in nb.prange(arr.shape[1]):
+            out.add(arr[row, col])
+
+    return out
+
+
 def get_window(dataset, bounds, boundless=True):
     """Calculate the window into dataset that contains bounds, for boundless reading.
 
@@ -603,10 +630,6 @@ class WindowGeometryMask(object):
         )
         nodata = getattr(np, dataset.dtypes[0])(dataset.nodata)
         data = dataset.read(1, window=read_window, boundless=True)
-
-        # extract values inside geometry except where they are NODATA
-        # values = data[self.shape_mask & (data != nodata)]
-        # return np.bincount(values, minlength=len(bins))
 
         if out is None:
             if num_values is None:

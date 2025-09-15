@@ -52,13 +52,13 @@ def read_cache(path):
 
 ### Create reports for an AOI
 aois = [
-    {"name": "Gulf_SECAS_CBRS_Polygons", "path": "Gulf_SECAS_CBRS_Polygons"},
+    # {"name": "Gulf_SECAS_CBRS_Polygons", "path": "Gulf_SECAS_CBRS_Polygons"},
     # {"name": "Caribbean_SECAS_CBRS_Polygons", "path": "Caribbean_SECAS_CBRS_Polygons"},
     # {"name": "Atlantic_SECAS_CBRS_Polygons", "path": "Atlantic_SECAS_CBRS_Polygons"},
     # {"name": "SECAS_CBRS_Polygons", "path": "SECAS_CBRS_Polygons"},
     # {"name": "", "path": "large_poly"}
     # {"name": "", "path": "no_urban"}
-    {"name": "GA Sentinal Landscapes: Fort Benning Area", "path": "benareautm_polygon"},
+    # {"name": "GA Sentinal Landscapes: Fort Benning Area", "path": "benareautm_polygon"},
     # {
     #     "name": "GA Sentinal Landscapes: Coastal Area",
     #     "path": "coastareautm_polygon",
@@ -114,6 +114,7 @@ aois = [
     # {"name": "Napoleonville area, LA", "path": "Napoleonville"},
     # {"name": "Area in El Yunque National Forest, PR", "path": "yunque"},
     # {"name": "San Juan area, PR", "path": "SanJuan"},
+    # {"name": "Area in USVI", "path": "USVI"},
     # {"name": "Area near Magnet, TX", "path": "magnet"},
     # {"name": "TriState area at junction of MO, OK, KS", "path": "TriState"},
     # {"name": "Quincy, FL area", "path": "Quincy"},
@@ -142,7 +143,7 @@ for aoi in aois:
     print(
         f"Area of extent: {extent_area:,.0f} acres",
     )
-    print(f"Area of geometry: {df.area.sum() *M2_ACRES:,.0f} acres")
+    print(f"Area of geometry: {df.area.sum() * M2_ACRES:,.0f} acres")
 
     ### calculate results, data must be in DATA_CRS
     bar = Bar("Summarizing rasters", max=100, suffix="%(percent)d%%")
@@ -185,10 +186,11 @@ for aoi in aois:
             geometry=geo_df.geometry.values[0],
             indicators=indicators,
             corridors="corridors" in results,
-            urban="urban" in results,
-            slr="slr" in results,
-            wildfire_risk="wildfire_risk" in results,
+            parcas="parcas" in results,
             protected_areas="protected_areas" in results,
+            slr="slr" in results,
+            urban="urban" in results,
+            wildfire_risk="wildfire_risk" in results,
             add_mask=results["acres"] >= 1e9,
         )
 
@@ -214,12 +216,13 @@ for aoi in aois:
 ## Create reports for summary units
 ids = {
     "huc12": [
+        # "031800020606"
         # "030203020102",
         # "030502100102",  # duplicate PARCA bug
         # "020403030502",
         # "051402060702",
         #     #     # "050500030804"  # in WV
-        # "030902030700"  # in base blueprint but missing SLR (Dry Tortugas)
+        # "030902030700",  # in base blueprint but missing SLR (Dry Tortugas)
         # "031002010205",  # in base blueprint but with SLR present
         # "210100070101",  # in Caribbean
         #     #     # "031101020903",  # Florida with inland marine indicators
@@ -263,10 +266,11 @@ for unit_type in ids:
                 summary_unit_id=unit_id,
                 indicators=indicators,
                 corridors="corridors" in results,
-                urban="urban" in results,
-                slr="slr" in results,
-                wildfire_risk="wildfire_risk" in results,
+                parcas="parcas" in results,
                 protected_areas="protected_areas" in results,
+                slr="slr" in results,
+                urban="urban" in results,
+                wildfire_risk="wildfire_risk" in results,
             )
             maps, scale, errors = asyncio.run(task)
 

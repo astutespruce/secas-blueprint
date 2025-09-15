@@ -202,7 +202,7 @@ def get_parca_unit_results(results_dir, unit):
             "total_parca_acres": <total_acres>,
             "outside_parca_acres": <nodata acres>,
             "outside_parca_percent": <nodata percent>,
-            "parcas": [{"name": <>, "owner": <>, "acres": <>}]
+            "parcas": [{"name": <>, "description": <>}]
         }
     """
 
@@ -228,7 +228,11 @@ def get_parca_unit_results(results_dir, unit):
         for entry in PARCAS
     ][::-1]
 
-    parcas = read_unit_from_feather(results_dir / "parcas_list.feather", unit.name)
+    parcas = read_unit_from_feather(
+        results_dir / "parcas_list.feather",
+        unit.name,
+        columns=["id", "name", "description"],
+    ).to_dict(orient="records")
 
     return {
         "entries": parca_results,
