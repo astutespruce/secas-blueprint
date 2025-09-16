@@ -207,16 +207,18 @@ marine["value"] = np.arange(1, len(marine) + 1).astype("uint16")
 # avoid edge effects
 tree = shapely.STRtree(marine.geometry.values)
 left, right = tree.query(hex_subregions.geometry.values, predicate="intersects")
-pairs = (
-    pd.Series(
-        hex_subregions.subregion.values.take(left),
+subregions = (
+    pd.DataFrame(
+        {
+            "subregions": hex_subregions.subregion.values.take(left),
+            "regions": hex_subregions.region.values.take(left),
+        },
         index=marine.id.values.take(right),
-        name="subregions",
     )
     .groupby(level=0)
-    .apply(list)
+    .agg({"subregions": "unique", "regions": "unique"})
 )
-marine = marine.join(pairs, on="id")
+marine = marine.join(subregions, on="id")
 
 
 # rasterize for summary unit analysis, use full extent

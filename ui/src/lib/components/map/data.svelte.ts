@@ -1,5 +1,4 @@
 import { defaultFilters } from '$lib/config/filters'
-import { renderLayersIndex } from '$lib/config/pixelLayers'
 import { logGAEvent } from '$lib/util/log'
 import type { Filter, Filters } from '$lib/types'
 

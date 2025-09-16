@@ -41,9 +41,11 @@ def get_summary_unit_results(unit_type, unit_id):
             "maxx",
             "maxy",
             "subregions",
+            "regions",
         ],
     )
     df["subregions"] = df.subregions.apply(set)
+    df["regions"] = df.regions.apply(set)
 
     if len(df) == 0:
         # no unit with that ID
@@ -63,6 +65,7 @@ def get_summary_unit_results(unit_type, unit_id):
         "outside_se_percent": 100 * unit.outside_se / unit.rasterized_acres,
         "bounds": bounds,
         "subregions": unit.subregions,
+        "regions": unit.regions,
     }
 
     blueprint_results = get_blueprint_unit_results(results_dir, unit)
