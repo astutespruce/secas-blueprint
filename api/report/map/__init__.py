@@ -5,9 +5,9 @@ from concurrent.futures import ThreadPoolExecutor
 from .aoi import get_aoi_map_image
 from .basemap import get_basemap_image
 from .locator import get_locator_map_image
-from .raster import render_raster
+from .raster import render_raster, WebMercatorReader
 from .summary_unit import get_summary_unit_map_image
-from .mercator import get_zoom, get_map_bounds, get_map_scale
+from .mercator import get_zoom, get_map_bounds
 from .util import pad_bounds, get_center, merge_maps, to_png_bytes
 
 
@@ -40,16 +40,13 @@ urban_filename = src_dir / "threats/urban/urban_2060_binned.tif"
 wildfire_risk_filename = src_dir / "threats/wildfire_risk/wildfire_risk.tif"
 
 
-def render_raster_map(bounds, scale, basemap_image, aoi_image, id, path, colors):
+def render_raster_map(reader, basemap_image, aoi_image, id, path, colors):
     """Render raster dataset map based on bounds.  Merge this over basemap image
     and under aoi_image.
 
     Parameters
     ----------
-    bounds : list-like of [xmin, ymin, xmax, ymax]
-        bounds of map
-    scale : dict
-        map scale info
+    reader : WebMercatorReader
     basemap_image : Image object
     aoi_image : Image object
     id : str
@@ -64,7 +61,7 @@ def render_raster_map(bounds, scale, basemap_image, aoi_image, id, path, colors)
     id, Image object
         Image object is None if it could not be rendered or does not overlap bounds
     """
-    raster_img = render_raster(path, bounds, scale, WIDTH, HEIGHT, colors)
+    raster_img = render_raster(path, reader, colors)
     map_image = merge_maps([basemap_image, raster_img, aoi_image])
     map_image = to_png_bytes(map_image)
 
@@ -72,8 +69,7 @@ def render_raster_map(bounds, scale, basemap_image, aoi_image, id, path, colors)
 
 
 async def render_raster_maps(
-    bounds,
-    scale,
+    reader,
     basemap_image,
     aoi_image,
     indicators,
@@ -88,10 +84,7 @@ async def render_raster_maps(
 
     Parameters
     ----------
-    bounds : list-like of [xmin, ymin, xmax, ymax]
-        bounds of map
-    scale : dict
-        map scale info
+    reader : WebMercatorReader
     basemap_image : Image object
     aoi_image : Image object
     indicators : list-like of indicator IDs
@@ -116,7 +109,7 @@ async def render_raster_maps(
     executor = ThreadPoolExecutor(max_workers=MAP_RENDER_THREADS)
     loop = asyncio.get_event_loop()
 
-    base_args = (bounds, scale, basemap_image, aoi_image)
+    base_args = (reader, basemap_image, aoi_image)
 
     task_args = [("blueprint", blueprint_filename, BLUEPRINT_COLORS)]
 
@@ -193,7 +186,7 @@ async def render_maps(
     Parameters
     ----------
     bounds : list-like of [xmin, ymin, xmax, ymax]
-        bounds of area of interest, will be used to derive map bounds.
+        bounds of area of interest in geographic coordinates, will be used to derive map bounds.
     geometry : shapely.Geometry, optional (default: None)
         If present, will be used to render the area of interest
     summary_unit_id : [type], optional (default: None)
@@ -230,9 +223,8 @@ async def render_maps(
     bounds = pad_bounds(bounds, PADDING)
     center = get_center(bounds)
     zoom = get_zoom(bounds, WIDTH, HEIGHT)
-
     bounds = get_map_bounds(center, zoom, WIDTH, HEIGHT)
-    scale = get_map_scale(bounds, WIDTH)
+    raster_map_reader = WebMercatorReader(bounds, WIDTH, HEIGHT)
 
     locator_image, error = get_locator_map_image(
         *center, bounds=bounds, geometry=geometry
@@ -264,8 +256,7 @@ async def render_maps(
 
     # Use background threads for rendering rasters
     raster_maps, raster_map_errors = await render_raster_maps(
-        bounds,
-        scale,
+        raster_map_reader,
         basemap_image,
         aoi_image,
         indicators=indicators or [],
@@ -280,4 +271,4 @@ async def render_maps(
     maps.update(raster_maps)
     errors.update(raster_map_errors)
 
-    return maps, scale, errors
+    return maps, raster_map_reader.scale, errors

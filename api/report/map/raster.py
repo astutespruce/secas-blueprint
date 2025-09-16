@@ -1,9 +1,11 @@
 import math
+from pathlib import Path
 import warnings
 
+from affine import Affine
+import numba as nb
 import numpy as np
 from PIL import Image
-from affine import Affine
 import rasterio
 from rasterio.enums import Resampling
 from rasterio import windows
@@ -13,10 +15,174 @@ from rasterio.warp import (
     reproject,
 )
 
-from analysis.constants import DATA_CRS, MAP_CRS, GEO_CRS
+from analysis.constants import DATA_CRS, MAP_CRS, GEO_CRS, STANDARD_RESOLUTION
+from analysis.lib.raster import get_window, window_overlaps, shift_window
+
+from .mercator import get_map_scale
 
 # silence rasterio warnings not applicable here
 warnings.filterwarnings("ignore", message=".*Dataset has no geotransform.*")
+
+data_dir = Path("data/inputs")
+extent_filename = data_dir / "boundaries/blueprint_extent.tif"
+
+
+class WebMercatorReader(object):
+    def __init__(self, geo_bounds, width, height):
+        """Construct WebMercatorReader for bounds and dimensions
+
+        Parameters
+        ----------
+        geo_bounds : list-like of [xmin,ymin,xmax,ymax]
+            in geographic coordinates
+        width : int
+            output image width
+        height : int
+            output image height
+        """
+        self._transform_cache = {}
+
+        self.geo_bounds = geo_bounds
+        self.width = width
+        self.height = height
+        self.scale = get_map_scale(geo_bounds, width)
+        self.data_bounds = transform_bounds(
+            GEO_CRS, DATA_CRS, *geo_bounds, densify_pts=21
+        )
+        self.mercator_bounds = transform_bounds(
+            GEO_CRS, MAP_CRS, *geo_bounds, densify_pts=21
+        )
+
+        # For smoother rendering, we want between 2 and 4 data pixels per
+        # screen pixel.
+        # ratio is number of data pixels per screen pixels
+        pixel_ratio = self.scale["resolution"] / STANDARD_RESOLUTION
+        self.densify = max(2, min(4, math.ceil(1.0 / pixel_ratio)))
+
+        # NOTE: we calculate the ratios based on overviews of [2,4,8,16,32,64]
+        # in order to get 2 screen pixels per data pixel
+        self.scale_factor = 1
+        for factor in [32, 16, 8, 4, 2]:
+            if pixel_ratio // factor >= 2:
+                self.scale_factor = factor
+                break
+
+        with rasterio.open(extent_filename) as src:
+            self.dataset_transform = src.transform
+            self.window = get_window(src, self.data_bounds, boundless=True)
+            self.window_transform = src.window_transform(self.window)
+            self.read_shape = (
+                int(self.window.height / self.scale_factor),
+                int(self.window.width / self.scale_factor),
+            )
+
+    def read(self, dataset):
+        """Read and warp data into Web Mercator
+
+        Parameters
+        ----------
+        dataset : open Rasterio dataset
+
+        Returns
+        -------
+        ndarray of shape (height, width)
+        """
+        if dataset.transform == self.dataset_transform:
+            read_window = self.window
+
+        else:
+            read_window = shift_window(
+                self.window, self.window_transform, dataset.transform
+            )
+            if not window_overlaps(read_window, dataset):
+                return None
+
+        data = dataset.read(
+            1,
+            window=read_window,
+            boundless=True,
+            fill_value=dataset.nodata,
+            out_shape=self.read_shape,
+        )
+
+        nodata = getattr(np, dataset.dtypes[0])(dataset.nodata)
+        if not np.any(data != nodata):
+            # entire area is nodata, no point in warping nodata pixels
+            return None
+
+        read_window_bounds = dataset.window_bounds(read_window)
+        read_window_transform = dataset.window_transform(read_window)
+
+        # scale window transform
+        scaling = Affine.scale(self.scale_factor, self.scale_factor)
+        read_window_transform *= scaling
+
+        # Calculate initial transform to project to Spherical Mercator
+        # NOTE: this is slow, so we cache it based on bounds
+        if read_window_bounds not in self._transform_cache:
+            src_height, src_width = data.shape
+            self._transform_cache[read_window_bounds] = calculate_default_transform(
+                dataset.crs,
+                MAP_CRS,
+                src_width,
+                src_height,
+                *read_window_bounds,
+                dst_width=self.width * self.densify,
+                dst_height=self.height * self.densify,
+            )
+
+        proj_transform, proj_width, proj_height = self._transform_cache[
+            read_window_bounds
+        ]
+
+        # Project to Spherical Mercator
+        projected = np.empty(shape=(proj_height, proj_width), dtype=data.dtype)
+        reproject(
+            source=data,
+            destination=projected,
+            src_transform=read_window_transform,
+            src_crs=dataset.crs,
+            src_nodata=nodata,
+            dst_transform=proj_transform,
+            dst_crs=MAP_CRS,
+            dst_nodata=nodata,
+            resampling=Resampling.nearest,
+            num_threads=2,
+        )
+
+        # Clip to bounds after reprojection
+        clip_window = (
+            windows.from_bounds(*self.mercator_bounds, proj_transform)
+            .round_offsets(op="floor")
+            .round_lengths(op="ceil")
+        )
+        clip_transform = windows.transform(clip_window, proj_transform)
+
+        # read projected data within window
+        data = projected[clip_window.toslices()]
+        height, width = data.shape
+
+        scaling = Affine.scale(width / self.width, height / self.height)
+        final_transform = clip_transform * scaling
+
+        clipped = np.empty(shape=(self.height, self.width), dtype=data.dtype)
+        reproject(
+            source=data,
+            destination=clipped,
+            src_transform=clip_transform,
+            src_crs=MAP_CRS,
+            dst_transform=final_transform,
+            dst_crs=MAP_CRS,
+            resampling=Resampling.nearest,
+            num_threads=2,
+        )
+
+        # if DEBUG:
+        # filename = os.path.splitext(os.path.split(dataset.name)[-1])[0]
+        # filename = f"/tmp/{filename}-warped-clipped.tif"
+        # write_raster(filename, clipped, final_transform, MAP_CRS, nodata)
+
+        return clipped
 
 
 def hex_to_rgb(color):
@@ -40,201 +206,91 @@ def hex_to_rgb(color):
     return tuple(int(color[i : i + 2], 16) for i in (0, 2, 4))
 
 
-def extract_data_for_map(src, bounds, scale, map_width, map_height):
-    """Extract, reproject, and clip data within bounds for map images.
-
-    Returns None if there is only nodata within the bounds.
+def hex_to_rgba(colors, alpha=0):
+    """Convert value, hex dict to RGBA array
 
     Parameters
     ----------
-    src : rasterio.RasterReader
-        open rasterio reader
-    bounds : list-like of (west, south, east, north)
-    scale : dict
-        contains resolution of map image pixels
-    map_width : int
-    map_height : int
+    colors : dict
+        lookup of value to hex color
+    alpha : int, optional (default 0)
+        alpha value
+    """
+
+    #
+    max_value = max(colors.keys())
+    out_colors = np.zeros((max_value + 1, 4), dtype="uint8")
+    for value, color in colors.items():
+        out_colors[value, :] = [int(color[i : i + 2], 16) for i in (1, 3, 5)] + [alpha]
+    return out_colors
+
+
+@nb.njit(
+    (nb.uint8[:, :], nb.uint8[:, :], nb.uint8),
+    fastmath=True,
+    nogil=True,
+    cache=True,
+)
+def to_rgba(data, colors, nodata):
+    """Convert 2D array of data into RGBA color values
+
+    Parameters
+    ----------
+    data : 2D uint8 array
+    colors : dict
+        lookup of value to hex color
+    nodata : uint8
+        NODATA value
 
     Returns
     -------
-    2d ndarray or None
+    uint8 array of shape (rows, cols, 4)
     """
+    rgba = np.zeros(shape=data.shape + (4,), dtype="uint8")
+    for i in range(0, data.shape[0]):
+        for j in range(0, data.shape[1]):
+            value = data[i, j]
+            if value != nodata:
+                color = colors[value]
+                for c in range(4):
+                    rgba[i, j, c] = color[c]
 
-    src_crs = src.crs
-
-    # For smoother rendering, we want between 2 and 4 data pixels per
-    # screen pixel.
-    # ratio is number of data pixels per screen pixels
-    pixel_ratio = scale["resolution"] / src.res[0]
-    densify = max(2, min(4, math.ceil(1.0 / pixel_ratio)))
-
-    scale_factor = 1
-
-    # NOTE: we calculate the ratios based on overviews of [2,4,8,16,32,64]
-    # in order to get 2 screen pixels per data pixel
-    for factor in [32, 16, 8, 4, 2]:
-        if pixel_ratio // factor >= 2:
-            scale_factor = factor
-            break
-
-    # Project bounds and define window to extract data.
-    # Round it to align with pixels
-    window = (
-        src.window(*transform_bounds(GEO_CRS, DATA_CRS, *bounds, densify_pts=21))
-        .round_offsets(op="floor")
-        .round_lengths(op="ceil")
-    )
-    # expand by 1px on all sides to be safe
-    window = windows.Window(
-        window.col_off - 1, window.row_off - 1, window.width + 2, window.height + 2
-    )
-
-    window_bounds = src.window_bounds(window)
-    window_transform = src.window_transform(window)
-
-    # Read data in window, potentially beyond extent of data
-    # TODO: https://github.com/mapbox/rasterio/issues/1878
-    # int8 nodata is not handled correctly and is converted to 0 instead
-    # TEMP: reassign nodata value internally
-    nodata = src.nodata
-    if src.dtypes[0] == "int8" and src.nodata == -128:
-        nodata = 127
-
-    # Use out_shape to use overviews if available, for reading otherwise very
-    # large areas in the data.
-    data = src.read(
-        1,
-        window=window,
-        boundless=True,
-        fill_value=nodata,
-        out_shape=(int(window.height / scale_factor), int(window.width / scale_factor)),
-    )
-    # scale window transform
-    scaling = Affine.scale(scale_factor, scale_factor)
-    window_transform *= scaling
-
-    # if DEBUG:
-    #     filename = os.path.splitext(os.path.split(src.name)[-1])[0]
-    #     filename = f"/tmp/{filename}-pre-warp.tif"
-    #     write_raster(filename, data, window_transform, src.crs, nodata)
-
-    # convert data before reproject
-    if nodata != src.nodata:
-        data[data == src.nodata] = nodata
-
-    if not np.any(data != nodata):
-        # entire area is nodata, no point in warping nodata pixels
-        return None
-
-    # Calculate initial transform to project to Spherical Mercator
-    src_height, src_width = data.shape
-    proj_transform, proj_width, proj_height = calculate_default_transform(
-        src.crs,
-        MAP_CRS,
-        src_width,
-        src_height,
-        *window_bounds,
-        dst_width=map_width * densify,
-        dst_height=map_height * densify,
-    )
-
-    # Project to Spherical Mercator
-    projected = np.empty(shape=(proj_height, proj_width), dtype=data.dtype)
-    reproject(
-        source=data,
-        destination=projected,
-        src_transform=window_transform,
-        src_crs=src_crs,
-        src_nodata=nodata,
-        dst_transform=proj_transform,
-        dst_crs=MAP_CRS,
-        dst_nodata=nodata,
-        resampling=Resampling.nearest,
-        num_threads=2,
-    )
-
-    # Clip to bounds after reprojection
-    clip_window = (
-        windows.from_bounds(
-            *transform_bounds(GEO_CRS, MAP_CRS, *bounds), proj_transform
-        )
-        .round_offsets(op="floor")
-        .round_lengths(op="ceil")
-    )
-    clip_transform = windows.transform(clip_window, proj_transform)
-
-    # read projected data within window
-    data = projected[clip_window.toslices()]
-    height, width = data.shape
-
-    scaling = Affine.scale(width / map_width, height / map_height)
-    final_transform = clip_transform * scaling
-
-    clipped = np.empty(shape=(map_height, map_width), dtype=data.dtype)
-    reproject(
-        source=data,
-        destination=clipped,
-        src_transform=clip_transform,
-        src_crs=MAP_CRS,
-        dst_transform=final_transform,
-        dst_crs=MAP_CRS,
-        resampling=Resampling.nearest,
-        num_threads=2,
-    )
-
-    # if DEBUG:
-    #     filename = os.path.splitext(os.path.split(src.name)[-1])[0]
-    #     filename = f"/tmp/{filename}-warped-clipped.tif"
-    #     write_raster(filename, clipped, final_transform, MAP_CRS, nodata)
-
-    # TEMP: Strip nodata values back out
-    if nodata != src.nodata:
-        clipped[clipped == nodata] = src.nodata
-
-    return clipped
+    return rgba
 
 
-def render_array(data, colors):
+def render_array(data, colors, nodata, alpha=255):
     """Render a data array to a PIL Image.
 
     Data values must be indexes into colors.
 
     Parameters
     ----------
-    data : 2D array
+    data : 2D uint8 array
         Values must be indexes into colors.  Any value not present in colors
         is rendered as completely transparent.
     colors : dict of hex colors
         lookup table of pixel values to colors
+    nodata : uint8
+        NODATA value
+    alpha : alpha value, optional (default: 255)
 
     Returns
     -------
     PIL Image
     """
 
-    # fully transparent image by default
-    # alpha is 0 for transparent and <= 255 for opaque parts
-    rgba = np.zeros(shape=data.shape + (4,), dtype="uint8")
-
-    for i, color in colors.items():
-        r, g, b = hex_to_rgb(color)
-        a = 175  # roughly 68% opacity
-
-        rgba[data == i, :] = r, g, b, a
-
-    return Image.fromarray(rgba, "RGBA")
+    rgba_colors = hex_to_rgba(colors, alpha)
+    rgba = to_rgba(data, rgba_colors, nodata)
+    return Image.fromarray(rgba)
 
 
-def render_raster(path, bounds, scale, width, height, colors):
+def render_raster(path, reader, colors):
     """Render a raster dataset to a PIL Image.
 
     Parameters
     ----------
     path : str or pathlib.Path
-    bounds : list-like of [xmin, ymin, xmax, ymax]
-        Map bounds
-    width : int
-    height : int
+    reader : WebMercatorReader
     colors : dict of hex colors
         lookup table of pixel values to colors
 
@@ -243,10 +299,10 @@ def render_raster(path, bounds, scale, width, height, colors):
     PIL Image
     """
     with rasterio.open(path) as src:
-        data = extract_data_for_map(src, bounds, scale, width, height)
+        data = reader.read(src)
+        nodata = getattr(np, src.dtypes[0])(src.nodata)
 
         if data is not None:
-
             # DEBUG
             # print(
             #     f"Memory of map data ({path}): {data.size * data.itemsize / (1024 * 1024):0.2f} MB",
@@ -254,6 +310,11 @@ def render_raster(path, bounds, scale, width, height, colors):
             # )
 
             # does not overlap with bounds
-            return render_array(data, colors)
+            return render_array(
+                data,
+                colors,
+                nodata,
+                175,  # about 68% opacity
+            )
 
-        return None
+    return None
