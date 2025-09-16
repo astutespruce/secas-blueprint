@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { cn } from '$lib/utils'
 
-	import { ProtectedAreas, SLR, Urban, WildfireRisk } from './moreinfo'
+	import { PARCAs, ProtectedAreas, SLR, Urban, WildfireRisk } from './moreinfo'
 	import { NeedHelp } from './general'
 
 	const {
@@ -13,6 +13,7 @@
 		protectedAreas,
 		protectedAreasList,
 		numProtectedAreas,
+		parcas,
 		class: className = ''
 	} = $props()
 </script>
@@ -27,6 +28,8 @@
 	{/if}
 
 	<ProtectedAreas {type} {protectedAreas} {protectedAreasList} {numProtectedAreas} />
+
+	<PARCAs {type} {parcas} />
 
 	<NeedHelp />
 </section>

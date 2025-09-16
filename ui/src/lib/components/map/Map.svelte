@@ -145,13 +145,19 @@
 			return
 		}
 
-		const subregions = map
+		const subregions = new Set<string>()
+		const regions = new Set<string>()
+		map
 			// @ts-ignore
 			.queryRenderedFeatures(null, { layers: ['subregions'] })
 			// @ts-ignore
-			.map(({ properties: { subregion } }) => subregion)
+			.forEach(({ properties: { subregion, region } }) => {
+				subregions.add(subregion)
+				regions.add(region)
+			})
 
-		mapData.visibleSubregions = new Set(subregions)
+		mapData.visibleSubregions = subregions
+		mapData.visibleRegions = regions
 	}, 10)
 
 	// use a callback to actually update the layers, since may style may still

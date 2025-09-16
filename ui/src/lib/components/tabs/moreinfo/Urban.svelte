@@ -14,7 +14,11 @@
 	<h3 class="text-2xl">Urbanization</h3>
 
 	{#if type === 'pixel'}
-		{#if urban !== null}
+		{#if urban === null || urban === undefined}
+			<div class="text-grey-8">
+				Projected future urbanization data is not currently available for this area.
+			</div>
+		{:else}
 			<!-- show as list with checkmarks -->
 			<div class="text-grey-8">Probability of urbanization by 2060:</div>
 			{#each urbanCategories as { value, label }}
@@ -31,10 +35,6 @@
 					<CheckIcon class={cn('size-4 flex-none invisible', { visible: value === urban })} />
 				</div>
 			{/each}
-		{:else}
-			<div class="text-grey-8">
-				Projected future urbanization data is not currently available for this area.
-			</div>
 		{/if}
 	{/if}
 	{#if type !== 'pixel'}

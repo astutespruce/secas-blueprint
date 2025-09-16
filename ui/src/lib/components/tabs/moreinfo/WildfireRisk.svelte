@@ -18,7 +18,7 @@
 	<h3 class="text-2xl">Wildfire Likelihood</h3>
 
 	{#if type === 'pixel'}
-		{#if wildfireRisk === null}
+		{#if wildfireRisk === null || wildfireRisk === undefined}
 			<div class="text-grey-8">
 				Wildfire likelihood data is not currently available for this area.
 			</div>

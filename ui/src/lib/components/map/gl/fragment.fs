@@ -28,6 +28,7 @@ uniform sampler2D layer5;
 uniform sampler2D layer6;
 uniform sampler2D layer7;
 uniform sampler2D layer8;
+uniform sampler2D layer9;
 
 // encoded filters, with a bit set to 1 for each value that is present in the
 // set of activated filters.  -1 indicates no filtering for that layer.
@@ -62,6 +63,7 @@ void main(void) {
   int valueRGB6 = rgbToInt32(ivec3(texture(layer6, vTexCoord).rgb * 255.));
   int valueRGB7 = rgbToInt32(ivec3(texture(layer7, vTexCoord).rgb * 255.));
   int valueRGB8 = rgbToInt32(ivec3(texture(layer8, vTexCoord).rgb * 255.));
+  int valueRGB9 = rgbToInt32(ivec3(texture(layer9, vTexCoord).rgb * 255.));
 
   // canRender is True where all filters are either not set or value is one
   // of active filter values
@@ -91,6 +93,8 @@ void main(void) {
     valueRGB = valueRGB7;
   } else if (renderLayerTextureIndex == 8) {
     valueRGB = valueRGB8;
+  } else if (renderLayerTextureIndex == 9) {
+    valueRGB = valueRGB9;
   }
 
   int renderValue = (valueRGB >> renderLayerOffset) & bitmask(renderLayerBits);

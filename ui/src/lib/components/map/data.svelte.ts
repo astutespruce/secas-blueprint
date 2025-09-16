@@ -18,7 +18,8 @@ export class MapData {
 	#numEnabledFilters = $derived.by(
 		() => Object.values(this.#filters).filter(({ enabled }) => enabled).length
 	)
-	#visibleSubregions: Set<string> = $state.raw(new Set())
+	#visibleSubregions: Set<string> = $state.raw(new Set<string>())
+	#visibleRegions: Set<string> = $state.raw(new Set<string>())
 	#filtersLoading: boolean = $state(true) // set to false on first set of visible subregions
 
 	get mapMode(): string {
@@ -102,6 +103,14 @@ export class MapData {
 		this.#filtersLoading = false
 	}
 
+	get visibleRegions() {
+		return this.#visibleRegions
+	}
+
+	set visibleRegions(visibleRegions: Set<string>) {
+		this.#visibleRegions = visibleRegions
+	}
+
 	// for logging state
 	toJSON() {
 		return {
@@ -109,7 +118,8 @@ export class MapData {
 			data: this.#data,
 			selectedIndicator: this.#selectedIndicator,
 			filters: this.#filters,
-			visibleSubregions: this.#visibleSubregions
+			visibleSubregions: this.#visibleSubregions,
+			visibleRegions: this.#visibleRegions
 		}
 	}
 }

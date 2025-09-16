@@ -10,7 +10,8 @@ import {
 	slrDepth,
 	slrNodata,
 	wildfireRisk,
-	protectedAreas
+	protectedAreas,
+	parcas
 } from './constants'
 
 // setup default filters
@@ -62,6 +63,12 @@ defaultFilters.wildfireRisk = {
 	enabled: false,
 	// values 0-10
 	activeValues: Object.fromEntries(range(0, 11).map((v) => [v, true]))
+}
+
+defaultFilters.parcas = {
+	enabled: false,
+	// values 0-1
+	activeValues: { 0: false, 1: true }
 }
 
 defaultFilters.protectedAreas = {
@@ -134,6 +141,12 @@ export const otherInfoFilters = [
 		values: protectedAreas,
 		description:
 			'Protected areas information is derived from the Protected Areas Database of the United States (PAD-US v4.1).'
+	},
+	{
+		id: 'parcas',
+		label: 'Priority Amphibian and Reptile Conservation Areas',
+		values: parcas,
+		description:
+			'Priority Amphibian and Reptile Areas derived from data provided by the Amphibian and Reptile Conservancy'
 	}
-	// TODO: add PARCAs
 ]
