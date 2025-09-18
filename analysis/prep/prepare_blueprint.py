@@ -422,20 +422,6 @@ for index, indicator_row in indicator_df.iterrows():
             print(f"\n-------------------------\nProcessing {indicator_row.label}")
 
             nodata = int(src.nodata)
-            # FIXME: temporary fixes for incorrect NODATA values
-            if indicator_row.id in {
-                "m_seagrass",
-                "f_gulfmigratoryfishconnectivity",
-                "m_caribbeanbeachhabitat",
-                "m_caribbeancoastalshorelinecondition",
-                "m_caribbeanfishnurseryhabitat",
-                "m_islandhabitat",
-                "m_southatlanticmaritimeforest",
-                "m_stablecoastalwetlands",
-                "t_caribbeanlowurbanhistoriclandscapes",
-                "t_southatlanticlowurbanhistoriclandscapes",
-            }:
-                nodata = 3
 
             # read data, standardize NODATA, and clip to data extent (not necessarily Blueprint extent)
             data = src.read(1)

@@ -12,7 +12,7 @@ from rasterio.features import rasterize, dataset_features
 from rasterio import windows
 import shapely
 
-from analysis.constants import DATA_CRS, SECAS_STATES, MASK_RESOLUTION, PARCAS
+from analysis.constants import DATA_CRS, GEO_CRS, SECAS_STATES, MASK_RESOLUTION, PARCAS
 from analysis.lib.colors import hex_to_uint8
 from analysis.lib.geometry import make_valid, to_dict_all, to_dict, dissolve
 from analysis.lib.raster import write_raster, add_overviews, create_lowres_mask
@@ -332,3 +332,32 @@ create_lowres_mask(
     resolution=MASK_RESOLUTION,
     ignore_zero=False,
 )
+
+################################################################################
+### Ocean areas
+################################################################################
+
+df = read_dataframe(src_dir / "boundaries/ne_50m_ocean.zip", columns=[]).to_crs(GEO_CRS)
+
+# clip to rough bounds, then invert so we can drop small areas
+outer_box = (-120.1, 1.9, -56.1, 45.9)
+inner_box = (-120, 2, -56, 46)
+df["geometry"] = shapely.clip_by_rect(df.geometry.values, *outer_box)
+box = shapely.box(*outer_box)
+df["geometry"] = shapely.difference(box, df.geometry.values)
+df = df.to_crs(DATA_CRS).explode(ignore_index=True)
+df = df.loc[
+    df.index.isin(
+        shapely.STRtree(df.geometry.values).query(bnd_geom, predicate="intersects")
+    )
+    | (df.area >= 1e10)
+].to_crs(GEO_CRS)
+
+df = gp.GeoDataFrame(geometry=[shapely.multipolygons(df.geometry.values)], crs=GEO_CRS)
+
+df["geometry"] = shapely.difference(box, df.geometry.values)
+# clip to a slightly smaller box
+df["geometry"] = shapely.clip_by_rect(df.geometry.values, *inner_box)
+
+
+write_dataframe(df, bnd_dir / "ocean.fgb")
