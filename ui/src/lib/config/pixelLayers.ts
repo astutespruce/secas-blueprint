@@ -109,18 +109,6 @@ const coreLayers: PixelLayer[] = [
 
 const otherInfoLayers: PixelLayer[] = [
 	{
-		id: 'urban',
-		label: 'Probability of urbanization by 2060',
-		colors: urban.map(({ color }) => color),
-		categories: urban.map(({ color, ...rest }) => ({
-			...rest,
-			color: color || '#FFFFFF',
-			outlineWidth: 1,
-			outlineColor: 'grey.5'
-		})),
-		layer: pixelLayerIndex.urban
-	},
-	{
 		id: 'slr',
 		label: 'Flooding extent by projected sea-level rise',
 		colors: slrDepth.concat(slrNodata).map(({ color }) => color),
@@ -135,6 +123,32 @@ const otherInfoLayers: PixelLayer[] = [
 				outlineColor: 'grey.5'
 			})),
 		layer: pixelLayerIndex.slr
+	},
+	{
+		id: 'parcas',
+		label: 'Priority Amphibian and Reptile Conservation Areas',
+		colors: parcas.map(({ color }) => color),
+		categories: parcas.filter(({ color }) => color !== null),
+		layer: pixelLayerIndex.parcas
+	},
+	{
+		id: 'urban',
+		label: 'Probability of urbanization by 2060',
+		colors: urban.map(({ color }) => color),
+		categories: urban.map(({ color, ...rest }) => ({
+			...rest,
+			color: color || '#FFFFFF',
+			outlineWidth: 1,
+			outlineColor: 'grey.5'
+		})),
+		layer: pixelLayerIndex.urban
+	},
+	{
+		id: 'protectedAreas',
+		label: 'Protected areas',
+		colors: protectedAreas.map(({ color }) => color),
+		categories: protectedAreas.filter(({ color }) => color !== null),
+		layer: pixelLayerIndex.protectedAreas
 	},
 	{
 		id: 'wildfireRisk',
@@ -158,20 +172,6 @@ const otherInfoLayers: PixelLayer[] = [
 			)
 		),
 		layer: pixelLayerIndex.wildfireRisk
-	},
-	{
-		id: 'protectedAreas',
-		label: 'Protected areas',
-		colors: protectedAreas.map(({ color }) => color),
-		categories: protectedAreas.filter(({ color }) => color !== null),
-		layer: pixelLayerIndex.protectedAreas
-	},
-	{
-		id: 'parcas',
-		label: 'Priority Amphibian and Reptile Conservation Areas',
-		colors: parcas.map(({ color }) => color),
-		categories: parcas.filter(({ color }) => color !== null),
-		layer: pixelLayerIndex.parcas
 	}
 ]
 

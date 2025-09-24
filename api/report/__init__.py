@@ -119,6 +119,7 @@ def create_report(maps, results, name=None, area_type="custom"):
         "maps": maps,
         "legends": legends,
         "results": results,
+        "is_marine_only": results.get("regions") == {"marine"},
         # have to flip the crosshatch horizontally due to bug in WeasyPrint
         "flip_crosshatch": sys.platform == "darwin",
     }

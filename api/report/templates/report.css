@@ -60,7 +60,7 @@ footer {
 
 /* table of contents */
 #TableOfContents {
-	margin: 24pt 0 72pt;
+	margin-top: 24pt;
 }
 
 #TableOfContents li li {
@@ -134,10 +134,6 @@ p {
 p.note {
 	font-size: small;
 	color: #7e8b96;
-}
-
-section {
-	page-break-before: always;
 }
 
 ul {
@@ -268,6 +264,14 @@ table td.highlight-col {
 .no-break {
 	page-break-inside: avoid;
 	break-inside: avoid;
+}
+
+.break-before {
+	page-break-before: always;
+}
+
+.break-after {
+	page-break-after: always;
 }
 
 .no-margin {
@@ -504,7 +508,13 @@ table td.highlight-col {
 	color: #666;
 }
 
-.indicator-description {
+.summary-units-description {
+	margin-top: 2rem;
+	font-size: 11pt;
+}
+
+.indicator-description,
+.dataset-description {
 	font-size: 11pt;
 }
 
@@ -555,11 +565,6 @@ table td.highlight-col {
 	width: 220px;
 	height: 52px;
 	margin-right: 18pt;
-}
-
-.cover-footer {
-	margin-top: 6pt;
-	width: 100%;
 }
 
 .north-arrow-container {

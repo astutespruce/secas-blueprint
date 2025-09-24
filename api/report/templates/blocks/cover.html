@@ -8,9 +8,30 @@
 
 {% include "blocks/table_of_contents.html" %}
 
+{% if area_type == "huc12" %}
+    <p class="summary-units-description">
+        This subwatershed boundary is based on the
+        <a href="https://www.usgs.gov/national-hydrography/watershed-boundary-dataset">National Watershed Boundary Dataset</a>
+        (2023), U.S. Geological Survey.
+    </p>
+{% elif area_type == "marine_hex" %}
+    <p class="summary-units-description">
+        This hexagon boundary is based on 40 km<sup>2</sup> hexagons developed by the
+        <a href="https://www.sciencebase.gov/catalog/item/5ba9378fe4b08583a5ca0937">U.S. Environmental Protection Agency</a>
+        and extended into the Gulf of America by the
+        <a href="https://www.boem.gov/gommapps">Gulf of Mexico Marine Assessment Program for Protected Species</a>
+        (GoMMAPPS) and the
+        <a href="https://www.fisheries.noaa.gov/about/southeast-fisheries-science-center">NOAA Southeast Fisheries Science Center</a>
+        with similar hexagons generated in the U.S. Caribbean for internal use
+        by the Southeast Conservation Adaptation Strategy (2023).
+    </p>
+{% endif %}
+
 <footer class="cover-footer">
     <div style="text-align: center;"><b><a href="https://secassoutheast.org/blueprint">The Southeast Conservation Blueprint 2025</a></b><br /><br /></div>
     <div class="flex justify-center">
-        <img src="assets:SECAS_logo.png" alt="SECAS logo" class="cover-logo" />
+        <div>
+            <img src="assets:SECAS_logo.png" alt="SECAS logo" class="cover-logo" />
+        </div>
     </div>
 </footer>

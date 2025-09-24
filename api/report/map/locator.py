@@ -145,24 +145,6 @@ def get_locator_map_image(longitude, latitude, bounds, geometry=None):
         }
 
     try:
-        # FIXME: remove
-        # ZOOM = 2.25
-        # WIDTH = 300
-        # HEIGHT = 200
-
-        # with open("/tmp/test.png", "wb") as out:
-        #     with Map(
-        #         json.dumps(style),
-        #         WIDTH,
-        #         HEIGHT,
-        #         1,
-        #         *CENTER,
-        #         zoom=ZOOM,
-        #         token=MAPBOX_ACCESS_TOKEN,
-        #         provider="mapbox",
-        #     ) as map:
-        #         _ = out.write(map.renderPNG())
-
         return (
             Map(
                 json.dumps(style),

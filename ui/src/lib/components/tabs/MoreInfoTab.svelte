@@ -20,16 +20,18 @@
 
 <section class={cn('flex-auto overflow-y-auto h-full py-8 pl-4 pr-8', className)}>
 	{#if type === 'pixel' || type === 'subwatershed'}
-		<Urban {type} {urban} {regions} />
-
-		<SLR {type} {...slr} />
-
-		<WildfireRisk {type} {wildfireRisk} {regions} />
+		<PARCAs {type} {parcas} />
 	{/if}
 
 	<ProtectedAreas {type} {protectedAreas} {protectedAreasList} {numProtectedAreas} />
 
-	<PARCAs {type} {parcas} />
+	{#if type === 'pixel' || type === 'subwatershed'}
+		<SLR {type} {...slr} />
+
+		<Urban {type} {urban} {regions} />
+
+		<WildfireRisk {type} {wildfireRisk} {regions} />
+	{/if}
 
 	<NeedHelp />
 </section>

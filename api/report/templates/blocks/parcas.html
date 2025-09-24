@@ -1,6 +1,21 @@
-<section>
+<section class="break-after">
     <div class="no-break">
         <h3 id="PARCAs">Priority Amphibian and Reptile Conservation Areas</h3>
+
+        <p class="dataset-description">
+            Priority Amphibian and Reptile Conservation Areas (PARCAs) are an
+            expert-driven, nonregulatory designation that includes places
+            capable of supporting viable amphibian and reptile populations,
+            places occupied by rare or imperiled species, and places rich in
+            biodiversity or species unique to that geographic area. Reptiles and
+            amphibians are a critical part of the Southeast region’s rich
+            biodiversity and many populations are declining in the face of
+            threats like habitat loss, invasive species, and climate change. The
+            PARCA dataset is maintained by the
+            <a href="https://arcprotects.org/work/" target="_blank">Amphibian and Reptile Conservancy</a>
+            and does not yet include Virginia or Kentucky.
+
+        </p>
 
         {% if maps.parcas %}
             <div class="map-container">
@@ -97,6 +112,11 @@
                 </p>
             {% endfor %}
         </div>
+
+        <p style="margin-top:4rem;">
+            Names and descriptions of public Priority Amphibian and Reptile Areas were provided by the
+            Amphibian and Reptile Conservancy on August 30, 2024 and edited slightly for clarity and consistency.
+        </p>
     </div>
     {% endif %}
 

@@ -10,7 +10,7 @@
 	const { type, urban, regions } = $props()
 </script>
 
-<div>
+<div class="not-first:mt-8 not-first:border-t not-first:border-t-grey-2 not-first:pt-8">
 	<h3 class="text-2xl">Urbanization</h3>
 
 	{#if type === 'pixel'}
