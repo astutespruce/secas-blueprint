@@ -225,7 +225,7 @@
     "valueLabel": "Frequency of inundation within the floodplain",
     "captionLabel": "floodplain inundation",
     "goodThreshold": 4,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/c58a64714a744ec9bddf8d7a4aaeff8c/about",
     "subregions": [
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -393,7 +393,7 @@
     "valueLabel": "",
     "captionLabel": "lakes & reservoirs",
     "goodThreshold": 3,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/c376e924447c4875bbd15d17479accef/about",
     "subregions": [
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -1074,7 +1074,7 @@
     "valueLabel": "",
     "captionLabel": "Caribbean mangrove migration",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/511312dc43d14e6b951f20e967dc763b/about",
     "subregions": [
       "Puerto Rico",
       "US Virgin Islands"
@@ -1645,7 +1645,7 @@
     "valueLabel": "",
     "captionLabel": "resilient coastal sites",
     "goodThreshold": null,
-    "url": "https://secas-fws.hub.arcgis.com/maps/fws::resilient-coastal-sites-southeast-blueprint-indicator-2023/about",
+    "url": "https://secas-fws.hub.arcgis.com/maps/2ea2c0d83ec24c91b53a1179a5ce7b18/about",
     "subregions": [
       "Atlantic Coastal Plain",
       "East Gulf Coastal Plain",
@@ -2138,7 +2138,7 @@
     "id": "t_caribbeanurbanparksize",
     "filename": "CaribbeanUrbanParkSize.tif",
     "label": "Caribbean urban park size",
-    "description": "This cultural resource indicator measures the size of parks and beaches in the urban environment in the U.S. Caribbean. Protected natural areas in urban environments provide urban residents a nearby place to connect with nature, and offer refugia for some species. All beaches in this region are open to the public. This indicator uses several protected areas and beach datasets (e.g., the Protected Areas Database of the United States, OpenStreetMap) and Census urban areas.",
+    "description": "This cultural resource indicator measures the size of parks and beaches in the urban environment in the U.S. Caribbean. Protected natural areas in urban environments provide urban residents a nearby place to connect with nature, and offer refugia for some species. All beaches in this region are open to the public. This indicator uses several protected areas and beach datasets (e.g., the Protected Areas Database of the United States, OpenStreetMap) and U.S. Census Bureau urban areas.",
     "values": [
       {
         "value": 0,
@@ -2336,7 +2336,7 @@
     "valueLabel": "",
     "captionLabel": "grassland & savanna extent",
     "goodThreshold": 5,
-    "url": "https://secas-fws.hub.arcgis.com/maps/fws::grasslands-savannas-southeast-blueprint-indicator/about",
+    "url": "https://secas-fws.hub.arcgis.com/maps/5b0041a3cd404735b2de319c97d563f5/about",
     "subregions": [
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -2403,7 +2403,7 @@
     "valueLabel": "Restoration priority",
     "captionLabel": "grassland & savanna restoration",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/93b553b59a4c44fdae74a1852fd7bd09/about",
     "subregions": [
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -2537,7 +2537,7 @@
     "valueLabel": "Importance for range-restricted species",
     "captionLabel": "imperiled amphibians & reptiles",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/aeeb7cbc30744b26b5e82cdf184da18a/about",
     "subregions": [
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -2599,7 +2599,7 @@
     "valueLabel": "Importance for range-restricted species",
     "captionLabel": "imperiled mammals",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/c8a03ac574764a0eb7795ee599bab02a/about",
     "subregions": [
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -2677,7 +2677,7 @@
     "id": "t_landscapecondition",
     "filename": "LandscapeCondition.tif",
     "label": "Landscape condition",
-    "description": "This indicator represents natural areas with limited human alteration while also considering the naturalness of the surrounding landscape. Examples of human alteration include urban development and intense agricultural use. The degree of naturalness across the landscape is a key ecological condition for sustaining species and ecosystem services that are sensitive to habitat fragmentation at multiple scales. This indicator combines data from multiple sources, including the National Land Cover Dataset; various data on grasslands, mines, quarries, and reservoirs; ideas from the Florida Critical Lands and Waters Identification Project's approach for evaluating land use intensity; and more.",
+    "description": "This indicator represents natural areas with limited human alteration while also considering the naturalness of the surrounding landscape. Examples of human alteration include urban development and intense agricultural use. The degree of naturalness across the landscape is a key ecological condition for sustaining species and ecosystem services that are sensitive to habitat fragmentation at multiple scales. This indicator combines data from multiple sources, including the National Land Cover Database; various data on grasslands, mines, quarries, and reservoirs; ideas from the Florida Critical Lands and Waters Identification Project's approach for evaluating land use intensity; and more.",
     "values": [
       {
         "value": 1,
@@ -2713,7 +2713,7 @@
     "valueLabel": "",
     "captionLabel": "landscape condition",
     "goodThreshold": 4,
-    "url": "https://secas-fws.hub.arcgis.com/maps/fws::landscape-condition-southeast-blueprint-indicator-2024/about",
+    "url": "https://secas-fws.hub.arcgis.com/maps/c259d72dba724a55aaa1c224416242f4/about",
     "subregions": [
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -2951,7 +2951,7 @@
     "valueLabel": "Priority for a new park to serve people who lack nearby park access",
     "captionLabel": "potential access to parks",
     "goodThreshold": null,
-    "url": "https://secas-fws.hub.arcgis.com/maps/fws::potential-access-to-parks-southeast-blueprint-indicator/about",
+    "url": "https://secas-fws.hub.arcgis.com/maps/557c331a10b24310b04d4fae4f1a1b24/about",
     "subregions": [
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -3003,7 +3003,7 @@
     "valueLabel": "Priority for a new park to serve people who lack nearby park access",
     "captionLabel": "Puerto Rico potential access to parks",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/317654f0c9304a72a222c4a031950e9c/about",
     "subregions": [
       "Puerto Rico"
     ]
@@ -3058,7 +3058,7 @@
     "valueLabel": "",
     "captionLabel": "resilient terrestrial sites",
     "goodThreshold": null,
-    "url": "https://secas-fws.hub.arcgis.com/maps/fws::resilient-terrestrial-sites-southeast-blueprint-indicator/about",
+    "url": "https://secas-fws.hub.arcgis.com/maps/2db724a1cac14e43a2acc9bc0a33be47/about",
     "subregions": [
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -3120,7 +3120,7 @@
     "valueLabel": "",
     "captionLabel": "river cane restoration",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/d5e3b5bc3bfa46f1ab59dfbaca5178bb/about",
     "subregions": [
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -3228,7 +3228,7 @@
     "id": "t_urbanparksize",
     "filename": "UrbanParkSize.tif",
     "label": "Urban park size",
-    "description": "This cultural resource indicator measures the size of parks larger than 5 acres in the urban environment. Protected natural areas in urban environments provide urban residents a nearby place to connect with nature, and offer refugia for some species. This indicator complements the equitable access to potential parks indicator by capturing the value of existing parks. It originates from the Protected Areas Database of the United States, Census urban areas, and the National Land Cover Database.",
+    "description": "This cultural resource indicator measures the size of parks larger than 5 acres in the urban environment. Protected natural areas in urban environments provide urban residents a nearby place to connect with nature, and offer refugia for some species. This indicator complements the equitable access to potential parks indicator by capturing the value of existing parks. It originates from the Protected Areas Database of the United States, U.S. Census Bureau urban areas, and the National Land Cover Database.",
     "values": [
       {
         "value": 0,
@@ -3328,7 +3328,7 @@
     "valueLabel": "",
     "captionLabel": "U.S. Virgin Islands imperiled terrestrial species",
     "goodThreshold": null,
-    "url": "",
+    "url": "https://secas-fws.hub.arcgis.com/maps/2a253b40483d4bba96c34eebe740957f/about",
     "subregions": [
       "US Virgin Islands"
     ]
