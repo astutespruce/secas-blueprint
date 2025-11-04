@@ -3,7 +3,7 @@
 	import { captureException, logGAEvent } from '$lib/util/log'
 	import { Footer, Header } from '$lib/components/layout'
 	import { Done, Progress, Queued, ReportError, UploadForm } from '$lib/components/report'
-	import type { ReportState, ReportJobResult, ProgressCallback } from '$lib/components/report/types'
+	import type { ReportState, ReportJobResult } from '$lib/components/report/types'
 
 	const initState: ReportState = {
 		reportURL: null,
@@ -55,7 +55,7 @@
 					elapsedTime: nextElapsedTime,
 					message: nextMessage = null,
 					errors: nextErrors = null
-				}: ProgressCallback) => {
+				}) => {
 					reportState = {
 						...reportState,
 						status: nextStatus,
@@ -72,7 +72,6 @@
 			)
 
 			if (uploadError) {
-				// eslint-disable-next-line no-console
 				console.error(uploadError)
 
 				reportState = {
@@ -109,7 +108,6 @@
 			window.location.href = result as string
 		} catch (ex) {
 			captureException('File upload failed', ex)
-			// eslint-disable-next-line no-console
 			console.error('Caught unhandled error from uploadFile', ex)
 
 			reportState = {

@@ -2,7 +2,6 @@
 	import CheckIcon from '~icons/fa-solid/check'
 	import { PercentBarChart } from '$lib/components/chart'
 	import { parcas as categories } from '$lib/config/constants'
-	import { formatNumber } from '$lib/util/format'
 	import { cn } from '$lib/utils'
 
 	const { type, parcas } = $props()

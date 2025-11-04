@@ -69,12 +69,8 @@
 		// this happens in hot reload
 		if (!(map && map.__deck && map.__deck.layerManager)) return
 
-		/* eslint-disable-next-line no-underscore-dangle */
 		map.__deck.setProps({
-			layers: [
-				/* eslint-disable-next-line no-underscore-dangle */
-				map.__deck.layerManager.layers[0].clone(newProps)
-			]
+			layers: [map.__deck.layerManager.layers[0].clone(newProps)]
 		})
 	}
 

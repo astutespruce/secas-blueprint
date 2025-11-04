@@ -68,7 +68,7 @@
 			target="_blank"
 		>
 			Protected Areas Database of the United States
-		</a>{' '}
+		</a>
 		(PAD-US v4.1) and include Fee, Designation, Easement, Marine, and Proclamation (Dept. of Defense
 		lands only) boundaries.
 

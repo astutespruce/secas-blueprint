@@ -70,7 +70,7 @@
 
 		<p class="mt-16">
 			You can download a detailed PDF report of the Blueprint, hubs and corridors, underlying
-			indicators, and landscape-level threats for the selected summary unit. Click the{' '}
+			indicators, and landscape-level threats for the selected summary unit. Click the
 			<b>Export detailed maps and analysis</b> link below the area name. To unselect the area, click
 			the <b>X</b> in the upper right of the sidebar.
 		</p>
@@ -127,7 +127,7 @@
 			data for that specific ground location, especially in areas of high variability in the data.
 			<br />
 			<br />
-			To view and / or download more precise spatial data, please visit the{' '}
+			To view and / or download more precise spatial data, please visit the
 			<a href="https://secas-fws.hub.arcgis.com/pages/blueprint" target="_blank">
 				Blueprint page of the SECAS Atlas
 			</a>
@@ -209,7 +209,7 @@
 
 		<h2 class="text-4xl">Display different map layers:</h2>
 		<p class="mt-2">
-			You can display map layers other than the Blueprint. Choose{' '}
+			You can display map layers other than the Blueprint. Choose
 			<b>View point data</b> or <b>Filter the Blueprint</b> from the button bar above the map, and then
 			click the button in the upper right of the map to display the list of available layers.
 		</p>

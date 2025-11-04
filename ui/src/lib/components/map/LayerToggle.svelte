@@ -46,7 +46,7 @@
 			<Title class="text-3xl">Choose layer to show on map</Title>
 		</Header>
 		<div class="overflow-y-auto max-h-[400px]">
-			{#each renderLayerGroups as { id: groupId, label: groupLabel, layers }}
+			{#each renderLayerGroups as { label: groupLabel, layers }}
 				<div class="not-first:mt-2 not-first:pt-2 not-first:border-t not-first:border-t-grey-1">
 					{#if groupLabel}
 						<h4 class="text-xl not-first:mt-8">{groupLabel}</h4>

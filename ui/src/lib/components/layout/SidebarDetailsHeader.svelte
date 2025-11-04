@@ -48,7 +48,7 @@
 		<div class="flex justify-between items-start gap-4 pt-4 pl-4 min-h-[7rem]">
 			<div class="flex-auto">
 				<h2 class="text-2xl leading-none">
-					{mapData.data.name}{' '}
+					{mapData.data.name}
 					{#if mapData.data.type === 'subwatershed'}
 						<span class="text-sm font-normal">(HUC12)</span>
 					{/if}

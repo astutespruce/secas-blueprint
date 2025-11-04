@@ -5,7 +5,6 @@
 
 	type PropType = {
 		type: string
-		id: string
 		label: string
 		icon: string
 		color: string

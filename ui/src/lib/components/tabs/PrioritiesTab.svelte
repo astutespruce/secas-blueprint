@@ -12,7 +12,7 @@
 		type: string
 		blueprint: number[] | number | null
 		corridors: number[] | number | null
-		subregions: Set<string>
+		regions: Set<string>
 		outsideSEPercent: number
 		class: string | undefined
 	}
@@ -186,25 +186,25 @@
 
 	{#if type === 'subwatershed'}
 		<div class="text-grey-9 text-sm mt-8 pt-8 border-t border-t-grey-2">
-			Subwatershed boundary is based on the{' '}
+			Subwatershed boundary is based on the
 			<a
 				href="https://www.usgs.gov/national-hydrography/watershed-boundary-dataset"
 				target="_blank"
 			>
 				National Watershed Boundary Dataset
-			</a>{' '}
+			</a>
 			(2023), U.S. Geological Survey.
 		</div>
 	{:else if type === 'marine hex'}
 		<div class="text-grey-9 text-sm mt-8 pt-8 border-t border-t-grey-2">
-			Hexagon boundary is based on 40 km<sup>2</sup> hexagons developed by the{' '}
+			Hexagon boundary is based on 40 km<sup>2</sup> hexagons developed by the
 			<a href="https://www.sciencebase.gov/catalog/item/5ba9378fe4b08583a5ca0937" target="_blank">
 				U.S. Environmental Protection Agency
-			</a>{' '}
-			and extended into the Gulf of America by the{' '}
+			</a>
+			and extended into the Gulf of America by the
 			<a href="https://www.boem.gov/gommapps" target="_blank">
 				Gulf of Mexico Marine Assessment Program for Protected Species
-			</a>{' '}
+			</a>
 			(GoMMAPPS). Gulf of America hexagons provided by the NOAA Southeast Fisheries Science Center. Similar
 			hexagons were generated in the U.S. Caribbean for internal use by the Southeast Conservation Adaptation
 			Strategy (2023).

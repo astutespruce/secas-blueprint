@@ -47,7 +47,7 @@
 
 <div class="my-8">
 	{#if goodThreshold === null}
-		{#each values.filter(({ value }: { value: number }) => value >= 0) as { value, label, percent, isHighValue, isLowValue }}
+		{#each values.filter(({ value }: { value: number }) => value >= 0) as { label, percent, isHighValue, isLowValue }}
 			<div class={cn('flex not-first:mt-4 items-start', { 'items-end': isLowValue })}>
 				<div class="flex items-center gap-1 flex-none w-20 font-bold text-sm">
 					{#if isHighValue}

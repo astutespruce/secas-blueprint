@@ -168,7 +168,6 @@ export const unpackFeatureData = (
 			return [key, value]
 		})
 		.reduce((prev, [key, value]) => {
-			// eslint-disable-next-line no-param-reassign
 			prev[key] = value
 			return prev
 		}, {})

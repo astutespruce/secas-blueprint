@@ -13,7 +13,7 @@
 		respond to your comments&mdash;we promise.
 		<br />
 		<br />
-		Please reach out to{' '}
+		Please reach out to
 		<a href="http://secassoutheast.org/staff"> Blueprint user support staff</a>.
 	</p>
 
@@ -26,7 +26,7 @@
 		it. It is what we do!
 		<br />
 		<br />
-		Please reach out to{' '}
+		Please reach out to
 		<a href="http://secassoutheast.org/staff"> Blueprint user support staff</a>.
 	</p>
 </section>

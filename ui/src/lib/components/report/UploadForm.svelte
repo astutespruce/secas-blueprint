@@ -50,7 +50,7 @@
 		}
 	})
 
-	const { form: formData, submitting, delayed, enhance, errors, validate } = form
+	const { form: formData, enhance, errors, validate } = form
 	const fileHandle = fileProxy(formData, 'file')
 
 	const handleDragOver = async (e: DragEvent) => {
@@ -218,20 +218,20 @@
 				urbanization and sea-level rise.
 				<br />
 				<br />
-				Don&apos;t have a shapefile? You can create one using{' '}
-				<a href="https://geojson.io/#map=6/32.861/-81.519" target="_blank"> geojson.io </a>{' '}
+				Don&apos;t have a shapefile? You can create one using
+				<a href="https://geojson.io/#map=6/32.861/-81.519" target="_blank"> geojson.io </a>
 				to draw your area of interest, save as a shapefile, then upload here.
 				<br />
 				<br />
 				<ContactDialog>
 					<span class="text-link hover:underline cursor-pointer">We are here</span>
-				</ContactDialog>{' '}
+				</ContactDialog>
 				to help you interpret and apply this information to your particular application!
 				<br />
 				<br />
 				We are working on resolving some technical challenges to make these these automatically generated
 				reports more accessible to people with disabilities. In the meantime, to request an accessible
-				PDF or other assistance, please contact Hilary Morris at{' '}
+				PDF or other assistance, please contact Hilary Morris at
 				<a href="mailto:hilary_morris@fws.gov"> hilary_morris@fws.gov </a>.
 				<br />
 				<br />

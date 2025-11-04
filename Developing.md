@@ -25,7 +25,7 @@ To check for outdated dependencies and upgrade them:
 uv pip list --outdated
 
 # install latest version
-uv pip install -U <packages>
+uv sync --upgrade --all-extras
 ```
 
 To update the requirements.txt file used to build these dependencies into the API
@@ -75,6 +75,32 @@ Note: this needs to be done each time an interpreter is opened for development.
 The user interface is developed using SvelteJS and Typescript. While we don't
 strictly require type annotations, we recommend using them where possible, and are
 progressively adding type annotations throughout the codebase.
+
+To run the user interface in development mode:
+
+```bash
+npm run dev -- --open
+```
+
+This will automatically open the development version in your browser.
+
+To run a static build of the user interface:
+
+```bash
+npm run build
+npm preview -- --open
+```
+
+To check for outdated dependencies and upgrade them:
+
+```bash
+npm install -g npm-check-updates
+ncu -i --cooldown 3
+```
+
+Note: this uses a 3 day "cooldown" to prevent upgrading to very recently released
+versions; modify this on a selective basis to pull in a newer version that resolves
+a vulnerability.
 
 ## Other dependencies
 

@@ -43,7 +43,6 @@ export const resolveKey = (item: { [key: string]: {} }, key: string): any => {
 export const groupBy = (data: [{ [key: string]: any }], groupField: string) =>
 	data.reduce((prev, d) => {
 		const key = resolveKey(d, groupField)
-		/* eslint-disable-next-line no-param-reassign */
 		prev[key] = (prev[key] || []).concat([d])
 		return prev
 	}, {})
@@ -210,7 +209,6 @@ export const parseDictEncodedValues = (text: string) => {
 			return [k, v]
 		})
 		.reduce((prev, [k, v]) => {
-			// eslint-disable-next-line no-param-reassign
 			prev[k] = v
 			return prev
 		}, {})

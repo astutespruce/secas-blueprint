@@ -66,8 +66,8 @@
 	<!-- don't show data info in Caribbean -->
 	{#if !(regions && regions.has('caribbean'))}
 		<div class="mt-8 text-grey-8 leading-tight">
-			Wildfire likelihood data derived from the{' '}
-			<a href="https://wildfirerisk.org/" target="_blank"> Wildfire Risk to Communities </a>{' '}
+			Wildfire likelihood data derived from the
+			<a href="https://wildfirerisk.org/" target="_blank"> Wildfire Risk to Communities </a>
 			project by the USDA Forest Service.
 		</div>
 	{/if}
