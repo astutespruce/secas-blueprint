@@ -919,7 +919,7 @@
     "id": "m_caribbeanbeachhabitat",
     "filename": "CaribbeanBeachHabitat.tif",
     "label": "Caribbean beach habitat",
-    "description": "This indicator evaluates beach habitat for six species of birds and sea turtles that nest on beaches in the U.S. Caribbean (Wilson's plover, American oystercatcher, and hawksbill, leatherback, green, and loggerhead sea turtles). It includes beach locations, sea turtle nest observations, and predicted suitable habitat for birds and sea turtles. Beaches, especially those known to support beach-nesting species, are particularly important habitats due to their limited spatial extent and vulnerability to development and sea-level rise. This indicator combines multiple datasets from the Gap Analysis Program, State of the World's Sea Turtles, OpenStreetMap, and more.",
+    "description": "This indicator evaluates beach habitat for six species of birds and sea turtles that nest on beaches in the U.S. Caribbean (Wilson's plover, American oystercatcher, and hawksbill, leatherback, green, and loggerhead sea turtles). It includes beach locations, sea turtle nest observations, and predicted suitable habitat for birds and sea turtles. Beaches, especially those known to support beach-nesting species, are particularly important habitats due to their limited spatial extent and vulnerability to development and sea-level rise. This indicator combines multiple datasets from the Gap Analysis Project, State of the World's Sea Turtles, OpenStreetMap, and more.",
     "values": [
       {
         "value": 0,
@@ -1933,7 +1933,7 @@
     "id": "t_caribbeanislandhabitat",
     "filename": "CaribbeanIslandHabitat.tif",
     "label": "Caribbean island habitat",
-    "description": "This indicator represents the importance of island habitat in the U.S. Caribbean for federally listed and other imperiled species based on the presence of imperiled and invasive animals. The isolation of islands often makes them ecologically unique and protects them from disturbance and mainland predators; however, these factors also make them more vulnerable to invasive species. This indicator uses species data from Island Conservation's Threatened Island Biodiversity Database, U.S. Fish and Wildlife Service critical habitat, and the Puerto Rico and U.S. Virgin Islands Gap Analysis Program.",
+    "description": "This indicator represents the importance of island habitat in the U.S. Caribbean for federally listed and other imperiled species based on the presence of imperiled and invasive animals. The isolation of islands often makes them ecologically unique and protects them from disturbance and mainland predators; however, these factors also make them more vulnerable to invasive species. This indicator uses species data from Island Conservation's Threatened Island Biodiversity Database, U.S. Fish and Wildlife Service critical habitat, and the Puerto Rico and U.S. Virgin Islands Gap Analysis Project.",
     "values": [
       {
         "value": 0,
@@ -2501,7 +2501,7 @@
     "id": "t_imperiledamphibiansandreptiles",
     "filename": "ImperiledAmphibiansandReptiles.tif",
     "label": "Imperiled amphibians & reptiles",
-    "description": "This indicator identifies potential habitat to support amphibian and reptile Regional Species of Greatest Conservation Need (RSGCN). Using a rarity-weighted richness approach, it prioritizes places important for species that are restricted to smaller ranges, such as narrow endemics, which are therefore more vulnerable to habitat loss or change. RSGCN are regional priority species derived from the list of SGCN identified in Southeast State Wildlife Action Plans as most in need of need of conservation action. RSGCN were chosen based on consistent criteria, such as level of conservation concern, regional stewardship responsibility, and ecological significance. This indicator uses models from the U.S. Geological Survey Gap Analysis Program that are based on known species ranges, species-habitat relationships, and landcover.",
+    "description": "This indicator identifies potential habitat to support amphibian and reptile Regional Species of Greatest Conservation Need (RSGCN). Using a rarity-weighted richness approach, it prioritizes places important for species that are restricted to smaller ranges, such as narrow endemics, which are therefore more vulnerable to habitat loss or change. RSGCN are regional priority species derived from the list of SGCN identified in Southeast State Wildlife Action Plans as most in need of need of conservation action. RSGCN were chosen based on consistent criteria, such as level of conservation concern, regional stewardship responsibility, and ecological significance. This indicator uses models from the U.S. Geological Survey Gap Analysis Project that are based on known species ranges, species-habitat relationships, and landcover.",
     "values": [
       {
         "value": 0,
@@ -2563,7 +2563,7 @@
     "id": "t_imperiledmammals",
     "filename": "ImperiledMammals.tif",
     "label": "Imperiled mammals",
-    "description": "This indicator identifies potential habitat to support mammal Regional Species of Greatest Conservation Need (RSGCN). Using a rarity-weighted richness approach, it prioritizes places important for species that are restricted to smaller ranges, such as narrow endemics, which are therefore more vulnerable to habitat loss or change. RSGCN are regional priority species derived from the list of SGCN identified in Southeast State Wildlife Action Plans as most in need of need of conservation action. RSGCN were chosen based on consistent criteria, such as level of conservation concern, regional stewardship responsibility, and ecological significance. This indicator uses models from the U.S. Geological Survey Gap Analysis Program that are based on known species ranges, species-habitat relationships, and LANDFIRE landcover.",
+    "description": "This indicator identifies potential habitat to support mammal Regional Species of Greatest Conservation Need (RSGCN). Using a rarity-weighted richness approach, it prioritizes places important for species that are restricted to smaller ranges, such as narrow endemics, which are therefore more vulnerable to habitat loss or change. RSGCN are regional priority species derived from the list of SGCN identified in Southeast State Wildlife Action Plans as most in need of need of conservation action. RSGCN were chosen based on consistent criteria, such as level of conservation concern, regional stewardship responsibility, and ecological significance. This indicator uses models from the U.S. Geological Survey Gap Analysis Project that are based on known species ranges, species-habitat relationships, and LANDFIRE landcover.",
     "values": [
       {
         "value": 0,
@@ -3146,7 +3146,7 @@
     "id": "t_southatlanticforestbirds",
     "filename": "SouthAtlanticForestBirds.tif",
     "label": "South Atlantic forest birds",
-    "description": "This indicator is an index of habitat suitability for twelve upland hardwood and forested wetland bird species (wood thrush, whip-poor-will, American woodcock, red-headed woodpecker, Chuck-will's widow, hooded warbler, Kentucky warbler, Acadian flycatcher, Northern parula, black-throated green warbler, prothonotary warbler, Swainson's warbler) based on patch size and other ecosystem characteristics such as proximity to water and proximity to forest and ecotone edge. The needs of these species are increasingly restrictive at higher index values, reflecting better quality habitat. It originates from Southeast Gap Analysis Program and Designing Sustainable Landscapes bird habitat models.",
+    "description": "This indicator is an index of habitat suitability for twelve upland hardwood and forested wetland bird species (wood thrush, whip-poor-will, American woodcock, red-headed woodpecker, Chuck-will's widow, hooded warbler, Kentucky warbler, Acadian flycatcher, Northern parula, black-throated green warbler, prothonotary warbler, Swainson's warbler) based on patch size and other ecosystem characteristics such as proximity to water and proximity to forest and ecotone edge. The needs of these species are increasingly restrictive at higher index values, reflecting better quality habitat. It originates from Southeast Gap Analysis Project and Designing Sustainable Landscapes bird habitat models.",
     "values": [
       {
         "value": 0,
