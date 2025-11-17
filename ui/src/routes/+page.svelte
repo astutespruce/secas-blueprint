@@ -138,7 +138,7 @@
 	<title>Southeast Conservation Blueprint Explorer</title>
 	{#if !dev}
 		<!-- only include manifest in production build -->
-		<link rel="manifest" href={asset('manifest.webmanifest')} />
+		<link rel="manifest" href={asset('/manifest.webmanifest')} />
 	{/if}
 </svelte:head>
 

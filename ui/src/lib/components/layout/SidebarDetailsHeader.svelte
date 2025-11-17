@@ -38,14 +38,14 @@
 					visible: mapData.numEnabledFilters > 0
 				})}
 			>
-				<Button onclick={mapData.resetFilters} class="text-sm h-7">
+				<Button onclick={() => mapData.resetFilters()} class="text-sm h-7">
 					<TimesCircleIcon class="size-4" />
 					reset {mapData.numEnabledFilters} pixel filter{mapData.numEnabledFilters > 1 ? 's' : ''}
 				</Button>
 			</div>
 		</div>
 	{:else}
-		<div class="flex justify-between items-start gap-4 pt-4 pl-4 min-h-[7rem]">
+		<div class="flex justify-between items-start gap-4 pt-4 pl-4 min-h-28">
 			<div class="flex-auto">
 				<h2 class="text-2xl leading-none">
 					{mapData.data.name}

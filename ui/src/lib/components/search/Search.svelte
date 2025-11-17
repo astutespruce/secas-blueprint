@@ -145,12 +145,9 @@
 			<Input
 				bind:ref
 				bind:value
-				class={cn(
-					'relative w-full flex-auto border-grey-3 [&:placeholder]:text-grey-8 z-0 pl-7 pr-2',
-					{
-						'pr-8': query && query.length > 0
-					}
-				)}
+				class={cn('relative w-full flex-auto border-grey-3 placeholder:text-grey-8 z-0 pl-7 pr-2', {
+					'pr-8': query && query.length > 0
+				})}
 				placeholder={isCompact ? 'Find a place' : 'Find a place by name / address'}
 				onclick={handleClick}
 				onfocus={onFocus}
