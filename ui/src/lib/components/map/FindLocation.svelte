@@ -73,7 +73,7 @@
 </script>
 
 <svelte:document
-	onclick={(e: Event) => {
+	onclick={() => {
 		handleWindowClick()
 	}}
 />

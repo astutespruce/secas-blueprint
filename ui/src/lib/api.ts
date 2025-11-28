@@ -1,7 +1,7 @@
-/* eslint-disable no-await-in-loop */
 import { browser } from '$app/environment'
 import { captureException } from '$lib/util/log'
 import { API_TOKEN, API_HOST } from '$lib/env'
+import type { ProgressCallback } from '$lib/components/report/types'
 
 let apiHost = API_HOST
 
@@ -15,7 +15,7 @@ if (browser && !apiHost) {
 
 const API = `${apiHost}/api/reports`
 
-export const uploadFile = async (file: File, name: string, onProgress: Function) => {
+export const uploadFile = async (file: File, name: string, onProgress: ProgressCallback) => {
 	// NOTE: both file and name are required by API
 	const formData = new FormData()
 	formData.append('file', file)
@@ -51,7 +51,11 @@ export const uploadFile = async (file: File, name: string, onProgress: Function)
 	return result
 }
 
-export const createSummaryUnitReport = async (id: string, type: string, onProgress: Function) => {
+export const createSummaryUnitReport = async (
+	id: string,
+	type: string,
+	onProgress: ProgressCallback
+) => {
 	let unitType = null
 
 	if (type === 'subwatershed') {
@@ -88,7 +92,7 @@ export const createSummaryUnitReport = async (id: string, type: string, onProgre
 	return result
 }
 
-const pollJob = async (jobId: string, onProgress: Function) => {
+const pollJob = async (jobId: string, onProgress: ProgressCallback) => {
 	let time = 0
 	let failedRequests = 0
 
@@ -99,7 +103,7 @@ const pollJob = async (jobId: string, onProgress: Function) => {
 			response = await fetch(`${API}/status/${jobId}`, {
 				cache: 'no-cache'
 			})
-		} catch (ex) {
+		} catch (_) {
 			failedRequests += 1
 
 			// sleep and try again
@@ -107,7 +111,6 @@ const pollJob = async (jobId: string, onProgress: Function) => {
 				setTimeout(r, pollInterval)
 			})
 			time += pollInterval
-			/* eslint-disable-next-line no-continue */
 			continue
 		}
 

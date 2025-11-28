@@ -13,11 +13,12 @@ import {
 	corridors,
 	ecosystems,
 	indicatorsIndex,
+	parcas,
+	protectedAreas,
 	urban,
 	slrDepth,
 	slrNodata,
 	wildfireRisk,
-	protectedAreas,
 	pixelLayers0,
 	pixelLayers1,
 	pixelLayers2,
@@ -26,7 +27,8 @@ import {
 	pixelLayers5,
 	pixelLayers6,
 	pixelLayers7,
-	pixelLayers8
+	pixelLayers8,
+	pixelLayers9
 } from './constants'
 
 import { tileHost } from './map'
@@ -40,25 +42,27 @@ const pixelLayerEncoding: PixelLayerEncodings = {
 	5: pixelLayers5,
 	6: pixelLayers6,
 	7: pixelLayers7,
-	8: pixelLayers8
+	8: pixelLayers8,
+	9: pixelLayers9
 }
 
 // this is copy-pasted from bounds reported by the tile services
 const pixelLayerBounds: PixelLayerBounds = {
 	0: [-108.0227, 16.97285, -57.03082, 41.58111],
-	1: [-108.0227, 23.73322, -74.0301, 41.58035],
-	2: [-98.53344, 22.37943, -70.38168, 40.66711],
-	3: [-108.0227, 22.4353, -70.06457, 41.58092],
-	4: [-108.0227, 23.78806, -74.172, 41.58053],
-	5: [-98.26575, 17.10476, -57.73155, 40.36863],
-	6: [-67.97848, 16.97285, -64.29697, 19.34715],
+	1: [-108.0227, 23.7876, -74.16891, 41.58053],
+	2: [-108.0227, 23.78657, -74.16925, 41.58053],
+	3: [-108.0227, 23.73322, -74.0301, 41.58035],
+	4: [-98.17642, 23.45445, -78.08619, 37.43742],
+	5: [-98.52635, 22.4353, -70.45003, 40.4673],
+	6: [-98.36691, 22.37943, -70.45039, 40.46605],
 	7: [-67.97848, 16.97285, -64.29697, 19.34715],
-	8: [-108.0227, 16.98923, -57.08541, 41.58111]
+	8: [-67.97848, 16.97285, -64.29697, 19.34715],
+	9: [-98.77728, 16.97285, -57.624, 40.36192]
 }
 
 const pixelLayerSourceConfig = { tileSize: 512, minzoom: 3, maxzoom: 14 }
 
-export const pixelLayers = [...Array(9).keys()].map((i) => ({
+export const pixelLayers = [...Array(10).keys()].map((i) => ({
 	...pixelLayerSourceConfig,
 	id: `pixels${i}`,
 	url: `${tileHost}/services/se_pixel_layers_${i}/tiles/{z}/{x}/{y}.png`,
@@ -105,18 +109,6 @@ const coreLayers: PixelLayer[] = [
 
 const otherInfoLayers: PixelLayer[] = [
 	{
-		id: 'urban',
-		label: 'Probability of urbanization by 2060',
-		colors: urban.map(({ color }) => color),
-		categories: urban.map(({ color, ...rest }) => ({
-			...rest,
-			color: color || '#FFFFFF',
-			outlineWidth: 1,
-			outlineColor: 'grey.5'
-		})),
-		layer: pixelLayerIndex.urban
-	},
-	{
 		id: 'slr',
 		label: 'Flooding extent by projected sea-level rise',
 		colors: slrDepth.concat(slrNodata).map(({ color }) => color),
@@ -131,6 +123,32 @@ const otherInfoLayers: PixelLayer[] = [
 				outlineColor: 'grey.5'
 			})),
 		layer: pixelLayerIndex.slr
+	},
+	{
+		id: 'parcas',
+		label: 'Priority Amphibian and Reptile Conservation Areas',
+		colors: parcas.map(({ color }) => color),
+		categories: parcas.filter(({ color }) => color !== null),
+		layer: pixelLayerIndex.parcas
+	},
+	{
+		id: 'urban',
+		label: 'Probability of urbanization by 2060',
+		colors: urban.map(({ color }) => color),
+		categories: urban.map(({ color, ...rest }) => ({
+			...rest,
+			color: color || '#FFFFFF',
+			outlineWidth: 1,
+			outlineColor: 'grey.5'
+		})),
+		layer: pixelLayerIndex.urban
+	},
+	{
+		id: 'protectedAreas',
+		label: 'Protected areas',
+		colors: protectedAreas.map(({ color }) => color),
+		categories: protectedAreas.filter(({ color }) => color !== null),
+		layer: pixelLayerIndex.protectedAreas
 	},
 	{
 		id: 'wildfireRisk',
@@ -154,13 +172,6 @@ const otherInfoLayers: PixelLayer[] = [
 			)
 		),
 		layer: pixelLayerIndex.wildfireRisk
-	},
-	{
-		id: 'protectedAreas',
-		label: 'Protected areas',
-		colors: protectedAreas.map(({ color }) => color),
-		categories: protectedAreas.filter(({ color }) => color !== null),
-		layer: pixelLayerIndex.protectedAreas
 	}
 ]
 

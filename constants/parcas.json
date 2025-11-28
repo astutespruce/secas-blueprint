@@ -1,0 +1,12 @@
+[
+	{
+		"value": 0,
+		"label": "Not a PARCA (excluding Kentucky and Virginia)",
+		"color": null
+	},
+	{
+		"value": 1,
+		"label": "Priority Amphibian and Reptile Conservation Area (PARCA)",
+		"color": "#38A800"
+	}
+]

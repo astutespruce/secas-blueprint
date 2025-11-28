@@ -110,10 +110,10 @@
 						canBeVisible:
 							(entry.id !== 'urban' &&
 								entry.id !== 'wildfireRisk' &&
-								mapData.visibleSubregions.size > 0) ||
+								mapData.visibleRegions.size > 0) ||
 							// urban / wildfire not in Caribbean
 							((entry.id === 'urban' || entry.id === 'wildfireRisk') &&
-								[...mapData.visibleSubregions].filter((s) => s !== 'Caribbean').length > 0)
+								[...mapData.visibleRegions].filter((s) => s !== 'caribbean').length > 0)
 					}))
 					.filter(({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled) // mapData.filters[id].enabled)
 			}

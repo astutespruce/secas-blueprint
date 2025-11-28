@@ -43,11 +43,11 @@
 			<div>This area is already inundated.</div>
 		{:else}
 			<div>
-				This area is projected to be inundated at{' '}
+				This area is projected to be inundated at
 				<b>
 					{depth}
 					{depth === 1 ? 'foot' : 'feet'}
-				</b>{' '}
+				</b>
 				of sea-level rise.
 			</div>
 		{/if}

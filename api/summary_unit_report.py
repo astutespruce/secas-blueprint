@@ -54,10 +54,11 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
         summary_unit_id=unit_id,
         indicators=indicators,
         corridors="corridors" in results,
-        urban="urban" in results,
-        slr="slr" in results and results["slr"].get("na", False) is not True,
-        wildfire_risk="wildfire_risk" in results,
+        parcas="parcas" in results,
         protected_areas="protected_areas" in results,
+        slr="slr" in results and results["slr"].get("na", False) is not True,
+        urban="urban" in results,
+        wildfire_risk="wildfire_risk" in results,
     )
 
     if map_errors:

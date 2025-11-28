@@ -6,8 +6,8 @@ import shapely
 
 from analysis.constants import M2_ACRES
 from analysis.lib.stats.blueprint import summarize_blueprint_in_aoi
+from analysis.lib.stats.parca import summarize_parcas_in_aoi
 from analysis.lib.stats.protected_areas import summarize_protected_areas_in_aoi
-from analysis.lib.stats.parca import get_parcas_for_aoi
 from analysis.lib.stats.rasterized_geometry import RasterizedGeometry
 from analysis.lib.stats.slr import summarize_slr_in_aoi
 from analysis.lib.stats.urban import summarize_urban_in_aoi
@@ -38,17 +38,15 @@ async def get_custom_area_results(df, progress_callback=None):
     acres = shapely.area(geometry) * M2_ACRES
 
     subregion_df = gp.read_feather(
-        subregions_filename, columns=["subregion", "geometry"]
+        subregions_filename, columns=["subregion", "region", "geometry"]
     )
     tree = shapely.STRtree(subregion_df.geometry.values)
-    subregions = set(
-        subregion_df.subregion.take(
-            np.unique(tree.query(geometry, predicate="intersects"))
-        )
+    subregion_df = subregion_df.take(
+        np.unique(tree.query(geometry, predicate="intersects"))
     )
 
     # if area does not intersect any of the subregions, there will be no results
-    if len(subregions) == 0:
+    if len(subregion_df) == 0:
         return None
 
     # start = time()
@@ -62,8 +60,11 @@ async def get_custom_area_results(df, progress_callback=None):
     if rasterized_geometry.acres == 0:
         return None
 
+    subregions = set(subregion_df.subregion.unique())
+
     results = {
         "subregions": subregions,
+        "regions": subregion_df.region.unique(),
         "acres": acres,
         "rasterized_acres": rasterized_geometry.acres,
         "outside_se_acres": rasterized_geometry.outside_se_acres,
@@ -85,10 +86,32 @@ async def get_custom_area_results(df, progress_callback=None):
     if progress_callback is not None:
         await progress_callback(60)
 
+    parca = summarize_parcas_in_aoi(rasterized_geometry, df)
+
+    if parca is not None:
+        results["parcas"] = parca
+
+    if progress_callback is not None:
+        await progress_callback(70)
+
+    protected_areas = summarize_protected_areas_in_aoi(rasterized_geometry, df)
+    if protected_areas is not None:
+        results["protected_areas"] = protected_areas
+
+    if progress_callback is not None:
+        await progress_callback(75)
+
+    slr = summarize_slr_in_aoi(rasterized_geometry, geometry=geometry)
+    if slr is not None:
+        results["slr"] = slr
+
+    if progress_callback is not None:
+        await progress_callback(80)
+
     async def urban_progress_callback(percent):
         if progress_callback is not None:
-            # urban progress scales between 60 and 80% of total progress
-            await progress_callback(60 + int(round((percent / 100) * 20)))
+            # urban progress scales between 80 and 95% of total progress
+            await progress_callback(80 + int(round((percent / 100) * 15)))
 
     urban = await summarize_urban_in_aoi(
         rasterized_geometry, progress_callback=urban_progress_callback
@@ -96,33 +119,9 @@ async def get_custom_area_results(df, progress_callback=None):
     if urban is not None:
         results["urban"] = urban
 
-    if progress_callback is not None:
-        await progress_callback(80)
-
-    slr = summarize_slr_in_aoi(rasterized_geometry, geometry=geometry)
-    if slr is not None:
-        results["slr"] = slr
-
-    if progress_callback is not None:
-        await progress_callback(90)
-
     wildfire_risk = summarize_wildfire_risk_in_aoi(rasterized_geometry)
     if wildfire_risk is not None:
         results["wildfire_risk"] = wildfire_risk
-
-    if progress_callback is not None:
-        await progress_callback(95)
-
-    protected_areas = summarize_protected_areas_in_aoi(rasterized_geometry, df)
-    if protected_areas is not None:
-        results["protected_areas"] = protected_areas
-
-    if progress_callback is not None:
-        await progress_callback(99)
-
-    parca = get_parcas_for_aoi(df)
-    if parca is not None:
-        results["parca"] = parca
 
     if progress_callback is not None:
         await progress_callback(100)

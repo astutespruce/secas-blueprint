@@ -5,6 +5,7 @@ import rawBlueprint from '$constants/blueprint.json'
 import rawCorridors from '$constants/corridors.json'
 import ecosystems from '$constants/ecosystems.json'
 import rawIndicators from '$constants/indicators.json'
+import parcas from '$constants/parcas.json'
 import protectedAreas from '$constants/protected_areas.json'
 import rawSLR from '$constants/slr.json'
 import subregions from '$constants/subregions.json'
@@ -21,10 +22,12 @@ import pixelLayers5 from '$constants/pixel_layers_5.json'
 import pixelLayers6 from '$constants/pixel_layers_6.json'
 import pixelLayers7 from '$constants/pixel_layers_7.json'
 import pixelLayers8 from '$constants/pixel_layers_8.json'
+import pixelLayers9 from '$constants/pixel_layers_9.json'
 
 // export unmodified values directly
 export {
 	ecosystems,
+	parcas,
 	protectedAreas,
 	subregions,
 	urban,
@@ -37,7 +40,8 @@ export {
 	pixelLayers5,
 	pixelLayers6,
 	pixelLayers7,
-	pixelLayers8
+	pixelLayers8,
+	pixelLayers9
 }
 
 export const ecosystemIndex = indexBy(ecosystems, 'id')

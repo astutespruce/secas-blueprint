@@ -7,14 +7,18 @@
 
 	const YEARS = [2001, 2004, 2006, 2008, 2011, 2013, 2016, 2019, 2021, 2030, 2040, 2050, 2060]
 
-	const { type, urban, subregions } = $props()
+	const { type, urban, regions } = $props()
 </script>
 
-<div>
+<div class="not-first:mt-8 not-first:border-t not-first:border-t-grey-2 not-first:pt-8">
 	<h3 class="text-2xl">Urbanization</h3>
 
 	{#if type === 'pixel'}
-		{#if urban !== null}
+		{#if urban === null || urban === undefined}
+			<div class="text-grey-8">
+				Projected future urbanization data is not currently available for this area.
+			</div>
+		{:else}
 			<!-- show as list with checkmarks -->
 			<div class="text-grey-8">Probability of urbanization by 2060:</div>
 			{#each urbanCategories as { value, label }}
@@ -31,14 +35,10 @@
 					<CheckIcon class={cn('size-4 flex-none invisible', { visible: value === urban })} />
 				</div>
 			{/each}
-		{:else}
-			<div class="text-grey-8">
-				Projected future urbanization data is not currently available for this area.
-			</div>
 		{/if}
 	{/if}
 	{#if type !== 'pixel'}
-		{#if subregions && subregions.has('Caribbean')}
+		{#if regions && regions.has('caribbean')}
 			<div class="text-grey-8">
 				Projected future urbanization data is not currently available for this area.
 			</div>
@@ -56,7 +56,7 @@
 	{/if}
 
 	<!-- don't show data info in Caribbean -->
-	{#if !(subregions && subregions.has('Caribbean'))}
+	{#if !(regions && regions.has('caribbean'))}
 		<div class="mt-8 text-grey-8 leading-tight">
 			Past and current (2021) urban levels based on developed land cover classes from the
 			<a

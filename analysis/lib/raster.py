@@ -2,8 +2,9 @@ from itertools import product
 import math
 
 from affine import Affine
-from progress.bar import Bar
+import numba as nb
 import numpy as np
+from progress.bar import Bar
 import rasterio
 from rasterio.enums import Resampling
 from rasterio.mask import geometry_mask
@@ -12,6 +13,63 @@ from rasterio.windows import Window
 import shapely
 
 from analysis.constants import OVERVIEW_FACTORS, DATA_CRS
+
+
+@nb.njit(
+    (nb.uint8[:, :], nb.bool_[:, :], nb.uint64[:], nb.uint8),
+    fastmath=True,
+    nogil=True,
+    cache=True,
+)
+def count_values_inplace(arr, mask, out, nodata):
+    """Calculate count of each value in arr.
+
+    About 2x as fast as np.bincount
+
+    Parameters
+    ----------
+    arr : uint8 ndarray of shape (rows, cols)
+    mask : bool ndarray of shape (rows, cols)
+        mask values are True for the areas to be counted
+    out : ndarray of shape (num_values, )
+        output array updated in place
+    nodata : uint8
+        NODATA value in arr
+    """
+    c = nb.uint64(1)
+    for row in nb.prange(arr.shape[0]):
+        for col in nb.prange(arr.shape[1]):
+            if mask[row, col]:
+                value = arr[row, col]
+                if value != nodata:
+                    out[value] += c
+
+
+@nb.njit(
+    (nb.uint8[:, :],),
+    fastmath=True,
+    nogil=True,
+    cache=True,
+)
+def unique(arr):
+    """Extract unique values in arr.
+
+    About 2x as fast as np.unique.
+
+    Parameters
+    ----------
+    arr : uint8 ndarray of shape (rows, cols)
+
+    Returns
+    -------
+    set
+    """
+    out = set()
+    for row in nb.prange(arr.shape[0]):
+        for col in nb.prange(arr.shape[1]):
+            out.add(arr[row, col])
+
+    return out
 
 
 def get_window(dataset, bounds, boundless=True):
@@ -220,14 +278,14 @@ def summarize_raster_by_units_grid(
     ndarray of shape(n, m) where n=len(df) and m=len(bins), in same order as df
     """
     nodata = np.uint8(value_dataset.nodata)
-    num_bins = len(bins)
 
     # get read window for df
     value_read_window = get_window(value_dataset, df.total_bounds, boundless=False)
     value_data = value_dataset.read(1, window=value_read_window)
 
-    # TODO: consider moving this loop to Cython
-    out = np.zeros((len(df), len(bins)), dtype="uint")
+    # TODO: consider moving this loop to Cython or numba, but that would require
+    # jit-ifying the window operations
+    out = np.zeros((len(df), len(bins)), dtype="uint64")
     for i, (_, row) in Bar(progress_label, max=len(df)).iter(enumerate(df.iterrows())):
         # get boundless window in order to calculate offset adjustments for
         # unit window, but then clip it to be boundless
@@ -268,8 +326,7 @@ def summarize_raster_by_units_grid(
         in_unit = units_grid.data[unit_window.toslices()] == row.value
 
         values = value_data[value_window.toslices()]
-        values_in_unit = values[in_unit & (values != nodata)]
-        out[i, :] = np.bincount(values_in_unit, minlength=num_bins).astype("uint")
+        count_values_inplace(values, in_unit, out[i, :], nodata)
 
         # # DEBUG: write value and unit rasters
         # outfilename = "/tmp/values.tif"
@@ -542,19 +599,19 @@ class WindowGeometryMask(object):
 
         return False
 
-    def get_pixel_count_by_bin(self, dataset, bins):
+    def get_pixel_count_by_bin(self, dataset, num_values=None, out=None):
         """Get count of pixels in each bin
 
         Parameters
         ----------
         dataset : open rasterio dataset
-        bins : list-like
-            List-like of values ranging from 0 to max value (not sparse!).
-            Counts will be generated that correspond to this list of bins.
+        num_values : int, optional (default: None)
+        out : ndarray of shape (num_values, ), optional (default: None)
+            output array, updated in place if provided
 
         Returns
         -------
-        ndarray
+        ndarray of shape (num_values, )
             Total number of pixels for each bin
         """
         # DEBUG: check for implementation errors
@@ -574,6 +631,12 @@ class WindowGeometryMask(object):
         nodata = getattr(np, dataset.dtypes[0])(dataset.nodata)
         data = dataset.read(1, window=read_window, boundless=True)
 
+        if out is None:
+            if num_values is None:
+                raise ValueError("Either num_values or out must be provided")
+
+            out = np.zeros((num_values,), dtype="uint64")
+
         # extract values inside geometry except where they are NODATA
-        values = data[self.shape_mask & (data != nodata)]
-        return np.bincount(values, minlength=len(bins))
+        count_values_inplace(data, self.shape_mask, out, nodata)
+        return out

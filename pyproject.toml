@@ -26,6 +26,7 @@ dependencies = [
     "geopandas",
     "gunicorn",
     "Jinja2",
+    "numba>=0.61.2",
     "numpy",
     "pandas",
     "Pillow",
@@ -36,6 +37,7 @@ dependencies = [
     "python-calamine",
     "python-dotenv",
     "python-multipart",
+    # IMPORTANT: rasterio 1.4.3 does not yet fully support GDAL 3.11
     "rasterio",
     # NOTE: redis 5.1 introduced changes that break arq
     "redis[hiredis]==5.0.0",

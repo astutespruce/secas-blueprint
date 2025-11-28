@@ -5,7 +5,7 @@ import geopandas as gp
 from pyogrio import read_dataframe, write_dataframe
 import shapely
 
-from analysis.constants import GEO_CRS
+from analysis.constants import GEO_CRS, SECAS_STATES
 
 
 data_dir = Path("data")
@@ -65,27 +65,75 @@ def create_tileset(infilename, outfilename, minzoom, maxzoom, layer_id, col_type
     ret.check_returncode()
 
 
-### Create state tileset (all states not just SECAS states)
+### Create state tileset (all states not just SECAS states) and ocean for report
+tilesets = []
 print(
     "\n\n------------------------------------------------\nCreating state tiles\n------------------------------------------------\n"
 )
-df = read_dataframe(
-    "zip://source_data/boundaries/tl_2023_us_state.zip/tl_2023_us_state.shp",
-    columns=["STATEFP"],
-    use_arrow=True,
-).to_crs(GEO_CRS)
+df = (
+    read_dataframe(
+        "zip://source_data/boundaries/tl_2024_us_state.zip/tl_2024_us_state.shp",
+        columns=["STUSPS"],
+        use_arrow=True,
+    )
+    .rename(columns={"STUSPS": "id"})
+    .to_crs(GEO_CRS)
+)
 
-infilename = tmp_dir / "states.fgb"
-write_dataframe(df, infilename)
+
+infilename = tmp_dir / "secas_states.fgb"
+# simplify boundaries for cleaner rendering
+tmp = df.loc[df.id.isin(SECAS_STATES)].explode(ignore_index=True)
+geom = shapely.coverage_simplify(shapely.multipolygons(tmp.geometry.values), 0.1)
+write_dataframe(
+    gp.GeoDataFrame(geometry=shapely.get_parts(geom), crs=GEO_CRS), infilename
+)
+outfilename = tmp_dir / "secas_states.mbtiles"
+tilesets.append(outfilename)
 
 create_tileset(
     infilename,
-    out_dir / "states.mbtiles",
+    outfilename,
     minzoom=0,
     maxzoom=5,
-    layer_id="states",
+    layer_id="secas_states",
+)
+
+
+infilename = tmp_dir / "other_states.fgb"
+write_dataframe(df.loc[~df.id.isin(SECAS_STATES)], infilename)
+outfilename = tmp_dir / "other_states.mbtiles"
+tilesets.append(outfilename)
+
+create_tileset(
+    infilename,
+    outfilename,
+    minzoom=0,
+    maxzoom=5,
+    layer_id="other_states",
     col_types=get_col_types(df),
 )
+
+
+infilename = data_dir / "boundaries/ocean.fgb"
+outfilename = tmp_dir / "ocean.mbtiles"
+tilesets.append(outfilename)
+
+create_tileset(
+    infilename,
+    outfilename,
+    minzoom=0,
+    maxzoom=5,
+    layer_id="ocean",
+)
+
+
+outfilename = out_dir / "report_boundaries.mbtiles"
+ret = subprocess.run(
+    [tile_join, "-f", "-pg"] + ["-o", f"{str(outfilename)}"] + tilesets
+)
+ret.check_returncode()
+
 
 ### Create protected areas and subregion tiles
 print(

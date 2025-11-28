@@ -91,18 +91,22 @@ huc12 = huc12.join(huc12_wgs84.bounds)
 huc12["value"] = np.arange(1, len(huc12) + 1).astype("uint16")
 
 # get subregions list for each huc12
-tree = shapely.STRtree(huc12.geometry.values)
-left, right = tree.query(subregion_df.geometry.values, predicate="intersects")
-pairs = (
-    pd.Series(
-        subregion_df.subregion.values.take(left),
+left, right = shapely.STRtree(huc12.geometry.values).query(
+    subregion_df.geometry.values, predicate="intersects"
+)
+subregions = (
+    pd.DataFrame(
+        {
+            "subregions": subregion_df.subregion.values.take(left),
+            "regions": subregion_df.region.values.take(left),
+        },
         index=huc12.id.values.take(right),
-        name="subregions",
     )
     .groupby(level=0)
-    .apply(list)
+    .agg({"subregions": "unique", "regions": "unique"})
 )
-huc12 = huc12.join(pairs, on="id")
+
+huc12 = huc12.join(subregions, on="id")
 
 
 ### Marine units
@@ -130,9 +134,7 @@ marine["name"] = "Hex ID: " + marine.id
 
 
 # select out those within the marine subregions / Caribbean
-hex_subregions = subregion_df.loc[
-    subregion_df.marine | (subregion_df.subregion == "Caribbean")
-]
+hex_subregions = subregion_df.loc[subregion_df.region.isin(["marine", "caribbean"])]
 tree = shapely.STRtree(marine.geometry.values)
 ix = np.unique(tree.query(hex_subregions.geometry.values, predicate="intersects")[1])
 marine = marine.iloc[ix].copy().reset_index(drop=True)
@@ -205,20 +207,21 @@ marine["value"] = np.arange(1, len(marine) + 1).astype("uint16")
 # avoid edge effects
 tree = shapely.STRtree(marine.geometry.values)
 left, right = tree.query(hex_subregions.geometry.values, predicate="intersects")
-pairs = (
-    pd.Series(
-        hex_subregions.subregion.values.take(left),
+subregions = (
+    pd.DataFrame(
+        {
+            "subregions": hex_subregions.subregion.values.take(left),
+            "regions": hex_subregions.region.values.take(left),
+        },
         index=marine.id.values.take(right),
-        name="subregions",
     )
     .groupby(level=0)
-    .apply(list)
+    .agg({"subregions": "unique", "regions": "unique"})
 )
-marine = marine.join(pairs, on="id")
+marine = marine.join(subregions, on="id")
 
 
 # rasterize for summary unit analysis, use full extent
-print("Rasterizing geometries")
 tmp_huc12 = pd.DataFrame(huc12[["id", "value", "geometry"]].join(huc12.bounds))
 tmp_huc12["geometry"] = tmp_huc12.geometry.values
 
@@ -229,6 +232,7 @@ with rasterio.open(blueprint_extent_filename) as src:
     extent_data = src.read(1)
     nodata = np.uint(src.nodata)
 
+    print("Rasterizing HUC12s")
     data = rasterize(
         # create tuples of GeoJSON, value
         tmp_huc12.apply(lambda row: (to_dict(row.geometry), row.value), axis=1),
@@ -261,6 +265,7 @@ with rasterio.open(blueprint_extent_filename) as src:
     write_raster(outfilename, data, transform=src.transform, crs=src.crs, nodata=0)
     add_overviews(outfilename)
 
+    print("Rasterizing marine hexes")
     data = rasterize(
         tmp_marine.apply(lambda row: (to_dict(row.geometry), row.value), axis=1),
         (src.height, src.width),

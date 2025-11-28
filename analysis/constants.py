@@ -76,6 +76,13 @@ PROTECTED_AREAS_COLORS = {
     if entry.get("color", None) is not None
 }
 
+PARCAS = json.loads(open(json_dir / "parcas.json").read())
+PARCA_COLORS = {
+    entry["value"]: entry["color"]
+    for entry in PARCAS
+    if entry.get("color", None) is not None
+}
+
 
 URBAN_YEARS = [2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100]
 
@@ -153,8 +160,7 @@ WILDFIRE_RISK_COLORS = {
 # saved in descending probability order
 WILDFIRE_RISK_LEGEND = [
     dict([key, value])
-    for key, value in
-    (
+    for key, value in (
         # this dict used to preserve original order and only keep unique label / colors
         dict(
             (("label", e["label"].split(" (")[0]), ("color", e["color"]))

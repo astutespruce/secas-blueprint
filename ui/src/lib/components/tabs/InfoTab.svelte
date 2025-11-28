@@ -20,7 +20,7 @@
 	{/if}
 
 	<p class="text-lg">
-		The Southeast Conservation Blueprint is the primary product of the{' '}
+		The Southeast Conservation Blueprint is the primary product of the
 		<a href="https://secassoutheast.org/" target="_blank">
 			Southeast Conservation Adaptation Strategy
 		</a>
@@ -31,7 +31,7 @@
 		<br />
 		For more information, visit the
 		<a href="https://secassoutheast.org/blueprint" target="_blank"> Blueprint webpage </a>. To view
-		the Blueprint data and make maps, visit the{' '}
+		the Blueprint data and make maps, visit the
 		<a href="https://secas-fws.hub.arcgis.com/pages/blueprint" target="_blank">
 			Blueprint page of the SECAS Atlas
 		</a>.
@@ -106,7 +106,7 @@
 			Note: this approach uses pixels that have been resampled and reprojected for each zoom level. This
 			means that the values shown in the tool may not exactly match the Blueprint and indicator data
 			for that specific ground location, especially in areas of high variability in the data. To view
-			and / or download more precise spatial data, please visit the{' '}
+			and / or download more precise spatial data, please visit the
 			<a href="https://secas-fws.hub.arcgis.com/pages/blueprint" target="_blank">
 				Blueprint page of the SECAS Atlas
 			</a>
@@ -133,8 +133,8 @@
 		</div>
 		<div class="flex-auto">
 			<p>
-				<b>Citation:</b> Southeast Conservation Adaptation Strategy (SECAS). 2024. Southeast
-				Conservation Blueprint 2024.{' '}
+				<b>Citation:</b> Southeast Conservation Adaptation Strategy (SECAS). 2025. Southeast
+				Conservation Blueprint 2025.
 				<a href="http://secassoutheast.org/blueprint" target="_blank">
 					http://secassoutheast.org/blueprint
 				</a>.
@@ -142,9 +142,9 @@
 		</div>
 	</div>
 	<p class="mt-4 leading-snug">
-		This application was developed by{' '}
-		<a href="https://astutespruce.com" target="_blank"> Astute Spruce, LLC </a>{' '}
-		in partnership with the U.S. Fish and Wildlife Service under the{' '}
+		This application was developed by
+		<a href="https://astutespruce.com" target="_blank"> Astute Spruce, LLC </a>
+		in partnership with the U.S. Fish and Wildlife Service under the
 		<a href="http://secassoutheast.org/" target="_blank">
 			Southeast Conservation Adaptation Strategy
 		</a>.

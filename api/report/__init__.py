@@ -11,6 +11,7 @@ from analysis.constants import (
     CORRIDORS,
     URBAN_LEGEND,
     SLR_LEGEND,
+    PARCAS,
     PROTECTED_AREAS,
     WILDFIRE_RISK_LEGEND,
 )
@@ -92,17 +93,20 @@ def create_report(maps, results, name=None, area_type="custom"):
     if "corridors" in results:
         legends["corridors"] = CORRIDORS[1:]
 
-    if "urban" in results:
-        legends["urban"] = URBAN_LEGEND
+    if "parcas" in results:
+        legends["parcas"] = PARCAS[::-1]
+
+    if "protected_areas" in results:
+        legends["protected_areas"] = PROTECTED_AREAS[::-1]
 
     if "slr" in results:
         legends["slr"] = SLR_LEGEND
 
+    if "urban" in results:
+        legends["urban"] = URBAN_LEGEND
+
     if "wildfire_risk" in results:
         legends["wildfire_risk"] = WILDFIRE_RISK_LEGEND
-
-    if "protected_areas" in results:
-        legends["protected_areas"] = PROTECTED_AREAS[::-1]
 
     context = {
         "date": date.today().strftime("%m/%d/%Y"),
@@ -115,6 +119,7 @@ def create_report(maps, results, name=None, area_type="custom"):
         "maps": maps,
         "legends": legends,
         "results": results,
+        "is_marine_only": results.get("regions") == {"marine"},
         # have to flip the crosshatch horizontally due to bug in WeasyPrint
         "flip_crosshatch": sys.platform == "darwin",
     }

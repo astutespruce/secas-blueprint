@@ -5,15 +5,16 @@ from concurrent.futures import ThreadPoolExecutor
 from .aoi import get_aoi_map_image
 from .basemap import get_basemap_image
 from .locator import get_locator_map_image
-from .raster import render_raster
+from .raster import render_raster, WebMercatorReader
 from .summary_unit import get_summary_unit_map_image
-from .mercator import get_zoom, get_map_bounds, get_map_scale
+from .mercator import get_zoom, get_map_bounds
 from .util import pad_bounds, get_center, merge_maps, to_png_bytes
 
 
 from analysis.constants import (
     BLUEPRINT_COLORS,
     CORRIDORS_COLORS,
+    PARCA_COLORS,
     PROTECTED_AREAS_COLORS,
     URBAN_COLORS,
     SLR_LEGEND,
@@ -31,23 +32,21 @@ PADDING = 5
 src_dir = Path("data/inputs")
 blueprint_filename = src_dir / "blueprint.tif"
 corridors_filename = src_dir / "corridors.tif"
-protected_areas_filename = src_dir / "boundaries/protected_areas.tif"
-urban_filename = src_dir / "threats/urban/urban_2060_binned.tif"
-slr_filename = src_dir / "threats/slr/slr.tif"
-wildfire_risk_filename = src_dir / "threats/wildfire_risk/wildfire_risk.tif"
 indicators_dir = src_dir / "indicators"
+parcas_filename = src_dir / "boundaries/parcas.tif"
+protected_areas_filename = src_dir / "boundaries/protected_areas.tif"
+slr_filename = src_dir / "threats/slr/slr.tif"
+urban_filename = src_dir / "threats/urban/urban_2060_binned.tif"
+wildfire_risk_filename = src_dir / "threats/wildfire_risk/wildfire_risk.tif"
 
 
-def render_raster_map(bounds, scale, basemap_image, aoi_image, id, path, colors):
+def render_raster_map(reader, basemap_image, aoi_image, id, path, colors):
     """Render raster dataset map based on bounds.  Merge this over basemap image
     and under aoi_image.
 
     Parameters
     ----------
-    bounds : list-like of [xmin, ymin, xmax, ymax]
-        bounds of map
-    scale : dict
-        map scale info
+    reader : WebMercatorReader
     basemap_image : Image object
     aoi_image : Image object
     id : str
@@ -62,7 +61,7 @@ def render_raster_map(bounds, scale, basemap_image, aoi_image, id, path, colors)
     id, Image object
         Image object is None if it could not be rendered or does not overlap bounds
     """
-    raster_img = render_raster(path, bounds, scale, WIDTH, HEIGHT, colors)
+    raster_img = render_raster(path, reader, colors)
     map_image = merge_maps([basemap_image, raster_img, aoi_image])
     map_image = to_png_bytes(map_image)
 
@@ -70,38 +69,37 @@ def render_raster_map(bounds, scale, basemap_image, aoi_image, id, path, colors)
 
 
 async def render_raster_maps(
-    bounds,
-    scale,
+    reader,
     basemap_image,
     aoi_image,
     indicators,
     corridors=False,
-    urban=False,
-    slr=False,
-    wildfire_risk=False,
+    parcas=False,
     protected_areas=False,
+    slr=False,
+    urban=False,
+    wildfire_risk=False,
 ):
     """Asynchronously render Raster maps.
 
     Parameters
     ----------
-    bounds : list-like of [xmin, ymin, xmax, ymax]
-        bounds of map
-    scale : dict
-        map scale info
+    reader : WebMercatorReader
     basemap_image : Image object
     aoi_image : Image object
     indicators : list-like of indicator IDs
     corridors : bool (default False)
         if True, will render corridors for Blueprint
-    urban : bool (default False)
-        if True, will render urban map
-    slr : bool (default False)
-        if True, will render SLR map
-    wildfire_risk : bool (default False)
-        if True, will render wildfire_risk map
+    parcas : bool (default False)
+        if True, will render PARCAs
     protected_areas : bool (default False)
         if True, will render protected_areas map
+    slr : bool (default False)
+        if True, will render SLR map
+    urban : bool (default False)
+        if True, will render urban map
+    wildfire_risk : bool (default False)
+        if True, will render wildfire_risk map
 
     Returns
     -------
@@ -111,7 +109,7 @@ async def render_raster_maps(
     executor = ThreadPoolExecutor(max_workers=MAP_RENDER_THREADS)
     loop = asyncio.get_event_loop()
 
-    base_args = (bounds, scale, basemap_image, aoi_image)
+    base_args = (reader, basemap_image, aoi_image)
 
     task_args = [("blueprint", blueprint_filename, BLUEPRINT_COLORS)]
 
@@ -133,26 +131,24 @@ async def render_raster_maps(
     if corridors:
         task_args.append(("corridors", corridors_filename, CORRIDORS_COLORS))
 
-    if urban:
-        task_args.append(
-            (
-                "urban_2060",
-                urban_filename,
-                URBAN_COLORS,
-            )
-        )
+    if parcas:
+        colors = PARCA_COLORS
+        task_args.append(("parcas", parcas_filename, colors))
+
+    if protected_areas:
+        colors = PROTECTED_AREAS_COLORS
+        task_args.append(("protected_areas", protected_areas_filename, colors))
 
     if slr:
         colors = {e["value"]: e["color"] for i, e in enumerate(SLR_LEGEND)}
         task_args.append(("slr", slr_filename, colors))
 
+    if urban:
+        task_args.append(("urban_2060", urban_filename, URBAN_COLORS))
+
     if wildfire_risk:
         colors = WILDFIRE_RISK_COLORS
         task_args.append(("wildfire_risk", wildfire_risk_filename, colors))
-
-    if protected_areas:
-        colors = PROTECTED_AREAS_COLORS
-        task_args.append(("protected_areas", protected_areas_filename, colors))
 
     # NOTE: have to have handle on pending or task loop gets closed too soon
     completed, pending = await asyncio.wait(
@@ -177,10 +173,11 @@ async def render_maps(
     summary_unit_id=None,
     indicators=None,
     corridors=False,
-    urban=False,
-    slr=False,
-    wildfire_risk=False,
+    parcas=False,
     protected_areas=False,
+    slr=False,
+    urban=False,
+    wildfire_risk=False,
     add_mask=False,
 ):
     """Render maps for locator and each raster dataset that overlaps with area
@@ -189,7 +186,7 @@ async def render_maps(
     Parameters
     ----------
     bounds : list-like of [xmin, ymin, xmax, ymax]
-        bounds of area of interest, will be used to derive map bounds.
+        bounds of area of interest in geographic coordinates, will be used to derive map bounds.
     geometry : shapely.Geometry, optional (default: None)
         If present, will be used to render the area of interest
     summary_unit_id : [type], optional (default: None)
@@ -198,14 +195,16 @@ async def render_maps(
         If present, is a list of all indicator IDs to render.
     corridors : bool, optional (default: False)
         If True, corridors will be rendered
-    urban : bool, optional (default: False)
-        If True, urban will be rendered.
-    slr : bool, optional (default: False)
-        If True, sea level rise will be rendered.
-    wildfire_risk : bool, optional (default: False)
-        If True, wildfire risk will be rendered.
+    parcas : bool, optional (default: False)
+        If True, PARCAs will be rendered
     protected_areas : bool, optional (default: False)
         If True, protected areas will be rendered.
+    slr : bool, optional (default: False)
+        If True, sea level rise will be rendered.
+    urban : bool, optional (default: False)
+        If True, urban will be rendered.
+    wildfire_risk : bool, optional (default: False)
+        If True, wildfire risk will be rendered.
     add_mask : bool, optional (default: False)
         If True, will add a light transparent mask outside geometry
 
@@ -224,9 +223,8 @@ async def render_maps(
     bounds = pad_bounds(bounds, PADDING)
     center = get_center(bounds)
     zoom = get_zoom(bounds, WIDTH, HEIGHT)
-
     bounds = get_map_bounds(center, zoom, WIDTH, HEIGHT)
-    scale = get_map_scale(bounds, WIDTH)
+    raster_map_reader = WebMercatorReader(bounds, WIDTH, HEIGHT)
 
     locator_image, error = get_locator_map_image(
         *center, bounds=bounds, geometry=geometry
@@ -258,19 +256,19 @@ async def render_maps(
 
     # Use background threads for rendering rasters
     raster_maps, raster_map_errors = await render_raster_maps(
-        bounds,
-        scale,
+        raster_map_reader,
         basemap_image,
         aoi_image,
-        indicators or [],
-        corridors,
-        urban,
-        slr,
-        wildfire_risk,
-        protected_areas,
+        indicators=indicators or [],
+        corridors=corridors,
+        parcas=parcas,
+        protected_areas=protected_areas,
+        slr=slr,
+        urban=urban,
+        wildfire_risk=wildfire_risk,
     )
 
     maps.update(raster_maps)
     errors.update(raster_map_errors)
 
-    return maps, scale, errors
+    return maps, raster_map_reader.scale, errors

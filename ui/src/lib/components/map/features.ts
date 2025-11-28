@@ -168,7 +168,6 @@ export const unpackFeatureData = (
 			return [key, value]
 		})
 		.reduce((prev, [key, value]) => {
-			// eslint-disable-next-line no-param-reassign
 			prev[key] = value
 			return prev
 		}, {})
@@ -193,9 +192,18 @@ export const unpackFeatureData = (
 		values[c] = values[c] ? applyFactor(values[c], 0.1) : []
 	})
 
-	values.subregions = new Set(
-		(values.subregions || '').split(',').map((v) => subregionIndex[v].subregion)
-	)
+	const subregions = new Set<string>()
+	const regions = new Set<string>()
+
+	if (values.subregions) {
+		values.subregions.split(',').forEach((v: string) => {
+			const { subregion, region } = subregionIndex[v]
+			subregions.add(subregion)
+			regions.add(region)
+		})
+	}
+	values.subregions = subregions
+	values.regions = regions
 
 	values.indicators = extractIndicators(
 		values.indicators || {},

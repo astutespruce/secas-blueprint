@@ -21,6 +21,7 @@ from analysis.constants import (
     DATA_CRS,
     WILDFIRE_RISK,
     PROTECTED_AREAS,
+    PARCAS,
 )
 from analysis.lib.raster import write_raster, shift_window, clip_window
 
@@ -34,17 +35,18 @@ bnd_filename = inputs_dir / "boundaries/se_boundary.feather"
 extent_filename = inputs_dir / "boundaries/blueprint_extent.tif"
 blueprint_filename = inputs_dir / "blueprint.tif"
 corridors_filename = inputs_dir / "corridors.tif"
-urban_filename = inputs_dir / "threats/urban/urban_2060_binned.tif"
-slr_filename = inputs_dir / "threats/slr/slr.tif"
-wildfire_risk_filename = inputs_dir / "threats/wildfire_risk/wildfire_risk.tif"
+parcas_filename = inputs_dir / "boundaries/parcas.tif"
 protected_areas_filename = inputs_dir / "boundaries/protected_areas.tif"
+slr_filename = inputs_dir / "threats/slr/slr.tif"
+urban_filename = inputs_dir / "threats/urban/urban_2060_binned.tif"
+wildfire_risk_filename = inputs_dir / "threats/wildfire_risk/wildfire_risk.tif"
 
 
 # very small amount added to numbers to make sure that log2 gives us current number of bytes
 EPS = 1e-6
 
 # window size in pixels; underlying blocks in GeoTIFFs are 256x256
-WINDOW_SIZE = 4096
+WINDOW_SIZE = 8192
 
 
 ### Create dataframe with info about bits required, groups, etc
@@ -61,6 +63,7 @@ indicators = pd.DataFrame(
     ],
     columns=["ecosystem", "id", "filename", "min_value", "max_value"],
 )
+
 
 core = pd.DataFrame(
     [
@@ -81,10 +84,17 @@ core = pd.DataFrame(
         },
         {
             "ecosystem": "otherInfo",
-            "id": "urban",
-            "filename": urban_filename,
-            "min_value": URBAN[0]["value"],
-            "max_value": URBAN[-1]["value"],
+            "id": "parcas",
+            "filename": parcas_filename,
+            "min_value": PARCAS[0]["value"],
+            "max_value": PARCAS[-1]["value"],
+        },
+        {
+            "ecosystem": "otherInfo",
+            "id": "protectedAreas",
+            "filename": protected_areas_filename,
+            "min_value": PROTECTED_AREAS[0]["value"],
+            "max_value": PROTECTED_AREAS[-1]["value"],
         },
         {
             "ecosystem": "otherInfo",
@@ -95,17 +105,17 @@ core = pd.DataFrame(
         },
         {
             "ecosystem": "otherInfo",
+            "id": "urban",
+            "filename": urban_filename,
+            "min_value": URBAN[0]["value"],
+            "max_value": URBAN[-1]["value"],
+        },
+        {
+            "ecosystem": "otherInfo",
             "id": "wildfireRisk",
             "filename": wildfire_risk_filename,
             "min_value": WILDFIRE_RISK[0]["value"],
             "max_value": WILDFIRE_RISK[-1]["value"],
-        },
-        {
-            "ecosystem": "otherInfo",
-            "id": "protectedAreas",
-            "filename": protected_areas_filename,
-            "min_value": PROTECTED_AREAS[0]["value"],
-            "max_value": PROTECTED_AREAS[-1]["value"],
         },
     ]
 )
@@ -255,12 +265,14 @@ for group in groups:
 
             data = row.src.read(1, window=read_window, boundless=True).astype("uint32")
 
+            nodata_ix = data == nodata
+
             # shift values up if needed
             if row.value_shift:
-                data[data != nodata] += np.uint32(1)
+                data[~nodata_ix] += np.uint32(1)
 
             # set nodata pixels to 0 (combined with existing 0 values that are below row.min_value)
-            data[data == row.nodata] = np.uint32(0)
+            data[nodata_ix] = np.uint32(0)
 
             if data.max() > 0:
                 out_ix = out_window.toslices()

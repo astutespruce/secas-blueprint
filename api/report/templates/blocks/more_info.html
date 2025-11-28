@@ -1,24 +1,8 @@
-<section>
-<h2 id="MoreInfo">More Information</h2>
+<h2 id="MoreInfo" class="break-before">More Information</h2>
 
-{% if results.urban and (results.urban.noturban_2100_percent + results.urban.outside_urban_percent) < 100 %}
-    {% include "blocks/urban.html" %}
-{% else %}
-    {% include "blocks/no_urban.html" %}
+{% if results.parcas %}
+    {% include "blocks/parcas.html" %}
 {% endif %}
-
-{% if results.slr and results.slr.depth %}
-    {% include "blocks/slr.html" %}
-{% else %}
-    {% include "blocks/no_slr.html" %}
-{% endif %}
-
-{% if results.wildfire_risk %}
-    {% include "blocks/wildfire_risk.html" %}
-{% else %}
-    {% include "blocks/no_wildfire_risk.html" %}
-{% endif %}
-
 
 {% if results.protected_areas %}
     {% include "blocks/protected_areas.html" %}
@@ -26,4 +10,20 @@
     {% include "blocks/no_protected_areas.html" %}
 {% endif %}
 
-</section>
+{% if results.slr and results.slr.depth %}
+    {% include "blocks/slr.html" %}
+{% elif not is_marine_only %}
+    {% include "blocks/no_slr.html" %}
+{% endif %}
+
+{% if results.urban and (results.urban.noturban_2100_percent + results.urban.outside_urban_percent) < 100 %}
+    {% include "blocks/urban.html" %}
+{% elif not is_marine_only %}
+    {% include "blocks/no_urban.html" %}
+{% endif %}
+
+{% if results.wildfire_risk %}
+    {% include "blocks/wildfire_risk.html" %}
+{% elif not is_marine_only %}
+    {% include "blocks/no_wildfire_risk.html" %}
+{% endif %}

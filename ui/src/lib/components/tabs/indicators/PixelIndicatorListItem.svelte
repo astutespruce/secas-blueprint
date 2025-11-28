@@ -7,7 +7,7 @@
 
 	import IndicatorPixelValueChart from './IndicatorPixelValueChart.svelte'
 
-	const { indicator, onSelect } = $props()
+	const { indicator } = $props()
 
 	const mapData: MapData = getContext('map-data')
 

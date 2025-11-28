@@ -1,6 +1,5 @@
 <script lang="ts">
 	import TimesCircleIcon from '~icons/fa-regular/times-circle'
-	import { cn } from '$lib/utils'
 	import { Button } from '$lib/components/ui/button'
 
 	const { type, name, location, onClose } = $props()
@@ -13,7 +12,7 @@
 		<div class="flex-auto text-sm">
 			Coordinates:
 			<br />
-			{location.latitude.toPrecision(5)}°N,{' '}
+			{location.latitude.toPrecision(5)}°N,
 			{location.longitude.toPrecision(5)}°
 		</div>
 	{:else}

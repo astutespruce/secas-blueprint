@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { getContext } from 'svelte'
-	import { derived, writable } from 'svelte/store'
 	import { createQuery } from '@tanstack/svelte-query'
 
 	import { CONTACT_EMAIL } from '$lib/env'
@@ -26,34 +25,33 @@
 
 	let value = $state('')
 	let index: number | null = $state(null)
-	let resultsNode = $state()
+	let resultsNode: Element | undefined = $state()
 
 	// query is debounced from value
+	// FIXME:
 	// NOTE: we have to use a writable stores until Svelte 5 is properly supported by tanstack-query
-	let query = writable<string>('')
-	let selectedId = writable<string | null>(null)
+	// let query = writable<string>('')
+	// let selectedId = writable<string | null>(null)
+	let query: string = $state('')
+	let selectedId: string | null = $state(null)
 
-	const suggestions = createQuery(
-		derived(query, ($query) => ({
-			queryKey: ['search', $query],
-			queryFn: () => ($query ? searchPlaces($query) : null),
-			enabled: !!$query && $query.length >= 3,
-			staleTime: 60 * 60 * 1000 // 60 minutes
-		}))
-	)
+	const suggestions = createQuery(() => ({
+		queryKey: ['search', query],
+		queryFn: () => (query ? searchPlaces(query) : null),
+		enabled: !!query && query.length >= 3,
+		staleTime: 60 * 60 * 1000 // 60 minutes
+	}))
 
-	const place = createQuery(
-		derived(selectedId, ($selectedId) => ({
-			queryKey: ['retrieve', $selectedId],
-			queryFn: () => ($selectedId ? getPlace($selectedId!) : null),
-			enabled: !!$selectedId,
-			staleTime: 60 * 60 * 1000 // 60 minutes
-		}))
-	)
+	const place = createQuery(() => ({
+		queryKey: ['retrieve', selectedId],
+		queryFn: () => (selectedId ? getPlace(selectedId!) : null),
+		enabled: !!selectedId,
+		staleTime: 60 * 60 * 1000 // 60 minutes
+	}))
 
-	place.subscribe((s) => {
-		if (s.data !== null && s.data !== undefined) {
-			locationData.location = s.data
+	$effect(() => {
+		if (place.data !== null && place.data !== undefined) {
+			locationData.location = place.data
 			onSelect()
 		}
 	})
@@ -65,7 +63,7 @@
 
 	const handleChange = debounce((newValue: string) => {
 		index = null
-		query.set(newValue)
+		query = newValue
 	}, 250)
 
 	$effect(() => {
@@ -75,13 +73,13 @@
 	$effect(() => {
 		if (
 			index !== null &&
-			$suggestions.data &&
-			$suggestions.data.length > 0 &&
+			suggestions.data &&
+			suggestions.data.length > 0 &&
 			resultsNode &&
 			resultsNode.children &&
 			resultsNode.children.length >= index
 		) {
-			resultsNode.children[index].focus()
+			;(resultsNode.children[index] as HTMLElement).focus()
 		}
 	})
 
@@ -89,12 +87,12 @@
 		e.stopPropagation()
 		index = null
 		value = ''
-		query.set('')
+		query = ''
 		locationData.location = null
 	}
 
 	const handleKeyDown = ({ key }: KeyboardEvent) => {
-		if (!($suggestions.data && $suggestions.data.length > 0)) {
+		if (!(suggestions.data && suggestions.data.length > 0)) {
 			return
 		}
 
@@ -104,12 +102,12 @@
 				nextIndex = index - 1
 			} else {
 				// wrap around
-				nextIndex = $suggestions.data.length - 1
+				nextIndex = suggestions.data.length - 1
 			}
 			index = nextIndex
 		} else if (key === 'ArrowDown') {
 			if (index !== null) {
-				if (index < $suggestions.data.length - 1) {
+				if (index < suggestions.data.length - 1) {
 					nextIndex = index + 1
 				}
 				// else wrap around, handled by set = 0 above
@@ -121,18 +119,16 @@
 	const handleResultClick = (id: string, nextIndex: number) => (e: Event) => {
 		e.preventDefault()
 		e.stopPropagation()
-		console.log('handleResultClick', id)
 		if (id !== undefined) {
-			selectedId.set(id)
+			selectedId = id
 			index = nextIndex
 		}
 	}
 
 	const handleResultKeyDown = (id: string, nextIndex: number) => (e: KeyboardEvent) => {
 		const { key } = e
-		console.log('handleResultKeyDown', key, id)
 		if (key === 'Enter' && id !== undefined) {
-			selectedId.set(id)
+			selectedId = id
 			index = nextIndex
 		}
 	}
@@ -149,12 +145,9 @@
 			<Input
 				bind:ref
 				bind:value
-				class={cn(
-					'relative w-full flex-auto border-grey-3 [&:placeholder]:text-grey-8 z-0 pl-7 pr-2',
-					{
-						'pr-8': $query && $query.length > 0
-					}
-				)}
+				class={cn('relative w-full flex-auto border-grey-3 placeholder:text-grey-8 z-0 pl-7 pr-2', {
+					'pr-8': query && query.length > 0
+				})}
 				placeholder={isCompact ? 'Find a place' : 'Find a place by name / address'}
 				onclick={handleClick}
 				onfocus={onFocus}
@@ -170,34 +163,34 @@
 			{/if}
 		</div>
 	</div>
-	{#if $query && $query?.length >= 3}
+	{#if query && query?.length >= 3}
 		<div
 			class={cn({
 				hidden: isCompact
 			})}
 		>
-			{#if $suggestions.error || $place.error}
+			{#if suggestions.error || place.error}
 				<div class="pl-4 pr-6 py-8 text-grey-8">
 					<div class="flex items-center gap-2">
 						<ExclamationTriangle class="size-6" />
 						Error loading search results.
 					</div>
 					<div class="mt-4">
-						Please try a different search term. If the error continues, please{' '}
+						Please try a different search term. If the error continues, please
 						<a href={`mailto:${CONTACT_EMAIL}`}> let us know </a>
 						.
 					</div>
 				</div>
-			{:else if $suggestions.isLoading || $place.isLoading}
+			{:else if suggestions.isLoading || place.isLoading}
 				<div class="flex gap-2 items-center justify-center px-4 py-8 text-grey-8">
 					<CompassIcon class="animate-spin size-8 text-grey-5" />
 					Loading...
 				</div>
-			{:else if !($suggestions.data && $suggestions.data.length > 0)}
+			{:else if !(suggestions.data && suggestions.data.length > 0)}
 				<div class="flex items-center justify-center px-4 py-8 text-grey-8">No results found</div>
 			{:else}
 				<div bind:this={resultsNode} class="search-results mt-4">
-					{#each $suggestions.data as { id, name, address }, i}
+					{#each suggestions.data as { id, name, address }, i}
 						<div
 							class="cursor-pointer leading-none bg-white hover:bg-grey-0 not-first:border-t not-first:border-t-grey-1 py-1 px-2"
 							onclick={handleResultClick(id, i)}

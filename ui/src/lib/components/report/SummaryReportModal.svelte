@@ -8,7 +8,7 @@
 	import Progress from './Progress.svelte'
 	import Queued from './Queued.svelte'
 	import ReportError from './ReportError.svelte'
-	import type { ReportState, ReportJobResult, ProgressCallback } from './types'
+	import type { ReportState, ReportJobResult, ProgressCallbackParams } from './types'
 
 	let open: boolean = $state(false)
 
@@ -71,7 +71,7 @@
 					elapsedTime: nextElapsedTime,
 					message: nextMessage = null,
 					errors: nextErrors = null
-				}: ProgressCallback) => {
+				}: ProgressCallbackParams) => {
 					reportState = {
 						...reportState,
 						status: nextStatus,
@@ -88,7 +88,6 @@
 			)
 
 			if (uploadError) {
-				// eslint-disable-next-line no-console
 				console.error(uploadError)
 
 				reportState = {
@@ -125,7 +124,6 @@
 			window.location.href = result as string
 		} catch (ex) {
 			captureException(`Create summary report for ${id} (${type}) failed`, ex)
-			// eslint-disable-next-line no-console
 			console.error('Caught unhandled error from createSummaryUnitReport', ex)
 
 			reportState = {

@@ -68,9 +68,9 @@
 			target="_blank"
 		>
 			Protected Areas Database of the United States
-		</a>{' '}
-		(PAD-US v4.0 and v3.0) and include Fee, Designation, Easement, Marine, and Proclamation (Dept. of
-		Defense lands only) boundaries.
+		</a>
+		(PAD-US v4.1) and include Fee, Designation, Easement, Marine, and Proclamation (Dept. of Defense
+		lands only) boundaries.
 
 		{#if protectedAreasList && protectedAreasList.length > 0}
 			Areas are listed based on name, ownership, and boundary information in the Protected Areas

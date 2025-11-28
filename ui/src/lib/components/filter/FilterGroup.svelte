@@ -7,7 +7,7 @@
 <div class="w-full flex-none">
 	<!-- header  -->
 	<div
-		class={`py-2 px-3 border-b border-t`}
+		class={'py-2 px-3 border-b border-t'}
 		style={`background-color:${color}; border-color:${borderColor};`}
 	>
 		<div class="flex items-center justify-between">

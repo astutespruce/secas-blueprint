@@ -40,3 +40,6 @@ rastertiler render data/for_tiles/se_pixel_layers_7.tif tiles/se_pixel_layers_7.
 
 echo "Rendering pixel layer 8"
 rastertiler render data/for_tiles/se_pixel_layers_8.tif tiles/se_pixel_layers_8.mbtiles -s 512 -n se_pixel_layers_8 -Z 3 -z 14 --disable-overviews
+
+echo "Rendering pixel layer 9"
+rastertiler render data/for_tiles/se_pixel_layers_9.tif tiles/se_pixel_layers_9.mbtiles -s 512 -n se_pixel_layers_9 -Z 3 -z 14 --disable-overviews

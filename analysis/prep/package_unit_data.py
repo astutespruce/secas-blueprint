@@ -31,6 +31,7 @@ from analysis.constants import (
     SLR_NODATA_COLS,
     NLCD_INDEXES,
     NLCD_YEARS,
+    PARCAS,
     PROTECTED_AREAS,
     URBAN_YEARS,
     WILDFIRE_RISK,
@@ -107,6 +108,49 @@ blueprint_results = (
 )
 blueprint = encode_blueprint(blueprint_results)
 
+
+### PARCAs
+print("Encoding PARCAs")
+cols = [f"parca_{e['value']}" for e in PARCAS]
+parcas = (
+    pd.read_feather(results_dir / "parcas.feather")
+    .set_index("id")
+    .join(huc12.rasterized_acres)
+)
+parcas = encode_values(parcas[cols], parcas.rasterized_acres, 1000).rename("parcas")
+
+
+### Protected areas
+print("Encoding protected areas")
+cols = [f"protected_areas_{e['value']}" for e in PROTECTED_AREAS]
+protected_areas_results = (
+    pd.read_feather(results_dir / "protected_areas.feather")
+    .set_index("id")
+    .join(huc12.rasterized_acres)
+)
+protected_areas = encode_values(
+    protected_areas_results[cols], protected_areas_results.rasterized_acres, 1000
+).rename("protected_areas")
+
+
+protected_areas_list = pd.read_feather(
+    results_dir / "protected_areas_list.feather", columns=["id", "name", "owner"]
+)
+ix = protected_areas_list.owner != ""
+protected_areas_list.loc[ix, "name"] += " (" + protected_areas_list.loc[ix].owner + ")"
+num_protected_areas = (
+    protected_areas_list.groupby("id").size().rename("num_protected_areas")
+)
+protected_areas_list = (
+    protected_areas_list.groupby("id")
+    .name.apply(list)
+    # take the top 5
+    .apply(lambda x: x[:5])
+    .apply("|".join)
+    .rename("protected_areas_list")
+)
+
+
 ### SLR Depth
 # delta encode percent * 10; dict encode nodata values
 print("Encoding SLR depth and projections...")
@@ -171,47 +215,17 @@ wildfire_risk = encode_values(
 ).rename("wildfire_risk")
 
 
-### Protected areas
-print("Encoding protected areas")
-cols = [f"protected_areas_{e['value']}" for e in PROTECTED_AREAS]
-protected_areas_results = (
-    pd.read_feather(results_dir / "protected_areas.feather")
-    .set_index("id")
-    .join(huc12.rasterized_acres)
-)
-protected_areas = encode_values(
-    protected_areas_results[cols], protected_areas_results.rasterized_acres, 1000
-).rename("protected_areas")
-
-
-protected_areas_list = pd.read_feather(
-    results_dir / "protected_areas_list.feather", columns=["id", "name", "owner"]
-)
-ix = protected_areas_list.owner != ""
-protected_areas_list.loc[ix, "name"] += " (" + protected_areas_list.loc[ix].owner + ")"
-num_protected_areas = (
-    protected_areas_list.groupby("id").size().rename("num_protected_areas")
-)
-protected_areas_list = (
-    protected_areas_list.groupby("id")
-    .name.apply(list)
-    # take the top 5
-    .apply(lambda x: x[:5])
-    .apply("|".join)
-    .rename("protected_areas_list")
-)
-
-
 huc12 = (
     huc12[["geometry", "name", "subregions", "type"]]
     .join(huc12[["acres", "rasterized_acres", "outside_se"]].round().astype("int"))
     .join(blueprint, how="left")
-    .join(slr, how="left")
-    .join(urban, how="left")
-    .join(wildfire_risk, how="left")
+    .join(parcas, how="left")
     .join(protected_areas, how="left")
     .join(protected_areas_list, how="left")
     .join(num_protected_areas, how="left")
+    .join(slr, how="left")
+    .join(urban, how="left")
+    .join(wildfire_risk, how="left")
 )
 
 

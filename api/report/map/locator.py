@@ -8,23 +8,19 @@ from api.settings import MAPBOX_ACCESS_TOKEN, TILE_DIR
 from analysis.lib.geometry import to_dict
 
 
-ZOOM = 1.75
 CENTER = [-85.941, 29.283]
-WIDTH = 230
-HEIGHT = 150
+ZOOM = 2.25
+WIDTH = 300
+HEIGHT = 200
 
-
-# basemap from: "https://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}"
 
 LOCATOR_STYLE = {
     "version": 8,
     "sources": {
-        "basemap": {
-            "type": "raster",
-            "url": f"mbtiles://{TILE_DIR}/basemap_esri_ocean.mbtiles",
-            "tileSize": 256,
+        "boundaries": {
+            "type": "vector",
+            "url": f"mbtiles://{TILE_DIR}/report_boundaries.mbtiles",
         },
-        "states": {"type": "vector", "url": f"mbtiles://{TILE_DIR}/states.mbtiles"},
         "map_units": {
             "type": "vector",
             "url": f"mbtiles://{TILE_DIR}/se_map_units.mbtiles",
@@ -35,20 +31,45 @@ LOCATOR_STYLE = {
         },
     },
     "layers": [
-        {"id": "basemap", "type": "raster", "source": "basemap"},
         {
-            "id": "states",
-            "source": "states",
-            "source-layer": "states",
+            "id": "background",
+            "type": "background",
+            "paint": {"background-color": "#F0F0EF"},
+        },
+        {
+            "id": "ocean",
+            "source": "boundaries",
+            "source-layer": "ocean",
+            "type": "fill",
+            "paint": {"fill-color": "#CAD2D3"},
+        },
+        {
+            "id": "other-states",
+            "source": "boundaries",
+            "source-layer": "other_states",
             "type": "line",
-            "paint": {"line-color": "#444444", "line-width": 1, "line-opacity": 1},
+            "paint": {"line-color": "#999999", "line-width": 0.5, "line-opacity": 1},
+        },
+        {
+            "id": "secas-states",
+            "source": "boundaries",
+            "source-layer": "secas_states",
+            "type": "line",
+            "paint": {"line-color": "#666666", "line-width": 0.5, "line-opacity": 1},
         },
         {
             "id": "mask",
             "source": "mask",
             "source-layer": "mask",
             "type": "fill",
-            "paint": {"fill-color": "#333333", "fill-opacity": 0.5},
+            "paint": {"fill-color": "#333333", "fill-opacity": 0.25},
+        },
+        {
+            "id": "mask-outline",
+            "source": "mask",
+            "source-layer": "mask",
+            "type": "line",
+            "paint": {"line-color": "#333333", "line-width": 0.75},
         },
         {
             "id": "marker",
@@ -108,13 +129,13 @@ def get_locator_map_image(longitude, latitude, bounds, geometry=None):
     if xmax - xmin >= 0.5 or ymax - ymin >= 0.5:
         if geometry:
             if shapely.area(geometry) > 0.1:
-                geometry = to_dict(geometry)
+                geojson = to_dict(geometry)
             else:
-                geometry = to_dict(shapely.envelope(geometry))
+                geojson = to_dict(shapely.envelope(geometry))
         else:
-            geometry = to_dict(shapely.box(xmin, ymin, xmax, ymax))
+            geojson = to_dict(shapely.box(xmin, ymin, xmax, ymax))
 
-        style["sources"]["feature"] = {"type": "geojson", "data": geometry}
+        style["sources"]["feature"] = {"type": "geojson", "data": geojson}
 
     else:
         style["sources"]["marker"] = {

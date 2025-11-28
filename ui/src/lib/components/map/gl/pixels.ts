@@ -250,12 +250,13 @@ export const extractPixelData = (
 	})
 
 	// @ts-ignore
-	const [{ properties: { subregion } } = { properties: {} }] = features.filter(
+	const [{ properties: { subregion, region } } = { properties: {} }] = features.filter(
 		// @ts-ignore
 		({ layer: { id } }) => id === 'subregions'
 	)
 
 	const subregions = new Set([subregion])
+	const regions = new Set([region])
 
 	// unpack indicators and ecosystems
 	// @ts-ignore
@@ -299,6 +300,7 @@ export const extractPixelData = (
 
 	return {
 		subregions,
+		regions,
 		outsideSEPercent: 0,
 		...data,
 		protectedAreasList,

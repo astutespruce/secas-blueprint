@@ -15,7 +15,7 @@ Python dependencies are managed using `uv`. First,
 
 ```bash
 uv venv .venv --python 3.12
-<source it according to your shell, e.g., source .venv/bin/activate.fish>
+# <source it according to your shell, e.g., source .venv/bin/activate.fish>
 uv pip install -e [dev].
 ```
 
@@ -25,7 +25,7 @@ To check for outdated dependencies and upgrade them:
 uv pip list --outdated
 
 # install latest version
-uv pip install -U <packages>
+uv sync --upgrade --all-extras
 ```
 
 To update the requirements.txt file used to build these dependencies into the API
@@ -39,8 +39,9 @@ uv pip compile -U pyproject.toml -o ../secas-docker/docker/api/secas-blueprint-r
 
 On MacOS, install other dependencies:
 
-- `brew install gdal`
-- `brew install pango`
+```bash
+brew install gdal pango redis
+```
 
 For Macos M1 (Arm64), you also may need to setup symlinks for some of the libraries
 to be found:
@@ -52,7 +53,6 @@ sudo ln -s /opt/homebrew/opt/harfbuzz/lib/libharfbuzz.dylib /usr/local/lib/harfb
 sudo ln -s /opt/homebrew/opt/fontconfig/lib/libfontconfig.1.dylib /usr/local/lib/fontconfig-1
 sudo ln -s /opt/homebrew/opt/pango/lib/libpangoft2-1.0.dylib /usr/local/lib/pangoft2-1.0
 ```
-
 
 ## User interface development
 
@@ -72,10 +72,35 @@ nvm use
 
 Note: this needs to be done each time an interpreter is opened for development.
 
-The user interface is developed using SvelteJS and Typescript.  While we don't
+The user interface is developed using SvelteJS and Typescript. While we don't
 strictly require type annotations, we recommend using them where possible, and are
 progressively adding type annotations throughout the codebase.
 
+To run the user interface in development mode:
+
+```bash
+npm run dev -- --open
+```
+
+This will automatically open the development version in your browser.
+
+To run a static build of the user interface:
+
+```bash
+npm run build
+npm preview -- --open
+```
+
+To check for outdated dependencies and upgrade them:
+
+```bash
+npm install -g npm-check-updates
+ncu -i --cooldown 3
+```
+
+Note: this uses a 3 day "cooldown" to prevent upgrading to very recently released
+versions; modify this on a selective basis to pull in a newer version that resolves
+a vulnerability.
 
 ## Other dependencies
 

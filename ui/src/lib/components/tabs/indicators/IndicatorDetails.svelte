@@ -118,7 +118,7 @@
 		</div>
 
 		<div class="mt-8">
-			To learn more and explore the GIS data,{' '}
+			To learn more and explore the GIS data,
 			<a href={url} target="_blank"> view this indicator in the SECAS Atlas </a>.
 		</div>
 

@@ -1,22 +1,17 @@
 <script>
-	import Comments from '~icons/fa-solid/comments';
-	import Envelope from '~icons/fa-solid/envelope';
-	import ExclamationCircle from '~icons/fa-solid/ExclamationCircle';
-	import ExternalLinkAlt from '~icons/fa-solid/external-link-alt';
+	import Comments from '~icons/fa-solid/comments'
+	import Envelope from '~icons/fa-solid/envelope'
+	import ExclamationCircle from '~icons/fa-solid/ExclamationCircle'
+	import ExternalLinkAlt from '~icons/fa-solid/external-link-alt'
 
-	// TODO: modals
-	import {
-		ContactDialog,
-		ProvideFeedbackDialog,
-		ReportProblemDialog
-	} from '$lib/components/dialog';
+	import { ContactDialog, ProvideFeedbackDialog, ReportProblemDialog } from '$lib/components/dialog'
 </script>
 
 <footer
 	class="hidden md:flex flex-none gap-4 items-center justify-between py-1 px-2 leading-none text-sm"
 >
 	<div class="flex flex-none gap-3 items-center">
-		<div>Version: Southeast Blueprint 2024</div>
+		<div>Version: Southeast Blueprint 2025</div>
 		<div>|</div>
 		<a href="http://secassoutheast.org/blueprint" target="_blank" class="flex gap-2 items-center">
 			<ExternalLinkAlt width="1em" height="1em" />

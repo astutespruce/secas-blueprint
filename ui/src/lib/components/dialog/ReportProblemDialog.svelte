@@ -21,7 +21,7 @@
 			We want to hear from you!
 			<br />
 			<br />
-			<b>email</b>:{' '}
+			<b>email</b>:
 			<a
 				href={`mailto:${CONTACT_EMAIL}?subject=SE Blueprint Explorer Support - report a problem`}
 				target="_blank"

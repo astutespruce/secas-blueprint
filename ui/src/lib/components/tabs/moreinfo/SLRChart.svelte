@@ -49,7 +49,7 @@
 	)
 
 	const xAxisTicks = $derived(
-		xScale.ticks(data.length).map((x, i) => ({ x: xScale(x), label: formatNumber(x) }))
+		xScale.ticks(data.length).map((x) => ({ x: xScale(x), label: formatNumber(x) }))
 	)
 
 	const yAxisTicks = $derived(

@@ -197,7 +197,7 @@
 			<Input
 				bind:ref
 				bind:value
-				class="relative w-full flex-auto border-grey-3 [&:placeholder]:text-grey-8 z-0 pl-7 pr-8"
+				class="relative w-full flex-auto border-grey-3 placeholder:text-grey-8 z-0 pl-7 pr-8"
 				placeholder="Enter latitude, longitude"
 				aria-invalid={!isValid}
 				onclick={handleClick}

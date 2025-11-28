@@ -16,7 +16,7 @@ export type ReportJobResult = {
 	errors?: string[]
 }
 
-export type ProgressCallback = {
+export type ProgressCallbackParams = {
 	status: string
 	progress: number
 	queuePosition?: number
@@ -24,3 +24,5 @@ export type ProgressCallback = {
 	message: string | null
 	errors: string[] | null
 }
+
+export type ProgressCallback = (ProgressCallbackParams) => void

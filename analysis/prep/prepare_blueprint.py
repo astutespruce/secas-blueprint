@@ -19,6 +19,7 @@ from analysis.lib.raster import (
     add_overviews,
     create_lowres_mask,
     shift_window,
+    unique,
 )
 
 
@@ -63,7 +64,7 @@ if not outfilename.exists():
     colormap = {e["value"]: hex_to_uint8(e["color"]) for e in BLUEPRINT}
     colormap[0] = (255, 255, 255, 0)
 
-    with rasterio.open(src_dir / "Blueprint2024.tif") as src:
+    with rasterio.open(src_dir / "Blueprint2025.tif") as src:
         nodata = int(src.nodata)
 
         read_window = shift_window(
@@ -110,14 +111,14 @@ if not outfilename.exists():
 
     print("Reading hubs and making valid")
     continental_hubs = read_dataframe(
-        src_dir / "hubs_corridors/ContinentalHubs2024.shp",
+        src_dir / "hubs_corridors/ContinentalHubs2025.shp",
         columns=[],
         use_arrow=True,
     ).explode(ignore_index=True)
     continental_hubs["value"] = 1
 
     caribbean_hubs = read_dataframe(
-        src_dir / "hubs_corridors/CaribbeanHubs2023.shp",
+        src_dir / "hubs_corridors/CaribbeanHubs2025.shp",
         columns=[],
         use_arrow=True,
     ).explode(ignore_index=True)
@@ -135,10 +136,10 @@ if not outfilename.exists():
 
     with (
         rasterio.open(
-            src_dir / "hubs_corridors/ContinentalCorridors2024.tif"
+            src_dir / "hubs_corridors/ContinentalCorridors2025.tif"
         ) as continental,
         rasterio.open(
-            src_dir / "hubs_corridors/CaribbeanCorridors2023.tif"
+            src_dir / "hubs_corridors/CaribbeanCorridors2025.tif"
         ) as caribbean,
     ):
         # consolidate all values into a single raster, writing hubs over corridors
@@ -149,7 +150,7 @@ if not outfilename.exists():
         print("Reading Caribbean corridors")
         # Caribbean data are limited to Caribbean extent, so use a larger read
         # window to read full extent
-        carribean_window = shift_window(
+        caribbean_window = shift_window(
             windows.Window(
                 col_off=0, row_off=0, width=extent.width, height=extent.height
             ),
@@ -157,7 +158,7 @@ if not outfilename.exists():
             caribbean.transform,
         )
         caribbean_corridors_data = caribbean.read(
-            1, window=carribean_window, boundless=True
+            1, window=caribbean_window, boundless=True
         )
         data[caribbean_corridors_data == np.uint8(1)] = np.uint8(2)
         del caribbean_corridors_data
@@ -171,7 +172,9 @@ if not outfilename.exists():
             extent.transform,
             continental.transform,
         )
-        continental_corridors_data = continental.read(1, window=inland_window)
+        continental_corridors_data = continental.read(
+            1, window=inland_window, boundless=True
+        )
         data[continental_corridors_data == np.uint8(1)] = np.uint8(2)
         del continental_corridors_data
 
@@ -223,16 +226,16 @@ ecosystems = []
 merged = None
 for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
     df = pd.read_excel(
-        indicators_dir / "Blueprint 2024 Indicator Thresholds.xlsx",
+        indicators_dir / "Blueprint 2025 Indicator Thresholds.xlsx",
         sheet_name=sheet_name,
         engine="calamine",
     ).rename(
         columns={
             "Indicator": "label",
-            "Legend sub-header": "valueLabel",
-            "2024 abbreviated indicator values": "valueLabels",
-            '2023 Blueprint Explorer "Good" threshold': "goodThreshold",
-            "2023 Indicator descriptions": "description",
+            "Legend Subheader": "valueLabel",
+            "Abbreviated indicator values": "valueLabels",
+            'Blueprint Explorer "Good" threshold': "goodThreshold",
+            "Indicator descriptions": "description",
             "Hub Link": "url",
         }
     )
@@ -243,9 +246,7 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
         .replace(")", "")
         .replace("&", "and")
         .replace(" ", "")
-        # FIXME: remove for Blueprint 2025 (temporary alias to existing ID)
-        # IMPORTANT: this requires hand-editing ecosystems.json to be in correct order for new name
-        .replace("PotentialAccessToParks", "EquitableAccessToPotentialParks")
+        .replace(".", "")
     )
 
     ecosystem_id = sheet_name.lower().split(" ")[-1][:1]
@@ -291,9 +292,12 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
         "Great Plains",
         "Interior Southeast",
         "Mississippi Alluvial Valley",
+        "Puerto Rico",
         "South Atlantic",
+        "U.S. Virgin Islands",
         "West Coastal Plain & Ouachitas",
-        "West Gulf Coast" "West Virginia",
+        "West Gulf Coast",
+        "West Virginia",
     ]
     df["captionLabel"] = df.label
     ix = ~df.label.apply(lambda x: any(x.startswith(p) for p in places))
@@ -424,6 +428,23 @@ for index, indicator_row in indicator_df.iterrows():
             data = np.where(data == nodata, NODATA, data)
             data_window = windows.get_data_window(data, nodata=NODATA)
             data = data[data_window.toslices()]
+
+            # check value range to make sure all are accounted for above, and raise error on unexpected values
+            values = unique(data)
+            expected_values = set(
+                [e["value"] for e in indicator_row["values"]] + [NODATA]
+            )
+            unexpected = values.difference(expected_values)
+            missing = expected_values.difference(values)
+            if unexpected:
+                raise ValueError(
+                    f"Unexpected values present in {indicator_row.filename}: {','.join([str(v) for v in unexpected])}"
+                )
+            if missing:
+                raise ValueError(
+                    f"Missing expected values from {indicator_row.filename}: {','.join([str(v) for v in missing])}"
+                )
+
             transform = windows.transform(data_window, src.transform)
 
             # all inputs are very closely aligned to Blueprint extent except for

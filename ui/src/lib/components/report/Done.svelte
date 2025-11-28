@@ -18,7 +18,7 @@
 	</h3>
 
 	{#if errors && errors.length > 0}
-		<Root variant="destructive" class="border-error mt-4 flex gap-4 mb-12 mx-10 max-w-[800px]">
+		<Root variant="destructive" class="border-error mt-4 flex gap-4 mb-12 max-w-[800px]">
 			<ExclamationTriangle width="1.5rem" height="1.5rem" class="flex-none" />
 
 			<Description class="text-lg text-error">

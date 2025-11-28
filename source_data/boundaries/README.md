@@ -1,13 +1,15 @@
 # SECAS Southeast Conservation Blueprint Boundary Datasets
 
+Data are prepared using `analysis/prep/prepare_boundaries.py`.
+
 ## States and Counties
 
 States are used for the locator image in downloadable reports and counties are
 used to lookup land trusts from the Land Trust Alliance that might be working
 in a given county.
 
-Downloaded 6/4/2024 from: https://www.census.gov/cgi-bin/geo/shapefiles/index.php
-(2023 versions)
+Downloaded 8/19/2025 from: https://www.census.gov/cgi-bin/geo/shapefiles/index.php
+(2024 versions)
 
 ## SECAS State boundaries for state reports
 
@@ -20,3 +22,9 @@ Keister on 11/27/2023.
 These were provided via email by Hilary Morris on 9/4/2024. Use the name and
 description for "Neuse Tar River PARCA" from the previous PARCA data that was
 limited to the South Atlantic.
+
+## Natural Earth ocean
+
+This dataset is used for the locator map in the PDF reports.
+
+Downloaded 9/16/2025 from https://www.naturalearthdata.com/downloads/50m-physical-vectors/.

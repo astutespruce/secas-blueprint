@@ -1,114 +1,116 @@
-<div class="no-break">
-    <h3 id="WildfireRisk">Wildfire Likelihood</h3>
+<section class="break-after">
+    <div class="no-break">
+        <h3 id="WildfireRisk">Wildfire Likelihood</h3>
 
-    <p>
-        Wildfire likelihood data originate from the Wildfire Risk to Communities
-        project developed by the U.S. Forest Service. This layer depicts the
-        probability of wildfire burning in a specific location in any given
-        year. Annual burn probabilities in the United States range from 0-14%,
-        but do not exceed 8% in the Southeast. Wildfire likelihood is based on
-        fire behavior modeling across thousands of simulations of possible fire
-        seasons. In each simulation, factors contributing to the probability of
-        a fire occurring (such as weather, topography, and ignitions) vary based
-        on patterns derived from observations in recent decades. Wildfire
-        likelihood is not predictive and does not reflect any forecasted future
-        weather or fire danger conditions. It also does not say anything about
-        the intensity of fire if it occurs. To explore additional wildfire risk
-        information, please see the <a href="https://wildfirerisk.org/">Wildfire
-        Risk to Communities</a> website.
-    </p>
+        <p>
+            Wildfire likelihood data originate from the Wildfire Risk to Communities
+            project developed by the U.S. Forest Service. This layer depicts the
+            probability of wildfire burning in a specific location in any given
+            year. Annual burn probabilities in the United States range from 0-14%,
+            but do not exceed 8% in the Southeast. Wildfire likelihood is based on
+            fire behavior modeling across thousands of simulations of possible fire
+            seasons. In each simulation, factors contributing to the probability of
+            a fire occurring (such as weather, topography, and ignitions) vary based
+            on patterns derived from observations in recent decades. Wildfire
+            likelihood is not predictive and does not reflect any forecasted future
+            weather or fire danger conditions. It also does not say anything about
+            the intensity of fire if it occurs. To explore additional wildfire risk
+            information, please see the <a href="https://wildfirerisk.org/">Wildfire
+            Risk to Communities</a> website.
+        </p>
 
-    {% if maps.wildfire_risk %}
-        <div class="map-container">
-            <img src="maps:wildfire_risk" alt="Map for wildfire risk" class="map">
+        {% if maps.wildfire_risk %}
+            <div class="map-container">
+                <img src="maps:wildfire_risk" alt="Map for wildfire risk" class="map">
 
-            {% include "elements/north_arrow.html" %}
-        </div>
-
-        {% include "elements/map_footer.html" %}
-
-        <div class="flex map-footer">
-            <div class="map-locator-container">
-                {% if maps.locator %}
-                    <img src="maps:locator" alt="Locator map" class="map-locator">
-                {% endif %}
+                {% include "elements/north_arrow.html" %}
             </div>
 
-            <div class="legend">
-                <div class="legend-header">Wildfire likelihood (annual burn probability)</div>
-                {% for item in legends.wildfire_risk %}
-                    <div class="legend-element flex align-center">
-                        <div class="legend-patch" style="background: {{item.color}}"></div>
-                        <div>{{item.label}}</div>
-                    </div>
-                {% endfor %}
-                {% if results.outside_se_percent > 0 %}
-                    <div class="legend-element flex align-center">
-                        <div class="legend-patch outside-se {% if flip_crosshatch %}flip-x{% endif %}"></div>
-                        <div class="legend-label">Outside Southeast Blueprint</div>
-                    </div>
-                {% endif %}
+            {% include "elements/map_footer.html" %}
+
+            <div class="flex map-footer">
+                <div class="map-locator-container">
+                    {% if maps.locator %}
+                        <img src="maps:locator" alt="Locator map" class="map-locator">
+                    {% endif %}
+                </div>
+
+                <div class="legend">
+                    <div class="legend-header">Wildfire likelihood (annual burn probability)</div>
+                    {% for item in legends.wildfire_risk %}
+                        <div class="legend-element flex align-center">
+                            <div class="legend-patch" style="background: {{item.color}}"></div>
+                            <div>{{item.label}}</div>
+                        </div>
+                    {% endfor %}
+                    {% if results.outside_se_percent > 0 %}
+                        <div class="legend-element flex align-center">
+                            <div class="legend-patch outside-se {% if flip_crosshatch %}flip-x{% endif %}"></div>
+                            <div class="legend-label">Outside Southeast Blueprint</div>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
-        </div>
 
-    {% else %}
-        <div class="map-placeholder text-center">
-            map could not be created
-        </div>
-    {% endif %}
-</div>
-
-<div class="no-break">
-
-    <div class="caption">
-        Table {{table.counter}}: Area in each wildfire probability category{% if name %} within {{name}}{% else %} in this area{% endif %}.
-        Values from the
-        <a href="https://wildfirerisk.org/">Wildire Risk To Communities</a>
-        project developed by the USDA Forest Service.
+        {% else %}
+            <div class="map-placeholder text-center">
+                map could not be created
+            </div>
+        {% endif %}
     </div>
 
-    {% set table.counter=table.counter+1 %}
+    <div class="no-break">
 
-    <table class="centered">
-        <thead>
-            <tr>
-                <th class="label" scope="col">Wildfire likelihood (annual burn probability)</th>
-                <th class="acres" scope="col">Acres</th>
-                <th class="percent" scope="col">Percent of Area</th>
+        <div class="caption">
+            Table {{table.counter}}: Area in each wildfire probability category{% if name %} within {{name}}{% else %} in this area{% endif %}.
+            Values from the
+            <a href="https://wildfirerisk.org/">Wildire Risk To Communities</a>
+            project developed by the USDA Forest Service.
+        </div>
+
+        {% set table.counter=table.counter+1 %}
+
+        <table class="centered">
+            <thead>
+                <tr>
+                    <th class="label" scope="col">Wildfire likelihood (annual burn probability)</th>
+                    <th class="acres" scope="col">Acres</th>
+                    <th class="percent" scope="col">Percent of Area</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in results.wildfire_risk.entries %}
+                <tr>
+                    <td class="label">{{entry.label}}</td>
+                    <td class="percent">{{entry.acres|format_number}}</td>
+                    <td class="percent">{{entry.percent|format_percent}}%</td>
+                </tr>
+            {% endfor %}
+
+            {% if results.wildfire_risk.outside_wildfire_risk_acres > 0 %}
+                <tr class="remainder-row">
+                    <td class="label">No wildfire risk data available</td>
+                    <td class="acres">{{results.wildfire_risk.outside_wildfire_risk_acres|format_number}}</td>
+                    <td class="percent">{{results.wildfire_risk.outside_wildfire_risk_percent|format_percent}}%</td>
+                </tr>
+            {% endif %}
+
+
+            {% if results.outside_se_acres > 0 %}
+                <tr class="remainder-row">
+                    <td class="label">Outside Southeast Blueprint</td>
+                    <td class="acres">{{results.outside_se_acres|format_number}}</td>
+                    <td class="percent">{{results.outside_se_percent|format_percent}}%</td>
+                </tr>
+            {% endif %}
+
+            <tr class="total-row">
+                <td class="align-right">Total area</td>
+                <td class="acres">{{results.rasterized_acres|format_number}}</td>
+                <td class="percent">100%</td>
             </tr>
-        </thead>
-        <tbody>
-            {% for entry in results.wildfire_risk.entries %}
-            <tr>
-                <td class="label">{{entry.label}}</td>
-                <td class="percent">{{entry.acres|format_number}}</td>
-                <td class="percent">{{entry.percent|format_percent}}%</td>
-            </tr>
-        {% endfor %}
 
-        {% if results.wildfire_risk.outside_wildfire_risk_acres > 0 %}
-            <tr class="remainder-row">
-                <td class="label">No wildfire risk data available</td>
-                <td class="acres">{{results.wildfire_risk.outside_wildfire_risk_acres|format_number}}</td>
-                <td class="percent">{{results.wildfire_risk.outside_wildfire_risk_percent|format_percent}}%</td>
-            </tr>
-        {% endif %}
-
-
-        {% if results.outside_se_acres > 0 %}
-            <tr class="remainder-row">
-                <td class="label">Outside Southeast Blueprint</td>
-                <td class="acres">{{results.outside_se_acres|format_number}}</td>
-                <td class="percent">{{results.outside_se_percent|format_percent}}%</td>
-            </tr>
-        {% endif %}
-
-        <tr class="total-row">
-            <td class="align-right">Total area</td>
-            <td class="acres">{{results.rasterized_acres|format_number}}</td>
-            <td class="percent">100%</td>
-        </tr>
-
-        </tbody>
-    </table>
-</div>
+            </tbody>
+        </table>
+    </div>
+</section>
