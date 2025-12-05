@@ -182,6 +182,7 @@ export const unpackFeatureData = (
 	const scaledColumns = [
 		'blueprint',
 		'corridors',
+		'parcas',
 		'protectedAreas',
 		'slrDepth',
 		'slrNodata',
