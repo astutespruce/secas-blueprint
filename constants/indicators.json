@@ -1043,7 +1043,7 @@
     "id": "m_caribbeanmangrovemigration",
     "filename": "CaribbeanMangroveMigration.tif",
     "label": "Caribbean mangrove migration",
-    "description": "This indicator represents current and potential future locations of mangroves in the U.S. Caribbean based on land cover and barriers to mangrove migration like slope, elevation, and development. Mangroves serve as essential habitat for migratory birds and economically important fish while also providing ecosystem services like stabilizing shorelines, trapping sediment, and protecting coastal communities from storm surge. This indicator adapts methods from the U.S. Virgin Islands Climate Change Ecosystem-Based Adaptation guidance document and expands the analysis to the full U.S. Caribbean. It uses landcover from the National Oceanic and Atmospheric Administration's Coastal Change Analysis Program as well as slope, elevation, roads, and landcover from LANDFIRE.",
+    "description": "This indicator represents current and potential future locations of mangroves in the U.S. Caribbean based on landcover and barriers to mangrove migration like slope, elevation, and development. Mangroves serve as essential habitat for migratory birds and economically important fish while also providing ecosystem services like stabilizing shorelines, trapping sediment, and protecting coastal communities from storm surge. This indicator adapts methods from the U.S. Virgin Islands Climate Change Ecosystem-Based Adaptation guidance document and expands the analysis to the full U.S. Caribbean. It uses landcover from the National Oceanic and Atmospheric Administration's Coastal Change Analysis Program as well as slope, elevation, roads, and landcover from LANDFIRE.",
     "values": [
       {
         "value": 0,
@@ -1779,7 +1779,7 @@
     ],
     "valueLabel": "",
     "captionLabel": "stable coastal wetlands",
-    "goodThreshold": 1,
+    "goodThreshold": 2,
     "url": "https://secas-fws.hub.arcgis.com/maps/fws::stable-coastal-wetlands-southeast-blueprint-indicator-2023/about",
     "subregions": [
       "Atlantic Coastal Plain",
