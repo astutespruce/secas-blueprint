@@ -7,7 +7,7 @@
 </svelte:head>
 
 <Header />
-<div class="h-full w-full flex-auto overflow-auto">
+<main class="h-full w-full flex-auto overflow-auto">
 	<div class="relative z-0 w-full overflow-hidden h-60">
 		<div class="z-1 absolute top-[-50%]">
 			<enhanced:img
@@ -26,6 +26,7 @@
 		Photo: Black Skimmers, <a
 			href="https://www.flickr.com/photos/usfwssoutheast/26871026541/"
 			target="_blank"
+			tabindex="-1"
 			class="text-grey-8">U.S. Fish and Wildlife Service Southeast Region</a
 		>
 	</div>
@@ -280,5 +281,5 @@
 			To remove the marker, click the <b>X</b> in the search field to clear the search.
 		</p>
 	</div>
-</div>
+</main>
 <Footer />

@@ -82,24 +82,25 @@
 			<div class="flex flex-auto items-center gap-2">
 				<div class="relative">
 					<FilterIcon
-						width="1em"
-						height="1em"
-						class={cn('top-0 relative text-grey-4 group-hover:text-grey-9', {
+						class={cn('size-4 top-0 relative text-grey-4 group-hover:text-grey-9', {
 							'text-grey-9': enabled
 						})}
+						aria-hidden="true"
 					/>
 					<Plus
-						width="0.7em"
-						height="0.7em"
-						class={cn('absolute top-[0.1rem] left-[-0.5rem] text-grey-4  group-hover:text-grey-9', {
-							hidden: enabled
-						})}
+						class={cn(
+							'size-[0.7em] absolute top-[0.1rem] -left-2 text-grey-4  group-hover:text-grey-9',
+							{
+								hidden: enabled
+							}
+						)}
+						aria-hidden="true"
 					/>
 				</div>
 				{label}
 			</div>
 		</div>
-		<InfoTooltip title={label} {description} />
+		<InfoTooltip title={label} {description} aria-label={`Show details for ${label}`} />
 	</div>
 
 	{#if enabled}
@@ -118,6 +119,7 @@
 							id={`checkbox-${id}-${value}`}
 							checked={activeValues[value]}
 							onCheckedChange={handleToggleValue(value)}
+							aria-label={`Toggle filter for ${valueLabel}`}
 						/>
 						<Label
 							for={`checkbox-${id}-${value}`}
@@ -129,7 +131,7 @@
 				{/each}
 			{:else}
 				<div class="flex gap-1 items-center justify-center text-grey-8">
-					<ExclamationTriangle width="1em" height="1em" />
+					<ExclamationTriangle class="size-4" aria-hidden="true" />
 					not visible in this area
 				</div>
 			{/if}

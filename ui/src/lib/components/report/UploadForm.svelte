@@ -22,7 +22,6 @@
 
 	const { onSubmit } = $props()
 	let isDragValid: boolean | null = $state(null)
-
 	const schema = z.object({
 		areaName: z.string().default('').optional(),
 		file: z
@@ -110,6 +109,20 @@
 		})
 	}
 
+	const handleDropZoneClick = () => {
+		const fileInputNode = document.getElementById('file')
+		if (fileInputNode) {
+			fileInputNode.click()
+		}
+	}
+
+	const handleDropZoneKeyDown = ({ key }: KeyboardEvent) => {
+		const fileInputNode = document.getElementById('file')
+		if (fileInputNode && key === 'Enter') {
+			fileInputNode.click()
+		}
+	}
+
 	const isFileValid = $derived($formData.file && !$errors.file)
 	const isValid = $derived(isFileValid && !$errors.areaName)
 </script>
@@ -141,12 +154,12 @@
 								<Input
 									type="file"
 									{...props}
+									id="file"
 									bind:files={$fileHandle}
 									accept={[...MIME_TYPES].join(',')}
 									multiple={false}
 									class="mt-2 hidden"
 								/>
-
 								<div
 									class={cn(
 										'border-2 border-grey-5 rounded-lg bg-grey-1/40 border-dashed p-6 flex flex-col justify-center items-center text-center cursor-pointer mt-2',
@@ -159,9 +172,14 @@
 											hidden: isFileValid
 										}
 									)}
+									onclick={handleDropZoneClick}
+									onkeydown={handleDropZoneKeyDown}
+									role="button"
+									aria-label="Click to browse for files or drop file over this area"
+									tabindex={0}
 								>
 									<div>
-										<Download width="2rem" height="2rem" />
+										<Download class="size-8" aria-hidden="true" />
 									</div>
 									<p class="text-2xl font-bold mt-2">Drop your zip file here</p>
 									<p class="text-lg text-grey-8 leading-tight mt-4">
@@ -244,7 +262,7 @@
 
 	<hr />
 
-	<h3 class="text-2xl">Examples of what is inside</h3>
+	<h2 class="text-2xl">Examples of what is inside</h2>
 
 	<div class="grid grid-cols-2 md:grid-cols-5 mt-2 gap-4 [&_img]:border [&_img]:border-grey-2">
 		<enhanced:img src="$images/report/report_sm_1.png" alt="Tool report example screenshot 1" />
