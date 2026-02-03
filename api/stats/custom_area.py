@@ -64,7 +64,7 @@ async def get_custom_area_results(df, progress_callback=None):
 
     results = {
         "subregions": subregions,
-        "regions": subregion_df.region.unique(),
+        "regions": set(subregion_df.region.unique()),
         "acres": acres,
         "rasterized_acres": rasterized_geometry.acres,
         "outside_se_acres": rasterized_geometry.outside_se_acres,

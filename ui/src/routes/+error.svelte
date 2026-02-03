@@ -22,7 +22,7 @@
 		<div class="relative flex-auto h-full">
 			<div class="hidden md:block absolute top-0 bottom-0 left-0 right-0 overflow-hidden">
 				<enhanced:img src="$images/48754428566_d34b348ac3_o.jpg" alt="" class="brightness-80" />
-				<div class="hidden md:block sticky bottom-0">
+				<div class="sticky bottom-0">
 					<div class="absolute bottom-0 right-0 bg-black/65 text-white px-2 text-sm">
 						Photo:
 						<a

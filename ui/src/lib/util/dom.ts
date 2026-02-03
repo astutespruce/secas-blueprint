@@ -1,15 +1,15 @@
-export const hasWindow = typeof window !== 'undefined' && window
+import { browser } from '$app/environment'
 
-export const hasGeolocation = hasWindow && navigator && 'geolocation' in navigator
+export const hasGeolocation = browser && navigator && 'geolocation' in navigator
 
 export const saveToStorage = (key: string, data: object) => {
-	if (!hasWindow) return
+	if (!browser) return
 
 	window.localStorage.setItem(key, JSON.stringify(data))
 }
 
 export const getFromStorage = (key: string) => {
-	if (!hasWindow) return null
+	if (!browser) return null
 
 	const value = window.localStorage.getItem(key)
 

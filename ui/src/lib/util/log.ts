@@ -1,11 +1,9 @@
-/* eslint-disable no-console */
 import * as Sentry from '@sentry/browser'
 
-import { hasWindow } from './dom'
+import { browser } from '$app/environment'
 
 export const captureException = (err: Error | string, data: object | null = null) => {
-	// @ts-ignore
-	if (hasWindow && window.Sentry) {
+	if (browser && window.Sentry) {
 		Sentry.withScope((scope) => {
 			// capture location where error occurred
 			scope.setFingerprint([window.location.pathname])
@@ -19,13 +17,11 @@ export const captureException = (err: Error | string, data: object | null = null
 
 export const logGAEvent = (event: string, data: object | null = null) => {
 	// NOTE: window.gtag only available in build mode
-	// @ts-ignore
-	if (!hasWindow || !window.gtag) {
+	if (!(browser && window.gtag)) {
 		return
 	}
 
 	try {
-		// @ts-ignore
 		window.gtag('event', event, data)
 	} catch (ex) {
 		console.error('Could not log event to google', ex)
