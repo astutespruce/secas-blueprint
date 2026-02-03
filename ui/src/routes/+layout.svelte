@@ -17,12 +17,16 @@
 
 		console.debug('setting up GTAG')
 
-		window.gtag = (...args) => {
-			dataLayer.push(...args)
+		// window.gtag = (...args) => {
+		// 	dataLayer.push(...args)
+		// }
+		function gtag() {
+			dataLayer.push(arguments)
 		}
 
 		gtag('js', new Date())
 		gtag('config', GOOGLE_ANALYTICS_ID)
+		window.gtag = gtag
 	}
 </script>
 
