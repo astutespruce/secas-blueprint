@@ -99,12 +99,18 @@ def summarize_parcas_in_aoi(rasterized_geometry, df):
         parca_acres = rasterized_geometry.get_acres_by_bin(src, bins=BINS)
 
     total_acres = parca_acres.sum()
+    if total_acres == 0:
+        return None
+
     nodata_acres = (
         rasterized_geometry.acres - rasterized_geometry.outside_se_acres - total_acres
     )
-
     if nodata_acres < 1e-6:
         nodata_acres = 0
+
+    # if only 0 values (not a PARCA) are present, ignore PARCAs
+    if parca_acres[1:].max() == 0:
+        return None
 
     entries = [
         {
@@ -215,6 +221,10 @@ def get_parca_unit_results(results_dir, unit):
 
     cols = [c for c in unit_results.index if c.startswith("parca_")]
     parca_acres = unit_results[cols].values
+
+    # if only 0 values (not a PARCA) are present, ignore PARCAs
+    if parca_acres[1:].max() == 0:
+        return None
 
     parca_results = [
         {

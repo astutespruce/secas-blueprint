@@ -17,9 +17,6 @@
 
 		console.debug('setting up GTAG')
 
-		// window.gtag = (...args) => {
-		// 	dataLayer.push(...args)
-		// }
 		function gtag() {
 			dataLayer.push(arguments)
 		}
