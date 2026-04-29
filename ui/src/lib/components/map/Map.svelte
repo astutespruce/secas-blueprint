@@ -163,7 +163,6 @@
 		mapIsDrawing = true
 
 		const isVisible = isRenderLayerVisible
-		const pixelLayer = map.getLayer('pixelLayers')
 
 		// toggle layer visibility
 		if (mapData.mapMode === 'unit') {
@@ -174,8 +173,8 @@
 			map.setLayoutProperty('subregions', 'visibility', 'none')
 
 			// disable pixel layer event listener
-			// @ts-ignore
-			pixelLayer!.deck!.setProps({
+			// @ts-expect-error __deck is dynamically defined
+			map.__deck.setProps({
 				onAfterRender: () => {} // no-op
 			})
 			setPixelLayerProps({
