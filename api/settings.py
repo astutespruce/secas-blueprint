@@ -13,8 +13,6 @@ TEMP_DIR.mkdir(exist_ok=True, parents=True)
 ENABLE_CORS = bool(os.getenv("ENABLE_CORS", False))
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*").split(",")
 
-# SITE_URL is used to construct link in report
-SITE_URL = f'{os.getenv("ROOT_URL", "http://localhost")}/southeast'
 TILE_DIR = os.getenv("TILE_DIR", "/data/tiles")
 MAPBOX_ACCESS_TOKEN = os.getenv("MAPBOX_ACCESS_TOKEN")
 API_TOKEN = os.getenv("API_TOKEN")
@@ -25,9 +23,7 @@ REDIS_PORT = os.getenv("REDIS_PORT", 6379)
 SENTRY_DSN = os.getenv("SENTRY_DSN")
 SENTRY_ENV = os.getenv("SENTRY_ENV")
 
-REDIS = RedisSettings(
-    host=REDIS_HOST, port=REDIS_PORT, retry_on_timeout=True, conn_timeout=2
-)
+REDIS = RedisSettings(host=REDIS_HOST, port=REDIS_PORT, retry_on_timeout=True, conn_timeout=2)
 
 REDIS_QUEUE = "southeast"
 

@@ -55,3 +55,4 @@ include = ["analysis", "api"]
 
 [tool.ruff]
 exclude = ['.scratch']
+line-length = 120
