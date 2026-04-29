@@ -237,7 +237,7 @@
 				<br />
 				<br />
 				Don&apos;t have a shapefile? You can create one using
-				<a href="https://geojson.io/#map=6/32.861/-81.519" target="_blank"> geojson.io </a>
+				<a href="https://geojson.io/" target="_blank"> geojson.io </a>
 				to draw your area of interest, save as a shapefile, then upload here.
 				<br />
 				<br />

@@ -67,14 +67,17 @@
 		if (!map) return
 
 		// this happens in hot reload
+		// @ts-expect-error __deck is dynamically defined
 		if (!(map && map.__deck && map.__deck.layerManager)) return
 
+		// @ts-expect-error __deck is dynamically defined
 		map.__deck.setProps({
+			// @ts-expect-error __deck is dynamically defined
 			layers: [map.__deck.layerManager.layers[0].clone(newProps)]
 		})
 	}
 
-	const getPixelData = debounce(() => {
+	const getPixelData = debounce(async () => {
 		if (mapData.mapMode !== 'pixel' || !map) {
 			return
 		}
@@ -85,9 +88,9 @@
 			return
 		}
 
-		const layer = map.getLayer('pixelLayers')
 		// don't fetch data if layer is not yet available or is not visible
-		if (!(layer && layer.deck && layer.deck.layerManager.layers[0].props.visible)) {
+		// @ts-expect-error layer.deck is dynamically defined
+		if (!map?.__deck?.layerManager?.layers[0]?.props?.visible) {
 			return
 		}
 
@@ -114,7 +117,7 @@
 			})
 		}
 
-		const pixelData = extractPixelData(map, map.getCenter(), layer, ecosystemInfo, indicatorInfo)
+		const pixelData = await extractPixelData(map, map.getCenter(), ecosystemInfo, indicatorInfo)
 
 		if (pixelData === null) {
 			// tile data not yet loaded for correct zoom, try again after next deckGL
@@ -144,9 +147,7 @@
 		const subregions = new Set<string>()
 		const regions = new Set<string>()
 		map
-			// @ts-ignore
 			.queryRenderedFeatures(null, { layers: ['subregions'] })
-			// @ts-ignore
 			.forEach(({ properties: { subregion, region } }) => {
 				subregions.add(subregion)
 				regions.add(region)
@@ -190,8 +191,8 @@
 		// pixel identify / filter modes
 		else if (mapData.mapMode === 'pixel') {
 			// enable pixel layer event listener
-			// @ts-ignore
-			pixelLayer!.deck!.setProps({
+			// @ts-expect-error __deck is dynamically defined
+			map.__deck.setProps({
 				onAfterRender: deckGLHandler.handler
 			})
 
@@ -203,8 +204,8 @@
 			}
 		} else if (mapData.mapMode === 'filter') {
 			// disable pixel layer event listener
-			// @ts-ignore
-			pixelLayer!.deck!.setProps({
+			// @ts-expect-error __deck is dynamically defined
+			map.__deck.setProps({
 				onAfterRender: () => {} // no-op
 			})
 		}
@@ -355,8 +356,8 @@
 
 			// enable event listener for renderer
 			if (mapData.mapMode === 'pixel') {
-				// @ts-ignore
-				map.getLayer('pixelLayers')!.deck!.setProps({
+				// @ts-expect-error __deck is dynamically defined
+				map.__deck.setProps({
 					onAfterRender: deckGLHandler.handler
 				})
 			} else if (mapData.mapMode === 'filter') {
