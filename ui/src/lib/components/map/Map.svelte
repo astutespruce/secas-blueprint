@@ -179,6 +179,7 @@
 			})
 			setPixelLayerProps({
 				visible: false,
+				filterMode: 'AND',
 				filters: null, // reset filters (also reset in parent state)
 				data: { visible: false }
 			})
@@ -225,6 +226,7 @@
 
 		setPixelLayerProps({
 			visible: true,
+			filterMode: mapData.filterMode,
 			filters: mapData.activeFilterValues,
 			// have to use opacity to hide so that pixel mode still works when hidden
 			opacity: isVisible ? 0.7 : 0,
@@ -312,6 +314,7 @@
 						extent: bounds,
 						maxRequests: 20, // because these are on HTTP/2, we can fetch many at once
 						opacity: 0.7,
+						filterMode: 'AND',
 						filters: null,
 						visible: false,
 						renderLayer,
@@ -344,6 +347,7 @@
 				map.once('idle', () => {
 					setPixelLayerProps({
 						visible: true,
+						filterMode: 'AND',
 						filters: null,
 						data: { visible: true }
 					})
@@ -649,13 +653,16 @@
 	// effect for update to filters
 	$effect(() => {
 		// NOTE: have to specifically mark activeFilterValues to trigger this effect
+		/* eslint-disable @typescript-eslint/no-unused-expressions */
+		mapData.filterMode
 		mapData.activeFilterValues
+		/* eslint-enable @typescript-eslint/no-unused-expressions */
 
 		if (!untrack(() => isLoaded)) {
 			return
 		}
 
-		setPixelLayerProps({ filters: mapData.activeFilterValues })
+		setPixelLayerProps({ filterMode: mapData.filterMode, filters: mapData.activeFilterValues })
 	})
 
 	const belowMinZoom = $derived(

@@ -8,29 +8,22 @@ import { range } from '$lib/util/data'
  * @returns GLSL code to inject into the fragment shader
  */
 export const getFilterExpr = (encodingSchemes) => {
-	let code = ''
-	const conditions = []
+	const expressions: string[] = []
 	let i = 0
-	encodingSchemes.forEach((layers, textureIndex) => {
-		const expressions = []
+	encodingSchemes.forEach((layers: { offset: number; bits: number }[], textureIndex: number) => {
 		layers.forEach(({ offset, bits }) => {
 			expressions.push(
-				`\n((stackedPNGLayer.filterValues[${i}] < 0) || matchValue(valueRGB${textureIndex}, ${offset}, ${bits}, stackedPNGLayer.filterValues[${i}]))`
+				`\nmatchValue(valueRGB${textureIndex}, ${offset}, ${bits}, stackedPNGLayer.filterValues[${i}])`
 			)
 			i += 1
 		})
-
-		const condition = `canRender${textureIndex}`
-		conditions.push(condition)
-
-		code += `\nbool ${condition} = (${expressions.join(' &&')});\n`
 	})
 
-	return `\n${code}\n\nbool canRender = (${conditions.join(' && ')});\n`
+	return `\n\nbool canRender = (${expressions.join(' + ')}) >= stackedPNGLayer.requiredLayerCount;\n`
 }
 
 /**
- * Construct uniform of int values of encoded filter values.
+ * Construct GL uniform of int values of encoded filter values.
  * The bit in the position of each value (after accounting for value shift) is
  * set to 1 for each active filter.
  * Value is set to -1 to ignore this indicator when filtering.
@@ -41,7 +34,7 @@ export const getFilterValues = (encodingSchemes, filters) => {
 	const filterValues = []
 
 	encodingSchemes.forEach((layers) => {
-		layers.forEach(({ id, valueShift }) => {
+		layers.forEach(({ id, valueShift, bits }) => {
 			const activeValues = filters[id]
 			if (activeValues) {
 				const encodedFilterValue = parseInt(

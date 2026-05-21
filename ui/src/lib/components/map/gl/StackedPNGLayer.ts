@@ -24,6 +24,11 @@ layout(std140) uniform stackedPNGLayerUniforms {
 	// encoded filters, with a bit set to 1 for each value that is present in the
 	// set of activated filters.  -1 indicates no filtering for that layer.
 	uniform int filterValues[${numLayers}];
+	// useAndLogic is true where layers are combined with AND logic; false indicates OR logic
+	uniform int useAndLogic;
+	// requiredLayerCount is the number of layers that must be TRUE for the selected logic
+	// in order to render a pixel; this should be 1 for OR logic and numLayers for AND logic
+	uniform int requiredLayerCount;
 } stackedPNGLayer;
 `
 
@@ -33,6 +38,8 @@ type StackedPNGLayerUniformProps = {
 	offset?: number
 	bits?: number
 	filterValues?: number[]
+	useAndLogic?: number
+	requiredLayerCount?: number
 	palette?: DynamicTexture
 	layer0?: DynamicTexture
 	layer1?: DynamicTexture
@@ -50,7 +57,9 @@ const stackedPNGLayerUniforms = {
 		offset: 'i32',
 		bits: 'i32',
 		// @ts-expect-error filterValues is valid
-		filterValues: ['i32', numLayers]
+		filterValues: ['i32', numLayers],
+		useAndLogic: 'i32',
+		requiredLayerCount: 'i32'
 	}
 } as const satisfies ShaderModule<StackedPNGLayerUniformProps>
 
@@ -67,6 +76,7 @@ type StackedPNGLayerProps = {
 		palette: DynamicTexture
 	}
 	filterValues?: number[]
+	filterMode?: string
 	opacity?: number
 }
 
@@ -132,12 +142,13 @@ class StackedPNGLayer extends Layer {
 	}
 
 	updateState({
-		props: { bounds, images = [], renderTarget, filterValues, opacity },
+		props: { bounds, images = [], renderTarget, filterMode, filterValues, opacity },
 		oldProps: {
 			bounds: oldBounds,
 			images: oldImages = [],
 			// @ts-expect-error oldRenderTarget is intentionally missing props
 			renderTarget: oldRenderTarget = {},
+			filterMode: oldFilterMode,
 			filterValues: oldFilterValues,
 			opacity: oldOpacity
 		}
@@ -188,12 +199,18 @@ class StackedPNGLayer extends Layer {
 			}
 		}
 
+		if (filterMode != oldFilterMode) {
+			newProps.useAndLogic = filterMode === 'AND' ? 1 : 0
+			newProps.requiredLayerCount = filterMode === 'AND' ? numLayers : 1
+		}
+
 		if (
 			filterValues &&
 			(!oldFilterValues || !filterValues.every((v: number, i: number) => v === oldFilterValues[i]))
 		) {
 			newProps.filterValues = filterValues
 		}
+
 		if (opacity !== oldOpacity) {
 			newProps.opacity = opacity
 		}

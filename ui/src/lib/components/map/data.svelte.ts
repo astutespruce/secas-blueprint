@@ -2,10 +2,14 @@ import { defaultFilters } from '$lib/config/filters'
 import { logGAEvent } from '$lib/util/log'
 import type { Filter, Filters } from '$lib/types'
 
+type MapMode = 'unit' | 'pixel' | 'filter'
+type FilterMode = 'AND' | 'OR'
+
 export class MapData {
-	#mapMode: string = $state('unit') // one of: unit, pixel, filter
+	#mapMode: MapMode = $state('unit')
 	#data: any | null = $state.raw(null) // FIXME: typing
 	#selectedIndicator: any | null = $state.raw(null) // FIXME: typing
+	#filterMode: FilterMode = $state('AND')
 	#filters: Filters = $state.raw(defaultFilters)
 	#activeFilterValues = $derived.by(() =>
 		Object.fromEntries(
@@ -25,7 +29,7 @@ export class MapData {
 		return this.#mapMode
 	}
 
-	set mapMode(mode: string) {
+	set mapMode(mode: MapMode) {
 		this.#mapMode = mode
 		this.#data = null
 		this.#selectedIndicator = null
@@ -60,6 +64,14 @@ export class MapData {
 				indicator
 			})
 		}
+	}
+
+	get filterMode() {
+		return this.#filterMode
+	}
+
+	set filterMode(mode: FilterMode) {
+		this.#filterMode = mode
 	}
 
 	get filters() {

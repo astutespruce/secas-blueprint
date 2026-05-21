@@ -157,6 +157,42 @@
 					the part that falls within a range of values for one or more layers.
 				</div>
 
+				<!-- FIXME: rework this component -->
+				<div class="bg-grey-1 py-1 px-2 flex gap-4 justify-between items-center">
+					<div class="font-bold">Filter logic:</div>
+					<div class="flex gap-1 bg-white rounded-md">
+						<Button
+							variant="outline"
+							class={cn(
+								'h-auto text-sm md:text-[1rem] py-1.5 px-3 bg-grey-3 font-bold rounded-none first:rounded-l-md last:rounded-r-md leading-none min-w-[6em] cursor-pointer focus-visible:outline-2 outline-accent',
+								{
+									'bg-white text-foreground hover:bg-white font-normal': mapData.filterMode === 'OR'
+								}
+							)}
+							onclick={() => {
+								mapData.filterMode = 'AND'
+							}}
+						>
+							AND
+						</Button>
+						<Button
+							variant="outline"
+							class={cn(
+								'h-auto text-sm md:text-[1rem] py-1.5 px-3 bg-grey-3 font-bold rounded-none first:rounded-l-md last:rounded-r-md leading-none min-w-[6em] cursor-pointer focus-visible:outline-2 outline-accent',
+								{
+									'bg-white text-foreground hover:bg-white font-normal':
+										mapData.filterMode === 'AND'
+								}
+							)}
+							onclick={() => {
+								mapData.filterMode = 'OR'
+							}}
+						>
+							OR
+						</Button>
+					</div>
+				</div>
+
 				<FilterGroup
 					label="Filter by priorities"
 					icon={BlueprintIcon}
