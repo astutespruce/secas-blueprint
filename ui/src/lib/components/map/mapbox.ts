@@ -1,6 +1,6 @@
 /* load mapbox GL to ensure token is properly initialized */
 
-import mapboxgl from 'mapbox-gl'
+import mapboxgl from 'mapbox-gl/esm'
 import 'mapbox-gl/dist/mapbox-gl.css'
 
 import { MAPBOX_TOKEN } from '$lib/env'
