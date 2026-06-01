@@ -280,8 +280,10 @@
 		})
 
 		map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right')
+		map.dragRotate.disable()
+		map.touchZoomRotate.disableRotation()
 
-		// @ts-ignore
+		// @ts-expect-error map is valid
 		window.map = map // for easier debugging and querying via console
 
 		map.on('style.load', hideGulfOfMexico)
@@ -310,7 +312,7 @@
 
 			// add sources
 			Object.entries(sources).forEach(([id, source]) => {
-				// @ts-ignore
+				// @ts-expect-error source is valid
 				map.addSource(id, source)
 			})
 
@@ -348,7 +350,7 @@
 
 			// add normal mapbox layers// add layers
 			layers.forEach((layer) => {
-				// @ts-ignore
+				// @ts-expect-error layer is valid
 				map.addLayer(layer, beforeLayer)
 			})
 
