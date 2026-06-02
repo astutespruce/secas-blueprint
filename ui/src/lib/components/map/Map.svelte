@@ -299,6 +299,7 @@
 			button.onclick = zoomFullExtent
 			button.title = 'zoom to full extent'
 			button.tabIndex = 0
+			button.classList = '!hidden md:!block'
 
 			const span = document.createElement('span')
 			span.classList = 'mapboxgl-ctrl-icon'

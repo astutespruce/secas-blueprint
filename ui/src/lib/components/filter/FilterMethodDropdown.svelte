@@ -1,6 +1,6 @@
 <script lang="ts">
 	import GearIcon from '~icons/fa-solid/cog'
-	import CheckIcon from '@lucide/svelte/icons/check'
+	import CheckIcon from '~icons/fa-solid/check'
 	import { getContext } from 'svelte'
 	import type { AppState } from '$lib/types'
 	import { cn } from '$lib/utils'
@@ -16,7 +16,7 @@
 </script>
 
 {#if appState.isMobile}
-	<Sheet.Root open>
+	<Sheet.Root>
 		<Sheet.Trigger>
 			{#snippet child({ props })}
 				<Button {...props} variant="ghost" class="hover:bg-transparent h-auto p-1!">
@@ -37,7 +37,7 @@
 					Display only the areas where the selected filters overlap.
 				</div>
 				<CheckIcon
-					class={cn('invisible size-5 ml-4', {
+					class={cn('invisible size-4 ml-4', {
 						visible: mapData.filterMode === 'AND'
 					})}
 				/>
@@ -52,7 +52,7 @@
 					Display all areas where any of the selected filters are present.
 				</div>
 				<CheckIcon
-					class={cn('invisible size-5 ml-4', {
+					class={cn('invisible size-4 ml-4', {
 						visible: mapData.filterMode === 'OR'
 					})}
 				/>

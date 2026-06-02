@@ -11,7 +11,7 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
-		"deploy": "npm ci --omit=dev --no-audit --legacy-peer-deps && svelte-kit sync && npm run build"
+		"deploy": "npm ci --no-audit --legacy-peer-deps && svelte-kit sync && npm run build"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^2.1.0",
