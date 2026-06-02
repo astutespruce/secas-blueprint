@@ -26,7 +26,6 @@
 	} from '$lib/components/tabs'
 	import { cn } from '$lib/utils'
 
-	// let isMobile: boolean = $state(false)
 	const appState: AppState = $state({ isMobile: false })
 	setContext('app-state', appState)
 
