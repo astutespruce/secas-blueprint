@@ -1,3 +1,7 @@
+export type AppState = {
+	isMobile: boolean
+}
+
 export type IndicatorValue = {
 	value: number
 	label: string

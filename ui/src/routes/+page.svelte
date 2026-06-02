@@ -6,7 +6,7 @@
 
 	import ExclamationTriangleIcon from '~icons/fa-solid/exclamation-triangle'
 
-	import type { LocationData } from '$lib/types'
+	import type { AppState, LocationData } from '$lib/types'
 	import {
 		Footer,
 		Header,
@@ -26,7 +26,9 @@
 	} from '$lib/components/tabs'
 	import { cn } from '$lib/utils'
 
-	let isMobile: boolean = $state(false)
+	// let isMobile: boolean = $state(false)
+	const appState: AppState = $state({ isMobile: false })
+	setContext('app-state', appState)
 
 	const mapData = new MapData()
 	setContext('map-data', mapData)
@@ -44,13 +46,13 @@
 
 	$effect(() => {
 		tab
-		isMobile
+		appState.isMobile
 		mapData.mapMode
 		mapData.data
 
 		let nextTab = tab
 
-		if (isMobile) {
+		if (appState.isMobile) {
 			if (mapData.data === null && tab.startsWith('selected-')) {
 				nextTab = 'map'
 			}
@@ -96,7 +98,7 @@
 	const handleWindowMatchMediaChange = ({ matches: nextIsMobile }: { matches: boolean }) => {
 		let nextTab = tab
 
-		if (isMobile && !nextIsMobile) {
+		if (appState.isMobile && !nextIsMobile) {
 			prevMobileTab = tab
 
 			// switched from mobile to desktop; if on any of the mobile-only tabs, switch to info
@@ -104,7 +106,7 @@
 				// reset to info tab (default) on desktop
 				nextTab = 'info'
 			}
-		} else if (!isMobile && nextIsMobile) {
+		} else if (!appState.isMobile && nextIsMobile) {
 			// switched from desktop to mobile
 			if (tab === 'info') {
 				// reset to map tab (default) on mobile
@@ -112,7 +114,7 @@
 			}
 		}
 
-		isMobile = nextIsMobile
+		appState.isMobile = nextIsMobile
 		tab = nextTab
 	}
 
@@ -125,7 +127,7 @@
 			tab = 'map'
 		}
 
-		isMobile = mediaQueryList.matches
+		appState.isMobile = mediaQueryList.matches
 		mediaQueryList.addEventListener('change', handleWindowMatchMediaChange)
 
 		return () => {
@@ -146,7 +148,7 @@
 
 <QueryClientProvider client={new QueryClient()}>
 	<Header hasData={mapData && mapData.data !== null} />
-	{#if isMobile && mapData && mapData.data}
+	{#if appState.isMobile && mapData && mapData.data}
 		<MobileDetailsHeader {...mapData.data} onClose={() => mapData.setData(null)} />
 	{/if}
 
@@ -163,7 +165,7 @@
 						}
 					)}
 				>
-					{#if !isMobile && mapData.data !== null}
+					{#if !appState.isMobile && mapData.data !== null}
 						<SidebarDetailsHeader {tab} onTabChange={handleTabChange} />
 					{/if}
 
