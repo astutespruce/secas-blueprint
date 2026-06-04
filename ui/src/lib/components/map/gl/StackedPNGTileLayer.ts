@@ -1,7 +1,7 @@
 import { TileLayer, _getURLFromTemplate } from '@deck.gl/geo-layers'
 import { load } from '@loaders.gl/core'
 import { ImageLoader } from '@loaders.gl/images'
-import { Device } from '@luma.gl/core'
+import { Device, luma } from '@luma.gl/core'
 import { dequal as deepEqual } from 'dequal'
 
 // have to use the raw loader to load shaders
@@ -11,6 +11,10 @@ import fragmentShader from './fragment.fs?raw'
 import { getFilterExpr, getFilterValues } from './filters'
 import StackedPNGLayer from './StackedPNGLayer'
 import { createPNGTexture, createPaletteTexture } from './texture'
+
+// turn off verbose logging
+luma.log.level = 0
+luma.log.enable(false)
 
 /**
  * Fetch a tile image asynchronously and load into a GL texture

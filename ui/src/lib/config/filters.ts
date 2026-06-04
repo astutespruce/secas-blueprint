@@ -150,3 +150,15 @@ export const otherInfoFilters = [
 			'Wildfire likelihood data derived from the Wildfire Risk to Communities project by the USDA Forest Service.'
 	}
 ]
+
+export const filterToIndex = Object.fromEntries(
+	[]
+		// @ts-expect-error priorityFilters are fine
+		.concat(priorityFilters)
+		.concat(ecosystemFilters.t.indicators)
+		.concat(ecosystemFilters.f.indicators)
+		.concat(ecosystemFilters.m.indicators)
+		// @ts-expect-error otherFilters are fine
+		.concat(otherInfoFilters)
+		.map(({ id }, index) => [id, index])
+)

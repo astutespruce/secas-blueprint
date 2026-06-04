@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { getContext, untrack } from 'svelte'
+	import { SvelteSet } from 'svelte/reactivity'
 	import { MapboxOverlay } from '@deck.gl/mapbox'
+	import type { LngLatLike } from 'mapbox-gl'
 
 	import CrosshairsIcon from '$images/CrosshairsIcon.svg'
 	import Spinner from '~icons/fa-solid/spinner'
@@ -144,10 +146,12 @@
 			return
 		}
 
-		const subregions = new Set<string>()
-		const regions = new Set<string>()
+		const subregions = new SvelteSet<string>()
+		const regions = new SvelteSet<string>()
 		map
+			// @ts-expect-error null first param is fine
 			.queryRenderedFeatures(null, { layers: ['subregions'] })
+			// @ts-expect-error subregion and region are fine
 			.forEach(({ properties: { subregion, region } }) => {
 				subregions.add(subregion)
 				regions.add(region)
@@ -179,8 +183,8 @@
 			})
 			setPixelLayerProps({
 				visible: false,
-				filterMode: 'AND',
-				filters: null, // reset filters (also reset in parent state)
+				filterMode: mapData.filterMode,
+				filters: mapData.activeFilterValues,
 				data: { visible: false }
 			})
 
@@ -242,6 +246,7 @@
 			return
 		}
 		// hide Gulf of Mexico
+		// @ts-expect-error map.style is fine
 		if (map.style._layers['marine-label-md-pt']) {
 			map.setFilter('marine-label-md-pt', [
 				'all',
@@ -249,7 +254,9 @@
 				['in', 'labelrank', 2, 3],
 				['!=', 'name', 'Gulf of Mexico']
 			])
-		} else if (map.style._layers['water-point-label']) {
+		}
+		// @ts-expect-error map.style is fine
+		else if (map.style._layers['water-point-label']) {
 			map.setFilter('water-point-label', [
 				'all',
 				[
@@ -265,9 +272,32 @@
 		}
 	}
 
+	const serializeMapCenterZoom = () => {
+		const mapCenter = map
+			.getCenter()
+			.toArray()
+			.map((d) => Math.round(d * 1e5) / 1e5)
+			.toString()
+		const mapZoom = Math.round(map.getZoom() * 1e2) / 1e2
+		window.location.hash = `${mapCenter}@${mapZoom}`
+	}
+
 	const createMap = (mapNode: HTMLDivElement) => {
 		const { bounds, maxBounds, minZoom, maxZoom } = config
-		const { center, zoom } = getCenterAndZoom(mapNode, bounds, 0)
+
+		let center: LngLatLike
+		let zoom
+
+		if (window.location.hash && window.location.hash.search('@') !== -1) {
+			// use URL hash to determine cetner
+			const [centerStr, zoomStr] = window.location.hash.slice(1).split('@')
+			center = centerStr.split(',').map((d) => parseFloat(d)) as LngLatLike
+			zoom = parseFloat(zoomStr)
+		} else {
+			const boundsCenterZoom = getCenterAndZoom(mapNode, bounds, 0)
+			center = boundsCenterZoom.center as LngLatLike
+			zoom = boundsCenterZoom.zoom
+		}
 
 		map = new mapboxgl.Map({
 			container: mapNode,
@@ -325,6 +355,7 @@
 				layers: [
 					new StackedPNGTileLayer({
 						id: 'pixelLayers',
+						// @ts-expect-error interleaved is fine
 						interleaved: true,
 						beforeId: beforeLayer,
 						refinementStrategy: 'no-overlap',
@@ -333,8 +364,8 @@
 						extent: bounds,
 						maxRequests: 20, // because these are on HTTP/2, we can fetch many at once
 						opacity: 0.7,
-						filterMode: 'AND',
-						filters: null,
+						filterMode: mapData.filterMode,
+						filters: mapData.activeFilterValues,
 						visible: false,
 						renderLayer,
 						tileSize: 512,
@@ -366,8 +397,8 @@
 				map.once('idle', () => {
 					setPixelLayerProps({
 						visible: true,
-						filterMode: 'AND',
-						filters: null,
+						filterMode: mapData.filterMode,
+						filters: mapData.activeFilterValues,
 						data: { visible: true }
 					})
 					map.once('idle', () => {
@@ -397,6 +428,8 @@
 			})
 
 			map.on('moveend', () => {
+				serializeMapCenterZoom()
+
 				delayedMapIsDrawing = true
 				if (mapData.mapMode === 'filter') {
 					updateVisibleSubregions()
@@ -405,6 +438,8 @@
 			})
 
 			map.on('zoomend', () => {
+				serializeMapCenterZoom()
+
 				if (mapData.mapMode === 'pixel') {
 					getPixelData()
 				} else if (mapData.mapMode === 'filter') {
@@ -439,6 +474,7 @@
 			// highlight selected
 			map.setFilter('unit-outline-highlight', ['==', 'id', properties!.id])
 
+			// @ts-expect-error properties is fine
 			mapData.setData(unpackFeatureData(properties, ecosystemInfo, indicatorInfo, subregionIndex))
 			resizeMap()
 		})
@@ -455,16 +491,14 @@
 				return
 			}
 
-			const { id } = features[0]
+			const { id } = features[0] as { id: string | number }
 
 			if (highlightId !== undefined && highlightId !== id) {
 				map.setFeatureState(
-					// @ts-ignore
 					{ source: 'mapUnits', sourceLayer: 'units', id: highlightId },
 					{ highlight: false }
 				)
 			}
-			// @ts-ignore
 			map.setFeatureState({ source: 'mapUnits', sourceLayer: 'units', id }, { highlight: true })
 			highlightId = id
 		})
@@ -477,7 +511,6 @@
 
 			if (highlightId !== undefined) {
 				map.setFeatureState(
-					// @ts-ignore
 					{ source: 'mapUnits', sourceLayer: 'units', id: highlightId },
 					{ highlight: false }
 				)
@@ -519,7 +552,7 @@
 				const {
 					sources: styleSources,
 					layers: styleLayers,
-					// @ts-ignore
+					// @ts-expect-error mapbox:origin is fine
 					metadata: { 'mapbox:origin': curStyleId }
 				} = map!.getStyle()
 				const layerIndex = indexBy(styleLayers, 'id')
@@ -534,7 +567,7 @@
 				Object.entries(sources).forEach(([id, source]) => {
 					// make sure we're not trying to reload the same style, which already has these
 					if (!styleSources[id]) {
-						// @ts-ignore
+						// @ts-expect-error source is fine
 						map!.addSource(id, source)
 					}
 				})
@@ -571,13 +604,13 @@
 						}
 					}
 
-					// @ts-ignore
+					// @ts-expect-error layer is fine
 					map!.addLayer(layer, beforeLayer)
 				})
 
 				if (!map!.getLayer('pixelLayers')) {
 					// pixel layer appears to now be retained on style change
-					// @ts-ignore
+					// @ts-expect-error layer is fine
 					map!.addLayer(pixelLayer, beforeLayer)
 				}
 			})
@@ -598,6 +631,7 @@
 
 	// effect for setting a location
 	$effect(() => {
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		locationData.location
 
 		if (!untrack(() => isLoaded)) {
@@ -632,6 +666,7 @@
 
 	// effect for updates to mapMode
 	$effect(() => {
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		mapData.mapMode
 
 		if (!untrack(() => isLoaded)) {
@@ -657,7 +692,9 @@
 
 	// effect for changed mapData to reset boundary highlight
 	$effect(() => {
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		mapData.mapMode
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		mapData.data
 
 		if (!untrack(() => isLoaded)) {
