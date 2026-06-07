@@ -27,6 +27,7 @@
 	import LayerToggle from './LayerToggle.svelte'
 	import { mapboxgl } from './mapbox'
 	import { ModeToggle } from './mode'
+	import PrintMap from './PrintMap.svelte'
 	import StyleToggle from './StyleToggle.svelte'
 	import { getCenterAndZoom } from './viewport'
 	import { cn } from '$lib/utils'
@@ -37,6 +38,7 @@
 	const mapData: MapData = getContext('map-data')
 	const locationData: LocationData = getContext('location-data')
 
+	let mapImg: string | null = $state(null)
 	let isLoaded: boolean = $state(false)
 	let isRenderLayerVisible: boolean = $state(true)
 	let currentZoom: number = $state(3)
@@ -306,7 +308,8 @@
 			zoom,
 			minZoom,
 			maxZoom,
-			maxBounds
+			maxBounds,
+			preserveDrawingBuffer: true
 		})
 
 		map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right')
@@ -452,6 +455,9 @@
 		map.on('idle', () => {
 			mapIsDrawing = false
 			delayedMapIsDrawing = false
+
+			// capture map image for printing
+			mapImg = map!.getCanvas().toDataURL('image/png')
 		})
 
 		map.on('click', ({ lngLat: point }) => {
@@ -737,9 +743,9 @@
 </script>
 
 <div
-	class="h-full w-full flex-auto relative md:border-l-2 border-l-grey-3 has-focus-visible:border-l-primary overflow-hidden"
+	class="h-full w-full flex-auto relative md:border-l-2 border-l-grey-3 has-focus-visible:border-l-primary overflow-hidden print:hidden"
 >
-	<div class="h-full w-full" {@attach createMap}></div>
+	<div class="h-full w-full print:hidden" {@attach createMap}></div>
 
 	{#if mapIsDrawing}
 		<div
@@ -751,7 +757,7 @@
 		<img
 			src={CrosshairsIcon}
 			alt="Crosshairs icon"
-			class="absolute block z-0 right-0 bottom-0 left-[50%] top-[50%] ml-[-1rem] mt-[-1rem] pointer-events-none size-8"
+			class="absolute block z-0 right-0 bottom-0 left-[50%] top-[50%] ml-[-1rem] mt-[-1rem] pointer-events-none size-8 print:hidden"
 		/>
 	{/if}
 
@@ -774,3 +780,11 @@
 		/>
 	{/if}
 </div>
+
+<!-- TODO: map image for print; only generate on print action -->
+<PrintMap
+	src={mapImg}
+	title={displayLayer.label}
+	subtitle={displayLayer.valueLabel}
+	categories={displayLayer.categories}
+/>

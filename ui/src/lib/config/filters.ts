@@ -151,14 +151,13 @@ export const otherInfoFilters = [
 	}
 ]
 
-export const filterToIndex = Object.fromEntries(
-	[]
-		// @ts-expect-error priorityFilters are fine
-		.concat(priorityFilters)
-		.concat(ecosystemFilters.t.indicators)
-		.concat(ecosystemFilters.f.indicators)
-		.concat(ecosystemFilters.m.indicators)
-		// @ts-expect-error otherFilters are fine
-		.concat(otherInfoFilters)
-		.map(({ id }, index) => [id, index])
-)
+export const allFilters = []
+	// @ts-expect-error priorityFilters are fine
+	.concat(priorityFilters)
+	.concat(ecosystemFilters.t.indicators)
+	.concat(ecosystemFilters.f.indicators)
+	.concat(ecosystemFilters.m.indicators)
+	// @ts-expect-error otherFilters are fine
+	.concat(otherInfoFilters)
+
+export const filterToIndex = Object.fromEntries(allFilters.map(({ id }, index) => [id, index]))

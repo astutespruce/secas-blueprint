@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { setContext, untrack } from 'svelte'
-	import { dev } from '$app/environment'
+	import { page } from '$app/state'
+	import { browser, dev } from '$app/environment'
 	import { asset } from '$app/paths'
 	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query'
 
 	import ExclamationTriangleIcon from '~icons/fa-solid/exclamation-triangle'
 
 	import type { AppState, LocationData } from '$lib/types'
+	import { PrintFiltersList } from '$lib/components/filter'
 	import {
 		Footer,
 		Header,
@@ -44,10 +46,12 @@
 	let prevMobileTab: string | null = $state(null)
 
 	$effect(() => {
+		/* eslint-disable @typescript-eslint/no-unused-expressions */
 		tab
 		appState.isMobile
 		mapData.mapMode
 		mapData.data
+		/* eslint-enable @typescript-eslint/no-unused-expressions */
 
 		let nextTab = tab
 
@@ -151,14 +155,23 @@
 		<MobileDetailsHeader {...mapData.data} onClose={() => mapData.setData(null)} />
 	{/if}
 
-	<main class="h-full w-full flex-auto overflow-auto">
-		<div class="flex flex-col h-full flex-auto">
-			<div class="flex h-full flex-auto overflow-y-hidden relative">
+	<!-- Print header -->
+	<div class="hidden print:block">
+		<h1 class="text-2xl">Southeast Conservation Blueprint Explorer (2026)</h1>
+		{#if browser}
+			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+			<a href={page.url.href} class="text-xs leading-none break-all">{page.url.href}</a>
+		{/if}
+	</div>
+
+	<main class="h-full w-full flex-auto overflow-auto print:h-auto">
+		<div class="flex flex-col h-full flex-auto print:h-auto">
+			<div class="flex h-full flex-auto overflow-y-hidden relative print:h-auto">
 				<!-- sidebar -->
 				<div
 					bind:this={contentNode}
 					class={cn(
-						'md:flex h-full bg-white grow shrink-0 basis-full md:basis-[360px] lg:basis-[468px] w-max-[100%] md:w-max-[360px] lg:w-max-[468px] flex-col overflow-hidden absolute md:relative left-0 right-0 top-0 bottom-0 z-10000 md:z-1',
+						'md:flex h-full bg-white grow shrink-0 basis-full md:basis-[360px] lg:basis-[468px] w-max-[100%] md:w-max-[360px] lg:w-max-[468px] flex-col overflow-hidden absolute md:relative left-0 right-0 top-0 bottom-0 z-10000 md:z-1 print:hidden',
 						{
 							hidden: tab === 'map'
 						}
@@ -205,6 +218,13 @@
 
 			<!-- mobile bottom tabs	-->
 			<MobileTabs {tab} onChange={handleTabChange} />
+		</div>
+
+		<div class="hidden print:block">
+			<!-- TODO: map legend -->
+			{#if mapData.mapMode === 'filter'}
+				<PrintFiltersList />
+			{/if}
 		</div>
 	</main>
 	<Footer />

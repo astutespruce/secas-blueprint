@@ -51,9 +51,9 @@
 	}
 </script>
 
-<div class="md:hidden flex-none border-t border-t-grey-9 leading-snug">
+<div class="md:hidden flex-none border-t border-t-grey-9 leading-snug print:hidden">
 	<nav class="grid auto-cols-fr grid-flow-col gap-0 items-center">
-		{#each tabs as { id, label, icon: Icon }}
+		{#each tabs as { id, label, icon: Icon } (id)}
 			<Button
 				class={cn(
 					'flex flex-col gap-0 items-center justify-center text-center flex-grow p-2 h-10 select-none rounded-none text-grey-1 text-[10px]',

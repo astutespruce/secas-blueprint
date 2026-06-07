@@ -59,7 +59,7 @@
 			{/if}
 
 			<div class="mt-2">
-				{#each categories as element}
+				{#each categories as element (element.label)}
 					<LegendElement {...element} />
 				{/each}
 			</div>

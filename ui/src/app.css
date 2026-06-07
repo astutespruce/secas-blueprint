@@ -155,9 +155,45 @@
 		@apply !top-[50px];
 	}
 
-	/* canvas {
-		@apply md:border-l-2 border-l-grey-3 focus-visible:border-l-[blue];
-	} */
+	@media print {
+		@page :first {
+			counter-set: page 0;
+		}
+		@page {
+			size: letter portrait;
+			margin: 0.25in 0.25in 0.5in 0.25in;
+			@top-left {
+				content: '';
+			}
+			@top-right {
+				content: '';
+			}
+			@bottom-left {
+				content: '';
+			}
+			@bottom-right {
+				@apply text-xs text-muted-foreground;
+				counter-increment: page;
+				content: 'Page ' counter(page);
+			}
+		}
+		body {
+			margin: 0;
+			height: auto;
+			print-color-adjust: exact !important;
+			background: #fff;
+		}
+
+		/* p,
+		ul,
+		ol {
+			@apply leading-snug;
+		}
+
+		figure {
+			@apply break-inside-avoid;
+		} */
+	}
 }
 
 @utility container {

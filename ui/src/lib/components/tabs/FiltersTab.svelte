@@ -21,6 +21,7 @@
 		otherInfoFilters as rawOtherInfoFilters
 	} from '$lib/config/filters'
 	import { FilterGroup, FilterMethodDropdown } from '$lib/components/filter'
+	import { PrintMapDialog } from '$lib/components/dialog'
 
 	const { class: className } = $props()
 	const mapData: MapData = getContext('map-data')
@@ -157,9 +158,9 @@
 					the part that falls within a range of values for one or more layers.
 				</div>
 
-				<!-- FIXME: rework this component -->
-				<div class="bg-grey-1 py-1 px-2 flex justify-end">
+				<div class="bg-grey-1 py-1 px-2 flex justify-between gap-4">
 					<FilterMethodDropdown />
+					<PrintMapDialog />
 				</div>
 
 				<FilterGroup
