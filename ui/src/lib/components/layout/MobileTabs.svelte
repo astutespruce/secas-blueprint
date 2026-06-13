@@ -10,10 +10,10 @@
 	import SearchIcon from '~icons/fa-solid/search-location'
 	import TasksIcon from '~icons/fa-solid/tasks'
 	import { Button } from '$lib/components/ui/button'
-	import { MapData } from '$lib/components/map'
+	import { MapState } from '$lib/components/map'
 	import { cn } from '$lib/utils'
 
-	const mapData: MapData = getContext('map-data')
+	const mapState: MapState = getContext('map-state')
 	const { tab, onChange } = $props()
 
 	const defaultTabs = [
@@ -38,9 +38,9 @@
 	]
 
 	let tabs = $derived.by(() => {
-		if (mapData.mapMode === 'filter') {
+		if (mapState.mapMode === 'filter') {
 			return filterTabs
-		} else if (mapData.data !== null && !mapData.data.isLoading) {
+		} else if (mapState.data !== null && !mapState.data.isLoading) {
 			return dataTabs
 		}
 		return defaultTabs

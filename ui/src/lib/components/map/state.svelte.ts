@@ -1,15 +1,18 @@
 import { SvelteSet } from 'svelte/reactivity'
+import type { Map } from 'mapbox-gl'
+
 import { browser } from '$app/environment'
-import { replaceState } from '$app/navigation'
 import { defaultFilters, filterToIndex } from '$lib/config/filters'
+import { pixelLayers, renderLayersIndex } from '$lib/config/pixelLayers'
 import { BLUEPRINT_VERSION } from '$lib/env'
 import { logGAEvent } from '$lib/util/log'
-import type { Filter, Filters } from '$lib/types'
+import type { Filter, Filters, PixelLayer } from '$lib/types'
 
 type MapMode = 'unit' | 'pixel' | 'filter'
 type FilterMode = 'AND' | 'OR'
 
-export class MapData {
+export class MapState {
+	#map: Map | null = $state(null) // set to map instance on load
 	#mapMode: MapMode = $state('unit')
 	#data: any | null = $state.raw(null) // FIXME: typing
 	#selectedIndicator: any | null = $state.raw(null) // FIXME: typing
@@ -29,9 +32,21 @@ export class MapData {
 	#visibleRegions: Set<string> = $state.raw(new SvelteSet<string>())
 	#filtersLoading: boolean = $state(true) // set to false on first set of visible subregions
 
+	#renderLayer: PixelLayer = $state.raw(renderLayersIndex.blueprint)
+	#renderLayerIsVisible: boolean = $state(true)
+	#mapImg: string | null = $state(null) // stores map image generated from map
+
 	constructor() {
 		this.restoreFromURL()
 	}
+
+	set map(map: Map) {
+		this.#map = map
+	}
+
+	// TODO:
+	// capture map image for printing
+	// mapImg = map!.getCanvas().toDataURL('image/png')
 
 	get mapMode(): string {
 		return this.#mapMode
@@ -41,7 +56,6 @@ export class MapData {
 		this.#mapMode = mode
 		this.#data = null
 		this.#selectedIndicator = null
-		this.saveToURL()
 	}
 
 	get data() {
@@ -81,7 +95,6 @@ export class MapData {
 
 	set filterMode(mode: FilterMode) {
 		this.#filterMode = mode
-		this.saveToURL()
 	}
 
 	get filters() {
@@ -101,8 +114,6 @@ export class MapData {
 			...this.#filters,
 			[id]: { enabled, activeValues }
 		}
-
-		this.saveToURL()
 	}
 
 	get activeFilterValues() {
@@ -111,7 +122,6 @@ export class MapData {
 
 	resetFilters() {
 		this.#filters = defaultFilters
-		this.saveToURL()
 	}
 
 	get filtersLoading() {
@@ -135,6 +145,26 @@ export class MapData {
 		this.#visibleRegions = visibleRegions
 	}
 
+	set renderLayer(newRenderLayer: PixelLayer) {
+		this.#renderLayer = newRenderLayer
+	}
+
+	get renderLayer() {
+		return this.#renderLayer
+	}
+
+	set renderLayerIsVisible(visible: boolean) {
+		this.#renderLayerIsVisible = visible
+	}
+
+	get renderLayerIsVisible() {
+		return this.#renderLayerIsVisible
+	}
+
+	get displayLayer() {
+		return this.#mapMode === 'unit' ? renderLayersIndex.blueprint : this.#renderLayer
+	}
+
 	// for logging state
 	toJSON() {
 		return {
@@ -147,8 +177,9 @@ export class MapData {
 		}
 	}
 
-	saveToURL() {
+	serializeFilterStateToURL() {
 		if (browser) {
+			let queryParams = ''
 			const filterValues = Object.fromEntries(
 				Object.entries(this.#activeFilterValues).map(([id, activeValues]) => [
 					filterToIndex[id],
@@ -168,16 +199,10 @@ export class MapData {
 				}
 
 				// eslint-disable-next-line svelte/prefer-svelte-reactivity
-				const searchParams = new URLSearchParams([...Object.entries(urlState)])
-
-				// eslint-disable-next-line svelte/no-navigation-without-resolve
-				replaceState(`?${searchParams.toString()}` + window.location.hash, urlState)
-			} else {
-				// no filters, no need to persist other parts of state
-				// NOTE: we have to include the leading ? or it doesn't clear out URL
-				// eslint-disable-next-line svelte/no-navigation-without-resolve
-				replaceState(`?${window.location.hash}`, {})
+				queryParams = `?${new URLSearchParams([...Object.entries(urlState)]).toString()}`
 			}
+
+			return `${window.location.origin}${window.location.pathname}${queryParams}${window.location.hash}`
 		}
 	}
 
@@ -222,6 +247,9 @@ export class MapData {
 					})
 				)
 				this.#filters = initFilters
+
+				// clear URL after loading
+				window.history.replaceState({}, '', `?${window.location.hash}`)
 			}
 		}
 	}

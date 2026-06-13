@@ -4,7 +4,7 @@
 	import { getContext } from 'svelte'
 	import type { AppState } from '$lib/types'
 	import { cn } from '$lib/utils'
-	import type { MapData } from '$lib/components/map'
+	import type { MapState } from '$lib/components/map'
 	import { Button } from '$lib/components/ui/button'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu'
 	import * as Sheet from '$lib/components/ui/sheet'
@@ -12,7 +12,7 @@
 	import OrLogicIcon from '$images/OrLogicIcon.svg'
 
 	const appState: AppState = getContext('app-state')
-	const mapData: MapData = getContext('map-data')
+	const mapState: MapState = getContext('map-state')
 </script>
 
 {#if appState.isMobile}
@@ -28,7 +28,7 @@
 		<Sheet.Content side="top" class="px-4 pt-4 pb-8 h-full">
 			<div class="font-bold text-xl">Filter overlay method:</div>
 			<Button
-				onclick={() => (mapData.filterMode = 'AND')}
+				onclick={() => (mapState.filterMode = 'AND')}
 				variant="ghost"
 				class="h-auto text-wrap wrap-normal whitespace-normal text-left w-full justify-between"
 			>
@@ -38,12 +38,12 @@
 				</div>
 				<CheckIcon
 					class={cn('invisible size-4 ml-4', {
-						visible: mapData.filterMode === 'AND'
+						visible: mapState.filterMode === 'AND'
 					})}
 				/>
 			</Button>
 			<Button
-				onclick={() => (mapData.filterMode = 'OR')}
+				onclick={() => (mapState.filterMode = 'OR')}
 				variant="ghost"
 				class="h-auto text-wrap wrap-normal whitespace-normal text-left w-full justify-between"
 			>
@@ -53,7 +53,7 @@
 				</div>
 				<CheckIcon
 					class={cn('invisible size-4 ml-4', {
-						visible: mapData.filterMode === 'OR'
+						visible: mapState.filterMode === 'OR'
 					})}
 				/>
 			</Button>
@@ -73,7 +73,7 @@
 			<DropdownMenu.Group>
 				<DropdownMenu.Label class="text-base">Filter overlay method:</DropdownMenu.Label>
 				<DropdownMenu.Separator />
-				<DropdownMenu.RadioGroup bind:value={mapData.filterMode}>
+				<DropdownMenu.RadioGroup bind:value={mapState.filterMode}>
 					<DropdownMenu.RadioItem value="AND" class="gap-4">
 						<img src={AndLogicIcon} alt="AND logic icon" class="size-7" />
 						Display only the areas where the selected filters overlap.

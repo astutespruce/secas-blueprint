@@ -16,7 +16,7 @@
 		MobileTabs,
 		SidebarDetailsHeader
 	} from '$lib/components/layout'
-	import { Map, MapData } from '$lib/components/map'
+	import { Map, MapState } from '$lib/components/map'
 	import {
 		ContactTab,
 		FiltersTab,
@@ -31,8 +31,8 @@
 	const appState: AppState = $state({ isMobile: false })
 	setContext('app-state', appState)
 
-	const mapData = new MapData()
-	setContext('map-data', mapData)
+	const mapState = new MapState()
+	setContext('map-state', mapState)
 
 	let locationData: LocationData = $state({ location: null })
 	setContext('location-data', locationData)
@@ -49,31 +49,31 @@
 		/* eslint-disable @typescript-eslint/no-unused-expressions */
 		tab
 		appState.isMobile
-		mapData.mapMode
-		mapData.data
+		mapState.mapMode
+		mapState.data
 		/* eslint-enable @typescript-eslint/no-unused-expressions */
 
 		let nextTab = tab
 
 		if (appState.isMobile) {
-			if (mapData.data === null && tab.startsWith('selected-')) {
+			if (mapState.data === null && tab.startsWith('selected-')) {
 				nextTab = 'map'
 			}
 		} else {
-			if (mapData.data === null && tab.startsWith('selected-')) {
+			if (mapState.data === null && tab.startsWith('selected-')) {
 				nextTab = 'info'
-			} else if (mapData.mapMode === 'filter' && tab !== 'filter') {
+			} else if (mapState.mapMode === 'filter' && tab !== 'filter') {
 				nextTab = 'filter'
-			} else if (tab === 'filter' && mapData.mapMode !== 'filter') {
-				nextTab = mapData.data !== null ? 'selected-priorities' : 'info'
-			} else if (tab === 'info' && mapData.data !== null) {
+			} else if (tab === 'filter' && mapState.mapMode !== 'filter') {
+				nextTab = mapState.data !== null ? 'selected-priorities' : 'info'
+			} else if (tab === 'info' && mapState.data !== null) {
 				nextTab = 'selected-priorities'
 			}
 		}
 
 		if (nextTab !== tab) {
 			if (nextTab !== 'selected-indicators') {
-				mapData.selectedIndicator = null
+				mapState.selectedIndicator = null
 			}
 
 			tab = nextTab
@@ -90,7 +90,7 @@
 		tab = newTab
 
 		// reset selected indicator on intentional tab change
-		mapData.selectedIndicator = null
+		mapState.selectedIndicator = null
 
 		// scroll content to top
 		if (contentNode) {
@@ -150,9 +150,9 @@
 <svelte:window {@attach windowMediaQueryHandler} />
 
 <QueryClientProvider client={new QueryClient()}>
-	<Header hasData={mapData && mapData.data !== null} />
-	{#if appState.isMobile && mapData && mapData.data}
-		<MobileDetailsHeader {...mapData.data} onClose={() => mapData.setData(null)} />
+	<Header hasData={mapState && mapState.data !== null} />
+	{#if appState.isMobile && mapState && mapState.data}
+		<MobileDetailsHeader {...mapState.data} onClose={() => mapState.setData(null)} />
 	{/if}
 
 	<!-- Print header -->
@@ -177,7 +177,7 @@
 						}
 					)}
 				>
-					{#if !appState.isMobile && mapData.data !== null}
+					{#if !appState.isMobile && mapState.data !== null}
 						<SidebarDetailsHeader {tab} onTabChange={handleTabChange} />
 					{/if}
 
@@ -193,10 +193,10 @@
 					<ContactTab class={tab === 'contact' ? '' : 'hidden'} />
 
 					<!-- selected data tabs -->
-					{#if mapData.data !== null}
-						{#if mapData.data.isLoading}
+					{#if mapState.data !== null}
+						{#if mapState.data.isLoading}
 							<div class="mt-8 text-center text-lg text-grey-8">Loading...</div>
-						{:else if mapData.data.blueprint === undefined || mapData.data.blueprint === null}
+						{:else if mapState.data.blueprint === undefined || mapState.data.blueprint === null}
 							<div class="flex gap-2 items-center mt-8 px-4">
 								<ExclamationTriangleIcon class="size-6 flex-none text-accent" />
 								<text class="text-grey-8 flex-auto font-bold">
@@ -204,11 +204,11 @@
 								</text>
 							</div>
 						{:else if tab === 'selected-priorities'}
-							<PrioritiesTab {...mapData.data} />
+							<PrioritiesTab {...mapState.data} />
 						{:else if tab === 'selected-indicators'}
-							<IndicatorsTab {...mapData.data} />
+							<IndicatorsTab {...mapState.data} />
 						{:else if tab === 'selected-more-info'}
-							<MoreInfoTab {...mapData.data} />
+							<MoreInfoTab {...mapState.data} />
 						{/if}
 					{/if}
 				</div>
@@ -222,7 +222,7 @@
 
 		<div class="hidden print:block">
 			<!-- TODO: map legend -->
-			{#if mapData.mapMode === 'filter'}
+			{#if mapState.mapMode === 'filter'}
 				<PrintFiltersList />
 			{/if}
 		</div>

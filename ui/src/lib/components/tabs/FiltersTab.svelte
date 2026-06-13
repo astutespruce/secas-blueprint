@@ -10,7 +10,7 @@
 	import MarineIcon from '$images/m.svg'
 	import OtherInfoIcon from '$images/otherInfo.svg'
 	import TerrestrialIcon from '$images/t.svg'
-	import type { MapData } from '$lib/components/map'
+	import type { MapState } from '$lib/components/map'
 	import { setIntersection } from '$lib/util/data'
 	import type { Filter } from '$lib/types'
 	import { cn } from '$lib/utils'
@@ -24,7 +24,7 @@
 	import { PrintMapDialog } from '$lib/components/dialog'
 
 	const { class: className } = $props()
-	const mapData: MapData = getContext('map-data')
+	const mapState: MapState = getContext('map-state')
 
 	type FilterVisibilityStub = {
 		canBeVisible: boolean
@@ -37,11 +37,11 @@
 				priorityFilters: rawPriorityFilters
 					.map((entry) => ({
 						...entry,
-						...mapData.filters[entry.id],
-						canBeVisible: mapData.visibleSubregions.size > 0
+						...mapState.filters[entry.id],
+						canBeVisible: mapState.visibleSubregions.size > 0
 					}))
 					.filter(
-						({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled // mapData.filters[id].enabled
+						({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled // mapState.filters[id].enabled
 					),
 
 				terrestrialFilters: ecosystemFilters.t.indicators
@@ -56,12 +56,13 @@
 						}) => ({
 							id,
 							...rest,
-							...mapData.filters[id],
-							canBeVisible: setIntersection(indicatorSubregions, mapData.visibleSubregions).size > 0
+							...mapState.filters[id],
+							canBeVisible:
+								setIntersection(indicatorSubregions, mapState.visibleSubregions).size > 0
 						})
 					)
 					.filter(
-						({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled // mapData.filters[id].enabled
+						({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled // mapState.filters[id].enabled
 					),
 
 				freshwaterFilters: ecosystemFilters.f.indicators
@@ -76,12 +77,13 @@
 						}) => ({
 							id,
 							...rest,
-							...mapData.filters[id],
-							canBeVisible: setIntersection(indicatorSubregions, mapData.visibleSubregions).size > 0
+							...mapState.filters[id],
+							canBeVisible:
+								setIntersection(indicatorSubregions, mapState.visibleSubregions).size > 0
 						})
 					)
 					.filter(
-						({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled // mapData.filters[id].enabled
+						({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled // mapState.filters[id].enabled
 					),
 
 				marineFilters: ecosystemFilters.m.indicators
@@ -96,36 +98,37 @@
 						}) => ({
 							id,
 							...rest,
-							...mapData.filters[id],
-							canBeVisible: setIntersection(indicatorSubregions, mapData.visibleSubregions).size > 0
+							...mapState.filters[id],
+							canBeVisible:
+								setIntersection(indicatorSubregions, mapState.visibleSubregions).size > 0
 						})
 					)
 					.filter(
-						({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled // mapData.filters[id].enabled
+						({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled // mapState.filters[id].enabled
 					),
 
 				otherInfoFilters: rawOtherInfoFilters
 					.map((entry) => ({
 						...entry,
-						...mapData.filters[entry.id],
+						...mapState.filters[entry.id],
 						canBeVisible:
 							(entry.id !== 'urban' &&
 								entry.id !== 'wildfireRisk' &&
-								mapData.visibleRegions.size > 0) ||
+								mapState.visibleRegions.size > 0) ||
 							// urban / wildfire not in Caribbean
 							((entry.id === 'urban' || entry.id === 'wildfireRisk') &&
-								[...mapData.visibleRegions].filter((s) => s !== 'caribbean').length > 0)
+								[...mapState.visibleRegions].filter((s) => s !== 'caribbean').length > 0)
 					}))
-					.filter(({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled) // mapData.filters[id].enabled)
+					.filter(({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled) // mapState.filters[id].enabled)
 			}
 		})
 
 	const handleFilterChange = ({ id, enabled, activeValues }: Filter & { id: string }) => {
-		mapData.setLayerFilterValues(id, { enabled, activeValues })
+		mapState.setLayerFilterValues(id, { enabled, activeValues })
 	}
 
 	const handleResetFilters = () => {
-		mapData.resetFilters()
+		mapState.resetFilters()
 	}
 </script>
 
@@ -137,20 +140,20 @@
 		</div>
 		<div
 			class={cn('flex justify-end items-center', {
-				hidden: mapData.numEnabledFilters === 0
+				hidden: mapState.numEnabledFilters === 0
 			})}
 		>
 			<Button onclick={handleResetFilters} class="text-sm px-2 gap-1 py-0 h-7">
 				<TimesCircle width="1em" height="1em" class="p-0 m-0" />
-				reset {mapData.numEnabledFilters} filter{mapData.numEnabledFilters > 1 ? 's' : ''}
+				reset {mapState.numEnabledFilters} filter{mapState.numEnabledFilters > 1 ? 's' : ''}
 			</Button>
 		</div>
 	</div>
 
 	<div class="flex-auto h-full overflow-y-auto">
-		{#if mapData.filtersLoading}
+		{#if mapState.filtersLoading}
 			<div class="mt-4 text-center text-xl text-grey-8">Loading...</div>
-		{:else if mapData.hasVisibleFilters}
+		{:else if mapState.hasVisibleFilters}
 			<div class="flex flex-col overflow-y-auto flex-auto h-full relative">
 				<div class="px-4 py-2 leading-tight text-grey-8">
 					Filters can help you find the part of the Blueprint that aligns with your mission,
