@@ -188,7 +188,7 @@ export class MapData {
 				const queryParams = Object.fromEntries([...new URLSearchParams(window.location.search)])
 				if (queryParams.version !== BLUEPRINT_VERSION) {
 					alert(
-						'Your URL includes filters based on a different Blueprint version; this is not supported and they will be ignored.  Sorry about that!'
+						"Your URL includes filters based on a previous version of the Blueprint, which is not supported. We're clearing your filters and loading the latest Blueprint. Sorry about that!"
 					)
 					window.history.replaceState({}, '', `?${window.location.hash}`)
 					return
