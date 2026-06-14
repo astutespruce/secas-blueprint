@@ -78,18 +78,16 @@ defaultFilters.protectedAreas = {
 
 export const priorityFilters = [
 	{
-		id: 'blueprint',
-		label: 'Blueprint priority',
-		description:
-			'The Blueprint identifies priority areas based on a suite of natural and cultural resource indicators representing terrestrial, freshwater, and marine ecosystems.',
+		id: blueprint.id,
+		label: blueprint.label,
+		description: blueprint.description,
 		values: blueprint.values.filter(({ value }) => value > 0).reverse()
 	},
 	{
-		id: 'corridors',
-		label: 'Hubs and corridors',
+		id: corridors.id,
+		label: corridors.label,
 		values: corridors.values.filter(({ value }) => value > 0),
-		description:
-			'The Blueprint uses a least-cost path connectivity analysis to identify corridors that link hubs across the shortest distance possible, while also routing through as much Blueprint priority as possible.'
+		description: corridors.description
 	}
 ]
 
@@ -107,41 +105,37 @@ export const ecosystemFilters = indexBy(
 
 export const otherInfoFilters = [
 	{
-		id: 'slr',
-		label: 'Flooding extent by projected sea-level rise',
+		id: slrDepth.id,
+		label: slrDepth.label,
 		values: slrDepth.values.map(({ value, label, ...rest }) => ({
 			...rest,
 			value,
 			label: value < 11 ? `${label} feet` : label
 		})),
-		description: 'Sea level rise estimates derived from the NOAA sea-level rise inundation data.'
+		description: slrDepth.description
 	},
 	{
-		id: 'parcas',
-		label: 'Priority Amphibian and Reptile Conservation Areas',
+		id: parcas.id,
+		label: parcas.label,
 		values: parcas.values,
-		description:
-			'Priority Amphibian and Reptile Areas derived from data provided by the Amphibian and Reptile Conservancy'
+		description: parcas.description
 	},
 	{
-		id: 'urban',
-		label: 'Probability of urbanization by 2060',
+		id: urban.id,
+		label: urban.label,
 		values: urban.values,
-		description:
-			'Past and current (2021) urban levels based on developed land cover classes from the National Land Cover Database. Future urban growth estimates derived from the FUTURES model developed by the Center for Geospatial Analytics, NC State University.  Data extent limited to the inland continental Southeast.'
+		description: urban.description
 	},
 	{
-		id: 'protectedAreas',
-		label: 'Protected areas',
+		id: protectedAreas.id,
+		label: protectedAreas.label,
 		values: protectedAreas.values,
-		description:
-			'Protected areas information is derived from the Protected Areas Database of the United States (PAD-US v4.1).'
+		description: protectedAreas.description
 	},
 	{
-		id: 'wildfireRisk',
-		label: 'Wildfire likelihood (annual burn probability)',
+		id: wildfireRisk.id,
+		label: wildfireRisk.label,
 		values: wildfireRisk.values,
-		description:
-			'Wildfire likelihood data derived from the Wildfire Risk to Communities project by the USDA Forest Service.'
+		description: wildfireRisk.description
 	}
 ]

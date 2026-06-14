@@ -102,31 +102,29 @@ const coreLayers: PixelLayer[] = [
 
 const otherInfoLayers: PixelLayer[] = [
 	{
-		id: 'slr',
-		label: 'Flooding extent by projected sea-level rise',
+		id: slrDepth.id,
+		label: slrDepth.label,
 		colors: slrDepth.values.map(({ color }) => color),
 		categories: slrDepth.values
 			.filter(({ value }) => value !== 13)
 			.map(({ label, ...rest }, i) => ({
 				...rest,
-				label:
-					/* eslint-disable-next-line no-nested-ternary */
-					i === 1 ? `${label} foot` : i <= 10 ? `${label} feet` : label,
+				label: i === 1 ? `${label} foot` : i <= 10 ? `${label} feet` : label,
 				outlineWidth: 1,
 				outlineColor: 'grey.5'
 			})),
 		layer: pixelLayerIndex.slr
 	},
 	{
-		id: 'parcas',
-		label: 'Priority Amphibian and Reptile Conservation Areas',
+		id: parcas.id,
+		label: parcas.label,
 		colors: parcas.values.map(({ color }) => color),
 		categories: parcas.values.filter(({ color }) => color !== null),
 		layer: pixelLayerIndex.parcas
 	},
 	{
-		id: 'urban',
-		label: 'Probability of urbanization by 2060',
+		id: urban.id,
+		label: urban.label,
 		colors: urban.values.map(({ color }) => color),
 		categories: urban.values.map(({ color, ...rest }) => ({
 			...rest,
