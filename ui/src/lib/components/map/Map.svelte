@@ -43,14 +43,11 @@
 	let isLoaded: boolean = $state(false)
 	let currentZoom: number = $state(3)
 	let highlightId: number | string | undefined = $state()
-	let prevLocation: Coordinate | null = $state(null)
 
 	// mapIsDrawing is used to show the spinner; it only gets set via a deounced callback to prevent short duration flashes
 	let mapIsDrawing: boolean = $state(false)
 	// delayedMapIsDrawing is toggled immediately when map enters drawing state and is used in callback to determine if should toggle mapIsDrawing
 	let delayedMapIsDrawing: boolean = $state(false)
-
-	let prevRenderLayerIsVisible: boolean = true
 
 	const deckGLHandler = eventHandler(50)
 	const updateMapIsDrawing = debounce(() => {
@@ -628,34 +625,30 @@
 		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		locationData.location
 
-		if (!untrack(() => isLoaded)) {
-			return
-		}
-
-		if (locationData.location !== null) {
-			if (locationData.location === untrack(() => prevLocation)) {
+		untrack(() => {
+			if (!isLoaded) {
 				return
 			}
 
-			const {
-				location: { latitude, longitude }
-			} = locationData
-			map.jumpTo({ center: [longitude, latitude], zoom: 12 })
-			map.once('idle', () => {
-				updateVisibleSubregions()
-			})
+			if (locationData.location !== null) {
+				const {
+					location: { latitude, longitude }
+				} = locationData
+				map.jumpTo({ center: [longitude, latitude], zoom: 12 })
+				map.once('idle', () => {
+					updateVisibleSubregions()
+				})
 
-			if (!marker) {
-				marker = new mapboxgl.Marker().setLngLat([longitude, latitude]).addTo(map)
+				if (!marker) {
+					marker = new mapboxgl.Marker().setLngLat([longitude, latitude]).addTo(map)
+				} else {
+					marker?.setLngLat([longitude, latitude])
+				}
 			} else {
-				marker?.setLngLat([longitude, latitude])
+				marker?.remove()
+				marker = null
 			}
-		} else {
-			marker?.remove()
-			marker = null
-		}
-
-		prevLocation = locationData.location
+		})
 	})
 
 	// effect for updates to mapMode
@@ -686,10 +679,10 @@
 
 	// effect for changed mapState to reset boundary highlight
 	$effect(() => {
-		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+		/* eslint-disable @typescript-eslint/no-unused-expressions */
 		mapState.mapMode
-		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		mapState.data
+		/* eslint-enable-next-line @typescript-eslint/no-unused-expressions */
 
 		if (!untrack(() => isLoaded)) {
 			return
@@ -717,34 +710,27 @@
 
 	// effect for update to renderLayerIsVisible
 	$effect(() => {
-		/* eslint-disable @typescript-eslint/no-unused-expressions */
-		mapState.mapMode
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		mapState.renderLayerIsVisible
-		/* eslint-enable @typescript-eslint/no-unused-expressions */
+		// NOTE: we intentionally do not track mapMode here but use in untrack
 
-		if (!untrack(() => isLoaded)) {
-			return
-		}
+		untrack(() => {
+			if (!isLoaded) {
+				return
+			}
 
-		// if the only thing that changed is mode, then skip because on change of
-		// map mode we are already setting pixel layer props, and setting it again
-		// here in fast succession clobbers it
-		if (mapState.renderLayerIsVisible === prevRenderLayerIsVisible) {
-			return
-		}
-		prevRenderLayerIsVisible = mapState.renderLayerIsVisible
-
-		if (mapState.mapMode === 'unit') {
-			map.setLayoutProperty(
-				'blueprint',
-				'visibility',
-				mapState.renderLayerIsVisible ? 'visible' : 'none'
-			)
-		} else {
-			// have to toggle opacity not visibility so that pixel-level identify
-			// still works
-			setPixelLayerProps({ opacity: mapState.renderLayerIsVisible ? 0.7 : 0 })
-		}
+			if (mapState.mapMode === 'unit') {
+				map.setLayoutProperty(
+					'blueprint',
+					'visibility',
+					mapState.renderLayerIsVisible ? 'visible' : 'none'
+				)
+			} else {
+				// have to toggle opacity not visibility so that pixel-level identify
+				// still works
+				setPixelLayerProps({ opacity: mapState.renderLayerIsVisible ? 0.7 : 0 })
+			}
+		})
 	})
 
 	const belowMinZoom = $derived(

@@ -66,7 +66,7 @@
 			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 			<a href={url} class="text-xs leading-none break-all">{url}</a>
 
-			<br /><br />
+			<br />
 			<span class="text-sm text-muted-foreground">
 				Note: these filters are only valid for Southeast Blueprint {BLUEPRINT_VERSION}.
 			</span>

@@ -183,16 +183,6 @@
 			print-color-adjust: exact !important;
 			background: #fff;
 		}
-
-		/* p,
-		ul,
-		ol {
-			@apply leading-snug;
-		}
-
-		figure {
-			@apply break-inside-avoid;
-		} */
 	}
 }
 
