@@ -1,13 +1,14 @@
 import { indexBy } from '$lib/util/data'
 import type { Indicator } from '$lib/types'
 
-import rawBlueprint from '$constants/blueprint.json'
-import rawCorridors from '$constants/corridors.json'
+import blueprint from '$constants/blueprint.json'
+import corridors from '$constants/corridors.json'
 import ecosystems from '$constants/ecosystems.json'
 import rawIndicators from '$constants/indicators.json'
 import parcas from '$constants/parcas.json'
 import protectedAreas from '$constants/protected_areas.json'
-import rawSLR from '$constants/slr.json'
+import slrDepth from '$constants/slr_depth.json'
+import slrProj from '$constants/slr_proj.json'
 import subregions from '$constants/subregions.json'
 import urban from '$constants/urban.json'
 import wildfireRisk from '$constants/wildfire_risk.json'
@@ -26,9 +27,13 @@ import pixelLayers9 from '$constants/pixel_layers_9.json'
 
 // export unmodified values directly
 export {
+	blueprint,
+	corridors,
 	ecosystems,
 	parcas,
 	protectedAreas,
+	slrDepth,
+	slrProj,
 	subregions,
 	urban,
 	wildfireRisk,
@@ -47,16 +52,6 @@ export {
 export const ecosystemIndex = indexBy(ecosystems, 'id')
 
 export const subregionsIndex = indexBy(subregions, 'subregion')
-
-// Sort by descending value
-export const blueprint = rawBlueprint.sort(({ value: leftValue }, { value: rightValue }) =>
-	rightValue > leftValue ? 1 : -1
-)
-// skip the first value
-export const blueprintCategories = blueprint.slice(0, blueprint.length - 1)
-
-// put 0 value at end
-export const corridors = rawCorridors.slice(1).concat(rawCorridors.slice(0, 1))
 
 // select subset of fields and add position within list
 export const indicators: Indicator[] = rawIndicators.map(
@@ -86,9 +81,5 @@ export const indicators: Indicator[] = rawIndicators.map(
 )
 
 export const indicatorsIndex = indexBy(indicators, 'id')
-
-// split depth and NODATA values
-export const slrDepth = rawSLR.slice(0, 11)
-export const slrNodata = rawSLR.slice(11)
 
 export const subregionIndex = indexBy(subregions, 'value')

@@ -17,7 +17,7 @@ from analysis.constants import (
     PARCA_COLORS,
     PROTECTED_AREAS_COLORS,
     URBAN_COLORS,
-    SLR_LEGEND,
+    SLR_DEPTH,
     INDICATORS_INDEX,
     WILDFIRE_RISK_COLORS,
 )
@@ -115,11 +115,7 @@ async def render_raster_maps(
 
     for id in indicators:
         indicator = INDICATORS_INDEX[id]
-        colors = {
-            e["value"]: e["color"]
-            for e in indicator["values"]
-            if e["color"] is not None
-        }
+        colors = {e["value"]: e["color"] for e in indicator["values"] if e["color"] is not None}
         task_args.append(
             (
                 id,
@@ -140,7 +136,7 @@ async def render_raster_maps(
         task_args.append(("protected_areas", protected_areas_filename, colors))
 
     if slr:
-        colors = {e["value"]: e["color"] for i, e in enumerate(SLR_LEGEND)}
+        colors = {e["value"]: e["color"] for i, e in enumerate([v for v in SLR_DEPTH if v["value"] < 11])}
         task_args.append(("slr", slr_filename, colors))
 
     if urban:
@@ -152,10 +148,7 @@ async def render_raster_maps(
 
     # NOTE: have to have handle on pending or task loop gets closed too soon
     completed, pending = await asyncio.wait(
-        [
-            loop.run_in_executor(executor, render_raster_map, *base_args, *args)
-            for args in task_args
-        ]
+        [loop.run_in_executor(executor, render_raster_map, *base_args, *args) for args in task_args]
     )
 
     results = [t.result() for t in completed]
@@ -226,9 +219,7 @@ async def render_maps(
     bounds = get_map_bounds(center, zoom, WIDTH, HEIGHT)
     raster_map_reader = WebMercatorReader(bounds, WIDTH, HEIGHT)
 
-    locator_image, error = get_locator_map_image(
-        *center, bounds=bounds, geometry=geometry
-    )
+    locator_image, error = get_locator_map_image(*center, bounds=bounds, geometry=geometry)
     if error:
         errors["locator"] = error
     else:
@@ -241,16 +232,12 @@ async def render_maps(
     aoi_image = None
 
     if geometry:
-        aoi_image, error = get_aoi_map_image(
-            geometry, center, zoom, WIDTH, HEIGHT, add_mask=add_mask
-        )
+        aoi_image, error = get_aoi_map_image(geometry, center, zoom, WIDTH, HEIGHT, add_mask=add_mask)
         if error:
             errors["aoi"] = error
 
     elif summary_unit_id:
-        aoi_image, error = get_summary_unit_map_image(
-            summary_unit_id, center, zoom, WIDTH, HEIGHT
-        )
+        aoi_image, error = get_summary_unit_map_image(summary_unit_id, center, zoom, WIDTH, HEIGHT)
         if error:
             errors["aoi"] = error
 

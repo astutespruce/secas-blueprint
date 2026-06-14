@@ -120,10 +120,8 @@ write_raster(
 del out
 
 colormap = {
-    e["value"]: hex_to_uint8(e["color"])
-    if e["color"] is not None
-    else (255, 255, 255, 0)
-    for e in WILDFIRE_RISK
+    e["value"]: hex_to_uint8(e["color"]) if e["color"] is not None else (255, 255, 255, 0)
+    for e in WILDFIRE_RISK["values"]
 }
 
 with rasterio.open(outfilename, "r+") as out:

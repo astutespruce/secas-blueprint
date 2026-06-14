@@ -8,7 +8,8 @@ import shapely
 
 from analysis.constants import (
     M2_ACRES,
-    SLR_DEPTH_BINS,
+    SLR_DEPTH,
+    SLR_DEPTH_VALUES,
     SLR_NODATA_VALUES,
     SLR_NODATA_COLS,
     SLR_PROJ_COLUMNS,
@@ -19,7 +20,7 @@ from analysis.lib.raster import summarize_raster_by_units_grid
 from analysis.lib.stats.summary_units import read_unit_from_feather
 
 
-SLR_BINS = SLR_DEPTH_BINS + [v["value"] for v in SLR_NODATA_VALUES]
+SLR_BINS = [v["value"] for v in SLR_DEPTH["values"]]
 
 
 src_dir = Path("data/inputs/threats/slr")
@@ -68,11 +69,7 @@ def summarize_slr_in_aoi(rasterized_geometry, geometry):
         slr_acres = rasterized_geometry.get_acres_by_bin(src, bins=SLR_BINS)
 
     total_slr_acres = slr_acres.sum()
-    slr_nodata_acres = (
-        rasterized_geometry.acres
-        - rasterized_geometry.outside_se_acres
-        - total_slr_acres
-    )
+    slr_nodata_acres = rasterized_geometry.acres - rasterized_geometry.outside_se_acres - total_slr_acres
 
     if slr_nodata_acres < 1e-6:
         slr_nodata_acres = 0
@@ -86,9 +83,7 @@ def summarize_slr_in_aoi(rasterized_geometry, geometry):
 
     # if the only value present is for inland areas where not applicable, show that message
     # also, if it is a mix of inland areas and nodata, just default to NA as well
-    if np.allclose(slr_acres[12], rasterized_geometry.acres) or (
-        (slr_acres[12] > 0) and slr_acres[:11].sum() == 0
-    ):
+    if np.allclose(slr_acres[12], rasterized_geometry.acres) or ((slr_acres[12] > 0) and slr_acres[:11].sum() == 0):
         return {"na": True}
 
     # accumulate values for 0-10ft
@@ -97,7 +92,7 @@ def summarize_slr_in_aoi(rasterized_geometry, geometry):
     slr_results = [
         {
             "value": i,
-            "label": f"{i} {'foot' if i==1 else 'feet'}",
+            "label": f"{i} {'foot' if i == 1 else 'feet'}",
             "acres": acres,
             "percent": 100 * acres / rasterized_geometry.acres,
         }
@@ -117,9 +112,7 @@ def summarize_slr_in_aoi(rasterized_geometry, geometry):
     df = gp.read_feather(proj_filename)
 
     parts = shapely.get_parts(geometry)
-    left, right = shapely.STRtree(df.geometry.values).query(
-        parts, predicate="intersects"
-    )
+    left, right = shapely.STRtree(df.geometry.values).query(parts, predicate="intersects")
 
     pairs = pd.DataFrame(
         {
@@ -130,18 +123,10 @@ def summarize_slr_in_aoi(rasterized_geometry, geometry):
     )
     shapely.prepare(pairs.slr_geometry.values)
     shapely.prepare(pairs.aoi_geometry.values)
-    slr_contains_ix = shapely.contains_properly(
-        pairs.slr_geometry.values, pairs.aoi_geometry.values
-    )
-    pairs.loc[slr_contains_ix, "geometry"] = pairs.loc[
-        slr_contains_ix
-    ].aoi_geometry.values
-    aoi_contains_ix = ~slr_contains_ix & shapely.contains_properly(
-        pairs.aoi_geometry.values, pairs.slr_geometry.values
-    )
-    pairs.loc[aoi_contains_ix, "geometry"] = pairs.loc[
-        aoi_contains_ix
-    ].slr_geometry.values
+    slr_contains_ix = shapely.contains_properly(pairs.slr_geometry.values, pairs.aoi_geometry.values)
+    pairs.loc[slr_contains_ix, "geometry"] = pairs.loc[slr_contains_ix].aoi_geometry.values
+    aoi_contains_ix = ~slr_contains_ix & shapely.contains_properly(pairs.aoi_geometry.values, pairs.slr_geometry.values)
+    pairs.loc[aoi_contains_ix, "geometry"] = pairs.loc[aoi_contains_ix].slr_geometry.values
 
     ix = ~(slr_contains_ix | aoi_contains_ix)
     pairs.loc[ix, "geometry"] = shapely.intersection(
@@ -151,16 +136,12 @@ def summarize_slr_in_aoi(rasterized_geometry, geometry):
     total_area = pairs.area.sum()
 
     # calculate area-weighted mean
-    area_factor = (
-        pairs[["slr_index", "area"]].groupby("slr_index").area.sum() / total_area
-    ).rename("area_factor")
+    area_factor = (pairs[["slr_index", "area"]].groupby("slr_index").area.sum() / total_area).rename("area_factor")
     df = df.join(area_factor, how="inner")
     projections = df[SLR_PROJ_COLUMNS].multiply(df.area_factor, axis=0).sum().round(2)
 
     projections = {
-        SLR_PROJ_SCENARIOS[scenario]: [
-            projections[f"{year}_{scenario}"] for year in SLR_YEARS
-        ]
+        SLR_PROJ_SCENARIOS[scenario]: [projections[f"{year}_{scenario}"] for year in SLR_YEARS]
         for scenario in SLR_PROJ_SCENARIOS
     }
 
@@ -183,13 +164,8 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
     out_dir : str
     """
 
-    if (
-        not len(df.columns.intersection({"value", "rasterized_acres", "outside_se"}))
-        == 3
-    ):
-        raise ValueError(
-            "GeoDataFrame for summary must include value, rasterized_acres, outside_se columns"
-        )
+    if not len(df.columns.intersection({"value", "rasterized_acres", "outside_se"})) == 3:
+        raise ValueError("GeoDataFrame for summary must include value, rasterized_acres, outside_se columns")
 
     with rasterio.open(depth_filename) as value_dataset:
         cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
@@ -217,7 +193,7 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
     # accumulate values for bins 0-10
     slr_acres[:, :11] = np.cumsum(slr_acres[:, :11], axis=1)
 
-    depth_cols = [f"depth_{v}" for v in SLR_DEPTH_BINS]
+    depth_cols = [f"depth_{v}" for v in SLR_DEPTH_VALUES]
     cols = depth_cols + SLR_NODATA_COLS
 
     slr = pd.DataFrame(
@@ -246,12 +222,8 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
         index=subset.index.values.take(right),
     ).join(proj[SLR_PROJ_COLUMNS], on="proj")
 
-    tmp["intersection_area"] = shapely.area(
-        shapely.intersection(tmp.geometry.values, tmp.proj_geometry.values)
-    )
-    tmp = tmp.join(
-        tmp.groupby(level=0).intersection_area.sum().rename("total_intersection_area")
-    )
+    tmp["intersection_area"] = shapely.area(shapely.intersection(tmp.geometry.values, tmp.proj_geometry.values))
+    tmp = tmp.join(tmp.groupby(level=0).intersection_area.sum().rename("total_intersection_area"))
     tmp["area_factor"] = tmp.intersection_area / tmp.total_intersection_area
 
     for col in SLR_PROJ_COLUMNS:
@@ -300,19 +272,18 @@ def get_slr_unit_results(results_dir, unit):
     # if the only value present is for inland areas where not applicable, show that message
     # also, if it is a mix of inland areas and nodata, just default to NA as well
     if np.allclose(slr_results.not_applicable, unit.rasterized_acres) or (
-        slr_results.not_applicable > 0
-        and sum(slr_results[f"depth_{i}"] for i in SLR_DEPTH_BINS) == 0
+        slr_results.not_applicable > 0 and sum(slr_results[f"depth_{i}"] for i in SLR_DEPTH_VALUES) == 0
     ):
         return {"na": True}
 
     depth = [
         {
             "value": i,
-            "label": f"{i} {'foot' if i==1 else 'feet'}",
+            "label": f"{i} {'foot' if i == 1 else 'feet'}",
             "acres": slr_results[f"depth_{i}"],
             "percent": 100 * slr_results[f"depth_{i}"] / unit.rasterized_acres,
         }
-        for i in SLR_DEPTH_BINS
+        for i in SLR_DEPTH_VALUES
     ] + [
         {
             **v,
@@ -327,9 +298,7 @@ def get_slr_unit_results(results_dir, unit):
 
     if pd.notnull(slr_results[f"{SLR_YEARS[0]}_{list(SLR_PROJ_SCENARIOS.keys())[0]}"]):
         projections = {
-            SLR_PROJ_SCENARIOS[scenario]: [
-                slr_results[f"{year}_{scenario}"].round(2) for year in SLR_YEARS
-            ]
+            SLR_PROJ_SCENARIOS[scenario]: [slr_results[f"{year}_{scenario}"].round(2) for year in SLR_YEARS]
             for scenario in SLR_PROJ_SCENARIOS
         }
 

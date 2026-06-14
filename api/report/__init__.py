@@ -9,8 +9,8 @@ from jinja2 import Environment, FileSystemLoader
 from analysis.constants import (
     BLUEPRINT,
     CORRIDORS,
-    URBAN_LEGEND,
-    SLR_LEGEND,
+    URBAN,
+    SLR_DEPTH,
     PARCAS,
     PROTECTED_AREAS,
     WILDFIRE_RISK_LEGEND,
@@ -87,23 +87,23 @@ def create_report(maps, results, name=None, area_type="custom"):
 
     legends = {
         # sort Blueprint descending order
-        "blueprint": BLUEPRINT[::-1]
+        "blueprint": BLUEPRINT["values"][::-1]
     }
 
     if "corridors" in results:
-        legends["corridors"] = CORRIDORS[1:]
+        legends["corridors"] = CORRIDORS["values"][1:]
 
     if "parcas" in results:
-        legends["parcas"] = PARCAS[::-1]
+        legends["parcas"] = PARCAS["values"][::-1]
 
     if "protected_areas" in results:
-        legends["protected_areas"] = PROTECTED_AREAS[::-1]
+        legends["protected_areas"] = PROTECTED_AREAS["values"][::-1]
 
     if "slr" in results:
-        legends["slr"] = SLR_LEGEND
+        legends["slr"] = [v for v in SLR_DEPTH["values"] if v["value"] < 11]
 
     if "urban" in results:
-        legends["urban"] = URBAN_LEGEND
+        legends["urban"] = URBAN["values"]
 
     if "wildfire_risk" in results:
         legends["wildfire_risk"] = WILDFIRE_RISK_LEGEND
@@ -149,8 +149,6 @@ def create_report(maps, results, name=None, area_type="custom"):
     # TODO: enable pdf/ua once accessibility features have been fixed in Weasyprint
     # kwargs["variant"] = "pdf/ua-1"
 
-    pdf = HTML(
-        BytesIO((template.render(**context)).encode()), url_fetcher=url_fetcher
-    ).write_pdf(**kwargs)
+    pdf = HTML(BytesIO((template.render(**context)).encode()), url_fetcher=url_fetcher).write_pdf(**kwargs)
 
     return pdf

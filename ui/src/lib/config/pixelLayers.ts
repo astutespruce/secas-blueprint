@@ -1,4 +1,4 @@
-import { indexBy, sortByFunc } from '$lib/util/data'
+import { indexBy } from '$lib/util/data'
 import type {
 	Indicator,
 	PixelLayerBounds,
@@ -9,7 +9,6 @@ import type {
 
 import {
 	blueprint,
-	blueprintCategories,
 	corridors,
 	ecosystems,
 	indicatorsIndex,
@@ -17,7 +16,6 @@ import {
 	protectedAreas,
 	urban,
 	slrDepth,
-	slrNodata,
 	wildfireRisk,
 	pixelLayers0,
 	pixelLayers1,
@@ -83,25 +81,20 @@ const coreLayers: PixelLayer[] = [
 		id: 'blueprint',
 		label: 'Blueprint priority',
 		valueLabel: 'for a connected network of lands and waters', // used in legend
-		// sort colors in ascending value; blueprint is in descending order
-		colors: blueprint.map(({ color, value }) => (value === 0 ? null : color)).reverse(),
-		categories: blueprintCategories,
+		colors: blueprint.values.map(({ color, value }) => (value === 0 ? null : color)),
+		categories: blueprint.values.filter(({ value }) => value > 0),
 		layer: pixelLayerIndex.blueprint
 	},
 	{
 		id: 'corridors',
 		label: 'Hubs and corridors',
-		colors: corridors
-			.slice()
-			.sort(sortByFunc('value'))
-			.map(({ color }) => color),
-		categories: corridors
+		colors: corridors.values.map(({ color }) => color),
+		categories: corridors.values
 			.filter(({ value }) => value > 0)
 			.map(({ value, label, color }) => ({
 				value,
 				label,
 				color
-				// type: 'fill'
 			})),
 		layer: pixelLayerIndex.corridors
 	}
@@ -111,9 +104,9 @@ const otherInfoLayers: PixelLayer[] = [
 	{
 		id: 'slr',
 		label: 'Flooding extent by projected sea-level rise',
-		colors: slrDepth.concat(slrNodata).map(({ color }) => color),
-		categories: slrDepth
-			.concat(slrNodata.filter(({ value }) => value !== 13))
+		colors: slrDepth.values.map(({ color }) => color),
+		categories: slrDepth.values
+			.filter(({ value }) => value !== 13)
 			.map(({ label, ...rest }, i) => ({
 				...rest,
 				label:
@@ -127,15 +120,15 @@ const otherInfoLayers: PixelLayer[] = [
 	{
 		id: 'parcas',
 		label: 'Priority Amphibian and Reptile Conservation Areas',
-		colors: parcas.map(({ color }) => color),
-		categories: parcas.filter(({ color }) => color !== null),
+		colors: parcas.values.map(({ color }) => color),
+		categories: parcas.values.filter(({ color }) => color !== null),
 		layer: pixelLayerIndex.parcas
 	},
 	{
 		id: 'urban',
 		label: 'Probability of urbanization by 2060',
-		colors: urban.map(({ color }) => color),
-		categories: urban.map(({ color, ...rest }) => ({
+		colors: urban.values.map(({ color }) => color),
+		categories: urban.values.map(({ color, ...rest }) => ({
 			...rest,
 			color: color || '#FFFFFF',
 			outlineWidth: 1,
@@ -146,20 +139,20 @@ const otherInfoLayers: PixelLayer[] = [
 	{
 		id: 'protectedAreas',
 		label: 'Protected areas',
-		colors: protectedAreas.map(({ color }) => color),
-		categories: protectedAreas.filter(({ color }) => color !== null),
+		colors: protectedAreas.values.map(({ color }) => color),
+		categories: protectedAreas.values.filter(({ color }) => color !== null),
 		layer: pixelLayerIndex.protectedAreas
 	},
 	{
 		id: 'wildfireRisk',
 		label: 'Wildfire likelihood (annual burn probability)',
-		colors: wildfireRisk.map(({ color }) => color),
+		colors: wildfireRisk.values.map(({ color }) => color),
 		// sort in descending order
 		// NOTE: this uses a custom legend for simple label values, not the full
 		// set of categories
 		categories: Object.values(
 			Object.fromEntries(
-				wildfireRisk
+				wildfireRisk.values
 					.map(({ label, color, ...rest }) => ({
 						label: label.split(' (')[0],
 						color: color || '#FFFFFF',

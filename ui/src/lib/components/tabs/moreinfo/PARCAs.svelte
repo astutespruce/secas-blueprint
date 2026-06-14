@@ -1,13 +1,13 @@
 <script lang="ts">
 	import CheckIcon from '~icons/fa-solid/check'
 	import { PercentBarChart } from '$lib/components/chart'
-	import { parcas as categories } from '$lib/config/constants'
+	import { parcas as parcaInfo } from '$lib/config/constants'
 	import { cn } from '$lib/utils'
 
 	const { type, parcas } = $props()
 
 	const bars = $derived(
-		categories.map((category) => ({
+		parcaInfo.values.map((category) => ({
 			...category,
 			percent: parcas ? parcas[category.value] || 0 : 0
 		}))
@@ -19,7 +19,7 @@
 
 	{#if type === 'pixel'}
 		<div class="ml-2 mt-2">
-			{#each categories as { value, label }}
+			{#each parcaInfo.values as { value, label } (value)}
 				<div
 					class="flex items-baseline justify-between pl-2 border-b border-b-grey-2 pb-1 not-first:mt-1 gap-4"
 				>
@@ -36,7 +36,7 @@
 			{/each}
 		</div>
 	{:else}
-		{#each bars as bar}
+		{#each bars as bar (bar.value)}
 			<PercentBarChart {...bar} class="mt-2 mb-4" />
 		{/each}
 	{/if}

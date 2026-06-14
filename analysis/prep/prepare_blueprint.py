@@ -61,16 +61,14 @@ outfilename = out_dir / "blueprint.tif"
 
 if not outfilename.exists():
     print("Extracting blueprint")
-    colormap = {e["value"]: hex_to_uint8(e["color"]) for e in BLUEPRINT}
+    colormap = {e["value"]: hex_to_uint8(e["color"]) for e in BLUEPRINT["values"]}
     colormap[0] = (255, 255, 255, 0)
 
     with rasterio.open(src_dir / "Blueprint2025.tif") as src:
         nodata = int(src.nodata)
 
         read_window = shift_window(
-            windows.Window(
-                col_off=0, row_off=0, width=extent.width, height=extent.height
-            ),
+            windows.Window(col_off=0, row_off=0, width=extent.width, height=extent.height),
             extent.transform,
             src.transform,
         )
@@ -128,19 +126,11 @@ if not outfilename.exists():
 
     ix = ~shapely.is_valid(hubs.geometry.values)
     hubs.loc[ix, "geometry"] = shapely.buffer(hubs.loc[ix].geometry.values, 0)
-    hubs = (
-        dissolve(hubs, by="value")
-        .explode(ignore_index=True)
-        .sort_values(by="value", ascending=False)
-    )
+    hubs = dissolve(hubs, by="value").explode(ignore_index=True).sort_values(by="value", ascending=False)
 
     with (
-        rasterio.open(
-            src_dir / "hubs_corridors/ContinentalCorridors2025.tif"
-        ) as continental,
-        rasterio.open(
-            src_dir / "hubs_corridors/CaribbeanCorridors2025.tif"
-        ) as caribbean,
+        rasterio.open(src_dir / "hubs_corridors/ContinentalCorridors2025.tif") as continental,
+        rasterio.open(src_dir / "hubs_corridors/CaribbeanCorridors2025.tif") as caribbean,
     ):
         # consolidate all values into a single raster, writing hubs over corridors
         # see values in corridors.json
@@ -151,30 +141,22 @@ if not outfilename.exists():
         # Caribbean data are limited to Caribbean extent, so use a larger read
         # window to read full extent
         caribbean_window = shift_window(
-            windows.Window(
-                col_off=0, row_off=0, width=extent.width, height=extent.height
-            ),
+            windows.Window(col_off=0, row_off=0, width=extent.width, height=extent.height),
             extent.transform,
             caribbean.transform,
         )
-        caribbean_corridors_data = caribbean.read(
-            1, window=caribbean_window, boundless=True
-        )
+        caribbean_corridors_data = caribbean.read(1, window=caribbean_window, boundless=True)
         data[caribbean_corridors_data == np.uint8(1)] = np.uint8(2)
         del caribbean_corridors_data
 
         print("Reading continental corridors")
         # Inland corridors are at 30m snapped to blueprint extent
         inland_window = shift_window(
-            windows.Window(
-                col_off=0, row_off=0, width=extent.width, height=extent.height
-            ),
+            windows.Window(col_off=0, row_off=0, width=extent.width, height=extent.height),
             extent.transform,
             continental.transform,
         )
-        continental_corridors_data = continental.read(
-            1, window=inland_window, boundless=True
-        )
+        continental_corridors_data = continental.read(1, window=inland_window, boundless=True)
         data[continental_corridors_data == np.uint8(1)] = np.uint8(2)
         del continental_corridors_data
 
@@ -204,10 +186,8 @@ if not outfilename.exists():
         add_overviews(outfilename)
 
         colormap = {
-            e["value"]: hex_to_uint8(e["color"])
-            if e["color"] is not None
-            else (255, 255, 255, 0)
-            for e in CORRIDORS
+            e["value"]: hex_to_uint8(e["color"]) if e["color"] is not None else (255, 255, 255, 0)
+            for e in CORRIDORS["values"]
         }
 
         with rasterio.open(outfilename, "r+") as src:
@@ -240,13 +220,15 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
         }
     )
     key = df.label.apply(
-        lambda x: x.title()
-        .replace("-", "")
-        .replace("(", "")
-        .replace(")", "")
-        .replace("&", "and")
-        .replace(" ", "")
-        .replace(".", "")
+        lambda x: (
+            x.title()
+            .replace("-", "")
+            .replace("(", "")
+            .replace(")", "")
+            .replace("&", "and")
+            .replace(" ", "")
+            .replace(".", "")
+        )
     )
 
     ecosystem_id = sheet_name.lower().split(" ")[-1][:1]
@@ -276,9 +258,7 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
     # extract first value as integer; this is the threshold, set the rest to None
     df.loc[df.goodThreshold.str.lower().str.contains("no"), "goodThreshold"] = None
     ix = df.goodThreshold.notnull()
-    df.loc[ix, "goodThreshold"] = (
-        df.loc[ix].goodThreshold.str.extract(r"(\d)").astype("uint8").values[:, 0]
-    )
+    df.loc[ix, "goodThreshold"] = df.loc[ix].goodThreshold.str.extract(r"(\d)").astype("uint8").values[:, 0]
 
     df["url"] = df.url.fillna("")
     df["valueLabel"] = df.valueLabel.fillna("").str.strip().replace("N/A", "")
@@ -337,9 +317,7 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
         ]
     ]
 
-    df["description"] = (
-        df["description"].str.replace("’", "'").str.replace("–", "-").str.strip()
-    )
+    df["description"] = df["description"].str.replace("’", "'").str.replace("–", "-").str.strip()
 
     if merged is None:
         merged = df
@@ -377,7 +355,7 @@ for index, indicator_row in indicator_df.iterrows():
 
     # by default, use the value labels from the GeoTIFF files, but override where
     # necessary from indicators_df
-    if indicator_row.valueLabel:
+    if indicator_row.valueLabels:
         df["label"] = df["value"].map(indicator_row.valueLabels)
 
     else:
@@ -393,17 +371,13 @@ for index, indicator_row in indicator_df.iterrows():
         )
 
     df["color"] = (
-        df[["red", "green", "blue"]]
-        .apply(lambda row: f"#{row.red:02X}{row.green:02X}{row.blue:02X}", axis=1)
-        .values
+        df[["red", "green", "blue"]].apply(lambda row: f"#{row.red:02X}{row.green:02X}{row.blue:02X}", axis=1).values
     )
 
     # All white is intended to be transparent
     df.loc[df.color == "#FFFFFF", "color"] = None
 
-    indicator_df.at[index, "values"] = df[["value", "label", "color"]].to_dict(
-        orient="records"
-    )
+    indicator_df.at[index, "values"] = df[["value", "label", "color"]].to_dict(orient="records")
 
 indicator_df = indicator_df.sort_values(by="id").drop(columns=["valueLabels"])
 
@@ -431,9 +405,7 @@ for index, indicator_row in indicator_df.iterrows():
 
             # check value range to make sure all are accounted for above, and raise error on unexpected values
             values = unique(data)
-            expected_values = set(
-                [e["value"] for e in indicator_row["values"]] + [NODATA]
-            )
+            expected_values = set([e["value"] for e in indicator_row["values"]] + [NODATA])
             unexpected = values.difference(expected_values)
             missing = expected_values.difference(values)
             if unexpected:
@@ -478,9 +450,7 @@ for index, indicator_row in indicator_df.iterrows():
 
         colormap = (
             values.set_index("value")
-            .color.apply(
-                lambda x: hex_to_uint8(x) + (255,) if x else (255, 255, 255, 0)
-            )
+            .color.apply(lambda x: hex_to_uint8(x) + (255,) if x else (255, 255, 255, 0))
             .to_dict()
         )
         with rasterio.open(outfilename, "r+") as src:
@@ -515,18 +485,14 @@ for index, indicator_row in indicator_df.iterrows():
 ################################################################################
 print("Extracting subregions associated with each indicator")
 indicator_df["subregions"] = None
-subregion_df = pd.read_feather(
-    data_dir / "inputs/boundaries/subregions.feather", columns=["value", "subregion"]
-)
+subregion_df = pd.read_feather(data_dir / "inputs/boundaries/subregions.feather", columns=["value", "subregion"])
 subregion_lut = subregion_df.set_index("value").subregion.to_dict()
 bins = np.arange(subregion_df.value.max() + 1)
 with rasterio.open(data_dir / "boundaries/subregion_mask.tif") as subregions:
     subregion_values = subregions.read(1)
     for index, indicator_row in indicator_df.iterrows():
         print(f"Finding subregions for {indicator_row.label}")
-        mask_filename = indicators_out_dir / str(indicator_row.filename).replace(
-            ".tif", "_mask.tif"
-        )
+        mask_filename = indicators_out_dir / str(indicator_row.filename).replace(".tif", "_mask.tif")
 
         with rasterio.open(mask_filename) as src:
             read_window = shift_window(
@@ -556,6 +522,4 @@ extent.close()
 
 
 with open(constants_dir / "indicators.json", "w") as out:
-    res = out.write(
-        json.dumps(indicator_df.to_dict(orient="records"), indent=2, ensure_ascii=False)
-    )
+    indicator_df.to_json(out, orient="records", indent=2, force_ascii=False)

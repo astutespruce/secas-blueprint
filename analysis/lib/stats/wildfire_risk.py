@@ -14,8 +14,8 @@ src_dir = data_dir / "inputs/threats/wildfire_risk"
 filename = src_dir / "wildfire_risk.tif"
 mask_filename = src_dir / "wildfire_risk_mask.tif"
 
-WILDFIRE_RISK_BINS = range(0, len(WILDFIRE_RISK))
-WILDFIRE_RISK_LABELS = {e["value"]: e["label"] for e in WILDFIRE_RISK}
+WILDFIRE_RISK_BINS = range(0, len(WILDFIRE_RISK["values"]))
+WILDFIRE_RISK_LABELS = {e["value"]: e["label"] for e in WILDFIRE_RISK["values"]}
 
 
 def summarize_wildfire_risk_in_aoi(rasterized_geometry):
@@ -50,14 +50,10 @@ def summarize_wildfire_risk_in_aoi(rasterized_geometry):
             return None
 
     with rasterio.open(filename) as src:
-        wildfire_risk_acres = rasterized_geometry.get_acres_by_bin(
-            src, bins=WILDFIRE_RISK_BINS
-        )
+        wildfire_risk_acres = rasterized_geometry.get_acres_by_bin(src, bins=WILDFIRE_RISK_BINS)
 
     total_acres = wildfire_risk_acres.sum()
-    nodata_acres = (
-        rasterized_geometry.acres - rasterized_geometry.outside_se_acres - total_acres
-    )
+    nodata_acres = rasterized_geometry.acres - rasterized_geometry.outside_se_acres - total_acres
 
     if nodata_acres < 1e-6:
         nodata_acres = 0
@@ -92,13 +88,8 @@ def summarize_wildfire_risk_by_units_grid(df, units_grid, out_dir):
     out_dir : str
     """
 
-    if (
-        not len(df.columns.intersection({"value", "rasterized_acres", "outside_se"}))
-        == 3
-    ):
-        raise ValueError(
-            "GeoDataFrame for summary must include value, rasterized_acres, outside_se columns"
-        )
+    if not len(df.columns.intersection({"value", "rasterized_acres", "outside_se"})) == 3:
+        raise ValueError("GeoDataFrame for summary must include value, rasterized_acres, outside_se columns")
 
     with rasterio.open(filename) as value_dataset:
         cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
@@ -151,9 +142,7 @@ def get_wildfire_risk_unit_results(results_dir, unit):
             "outside_wildfire_risk_percent": <percent outside this dataset but within SE>,
         }
     """
-    wildfire_risk_results = read_unit_from_feather(
-        results_dir / "wildfire_risk.feather", unit.name
-    )
+    wildfire_risk_results = read_unit_from_feather(results_dir / "wildfire_risk.feather", unit.name)
     if len(wildfire_risk_results) == 0:
         return {}
 
@@ -167,22 +156,16 @@ def get_wildfire_risk_unit_results(results_dir, unit):
             "value": entry["value"],
             "label": entry["label"],
             "acres": wildfire_risk_acres[entry["value"]].item(),
-            "percent": (
-                100 * wildfire_risk_acres[entry["value"]] / unit.rasterized_acres
-            ).item(),
+            "percent": (100 * wildfire_risk_acres[entry["value"]] / unit.rasterized_acres).item(),
         }
-        for entry in WILDFIRE_RISK
+        for entry in WILDFIRE_RISK["values"]
     ]
 
     return {
         "entries": wildfire_risk,
         "total_wildfire_risk_acres": wildfire_risk_results.total_wildfire_risk_acres,
-        "outside_wildfire_risk_acres": (
-            wildfire_risk_results.outside_wildfire_risk_acres
-        ).item(),
+        "outside_wildfire_risk_acres": (wildfire_risk_results.outside_wildfire_risk_acres).item(),
         "outside_wildfire_risk_percent": (
-            100
-            * wildfire_risk_results.outside_wildfire_risk_acres
-            / unit.rasterized_acres
+            100 * wildfire_risk_results.outside_wildfire_risk_acres / unit.rasterized_acres
         ).item(),
     }

@@ -1,0 +1,9 @@
+{
+	"id": "slr_proj",
+	"label": "Projected sea-level rise",
+	"description": "Sea-level rise projections are derived from 1-degree grid cells that accompany the 2022 Sea Level Rise Technical Report by NOAA.  Sea-level rise scenarios correspond to a global sea level rise of between 1, 1.64, 3.2, 4.9, and 6.56 feet.",
+	"source": "National Oceanic and Atmospheric Administration",
+	"date": "2022",
+	"citation": "Sweet, W.V., B.D. Hamlington, R.E. Kopp, C.P. Weaver, P.L.Barnard, D. Bekaert, W. Brooks, M. Craghan, G. Dusek, T. Frederikse, G.Garner, A.S. Genz, J.P. Krasting, E. Larour, D. Marcy,J.J. Marra, J.Obeysekera, M. Osler, M. Pendleton, D. Roman, L. Schmied, W. Veatch, K.D.White, and C. Zuzak, 2022: Global and Regional Sea Level Rise Scenarios for the United States: Updated Mean Projections and Extreme Water Level Probabilities Along U.S. Coastlines. NOAA Technical Report NOS 01. National Oceanic and Atmospheric Administration, National Ocean Service, Silver Spring, MD",
+	"url": "https://oceanservice.noaa.gov/hazards/sealevelrise/sealevelrise-tech-report.html"
+}

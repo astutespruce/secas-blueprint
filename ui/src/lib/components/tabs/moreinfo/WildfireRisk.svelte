@@ -1,13 +1,13 @@
 <script lang="ts">
 	import CheckIcon from '~icons/fa-solid/check'
 	import { PercentBarChart } from '$lib/components/chart'
-	import { wildfireRisk as categories } from '$lib/config/constants'
+	import { wildfireRisk as wildfireRiskInfo } from '$lib/config/constants'
 	import { cn } from '$lib/utils'
 
 	const { type, wildfireRisk, regions } = $props()
 
 	const bars = $derived(
-		categories.map((category) => ({
+		wildfireRiskInfo.values.map((category) => ({
 			...category,
 			percent: wildfireRisk ? wildfireRisk[category.value] || 0 : 0
 		}))
@@ -26,7 +26,7 @@
 			<div class="text-grey-8">Annual burn probability:</div>
 
 			<div class="ml-2 mt-2">
-				{#each categories as { value, label }}
+				{#each wildfireRiskInfo.values as { value, label } (value)}
 					<div
 						class="flex items-baseline justify-between pl-2 border-b border-b-grey-2 pb-1 not-first:mt-1 gap-4"
 					>
@@ -56,7 +56,7 @@
 				Area in each wildfire probability category within this subwatershed:
 			</div>
 			<div class="mt-4">
-				{#each bars as bar}
+				{#each bars as bar (bar.value)}
 					<PercentBarChart {...bar} class="mt-2 mb-4" />
 				{/each}
 			</div>

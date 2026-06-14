@@ -16,8 +16,7 @@ from analysis.constants import (
     BLUEPRINT,
     CORRIDORS,
     URBAN,
-    SLR_DEPTH_BINS,
-    SLR_NODATA_VALUES,
+    SLR_DEPTH,
     DATA_CRS,
     WILDFIRE_RISK,
     PROTECTED_AREAS,
@@ -72,50 +71,50 @@ core = pd.DataFrame(
             "ecosystem": "",
             "id": "blueprint",
             "filename": blueprint_filename,
-            "min_value": BLUEPRINT[0]["value"],
-            "max_value": BLUEPRINT[-1]["value"],
+            "min_value": BLUEPRINT["values"][0]["value"],
+            "max_value": BLUEPRINT["values"][-1]["value"],
         },
         {
             "ecosystem": "",
             "id": "corridors",
             "filename": corridors_filename,
-            "min_value": CORRIDORS[0]["value"],
-            "max_value": CORRIDORS[-1]["value"],
+            "min_value": CORRIDORS["values"][0]["value"],
+            "max_value": CORRIDORS["values"][-1]["value"],
         },
         {
             "ecosystem": "otherInfo",
             "id": "parcas",
             "filename": parcas_filename,
-            "min_value": PARCAS[0]["value"],
-            "max_value": PARCAS[-1]["value"],
+            "min_value": PARCAS["values"][0]["value"],
+            "max_value": PARCAS["values"][-1]["value"],
         },
         {
             "ecosystem": "otherInfo",
             "id": "protectedAreas",
             "filename": protected_areas_filename,
-            "min_value": PROTECTED_AREAS[0]["value"],
-            "max_value": PROTECTED_AREAS[-1]["value"],
+            "min_value": PROTECTED_AREAS["values"][0]["value"],
+            "max_value": PROTECTED_AREAS["values"][-1]["value"],
         },
         {
             "ecosystem": "otherInfo",
             "id": "slr",
             "filename": slr_filename,
-            "min_value": SLR_DEPTH_BINS[0],
-            "max_value": SLR_NODATA_VALUES[-1]["value"],
+            "min_value": SLR_DEPTH["values"][0]["value"],
+            "max_value": SLR_DEPTH["values"][-1]["value"],
         },
         {
             "ecosystem": "otherInfo",
             "id": "urban",
             "filename": urban_filename,
-            "min_value": URBAN[0]["value"],
-            "max_value": URBAN[-1]["value"],
+            "min_value": URBAN["values"][0]["value"],
+            "max_value": URBAN["values"][-1]["value"],
         },
         {
             "ecosystem": "otherInfo",
             "id": "wildfireRisk",
             "filename": wildfire_risk_filename,
-            "min_value": WILDFIRE_RISK[0]["value"],
-            "max_value": WILDFIRE_RISK[-1]["value"],
+            "min_value": WILDFIRE_RISK["values"][0]["value"],
+            "max_value": WILDFIRE_RISK["values"][-1]["value"],
         },
     ]
 )
@@ -174,9 +173,7 @@ for col in ["group", "position", "bits", "offset", "min_value", "max_value"]:
 
 # NOTE: groups must be stored in encoding definition
 # in exactly the same order they are encoded
-df[["group", "position", "offset", "bits", "value_shift"]].reset_index().to_feather(
-    out_dir / "encoding.feather"
-)
+df[["group", "position", "offset", "bits", "value_shift"]].reset_index().to_feather(out_dir / "encoding.feather")
 
 # save encoding JSON for frontend
 for group in groups:
@@ -197,11 +194,7 @@ extent = rasterio.open(extent_filename)
 windows = []
 for row_off in np.arange(extent.height, step=WINDOW_SIZE):
     for col_off in np.arange(extent.width, step=WINDOW_SIZE):
-        windows.append(
-            Window(
-                row_off=row_off, col_off=col_off, width=WINDOW_SIZE, height=WINDOW_SIZE
-            )
-        )
+        windows.append(Window(row_off=row_off, col_off=col_off, width=WINDOW_SIZE, height=WINDOW_SIZE))
 
 bounds = shapely.box(*np.array([extent.window_bounds(w) for w in windows]).T)
 tree = shapely.STRtree(bounds)
@@ -243,9 +236,7 @@ for group in groups:
         nodata = np.uint32(row.nodata)
 
         # process each stack of layers by window to avoid running out of memory
-        for i, window in Bar(f"Processing {id}", max=len(windows)).iter(
-            enumerate(windows)
-        ):
+        for i, window in Bar(f"Processing {id}", max=len(windows)).iter(enumerate(windows)):
             # clip output window to output grid
             out_window = clip_window(
                 shift_window(window, extent.window_transform(window), out_transform),
@@ -276,9 +267,7 @@ for group in groups:
 
             if data.max() > 0:
                 out_ix = out_window.toslices()
-                out[out_ix] = np.bitwise_or(
-                    np.left_shift(data, row.offset), out[out_ix]
-                )
+                out[out_ix] = np.bitwise_or(np.left_shift(data, row.offset), out[out_ix])
 
     # determine the window where data are available, and write out a smaller output
     print("Calculating data window...")

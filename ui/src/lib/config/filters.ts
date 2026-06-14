@@ -1,4 +1,4 @@
-import { indexBy, range, sortByFunc } from '$lib/util/data'
+import { indexBy, range } from '$lib/util/data'
 import type { Filters } from '$lib/types'
 import {
 	blueprint,
@@ -8,7 +8,6 @@ import {
 	indicatorsIndex,
 	urban,
 	slrDepth,
-	slrNodata,
 	wildfireRisk,
 	protectedAreas,
 	parcas
@@ -83,12 +82,12 @@ export const priorityFilters = [
 		label: 'Blueprint priority',
 		description:
 			'The Blueprint identifies priority areas based on a suite of natural and cultural resource indicators representing terrestrial, freshwater, and marine ecosystems.',
-		values: blueprint.slice().sort(sortByFunc('value')).slice(1, blueprint.length).reverse()
+		values: blueprint.values.filter(({ value }) => value > 0).reverse()
 	},
 	{
 		id: 'corridors',
 		label: 'Hubs and corridors',
-		values: corridors.filter(({ value }) => value > 0),
+		values: corridors.values.filter(({ value }) => value > 0),
 		description:
 			'The Blueprint uses a least-cost path connectivity analysis to identify corridors that link hubs across the shortest distance possible, while also routing through as much Blueprint priority as possible.'
 	}
@@ -110,42 +109,38 @@ export const otherInfoFilters = [
 	{
 		id: 'slr',
 		label: 'Flooding extent by projected sea-level rise',
-		values: slrDepth
-			.map(({ label, ...rest }) => ({
-				...rest,
-				label: `${label} feet`
-			}))
-			.concat(slrNodata),
+		values: slrDepth.values.map(({ value, label, ...rest }) => ({
+			...rest,
+			value,
+			label: value < 11 ? `${label} feet` : label
+		})),
 		description: 'Sea level rise estimates derived from the NOAA sea-level rise inundation data.'
 	},
 	{
 		id: 'parcas',
 		label: 'Priority Amphibian and Reptile Conservation Areas',
-		values: parcas,
+		values: parcas.values,
 		description:
 			'Priority Amphibian and Reptile Areas derived from data provided by the Amphibian and Reptile Conservancy'
 	},
 	{
 		id: 'urban',
 		label: 'Probability of urbanization by 2060',
-		values: urban
-			.slice()
-			// values are not in order and need to be sorted in ascending order
-			.sort(sortByFunc('value')),
+		values: urban.values,
 		description:
 			'Past and current (2021) urban levels based on developed land cover classes from the National Land Cover Database. Future urban growth estimates derived from the FUTURES model developed by the Center for Geospatial Analytics, NC State University.  Data extent limited to the inland continental Southeast.'
 	},
 	{
 		id: 'protectedAreas',
 		label: 'Protected areas',
-		values: protectedAreas,
+		values: protectedAreas.values,
 		description:
 			'Protected areas information is derived from the Protected Areas Database of the United States (PAD-US v4.1).'
 	},
 	{
 		id: 'wildfireRisk',
 		label: 'Wildfire likelihood (annual burn probability)',
-		values: wildfireRisk,
+		values: wildfireRisk.values,
 		description:
 			'Wildfire likelihood data derived from the Wildfire Risk to Communities project by the USDA Forest Service.'
 	}

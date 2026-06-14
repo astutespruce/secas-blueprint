@@ -1,14 +1,14 @@
 <script lang="ts">
 	import CheckIcon from '~icons/fa-solid/check'
 	import { PercentBarChart } from '$lib/components/chart'
-	import { protectedAreas as categories } from '$lib/config/constants'
+	import { protectedAreas as protectedAreasInfo } from '$lib/config/constants'
 	import { formatNumber } from '$lib/util/format'
 	import { cn } from '$lib/utils'
 
 	const { type, protectedAreas, protectedAreasList, numProtectedAreas } = $props()
 
 	const bars = $derived(
-		categories.map((category) => ({
+		protectedAreasInfo.values.map((category) => ({
 			...category,
 			percent: protectedAreas ? protectedAreas[category.value] || 0 : 0
 		}))
@@ -20,7 +20,7 @@
 
 	{#if type === 'pixel'}
 		<div class="ml-2 mt-2">
-			{#each categories as { value, label }}
+			{#each protectedAreasInfo.values as { value, label } (value)}
 				<div
 					class="flex items-baseline justify-between pl-2 border-b border-b-grey-2 pb-1 not-first:mt-1 gap-4"
 				>
@@ -39,7 +39,7 @@
 			{/each}
 		</div>
 	{:else}
-		{#each bars as bar}
+		{#each bars as bar (bar.value)}
 			<PercentBarChart {...bar} class="mt-2 mb-4" />
 		{/each}
 	{/if}
@@ -48,7 +48,7 @@
 		<div class="mt-6">
 			<div class="font-bold">Protected areas at this location</div>
 			<ul class="mt-2 list-disc ml-4 text-grey-9">
-				{#each protectedAreasList as name}
+				{#each protectedAreasList as name, i (`${name}-${i}`)}
 					<li class="not-first:mt-2">{name}</li>
 				{/each}
 
@@ -69,8 +69,8 @@
 		>
 			Protected Areas Database of the United States
 		</a>
-		(PAD-US v4.1) and include Fee, Designation, Easement, Marine, and Proclamation (Dept. of Defense
-		lands only) boundaries.
+		(PAD-US v4.1) and include Fee, Designation, Easement, Marine, and Proclamation (Dept. of Defense lands
+		only) boundaries.
 
 		{#if protectedAreasList && protectedAreasList.length > 0}
 			Areas are listed based on name, ownership, and boundary information in the Protected Areas

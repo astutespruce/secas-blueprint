@@ -16,8 +16,8 @@ filename = src_dir / "parcas.tif"
 mask_filename = src_dir / "parcas_mask.tif"
 boundary_filename = src_dir / "parcas.feather"
 
-BINS = range(0, len(PARCAS))
-LABELS = {e["value"]: e["label"] for e in PARCAS}
+BINS = range(0, len(PARCAS["values"]))
+LABELS = {e["value"]: e["label"] for e in PARCAS["values"]}
 
 
 def extract_parcas(df):
@@ -41,9 +41,7 @@ def extract_parcas(df):
 
     # find all protected areas polygons that intersect any part of the AOI
     tmp = df.explode(ignore_index=False, index_parts=False)
-    left, right = shapely.STRtree(parcas.geometry.values).query(
-        tmp.geometry.values, predicate="intersects"
-    )
+    left, right = shapely.STRtree(parcas.geometry.values).query(tmp.geometry.values, predicate="intersects")
 
     # no intersections
     if len(left) == 0:
@@ -102,9 +100,7 @@ def summarize_parcas_in_aoi(rasterized_geometry, df):
     if total_acres == 0:
         return None
 
-    nodata_acres = (
-        rasterized_geometry.acres - rasterized_geometry.outside_se_acres - total_acres
-    )
+    nodata_acres = rasterized_geometry.acres - rasterized_geometry.outside_se_acres - total_acres
     if nodata_acres < 1e-6:
         nodata_acres = 0
 
@@ -147,13 +143,8 @@ def summarize_parcas_by_units(df, units_grid, out_dir):
     """
     print("Calculating overlap with PARCAs")
 
-    if (
-        not len(df.columns.intersection({"value", "rasterized_acres", "outside_se"}))
-        == 3
-    ):
-        raise ValueError(
-            "GeoDataFrame for summary must include value, rasterized_acres, outside_se columns"
-        )
+    if not len(df.columns.intersection({"value", "rasterized_acres", "outside_se"})) == 3:
+        raise ValueError("GeoDataFrame for summary must include value, rasterized_acres, outside_se columns")
 
     with rasterio.open(filename) as value_dataset:
         cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
@@ -231,11 +222,9 @@ def get_parca_unit_results(results_dir, unit):
             "value": entry["value"],
             "label": entry["label"],
             "acres": parca_acres[entry["value"]].item(),
-            "percent": (
-                100 * parca_acres[entry["value"]] / unit.rasterized_acres
-            ).item(),
+            "percent": (100 * parca_acres[entry["value"]] / unit.rasterized_acres).item(),
         }
-        for entry in PARCAS
+        for entry in PARCAS["values"]
     ][::-1]
 
     parcas = read_unit_from_feather(
@@ -248,8 +237,6 @@ def get_parca_unit_results(results_dir, unit):
         "entries": parca_results,
         "total_parca_acres": unit_results.total_parca_acres,
         "outside_parca_acres": (unit_results.outside_parca_acres).item(),
-        "outside_parca_percent": (
-            100 * unit_results.outside_parca_acres / unit.rasterized_acres
-        ).item(),
+        "outside_parca_percent": (100 * unit_results.outside_parca_acres / unit.rasterized_acres).item(),
         "parcas": parcas,
     }

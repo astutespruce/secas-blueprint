@@ -1,9 +1,6 @@
 <script lang="ts">
 	import CheckIcon from '~icons/fa-solid/check'
-	import {
-		blueprint as blueprintCategories,
-		corridors as corridorCategories
-	} from '$lib/config/constants'
+	import { blueprint as blueprintInfo, corridors as corridorInfo } from '$lib/config/constants'
 	import { PieChart } from '$lib/components/chart'
 	import { cn } from '$lib/utils'
 	import { NeedHelp } from './general'
@@ -43,7 +40,9 @@
 		}
 
 		const blueprintPercents = (blueprint as number[]).slice().reverse()
-		const data: Category[] = blueprintCategories
+		const data: Category[] = blueprintInfo.values
+			.slice()
+			.reverse()
 			.map(({ color, ...rest }, i) => ({
 				...rest,
 				// add transparency to match map
@@ -65,7 +64,7 @@
 	// given a summary unit or pixel, there will only ever be continental
 	// or caribben corridors possible
 	const availableCorridorCategories = $derived(
-		corridorCategories
+		corridorInfo.values
 			.filter(({ value }) => value > 0 || type === 'pixel')
 			.map(({ value, description, ...rest }) => {
 				if (value === 1 && description) {
@@ -90,15 +89,12 @@
 			return []
 		}
 
-		// splice corridor percents into same order as corridor categories (0 at the end)
-		// @ts-ignore
-		const corridorPercents = corridors.slice(1).concat(corridors.slice(0, 1))
 		// sort categories into ascending order
-		const data: Category[] = corridorCategories
+		const data: Category[] = corridorInfo.values
 			.map(({ value, color, ...rest }, i) => ({
 				...rest,
 				color: value === 0 ? '#ffebc2' : color,
-				value: corridorPercents[i]
+				value: (corridors as number[])[i]
 			}))
 			.filter(({ value }) => value > 0)
 
@@ -122,7 +118,9 @@
 
 	{#if outsideSEPercent < 100}
 		<div class="mt-2">
-			{#each blueprintCategories as { value, label, percent, color, description }}
+			{#each blueprintInfo.values
+				.slice()
+				.reverse() as { value, label, percent, color, description } (value)}
 				<div
 					class={cn(
 						'flex justify-between items-start gap-2 text-grey-8 border border-transparent py-2 px-4 rounded-[0.5rem] bg-white not-first:mt-2',
@@ -159,7 +157,7 @@
 
 	{#if outsideSEPercent < 100}
 		<div class="mt-2">
-			{#each availableCorridorCategories as { value, label, description }}
+			{#each availableCorridorCategories as { value, label, description } (value)}
 				<div
 					class={cn(
 						'flex justify-between items-start gap-2 text-grey-8 border border-transparent py-2 px-4 rounded-[0.5rem] bg-white not-first:mt-2',
