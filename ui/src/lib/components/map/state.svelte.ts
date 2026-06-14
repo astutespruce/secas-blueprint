@@ -44,10 +44,6 @@ export class MapState {
 		this.#map = map
 	}
 
-	// TODO:
-	// capture map image for printing
-	// mapImg = map!.getCanvas().toDataURL('image/png')
-
 	get mapMode(): string {
 		return this.#mapMode
 	}
@@ -163,6 +159,27 @@ export class MapState {
 
 	get displayLayer() {
 		return this.#mapMode === 'unit' ? renderLayersIndex.blueprint : this.#renderLayer
+	}
+
+	get mapImg() {
+		return this.#mapImg
+	}
+
+	renderMapImage() {
+		if (!this.#map) {
+			return
+		}
+
+		// capture map image for printing
+		this.#mapImg = null
+		this.#map.once('idle', () => {
+			this.#mapImg = this.#map!.getCanvas().toDataURL('image/png')
+		})
+		this.#map?.triggerRepaint()
+	}
+
+	resetMapImg() {
+		this.#mapImg = null
 	}
 
 	// for logging state

@@ -6,9 +6,7 @@
 	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query'
 
 	import ExclamationTriangleIcon from '~icons/fa-solid/exclamation-triangle'
-
 	import type { AppState, LocationData } from '$lib/types'
-	import { PrintFiltersList } from '$lib/components/filter'
 	import {
 		Footer,
 		Header,
@@ -17,6 +15,7 @@
 		SidebarDetailsHeader
 	} from '$lib/components/layout'
 	import { Map, MapState } from '$lib/components/map'
+	import { PrintContainer } from '$lib/components/print'
 	import {
 		ContactTab,
 		FiltersTab,
@@ -28,7 +27,7 @@
 	} from '$lib/components/tabs'
 	import { cn } from '$lib/utils'
 
-	const appState: AppState = $state({ isMobile: false })
+	const appState: AppState = $state({ isMobile: false, isPrint: false })
 	setContext('app-state', appState)
 
 	const mapState = new MapState()
@@ -155,23 +154,14 @@
 		<MobileDetailsHeader {...mapState.data} onClose={() => mapState.setData(null)} />
 	{/if}
 
-	<!-- Print header -->
-	<div class="hidden print:block">
-		<h1 class="text-2xl">Southeast Conservation Blueprint Explorer (2026)</h1>
-		{#if browser}
-			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-			<a href={page.url.href} class="text-xs leading-none break-all">{page.url.href}</a>
-		{/if}
-	</div>
-
-	<main class="h-full w-full flex-auto overflow-auto print:h-auto">
-		<div class="flex flex-col h-full flex-auto print:h-auto">
-			<div class="flex h-full flex-auto overflow-y-hidden relative print:h-auto">
+	<main class="h-full w-full flex-auto overflow-auto print:hidden">
+		<div class="flex flex-col h-full flex-auto">
+			<div class="flex h-full flex-auto overflow-y-hidden relative">
 				<!-- sidebar -->
 				<div
 					bind:this={contentNode}
 					class={cn(
-						'md:flex h-full bg-white grow shrink-0 basis-full md:basis-[360px] lg:basis-[468px] w-max-[100%] md:w-max-[360px] lg:w-max-[468px] flex-col overflow-hidden absolute md:relative left-0 right-0 top-0 bottom-0 z-10000 md:z-1 print:hidden',
+						'md:flex h-full bg-white grow shrink-0 basis-full md:basis-[360px] lg:basis-[468px] w-max-[100%] md:w-max-[360px] lg:w-max-[468px] flex-col overflow-hidden absolute md:relative left-0 right-0 top-0 bottom-0 z-10000 md:z-1',
 						{
 							hidden: tab === 'map'
 						}
@@ -219,13 +209,10 @@
 			<!-- mobile bottom tabs	-->
 			<MobileTabs {tab} onChange={handleTabChange} />
 		</div>
-
-		<div class="hidden print:block">
-			<!-- TODO: map legend -->
-			{#if mapState.mapMode === 'filter'}
-				<PrintFiltersList />
-			{/if}
-		</div>
 	</main>
 	<Footer />
 </QueryClientProvider>
+
+{#if appState.isPrint}
+	<PrintContainer />
+{/if}

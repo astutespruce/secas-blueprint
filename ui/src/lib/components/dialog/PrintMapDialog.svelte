@@ -1,10 +1,18 @@
 <script lang="ts">
+	import Spinner from '~icons/fa-solid/spinner'
+	import { getContext } from 'svelte'
 	import { browser } from '$app/environment'
 	import PrintIcon from '~icons/fa-solid/file-import'
 	import { Root, Trigger, Content, Header, Title, Footer, Close } from '$lib/components/ui/dialog'
 	import { Button } from '$lib/components/ui/button'
+	import type { AppState } from '$lib/types'
+	import type { MapState } from '$lib/components/map'
+
+	const appState: AppState = getContext('app-state')
+	const mapState: MapState = getContext('map-state')
 
 	let open = $state(false)
+	let isLoading = $state(false)
 
 	const handlePrint = () => {
 		if (browser) {
@@ -12,6 +20,22 @@
 		}
 		open = false
 	}
+
+	$effect(() => {
+		if (open) {
+			isLoading = true
+			appState.isPrint = true
+			mapState.renderMapImage()
+		} else {
+			appState.isPrint = false
+		}
+	})
+
+	$effect(() => {
+		if (mapState.mapImg !== null) {
+			isLoading = false
+		}
+	})
 </script>
 
 <Root bind:open>
@@ -27,15 +51,25 @@
 		<Header class="border-b pb-4 border-b-grey-3">
 			<Title class="text-3xl">Print map / save to PDF</Title>
 		</Header>
-		<p class="text-lg">
-			This will use your browser's print interface to save a lightweight capture of your map and any
-			enabled filters.
-			<br /><br />
-			In your browser's print dialog, you can choose to save this to PDF instead of printing it.
-		</p>
+		{#if isLoading}
+			<p class="text-lg text-center">Saving map image...</p>
+		{:else}
+			<p class="text-lg">
+				This will use your browser's print interface to save a lightweight capture of your map and
+				any enabled filters.
+				<br /><br />
+				In your browser's print dialog, you can choose to save this to PDF instead of printing it.
+			</p>
+		{/if}
 		<Footer class="border-t border-t-grey-2 pt-2">
 			<Close class="text-lg cursor-pointer">Cancel</Close>
-			<Button onclick={handlePrint} class="text-lg">Print / Save to PDF</Button>
+			<Button onclick={handlePrint} disabled={isLoading} class="text-lg">
+				{#if isLoading}
+					<Spinner class="size-4 animate-spin" />
+				{/if}
+
+				Print / Save to PDF</Button
+			>
 		</Footer>
 	</Content>
 </Root>
