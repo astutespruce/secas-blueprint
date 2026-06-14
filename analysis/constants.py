@@ -80,8 +80,8 @@ URBAN_COLORS = {e["value"]: e["color"] for e in URBAN["values"] if e["color"] is
 
 SLR_DEPTH = json.loads(open(json_dir / "slr_depth.json").read())
 # depth in 1 foot increments from 0
-SLR_DEPTH_VALUES = [v["value"] for v in SLR_DEPTH["values"] if v["value"] < 11]
-SLR_NODATA_VALUES = [v["value"] for v in SLR_DEPTH["values"] if v["value"] >= 11]
+SLR_DEPTH_VALUES = [v for v in SLR_DEPTH["values"] if v["value"] < 11]
+SLR_NODATA_VALUES = [v for v in SLR_DEPTH["values"] if v["value"] >= 11]
 SLR_NODATA_COLS = ["not_inundated", "not_applicable", "nodata"]
 
 SLR_YEARS = [2020, 2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100]

@@ -17,7 +17,7 @@ from analysis.constants import (
     PARCA_COLORS,
     PROTECTED_AREAS_COLORS,
     URBAN_COLORS,
-    SLR_DEPTH,
+    SLR_DEPTH_VALUES,
     INDICATORS_INDEX,
     WILDFIRE_RISK_COLORS,
 )
@@ -136,7 +136,7 @@ async def render_raster_maps(
         task_args.append(("protected_areas", protected_areas_filename, colors))
 
     if slr:
-        colors = {e["value"]: e["color"] for i, e in enumerate([v for v in SLR_DEPTH if v["value"] < 11])}
+        colors = {v["value"]: v["color"] for v in SLR_DEPTH_VALUES}
         task_args.append(("slr", slr_filename, colors))
 
     if urban:

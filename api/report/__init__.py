@@ -10,7 +10,7 @@ from analysis.constants import (
     BLUEPRINT,
     CORRIDORS,
     URBAN,
-    SLR_DEPTH,
+    SLR_DEPTH_VALUES,
     PARCAS,
     PROTECTED_AREAS,
     WILDFIRE_RISK_LEGEND,
@@ -100,7 +100,9 @@ def create_report(maps, results, name=None, area_type="custom"):
         legends["protected_areas"] = PROTECTED_AREAS["values"][::-1]
 
     if "slr" in results:
-        legends["slr"] = [v for v in SLR_DEPTH["values"] if v["value"] < 11]
+        legends["slr"] = [
+            {**v, "label": v["label"].replace(" foot", "").replace(" feet", "")} for v in SLR_DEPTH_VALUES
+        ]
 
     if "urban" in results:
         legends["urban"] = URBAN["values"]

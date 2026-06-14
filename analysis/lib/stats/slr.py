@@ -193,7 +193,7 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
     # accumulate values for bins 0-10
     slr_acres[:, :11] = np.cumsum(slr_acres[:, :11], axis=1)
 
-    depth_cols = [f"depth_{v}" for v in SLR_DEPTH_VALUES]
+    depth_cols = [f"depth_{v['value']}" for v in SLR_DEPTH_VALUES]
     cols = depth_cols + SLR_NODATA_COLS
 
     slr = pd.DataFrame(
@@ -272,18 +272,18 @@ def get_slr_unit_results(results_dir, unit):
     # if the only value present is for inland areas where not applicable, show that message
     # also, if it is a mix of inland areas and nodata, just default to NA as well
     if np.allclose(slr_results.not_applicable, unit.rasterized_acres) or (
-        slr_results.not_applicable > 0 and sum(slr_results[f"depth_{i}"] for i in SLR_DEPTH_VALUES) == 0
+        slr_results.not_applicable > 0 and sum(slr_results[f"depth_{v['value']}"] for v in SLR_DEPTH_VALUES) == 0
     ):
         return {"na": True}
 
     depth = [
         {
-            "value": i,
-            "label": f"{i} {'foot' if i == 1 else 'feet'}",
-            "acres": slr_results[f"depth_{i}"],
-            "percent": 100 * slr_results[f"depth_{i}"] / unit.rasterized_acres,
+            "value": v["value"],
+            "label": v["label"],
+            "acres": slr_results[f"depth_{v['value']}"],
+            "percent": 100 * slr_results[f"depth_{v['value']}"] / unit.rasterized_acres,
         }
-        for i in SLR_DEPTH_VALUES
+        for v in SLR_DEPTH_VALUES
     ] + [
         {
             **v,

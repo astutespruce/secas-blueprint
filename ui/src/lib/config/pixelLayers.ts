@@ -107,9 +107,9 @@ const otherInfoLayers: PixelLayer[] = [
 		colors: slrDepth.values.map(({ color }) => color),
 		categories: slrDepth.values
 			.filter(({ value }) => value !== 13)
-			.map(({ label, ...rest }, i) => ({
+			.map(({ label, ...rest }) => ({
 				...rest,
-				label: i === 1 ? `${label} foot` : i <= 10 ? `${label} feet` : label,
+				label,
 				outlineWidth: 1,
 				outlineColor: 'grey.5'
 			})),
@@ -135,15 +135,15 @@ const otherInfoLayers: PixelLayer[] = [
 		layer: pixelLayerIndex.urban
 	},
 	{
-		id: 'protectedAreas',
-		label: 'Protected areas',
+		id: protectedAreas.id,
+		label: protectedAreas.label,
 		colors: protectedAreas.values.map(({ color }) => color),
 		categories: protectedAreas.values.filter(({ color }) => color !== null),
 		layer: pixelLayerIndex.protectedAreas
 	},
 	{
-		id: 'wildfireRisk',
-		label: 'Wildfire likelihood (annual burn probability)',
+		id: wildfireRisk.id,
+		label: wildfireRisk.label,
 		colors: wildfireRisk.values.map(({ color }) => color),
 		// sort in descending order
 		// NOTE: this uses a custom legend for simple label values, not the full

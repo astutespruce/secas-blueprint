@@ -139,7 +139,7 @@ protected_areas_list = (
 # delta encode percent * 10; dict encode nodata values
 print("Encoding SLR depth and projections...")
 slr_results = pd.read_feather(results_dir / "slr.feather").set_index("id").join(huc12.rasterized_acres)
-depth_cols = [f"depth_{d}" for d in SLR_DEPTH_VALUES]
+depth_cols = [f"depth_{v['value']}" for v in SLR_DEPTH_VALUES]
 
 slr_depth = delta_encode_values(slr_results[depth_cols], slr_results.rasterized_acres, 1000).rename("slr_depth")
 

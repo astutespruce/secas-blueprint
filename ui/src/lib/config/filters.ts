@@ -107,11 +107,7 @@ export const otherInfoFilters = [
 	{
 		id: slrDepth.id,
 		label: slrDepth.label,
-		values: slrDepth.values.map(({ value, label, ...rest }) => ({
-			...rest,
-			value,
-			label: value < 11 ? `${label} feet` : label
-		})),
+		values: slrDepth.values,
 		description: slrDepth.description
 	},
 	{
