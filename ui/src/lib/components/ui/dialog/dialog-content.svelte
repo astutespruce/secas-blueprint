@@ -1,4 +1,5 @@
 <script lang="ts">
+	// style override: changed border and padding to p-6
 	import { Dialog as DialogPrimitive } from 'bits-ui'
 	import XIcon from '@lucide/svelte/icons/x'
 	import type { Snippet } from 'svelte'
@@ -23,14 +24,14 @@
 		bind:ref
 		data-slot="dialog-content"
 		class={cn(
-			'bg-background absolute left-[50%] top-[50%] z-[10000] grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border py-6 pl-6 pr-12 shadow-lg duration-200 sm:max-w-lg',
+			'bg-background absolute left-[50%] top-[50%] z-[10000] grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-0 rounded-lg border border-grey-9/50 p-6 shadow-lg duration-200 sm:max-w-lg',
 			className
 		)}
 		{...restProps}
 	>
 		{@render children?.()}
 		<DialogPrimitive.Close
-			class="ring-offset-background focus:ring-grey-6 rounded-full focus:outline-hidden absolute right-4 top-4 opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none [&_svg:not([class*='size-'])]:size-6 [&_svg]:pointer-events-none [&_svg]:shrink-0 cursor-pointer"
+			class="ring-offset-background focus:ring-grey-9/50 rounded-full focus:outline-hidden absolute right-4 top-4 opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none [&_svg:not([class*='size-'])]:size-6 [&_svg]:pointer-events-none [&_svg]:shrink-0 cursor-pointer"
 		>
 			<XIcon />
 			<span class="sr-only">Close</span>

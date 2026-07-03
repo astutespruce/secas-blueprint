@@ -7,7 +7,7 @@
 <div class="w-full flex-none">
 	<!-- header  -->
 	<div
-		class={'py-2 px-3 border-b border-t'}
+		class="py-2 px-3 border-b border-t"
 		style={`background-color:${color}; border-color:${borderColor};`}
 	>
 		<div class="flex items-center justify-between">
@@ -20,7 +20,7 @@
 
 	<!-- filters list -->
 	<div class="mb-4">
-		{#each entries as entry}
+		{#each entries as entry (entry.id)}
 			<Filter {...entry} {onChange} />
 		{:else}
 			<div class="mt-4 text-grey-8 text-center">no filters available for this area</div>

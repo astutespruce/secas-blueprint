@@ -265,11 +265,31 @@
 	<h2 class="text-2xl">Examples of what is inside</h2>
 
 	<div class="grid grid-cols-2 md:grid-cols-5 mt-2 gap-4 [&_img]:border [&_img]:border-grey-2">
-		<enhanced:img src="$images/report/report_sm_1.png" alt="Tool report example screenshot 1" />
-		<enhanced:img src="$images/report/report_sm_2.png" alt="Tool report example screenshot 2" />
-		<enhanced:img src="$images/report/report_sm_3.png" alt="Tool report example screenshot 3" />
-		<enhanced:img src="$images/report/report_sm_4.png" alt="Tool report example screenshot 4" />
-		<enhanced:img src="$images/report/report_sm_5.png" alt="Tool report example screenshot 5" />
+		<enhanced:img
+			src="$images/report/report_sm_1.png"
+			alt="Tool report example screenshot 1"
+			loading="lazy"
+		/>
+		<enhanced:img
+			src="$images/report/report_sm_2.png"
+			alt="Tool report example screenshot 2"
+			loading="lazy"
+		/>
+		<enhanced:img
+			src="$images/report/report_sm_3.png"
+			alt="Tool report example screenshot 3"
+			loading="lazy"
+		/>
+		<enhanced:img
+			src="$images/report/report_sm_4.png"
+			alt="Tool report example screenshot 4"
+			loading="lazy"
+		/>
+		<enhanced:img
+			src="$images/report/report_sm_5.png"
+			alt="Tool report example screenshot 5"
+			loading="lazy"
+		/>
 	</div>
 	<p class="mt-2 text-lg">...and much more!</p>
 </div>

@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { getContext, untrack } from 'svelte'
+	import { SvelteSet } from 'svelte/reactivity'
 	import { MapboxOverlay } from '@deck.gl/mapbox'
+	import * as mapboxgl from 'mapbox-gl/esm'
+	import type { Map, Marker, SourceSpecification } from 'mapbox-gl/esm'
+	import 'mapbox-gl/dist/mapbox-gl.css'
 
 	import CrosshairsIcon from '$images/CrosshairsIcon.svg'
 	import Spinner from '~icons/fa-solid/spinner'
@@ -12,7 +16,7 @@
 	} from '$lib/config/constants'
 	import { mapConfig as config, sources, layers } from '$lib/config/map'
 	import { pixelLayers, renderLayersIndex } from '$lib/config/pixelLayers'
-	import type { MapData } from '$lib/components/map'
+	import { MAPBOX_TOKEN } from '$lib/env'
 	import type { Coordinate, LocationData, PixelLayer } from '$lib/types'
 	import { indexBy } from '$lib/util/data'
 	import { debounce, eventHandler } from '$lib/util/func'
@@ -23,24 +27,21 @@
 	import { Legend } from './legend'
 
 	import LayerToggle from './LayerToggle.svelte'
-	import { mapboxgl } from './mapbox'
 	import { ModeToggle } from './mode'
+	import { MapState } from './state.svelte'
 	import StyleToggle from './StyleToggle.svelte'
+	import { serializeMapCenterZoomToURL, deserializeMapCenterZoomFromURL } from './util'
 	import { getCenterAndZoom } from './viewport'
-	import { cn } from '$lib/utils'
 
-	let map: mapboxgl.Map
-	let marker: mapboxgl.Marker | null = null
+	let map: Map
+	let marker: Marker | null = null
 
-	const mapData: MapData = getContext('map-data')
+	const mapState: MapState = getContext('map-state')
 	const locationData: LocationData = getContext('location-data')
 
 	let isLoaded: boolean = $state(false)
-	let isRenderLayerVisible: boolean = $state(true)
 	let currentZoom: number = $state(3)
 	let highlightId: number | string | undefined = $state()
-	let renderLayer: PixelLayer = $state.raw(renderLayersIndex.blueprint)
-	let prevLocation: Coordinate | null = $state(null)
 
 	// mapIsDrawing is used to show the spinner; it only gets set via a deounced callback to prevent short duration flashes
 	let mapIsDrawing: boolean = $state(false)
@@ -63,14 +64,14 @@
 	const minPixelLayerZoom = 7 // minimum reasonable zoom for getting pixel data
 	const minSummaryZoom = layers.filter(({ id }) => id === 'unit-outline')[0].minzoom
 
-	const setPixelLayerProps = (newProps) => {
+	const setPixelLayerProps = (newProps: object) => {
 		if (!map) return
 
 		// this happens in hot reload
 		// @ts-expect-error __deck is dynamically defined
 		if (!(map && map.__deck && map.__deck.layerManager)) return
 
-		// @ts-expect-error __deck is dynamically defined
+		// @ts-expect-error __deck is valid
 		map.__deck.setProps({
 			// @ts-expect-error __deck is dynamically defined
 			layers: [map.__deck.layerManager.layers[0].clone(newProps)]
@@ -78,12 +79,12 @@
 	}
 
 	const getPixelData = debounce(async () => {
-		if (mapData.mapMode !== 'pixel' || !map) {
+		if (mapState.mapMode !== 'pixel' || !map) {
 			return
 		}
 
 		if (currentZoom < minPixelLayerZoom) {
-			mapData.setData(null)
+			mapState.setData(null)
 			resizeMap()
 			return
 		}
@@ -99,11 +100,11 @@
 		// If protected areas tiles aren't loaded yet, schedule a callback once tiles are loaded
 		if (
 			!(
-				map.style._otherSourceCaches.protectedAreas &&
-				map.style._otherSourceCaches.protectedAreas.loaded()
+				map?.style?._otherSourceCaches.protectedAreas &&
+				map?.style._otherSourceCaches.protectedAreas.loaded()
 			)
 		) {
-			mapData.setData({
+			mapState.setData({
 				type: 'pixel',
 				location: {
 					longitude,
@@ -127,7 +128,7 @@
 			})
 		}
 
-		mapData.setData({
+		mapState.setData({
 			type: 'pixel',
 			location: {
 				longitude,
@@ -140,21 +141,23 @@
 	}, 10)
 
 	const updateVisibleSubregions = debounce(() => {
-		if (mapData.mapMode !== 'filter' || !map) {
+		if (mapState.mapMode !== 'filter' || !map) {
 			return
 		}
 
-		const subregions = new Set<string>()
-		const regions = new Set<string>()
+		const subregions = new SvelteSet<string>()
+		const regions = new SvelteSet<string>()
 		map
+			// @ts-expect-error null first param is fine
 			.queryRenderedFeatures(null, { layers: ['subregions'] })
+			// @ts-expect-error subregion and region are fine
 			.forEach(({ properties: { subregion, region } }) => {
 				subregions.add(subregion)
 				regions.add(region)
 			})
 
-		mapData.visibleSubregions = subregions
-		mapData.visibleRegions = regions
+		mapState.visibleSubregions = subregions
+		mapState.visibleRegions = regions
 	}, 10)
 
 	// use a callback to actually update the layers, since may style may still
@@ -162,13 +165,15 @@
 	const updateVisibleLayers = () => {
 		mapIsDrawing = true
 
-		const isVisible = isRenderLayerVisible
-
 		// toggle layer visibility
-		if (mapData.mapMode === 'unit') {
+		if (mapState.mapMode === 'unit') {
 			map.setLayoutProperty('unit-fill', 'visibility', 'visible')
 			map.setLayoutProperty('unit-outline', 'visibility', 'visible')
-			map.setLayoutProperty('blueprint', 'visibility', isVisible ? 'visible' : 'none')
+			map.setLayoutProperty(
+				'blueprint',
+				'visibility',
+				mapState.renderLayerIsVisible ? 'visible' : 'none'
+			)
 			map.setLayoutProperty('protectedAreas', 'visibility', 'none')
 			map.setLayoutProperty('subregions', 'visibility', 'none')
 
@@ -179,7 +184,8 @@
 			})
 			setPixelLayerProps({
 				visible: false,
-				filters: null, // reset filters (also reset in parent state)
+				filterMode: mapState.filterMode,
+				filters: mapState.activeFilterValues,
 				data: { visible: false }
 			})
 
@@ -188,7 +194,7 @@
 			return
 		}
 		// pixel identify / filter modes
-		else if (mapData.mapMode === 'pixel') {
+		else if (mapState.mapMode === 'pixel') {
 			// enable pixel layer event listener
 			// @ts-expect-error __deck is dynamically defined
 			map.__deck.setProps({
@@ -201,7 +207,7 @@
 					getPixelData()
 				})
 			}
-		} else if (mapData.mapMode === 'filter') {
+		} else if (mapState.mapMode === 'filter') {
 			// disable pixel layer event listener
 			// @ts-expect-error __deck is dynamically defined
 			map.__deck.setProps({
@@ -217,7 +223,7 @@
 		map.setLayoutProperty('protectedAreas', 'visibility', 'visible')
 		map.setLayoutProperty('subregions', 'visibility', 'visible')
 
-		if (mapData.mapMode === 'filter') {
+		if (mapState.mapMode === 'filter') {
 			map.once('idle', () => {
 				updateVisibleSubregions()
 			})
@@ -225,9 +231,10 @@
 
 		setPixelLayerProps({
 			visible: true,
-			filters: mapData.activeFilterValues,
+			filterMode: mapState.filterMode,
+			filters: mapState.activeFilterValues,
 			// have to use opacity to hide so that pixel mode still works when hidden
-			opacity: isVisible ? 0.7 : 0,
+			opacity: mapState.renderLayerIsVisible ? 0.7 : 0,
 			// data prop is used to force loading of tiles if they aren't already loaded
 			data: { visible: true }
 		})
@@ -240,14 +247,14 @@
 			return
 		}
 		// hide Gulf of Mexico
-		if (map.style._layers['marine-label-md-pt']) {
+		if (map.style?._layers['marine-label-md-pt']) {
 			map.setFilter('marine-label-md-pt', [
 				'all',
 				['==', '$type', 'Point'],
 				['in', 'labelrank', 2, 3],
 				['!=', 'name', 'Gulf of Mexico']
 			])
-		} else if (map.style._layers['water-point-label']) {
+		} else if (map.style?._layers['water-point-label']) {
 			map.setFilter('water-point-label', [
 				'all',
 				[
@@ -265,21 +272,38 @@
 
 	const createMap = (mapNode: HTMLDivElement) => {
 		const { bounds, maxBounds, minZoom, maxZoom } = config
-		const { center, zoom } = getCenterAndZoom(mapNode, bounds, 0)
+
+		let center: LngLatLike
+		let zoom
+
+		const { center: urlCenter, zoom: urlZoom } = deserializeMapCenterZoomFromURL()
+
+		if (urlCenter !== undefined) {
+			center = urlCenter
+			zoom = urlZoom
+		} else {
+			const boundsCenterZoom = getCenterAndZoom(mapNode, bounds, 0)
+			center = boundsCenterZoom.center as LngLatLike
+			zoom = boundsCenterZoom.zoom
+		}
 
 		map = new mapboxgl.Map({
 			container: mapNode,
+			accessToken: MAPBOX_TOKEN,
 			style: 'mapbox://styles/mapbox/light-v9',
+			accessToken: MAPBOX_TOKEN,
 			center,
 			zoom,
 			minZoom,
 			maxZoom,
-			maxBounds
+			maxBounds,
+			preserveDrawingBuffer: true
 		})
 
-		map.addControl(new mapboxgl.NavigationControl(), 'top-right')
+		map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right')
+		map.dragRotate.disable()
+		map.touchZoomRotate.disableRotation()
 
-		// @ts-ignore
 		window.map = map // for easier debugging and querying via console
 
 		map.on('style.load', hideGulfOfMexico)
@@ -290,10 +314,26 @@
 				'interactive map showing Southeast Conservation Blueprint'
 			)
 
+			// add full extent button manually so it has proper tab order
+			const button = document.createElement('button')
+			button.onclick = zoomFullExtent
+			button.title = 'zoom to full extent'
+			button.tabIndex = 0
+			button.classList = '!hidden md:!block'
+
+			const span = document.createElement('span')
+			span.classList = 'mapboxgl-ctrl-icon'
+			// from @lucide/svelte/icons/home
+			span.style =
+				'background-image:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWhvdXNlLWljb24gbHVjaWRlLWhvdXNlIj48cGF0aCBkPSJNMTUgMjF2LThhMSAxIDAgMCAwLTEtMWgtNGExIDEgMCAwIDAtMSAxdjgiLz48cGF0aCBkPSJNMyAxMGEyIDIgMCAwIDEgLjcwOS0xLjUyOGw3LTZhMiAyIDAgMCAxIDIuNTgyIDBsNyA2QTIgMiAwIDAgMSAyMSAxMHY5YTIgMiAwIDAgMS0yIDJINWEyIDIgMCAwIDEtMi0yeiIvPjwvc3ZnPg==);'
+			button.appendChild(span)
+
+			const container = document.querySelector('.mapboxgl-ctrl-top-right .mapboxgl-ctrl-group')
+			container?.appendChild(button)
+
 			// add sources
 			Object.entries(sources).forEach(([id, source]) => {
-				// @ts-ignore
-				map.addSource(id, source)
+				map.addSource(id, source as SourceSpecification)
 			})
 
 			// add DeckGL pixel layer
@@ -304,6 +344,7 @@
 				layers: [
 					new StackedPNGTileLayer({
 						id: 'pixelLayers',
+						// @ts-expect-error interleaved is fine
 						interleaved: true,
 						beforeId: beforeLayer,
 						refinementStrategy: 'no-overlap',
@@ -312,9 +353,10 @@
 						extent: bounds,
 						maxRequests: 20, // because these are on HTTP/2, we can fetch many at once
 						opacity: 0.7,
-						filters: null,
+						filterMode: mapState.filterMode,
+						filters: mapState.activeFilterValues,
 						visible: false,
-						renderLayer,
+						renderLayer: mapState.renderLayer,
 						tileSize: 512,
 						useWebGL2: true
 					})
@@ -329,12 +371,12 @@
 
 			// add normal mapbox layers// add layers
 			layers.forEach((layer) => {
-				// @ts-ignore
+				// @ts-expect-error layer is valid
 				map.addLayer(layer, beforeLayer)
 			})
 
 			// if map is initialized in pixel or filter mode
-			if (mapData.mapMode === 'pixel' || mapData.mapMode === 'filter') {
+			if (mapState.mapMode === 'pixel' || mapState.mapMode === 'filter') {
 				map.setLayoutProperty('unit-fill', 'visibility', 'none')
 				map.setLayoutProperty('unit-outline', 'visibility', 'none')
 				map.setLayoutProperty('blueprint', 'visibility', 'none')
@@ -344,7 +386,8 @@
 				map.once('idle', () => {
 					setPixelLayerProps({
 						visible: true,
-						filters: null,
+						filterMode: mapState.filterMode,
+						filters: mapState.activeFilterValues,
 						data: { visible: true }
 					})
 					map.once('idle', () => {
@@ -354,12 +397,12 @@
 			}
 
 			// enable event listener for renderer
-			if (mapData.mapMode === 'pixel') {
+			if (mapState.mapMode === 'pixel') {
 				// @ts-expect-error __deck is dynamically defined
 				map.__deck.setProps({
 					onAfterRender: deckGLHandler.handler
 				})
-			} else if (mapData.mapMode === 'filter') {
+			} else if (mapState.mapMode === 'filter') {
 				map.once('idle', () => {
 					updateVisibleSubregions()
 				})
@@ -368,27 +411,33 @@
 			currentZoom = map.getZoom()
 
 			map.on('move', () => {
-				if (mapData.mapMode === 'pixel') {
+				if (mapState.mapMode === 'pixel') {
 					getPixelData()
 				}
 			})
 
 			map.on('moveend', () => {
+				serializeMapCenterZoomToURL(map)
+
 				delayedMapIsDrawing = true
-				if (mapData.mapMode === 'filter') {
+				if (mapState.mapMode === 'filter') {
 					updateVisibleSubregions()
 				}
 				updateMapIsDrawing()
 			})
 
 			map.on('zoomend', () => {
-				if (mapData.mapMode === 'pixel') {
+				serializeMapCenterZoomToURL(map)
+
+				if (mapState.mapMode === 'pixel') {
 					getPixelData()
-				} else if (mapData.mapMode === 'filter') {
+				} else if (mapState.mapMode === 'filter') {
 					updateVisibleSubregions()
 				}
 				currentZoom = map.getZoom()
 			})
+
+			mapState.map = map
 		})
 
 		map.on('idle', () => {
@@ -397,7 +446,7 @@
 		})
 
 		map.on('click', ({ lngLat: point }) => {
-			if (mapData.mapMode === 'pixel') {
+			if (mapState.mapMode === 'pixel') {
 				return
 			}
 
@@ -406,7 +455,7 @@
 			})
 
 			if (!(features && features.length > 0)) {
-				mapData.setData(null)
+				mapState.setData(null)
 				resizeMap()
 				return
 			}
@@ -416,7 +465,8 @@
 			// highlight selected
 			map.setFilter('unit-outline-highlight', ['==', 'id', properties!.id])
 
-			mapData.setData(unpackFeatureData(properties, ecosystemInfo, indicatorInfo, subregionIndex))
+			// @ts-expect-error properties is fine
+			mapState.setData(unpackFeatureData(properties, ecosystemInfo, indicatorInfo, subregionIndex))
 			resizeMap()
 		})
 
@@ -432,16 +482,14 @@
 				return
 			}
 
-			const { id } = features[0]
+			const { id } = features[0] as { id: string | number }
 
 			if (highlightId !== undefined && highlightId !== id) {
 				map.setFeatureState(
-					// @ts-ignore
 					{ source: 'mapUnits', sourceLayer: 'units', id: highlightId },
 					{ highlight: false }
 				)
 			}
-			// @ts-ignore
 			map.setFeatureState({ source: 'mapUnits', sourceLayer: 'units', id }, { highlight: true })
 			highlightId = id
 		})
@@ -454,7 +502,6 @@
 
 			if (highlightId !== undefined) {
 				map.setFeatureState(
-					// @ts-ignore
 					{ source: 'mapUnits', sourceLayer: 'units', id: highlightId },
 					{ highlight: false }
 				)
@@ -465,18 +512,6 @@
 		// when this component is destroyed, remove the map
 		return () => {
 			map?.remove()
-		}
-	}
-
-	const handleToggleRenderLayerVisible = () => {
-		if (!map) return
-		isRenderLayerVisible = !isRenderLayerVisible
-		if (mapData.mapMode === 'unit') {
-			map.setLayoutProperty('blueprint', 'visibility', isRenderLayerVisible ? 'visible' : 'none')
-		} else {
-			// have to toggle opacity not visibility so that pixel-level identify
-			// still works
-			setPixelLayerProps({ opacity: isRenderLayerVisible ? 0.7 : 0 })
 		}
 	}
 
@@ -496,7 +531,7 @@
 				const {
 					sources: styleSources,
 					layers: styleLayers,
-					// @ts-ignore
+					// @ts-expect-error mapbox:origin is fine
 					metadata: { 'mapbox:origin': curStyleId }
 				} = map!.getStyle()
 				const layerIndex = indexBy(styleLayers, 'id')
@@ -511,7 +546,7 @@
 				Object.entries(sources).forEach(([id, source]) => {
 					// make sure we're not trying to reload the same style, which already has these
 					if (!styleSources[id]) {
-						// @ts-ignore
+						// @ts-expect-error source is fine
 						map!.addSource(id, source)
 					}
 				})
@@ -525,7 +560,7 @@
 
 					const layer = { ...l }
 
-					if (mapData.mapMode !== 'unit') {
+					if (mapState.mapMode !== 'unit') {
 						if (l.id === 'blueprint' || l.id === 'unit-fill' || l.id === 'unit-outline') {
 							layer.layout = {
 								visibility: 'none'
@@ -537,24 +572,24 @@
 							}
 						}
 					} else {
-						if (l.id === 'blueprint' && !isRenderLayerVisible) {
+						if (l.id === 'blueprint' && !mapState.renderLayerIsVisible) {
 							layer.layout = {
 								visibility: 'none'
 							}
 						}
-						if (l.id === 'unit-outline-highlight' && mapData.data !== null) {
+						if (l.id === 'unit-outline-highlight' && mapState.data !== null) {
 							// re-highlight selected layer
-							layer.filter = ['==', 'id', mapData.data.id]
+							layer.filter = ['==', 'id', mapState.data.id]
 						}
 					}
 
-					// @ts-ignore
+					// @ts-expect-error layer is fine
 					map!.addLayer(layer, beforeLayer)
 				})
 
 				if (!map!.getLayer('pixelLayers')) {
 					// pixel layer appears to now be retained on style change
-					// @ts-ignore
+					// @ts-expect-error layer is fine
 					map!.addLayer(pixelLayer, beforeLayer)
 				}
 			})
@@ -568,48 +603,53 @@
 		}
 	}
 
-	const handleSetRenderLayer = (newRenderLayer: PixelLayer) => {
-		renderLayer = newRenderLayer
-		setPixelLayerProps({ renderLayer: $state.snapshot(renderLayer) })
-	}
-
-	// effect for setting a location
+	// effect for changing renderLayer
 	$effect(() => {
-		locationData.location
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+		mapState.renderLayer
 
 		if (!untrack(() => isLoaded)) {
 			return
 		}
 
-		if (locationData.location !== null) {
-			if (locationData.location === untrack(() => prevLocation)) {
+		setPixelLayerProps({ renderLayer: $state.snapshot(mapState.renderLayer) })
+	})
+
+	// effect for setting a location
+	$effect(() => {
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+		locationData.location
+
+		untrack(() => {
+			if (!isLoaded) {
 				return
 			}
 
-			const {
-				location: { latitude, longitude }
-			} = locationData
-			map.jumpTo({ center: [longitude, latitude], zoom: 12 })
-			map.once('idle', () => {
-				updateVisibleSubregions()
-			})
+			if (locationData.location !== null) {
+				const {
+					location: { latitude, longitude }
+				} = locationData
+				map.jumpTo({ center: [longitude, latitude], zoom: 12 })
+				map.once('idle', () => {
+					updateVisibleSubregions()
+				})
 
-			if (!marker) {
-				marker = new mapboxgl.Marker().setLngLat([longitude, latitude]).addTo(map)
+				if (!marker) {
+					marker = new mapboxgl.Marker().setLngLat([longitude, latitude]).addTo(map)
+				} else {
+					marker?.setLngLat([longitude, latitude])
+				}
 			} else {
-				marker?.setLngLat([longitude, latitude])
+				marker?.remove()
+				marker = null
 			}
-		} else {
-			marker?.remove()
-			marker = null
-		}
-
-		prevLocation = locationData.location
+		})
 	})
 
 	// effect for updates to mapMode
 	$effect(() => {
-		mapData.mapMode
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+		mapState.mapMode
 
 		if (!untrack(() => isLoaded)) {
 			return
@@ -632,16 +672,18 @@
 		updateVisibleLayers()
 	})
 
-	// effect for changed mapData to reset boundary highlight
+	// effect for changed mapState to reset boundary highlight
 	$effect(() => {
-		mapData.mapMode
-		mapData.data
+		/* eslint-disable @typescript-eslint/no-unused-expressions */
+		mapState.mapMode
+		mapState.data
+		/* eslint-enable-next-line @typescript-eslint/no-unused-expressions */
 
 		if (!untrack(() => isLoaded)) {
 			return
 		}
 
-		if (mapData.mapMode === 'unit' && mapData.data === null) {
+		if (mapState.mapMode === 'unit' && mapState.data === null) {
 			map.setFilter('unit-outline-highlight', ['==', 'id', Infinity])
 		}
 	})
@@ -649,30 +691,58 @@
 	// effect for update to filters
 	$effect(() => {
 		// NOTE: have to specifically mark activeFilterValues to trigger this effect
-		mapData.activeFilterValues
+		/* eslint-disable @typescript-eslint/no-unused-expressions */
+		mapState.filterMode
+		mapState.activeFilterValues
+		/* eslint-enable @typescript-eslint/no-unused-expressions */
 
 		if (!untrack(() => isLoaded)) {
 			return
 		}
 
-		setPixelLayerProps({ filters: mapData.activeFilterValues })
+		setPixelLayerProps({ filterMode: mapState.filterMode, filters: mapState.activeFilterValues })
+	})
+
+	// effect for update to renderLayerIsVisible
+	$effect(() => {
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+		mapState.renderLayerIsVisible
+		// NOTE: we intentionally do not track mapMode here but use in untrack
+
+		untrack(() => {
+			if (!isLoaded) {
+				return
+			}
+
+			if (mapState.mapMode === 'unit') {
+				map.setLayoutProperty(
+					'blueprint',
+					'visibility',
+					mapState.renderLayerIsVisible ? 'visible' : 'none'
+				)
+			} else {
+				// have to toggle opacity not visibility so that pixel-level identify
+				// still works
+				setPixelLayerProps({ opacity: mapState.renderLayerIsVisible ? 0.7 : 0 })
+			}
+		})
 	})
 
 	const belowMinZoom = $derived(
-		mapData.mapMode === 'pixel'
+		mapState.mapMode === 'pixel'
 			? currentZoom < minPixelLayerZoom
 			: currentZoom < (minSummaryZoom || 0)
 	)
 
-	const displayLayer = $derived(
-		mapData.mapMode === 'unit' ? renderLayersIndex.blueprint : renderLayer
-	)
+	const zoomFullExtent = () => {
+		map.fitBounds(config.bounds, { padding: 100 })
+	}
 </script>
 
 <div
-	class="h-full w-full flex-auto relative md:border-l-2 border-l-grey-3 has-focus-visible:border-l-primary overflow-hidden"
+	class="h-full w-full flex-auto relative md:border-l-2 border-l-grey-3 has-focus-visible:border-l-primary overflow-hidden print:hidden"
 >
-	<div class="h-full w-full" {@attach createMap}></div>
+	<div class="h-full w-full print:hidden" {@attach createMap}></div>
 
 	{#if mapIsDrawing}
 		<div
@@ -680,11 +750,11 @@
 		>
 			<Spinner class="size-6 animate-spin" />
 		</div>
-	{:else if mapData.mapMode === 'pixel' && currentZoom >= minPixelLayerZoom}
+	{:else if mapState.mapMode === 'pixel' && currentZoom >= minPixelLayerZoom}
 		<img
 			src={CrosshairsIcon}
 			alt="Crosshairs icon"
-			class="absolute block z-0 right-0 bottom-0 left-[50%] top-[50%] ml-[-1rem] mt-[-1rem] pointer-events-none size-8"
+			class="absolute block z-0 right-0 bottom-0 left-[50%] top-[50%] ml-[-1rem] mt-[-1rem] pointer-events-none size-8 print:hidden"
 		/>
 	{/if}
 
@@ -692,18 +762,7 @@
 		<ModeToggle {belowMinZoom} />
 		<FindLocation />
 		<StyleToggle onChange={handleBasemapChange} />
-		<LayerToggle
-			{renderLayer}
-			onSetRenderLayer={handleSetRenderLayer}
-			class={cn('hidden', { block: mapData.mapMode !== 'unit' })}
-		/>
-
-		<Legend
-			title={displayLayer.label}
-			subtitle={displayLayer.valueLabel}
-			categories={displayLayer.categories}
-			isVisible={isRenderLayerVisible}
-			onToggleLayerVisibility={handleToggleRenderLayerVisible}
-		/>
+		<LayerToggle />
+		<Legend />
 	{/if}
 </div>

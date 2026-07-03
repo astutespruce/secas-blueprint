@@ -135,3 +135,14 @@ export const otherInfoFilters = [
 		description: wildfireRisk.description
 	}
 ]
+
+export const allFilters = []
+	// @ts-expect-error priorityFilters are fine
+	.concat(priorityFilters)
+	.concat(ecosystemFilters.t.indicators)
+	.concat(ecosystemFilters.f.indicators)
+	.concat(ecosystemFilters.m.indicators)
+	// @ts-expect-error otherFilters are fine
+	.concat(otherInfoFilters)
+
+export const filterToIndex = Object.fromEntries(allFilters.map(({ id }, index) => [id, index]))

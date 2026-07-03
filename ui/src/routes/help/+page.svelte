@@ -14,6 +14,7 @@
 				src="$images/26871026541_48a8096dd9_o.jpg"
 				class="h-auto min-w-[720px] object-cover brightness-60"
 				alt=""
+				fetchpriority="high"
 			/>
 		</div>
 		<div class="container mt-14">
@@ -99,7 +100,11 @@
 				</p>
 			</div>
 			<div>
-				<enhanced:img src="$images/help-point-data.png" alt="Shows point data mode" />
+				<enhanced:img
+					src="$images/help-point-data.png"
+					alt="Shows point data mode"
+					loading="lazy"
+				/>
 			</div>
 		</div>
 
@@ -108,6 +113,7 @@
 				<enhanced:img
 					src="$images/help-point-data-tabs.png"
 					alt="Shows tabs when viewing point data"
+					loading="lazy"
 				/>
 			</div>
 			<div class="flex flex-col justify-center">
@@ -155,7 +161,11 @@
 				</p>
 			</div>
 			<div>
-				<enhanced:img src="$images/help-filter.png" alt="Shows filtering the Blueprint" />
+				<enhanced:img
+					src="$images/help-filter.png"
+					alt="Shows filtering the Blueprint"
+					loading="lazy"
+				/>
 			</div>
 		</div>
 
@@ -163,7 +173,7 @@
 			You can select more than one layer. The filters are evaluated using AND logic, which means
 			that in order for a pixel to display on the map, it must meet all the selected criteria. If
 			you filter by layers that do not co-occur at the same location, such as estuarine coastal
-			condition and plays, nothing will display on the map.
+			condition and playas, nothing will display on the map.
 		</p>
 
 		<div class="grid grid-cols-0 md:grid-cols-2 gap-8 mt-16">
@@ -171,12 +181,14 @@
 				<enhanced:img
 					src="$images/help-filter-before.png"
 					alt="Shows filtering the Blueprint showing before filters are applied"
+					loading="lazy"
 				/>
 			</div>
 			<div>
 				<enhanced:img
 					src="$images/help-filter-after.png"
 					alt="Shows filtering the Blueprint showing after filters are applied"
+					loading="lazy"
 				/>
 			</div>
 		</div>
@@ -199,11 +211,31 @@
 		</p>
 
 		<div class="grid grid-cols-2 md:grid-cols-5 mt-2 gap-4">
-			<enhanced:img src="$images/report/report_sm_1.png" alt="Tool report example screenshot 1" />
-			<enhanced:img src="$images/report/report_sm_2.png" alt="Tool report example screenshot 2" />
-			<enhanced:img src="$images/report/report_sm_3.png" alt="Tool report example screenshot 3" />
-			<enhanced:img src="$images/report/report_sm_4.png" alt="Tool report example screenshot 4" />
-			<enhanced:img src="$images/report/report_sm_5.png" alt="Tool report example screenshot 5" />
+			<enhanced:img
+				src="$images/report/report_sm_1.png"
+				alt="Tool report example screenshot 1"
+				loading="lazy"
+			/>
+			<enhanced:img
+				src="$images/report/report_sm_2.png"
+				alt="Tool report example screenshot 2"
+				loading="lazy"
+			/>
+			<enhanced:img
+				src="$images/report/report_sm_3.png"
+				alt="Tool report example screenshot 3"
+				loading="lazy"
+			/>
+			<enhanced:img
+				src="$images/report/report_sm_4.png"
+				alt="Tool report example screenshot 4"
+				loading="lazy"
+			/>
+			<enhanced:img
+				src="$images/report/report_sm_5.png"
+				alt="Tool report example screenshot 5"
+				loading="lazy"
+			/>
 		</div>
 
 		<hr />
@@ -220,12 +252,14 @@
 				<enhanced:img
 					src="$images/help-toggle-layers-button.png"
 					alt="Shows toggle layers button"
+					loading="lazy"
 				/>
 			</div>
 			<div>
 				<enhanced:img
 					src="$images/help-toggle-layers-modal.png"
 					alt="Shows toggle layers modal popup"
+					loading="lazy"
 				/>
 			</div>
 		</div>
@@ -246,10 +280,14 @@
 				</p>
 			</div>
 			<div>
-				<enhanced:img src="$images/help-search-field.png" alt="Shows search field" />
+				<enhanced:img src="$images/help-search-field.png" alt="Shows search field" loading="lazy" />
 			</div>
 			<div>
-				<enhanced:img src="$images/help-search-options.png" alt="Shows search field options" />
+				<enhanced:img
+					src="$images/help-search-options.png"
+					alt="Shows search field options"
+					loading="lazy"
+				/>
 			</div>
 		</div>
 
@@ -268,12 +306,14 @@
 				<enhanced:img
 					src="$images/help-search-results.png"
 					alt="Shows search results for placename search"
+					loading="lazy"
 				/>
 			</div>
 			<div>
 				<enhanced:img
 					src="$images/help-search-lat-long.png"
 					alt="Shows latitude / longitude search"
+					loading="lazy"
 				/>
 			</div>
 		</div>
