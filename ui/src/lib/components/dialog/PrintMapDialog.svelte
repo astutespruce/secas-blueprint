@@ -48,7 +48,7 @@
 		{/snippet}
 	</Trigger>
 	<Content class="pt-4 pb-6 print:hidden">
-		<Header class="border-b pb-4 border-b-grey-3">
+		<Header class="border-b pb-2 mb-2 border-b-grey-3">
 			<Title class="text-3xl">Print map / save to PDF</Title>
 		</Header>
 		{#if isLoading}
@@ -61,7 +61,7 @@
 				In your browser's print dialog, you can choose to save this to PDF instead of printing it.
 			</p>
 		{/if}
-		<Footer class="border-t border-t-grey-2 pt-2">
+		<Footer class="border-t border-t-grey-2 mt-2 pt-2">
 			<Close class="text-lg cursor-pointer">Cancel</Close>
 			<Button onclick={handlePrint} disabled={isLoading} class="text-lg">
 				{#if isLoading}
