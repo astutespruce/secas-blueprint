@@ -161,7 +161,7 @@
 				<div
 					bind:this={contentNode}
 					class={cn(
-						'md:flex h-full bg-white grow shrink-0 basis-full md:basis-[360px] lg:basis-[468px] w-max-[100%] md:w-max-[360px] lg:w-max-[468px] flex-col overflow-hidden absolute md:relative left-0 right-0 top-0 bottom-0 z-10000 md:z-1',
+						'md:flex h-full bg-white grow shrink-0 basis-full md:basis-[468px] w-max-[100%] md:w-max-[468px] flex-col overflow-hidden absolute md:relative left-0 right-0 top-0 bottom-0 z-10000 md:z-1',
 						{
 							hidden: tab === 'map'
 						}

@@ -57,19 +57,28 @@
 		{/if}
 
 		{#if mapState.mapMode === 'filter'}
-			<FiltersList />
+			{#if mapState.numEnabledFilters > 0}
+				<FiltersList />
+
+				<p class="mt-12">
+					<b>To reopen this map with these filters enabled in your browser, go to:</b>
+					<br />
+					<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+					<a href={url} class="text-xs leading-none break-all">{url}</a>
+
+					<br />
+					<span class="text-sm text-muted-foreground">
+						Note: these filters are only valid for Southeast Blueprint {BLUEPRINT_VERSION}.
+					</span>
+				</p>
+			{:else}
+				<p class="mt-12">
+					<b>To reopen this map in your browser, go to:</b>
+					<br />
+					<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+					<a href={url} class="text-xs leading-none break-all">{url}</a>
+				</p>
+			{/if}
 		{/if}
-
-		<p class="mt-12">
-			<b>To reopen these filters in your browser, go to:</b>
-			<br />
-			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-			<a href={url} class="text-xs leading-none break-all">{url}</a>
-
-			<br />
-			<span class="text-sm text-muted-foreground">
-				Note: these filters are only valid for Southeast Blueprint {BLUEPRINT_VERSION}.
-			</span>
-		</p>
 	</div>
 {/if}

@@ -43,7 +43,7 @@
 		{#snippet child({ props })}
 			<Button {...props} variant="ghost" class="hover:bg-transparent h-auto p-1!">
 				<PrintIcon />
-				<b>Print / Save to PDF</b>
+				<b>Print / save map to PDF</b>
 			</Button>
 		{/snippet}
 	</Trigger>
@@ -55,8 +55,8 @@
 			<p class="text-lg text-center">Saving map image...</p>
 		{:else}
 			<p class="text-lg">
-				This will use your browser's print interface to save a lightweight capture of your map and
-				any enabled filters.
+				This will use your browser's print interface to save a screenshot of your map and any
+				enabled filters.
 				<br /><br />
 				In your browser's print dialog, you can choose to save this to PDF instead of printing it.
 			</p>
@@ -66,9 +66,11 @@
 			<Button onclick={handlePrint} disabled={isLoading} class="text-lg">
 				{#if isLoading}
 					<Spinner class="size-4 animate-spin" />
+				{:else}
+					<PrintIcon class="size-4" />
 				{/if}
 
-				Print / Save to PDF</Button
+				Print / Save map to PDF</Button
 			>
 		</Footer>
 	</Content>

@@ -20,8 +20,8 @@
 		<Sheet.Trigger>
 			{#snippet child({ props })}
 				<Button {...props} variant="ghost" class="hover:bg-transparent h-auto p-1!">
-					<b>Change filter overlay method</b>
 					<GearIcon />
+					<b>Change filter overlay method</b>
 				</Button>
 			{/snippet}
 		</Sheet.Trigger>
@@ -64,8 +64,8 @@
 		<DropdownMenu.Trigger>
 			{#snippet child({ props })}
 				<Button {...props} variant="ghost" class="hover:bg-transparent h-auto p-1!">
-					<b>Change filter overlay method</b>
 					<GearIcon />
+					<b>Change filter overlay method</b>
 				</Button>
 			{/snippet}
 		</DropdownMenu.Trigger>
