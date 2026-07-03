@@ -173,7 +173,7 @@
 			You can select more than one layer. The filters are evaluated using AND logic, which means
 			that in order for a pixel to display on the map, it must meet all the selected criteria. If
 			you filter by layers that do not co-occur at the same location, such as estuarine coastal
-			condition and plays, nothing will display on the map.
+			condition and playas, nothing will display on the map.
 		</p>
 
 		<div class="grid grid-cols-0 md:grid-cols-2 gap-8 mt-16">

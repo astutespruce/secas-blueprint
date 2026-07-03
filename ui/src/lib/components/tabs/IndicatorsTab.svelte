@@ -5,7 +5,7 @@
 	import MarineIcon from '$images/m.svg'
 	import TerrestrialIcon from '$images/t.svg'
 	import { cn } from '$lib/utils'
-	import type { MapData } from '$lib/components/map'
+	import type { MapState } from '$lib/components/map'
 	import { Ecosystem, IndicatorDetails } from './indicators'
 
 	const ecosystemIcons = {
@@ -16,20 +16,20 @@
 
 	const { type, indicators, outsideSEPercent, rasterizedAcres, class: className = '' } = $props()
 
-	const mapData: MapData = getContext('map-data')
+	const mapState: MapState = getContext('map-state')
 </script>
 
 <section class={cn('flex-auto overflow-y-auto h-full', className)}>
-	{#if mapData.selectedIndicator && !!indicators.indicators[mapData.selectedIndicator]}
+	{#if mapState.selectedIndicator && !!indicators.indicators[mapState.selectedIndicator]}
 		<IndicatorDetails
 			{type}
-			{...indicators.indicators[mapData.selectedIndicator]}
+			{...indicators.indicators[mapState.selectedIndicator]}
 			{outsideSEPercent}
 			{rasterizedAcres}
-			icon={ecosystemIcons[indicators.indicators[mapData.selectedIndicator].ecosystem.id]}
+			icon={ecosystemIcons[indicators.indicators[mapState.selectedIndicator].ecosystem.id]}
 		/>
 	{:else}
-		{#each indicators.ecosystems as ecosystem}
+		{#each indicators.ecosystems as ecosystem (ecosystem.id)}
 			<Ecosystem {type} {...ecosystem} icon={ecosystemIcons[ecosystem.id]} />
 		{/each}
 	{/if}

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import DownloadIcon from '~icons/fa-solid/download'
 	import { createSummaryUnitReport } from '$lib/api'
-	import { Root, Trigger, Content, Header, Title } from '$lib/components/ui/dialog'
+	import { Root, Trigger, Close, Content, Footer, Header, Title } from '$lib/components/ui/dialog'
 	import { Button } from '$lib/components/ui/button'
 	import { captureException, logGAEvent } from '$lib/util/log'
 	import Done from './Done.svelte'
@@ -181,9 +181,8 @@
 			</p>
 		{/if}
 
-		<hr class="my-0" />
-		<div class="flex justify-between items-center gap-4">
-			<Button onclick={handleClose} variant="secondary" class="text-lg">Cancel</Button>
+		<Footer class="gap-4 border-t border-t-grey-2 pt-2">
+			<Close onclick={handleClose} class="text-lg cursor-pointer">Cancel</Close>
 
 			{#if reportState.reportURL}
 				<Button href={reportState.reportURL} class="text-lg no-underline">
@@ -193,6 +192,6 @@
 			{:else if !reportState.inProgress && reportState.error === null}
 				<Button onclick={handleCreateReport} class="text-lg">Create report</Button>
 			{/if}
-		</div>
+		</Footer>
 	</Content>
 </Root>

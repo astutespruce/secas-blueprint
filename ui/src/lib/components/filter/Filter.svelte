@@ -1,4 +1,6 @@
 <script lang="ts">
+	import ArrowUpIcon from '~icons/fa-solid/arrow-up'
+	import ArrowDownIcon from '~icons/fa-solid/arrow-down'
 	import ExclamationTriangle from '~icons/fa-solid/exclamation-triangle'
 	import FilterIcon from '~icons/fa-solid/filter'
 	import Plus from '~icons/fa-solid/plus'
@@ -15,6 +17,7 @@
 		description,
 		values,
 		valueLabel: indicatorValueLabel,
+		goodThreshold,
 		enabled,
 		activeValues,
 		canBeVisible,
@@ -112,7 +115,21 @@
 					</div>
 				{/if}
 
-				{#each values as { value, label: valueLabel }}
+				{#each values as { value, label: valueLabel } (value)}
+					{#if goodThreshold !== null && value + 1 === goodThreshold}
+						<div class="mt-2 text-grey-8 text-xs">
+							<div class="flex justify-center items-center gap-1">
+								<ArrowUpIcon class="size-3" />
+								<div class="w-[14em]">good condition</div>
+							</div>
+							<div class="border-b border-dashed border-b-grey-6 h-[1px] my-2"></div>
+							<div class="flex justify-center items-center gap-1">
+								<ArrowDownIcon class="size-3" />
+								<div class="w-[14em]">not in good condition</div>
+							</div>
+						</div>
+					{/if}
+
 					<div class="flex gap-3 not-first:mt-2">
 						<Checkbox
 							bind:ref={checkboxNode}
