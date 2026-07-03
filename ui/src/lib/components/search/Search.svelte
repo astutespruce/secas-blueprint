@@ -28,10 +28,6 @@
 	let resultsNode: Element | undefined = $state()
 
 	// query is debounced from value
-	// FIXME:
-	// NOTE: we have to use a writable stores until Svelte 5 is properly supported by tanstack-query
-	// let query = writable<string>('')
-	// let selectedId = writable<string | null>(null)
 	let query: string = $state('')
 	let selectedId: string | null = $state(null)
 
@@ -190,7 +186,7 @@
 				<div class="flex items-center justify-center px-4 py-8 text-grey-8">No results found</div>
 			{:else}
 				<div bind:this={resultsNode} class="search-results mt-4">
-					{#each suggestions.data as { id, name, address }, i}
+					{#each suggestions.data as { id, name, address }, i (id)}
 						<div
 							class="cursor-pointer leading-none bg-white hover:bg-grey-0 not-first:border-t not-first:border-t-grey-1 py-1 px-2"
 							onclick={handleResultClick(id, i)}
