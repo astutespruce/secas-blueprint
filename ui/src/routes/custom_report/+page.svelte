@@ -152,6 +152,7 @@
 				src="$images/26871026541_48a8096dd9_o.jpg"
 				class="h-auto min-w-[720px] object-cover brightness-60"
 				alt=""
+				fetchpriority="high"
 			/>
 		</div>
 		<div class="container mt-14">

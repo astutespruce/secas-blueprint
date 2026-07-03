@@ -2,9 +2,9 @@
 	import { getContext, untrack } from 'svelte'
 	import { SvelteSet } from 'svelte/reactivity'
 	import { MapboxOverlay } from '@deck.gl/mapbox'
-	import mapboxgl from 'mapbox-gl/esm'
+	import * as mapboxgl from 'mapbox-gl/esm'
+	import type { Map, Marker, SourceSpecification } from 'mapbox-gl/esm'
 	import 'mapbox-gl/dist/mapbox-gl.css'
-	import type { LngLatLike } from 'mapbox-gl'
 
 	import CrosshairsIcon from '$images/CrosshairsIcon.svg'
 	import Spinner from '~icons/fa-solid/spinner'
@@ -15,10 +15,9 @@
 		subregionIndex
 	} from '$lib/config/constants'
 	import { mapConfig as config, sources, layers } from '$lib/config/map'
-	import { pixelLayers } from '$lib/config/pixelLayers'
-
+	import { pixelLayers, renderLayersIndex } from '$lib/config/pixelLayers'
 	import { MAPBOX_TOKEN } from '$lib/env'
-	import type { Coordinate, LocationData } from '$lib/types'
+	import type { Coordinate, LocationData, PixelLayer } from '$lib/types'
 	import { indexBy } from '$lib/util/data'
 	import { debounce, eventHandler } from '$lib/util/func'
 
@@ -34,8 +33,8 @@
 	import { serializeMapCenterZoomToURL, deserializeMapCenterZoomFromURL } from './util'
 	import { getCenterAndZoom } from './viewport'
 
-	let map: mapboxgl.Map
-	let marker: mapboxgl.Marker | null = null
+	let map: Map
+	let marker: Marker | null = null
 
 	const mapState: MapState = getContext('map-state')
 	const locationData: LocationData = getContext('location-data')
@@ -65,7 +64,7 @@
 	const minPixelLayerZoom = 7 // minimum reasonable zoom for getting pixel data
 	const minSummaryZoom = layers.filter(({ id }) => id === 'unit-outline')[0].minzoom
 
-	const setPixelLayerProps = (newProps) => {
+	const setPixelLayerProps = (newProps: object) => {
 		if (!map) return
 
 		// this happens in hot reload
@@ -248,17 +247,14 @@
 			return
 		}
 		// hide Gulf of Mexico
-		// @ts-expect-error map.style is fine
-		if (map.style._layers['marine-label-md-pt']) {
+		if (map.style?._layers['marine-label-md-pt']) {
 			map.setFilter('marine-label-md-pt', [
 				'all',
 				['==', '$type', 'Point'],
 				['in', 'labelrank', 2, 3],
 				['!=', 'name', 'Gulf of Mexico']
 			])
-		}
-		// @ts-expect-error map.style is fine
-		else if (map.style._layers['water-point-label']) {
+		} else if (map.style?._layers['water-point-label']) {
 			map.setFilter('water-point-label', [
 				'all',
 				[
@@ -295,6 +291,7 @@
 			container: mapNode,
 			accessToken: MAPBOX_TOKEN,
 			style: 'mapbox://styles/mapbox/light-v9',
+			accessToken: MAPBOX_TOKEN,
 			center,
 			zoom,
 			minZoom,
@@ -307,7 +304,6 @@
 		map.dragRotate.disable()
 		map.touchZoomRotate.disableRotation()
 
-		// @ts-expect-error map is valid
 		window.map = map // for easier debugging and querying via console
 
 		map.on('style.load', hideGulfOfMexico)
@@ -337,8 +333,7 @@
 
 			// add sources
 			Object.entries(sources).forEach(([id, source]) => {
-				// @ts-expect-error source is valid
-				map.addSource(id, source)
+				map.addSource(id, source as SourceSpecification)
 			})
 
 			// add DeckGL pixel layer
