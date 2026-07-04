@@ -8,9 +8,10 @@ import { dequal as deepEqual } from 'dequal'
 import vertexShader from './vertex.vs?raw'
 import fragmentShader from './fragment.fs?raw'
 
+import { makeRGBAFloat32Palette } from './colors'
 import { getFilterExpr, getFilterValues } from './filters'
 import StackedPNGLayer from './StackedPNGLayer'
-import { createPNGTexture, createPaletteTexture } from './texture'
+import { createPNGTexture } from './texture'
 
 // turn off verbose logging
 luma.log.level = 0
@@ -58,7 +59,8 @@ export default class StackedPNGTileLayer extends TileLayer {
 			),
 			renderTarget: {
 				...renderLayer,
-				palette: createPaletteTexture(device, renderLayer.colors)
+				// first color must always be null
+				palette: makeRGBAFloat32Palette([null, ...renderLayer.colors])
 			}
 		})
 	}
@@ -74,6 +76,7 @@ export default class StackedPNGTileLayer extends TileLayer {
 
 		// only update filters when they've changed
 		if (!deepEqual(oldFilters, newFilters)) {
+			// @ts-expect-error filterValues is valid
 			newState.filterValues = getFilterValues(
 				layers.map(({ encoding }) => encoding),
 				newFilters || {}
@@ -83,9 +86,11 @@ export default class StackedPNGTileLayer extends TileLayer {
 		// only update render target when these are different
 		if (oldRenderLayer && newRenderLayer.id !== oldRenderLayer.id) {
 			const { device } = this.context
+			// @ts-expect-error renderTarget is valid
 			newState.renderTarget = {
 				...newRenderLayer,
-				palette: createPaletteTexture(device, newRenderLayer.colors)
+				// first color must always be null
+				palette: makeRGBAFloat32Palette([null, ...newRenderLayer.colors])
 			}
 		}
 

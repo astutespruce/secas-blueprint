@@ -213,3 +213,9 @@ renderLayerGroups.push({
 })
 
 export const renderLayersIndex = indexBy(layers, 'id')
+
+export const paletteSize =
+	Math.max(
+		// @ts-expect-error colors is valid
+		...(Object.values(renderLayersIndex).map(({ colors }) => colors.length) as number[])
+	) + 1
