@@ -162,7 +162,7 @@
 								/>
 								<div
 									class={cn(
-										'border-2 border-grey-5 rounded-lg bg-grey-1/40 border-dashed p-6 flex flex-col justify-center items-center text-center cursor-pointer mt-2',
+										'border-2 border-grey-8/50 rounded-lg bg-grey-1/40 border-dashed p-6 flex flex-col justify-center items-center text-center cursor-pointer mt-2',
 										{
 											'border-error': isDragValid === false || $errors.file,
 											'bg-error/10': isDragValid === false || $errors.file,

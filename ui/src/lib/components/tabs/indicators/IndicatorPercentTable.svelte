@@ -81,7 +81,7 @@
 					{formatPercent(totalGoodPercent)}% in good condition
 				</div>
 			</div>
-			<div class="border-b border-dashed border-b-grey-6 h-[1px] my-2"></div>
+			<div class="border-b border-dashed border-b-grey-8/60 h-[1px] my-2"></div>
 			<div class="flex justify-center items-center gap-1">
 				<ArrowDownIcon class="size-4" />
 				<div class="w-[14em]">
@@ -108,7 +108,6 @@
 		{#each remainders as { value, label, percent } (value)}
 			<div class="flex mt-4">
 				<div class="flex-none w-20 font-bold text-sm"></div>
-				<!-- TODO: grey-4 -->
 				<IndicatorPercentChart {label} {percent} />
 			</div>
 		{/each}

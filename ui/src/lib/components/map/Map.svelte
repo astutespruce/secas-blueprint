@@ -736,7 +736,7 @@
 </script>
 
 <div
-	class="h-full w-full flex-auto relative md:border-l-2 border-l-grey-3 has-focus-visible:border-l-primary overflow-hidden print:hidden"
+	class="h-full w-full flex-auto relative md:border-l-2 border-l-grey-2 has-focus-visible:border-l-primary overflow-hidden print:hidden"
 >
 	<div class="h-full w-full print:hidden" {@attach createMap}></div>
 

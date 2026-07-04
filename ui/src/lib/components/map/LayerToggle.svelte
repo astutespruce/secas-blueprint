@@ -44,7 +44,7 @@
 		<LayerGroupIcon class="w-6 h-6 md:w-4.5 md:h-4.5" />
 	</Trigger>
 	<Content class="pt-4 pb-6">
-		<Header class="border-b pb-4 border-b-grey-3">
+		<Header class="border-b pb-4 border-b-grey-2">
 			<Title class="text-3xl">Choose layer to show on map</Title>
 		</Header>
 		<div class="overflow-y-auto max-h-[400px]">

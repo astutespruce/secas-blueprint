@@ -48,7 +48,7 @@
 		{/snippet}
 	</Trigger>
 	<Content class="pt-4 pb-6 print:hidden">
-		<Header class="border-b pb-2 mb-2 border-b-grey-3">
+		<Header class="border-b pb-2 mb-2 border-b-grey-2">
 			<Title class="text-3xl">Print map / save to PDF</Title>
 		</Header>
 		{#if isLoading}

@@ -71,7 +71,7 @@
 			onclick={() => (mapState.selectedIndicator = null)}
 		>
 			<div class="flex items-start">
-				<ReplyIcon class="size-3 flex-none text-grey-7" />
+				<ReplyIcon class="size-3 flex-none text-muted-foreground" />
 				<div class="flex gap-2 flex-auto items-center">
 					<img
 						src={icon}

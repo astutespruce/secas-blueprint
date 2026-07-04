@@ -29,7 +29,7 @@
 </script>
 
 <div
-	class="absolute z-1 text-grey-9 bg-white cursor-pointer bottom-[40px] lg:bottom-[24px] right-[10px] border border-grey-5 rounded-sm shadow-md shadow-grey-6 max-w-[210px] select-none hidden md:block focus-visible:outline-2 outline-accent"
+	class="absolute z-1 text-grey-9 bg-white cursor-pointer bottom-[40px] lg:bottom-[24px] right-[10px] border border-grey-8/50 rounded-sm shadow-md shadow-grey-8/50 max-w-[210px] select-none hidden md:block focus-visible:outline-2 outline-accent"
 	onclick={toggleVisibility}
 	onkeydown={handleKeyDown}
 	role="button"
@@ -42,7 +42,7 @@
 					{title}
 				</div>
 				<Button
-					class="flex-none bg-grey-0 text-foreground border border-grey-7 rounded-sm p-0 leading-none hover:bg-grey-1 w-7 h-7"
+					class="flex-none bg-grey-0 text-foreground border border-grey-8 rounded-sm p-0 leading-none hover:bg-grey-1 w-7 h-7"
 					title={`Click to ${mapState.renderLayerIsVisible ? 'hide' : 'show'}`}
 					onclick={toggleLayerVisibility}
 					tabindex={0}
