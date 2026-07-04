@@ -14,7 +14,7 @@
 	const {
 		type,
 		label,
-		ecosystem,
+		group,
 		description,
 		url,
 		goodThreshold,
@@ -64,23 +64,23 @@
 <div class="flex flex-col h-full overflow-hidden">
 	<div
 		class="border-b p-1"
-		style={`background-color:${ecosystem.color}; border-color:${ecosystem.borderColor};`}
+		style={`background-color:${group.color}; border-color:${group.borderColor};`}
 	>
 		<Button
 			class="shadow-none rounded-none bg-transparent hover:bg-transparent w-full flex justify-between items-center pl-1 pr-4 text-foreground text-wrap whitespace-break-spaces h-auto gap-4 py-1"
 			onclick={() => (mapState.selectedIndicator = null)}
 		>
 			<div class="flex items-start">
-				<ReplyIcon class="size-3 flex-none text-grey-7" />
+				<ReplyIcon class="size-3 flex-none text-muted-foreground" />
 				<div class="flex gap-2 flex-auto items-center">
 					<img
 						src={icon}
-						alt={`${ecosystem.label} icon`}
+						alt={`${group.label} icon`}
 						class="flex-none size-10 bg-white rounded-full block"
 					/>
 					<div class="flex flex-col leading-tight items-start text-left">
 						<div class="font-sm color-grey-8">
-							{ecosystem.label}
+							{group.label}
 						</div>
 						<h4 class="text-xl leading-tight">
 							{label}

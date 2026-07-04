@@ -61,7 +61,7 @@
 			</div>
 			<Button
 				aria-label="unselect summary unit"
-				class="flex-none text-grey-5 hover:text-grey-9 bg-transparent hover:bg-transparent shadow-none rounded-full m-0 p-0 h-6"
+				class="flex-none text-grey-8/50 hover:text-grey-9 bg-transparent hover:bg-transparent shadow-none rounded-full m-0 p-0 h-6"
 				onclick={() => {
 					mapState.setData(null)
 				}}
@@ -76,14 +76,14 @@
 	{/if}
 
 	<nav class="grid auto-cols-fr grid-flow-col gap-0 items-center border-t-2 border-t-grey-2">
-		{#each tabs as { id, label, icon: Icon }}
+		{#each tabs as { id, label, icon: Icon } (id)}
 			<div
-				class={cn('p-1 bg-grey-1 border-b border-b-grey-3', {
+				class={cn('p-1 bg-grey-1 border-b border-b-grey-2', {
 					'bg-white hover:bg-white border-b-transparent': id === tab
 				})}
 			>
 				<Button
-					class="w-full flex gap-2 items-center justify-center text-center flex-grow p-2 h-8 select-none rounded-none text-grey-9 text-md bg-transparent hover:bg-transparent shadow-none"
+					class="w-full flex gap-2 items-center justify-center text-center grow p-2 h-8 select-none rounded-none text-grey-9 text-md bg-transparent hover:bg-transparent shadow-none"
 					onclick={handleTabClick(id)}
 				>
 					<Icon class="size-6" />

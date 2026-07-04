@@ -10,7 +10,7 @@ import type {
 import {
 	blueprint,
 	corridors,
-	ecosystems,
+	indicatorGroups,
 	indicatorsIndex,
 	parcas,
 	protectedAreas,
@@ -176,7 +176,7 @@ export const renderLayerGroups = [
 	}
 ]
 
-ecosystems.forEach(({ id: groupId, label: groupLabel, indicators: groupIndicators }) => {
+indicatorGroups.forEach(({ id: groupId, label: groupLabel, indicators: groupIndicators }) => {
 	const group = {
 		id: groupId,
 		label: `${groupLabel} indicators`,
@@ -204,3 +204,9 @@ renderLayerGroups.push({
 })
 
 export const renderLayersIndex = indexBy(layers, 'id')
+
+export const paletteSize =
+	Math.max(
+		// @ts-expect-error colors is valid
+		...(Object.values(renderLayersIndex).map(({ colors }) => colors.length) as number[])
+	) + 1

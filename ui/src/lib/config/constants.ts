@@ -3,7 +3,7 @@ import type { Indicator } from '$lib/types'
 
 import blueprint from '$constants/blueprint.json'
 import corridors from '$constants/corridors.json'
-import ecosystems from '$constants/ecosystems.json'
+import indicatorGroups from '$constants/indicator_groups.json'
 import rawIndicators from '$constants/indicators.json'
 import parcas from '$constants/parcas.json'
 import protectedAreas from '$constants/protected_areas.json'
@@ -29,7 +29,7 @@ import pixelLayers9 from '$constants/pixel_layers_9.json'
 export {
 	blueprint,
 	corridors,
-	ecosystems,
+	indicatorGroups,
 	parcas,
 	protectedAreas,
 	slrDepth,
@@ -49,7 +49,7 @@ export {
 	pixelLayers9
 }
 
-export const ecosystemIndex = indexBy(ecosystems, 'id')
+export const indicatorGroupIndex = indexBy(indicatorGroups, 'id')
 
 export const subregionsIndex = indexBy(subregions, 'subregion')
 

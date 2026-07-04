@@ -6,7 +6,7 @@ import rasterio
 
 from analysis.constants import (
     BLUEPRINT,
-    ECOSYSTEMS,
+    INDICATOR_GROUPS,
     INDICATORS,
     INDICATORS_INDEX,
     CORRIDORS,
@@ -49,7 +49,7 @@ async def summarize_blueprint_in_aoi(rasterized_geometry, subregions, progress_c
         "blueprint": [{"value": <...>, "label": <...>, "acres": <...>, "percent": <...>, ...}, ...],
         "corridors": [{"value": <...>, "label": <...>, "acres": <...>, "percent": <...>, ...}, ...],
         "legend": [...],
-        "ecosystems": ...,
+        "indicator_groups": ...,
         "total_acres": <...>
     }
     """
@@ -152,23 +152,23 @@ async def summarize_blueprint_in_aoi(rasterized_geometry, subregions, progress_c
         if progress_callback is not None:
             await progress_callback(20 + (75 * (i + 1) / len(indicators_present)))
 
-    ### aggregate indicators up to ecosystems
-    # determine ecosystems present from indicators
-    ecosystem_ids = {id.split("_")[0] for id in indicators}
-    ecosystems_present = [deepcopy(e) for e in ECOSYSTEMS if e["id"] in ecosystem_ids]
-    ecosystems = []
-    for ecosystem in ecosystems_present:
-        id = ecosystem["id"]
+    ### aggregate indicators up to indicator groups
+    # determine indicator gruops present from indicators
+    indicator_group_ids = {id.split("_")[0] for id in indicators}
+    indicator_groups_present = [deepcopy(e) for e in INDICATOR_GROUPS if e["id"] in indicator_group_ids]
+    indicator_groups = []
+    for group in indicator_groups_present:
+        id = group["id"]
 
         # include either indicators that are present or those expected based on
         # subregions
         expected_indicators = [
             id
-            for id in ecosystem["indicators"]
+            for id in group["indicators"]
             if id in indicators or subregions.intersection(INDICATORS_INDEX[id]["subregions"])
         ]
 
-        ecosystem["indicator_summary"] = [
+        group["indicator_summary"] = [
             {
                 "id": id,
                 "label": INDICATORS_INDEX[id]["label"],
@@ -177,15 +177,15 @@ async def summarize_blueprint_in_aoi(rasterized_geometry, subregions, progress_c
             for id in expected_indicators
         ]
 
-        # update ecosystem with only indicators that are present
-        ecosystem["indicators"] = [indicators[id] for id in ecosystem["indicators"] if id in indicators]
-        ecosystems.append(ecosystem)
+        # update group with only indicators that are present
+        group["indicators"] = [indicators[id] for id in group["indicators"] if id in indicators]
+        indicator_groups.append(group)
 
     results = {
         "blueprint": blueprint,
         # don't include Not a priority in legend
         "legend": pluck(BLUEPRINT["values"][1:], ["label", "color"])[::-1],
-        "ecosystems": ecosystems,
+        "indicator_groups": indicator_groups,
         "total_acres": total_acres,
     }
 
@@ -396,22 +396,22 @@ def get_blueprint_unit_results(results_dir, unit):
 
         indicators[id] = indicator_results
 
-    # aggregate indicators up to ecosystems
-    ecosystem_ids = {id.split("_")[0] for id in indicators}
-    ecosystems_present = [deepcopy(e) for e in ECOSYSTEMS if e["id"] in ecosystem_ids]
-    ecosystems = []
-    for ecosystem in ecosystems_present:
-        id = ecosystem["id"]
+    # aggregate indicators up to indicator groups
+    indicator_group_ids = {id.split("_")[0] for id in indicators}
+    indicator_groups_present = [deepcopy(e) for e in INDICATOR_GROUPS if e["id"] in indicator_group_ids]
+    indicator_groups = []
+    for group in indicator_groups_present:
+        id = group["id"]
 
         # include either indicators that are present or those expected based on
         # subregions
         expected_indicators = [
             id
-            for id in ecosystem["indicators"]
+            for id in group["indicators"]
             if id in indicators or unit.subregions.intersection(INDICATORS_INDEX[id]["subregions"])
         ]
 
-        ecosystem["indicator_summary"] = [
+        group["indicator_summary"] = [
             {
                 "id": id,
                 "label": INDICATORS_INDEX[id]["label"],
@@ -420,16 +420,16 @@ def get_blueprint_unit_results(results_dir, unit):
             for id in expected_indicators
         ]
 
-        # update ecosystem with only indicators that are present
-        ecosystem["indicators"] = [indicators[id] for id in ecosystem["indicators"] if id in indicators]
-        ecosystems.append(ecosystem)
+        # update group with only indicators that are present
+        group["indicators"] = [indicators[id] for id in group["indicators"] if id in indicators]
+        indicator_groups.append(group)
 
     results = {
         "blueprint": blueprint,
         # don't include Not a priority in legend
         "legend": pluck(BLUEPRINT["values"][1:], ["label", "color"])[::-1],
         "total_acres": total_acres,
-        "ecosystems": ecosystems,
+        "indicator_groups": indicator_groups,
     }
 
     if corridors:

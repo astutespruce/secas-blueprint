@@ -1,9 +1,9 @@
 import { SvelteSet } from 'svelte/reactivity'
-import type { Map } from 'mapbox-gl'
+import type { Map } from 'mapbox-gl/esm'
 
 import { browser } from '$app/environment'
 import { defaultFilters, filterToIndex } from '$lib/config/filters'
-import { pixelLayers, renderLayersIndex } from '$lib/config/pixelLayers'
+import { renderLayersIndex } from '$lib/config/pixelLayers'
 import { BLUEPRINT_VERSION } from '$lib/env'
 import { logGAEvent } from '$lib/util/log'
 import type { Filter, Filters, PixelLayer } from '$lib/types'

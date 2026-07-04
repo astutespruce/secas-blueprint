@@ -64,8 +64,8 @@ const getTile = (map: Map, screenPoint: Point) => {
 	}
 }
 
-const extractIndicators = (data, ecosystemInfo, indicatorInfo, subregions: Set<string>) => {
-	const ecosystemIndex = indexBy(ecosystemInfo, 'id')
+const extractIndicators = (data, indicatorGroupInfo, indicatorInfo, subregions: Set<string>) => {
+	const indicatorGroupIndex = indexBy(indicatorGroupInfo, 'id')
 
 	// only show indicators that are either present or likely present based on
 	// subregion
@@ -88,31 +88,31 @@ const extractIndicators = (data, ecosystemInfo, indicatorInfo, subregions: Set<s
 				id,
 				values,
 				total: present ? 100 : 0,
-				ecosystem: ecosystemIndex[id.split('_')[0]]
+				group: indicatorGroupIndex[id.split('_')[0]]
 			}
 		})
 
-	// aggregate these up by ecosystems for ecosystems that are present
-	const ecosystemsPresent = new Set(
+	// aggregate these up by indicator group for indicator groups that are present
+	const indicatorGroupsPresent = new Set(
 		indicators
 			.filter(
 				({ values }: { values: [{ percent: number }] }) =>
 					sum(values.map(({ percent }: { percent: number }) => percent)) > 0
 			)
-			.map(({ ecosystem: { id } }: { ecosystem: { id: string } }) => id)
+			.map(({ group: { id } }: { group: { id: string } }) => id)
 	)
 
 	indicators = indexBy(indicators, 'id')
 
-	const ecosystems = ecosystemInfo
-		.filter(({ id }: { id: string }) => ecosystemsPresent.has(id))
+	const indicatorGroups = indicatorGroupInfo
+		.filter(({ id }: { id: string }) => indicatorGroupsPresent.has(id))
 		.map(
 			({
-				id: ecosystemId,
+				id: groupId,
 				label,
 				color,
 				borderColor,
-				indicators: ecosystemIndicators,
+				indicators: groupIndicators,
 				...rest
 			}: {
 				id: string
@@ -121,13 +121,11 @@ const extractIndicators = (data, ecosystemInfo, indicatorInfo, subregions: Set<s
 				borderColor: string
 				indicators: string[]
 			}) => {
-				const indicatorsPresent = ecosystemIndicators.filter(
-					(indicatorId) => indicators[indicatorId]
-				)
+				const indicatorsPresent = groupIndicators.filter((indicatorId) => indicators[indicatorId])
 
 				return {
 					...rest,
-					id: ecosystemId,
+					id: groupId,
 					label,
 					color,
 					borderColor,
@@ -138,13 +136,13 @@ const extractIndicators = (data, ecosystemInfo, indicatorInfo, subregions: Set<s
 			}
 		)
 
-	return { ecosystems, indicators }
+	return { indicatorGroups, indicators }
 }
 
 export const extractPixelData = async (
 	map: Map,
 	point: LngLatLike,
-	ecosystemInfo,
+	indicatorGroupInfo,
 	indicatorInfo
 ) => {
 	const screenPoint = map.project(point)
@@ -240,8 +238,8 @@ export const extractPixelData = async (
 	const subregions = new Set([subregion])
 	const regions = new Set([region])
 
-	// unpack indicators and ecosystems
-	data.indicators = extractIndicators(data, ecosystemInfo, indicatorInfo, subregions)
+	// unpack indicators and indicator gruops
+	data.indicators = extractIndicators(data, indicatorGroupInfo, indicatorInfo, subregions)
 
 	// extract SLR
 	if (data.slr !== undefined && data.slr !== null) {
@@ -265,10 +263,10 @@ export const extractPixelData = async (
 
 	// extract protected areas from vector tiles
 	const protectedAreasList: string[] = []
-	// @ts-ignore
+	// @ts-expect-error id is valid
 	const protectedAreasFeatures = features.filter(({ layer: { id } }) => id === 'protectedAreas')
 	if (protectedAreasFeatures.length > 0) {
-		// @ts-ignore
+		// @ts-expect-error name and owner are valid
 		protectedAreasFeatures.forEach(({ properties: { name, owner } }) => {
 			if (owner) {
 				protectedAreasList.push(`${name} (${owner})`)

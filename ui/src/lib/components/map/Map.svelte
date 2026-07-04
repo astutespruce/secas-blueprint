@@ -3,21 +3,21 @@
 	import { SvelteSet } from 'svelte/reactivity'
 	import { MapboxOverlay } from '@deck.gl/mapbox'
 	import * as mapboxgl from 'mapbox-gl/esm'
-	import type { Map, Marker, SourceSpecification } from 'mapbox-gl/esm'
+	import type { LngLatLike, Map, Marker, SourceSpecification } from 'mapbox-gl/esm'
 	import 'mapbox-gl/dist/mapbox-gl.css'
 
 	import CrosshairsIcon from '$images/CrosshairsIcon.svg'
 	import Spinner from '~icons/fa-solid/spinner'
 
 	import {
-		ecosystems as ecosystemInfo,
+		indicatorGroups as indicatorGroupInfo,
 		indicators as indicatorInfo,
 		subregionIndex
 	} from '$lib/config/constants'
 	import { mapConfig as config, sources, layers } from '$lib/config/map'
-	import { pixelLayers, renderLayersIndex } from '$lib/config/pixelLayers'
+	import { pixelLayers } from '$lib/config/pixelLayers'
 	import { MAPBOX_TOKEN } from '$lib/env'
-	import type { Coordinate, LocationData, PixelLayer } from '$lib/types'
+	import type { LocationData } from '$lib/types'
 	import { indexBy } from '$lib/util/data'
 	import { debounce, eventHandler } from '$lib/util/func'
 
@@ -98,12 +98,10 @@
 		const { lng: longitude, lat: latitude } = map.getCenter()
 
 		// If protected areas tiles aren't loaded yet, schedule a callback once tiles are loaded
-		if (
-			!(
-				map?.style?._otherSourceCaches.protectedAreas &&
-				map?.style._otherSourceCaches.protectedAreas.loaded()
-			)
-		) {
+		if (!(
+			map?.style?._otherSourceCaches.protectedAreas &&
+			map?.style._otherSourceCaches.protectedAreas.loaded()
+		)) {
 			mapState.setData({
 				type: 'pixel',
 				location: {
@@ -118,7 +116,12 @@
 			})
 		}
 
-		const pixelData = await extractPixelData(map, map.getCenter(), ecosystemInfo, indicatorInfo)
+		const pixelData = await extractPixelData(
+			map,
+			map.getCenter(),
+			indicatorGroupInfo,
+			indicatorInfo
+		)
 
 		if (pixelData === null) {
 			// tile data not yet loaded for correct zoom, try again after next deckGL
@@ -148,7 +151,6 @@
 		const subregions = new SvelteSet<string>()
 		const regions = new SvelteSet<string>()
 		map
-			// @ts-expect-error null first param is fine
 			.queryRenderedFeatures(null, { layers: ['subregions'] })
 			// @ts-expect-error subregion and region are fine
 			.forEach(({ properties: { subregion, region } }) => {
@@ -291,7 +293,6 @@
 			container: mapNode,
 			accessToken: MAPBOX_TOKEN,
 			style: 'mapbox://styles/mapbox/light-v9',
-			accessToken: MAPBOX_TOKEN,
 			center,
 			zoom,
 			minZoom,
@@ -466,7 +467,9 @@
 			map.setFilter('unit-outline-highlight', ['==', 'id', properties!.id])
 
 			// @ts-expect-error properties is fine
-			mapState.setData(unpackFeatureData(properties, ecosystemInfo, indicatorInfo, subregionIndex))
+			mapState.setData(
+				unpackFeatureData(properties, indicatorGroupInfo, indicatorInfo, subregionIndex)
+			)
 			resizeMap()
 		})
 
@@ -740,7 +743,7 @@
 </script>
 
 <div
-	class="h-full w-full flex-auto relative md:border-l-2 border-l-grey-3 has-focus-visible:border-l-primary overflow-hidden print:hidden"
+	class="h-full w-full flex-auto relative md:border-l-2 border-l-grey-2 has-focus-visible:border-l-primary overflow-hidden print:hidden"
 >
 	<div class="h-full w-full print:hidden" {@attach createMap}></div>
 

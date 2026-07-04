@@ -1,4 +1,4 @@
-import type { Map, LngLatLike } from 'mapbox-gl'
+import type { Map, LngLatLike } from 'mapbox-gl/esm'
 
 // store map center / zoom in URL
 export const serializeMapCenterZoomToURL = (map: Map) => {

@@ -54,11 +54,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
         Raised if bounds are too large or if area of interest doesn't overalap SA region
     """
 
-    filename = (
-        f"Southeast Blueprint Summary Report - {name}.pdf"
-        if name
-        else "Southeast Blueprint Summary Report.pdf"
-    )
+    filename = f"Southeast Blueprint Summary Report - {name}.pdf" if name else "Southeast Blueprint Summary Report.pdf"
 
     errors = []
 
@@ -66,11 +62,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
 
     path = f"/vsizip/{zip_filename}/{dataset}"
 
-    df = (
-        read_dataframe(path, layer=layer, columns=[], force_2d=True)
-        .to_crs(DATA_CRS)
-        .explode(ignore_index=True)
-    )
+    df = read_dataframe(path, layer=layer, columns=[], force_2d=True).to_crs(DATA_CRS).explode(ignore_index=True)
 
     df = df.loc[df.geometry.type == "Polygon"].copy()
 
@@ -132,9 +124,7 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
                 "Could not dissolve features together for analysis.  Please make sure all features have valid geometries and are of the same type."
             )
 
-    await set_progress(
-        ctx["redis"], ctx["job_id"], 10, "Calculating results (this might take a while)"
-    )
+    await set_progress(ctx["redis"], ctx["job_id"], 10, "Calculating results (this might take a while)")
 
     # calculate results, data must be in DATA_CRS
     print("Calculating results...")
@@ -154,14 +144,12 @@ async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
             "area of interest does not overlap Southeast Blueprint or area of interest did not overlap with the center of at least one 30m pixel in the Southeast Blueprint"
         )
 
-    # compile indicator IDs across all ecosystems
+    # compile indicator IDs across all indicator groups
     indicators = []
-    for ecosystem in results.get("ecosystems", []):
-        indicators.extend([i["id"] for i in ecosystem["indicators"]])
+    for group in results.get("indicator_groups", []):
+        indicators.extend([i["id"] for i in group["indicators"]])
 
-    await set_progress(
-        ctx["redis"], ctx["job_id"], 60, "Creating maps (this might take a while)"
-    )
+    await set_progress(ctx["redis"], ctx["job_id"], 60, "Creating maps (this might take a while)")
 
     print("Rendering maps...")
     geo_df = df.to_crs(GEO_CRS)

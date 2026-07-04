@@ -20,7 +20,7 @@
 					id,
 					label,
 					goodThreshold,
-					values: values.map(({ value, label }) => ({
+					values: (values as { value: number; label: string }[]).map(({ value, label }) => ({
 						value,
 						label,
 						enabled: activeValues[value]
@@ -78,7 +78,7 @@
 										<ArrowUpIcon class="size-3" />
 										<div class="w-[14em]">good condition</div>
 									</div>
-									<div class="border-b border-dashed border-b-grey-6 h-[1px] my-2"></div>
+									<div class="border-b border-dashed border-b-grey-8/60 h-[1px] my-2"></div>
 									<div class="flex justify-center items-center gap-1">
 										<ArrowDownIcon class="size-3" />
 										<div class="w-[14em]">not in good condition</div>

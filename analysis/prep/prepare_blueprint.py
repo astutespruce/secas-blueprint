@@ -24,7 +24,7 @@ from analysis.lib.raster import (
 
 
 NODATA = 255  # standardize NODATA of all indicators
-ECOSYSTEM_COLORS = {
+INDICATOR_GROUP_COLORS = {
     # terrestrial
     "t": {
         "color": "#f2f8ec",
@@ -202,7 +202,7 @@ if not outfilename.exists():
 print("Extracting indicator info to indicators.json")
 
 # Extract indicator names, descriptions, etc from XLSX
-ecosystems = []
+indicator_groups = []
 merged = None
 for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
     df = pd.read_excel(
@@ -231,14 +231,14 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
         )
     )
 
-    ecosystem_id = sheet_name.lower().split(" ")[-1][:1]
-    df["id"] = ecosystem_id + "_" + key.str.lower()
+    indicator_group_id = sheet_name.lower().split(" ")[-1][:1]
+    df["id"] = indicator_group_id + "_" + key.str.lower()
 
-    ecosystems.append(
+    indicator_groups.append(
         {
-            "id": ecosystem_id,
+            "id": indicator_group_id,
             "label": sheet_name.capitalize(),
-            **ECOSYSTEM_COLORS[ecosystem_id],
+            **INDICATOR_GROUP_COLORS[indicator_group_id],
             "indicators": df.id.sort_values().values.tolist(),
         }
     )
@@ -326,8 +326,8 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
 
 indicator_df = merged
 
-with open(constants_dir / "ecosystems.json", "w") as out:
-    res = out.write(json.dumps(ecosystems, indent=2))
+with open(constants_dir / "indicator_groups.json", "w") as out:
+    res = out.write(json.dumps(indicator_groups, indent=2))
 
 
 # read indicator attribute tables

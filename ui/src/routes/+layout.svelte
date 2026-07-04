@@ -18,10 +18,13 @@
 		console.debug('setting up GTAG')
 
 		function gtag() {
+			// @ts-expect-error dataLayer is valid
 			dataLayer.push(arguments)
 		}
 
+		// @ts-expect-error gtag is valid
 		gtag('js', new Date())
+		// @ts-expect-error gtag is valid
 		gtag('config', GOOGLE_ANALYTICS_ID)
 		window.gtag = gtag
 	}

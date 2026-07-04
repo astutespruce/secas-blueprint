@@ -518,7 +518,7 @@ table td.highlight-col {
 	font-size: 11pt;
 }
 
-.ecosystem-header,
+.indicator-group-header,
 .indicator-header {
 	font-family: Raleway, sans-serif;
 	margin-top: -20pt;
@@ -529,20 +529,20 @@ table td.highlight-col {
 	line-height: 1.2;
 }
 
-.ecosystem-header h2,
+.indicator-group-header h2,
 .indicator-header h2 {
 	margin-bottom: 0;
 	font-size: 24px;
 }
 
-.ecosystem-header h3,
+.indicator-group-header h3,
 .indicator-header h3 {
 	margin: 0.15rem 0 0 0.5rem;
 }
 
-.indicator-header-ecosystem {
+.indicator-header-indicator-group {
 	font-size: 14px;
-	color: #666;
+	color: #333;
 }
 
 .indicator-area {
@@ -550,7 +550,7 @@ table td.highlight-col {
 	color: #666;
 }
 
-.ecosystem-icon {
+.indicator-group-icon {
 	margin-right: 6pt;
 	height: 32pt;
 	background: #fff;

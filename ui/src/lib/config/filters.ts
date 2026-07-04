@@ -3,7 +3,7 @@ import type { Filters } from '$lib/types'
 import {
 	blueprint,
 	corridors,
-	ecosystems as rawEcosystems,
+	indicatorGroups as rawIndicatorGroups,
 	indicators,
 	indicatorsIndex,
 	urban,
@@ -91,16 +91,18 @@ export const priorityFilters = [
 	}
 ]
 
-export const ecosystemFilters = indexBy(
-	rawEcosystems.map(({ indicators: ecosystemIndicators, ...ecosystem }) => ({
-		...ecosystem,
-		indicators: ecosystemIndicators.map((id) => ({
-			...indicatorsIndex[id],
-			// sort indicator values in descending order
-			values: indicatorsIndex[id].values.slice().reverse()
-		}))
-	})),
-	'id'
+export const indicatorGroupFilters = Object.fromEntries(
+	rawIndicatorGroups.map(({ indicators: groupIndicators, ...group }) => [
+		group.id,
+		{
+			...group,
+			indicators: groupIndicators.map((id) => ({
+				...indicatorsIndex[id],
+				// sort indicator values in descending order
+				values: indicatorsIndex[id].values.slice().reverse()
+			}))
+		}
+	])
 )
 
 export const otherInfoFilters = [
@@ -139,9 +141,12 @@ export const otherInfoFilters = [
 export const allFilters = []
 	// @ts-expect-error priorityFilters are fine
 	.concat(priorityFilters)
-	.concat(ecosystemFilters.t.indicators)
-	.concat(ecosystemFilters.f.indicators)
-	.concat(ecosystemFilters.m.indicators)
+	// @ts-expect-error indicatorGroupFilters are fine
+	.concat(indicatorGroupFilters.t.indicators)
+	// @ts-expect-error indicatorGroupFilters are fine
+	.concat(indicatorGroupFilters.f.indicators)
+	// @ts-expect-error indicatorGroupFilters are fine
+	.concat(indicatorGroupFilters.m.indicators)
 	// @ts-expect-error otherFilters are fine
 	.concat(otherInfoFilters)
 

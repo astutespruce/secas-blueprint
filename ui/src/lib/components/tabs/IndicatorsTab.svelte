@@ -6,9 +6,9 @@
 	import TerrestrialIcon from '$images/t.svg'
 	import { cn } from '$lib/utils'
 	import type { MapState } from '$lib/components/map'
-	import { Ecosystem, IndicatorDetails } from './indicators'
+	import { IndicatorGroup, IndicatorDetails } from './indicators'
 
-	const ecosystemIcons = {
+	const indicatorGroupIcons = {
 		f: FreshwaterIcon,
 		m: MarineIcon,
 		t: TerrestrialIcon
@@ -26,11 +26,18 @@
 			{...indicators.indicators[mapState.selectedIndicator]}
 			{outsideSEPercent}
 			{rasterizedAcres}
-			icon={ecosystemIcons[indicators.indicators[mapState.selectedIndicator].ecosystem.id]}
+			icon={indicatorGroupIcons[
+				indicators.indicators[mapState.selectedIndicator].group
+					.id as keyof typeof indicatorGroupIcons
+			]}
 		/>
 	{:else}
-		{#each indicators.ecosystems as ecosystem (ecosystem.id)}
-			<Ecosystem {type} {...ecosystem} icon={ecosystemIcons[ecosystem.id]} />
+		{#each indicators.indicatorGroups as group (group.id)}
+			<IndicatorGroup
+				{type}
+				{...group}
+				icon={indicatorGroupIcons[group.id as keyof typeof indicatorGroupIcons]}
+			/>
 		{/each}
 	{/if}
 </section>

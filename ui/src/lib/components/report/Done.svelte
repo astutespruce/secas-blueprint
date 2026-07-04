@@ -27,7 +27,7 @@
 					create most of your report, but some sections may be missing. The server says:
 				</p>
 				<ul>
-					{#each errors as error}
+					{#each errors as error (error)}
 						<li>{error}</li>
 					{/each}
 				</ul>

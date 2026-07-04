@@ -10,6 +10,9 @@ precision mediump float;
 in vec2 vTexCoord;
 out vec4 fragColor;
 
+// additional uniforms are injected by the caller; see
+// StackedPNGLayer.ts::stackedPNGLayerUniformBlock
+
 uniform sampler2D palette;
 
 // uniforms for textures for each layer
@@ -97,7 +100,7 @@ void main(void) {
   }
 
   int renderValue = (valueRGB >> stackedPNGLayer.offset) & bitmask(stackedPNGLayer.bits);
-  fragColor = texelFetch(palette, ivec2(renderValue, 0), 0);
+  fragColor = stackedPNGLayer.palette[renderValue];
 
   fragColor.a = fragColor.a * stackedPNGLayer.opacity;
   if (!canRender) {

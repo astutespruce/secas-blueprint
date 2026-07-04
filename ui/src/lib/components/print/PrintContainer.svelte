@@ -25,7 +25,7 @@
 			<div class="mt-4">
 				<img
 					src={mapState.mapImg}
-					class="block max-h-180 max-w-190 border border-grey-5 flex-none m-px"
+					class="block max-h-180 max-w-190 border border-grey-8/50 flex-none m-px"
 					alt="map"
 				/>
 

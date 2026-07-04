@@ -175,10 +175,10 @@ for aoi in aois:
     if not maps:
         print("Rendering maps...")
 
-        # compile indicator IDs across all ecosystems
+        # compile indicator IDs across all indicator groups
         indicators = []
-        for ecosystem in results.get("ecosystems", []):
-            indicators.extend([i["id"] for i in ecosystem["indicators"]])
+        for group in results.get("indicator_groups", []):
+            indicators.extend([i["id"] for i in group["indicators"]])
 
         geo_df = df.to_crs(GEO_CRS)
         task = render_maps(
@@ -253,8 +253,8 @@ for unit_type in ids:
 
         # compile indicator IDs across all inputs
         indicators = []
-        for ecosystem in results.get("ecosystems", []):
-            indicators.extend([i["id"] for i in ecosystem["indicators"]])
+        for group in results.get("indicator_groups", []):
+            indicators.extend([i["id"] for i in group["indicators"]])
 
         maps = None
         if CACHE_MAPS:
@@ -283,9 +283,7 @@ for unit_type in ids:
 
         results["scale"] = scale
 
-        pdf = create_report(
-            maps=maps, results=results, name=results["name"], area_type=unit_type
-        )
+        pdf = create_report(maps=maps, results=results, name=results["name"], area_type=unit_type)
 
         with open(out_dir / f"{unit_id}_report.pdf", "wb") as out:
             out.write(pdf)

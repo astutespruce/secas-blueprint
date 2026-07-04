@@ -60,7 +60,7 @@ indicators = pd.DataFrame(
         ]
         for e in INDICATORS
     ],
-    columns=["ecosystem", "id", "filename", "min_value", "max_value"],
+    columns=["theme", "id", "filename", "min_value", "max_value"],
 )
 
 
@@ -68,49 +68,49 @@ core = pd.DataFrame(
     [
         # blueprint is included so that it can be rendered after applying filters in UI
         {
-            "ecosystem": "",
+            "theme": "priorities",
             "id": "blueprint",
             "filename": blueprint_filename,
             "min_value": BLUEPRINT["values"][0]["value"],
             "max_value": BLUEPRINT["values"][-1]["value"],
         },
         {
-            "ecosystem": "",
+            "theme": "priorities",
             "id": "corridors",
             "filename": corridors_filename,
             "min_value": CORRIDORS["values"][0]["value"],
             "max_value": CORRIDORS["values"][-1]["value"],
         },
         {
-            "ecosystem": "otherInfo",
+            "theme": "otherInfo",
             "id": "parcas",
             "filename": parcas_filename,
             "min_value": PARCAS["values"][0]["value"],
             "max_value": PARCAS["values"][-1]["value"],
         },
         {
-            "ecosystem": "otherInfo",
+            "theme": "otherInfo",
             "id": "protectedAreas",
             "filename": protected_areas_filename,
             "min_value": PROTECTED_AREAS["values"][0]["value"],
             "max_value": PROTECTED_AREAS["values"][-1]["value"],
         },
         {
-            "ecosystem": "otherInfo",
+            "theme": "otherInfo",
             "id": "slr",
             "filename": slr_filename,
             "min_value": SLR_DEPTH["values"][0]["value"],
             "max_value": SLR_DEPTH["values"][-1]["value"],
         },
         {
-            "ecosystem": "otherInfo",
+            "theme": "otherInfo",
             "id": "urban",
             "filename": urban_filename,
             "min_value": URBAN["values"][0]["value"],
             "max_value": URBAN["values"][-1]["value"],
         },
         {
-            "ecosystem": "otherInfo",
+            "theme": "otherInfo",
             "id": "wildfireRisk",
             "filename": wildfire_risk_filename,
             "min_value": WILDFIRE_RISK["values"][0]["value"],

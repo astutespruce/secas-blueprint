@@ -5,7 +5,7 @@ import { Model } from '@luma.gl/engine'
 import type { ShaderModule } from '@luma.gl/shadertools'
 import { DynamicTexture } from '@luma.gl/engine'
 
-import { pixelLayers } from '$lib/config/pixelLayers'
+import { pixelLayers, paletteSize } from '$lib/config/pixelLayers'
 import { sum } from '$lib/util/data'
 
 import createMesh from './mesh'
@@ -29,6 +29,7 @@ layout(std140) uniform stackedPNGLayerUniforms {
 	// requiredLayerCount is the number of layers that must be TRUE for the selected logic
 	// in order to render a pixel; this should be 1 for OR logic and numLayers for AND logic
 	uniform int requiredLayerCount;
+	uniform vec4 palette[${paletteSize}];
 } stackedPNGLayer;
 `
 
@@ -40,12 +41,8 @@ type StackedPNGLayerUniformProps = {
 	filterValues?: number[]
 	useAndLogic?: number
 	requiredLayerCount?: number
-	palette?: DynamicTexture
-	layer0?: DynamicTexture
-	layer1?: DynamicTexture
-	layer2?: DynamicTexture
-	layer3?: DynamicTexture
-	layer4?: DynamicTexture
+	palette?: number[]
+	// layers are DynamicTexture type, but don't need to be itemized here
 }
 
 const stackedPNGLayerUniforms = {
@@ -59,7 +56,8 @@ const stackedPNGLayerUniforms = {
 		// @ts-expect-error filterValues is valid
 		filterValues: ['i32', numLayers],
 		useAndLogic: 'i32',
-		requiredLayerCount: 'i32'
+		requiredLayerCount: 'i32',
+		palette: ['vec4<f32>', paletteSize]
 	}
 } as const satisfies ShaderModule<StackedPNGLayerUniformProps>
 
@@ -73,7 +71,7 @@ type StackedPNGLayerProps = {
 			offset: number
 			bits: number
 		}
-		palette: DynamicTexture
+		palette: number[]
 	}
 	filterValues?: number[]
 	filterMode?: string

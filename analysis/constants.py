@@ -58,7 +58,7 @@ CORRIDORS_COLORS = {
     entry["value"]: entry["color"] for entry in CORRIDORS["values"] if entry.get("color", None) is not None
 }
 
-ECOSYSTEMS = json.loads(open(json_dir / "ecosystems.json").read())
+INDICATOR_GROUPS = json.loads(open(json_dir / "indicator_groups.json").read())
 INDICATORS = json.loads(open(json_dir / "indicators.json").read())
 INDICATORS_INDEX = {indicator["id"]: indicator for indicator in INDICATORS}
 
