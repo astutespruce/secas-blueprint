@@ -29,17 +29,17 @@ const isEmpty = (text: string | null) => {
 /**
  * Extract dictionary-encoded counts and means
  * @param {Object} packedPercents
- * @param {Array} ecosystemInfo - array of ecosystem info
+ * @param {Array} indicatorGroupInfo - array of indicator group info
  * @param {Array} indicatorInfo - array of indicator info
  * @param {Array} subregions - array of subregion names
  */
 const extractIndicators = (
 	packedPercents: string,
-	ecosystemInfo,
+	indicatorGroupInfo,
 	indicatorInfo,
 	subregions: Set<string>
 ) => {
-	const ecosystemIndex = indexBy(ecosystemInfo, 'id')
+	const indicatorGroupIndex = indexBy(indicatorGroupInfo, 'id')
 
 	// merge incoming packed percents with indicator info
 	let indicators = indicatorInfo
@@ -77,64 +77,53 @@ const extractIndicators = (
 					id,
 					values,
 					total: Math.min(sum(percents), 100),
-					ecosystem: ecosystemIndex[id.split('_')[0]]
+					group: indicatorGroupIndex[id.split('_')[0]]
 				}
 			}
 		)
 
-	// aggregate these up by ecosystems for ecosystems that are present
-	const ecosystemsPresent = new Set(
+	// aggregate these up by indicator group for indicator groups that are present
+	const indicatorGroupsPresent = new Set(
 		indicators
 			.filter(
 				({ values }: { values: [{ percent: number }] }) =>
 					sum(values.map(({ percent }) => percent)) > 0
 			)
-			.map(({ ecosystem: { id } }: { ecosystem: { id: string } }) => id)
+			.map(({ group: { id } }: { group: { id: string } }) => id)
 	)
 
 	indicators = indexBy(indicators, 'id')
 
-	const ecosystems = ecosystemInfo
-		.filter(({ id }) => ecosystemsPresent.has(id))
-		.map(
-			({
-				id: ecosystemId,
+	const indicatorGroups = indicatorGroupInfo
+		.filter(({ id }) => indicatorGroupsPresent.has(id))
+		.map(({ id: groupId, label, color, borderColor, indicators: groupIndicators, ...rest }) => {
+			const indicatorsPresent = groupIndicators.filter((indicatorId) => indicators[indicatorId])
+
+			return {
+				...rest,
+				id: groupId,
 				label,
 				color,
 				borderColor,
-				indicators: ecosystemIndicators,
-				...rest
-			}) => {
-				const indicatorsPresent = ecosystemIndicators.filter(
-					(indicatorId) => indicators[indicatorId]
-				)
-
-				return {
-					...rest,
-					id: ecosystemId,
-					label,
-					color,
-					borderColor,
-					indicators: indicatorsPresent.map((indicatorId) => ({
-						...indicators[indicatorId]
-					}))
-				}
+				indicators: indicatorsPresent.map((indicatorId) => ({
+					...indicators[indicatorId]
+				}))
 			}
-		)
+		})
 
-	return { ecosystems, indicators }
+	return { indicatorGroups, indicators }
 }
 
 /**
  * Unpack encoded attributes in feature data.
  * @param {Object} properties
- * @param {Array} ecosystemInfo - array of ecosystem info
+ * @param {Array} indicatorGroupInfo - array of indicator group info
  * @param {Array} indicatorInfo - array of indicator info
  * @param {Object} subregionIndex - lookup of subregions by value
  */
 export const unpackFeatureData = (
 	properties: object,
-	ecosystemInfo,
+	indicatorGroupInfo,
 	indicatorInfo,
 	subregionIndex
 ) => {
@@ -208,7 +197,7 @@ export const unpackFeatureData = (
 
 	values.indicators = extractIndicators(
 		values.indicators || {},
-		ecosystemInfo,
+		indicatorGroupInfo,
 		indicatorInfo,
 		values.subregions
 	)

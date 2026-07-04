@@ -10,7 +10,7 @@
 	import Spinner from '~icons/fa-solid/spinner'
 
 	import {
-		ecosystems as ecosystemInfo,
+		indicatorGroups as indicatorGroupInfo,
 		indicators as indicatorInfo,
 		subregionIndex
 	} from '$lib/config/constants'
@@ -116,7 +116,12 @@
 			})
 		}
 
-		const pixelData = await extractPixelData(map, map.getCenter(), ecosystemInfo, indicatorInfo)
+		const pixelData = await extractPixelData(
+			map,
+			map.getCenter(),
+			indicatorGroupInfo,
+			indicatorInfo
+		)
 
 		if (pixelData === null) {
 			// tile data not yet loaded for correct zoom, try again after next deckGL
@@ -462,7 +467,9 @@
 			map.setFilter('unit-outline-highlight', ['==', 'id', properties!.id])
 
 			// @ts-expect-error properties is fine
-			mapState.setData(unpackFeatureData(properties, ecosystemInfo, indicatorInfo, subregionIndex))
+			mapState.setData(
+				unpackFeatureData(properties, indicatorGroupInfo, indicatorInfo, subregionIndex)
+			)
 			resizeMap()
 		})
 

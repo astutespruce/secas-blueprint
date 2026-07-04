@@ -11,7 +11,7 @@ import {
 	blueprint,
 	blueprintCategories,
 	corridors,
-	ecosystems,
+	indicatorGroups,
 	indicatorsIndex,
 	parcas,
 	protectedAreas,
@@ -185,7 +185,7 @@ export const renderLayerGroups = [
 	}
 ]
 
-ecosystems.forEach(({ id: groupId, label: groupLabel, indicators: groupIndicators }) => {
+indicatorGroups.forEach(({ id: groupId, label: groupLabel, indicators: groupIndicators }) => {
 	const group = {
 		id: groupId,
 		label: `${groupLabel} indicators`,

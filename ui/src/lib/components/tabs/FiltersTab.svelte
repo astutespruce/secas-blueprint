@@ -14,10 +14,10 @@
 	import { setIntersection } from '$lib/util/data'
 	import type { Filter } from '$lib/types'
 	import { cn } from '$lib/utils'
-	import { ecosystemIndex } from '$lib/config/constants'
+	import { indicatorGroups, indicatorsIndex } from '$lib/config/constants'
 	import {
 		priorityFilters as rawPriorityFilters,
-		ecosystemFilters,
+		indicatorGroupFilters as rawIndicatorGroupFilters,
 		otherInfoFilters as rawOtherInfoFilters
 	} from '$lib/config/filters'
 	import { FilterGroup, FilterMethodDropdown } from '$lib/components/filter'
@@ -31,97 +31,61 @@
 		enabled: boolean
 	}
 
-	let { priorityFilters, terrestrialFilters, freshwaterFilters, marineFilters, otherInfoFilters } =
-		$derived.by(() => {
-			return {
-				priorityFilters: rawPriorityFilters
-					.map((entry) => ({
-						...entry,
-						...mapState.filters[entry.id],
-						canBeVisible: mapState.visibleSubregions.size > 0
-					}))
-					.filter(
-						({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled // mapState.filters[id].enabled
-					),
+	const indicatorGroupIcons = {
+		f: FreshwaterIcon,
+		m: MarineIcon,
+		t: TerrestrialIcon
+	}
 
-				terrestrialFilters: ecosystemFilters.t.indicators
-					.map(
-						({
-							id,
-							subregions: indicatorSubregions,
-							...rest
-						}: {
-							id: string
-							subregions: Set<string>
-						}) => ({
-							id,
-							...rest,
-							...mapState.filters[id],
-							canBeVisible:
-								setIntersection(indicatorSubregions, mapState.visibleSubregions).size > 0
+	let { priorityFilters, otherInfoFilters, ...indicatorGroupFilters } = $derived.by(() => {
+		return {
+			priorityFilters: rawPriorityFilters
+				.map((entry) => ({
+					...entry,
+					...mapState.filters[entry.id],
+					canBeVisible: mapState.visibleSubregions.size > 0
+				}))
+				.filter(
+					({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled // mapState.filters[id].enabled
+				),
+
+			...Object.fromEntries(
+				Object.entries(rawIndicatorGroupFilters).map(([id, { indicators }]) => {
+					const indicatorFilters = indicators
+						.map(({ id, subregions: indicatorSubregions, ...rest }) => {
+							// const { subregions: indicatorSubregions, values, ...rest } = indicatorsIndex[id]
+
+							return {
+								id,
+								...rest,
+								...mapState.filters[id],
+								// null / empty subregions indicates the indicator is visible everywhere
+								canBeVisible:
+									indicatorSubregions.size === 0 ||
+									setIntersection(indicatorSubregions, mapState.visibleSubregions).size > 0
+							}
 						})
-					)
-					.filter(
-						({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled // mapState.filters[id].enabled
-					),
+						.filter(({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled)
 
-				freshwaterFilters: ecosystemFilters.f.indicators
-					.map(
-						({
-							id,
-							subregions: indicatorSubregions,
-							...rest
-						}: {
-							id: string
-							subregions: Set<string>
-						}) => ({
-							id,
-							...rest,
-							...mapState.filters[id],
-							canBeVisible:
-								setIntersection(indicatorSubregions, mapState.visibleSubregions).size > 0
-						})
-					)
-					.filter(
-						({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled // mapState.filters[id].enabled
-					),
+					return [id, indicatorFilters]
+				})
+			),
 
-				marineFilters: ecosystemFilters.m.indicators
-					.map(
-						({
-							id,
-							subregions: indicatorSubregions,
-							...rest
-						}: {
-							id: string
-							subregions: Set<string>
-						}) => ({
-							id,
-							...rest,
-							...mapState.filters[id],
-							canBeVisible:
-								setIntersection(indicatorSubregions, mapState.visibleSubregions).size > 0
-						})
-					)
-					.filter(
-						({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled // mapState.filters[id].enabled
-					),
-
-				otherInfoFilters: rawOtherInfoFilters
-					.map((entry) => ({
-						...entry,
-						...mapState.filters[entry.id],
-						canBeVisible:
-							(entry.id !== 'urban' &&
-								entry.id !== 'wildfireRisk' &&
-								mapState.visibleRegions.size > 0) ||
-							// urban / wildfire not in Caribbean
-							((entry.id === 'urban' || entry.id === 'wildfireRisk') &&
-								[...mapState.visibleRegions].filter((s) => s !== 'caribbean').length > 0)
-					}))
-					.filter(({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled) // mapState.filters[id].enabled)
-			}
-		})
+			otherInfoFilters: rawOtherInfoFilters
+				.map((entry) => ({
+					...entry,
+					...mapState.filters[entry.id],
+					canBeVisible:
+						(entry.id !== 'urban' &&
+							entry.id !== 'wildfireRisk' &&
+							mapState.visibleRegions.size > 0) ||
+						// urban / wildfire not in Caribbean
+						((entry.id === 'urban' || entry.id === 'wildfireRisk') &&
+							[...mapState.visibleRegions].filter((s) => s !== 'caribbean').length > 0)
+				}))
+				.filter(({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled) // mapState.filters[id].enabled)
+		}
+	})
 
 	const handleFilterChange = ({ id, enabled, activeValues }: Filter & { id: string }) => {
 		mapState.setLayerFilterValues(id, { enabled, activeValues })
@@ -175,32 +139,16 @@
 					onChange={handleFilterChange}
 				/>
 
-				<FilterGroup
-					label="Filter by terrestrial indicators"
-					icon={TerrestrialIcon}
-					color={ecosystemIndex.t.color}
-					borderColor={ecosystemIndex.t.borderColor}
-					entries={terrestrialFilters}
-					onChange={handleFilterChange}
-				/>
-
-				<FilterGroup
-					label="Filter by freshwater indicators"
-					icon={FreshwaterIcon}
-					color={ecosystemIndex.f.color}
-					borderColor={ecosystemIndex.f.borderColor}
-					entries={freshwaterFilters}
-					onChange={handleFilterChange}
-				/>
-
-				<FilterGroup
-					label="Filter by coastal & marine indicators"
-					icon={MarineIcon}
-					color={ecosystemIndex.m.color}
-					borderColor={ecosystemIndex.m.borderColor}
-					entries={marineFilters}
-					onChange={handleFilterChange}
-				/>
+				{#each indicatorGroups as { id, label, color, borderColor } (id)}
+					<FilterGroup
+						label={`Filter by ${label.toLowerCase()}`}
+						icon={indicatorGroupIcons[id as keyof typeof indicatorGroupIcons]}
+						{color}
+						{borderColor}
+						entries={indicatorGroupFilters[id as keyof typeof indicatorGroupFilters]}
+						onChange={handleFilterChange}
+					/>
+				{/each}
 
 				<FilterGroup
 					label="More filters"
