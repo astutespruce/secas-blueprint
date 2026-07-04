@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { setContext, untrack } from 'svelte'
-	import { page } from '$app/state'
-	import { browser, dev } from '$app/environment'
+	import { dev } from '$app/environment'
 	import { asset } from '$app/paths'
 	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query'
 

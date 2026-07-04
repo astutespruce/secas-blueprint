@@ -19,7 +19,7 @@
 
 	{#if type === 'pixel'}
 		<div class="ml-2 mt-2">
-			{#each categories as { value, label }}
+			{#each categories as { value, label } (value)}
 				<div
 					class="flex items-baseline justify-between pl-2 border-b border-b-grey-2 pb-1 not-first:mt-1 gap-4"
 				>
@@ -36,7 +36,7 @@
 			{/each}
 		</div>
 	{:else}
-		{#each bars as bar}
+		{#each bars as bar (bar.value)}
 			<PercentBarChart {...bar} class="mt-2 mb-4" />
 		{/each}
 	{/if}

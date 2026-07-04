@@ -20,7 +20,7 @@
 					id,
 					label,
 					goodThreshold,
-					values: values.map(({ value, label }) => ({
+					values: (values as { value: number; label: string }[]).map(({ value, label }) => ({
 						value,
 						label,
 						enabled: activeValues[value]

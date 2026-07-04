@@ -30,11 +30,11 @@
 
 	<div>
 		{#if type === 'pixel'}
-			{#each indicators as indicator}
+			{#each indicators as indicator (indicator.id)}
 				<PixelIndicatorListItem {indicator} onSelect={onSelectIndicator} />
 			{/each}
 		{:else}
-			{#each indicators as indicator}
+			{#each indicators as indicator (indicator.id)}
 				<IndicatorListItem {indicator} />
 			{/each}
 		{/if}

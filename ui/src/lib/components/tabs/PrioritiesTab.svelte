@@ -91,9 +91,12 @@
 		}
 
 		// splice corridor percents into same order as corridor categories (0 at the end)
-		// @ts-ignore
-		const corridorPercents = corridors.slice(1).concat(corridors.slice(0, 1))
+
+		const corridorPercents = (corridors as number[])
+			.slice(1)
+			.concat((corridors as number[]).slice(0, 1))
 		// sort categories into ascending order
+		// @ts-expect-error data is OK
 		const data: Category[] = corridorCategories
 			.map(({ value, color, ...rest }, i) => ({
 				...rest,
@@ -122,7 +125,7 @@
 
 	{#if outsideSEPercent < 100}
 		<div class="mt-2">
-			{#each blueprintCategories as { value, label, percent, color, description }}
+			{#each blueprintCategories as { value, label, percent, color, description } (value)}
 				<div
 					class={cn(
 						'flex justify-between items-start gap-2 text-grey-8 border border-transparent py-2 px-4 rounded-[0.5rem] bg-white not-first:mt-2',
@@ -159,7 +162,7 @@
 
 	{#if outsideSEPercent < 100}
 		<div class="mt-2">
-			{#each availableCorridorCategories as { value, label, description }}
+			{#each availableCorridorCategories as { value, label, description } (value)}
 				<div
 					class={cn(
 						'flex justify-between items-start gap-2 text-grey-8 border border-transparent py-2 px-4 rounded-[0.5rem] bg-white not-first:mt-2',

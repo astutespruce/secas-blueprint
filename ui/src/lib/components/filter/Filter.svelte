@@ -48,7 +48,7 @@
 		logGAEvent('set-filter-values', {
 			filter: id,
 			values: `${id}:${Object.entries(newActiveValues)
-				.filter(([_, v]) => v)
+				.filter(([, v]) => v)
 				.map(([k]) => k.toString())
 				.join(',')}`
 		})
