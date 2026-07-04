@@ -2,6 +2,9 @@ from pathlib import Path
 from itertools import product
 import json
 
+# Make sure to set this here and in ui/src/lib/env.ts on each new Blueprint version
+BLUEPRINT_VERSION = "2025"
+
 # Set to True to output intermediate rasters for validation (uncomment in map.raster module)
 # Set to True to output /tmp/test.html for reports
 DEBUG = False

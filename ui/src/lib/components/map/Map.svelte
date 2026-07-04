@@ -589,12 +589,6 @@
 					// @ts-expect-error layer is fine
 					map!.addLayer(layer, beforeLayer)
 				})
-
-				if (!map!.getLayer('pixelLayers')) {
-					// pixel layer appears to now be retained on style change
-					// @ts-expect-error layer is fine
-					map!.addLayer(pixelLayer, beforeLayer)
-				}
 			})
 		}
 
