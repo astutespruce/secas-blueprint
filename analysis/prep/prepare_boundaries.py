@@ -302,7 +302,7 @@ data = rasterize(
 
 data = np.where(extent_data == 1, data, NODATA)
 
-outfilename = out_dir / "parcas.tif"
+outfilename = data_dir / "inputs" / PARCAS["filename"]
 write_raster(
     outfilename,
     data,
@@ -320,7 +320,7 @@ add_overviews(outfilename)
 
 create_lowres_mask(
     outfilename,
-    out_dir / "parcas_mask.tif",
+    str(outfilename).replace(".tif", "_mask.tif"),
     resolution=MASK_RESOLUTION,
     ignore_zero=False,
 )

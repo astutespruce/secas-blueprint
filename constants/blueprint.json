@@ -1,5 +1,6 @@
 {
 	"id": "blueprint",
+	"filename": "blueprint.tif",
 	"label": "Blueprint priority",
 	"description": "The Blueprint identifies priority areas based on a suite of natural and cultural resource indicators representing terrestrial, freshwater, and marine ecosystems.",
 	"source": "Southeast Conservation Adaptation Strategy",

@@ -11,10 +11,10 @@ from analysis.lib.raster import summarize_raster_by_units_grid
 from analysis.lib.stats.summary_units import read_unit_from_feather
 
 
-src_dir = Path("data/inputs/boundaries")
-filename = src_dir / "protected_areas.tif"
-mask_filename = src_dir / "protected_areas_mask.tif"
-boundary_filename = src_dir / "protected_areas.fgb"
+src_dir = Path("data/inputs")
+filename = src_dir / PROTECTED_AREAS["filename"]
+mask_filename = src_dir / PROTECTED_AREAS["filename"].replace(".tif", "_mask.tif")
+boundary_filename = src_dir / PROTECTED_AREAS["filename"].replace(".tif", ".fgb")
 columns = ["name", "owner"]
 
 BINS = range(0, len(PROTECTED_AREAS["values"]))

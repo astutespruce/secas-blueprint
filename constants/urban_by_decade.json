@@ -1,0 +1,10 @@
+{
+	"id": "urban_by_decade",
+	"filename": "threats/urban/urban_{year}.tif",
+	"label": "Extent of projected urbanization by decade 2030-2100",
+	"description": "Past and current (2021) urban levels based on developed land cover classes from the National Land Cover Database. Future urban growth estimates derived from the FUTURES model developed by the Center for Geospatial Analytics, NC State University.  Data extent limited to the inland continental Southeast.",
+	"source": "FUTURES",
+	"date": "2023",
+	"citation": "Center for Geospatial Analytics, NC State University (June 2023)",
+	"url": "https://www.sciencebase.gov/catalog/item/63f50297d34efa0476b04cf7"
+}

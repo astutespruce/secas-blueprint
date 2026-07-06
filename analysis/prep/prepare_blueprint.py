@@ -57,7 +57,7 @@ extent = rasterio.open(out_dir / "boundaries/blueprint_extent.tif")
 ################################################################################
 ### Extract blueprint to data extent
 ################################################################################
-outfilename = out_dir / "blueprint.tif"
+outfilename = out_dir / BLUEPRINT["filename"]
 
 if not outfilename.exists():
     print("Extracting blueprint")
@@ -103,7 +103,7 @@ if not outfilename.exists():
 ################################################################################
 ### Extract hubs and corridors
 ################################################################################
-outfilename = out_dir / "corridors.tif"
+outfilename = out_dir / CORRIDORS["filename"]
 if not outfilename.exists():
     print("Extracting hubs and corridors")
 

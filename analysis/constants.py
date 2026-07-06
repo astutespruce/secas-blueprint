@@ -76,6 +76,9 @@ PARCA_COLORS = {entry["value"]: entry["color"] for entry in PARCAS["values"] if 
 
 URBAN_YEARS = [2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100]
 
+# Urban probabilities by decade
+URBAN_BY_DECADE = json.loads(open(json_dir / "urban_by_decade.json").read())
+
 # Classified Urban 2060
 # NOTE: value 5 is not urbanized
 URBAN = json.loads(open(json_dir / "urban.json").read())
@@ -87,6 +90,7 @@ SLR_DEPTH_VALUES = [v for v in SLR_DEPTH["values"] if v["value"] < 11]
 SLR_NODATA_VALUES = [v for v in SLR_DEPTH["values"] if v["value"] >= 11]
 SLR_NODATA_COLS = ["not_inundated", "not_applicable", "nodata"]
 
+SLR_PROJ = json.loads(open(json_dir / "slr_proj.json").read())
 SLR_YEARS = [2020, 2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100]
 SLR_PROJ_SCENARIOS = {
     "l": "Low",

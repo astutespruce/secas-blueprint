@@ -133,7 +133,9 @@ df.owner.drop_duplicates().to_csv("/tmp/names.csv", index=False)
 
 # Use FGB (instead of Feather) for more optimal reading by area of interest
 print("Writing files")
-write_dataframe(df[["name", "owner", "geometry"]], out_dir / "protected_areas.fgb")
+write_dataframe(
+    df[["name", "owner", "geometry"]], data_dir / "inputs" / PROTECTED_AREAS["filename"].replace(".tif", ".fgb")
+)
 
 
 ################################################################################
@@ -167,7 +169,7 @@ data = rasterize(
 
 data = np.where(extent_data == 1, data, NODATA)
 
-outfilename = out_dir / "protected_areas.tif"
+outfilename = data_dir / "inputs" / PROTECTED_AREAS["filename"]
 write_raster(
     outfilename,
     data,
@@ -185,7 +187,7 @@ add_overviews(outfilename)
 
 create_lowres_mask(
     outfilename,
-    out_dir / "protected_areas_mask.tif",
+    str(outfilename).replace(".tif", "_mask.tif"),
     resolution=MASK_RESOLUTION,
     ignore_zero=False,
 )

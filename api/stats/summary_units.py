@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from analysis.lib.stats.blueprint import get_blueprint_unit_results
-from analysis.lib.stats.parca import get_parca_unit_results
+from analysis.lib.stats.parcas import get_parca_unit_results
 from analysis.lib.stats.protected_areas import get_protected_areas_unit_results
 from analysis.lib.stats.slr import get_slr_unit_results
 from analysis.lib.stats.summary_units import read_unit_from_feather

@@ -9,10 +9,9 @@ from analysis.lib.stats.summary_units import (
     read_unit_from_feather,
 )
 
-data_dir = Path("data")
-src_dir = data_dir / "inputs/threats/wildfire_risk"
-filename = src_dir / "wildfire_risk.tif"
-mask_filename = src_dir / "wildfire_risk_mask.tif"
+src_dir = Path("data/inputs")
+filename = src_dir / WILDFIRE_RISK["filename"]
+mask_filename = src_dir / WILDFIRE_RISK["filename"].replace(".tif", "_mask.tif")
 
 WILDFIRE_RISK_BINS = range(0, len(WILDFIRE_RISK["values"]))
 WILDFIRE_RISK_LABELS = {e["value"]: e["label"] for e in WILDFIRE_RISK["values"]}

@@ -10,7 +10,7 @@ from analysis.lib.raster import SummaryUnitGrid
 from analysis.lib.stats.blueprint import summarize_blueprint_by_units_grid
 from analysis.lib.stats.nlcd import summarize_nlcd_by_units_grid
 from analysis.lib.stats.protected_areas import summarize_protected_areas_by_units
-from analysis.lib.stats.parca import summarize_parcas_by_units
+from analysis.lib.stats.parcas import summarize_parcas_by_units
 from analysis.lib.stats.slr import summarize_slr_by_units_grid
 from analysis.lib.stats.urban import summarize_urban_by_units_grid
 from analysis.lib.stats.wildfire_risk import summarize_wildfire_risk_by_units_grid
@@ -63,9 +63,7 @@ with rasterio.open(huc12_raster_filename) as units_dataset:
     ix = ~units_df.index.isin(
         units_df.index.values.take(
             tree.query(
-                subregion_df.loc[
-                    subregion_df.subregion.isin(["Puerto Rico", "US Virgin Islands"])
-                ].geometry.values[0],
+                subregion_df.loc[subregion_df.subregion.isin(["Puerto Rico", "US Virgin Islands"])].geometry.values[0],
                 predicate="intersects",
             )
         )

@@ -1,5 +1,6 @@
 {
 	"id": "protectedAreas",
+	"filename": "boundaries/protected_areas.tif",
 	"label": "Protected areas",
 	"description": "Protected areas information is derived from the Protected Areas Database of the United States (PAD-US v4.1).",
 	"source": "U.S. Geological Survey",

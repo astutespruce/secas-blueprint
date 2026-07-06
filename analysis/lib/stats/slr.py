@@ -12,6 +12,7 @@ from analysis.constants import (
     SLR_DEPTH_VALUES,
     SLR_NODATA_VALUES,
     SLR_NODATA_COLS,
+    SLR_PROJ,
     SLR_PROJ_COLUMNS,
     SLR_YEARS,
     SLR_PROJ_SCENARIOS,
@@ -23,10 +24,10 @@ from analysis.lib.stats.summary_units import read_unit_from_feather
 SLR_BINS = [v["value"] for v in SLR_DEPTH["values"]]
 
 
-src_dir = Path("data/inputs/threats/slr")
-depth_filename = src_dir / "slr.tif"
-mask_filename = src_dir / "slr_mask.tif"
-proj_filename = src_dir / "noaa_1deg_cells.feather"
+src_dir = Path("data/inputs")
+depth_filename = src_dir / SLR_DEPTH["filename"]
+mask_filename = src_dir / SLR_DEPTH["filename"].replace(".tif", "_mask.tif")
+proj_filename = src_dir / SLR_PROJ["filename"]
 
 
 def summarize_slr_in_aoi(rasterized_geometry, geometry):

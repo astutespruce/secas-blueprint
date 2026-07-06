@@ -22,13 +22,7 @@ from pyogrio import (
 import shapely
 
 
-from analysis.constants import (
-    DATA_CRS,
-    MASK_RESOLUTION,
-    SLR_YEARS,
-    SLR_PROJ_COLUMNS,
-    SLR_DEPTH,
-)
+from analysis.constants import DATA_CRS, MASK_RESOLUTION, SLR_YEARS, SLR_PROJ_COLUMNS, SLR_DEPTH, SLR_PROJ
 from analysis.lib.colors import hex_to_uint8
 from analysis.lib.raster import write_raster
 from analysis.lib.geometry import (
@@ -284,7 +278,7 @@ _ = rasterize(
 
 ## Combine into a single raster and mask to SE Blueprint extent
 print("Combining into single raster")
-outfilename = out_dir / "slr.tif"
+outfilename = data_dir / "inputs" / SLR_DEPTH["filename"]
 with rasterio.open(vrt_filename) as vrt:
     # calculate write window
     left = int((vrt.transform[2] - extent_raster.transform[2]) / vrt.res[0])
@@ -325,7 +319,7 @@ with rasterio.open(vrt_filename) as vrt:
 print("Creating SLR mask")
 create_lowres_mask(
     outfilename,
-    out_dir / "slr_mask.tif",
+    str(outfilename).replace(".tif", "_mask.tif"),
     resolution=MASK_RESOLUTION,
     ignore_zero=False,
 )
@@ -439,10 +433,10 @@ df = df.take(ix).reset_index(drop=True)
 
 df = df[["geometry", "Region"] + SLR_PROJ_COLUMNS]
 
-df.to_feather(out_dir / "noaa_1deg_cells.feather")
+df.to_feather(data_dir / "inputs" / SLR_PROJ["filename"])
 
 # DEBUG
-write_dataframe(df, tmp_dir / "noaa_1deg_cells.fgb")
+# write_dataframe(df, tmp_dir / "noaa_1deg_cells.fgb")
 
 
 print(f"All done in {time() - start:.2f}s")

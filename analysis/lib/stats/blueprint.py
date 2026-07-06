@@ -21,8 +21,8 @@ from analysis.lib.stats.summary_units import (
 data_dir = Path("data")
 src_dir = data_dir / "inputs"
 indicators_dir = src_dir / "indicators"
-blueprint_filename = src_dir / "blueprint.tif"
-corridors_filename = src_dir / "corridors.tif"
+blueprint_filename = src_dir / BLUEPRINT["filename"]
+corridors_filename = src_dir / CORRIDORS["filename"]
 
 BLUEPRINT_BINS = range(0, len(BLUEPRINT["values"]))
 CORRIDOR_BINS = range(0, len(CORRIDORS["values"]))

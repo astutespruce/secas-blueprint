@@ -1,5 +1,6 @@
 {
 	"id": "slr",
+	"filename": "threats/slr/slr.tif",
 	"label": "Flooding extent by projected sea-level rise",
 	"description": "Sea level rise estimates derived from the NOAA sea-level rise inundation data.",
 	"source": "National Oceanic and Atmospheric Administration",

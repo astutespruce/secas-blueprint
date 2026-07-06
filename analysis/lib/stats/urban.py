@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import rasterio
 
-from analysis.constants import M2_ACRES, URBAN_YEARS
+from analysis.constants import URBAN_BY_DECADE, M2_ACRES, URBAN_YEARS
 from analysis.lib.raster import summarize_raster_by_units_grid
 from analysis.lib.stats.summary_units import read_unit_from_feather
 
@@ -14,9 +14,9 @@ from analysis.lib.stats.summary_units import read_unit_from_feather
 PROBABILITIES = np.append(np.arange(0, 51) / 50.0, np.array([1.0]))
 
 
-src_dir = Path("data/inputs/threats/urban")
-urban_filename = str(src_dir / "urban_{year}.tif")
-mask_filename = src_dir / "urban_mask.tif"
+src_dir = Path("data/inputs")
+urban_filename = str(src_dir / URBAN_BY_DECADE["filename"])
+mask_filename = src_dir / URBAN_BY_DECADE["filename"].replace("_{year}.tif", "_mask.tif")
 
 
 async def summarize_urban_in_aoi(rasterized_geometry, progress_callback=None):
@@ -76,9 +76,7 @@ async def summarize_urban_in_aoi(rasterized_geometry, progress_callback=None):
             urban_2060_acres = total_projected_acres
             # IMPORTANT: nonzero_urban_2060_percent is for ANY pixel > 0 probability
             # that is not already urbanized (51), so it does not use the projected acres
-            nonzero_urban_2060_percent = (
-                100 * urban_acres[1:51].sum() / rasterized_geometry.acres
-            )
+            nonzero_urban_2060_percent = 100 * urban_acres[1:51].sum() / rasterized_geometry.acres
 
         elif year == 2100:
             urban_2100_acres = total_projected_acres
@@ -105,11 +103,7 @@ async def summarize_urban_in_aoi(rasterized_geometry, progress_callback=None):
     if noturban_2100_acres < 1e-6:
         noturban_2100_acres = 0
 
-    outside_urban_acres = (
-        rasterized_geometry.acres
-        - rasterized_geometry.outside_se_acres
-        - available_urban_acres
-    )
+    outside_urban_acres = rasterized_geometry.acres - rasterized_geometry.outside_se_acres - available_urban_acres
     if outside_urban_acres < 1e-6:
         outside_urban_acres = 0
 
@@ -119,9 +113,7 @@ async def summarize_urban_in_aoi(rasterized_geometry, progress_callback=None):
         "outside_urban_acres": outside_urban_acres,
         "outside_urban_percent": 100 * outside_urban_acres / rasterized_geometry.acres,
         "nonzero_urban_2060_percent": nonzero_urban_2060_percent,
-        "percent_increase_by_2060": 100
-        * (urban_2060_acres - already_urban_acres)
-        / already_urban_acres
+        "percent_increase_by_2060": 100 * (urban_2060_acres - already_urban_acres) / already_urban_acres
         if already_urban_acres > 0
         else 0,
         "noturban_2100_acres": noturban_2100_acres,
@@ -143,13 +135,8 @@ def summarize_urban_by_units_grid(df, units_grid, out_dir):
     out_dir : str
     """
 
-    if (
-        not len(df.columns.intersection({"value", "rasterized_acres", "outside_se"}))
-        == 3
-    ):
-        raise ValueError(
-            "GeoDataFrame for summary must include value, rasterized_acres, outside_se columns"
-        )
+    if not len(df.columns.intersection({"value", "rasterized_acres", "outside_se"})) == 3:
+        raise ValueError("GeoDataFrame for summary must include value, rasterized_acres, outside_se columns")
 
     bins = np.arange(0, len(PROBABILITIES))
 
@@ -266,9 +253,7 @@ def get_urban_unit_results(results_dir, unit):
             "year": year,
             "label": f"{year} projected extent",
             "acres": urban_results[f"urban_proj_{year}_acres"],
-            "percent": 100
-            * urban_results[f"urban_proj_{year}_acres"]
-            / unit.rasterized_acres,
+            "percent": 100 * urban_results[f"urban_proj_{year}_acres"] / unit.rasterized_acres,
         }
         for year in URBAN_YEARS
     ]
@@ -277,19 +262,13 @@ def get_urban_unit_results(results_dir, unit):
         "entries": entries,
         "available_urban_acres": urban_results.available_urban_acres,
         "outside_urban_acres": urban_results.outside_urban_acres,
-        "outside_urban_percent": 100
-        * urban_results.outside_urban_acres
-        / unit.rasterized_acres,
-        "nonzero_urban_2060_percent": 100
-        * urban_results.nonzero_urban_2060_acres
-        / unit.rasterized_acres,
+        "outside_urban_percent": 100 * urban_results.outside_urban_acres / unit.rasterized_acres,
+        "nonzero_urban_2060_percent": 100 * urban_results.nonzero_urban_2060_acres / unit.rasterized_acres,
         "percent_increase_by_2060": 100
         * (urban_results.urban_proj_2060_acres - urban_results.urban_2021_acres)
         / urban_results.urban_2021_acres
         if urban_results.urban_2021_acres > 0
         else 0,
         "noturban_2100_acres": urban_results.noturban_2100_acres,
-        "noturban_2100_percent": 100
-        * urban_results.noturban_2100_acres
-        / unit.rasterized_acres,
+        "noturban_2100_percent": 100 * urban_results.noturban_2100_acres / unit.rasterized_acres,
     }

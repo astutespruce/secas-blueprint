@@ -1,5 +1,6 @@
 {
 	"id": "corridors",
+	"filename": "corridors.tif",
 	"label": "Hubs and corridors",
 	"description": "The Blueprint uses a least-cost path connectivity analysis to identify corridors that link hubs across the shortest distance possible, while also routing through as much Blueprint priority as possible.",
 	"source": "Southeast Conservation Adaptation Strategy",

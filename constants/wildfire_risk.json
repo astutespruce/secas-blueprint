@@ -1,5 +1,6 @@
 {
 	"id": "wildfireRisk",
+	"filename": "threats/wildfire_risk/wildfire_risk.tif",
 	"label": "Wildfire likelihood (annual burn probability)",
 	"description": "Wildfire likelihood data derived from the Wildfire Risk to Communities project by the USDA Forest Service.",
 	"source": "Wildfire Risk to Communities, USDA Forest Service",

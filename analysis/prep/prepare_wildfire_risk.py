@@ -28,13 +28,12 @@ WINDOW_SIZE = 4096
 
 NODATA = 255
 
-
-bnd_dir = Path("data/inputs/boundaries")
+data_dir = Path("data")
+bnd_dir = data_dir / "inputs/boundaries"
 src_dir = Path("source_data/wildfire_risk")
-out_dir = Path("data/inputs/threats/wildfire_risk")
-tmp_dir = Path("/tmp")
-
+out_dir = data_dir / "inputs/threats/wildfire_risk"
 out_dir.mkdir(parents=True, exist_ok=True)
+tmp_dir = Path("/tmp")
 
 # NOTE: PR and USVI are not available, so we only create this dataset for the contiguous inland Southeast
 bnd_raster = rasterio.open(bnd_dir / "contiguous_southeast_inland_mask.tif")
@@ -107,7 +106,7 @@ with rasterio.open(vrt_filename) as src:
         out[window.toslices()] = binned
 
 
-outfilename = out_dir / "wildfire_risk.tif"
+outfilename = out_dir / "inputs" / WILDFIRE_RISK["filename"]
 
 write_raster(
     outfilename,
@@ -132,7 +131,7 @@ add_overviews(outfilename)
 
 create_lowres_mask(
     outfilename,
-    out_dir / "wildfire_risk_mask.tif",
+    str(outfilename).replace(".tif", "_mask.tif"),
     resolution=MASK_RESOLUTION,
     ignore_zero=False,
 )

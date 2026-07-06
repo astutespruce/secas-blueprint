@@ -11,10 +11,10 @@ from analysis.lib.raster import summarize_raster_by_units_grid
 from analysis.lib.stats.summary_units import read_unit_from_feather
 
 
-src_dir = Path("data/inputs/boundaries")
-filename = src_dir / "parcas.tif"
-mask_filename = src_dir / "parcas_mask.tif"
-boundary_filename = src_dir / "parcas.feather"
+src_dir = Path("data/inputs")
+filename = src_dir / PARCAS["filename"]
+mask_filename = src_dir / PARCAS["filename"].replace(".tif", "_mask.tif")
+boundary_filename = src_dir / PARCAS["filename"].replace(".tif", ".feather")
 
 BINS = range(0, len(PARCAS["values"]))
 LABELS = {e["value"]: e["label"] for e in PARCAS["values"]}
