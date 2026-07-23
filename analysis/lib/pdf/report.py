@@ -15,7 +15,7 @@ from analysis.constants import (
     PROTECTED_AREAS,
     WILDFIRE_RISK_LEGEND,
 )
-from api.report.format import format_number, format_percent
+from analysis.lib.pdf.format import format_number, format_percent
 
 
 def reverse_filter(iterable):

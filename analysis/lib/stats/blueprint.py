@@ -4,19 +4,11 @@ from pathlib import Path
 import pandas as pd
 import rasterio
 
-from analysis.constants import (
-    BLUEPRINT,
-    INDICATOR_GROUPS,
-    INDICATORS,
-    INDICATORS_INDEX,
-    CORRIDORS,
-    M2_ACRES,
-)
-from analysis.lib.util import pluck
+from analysis.constants import BLUEPRINT, INDICATOR_GROUPS, INDICATORS, INDICATORS_INDEX, CORRIDORS, M2_ACRES
 from analysis.lib.raster import summarize_raster_by_units_grid
-from analysis.lib.stats.summary_units import (
-    read_unit_from_feather,
-)
+from analysis.lib.io import read_unit_from_feather
+from analysis.lib.util import pluck
+
 
 data_dir = Path("data")
 src_dir = data_dir / "inputs"

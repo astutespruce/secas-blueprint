@@ -17,8 +17,8 @@ from analysis.constants import (
     SLR_YEARS,
     SLR_PROJ_SCENARIOS,
 )
+from analysis.lib.io import read_unit_from_feather
 from analysis.lib.raster import summarize_raster_by_units_grid
-from analysis.lib.stats.summary_units import read_unit_from_feather
 
 
 SLR_BINS = [v["value"] for v in SLR_DEPTH["values"]]

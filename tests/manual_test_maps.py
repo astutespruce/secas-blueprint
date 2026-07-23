@@ -11,9 +11,9 @@ from analysis.constants import DATA_CRS, GEO_CRS
 
 
 from analysis.lib.geometry import dissolve
-from api.report.map import render_maps
-from api.stats.custom_area import get_custom_area_results
-from api.stats.summary_units import get_summary_unit_results
+from analysis.lib.pdf.map import render_maps
+from analysis.lib.stats.custom_area import get_custom_area_results
+from analysis.lib.stats.summary_units import get_summary_unit_results
 
 aoi_names = ["Razor"]
 # aoi_names = ["OCMU_SRS_StudyArea"]

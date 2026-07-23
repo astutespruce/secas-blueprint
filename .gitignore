@@ -6,6 +6,7 @@
 /dist/*
 /ui/public/*
 
+!/tests/fixtures/*.zip
 
 .env
 

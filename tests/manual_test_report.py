@@ -11,10 +11,10 @@ from progress.bar import Bar
 
 from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES
 from analysis.lib.geometry import dissolve
-from api.report import create_report
-from api.report.map import render_maps
-from api.stats.custom_area import get_custom_area_results
-from api.stats.summary_units import get_summary_unit_results
+from analysis.lib.pdf.report import create_report
+from analysis.lib.pdf.map import render_maps
+from analysis.lib.stats.custom_area import get_custom_area_results
+from analysis.lib.stats.summary_units import get_summary_unit_results
 
 # if True, cache maps if not previously created, then reuse
 CACHE_MAPS = False
@@ -52,6 +52,7 @@ def read_cache(path):
 
 ### Create reports for an AOI
 aois = [
+    # {"name": "", "path": "Forest_View_Road"}
     # {"name": "Gulf_SECAS_CBRS_Polygons", "path": "Gulf_SECAS_CBRS_Polygons"},
     # {"name": "Caribbean_SECAS_CBRS_Polygons", "path": "Caribbean_SECAS_CBRS_Polygons"},
     # {"name": "Atlantic_SECAS_CBRS_Polygons", "path": "Atlantic_SECAS_CBRS_Polygons"},
@@ -216,6 +217,8 @@ for aoi in aois:
 ## Create reports for summary units
 ids = {
     "huc12": [
+        # "030601040506",
+        # "030601030509",
         # "031800020606"
         # "030203020102",
         # "030502100102",  # duplicate PARCA bug

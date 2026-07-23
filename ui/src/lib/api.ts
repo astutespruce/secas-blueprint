@@ -3,6 +3,8 @@ import { captureException } from '$lib/util/log'
 import { API_TOKEN, API_HOST } from '$lib/env'
 import type { ProgressCallback } from '$lib/components/report/types'
 
+type SummaryUnitType = 'subwatershed' | 'marine_hex'
+
 let apiHost = API_HOST
 
 const pollInterval = 1000 // milliseconds; 1 second
@@ -13,7 +15,7 @@ if (browser && !apiHost) {
 	apiHost = `//${window.location.host}`
 }
 
-const API = `${apiHost}/api/reports`
+const API = `${apiHost}/api`
 
 export const uploadFile = async (file: File, name: string, onProgress: ProgressCallback) => {
 	// NOTE: both file and name are required by API
@@ -21,7 +23,8 @@ export const uploadFile = async (file: File, name: string, onProgress: ProgressC
 	formData.append('file', file)
 	formData.append('name', name)
 
-	const response = await fetch(`${API}/custom?token=${API_TOKEN}`, {
+	// FIXME: handle both types here
+	const response = await fetch(`${API}/custom_report/pdf?token=${API_TOKEN}`, {
 		method: 'POST',
 		body: formData
 	})
@@ -53,20 +56,17 @@ export const uploadFile = async (file: File, name: string, onProgress: ProgressC
 
 export const createSummaryUnitReport = async (
 	id: string,
-	type: string,
+	type: SummaryUnitType,
 	onProgress: ProgressCallback
 ) => {
-	let unitType = null
+	const unitType = type === 'subwatershed' ? 'huc12' : 'marine_hex'
 
-	if (type === 'subwatershed') {
-		unitType = 'huc12'
-	} else if (type === 'marine hex') {
-		unitType = 'marine_hex'
-	}
-
-	const response = await fetch(`${API}/${unitType}/${id}?token=${API_TOKEN}`, {
-		method: 'POST'
-	})
+	const response = await fetch(
+		`${API}/summary_unit_report/${unitType}/${id}/pdf?token=${API_TOKEN}`,
+		{
+			method: 'POST'
+		}
+	)
 
 	const json = await response.json()
 	const { job, detail } = json
@@ -100,10 +100,10 @@ const pollJob = async (jobId: string, onProgress: ProgressCallback) => {
 
 	while (time < jobTimeout && failedRequests < failedFetchLimit) {
 		try {
-			response = await fetch(`${API}/status/${jobId}`, {
+			response = await fetch(`${API}/jobs/${jobId}`, {
 				cache: 'no-cache'
 			})
-		} catch (_) {
+		} catch {
 			failedRequests += 1
 
 			// sleep and try again

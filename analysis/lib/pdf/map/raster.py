@@ -9,11 +9,7 @@ from PIL import Image
 import rasterio
 from rasterio.enums import Resampling
 from rasterio import windows
-from rasterio.warp import (
-    transform_bounds,
-    calculate_default_transform,
-    reproject,
-)
+from rasterio.warp import transform_bounds, calculate_default_transform, reproject
 
 from analysis.constants import DATA_CRS, MAP_CRS, GEO_CRS, STANDARD_RESOLUTION
 from analysis.lib.raster import get_window, window_overlaps, shift_window
@@ -46,12 +42,8 @@ class WebMercatorReader(object):
         self.width = width
         self.height = height
         self.scale = get_map_scale(geo_bounds, width)
-        self.data_bounds = transform_bounds(
-            GEO_CRS, DATA_CRS, *geo_bounds, densify_pts=21
-        )
-        self.mercator_bounds = transform_bounds(
-            GEO_CRS, MAP_CRS, *geo_bounds, densify_pts=21
-        )
+        self.data_bounds = transform_bounds(GEO_CRS, DATA_CRS, *geo_bounds, densify_pts=21)
+        self.mercator_bounds = transform_bounds(GEO_CRS, MAP_CRS, *geo_bounds, densify_pts=21)
 
         # For smoother rendering, we want between 2 and 4 data pixels per
         # screen pixel.
@@ -91,9 +83,7 @@ class WebMercatorReader(object):
             read_window = self.window
 
         else:
-            read_window = shift_window(
-                self.window, self.window_transform, dataset.transform
-            )
+            read_window = shift_window(self.window, self.window_transform, dataset.transform)
             if not window_overlaps(read_window, dataset):
                 return None
 
@@ -131,9 +121,7 @@ class WebMercatorReader(object):
                 dst_height=self.height * self.densify,
             )
 
-        proj_transform, proj_width, proj_height = self._transform_cache[
-            read_window_bounds
-        ]
+        proj_transform, proj_width, proj_height = self._transform_cache[read_window_bounds]
 
         # Project to Spherical Mercator
         projected = np.empty(shape=(proj_height, proj_width), dtype=data.dtype)

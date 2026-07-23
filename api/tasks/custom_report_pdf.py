@@ -7,27 +7,21 @@ import numpy as np
 from pyogrio import read_dataframe
 import shapely
 
-from api.errors import DataError
-from api.report.map import render_maps
-from api.report import create_report
-from api.settings import (
-    LOGGING_LEVEL,
-    TEMP_DIR,
-    CUSTOM_REPORT_MAX_ACRES,
-    MAX_POLYGONS,
-    MAX_VERTICES,
-)
-from api.stats.custom_area import get_custom_area_results
-from api.progress import set_progress
-
 from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES, STANDARD_RESOLUTION
 from analysis.lib.geometry import dissolve
+from analysis.lib.pdf.map import render_maps
+from analysis.lib.pdf.report import create_report
+from analysis.lib.stats.custom_area import get_custom_area_results
+from api.errors import DataError
+from api.settings import LOGGING_LEVEL, TEMP_DIR, CUSTOM_REPORT_MAX_ACRES, MAX_POLYGONS, MAX_VERTICES
+from api.lib.progress import set_progress
+
 
 log = logging.getLogger(__name__)
 log.setLevel(LOGGING_LEVEL)
 
 
-async def create_custom_report(ctx, zip_filename, dataset, layer, name=""):
+async def create_custom_pdf_report(ctx, zip_filename, dataset, layer, name=""):
     """Create a Blueprint report for a user-uploaded GIS file contained in a zip.
     Zip must contain either a shapefile or a file geodatabase.
 

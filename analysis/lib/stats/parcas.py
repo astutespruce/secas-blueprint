@@ -6,9 +6,8 @@ import shapely
 import rasterio
 
 from analysis.constants import M2_ACRES, PARCAS
+from analysis.lib.io import read_unit_from_feather
 from analysis.lib.raster import summarize_raster_by_units_grid
-
-from analysis.lib.stats.summary_units import read_unit_from_feather
 
 
 src_dir = Path("data/inputs")

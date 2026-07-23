@@ -1,4 +1,6 @@
 import logging
+from pathlib import Path
+import re
 
 from pyogrio import list_layers, read_info
 
@@ -7,35 +9,7 @@ from api.settings import MAX_POLYGONS
 
 log = logging.getLogger(__name__)
 
-
-def list_files(zip):
-    """List files in a zipfile, excluding hidden files and directories
-
-    Parameters
-    ----------
-    zip : ZipFile
-
-    Returns
-    -------
-    list
-        list of file names in the zipfile
-    """
-    return [f for f in zip.namelist() if "__MACOSX" not in f or ".DS_Store" in f]
-
-
-def get_geo_files(zip):
-    """List the geospatial files in the zipfile.
-
-    Parameters
-    ----------
-    zip : ZipFile
-
-    Returns
-    -------
-    list
-        list of geospatial files
-    """
-    return
+gdb_regex = re.compile(r"\.gdb\/.+$")
 
 
 def get_dataset(zip):
@@ -56,22 +30,21 @@ def get_dataset(zip):
     (str, str)
         tuple of geospatial file within zip file, name of layer
     """
-    files = set(list_files(zip))
-    geo_files = [f for f in list_files(zip) if f.endswith(".shp") or f.endswith(".gdb")]
-
+    files = [f for f in zip.namelist() if "__MACOSX" not in f or ".DS_Store" in f]
+    shp_files = set(f for f in files if f.endswith(".shp"))
+    gdb_files = set(str(Path(f).parent) for f in files if gdb_regex.search(f))
+    geo_files = list(shp_files.union(gdb_files))
     num_files = len(geo_files)
 
     if num_files == 0:
-        log.error("Upload zip file does not contain shp or FGDB files")
+        log.error("Upload zip file does not contain shp or file geodatabase files")
 
-        raise ValueError("zip file must include a shapefile or FGDB")
+        raise ValueError("zip file must include a shapefile or file geodatabase")
 
     if num_files > 1:
-        log.error(
-            f"Upload zip file contains {num_files} shp or FGDB files:\n{geo_files}"
-        )
+        log.error(f"Upload zip file contains {num_files} shp or file geodatabase files:\n{geo_files}")
 
-        raise ValueError("zip file must include only one shapefile or FGDB")
+        raise ValueError("zip file must include only one shapefile or file geodatabase")
 
     filename = geo_files[0]
 
@@ -94,10 +67,10 @@ def get_dataset(zip):
         raise ValueError("data source must contain only one data layer")
 
     if "Polygon" not in layers[0, 1]:
-        log.error(f"Upload data source is not a polygon: {layers[0,1]}")
+        log.error(f"Upload data source is not a polygon: {layers[0, 1]}")
         raise ValueError("data source must be a Polygon type")
 
-    # Validate that that layer has at least one feature but doesn't have too many
+    # Validate that layer has at least one feature but doesn't have too many
     # features
     num_features = read_info(dataset, layers[0, 0])["features"]
     if num_features == 0:

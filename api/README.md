@@ -43,7 +43,7 @@ See `deploy/staging/README.md`.
 To make custom report requests using HTTPie:
 
 ```bash
-http -f POST :5000/api/reports/custom token=="<token from .env>" name="<area name>" file@<filename>.zip
+http -f POST :5000/api/custom_report/pdf token=="<token from .env>" name="<area name>" file@<filename>.zip
 ```
 
 This creates a background job and returns:
@@ -57,13 +57,13 @@ This creates a background job and returns:
 To query job status:
 
 ```
-http :5000/api/reports/status/<job_id>
+http :5000/api/jobs/<job_id>
 ```
 
 To download PDF from a successful job:
 
 ```
-http :5000/api/reports/results/<job_id>
+http :5000/api/jobs/<job_id>/results
 ```
 
 This sets the `Content-Type` header to attachment and uses the passed-in name
@@ -72,7 +72,7 @@ for the filename.
 To list queued and completed jobs:
 
 ```
-http :5000/admin/jobs/status -a admin
+http :5000/admin/jobs -a admin
 ```
 
 Username is admin, password is `API_SECRET` in `.env`

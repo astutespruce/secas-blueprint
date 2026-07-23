@@ -5,8 +5,9 @@ import pandas as pd
 import rasterio
 
 from analysis.constants import URBAN_BY_DECADE, M2_ACRES, URBAN_YEARS
+from analysis.lib.io import read_unit_from_feather
 from analysis.lib.raster import summarize_raster_by_units_grid
-from analysis.lib.stats.summary_units import read_unit_from_feather
+
 
 # values are number of runs out of 50 that are predicted to urbanize
 # 51 = urban as of 2021 (NLCD)

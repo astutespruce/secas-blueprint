@@ -1,18 +1,18 @@
 import logging
 import tempfile
 
+from analysis.lib.pdf.map import render_maps
+from analysis.lib.pdf.report import create_report
+from analysis.lib.stats.summary_units import get_summary_unit_results
 from api.errors import DataError
-from api.report.map import render_maps
-from api.report import create_report
 from api.settings import LOGGING_LEVEL, TEMP_DIR
-from api.stats.summary_units import get_summary_unit_results
-from api.progress import set_progress
+from api.lib.progress import set_progress
 
 log = logging.getLogger(__name__)
 log.setLevel(LOGGING_LEVEL)
 
 
-async def create_summary_unit_report(ctx, unit_type, unit_id):
+async def create_summary_unit_pdf_report(ctx, unit_type, unit_id):
     """Generate Southeast Blueprint Report for a HUC12
     or marine hex grid cell
 

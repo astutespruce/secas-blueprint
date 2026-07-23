@@ -17,7 +17,7 @@ OUT_DIR.mkdir(exist_ok=True, parents=True)
 
 
 def poll_until_done(job_id, current=0, max=100):
-    r = httpx.get(f"{API_URL}/api/reports/status/{job_id}?token={API_TOKEN}")
+    r = httpx.get(f"{API_URL}/api/jobs/{job_id}?token={API_TOKEN}")
 
     if r.status_code != 200:
         raise Exception(f"Error processing request (HTTP {r.status_code}): {r.text}")
@@ -38,12 +38,8 @@ def poll_until_done(job_id, current=0, max=100):
         print(f"Failed: {json['detail']}")
         return
 
-    status_info = (
-        f' ({json.get("queue_position")} ahead in queue)' if status == "queued" else ""
-    )
-    print(
-        f"status: {status}{status_info}, progress: {progress}, message: {message}, errors: {errors}"
-    )
+    status_info = f" ({json.get('queue_position')} ahead in queue)" if status == "queued" else ""
+    print(f"status: {status}{status_info}, progress: {progress}, message: {message}, errors: {errors}")
 
     current += 1
     if current == max:
@@ -69,7 +65,7 @@ def download_file(url):
 def test_upload_file(filename):
     files = {"file": open(filename, "rb")}
     r = httpx.post(
-        f"{API_URL}/api/reports/custom?token={API_TOKEN}",
+        f"{API_URL}/api/custom_report/pdf?token={API_TOKEN}",
         data={"name": "Test Custom Area"},
         files=files,
     )
@@ -87,7 +83,7 @@ def test_upload_file(filename):
 
 
 def test_huc12_report(huc12_id):
-    r = httpx.post(f"{API_URL}/api/reports/huc12/{huc12_id}?token={API_TOKEN}")
+    r = httpx.post(f"{API_URL}/api/summary_unit_report/huc12/{huc12_id}?token={API_TOKEN}")
 
     if r.status_code != 200:
         raise Exception(f"Error processing request (HTTP {r.status_code}): {r.text}")

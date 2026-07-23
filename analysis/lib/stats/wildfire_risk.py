@@ -4,10 +4,9 @@ import pandas as pd
 import rasterio
 
 from analysis.constants import WILDFIRE_RISK, M2_ACRES
+from analysis.lib.io import read_unit_from_feather
 from analysis.lib.raster import summarize_raster_by_units_grid
-from analysis.lib.stats.summary_units import (
-    read_unit_from_feather,
-)
+
 
 src_dir = Path("data/inputs")
 filename = src_dir / WILDFIRE_RISK["filename"]
