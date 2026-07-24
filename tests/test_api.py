@@ -1,11 +1,17 @@
+from pathlib import Path
 import time
+from zipfile import ZipFile
 
 from httpx import BasicAuth
 import pytest
 
+from api.lib.geo import get_dataset
 from api.settings import API_TOKEN, API_SECRET
 
 POLL_DELAY_SECONDS = 1
+
+
+fixture_dir = Path("tests/fixtures")
 
 
 async def poll_until_done(client, job_id, interval=POLL_DELAY_SECONDS):
@@ -24,6 +30,39 @@ async def poll_until_done(client, job_id, interval=POLL_DELAY_SECONDS):
         time.sleep(interval)
 
     raise RuntimeError("Max poll iterations reached without completing job")
+
+
+@pytest.mark.parametrize(
+    "zip_filename,error",
+    [
+        ("geojson.zip", "zip file must include a shapefile or file geodatabase"),
+        ("zip_empty.zip", "zip file must include a shapefile or file geodatabase"),
+        ("gdb_poly_multiple_files.zip", "zip file must include only one shapefile or file geodatabase"),
+        ("shp_poly_multiple_files.zip", "zip file must include only one shapefile or file geodatabase"),
+        ("gdb_poly_multiple_layers.zip", "data source must contain only one data layer"),
+        ("shp_missing_shx.zip", "zip file must include"),
+        ("gdb_point.zip", "data source must be a Polygon type"),
+        ("gdb_line.zip", "data source must be a Polygon type"),
+        ("shp_point.zip", "data source must be a Polygon type"),
+        ("shp_line.zip", "data source must be a Polygon type"),
+        ("shp_poly_too_many.zip", "data source contains too many features"),
+    ],
+)
+def test_get_dataset_invalid_inputs(zip_filename, error):
+    with ZipFile(fixture_dir / zip_filename) as zipfile:
+        with pytest.raises(ValueError, match=error):
+            get_dataset(zipfile)
+
+
+@pytest.mark.parametrize(
+    "zip_filename,filename,layer",
+    [("gdb_poly_small.zip", "poly_small.gdb", "poly_small"), ("shp_poly_small.zip", "poly_small.shp", "poly_small")],
+)
+def test_get_dataset(zip_filename, filename, layer):
+    with ZipFile(fixture_dir / zip_filename) as zipfile:
+        actual_filename, actual_layer = get_dataset(zipfile)
+        assert actual_filename == filename
+        assert actual_layer == layer
 
 
 @pytest.mark.anyio

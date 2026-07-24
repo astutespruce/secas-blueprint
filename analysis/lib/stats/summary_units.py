@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from analysis.constants import SummaryUnitType
 from analysis.lib.io import read_unit_from_feather
 from analysis.lib.stats.blueprint import get_blueprint_unit_results
 from analysis.lib.stats.parcas import get_parca_unit_results
@@ -12,24 +13,28 @@ from analysis.lib.stats.wildfire_risk import get_wildfire_risk_unit_results
 data_dir = Path("data")
 
 
-def get_summary_unit_results(unit_type, unit_id):
+def get_summary_unit_results(unit_type: SummaryUnitType, unit_id: str) -> dict:
     """Get statistics for a single summary unit (HUC12 / marine hex)
 
     Parameters
     ----------
-    unit_type : str, one of {"huc12", "marine_hex"}
+    unit_type : str, one of SummaryUnitType
     unit_id : str
 
     Returns
     -------
     dict (None if id not present)
     """
+    if unit_type not in SummaryUnitType:
+        raise ValueError(f"unit_type must be one of {', '.join([x.value for x in SummaryUnitType])}")
+
+    if not isinstance(unit_id, str):
+        raise ValueError("unit_id must be a string")
+
     results_dir = data_dir / "results" / unit_type
 
-    units_filename = "huc12.feather" if unit_type == "huc12" else "marine_hex.feather"
-
     df = read_unit_from_feather(
-        data_dir / "inputs/summary_units" / units_filename,
+        data_dir / f"inputs/summary_units/{unit_type}.feather",
         unit_id,
         columns=[
             "id",

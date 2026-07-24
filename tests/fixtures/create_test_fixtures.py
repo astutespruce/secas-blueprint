@@ -29,9 +29,7 @@ def save_to_zip(files: dict[str | Path, gp.GeoDataFrame], outfilename: str):
                 layer = None
 
             filename = tmpdir / Path(filename)
-            write_dataframe(
-                df, tmpdir / filename, driver=drivers[filename.suffix], layer=layer, append=(filename).exists()
-            )
+            write_dataframe(df, filename, driver=drivers[filename.suffix], layer=layer, append=(filename).exists())
 
         with ZipFile(outfilename, "w", compression=ZIP_DEFLATED) as zipfile:
             for filename in glob(f"{tmpdir}/**", recursive=True):
@@ -120,3 +118,13 @@ save_to_zip(
     },
     out_dir / "gdb_poly_multiple_layers.zip",
 )
+
+# create invalid shapefile
+with TemporaryDirectory(dir="/tmp") as tmp:
+    tmpdir = Path(tmp)
+    tmpdir.mkdir(exist_ok=True)
+    write_dataframe(gp.GeoDataFrame(geometry=[shapely.box(0, 0, 1, 1)], crs=GEO_CRS), tmpdir / "missing_shx.shp")
+
+    with ZipFile(out_dir / "shp_missing_shx.zip", "w", compression=ZIP_DEFLATED) as zipfile:
+        filename = tmpdir / "missing_shx.shp"
+        zipfile.write(filename, str(filename.relative_to(tmpdir)))

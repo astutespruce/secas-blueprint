@@ -1,3 +1,4 @@
+from enum import StrEnum
 from pathlib import Path
 from itertools import product
 import json
@@ -161,3 +162,18 @@ WILDFIRE_RISK_BINS = [
     0.0464159,
     2,
 ]
+
+
+class SummaryUnitType(StrEnum):
+    huc12 = "huc12"
+    marine_hex = "marine_hex"
+
+
+class ReportType(StrEnum):
+    pdf = "pdf"
+    xlsx = "xlsx"
+
+
+class SummaryUnitReportType(StrEnum):
+    pdf = "pdf"
+    # XLSX not yet supported

@@ -1,21 +1,11 @@
-from enum import StrEnum
-
 import arq
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security.api_key import APIKey
 
+from analysis.constants import SummaryUnitReportType, SummaryUnitType
 from api.settings import REDIS, REDIS_QUEUE
 from api.logger import log
 from api.lib.validation import validate_token
-
-
-class UnitType(StrEnum):
-    huc12 = "huc12"
-    marine_hex = "marine_hex"
-
-
-class SummaryUnitReportType(StrEnum):
-    pdf = "pdf"
 
 
 router = APIRouter()
@@ -23,7 +13,10 @@ router = APIRouter()
 
 @router.post("/summary_unit_report/{unit_type}/{unit_id}/{report_type}")
 async def summary_unit_report(
-    unit_type: UnitType, unit_id: str, report_type: SummaryUnitReportType, token: APIKey = Depends(validate_token)
+    unit_type: SummaryUnitType,
+    unit_id: str,
+    report_type: SummaryUnitReportType,
+    token: APIKey = Depends(validate_token),
 ):
     try:
         redis = await arq.create_pool(REDIS)

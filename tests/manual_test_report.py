@@ -1,7 +1,5 @@
 import asyncio
-import json
 import os
-from base64 import b64decode, b64encode
 from pathlib import Path
 from time import time
 
@@ -13,41 +11,8 @@ from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES
 from analysis.lib.geometry import dissolve
 from analysis.lib.pdf.report import create_report
 from analysis.lib.pdf.map import render_maps
-from analysis.lib.stats.custom_area import get_custom_area_results
+from analysis.lib.stats.aoi import get_aoi_results
 from analysis.lib.stats.summary_units import get_summary_unit_results
-
-# if True, cache maps if not previously created, then reuse
-CACHE_MAPS = False
-
-
-def write_cache(maps, scale, path):
-    if not path.exists():
-        os.makedirs(path)
-
-    for name, data in maps.items():
-        if data is not None:
-            with open(path / f"{name.replace(':', '__')}.png", "wb") as out:
-                out.write(b64decode(data))
-
-    with open(path / "scale.json", "w") as out:
-        out.write(json.dumps(scale))
-
-
-def read_cache(path):
-    if not path.exists():
-        # cache miss
-        return None, None
-
-    maps = {}
-    for filename in path.glob("*.png"):
-        name = filename.stem.replace("__", ":")
-        maps[name] = b64encode(open(filename, "rb").read()).decode("utf-8")
-
-    scale = json.loads(open(path / "scale.json").read())
-
-    print("CACHE: loaded maps from cache")
-
-    return maps, scale
 
 
 ### Create reports for an AOI
@@ -103,7 +68,7 @@ aois = [
     # {"name": "FL test", "path": "EvergladesHeadwaterComplex_APPTYPE_0"},
     # {"name": "Guild Tracts", "path": "GuildTracts"}
     # {"name": "Florida Panhandle Boundary", "path": "FL_panhadle_boundary"},
-    {"name": "Dell Murphy wetlands", "path": "Dell Murphy wetlands"},
+    # {"name": "Dell Murphy wetlands", "path": "Dell Murphy wetlands"},
     # {"name": "TRB GA", "path": "TRB_GA"},
     # {"name": "Florida 5 Star County Boundary", "path": "FL_5StarCounty_Boundary"}
     # {"name": "Cumberland Plateau Focus Area", "path": "NFWF_Cumberland_Fund_TN"}
@@ -123,7 +88,7 @@ aois = [
     # {"name": "Cave Spring, VA area", "path": "CaveSpring"},
     # {"name": "South Atlantic Offshore", "path": "SAOffshore"},
     # {"name": "Florida Offshore", "path": "FLOffshore"},
-    # {"name": "Razor", "path": "Razor"},
+    {"name": "Razor", "path": "Razor"},
     # {"name": "Single Test Area", "path": "SingleTest"},
 ]
 
@@ -153,7 +118,7 @@ for aoi in aois:
         bar.next(percent)
 
     print("Calculating results...")
-    task = get_custom_area_results(df, progress_callback=progress_callback)
+    task = get_aoi_results(df, progress_callback=progress_callback)
     results = asyncio.run(task)
 
     bar.finish()
@@ -170,9 +135,6 @@ for aoi in aois:
 
     maps = None
     scale = None
-    if CACHE_MAPS:
-        maps, scale = read_cache(cache_dir)
-
     if not maps:
         print("Rendering maps...")
 
@@ -199,9 +161,6 @@ for aoi in aois:
 
         if errors:
             print("Errors", errors)
-
-        if CACHE_MAPS:
-            write_cache(maps, scale, cache_dir)
 
     results["scale"] = scale
 
@@ -260,9 +219,6 @@ for unit_type in ids:
             indicators.extend([i["id"] for i in group["indicators"]])
 
         maps = None
-        if CACHE_MAPS:
-            maps, scale = read_cache(cache_dir)
-
         if not maps:
             print("Rendering maps...")
             task = render_maps(
@@ -280,9 +236,6 @@ for unit_type in ids:
 
             if errors:
                 print("Errors", errors)
-
-            if CACHE_MAPS:
-                write_cache(maps, scale, cache_dir)
 
         results["scale"] = scale
 

@@ -1,6 +1,7 @@
 import logging
 from pathlib import Path
 import re
+from zipfile import ZipFile
 
 from pyogrio import list_layers, read_info
 
@@ -12,7 +13,7 @@ log = logging.getLogger(__name__)
 gdb_regex = re.compile(r"\.gdb\/.+$")
 
 
-def get_dataset(zip):
+def get_dataset(zip: ZipFile) -> tuple[str]:
     """Gets singular geospatial dataset and layer for analysis.
 
     Validates rules:

@@ -1,4 +1,3 @@
-from enum import StrEnum
 from pathlib import Path
 import shutil
 import tempfile
@@ -9,15 +8,11 @@ import arq
 from fastapi import APIRouter, File, UploadFile, Form, HTTPException, Depends
 from fastapi.security.api_key import APIKey
 
+from analysis.constants import ReportType
 from api.lib.geo import get_dataset
 from api.logger import log
 from api.settings import REDIS, REDIS_QUEUE, TEMP_DIR
 from api.lib.validation import validate_content_type, validate_token
-
-
-class ReportType(StrEnum):
-    pdf = "pdf"
-    xlsx = "xlsx"
 
 
 def save_file(file: UploadFile) -> Path:

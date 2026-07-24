@@ -18,7 +18,7 @@ bnd_dir = data_dir / "boundaries"
 subregions_filename = bnd_dir / "subregions.feather"
 
 
-async def get_custom_area_results(df, progress_callback=None):
+async def get_aoi_results(df, progress_callback=None):
     """Calculate statistics for custom area
 
     df : GeoDataFrame

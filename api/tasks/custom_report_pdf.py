@@ -11,7 +11,7 @@ from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES, STANDARD_RESOLUTION
 from analysis.lib.geometry import dissolve
 from analysis.lib.pdf.map import render_maps
 from analysis.lib.pdf.report import create_report
-from analysis.lib.stats.custom_area import get_custom_area_results
+from analysis.lib.stats.aoi import get_aoi_results
 from api.errors import DataError
 from api.settings import LOGGING_LEVEL, TEMP_DIR, CUSTOM_REPORT_MAX_ACRES, MAX_POLYGONS, MAX_VERTICES
 from api.lib.progress import set_progress
@@ -131,7 +131,7 @@ async def create_custom_pdf_report(ctx, zip_filename, dataset, layer, name=""):
             "Calculating results (this might take a while)",
         )
 
-    results = await get_custom_area_results(df, progress_callback=progress_callback)
+    results = await get_aoi_results(df, progress_callback=progress_callback)
 
     if results is None:
         raise DataError(
