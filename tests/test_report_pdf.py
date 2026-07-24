@@ -164,6 +164,17 @@ async def test_summary_unit_maps_huc12():
 
 
 @pytest.mark.anyio
+async def test_summary_unit_pdf_huc12():
+    """this is just a smoke test that PDF generates"""
+    unit_id = "030601040506"
+    results = get_summary_unit_results("huc12", unit_id)
+    maps, scale, map_errors = await render_maps(results["bounds"], summary_unit_id=unit_id)
+    results["scale"] = scale
+    pdf = create_report(maps=maps, results=results, name=results["name"], area_type="huc12")
+    assert pdf is not None
+
+
+@pytest.mark.anyio
 @pytest.mark.parametrize("format", ["gdb", "shp"])
 async def test_aoi_results_no_overlap(format):
     zip_filename = fixture_dir / f"{format}_poly_no_overlap.zip"

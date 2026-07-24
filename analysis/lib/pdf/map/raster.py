@@ -16,6 +16,10 @@ from analysis.lib.raster import get_window, window_overlaps, shift_window
 
 from .mercator import get_map_scale
 
+
+type UInt8_2D_Array = np.ndarray[tuple[int, int], np.dtype[np.uint8]]
+
+
 # silence rasterio warnings not applicable here
 warnings.filterwarnings("ignore", message=".*Dataset has no geotransform.*")
 
@@ -173,7 +177,7 @@ class WebMercatorReader(object):
         return clipped
 
 
-def hex_to_rgb(color):
+def hex_to_rgb(color: str) -> tuple[int]:
     """Convert a hex color code to an 8 bit rgb tuple.
 
     Parameters
@@ -186,15 +190,14 @@ def hex_to_rgb(color):
 
     """
 
-    if not len(color) == 7 and color[0] == "#":
+    if not (color and len(color) == 7 and color[0] == "#"):
         raise ValueError("Color must be in #112233 format")
 
-    color = color.lstrip("#")
+    # ignore leading "#"
+    return tuple(int(color[i : i + 2], 16) for i in (1, 3, 5))
 
-    return tuple(int(color[i : i + 2], 16) for i in (0, 2, 4))
 
-
-def hex_to_rgba(colors, alpha=0):
+def hex_to_rgba(colors: dict[int, str], alpha: int = 0) -> np.ndarray:
     """Convert value, hex dict to RGBA array
 
     Parameters
@@ -205,10 +208,15 @@ def hex_to_rgba(colors, alpha=0):
         alpha value
     """
 
-    #
+    if not (colors and isinstance(colors, dict)):
+        raise ValueError("Colors must be a non-empty dict")
+
     max_value = max(colors.keys())
     out_colors = np.zeros((max_value + 1, 4), dtype="uint8")
     for value, color in colors.items():
+        if not (color and len(color) == 7 and color[0] == "#"):
+            raise ValueError("Color must be in #112233 format")
+
         out_colors[value, :] = [int(color[i : i + 2], 16) for i in (1, 3, 5)] + [alpha]
     return out_colors
 
@@ -219,14 +227,14 @@ def hex_to_rgba(colors, alpha=0):
     nogil=True,
     cache=True,
 )
-def to_rgba(data, colors, nodata):
+def to_rgba(data: UInt8_2D_Array, colors: UInt8_2D_Array, nodata: np.uint8) -> np.ndarray[np.ndarray[np.uint8]]:
     """Convert 2D array of data into RGBA color values
 
     Parameters
     ----------
     data : 2D uint8 array
-    colors : dict
-        lookup of value to hex color
+    colors : 2D uint8 array
+        indexed array of colors (4 components per value)
     nodata : uint8
         NODATA value
 

@@ -35,22 +35,18 @@ class RasterizedGeometry(object):
         # create lowres shape mask and window (used to presecreen some datasets)
         with rasterio.open(extent_mask_filename) as src:
             window = get_window(src, self.bounds)
-            self.lowres_mask = WindowGeometryMask(
-                src, window, all_shapes, all_touched=True
-            )
+            self.lowres_mask = WindowGeometryMask(src, window, all_shapes, all_touched=True)
 
         # create masks and windows
         with rasterio.open(extent_filename) as src:
-            windows, ratio = get_overlapping_windows(
-                src, geometry, bounds=self.bounds, window_size=WINDOW_SIZE
-            )
+            windows, ratio = get_overlapping_windows(src, geometry, bounds=self.bounds, window_size=WINDOW_SIZE)
 
             num_windows = len(windows)
             self.masks = []
 
             # threshold for using windows determined by testing performance
             if num_windows >= 50 or (num_windows > 1 and ratio <= 0.25):
-                print(f"Using {len(windows)} windows for reading (ratio: {ratio:.3f})")
+                # print(f"Using {len(windows)} windows for reading (ratio: {ratio:.3f})")
                 for window in windows:
                     # clip geometry to window then rasterize
                     clipped = shapely.clip_by_rect(geometry, *src.window_bounds(window))
@@ -58,9 +54,7 @@ class RasterizedGeometry(object):
                     self.masks.append(mask)
 
             else:
-                print(
-                    f"Using single window for reading (overlapping windows: {num_windows}, ratio: {ratio:.3f})"
-                )
+                # print(f"Using single window for reading (overlapping windows: {num_windows}, ratio: {ratio:.3f})")
                 window = get_window(src, self.bounds)
                 mask = WindowGeometryMask(src, window, all_shapes)
                 self.masks.append(mask)
