@@ -87,7 +87,7 @@ async def summarize_blueprint_in_aoi(rasterized_geometry, subregions, progress_c
 
     indicators_present = []
     for indicator in INDICATORS:
-        mask_filename = src_dir / "indicators" / indicator["filename"].replace(".tif", "_mask.tif")
+        mask_filename = src_dir / indicator["filename"].replace(".tif", "_mask.tif")
         with rasterio.open(mask_filename) as src:
             if rasterized_geometry.detect_data(src):
                 indicators_present.append(indicator)
@@ -95,7 +95,7 @@ async def summarize_blueprint_in_aoi(rasterized_geometry, subregions, progress_c
     indicators = {}
     for i, indicator in enumerate(indicators_present):
         id = indicator["id"]
-        filename = src_dir / "indicators" / indicator["filename"]
+        filename = src_dir / indicator["filename"]
         bins = range(0, indicator["values"][-1]["value"] + 1)
 
         with rasterio.open(filename) as src:

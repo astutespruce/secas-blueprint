@@ -8,6 +8,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import FileResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
+from analysis.constants import ReportType
 from api.errors import DataError
 from api.settings import REDIS, REDIS_QUEUE, API_SECRET
 from api.logger import log
@@ -126,13 +127,13 @@ async def job_status_endpoint(job_id: str):
             info = await job.result_info()
 
             try:
-                # this re-raises the underlying exception raised in the worker
-                filename, out_filename, errors = await job.result()
-
                 if info.success:
+                    # this re-raises the underlying exception raised in the worker
+                    results, errors = await job.result()
+
                     return {
                         "status": "success",
-                        "result": f"/api/jobs/{job_id}/results",
+                        "result": results.get("payload", None),
                         "errors": errors,
                     }
 
@@ -167,8 +168,8 @@ async def job_status_endpoint(job_id: str):
                 await redis.aclose()
 
 
-@router.get("/jobs/{job_id}/results")
-async def report_pdf_endpoint(job_id: str):
+@router.get("/jobs/{job_id}/{report_type}")
+async def report_results_endpoint(job_id: str, report_type: ReportType):
     redis = await arq.create_pool(REDIS)
 
     try:
@@ -194,10 +195,11 @@ async def report_pdf_endpoint(job_id: str):
 
         path, out_filename, errors = info.result
 
-        if "_pdf_" in info.function:
+        if report_type == ReportType.pdf:
             media_type = "application/pdf"
 
-        else:
+        elif report_type == ReportType.xlsx:
+            # TODO: only supported for create_custom_report_xlsx
             raise NotImplementedError("TODO: media type for xlsx")
 
         return FileResponse(path, filename=out_filename, media_type=media_type)

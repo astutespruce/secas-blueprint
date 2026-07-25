@@ -137,4 +137,8 @@ async def create_custom_pdf_report(ctx, zip_filename, dataset, layer, name=""):
 
     log.debug(f"Created PDF at: {name}")
 
-    return name, filename, errors
+    return {
+        "name": name,
+        "filename": filename,
+        "payload": f"/api/jobs/{ctx['job_id']}/pdf",
+    }, errors

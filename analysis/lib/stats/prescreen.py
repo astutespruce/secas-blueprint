@@ -25,20 +25,20 @@ def get_available_datasets(df: gp.GeoDataFrame) -> list[str]:
     list[str]
     """
 
-    available_datasets = []
+    datasets = []
 
     with rasterio.open(extent_mask_filename) as src:
         window = get_window(src, df.total_bounds)
 
         if not window_overlaps(window, src):
-            return available_datasets
+            return datasets
 
         shapes = to_dict_all(df.geometry.values)
         lowres_mask = WindowGeometryMask(src, window, shapes, all_touched=True)
 
         # use the lowres extent to determine overlap with blueprint
         if lowres_mask.detect_data(src):
-            available_datasets.extend([BLUEPRINT["id"], CORRIDORS["id"]])
+            datasets.extend([BLUEPRINT["id"], CORRIDORS["id"]])
 
     for dataset_id, dataset in REPORT_DATASETS.items():
         if dataset_id in {BLUEPRINT["id"], CORRIDORS["id"]}:
@@ -52,10 +52,10 @@ def get_available_datasets(df: gp.GeoDataFrame) -> list[str]:
 
             with rasterio.open(data_dir / filename) as src:
                 if lowres_mask.detect_data(src):
-                    available_datasets.append(dataset_id)
+                    datasets.append(dataset_id)
 
                     if dataset_id == SLR_DEPTH["id"]:
                         # SLR projections available where SLR depth is available
-                        available_datasets.append(SLR_PROJ["id"])
+                        datasets.append(SLR_PROJ["id"])
 
-    return available_datasets
+    return datasets

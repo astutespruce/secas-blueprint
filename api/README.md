@@ -63,7 +63,7 @@ http :5000/api/jobs/<job_id>
 To download PDF from a successful job:
 
 ```
-http :5000/api/jobs/<job_id>/results
+http :5000/api/jobs/<job_id>/pdf
 ```
 
 This sets the `Content-Type` header to attachment and uses the passed-in name

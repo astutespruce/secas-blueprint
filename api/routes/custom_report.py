@@ -71,7 +71,7 @@ async def custom_report_endpoint(
         task = "create_custom_pdf_report"
         kwargs = {"name": name}
     elif report_type == "xlsx":
-        task = "inspect_xlsx_report_inputs"
+        task = "get_xlsx_report_inputs"
         kwargs = {"uuid": secrets.token_urlsafe(16)}
 
     # Create report task

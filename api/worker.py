@@ -6,7 +6,7 @@ from arq import cron
 import sentry_sdk
 
 from api.tasks.custom_report_pdf import create_custom_pdf_report
-from api.tasks.custom_report_xlsx import create_custom_xlsx_report
+from api.tasks.custom_report_xlsx import get_xlsx_report_inputs
 from api.tasks.summary_unit_report_pdf import create_summary_unit_pdf_report
 
 from api.settings import (
@@ -108,7 +108,7 @@ class WorkerSettings:
     queue_name = REDIS_QUEUE
     # run cleanup every 60 minutes
     cron_jobs = [cron(cleanup_files, run_at_startup=True, minute=0, second=0)]
-    functions = [create_custom_pdf_report, create_custom_xlsx_report, create_summary_unit_pdf_report]
+    functions = [create_custom_pdf_report, get_xlsx_report_inputs, create_summary_unit_pdf_report]
 
     on_startup = startup
     on_shutdown = shutdown

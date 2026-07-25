@@ -109,13 +109,23 @@ for format in ["shp", "gdb"]:
 
     # small overlapping rect
     save_to_zip(
-        {f"poly_small.{format}": gp.GeoDataFrame(geometry=[shapely.box(-85.98, 33.340, -85.975, 33.344)], crs=GEO_CRS)},
+        {
+            f"poly_small.{format}": gp.GeoDataFrame(
+                [{"ID": np.int8(1), "Name": "first"}],
+                geometry=[shapely.box(-85.98, 33.340, -85.975, 33.344)],
+                crs=GEO_CRS,
+            )
+        },
         out_dir / f"{format}_poly_small.zip",
     )
 
     # large overlapping rect that is bigger than default limit of 5M acres
     save_to_zip(
-        {f"poly_large.{format}": gp.GeoDataFrame(geometry=[shapely.box(-88, 32, -80, 35)], crs=GEO_CRS)},
+        {
+            f"poly_large.{format}": gp.GeoDataFrame(
+                [{"ID": np.int8(1), "Name": "first"}], geometry=[shapely.box(-88, 32, -80, 35)], crs=GEO_CRS
+            )
+        },
         out_dir / f"{format}_poly_large.zip",
     )
 
@@ -137,3 +147,87 @@ with TemporaryDirectory(dir="/tmp") as tmp:
     with ZipFile(out_dir / "shp_missing_shx.zip", "w", compression=ZIP_DEFLATED) as zipfile:
         filename = tmpdir / "missing_shx.shp"
         zipfile.write(filename, str(filename.relative_to(tmpdir)))
+
+
+# test with small rectangles created via geojson.io
+df = gp.GeoDataFrame(
+    [
+        {
+            "ID": 1,
+            "Name": "first",
+            "Region": "continental",
+            "Common": "A",
+            "geometry": shapely.box(-85.5717, 34.9635, -85.5599, 34.9741),
+        },
+        {
+            "ID": 2,
+            "Name": "second",
+            "Region": "continental",
+            "Common": "A",
+            "geometry": shapely.box(-82.6885, 28.8070, -82.6844, 28.8107),
+        },
+        {
+            "ID": 3,
+            "Name": "third",
+            "Region": "continental",
+            "Common": "A",
+            "geometry": shapely.box(-91.0470, 33.8705, -91.0399, 33.8760),
+        },
+        {
+            "ID": 4,
+            "Name": "five",
+            "Region": "caribbean",
+            "Common": "A",
+            "geometry": shapely.box(-66.5655, 18.3474, -66.5579, 18.3541),
+        },
+        {
+            "ID": 5,
+            "Name": "six",
+            "Region": "marine",
+            "Common": "A",
+            "geometry": shapely.box(-80.9222, 31.6965, -80.8734, 31.7390),
+        },
+    ],
+    geometry="geometry",
+    crs=GEO_CRS,
+)
+df["ID"] = df.ID.astype("int8")
+
+for format in ["shp", "gdb"]:
+    save_to_zip({f"poly_multiple.{format}": df}, out_dir / f"{format}_poly_multiple.zip")
+
+
+# one area in Southeast, one in Midwest, one shared by both
+df = gp.GeoDataFrame(
+    [
+        {
+            "ID": 1,
+            "Name": "first",
+            "Blueprint": "Southeast",
+            "Common": "A",
+            "geometry": shapely.box(-79.5952, 35.0428, -79.5841, 35.0529),
+        },
+        {
+            "ID": 2,
+            "Name": "second",
+            "Blueprint": "Midwest",
+            "Common": "A",
+            "geometry": shapely.box(-94.4318, 47.6882, -94.4144, 47.6992),
+        },
+        {
+            "ID": 3,
+            "Name": "third",
+            "Blueprint": "Southeast,Midwest",
+            "Common": "A",
+            "geometry": shapely.box(-91.8829, 37.9214, -91.8761, 37.9256),
+        },
+    ],
+    geometry="geometry",
+    crs=GEO_CRS,
+)
+df["ID"] = df.ID.astype("int8")
+
+for format in ["shp", "gdb"]:
+    save_to_zip(
+        {f"poly_multiple_partial_overlap.{format}": df}, out_dir / f"{format}_poly_multiple_partial_overlap.zip"
+    )
