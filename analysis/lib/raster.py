@@ -547,7 +547,7 @@ class WindowGeometryMask(object):
             invert=True,
         )
 
-    def detect_data(self, dataset):
+    def detect_data(self, dataset: rasterio.DatasetReader) -> bool:
         """Detect if there are any non-NODATA pixel values in the dataset within
         the geometry mask.
 

@@ -1,15 +1,12 @@
-import logging
 import tempfile
 
 from analysis.lib.pdf.map import render_maps
 from analysis.lib.pdf.report import create_report
 from analysis.lib.stats.summary_units import get_summary_unit_results
 from api.errors import DataError
-from api.settings import LOGGING_LEVEL, TEMP_DIR
+from api.settings import TEMP_DIR
+from api.logger import log
 from api.lib.progress import set_progress
-
-log = logging.getLogger(__name__)
-log.setLevel(LOGGING_LEVEL)
 
 
 async def create_summary_unit_pdf_report(ctx, unit_type, unit_id):

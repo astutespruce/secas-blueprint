@@ -2,17 +2,15 @@ from base64 import b64decode
 from copy import deepcopy
 from io import BytesIO
 import json
-import logging
 
 from PIL import Image
 from pymgl import Map
 import shapely
 
 from analysis.lib.geometry import to_dict
+from api.logger import log
 from api.settings import TILE_DIR
 
-
-log = logging.getLogger(__name__)
 
 STYLE = {
     "version": 8,

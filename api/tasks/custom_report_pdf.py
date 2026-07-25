@@ -1,6 +1,5 @@
 """Create a custom report for a user-uploaded area of interest."""
 
-import logging
 import tempfile
 
 import numpy as np
@@ -13,12 +12,10 @@ from analysis.lib.pdf.map import render_maps
 from analysis.lib.pdf.report import create_report
 from analysis.lib.stats.aoi import get_aoi_results
 from api.errors import DataError
-from api.settings import LOGGING_LEVEL, TEMP_DIR, CUSTOM_REPORT_MAX_ACRES, MAX_POLYGONS, MAX_VERTICES
+from api.settings import TEMP_DIR, CUSTOM_REPORT_MAX_ACRES, MAX_POLYGONS, MAX_VERTICES
+from api.logger import log
+from api.lib.geo import extract_dataset
 from api.lib.progress import set_progress
-
-
-log = logging.getLogger(__name__)
-log.setLevel(LOGGING_LEVEL)
 
 
 async def create_custom_pdf_report(ctx, zip_filename, dataset, layer, name=""):
@@ -54,64 +51,11 @@ async def create_custom_pdf_report(ctx, zip_filename, dataset, layer, name=""):
 
     await set_progress(ctx["redis"], ctx["job_id"], 0, "Preparing area of interest")
 
-    path = f"/vsizip/{zip_filename}/{dataset}"
-
-    df = read_dataframe(path, layer=layer, columns=[], force_2d=True).to_crs(DATA_CRS).explode(ignore_index=True)
-
-    df = df.loc[df.geometry.type == "Polygon"].copy()
-
-    # reject any areas that are too large
-    area = df.area
-    approx_acres = area.sum() * M2_ACRES
-    if approx_acres > CUSTOM_REPORT_MAX_ACRES:
-        raise DataError(
-            f"Your area of interest is too large ({approx_acres:,.0f} acres); it must be < {CUSTOM_REPORT_MAX_ACRES:,.0f} acres"
-        )
-
-    # reject any areas that are too complex: too many individual features or too many vertices
-    if len(df) > MAX_POLYGONS:
-        log.error("Upload data source contains too many polygons")
-        raise DataError(
-            f"data source contains too many individual polygons: {len(df):,} (must be <{MAX_POLYGONS:,}).  Please select a smaller subset of polygons or preprocess this dataset to reduce the number of individual polygons (e.g., dissolve adjacent boundaries)."
-        )
-
-    num_vertices = shapely.get_num_coordinates(df.geometry.values).sum()
-    if num_vertices > MAX_VERTICES:
-        log.error("Upload data source contains too many coordinates")
-        raise DataError(
-            f"data source appears to be too complex and contains too many coordinates: {num_vertices:,} (total coordinates must be <{MAX_VERTICES:,}).  Please select a smaller subset of polygons preprocess this dataset to reduce the number of coordinates (e.g., dissolve adjacent boundaries, simplify polygons, etc)."
-        )
-
-    # make sure that the polygons are big enough to be useful
-    too_small_ix = area < (STANDARD_RESOLUTION * STANDARD_RESOLUTION)
-    pct_too_small = 100 * area[too_small_ix].sum() / area.sum()
-
-    if pct_too_small >= 50:
-        log.error(
-            f"Upload data source has {pct_too_small}% of the total area in polygons less than a single 30x30m pixel"
-        )
-        raise DataError(
-            f"{pct_too_small:.0f}% of the total area in the data source is in polygons less than a single 30x30m pixel; these will not provide useful results.  Please filter these out of your dataset and try again."
-        )
-
-    df["geometry"] = shapely.make_valid(df.geometry.values)
-    df = df.explode(ignore_index=True)
-
-    # check for non-polygon results of making valid and strip them out
-    geom_types = np.unique(shapely.get_type_id(df.geometry.values))
-    if set(geom_types) - {3, 6}:
-        df = df.loc[shapely.get_type_id(df.geometry.values) == 3].copy()
-        print("Found non-polygon geometries; stripping them out")
-
-        if len(df) == 0:
-            raise DataError(
-                "No valid area boundaries available for analysis after making geometries valid.  This means that one or more of your features has an invalid geometry.  Please clean up your data and try again."
-            )
+    df = extract_dataset(f"/vsizip/{zip_filename}/{dataset}", layer=layer, columns=[])
 
     if len(df) > 1:
         try:
-            df["group"] = 1
-            df = dissolve(df, by="group")
+            df = dissolve(df)
 
         except Exception:
             raise DataError(

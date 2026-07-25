@@ -5,7 +5,8 @@ from zipfile import ZipFile
 from httpx import BasicAuth
 import pytest
 
-from api.lib.geo import get_dataset
+from api.errors import DataError
+from api.lib.geo import get_dataset, extract_dataset
 from api.settings import API_TOKEN, API_SECRET
 
 POLL_DELAY_SECONDS = 1
@@ -63,6 +64,41 @@ def test_get_dataset(zip_filename, filename, layer):
         actual_filename, actual_layer = get_dataset(zipfile)
         assert actual_filename == filename
         assert actual_layer == layer
+
+
+@pytest.mark.parametrize("format", ["shp", "gdb"])
+@pytest.mark.parametrize(
+    "zip_filename,error",
+    [
+        ("{format}_poly_too_many.zip", "too many individual polygons"),
+        ("{format}_poly_large.zip", "area of interest is too large"),
+        ("{format}_poly_tiny.zip", "polygons less than a single 30x30m pixel"),
+        # point / line would normally be screened out by get_dataset
+        ("{format}_point.zip", "no polygons found in data source"),
+        ("{format}_line.zip", "no polygons found in data source"),
+    ],
+)
+def test_extract_dataset_errors(format, zip_filename, error):
+    filename = zip_filename.format(format=format)
+    dataset = filename.replace(f"{format}_", "").replace(".zip", f".{format}")
+
+    with pytest.raises(DataError, match=error):
+        extract_dataset(f"/vsizip/tests/fixtures/{filename}/{dataset}", layer=None, columns=[])
+
+
+@pytest.mark.parametrize("format", ["shp", "gdb"])
+@pytest.mark.parametrize(
+    "zip_filename",
+    [
+        "{format}_poly_no_overlap.zip",
+        "{format}_poly_z_no_overlap.zip",
+    ],
+)
+def test_extract_dataset(format, zip_filename):
+    filename = zip_filename.format(format=format)
+    dataset = filename.replace(f"{format}_", "").replace(".zip", f".{format}")
+    df = extract_dataset(f"/vsizip/tests/fixtures/{filename}/{dataset}", layer=None, columns=[])
+    assert not df.has_z.any()
 
 
 @pytest.mark.anyio

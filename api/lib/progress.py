@@ -1,11 +1,9 @@
-import logging
 import time
 
 from redis.exceptions import TimeoutError
 
+from api.logger import log
 from api.settings import JOB_TIMEOUT
-
-log = logging.getLogger("api")
 
 
 JOB_PREFIX = "arq:job-progress:"
@@ -31,9 +29,7 @@ async def set_progress(redis, job_id, progress=0, message="", errors=None):
     retry = 0
     while retry <= 5:
         try:
-            await redis.setex(
-                f"{JOB_PREFIX}{job_id}", EXPIRATION, f"{progress}|{message}|{error_str}"
-            )
+            await redis.setex(f"{JOB_PREFIX}{job_id}", EXPIRATION, f"{progress}|{message}|{error_str}")
             return
 
         except TimeoutError as ex:

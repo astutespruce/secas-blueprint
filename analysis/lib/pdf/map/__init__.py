@@ -32,7 +32,6 @@ PADDING = 5
 src_dir = Path("data/inputs")
 blueprint_filename = src_dir / "blueprint.tif"
 corridors_filename = src_dir / "corridors.tif"
-indicators_dir = src_dir / "indicators"
 parcas_filename = src_dir / "boundaries/parcas.tif"
 protected_areas_filename = src_dir / "boundaries/protected_areas.tif"
 slr_filename = src_dir / "threats/slr/slr.tif"
@@ -119,7 +118,7 @@ async def render_raster_maps(
         task_args.append(
             (
                 id,
-                indicators_dir / indicator["filename"],
+                src_dir / indicator["filename"],
                 colors,
             )
         )
@@ -140,7 +139,7 @@ async def render_raster_maps(
         task_args.append(("slr", slr_filename, colors))
 
     if urban:
-        task_args.append(("urban_2060", urban_filename, URBAN_COLORS))
+        task_args.append(("urban", urban_filename, URBAN_COLORS))
 
     if wildfire_risk:
         colors = WILDFIRE_RISK_COLORS

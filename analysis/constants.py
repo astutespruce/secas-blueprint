@@ -52,6 +52,7 @@ SECAS_HUC2 = [2, 3, 5, 6, 7, 8, 10, 11, 12, 13, 21]
 
 json_dir = Path("constants")
 
+
 BLUEPRINT = json.loads(open(json_dir / "blueprint.json").read())
 BLUEPRINT_COLORS = {
     i: entry["color"] for i, entry in enumerate(BLUEPRINT["values"]) if "color" in entry and entry["value"] > 0
@@ -63,8 +64,19 @@ CORRIDORS_COLORS = {
 }
 
 INDICATOR_GROUPS = json.loads(open(json_dir / "indicator_groups.json").read())
-INDICATORS = json.loads(open(json_dir / "indicators.json").read())
+raw_indicators = json.loads(open(json_dir / "indicators.json").read())
+for indicator in raw_indicators:
+    indicator["filename"] = f"indicators/{indicator['filename']}"
+
+raw_indicators_index = {indicator["id"]: indicator for indicator in raw_indicators}
+# order by indicator group to match order used elsewhere
+INDICATORS = []
+for group in INDICATOR_GROUPS:
+    INDICATORS.extend([raw_indicators_index[id] for id in group["indicators"]])
 INDICATORS_INDEX = {indicator["id"]: indicator for indicator in INDICATORS}
+
+del raw_indicators_index
+
 
 PROTECTED_AREAS = json.loads(open(json_dir / "protected_areas.json").read())
 PROTECTED_AREAS_COLORS = {
@@ -162,6 +174,25 @@ WILDFIRE_RISK_BINS = [
     0.0464159,
     2,
 ]
+
+
+# this matches the overall order of filters
+REPORT_DATASETS = {
+    dataset["id"]: dataset
+    for dataset in [
+        BLUEPRINT,
+        CORRIDORS,
+    ]
+    + INDICATORS
+    + [
+        SLR_DEPTH,
+        SLR_PROJ,  # NOTE: not present in filters
+        PARCAS,
+        URBAN_BY_DECADE,  # NOTE: filter is just urban 2060
+        PROTECTED_AREAS,
+        WILDFIRE_RISK,
+    ]
+}
 
 
 class SummaryUnitType(StrEnum):

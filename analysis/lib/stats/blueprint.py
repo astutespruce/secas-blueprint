@@ -12,7 +12,6 @@ from analysis.lib.util import pluck
 
 data_dir = Path("data")
 src_dir = data_dir / "inputs"
-indicators_dir = src_dir / "indicators"
 blueprint_filename = src_dir / BLUEPRINT["filename"]
 corridors_filename = src_dir / CORRIDORS["filename"]
 
@@ -252,10 +251,9 @@ def summarize_blueprint_by_units_grid(df, units_grid, out_dir, marine=False):
 
     for indicator in check_indicators:
         id = indicator["id"]
-        filename = indicators_dir / indicator["filename"]
         # WARNING: some indicators have missing values in the range and are non-contiguous
         values = [v["value"] for v in indicator["values"]]
-        with rasterio.open(filename) as value_dataset:
+        with rasterio.open(src_dir / indicator["filename"]) as value_dataset:
             indicator_acres = (
                 summarize_raster_by_units_grid(
                     df,

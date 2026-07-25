@@ -299,5 +299,5 @@ async def test_aoi_maps():
     assert "parcas" in maps
     assert "protected_areas" in maps
     assert "slr" in maps
-    assert "urban_2060" in maps
+    assert "urban" in maps
     assert "wildfire_risk" in maps

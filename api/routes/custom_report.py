@@ -1,4 +1,5 @@
 from pathlib import Path
+import secrets
 import shutil
 import tempfile
 from typing import Optional
@@ -66,8 +67,14 @@ async def custom_report_endpoint(
     except ValueError as ex:
         raise HTTPException(status_code=400, detail=str(ex))
 
+    if report_type == "pdf":
+        task = "create_custom_pdf_report"
+        kwargs = {"name": name}
+    elif report_type == "xlsx":
+        task = "inspect_xlsx_report_inputs"
+        kwargs = {"uuid": secrets.token_urlsafe(16)}
+
     # Create report task
-    task = f"create_custom_{report_type}_report"
     try:
         redis = await arq.create_pool(REDIS)
         job = await redis.enqueue_job(
@@ -75,7 +82,7 @@ async def custom_report_endpoint(
             filename,
             dataset,
             layer,
-            name=name,
+            **kwargs,
             _queue_name=REDIS_QUEUE,
         )
         return {"job": job.job_id}

@@ -26,7 +26,6 @@ from analysis.lib.raster import write_raster, shift_window, clip_window
 
 data_dir = Path("data")
 inputs_dir = data_dir / "inputs"
-indicators_dir = inputs_dir / "indicators"
 out_dir = Path("data/for_tiles")
 constants_dir = Path("constants")
 
@@ -54,7 +53,7 @@ indicators = pd.DataFrame(
         [
             e["id"].split("_")[0],
             e["id"],
-            indicators_dir / e["filename"],
+            inputs_dir / e["filename"],
             min([v["value"] for v in e["values"]]),
             max([v["value"] for v in e["values"]]),
         ]
@@ -90,14 +89,14 @@ core = pd.DataFrame(
         },
         {
             "theme": "otherInfo",
-            "id": "protectedAreas",
+            "id": "protected_areas",
             "filename": protected_areas_filename,
             "min_value": PROTECTED_AREAS["values"][0]["value"],
             "max_value": PROTECTED_AREAS["values"][-1]["value"],
         },
         {
             "theme": "otherInfo",
-            "id": "slr",
+            "id": "slr_depth",
             "filename": slr_filename,
             "min_value": SLR_DEPTH["values"][0]["value"],
             "max_value": SLR_DEPTH["values"][-1]["value"],
@@ -111,7 +110,7 @@ core = pd.DataFrame(
         },
         {
             "theme": "otherInfo",
-            "id": "wildfireRisk",
+            "id": "wildfire_risk",
             "filename": wildfire_risk_filename,
             "min_value": WILDFIRE_RISK["values"][0]["value"],
             "max_value": WILDFIRE_RISK["values"][-1]["value"],
@@ -184,7 +183,6 @@ for group in groups:
             .reset_index()
             .to_json(orient="records")
         )
-
 
 ### determine the block windows that overlap bounds
 # everything else will be filled with 0

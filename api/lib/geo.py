@@ -1,14 +1,16 @@
-import logging
 from pathlib import Path
 import re
 from zipfile import ZipFile
 
-from pyogrio import list_layers, read_info
+import geopandas as gp
+from pyogrio import list_layers, read_info, read_dataframe
+import shapely
 
-from api.settings import MAX_POLYGONS
+from analysis.constants import DATA_CRS, M2_ACRES, STANDARD_RESOLUTION
+from api.errors import DataError
+from api.settings import CUSTOM_REPORT_MAX_ACRES, MAX_POLYGONS, MAX_VERTICES
+from api.logger import log
 
-
-log = logging.getLogger(__name__)
 
 gdb_regex = re.compile(r"\.gdb\/.+$")
 
@@ -85,3 +87,63 @@ def get_dataset(zip: ZipFile) -> tuple[str]:
         )
 
     return filename, layers[0, 0]
+
+
+def extract_dataset(path: str | Path, layer: None | str, columns: list[str]) -> gp.GeoDataFrame:
+    df = read_dataframe(path, layer=layer, columns=columns, use_arrow=True)
+    if df.has_z.any():
+        df["geometry"] = shapely.force_2d(df.geometry.values)
+
+    df = df.to_crs(DATA_CRS).explode(ignore_index=True)
+
+    if df.geometry.type.unique() != ["Polygon"]:
+        raise DataError("no polygons found in data source")
+
+    # reject any areas that are too large
+    area = df.area
+    approx_acres = area.sum() * M2_ACRES
+    if approx_acres > CUSTOM_REPORT_MAX_ACRES:
+        raise DataError(
+            f"Your area of interest is too large ({approx_acres:,.0f} acres); it must be < {CUSTOM_REPORT_MAX_ACRES:,.0f} acres"
+        )
+
+    # reject any areas that are too complex: too many individual features or too many vertices
+    if len(df) > MAX_POLYGONS:
+        log.error("Upload data source contains too many polygons")
+        raise DataError(
+            f"data source contains too many individual polygons: {len(df):,} (must be <{MAX_POLYGONS:,}).  Please select a smaller subset of polygons or preprocess this dataset to reduce the number of individual polygons (e.g., dissolve adjacent boundaries)."
+        )
+
+    num_vertices = shapely.get_num_coordinates(df.geometry.values).sum()
+    if num_vertices > MAX_VERTICES:
+        log.error("Upload data source contains too many coordinates")
+        raise DataError(
+            f"data source appears to be too complex and contains too many coordinates: {num_vertices:,} (total coordinates must be <{MAX_VERTICES:,}).  Please select a smaller subset of polygons preprocess this dataset to reduce the number of coordinates (e.g., dissolve adjacent boundaries, simplify polygons, etc)."
+        )
+
+    # make sure that the polygons are big enough to be useful
+    too_small_ix = area < (STANDARD_RESOLUTION * STANDARD_RESOLUTION)
+    pct_too_small = 100 * area[too_small_ix].sum() / area.sum()
+
+    if pct_too_small >= 50:
+        log.error(
+            f"Upload data source has {pct_too_small}% of the total area in polygons less than a single 30x30m pixel"
+        )
+        raise DataError(
+            f"{pct_too_small:.0f}% of the total area in the data source is in polygons less than a single 30x30m pixel; these will not provide useful results.  Please filter these out of your dataset and try again."
+        )
+
+    df["geometry"] = shapely.make_valid(df.geometry.values)
+    df = df.explode(ignore_index=True)
+
+    # check for non-polygon results of making valid and strip them out
+    if list(df.geometry.type.unique()) != ["Polygon"]:
+        df = df.loc[df.geometry.type == "Polygon"].copy()
+        log.warning("Found non-polygon geometries; stripping them out")
+
+        if len(df) == 0:
+            raise DataError(
+                "no valid area boundaries available for analysis after making geometries valid.  This means that one or more of your features has an invalid geometry.  Please clean up your data and try again."
+            )
+
+    return df

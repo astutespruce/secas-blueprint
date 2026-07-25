@@ -1,14 +1,8 @@
-import logging
-
-from fastapi import (
-    HTTPException,
-    Security,
-)
+from fastapi import HTTPException, Security
 from fastapi.security.api_key import APIKeyQuery
 
+from api.logger import log
 from api.settings import API_TOKEN
-
-log = logging.getLogger("api")
 
 
 def validate_token(token: str = Security(APIKeyQuery(name="token", auto_error=True))):

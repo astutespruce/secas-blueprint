@@ -72,8 +72,8 @@ for format in ["shp", "gdb"]:
                 geometry=shapely.box(
                     np.repeat(0, MAX_POLYGONS + 10),
                     np.repeat(0, MAX_POLYGONS + 10),
-                    np.repeat(1, MAX_POLYGONS + 10),
-                    np.repeat(1, MAX_POLYGONS + 10),
+                    np.repeat(0.0001, MAX_POLYGONS + 10),
+                    np.repeat(0.0001, MAX_POLYGONS + 10),
                 ),
                 crs=GEO_CRS,
             )
@@ -86,6 +86,15 @@ for format in ["shp", "gdb"]:
     save_to_zip(
         {f"poly_no_overlap.{format}": gp.GeoDataFrame(geometry=[shapely.box(0, 0, 1, 1)], crs=GEO_CRS)},
         out_dir / f"{format}_poly_no_overlap.zip",
+    )
+
+    save_to_zip(
+        {
+            f"poly_z_no_overlap.{format}": gp.GeoDataFrame(
+                geometry=[shapely.Polygon(((0, 0, 1), (0, 1, 2), (1, 1, 3), (1, 0, 2), (0, 0, 1)))], crs=GEO_CRS
+            )
+        },
+        out_dir / f"{format}_poly_z_no_overlap.zip",
     )
 
     # very small overlapping rect less than 1px area

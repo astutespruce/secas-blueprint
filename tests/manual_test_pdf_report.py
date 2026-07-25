@@ -88,7 +88,7 @@ aois = [
     # {"name": "Cave Spring, VA area", "path": "CaveSpring"},
     # {"name": "South Atlantic Offshore", "path": "SAOffshore"},
     # {"name": "Florida Offshore", "path": "FLOffshore"},
-    {"name": "Razor", "path": "Razor"},
+    # {"name": "Razor", "path": "Razor"},
     # {"name": "Single Test Area", "path": "SingleTest"},
 ]
 
