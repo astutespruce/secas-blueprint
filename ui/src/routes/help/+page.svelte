@@ -235,8 +235,8 @@
 				you've selected using the <b>Print / save map to PDF</b> button. This will use your
 				browser's print dialog, where you can choose PDF as an option.
 				<br /><br />
-				The map snapshot is based on the dimensions of your browser window and view of the map that is
-				currently visible in your browser window. You may need to adjust the map or the size of your browser
+				The map snapshot is based on the dimensions of your browser window and the view of the map that
+				is currently visible in the Explorer. You may need to adjust the map or the size of your browser
 				window to better focus on your area of interest.
 			</p>
 			<div>
