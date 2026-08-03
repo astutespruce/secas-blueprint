@@ -171,9 +171,9 @@
 
 		<p class="mt-16">
 			You can select more than one layer. By default, filters are evaluated using AND logic, which
-			means that in order for a pixel to display on the map, it must meet all the selected criteria.
-			If you filter by layers that do not co-occur at the same location, such as estuarine coastal
-			condition and playas, nothing will display on the map.
+			means that in order for a pixel to display on the map, it must meet <i>all</i> the selected criteria.
+			If you filter by layers that do not co-occur at the same location, such as estuarine coastal condition
+			and playas, nothing will display on the map.
 		</p>
 
 		<div class="grid grid-cols-0 md:grid-cols-2 gap-8 mt-16">
@@ -194,8 +194,8 @@
 		</div>
 
 		<p class="mt-16">
-			Alternatively, you can use OR logic to select all areas where any of your selected criteria
-			are present.
+			Alternatively, you can use OR logic to select all areas where <i>any</i> of your selected
+			criteria are present.
 			<br /><br />
 			Use the <b>Change filter overlay method</b> dropdown to change the logic being applied to your filters.
 			This can be especially helpful for identifying areas across indicators that do not spatially co-occur.
