@@ -194,7 +194,8 @@
 		</div>
 
 		<p class="mt-16">
-			You can use OR logic to select all areas where any of your selected criteria are present.
+			Alternatively, you can use OR logic to select all areas where any of your selected criteria
+			are present.
 			<br /><br />
 			Use the <b>Change filter overlay method</b> dropdown to change the logic being applied to your filters.
 			This can be especially helpful for identifying areas across indicators that do not spatially co-occur.
@@ -230,13 +231,13 @@
 
 		<div class="grid grid-cols-0 md:grid-cols-[2fr_1fr] gap-8 mt-16">
 			<p>
-				You can save a snapshot of your filtered map and information about the filters you've
-				selected to a PDF using the <b>Print / save map to PDF</b> button. This will use your
+				You can save a PDF with a snapshot of your filtered map and information about the filters
+				you've selected using the <b>Print / save map to PDF</b> button. This will use your
 				browser's print dialog, where you can choose PDF as an option.
 				<br /><br />
-				The map snapshot is based on the aspect ratio and the area that is currently visible in your browser
-				window. You may need to adjust the side of your browser window to better focus on your area of
-				interest.
+				The map snapshot is based on the dimensions of your browser window and view of the map that is
+				currently visible in your browser window. You may need to adjust the map or the size of your browser
+				window to better focus on your area of interest.
 			</p>
 			<div>
 				<enhanced:img
@@ -271,7 +272,7 @@
 
 		<p class="mt-8">
 			Note: this PDF file is intended to help save information about your active filters for later
-			reference. It is entirely different than the data-rich PDF reports you can create by selecting
+			reference. It is entirely different from the data-rich PDF reports you can create by selecting
 			a watershed or by uploading a shapefile, which include maps of the Blueprint and all
 			indicators present in your area of interest.
 		</p>
