@@ -13,6 +13,7 @@ from analysis.lib.raster import summarize_raster_by_units_grid
 # 51 = urban as of 2021 (NLCD)
 # NOTE: index 0 = not predicted to urbanize
 PROBABILITIES = np.append(np.arange(0, 51) / 50.0, np.array([1.0]))
+BINS = range(len(PROBABILITIES))
 
 
 src_dir = Path("data/inputs")
@@ -53,12 +54,10 @@ async def summarize_urban_in_aoi(rasterized_geometry, progress_callback=None):
         if not rasterized_geometry.detect_data(src):
             return None
 
-    bins = range(len(PROBABILITIES))
-
     urban_results = []
     for i, year in enumerate(URBAN_YEARS):
         with rasterio.open(urban_filename.format(year=year)) as src:
-            urban_acres = rasterized_geometry.get_acres_by_bin(src, bins)
+            urban_acres = rasterized_geometry.get_acres_by_bin(src, BINS)
 
         # total urbanization is sum of acres by probability bin * probability
         total_projected_acres = (urban_acres * PROBABILITIES).sum()

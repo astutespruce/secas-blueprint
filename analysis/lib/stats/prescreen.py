@@ -16,6 +16,10 @@ data_dir = Path("data/inputs")
 def get_available_datasets(df: gp.GeoDataFrame) -> list[str]:
     """Find all datasets that overlap features in df
 
+    NOTE: we use the raster versions of PARCAs and Protected Areas to determine
+    if there is potential overlap, but then we analyze against their polygon
+    versions.
+
     Parameters
     ----------
     df : gp.GeoDataFrame

@@ -12,8 +12,8 @@ src_dir = Path("data/inputs")
 filename = src_dir / WILDFIRE_RISK["filename"]
 mask_filename = src_dir / WILDFIRE_RISK["filename"].replace(".tif", "_mask.tif")
 
-WILDFIRE_RISK_BINS = range(0, len(WILDFIRE_RISK["values"]))
-WILDFIRE_RISK_LABELS = {e["value"]: e["label"] for e in WILDFIRE_RISK["values"]}
+BINS = range(0, len(WILDFIRE_RISK["values"]))
+VALUE_LABELS = {e["value"]: e["label"] for e in WILDFIRE_RISK["values"]}
 
 
 def summarize_wildfire_risk_in_aoi(rasterized_geometry):
@@ -48,7 +48,7 @@ def summarize_wildfire_risk_in_aoi(rasterized_geometry):
             return None
 
     with rasterio.open(filename) as src:
-        wildfire_risk_acres = rasterized_geometry.get_acres_by_bin(src, bins=WILDFIRE_RISK_BINS)
+        wildfire_risk_acres = rasterized_geometry.get_acres_by_bin(src, bins=BINS)
 
     total_acres = wildfire_risk_acres.sum()
     nodata_acres = rasterized_geometry.acres - rasterized_geometry.outside_se_acres - total_acres
@@ -59,7 +59,7 @@ def summarize_wildfire_risk_in_aoi(rasterized_geometry):
     entries = [
         {
             "value": i,
-            "label": WILDFIRE_RISK_LABELS[i],
+            "label": VALUE_LABELS[i],
             "acres": acres.item(),
             "percent": (100 * acres / rasterized_geometry.acres).item(),
         }
@@ -97,7 +97,7 @@ def summarize_wildfire_risk_by_units_grid(df, units_grid, out_dir):
                 df,
                 units_grid,
                 value_dataset,
-                bins=WILDFIRE_RISK_BINS,
+                bins=BINS,
                 progress_label="Summarizing wildfire risk",
             )
             * cellsize
@@ -109,7 +109,7 @@ def summarize_wildfire_risk_by_units_grid(df, units_grid, out_dir):
 
     wildfire_risk = pd.DataFrame(
         wildfire_risk_acres,
-        columns=[f"wildfire_risk_{v}" for v in WILDFIRE_RISK_BINS],
+        columns=[f"wildfire_risk_{v}" for v in BINS],
         index=df.index,
     )
     wildfire_risk["total_wildfire_risk_acres"] = total_acres

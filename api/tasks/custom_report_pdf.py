@@ -2,17 +2,13 @@
 
 import tempfile
 
-import numpy as np
-from pyogrio import read_dataframe
-import shapely
-
-from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES, STANDARD_RESOLUTION
+from analysis.constants import GEO_CRS
 from analysis.lib.geometry import dissolve
 from analysis.lib.pdf.map import render_maps
 from analysis.lib.pdf.report import create_report
 from analysis.lib.stats.aoi import get_aoi_results
 from api.errors import DataError
-from api.settings import TEMP_DIR, CUSTOM_REPORT_MAX_ACRES, MAX_POLYGONS, MAX_VERTICES
+from api.settings import TEMP_DIR
 from api.logger import log
 from api.lib.geo import extract_dataset
 from api.lib.progress import set_progress
@@ -71,6 +67,7 @@ async def create_custom_pdf_report(ctx, zip_filename, dataset, layer, name=""):
         await set_progress(
             ctx["redis"],
             ctx["job_id"],
+            # ranges 10-60%
             int(round(10 + (percent / 100) * 50)),
             "Calculating results (this might take a while)",
         )

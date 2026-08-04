@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import geopandas as gp
+import numpy as np
 import pandas as pd
 from pyogrio import read_dataframe
 import rasterio
@@ -21,7 +22,7 @@ BINS = range(0, len(PROTECTED_AREAS["values"]))
 LABELS = {e["value"]: e["label"] for e in PROTECTED_AREAS["values"]}
 
 
-def extract_protected_areas(df, use_bbox=False):
+def extract_protected_areas_in_aoi(df, use_bbox=False):
     """Extract intersection with protected areas data
 
         Parameters
@@ -157,7 +158,7 @@ def summarize_protected_areas_in_aoi(rasterized_geometry, df):
     protected_areas = []
     num_protected_areas = 0
 
-    protected_areas = extract_protected_areas(df, use_bbox=True)
+    protected_areas = extract_protected_areas_in_aoi(df, use_bbox=True)
     if protected_areas is not None:
         # only list areas >= 1 acre
         by_area = (
@@ -186,8 +187,94 @@ def summarize_protected_areas_in_aoi(rasterized_geometry, df):
     }
 
 
+def extract_protected_areas_in_analysis_areas(df: gp.GeoDataFrame) -> pd.DataFrame:
+    """Extract protected areas and their area overlap with each analysis unit
+
+    Parameters
+    ----------
+    df : GeoDataFrame
+        uses index to aggregate results
+
+    Returns
+    -------
+    DataFrame
+        indexed on same index as df, returns list of dicts of name and acres per row in df
+    """
+    index_name = df.index.name or "index"
+    out_name = PROTECTED_AREAS["id"]
+
+    tmp = df.explode(ignore_index=False, index_parts=False)
+    # use union of individual area bounding boxes to read features
+    read_mask = shapely.union_all(shapely.envelope(tmp.geometry.values))
+    protected_areas = read_dataframe(boundary_filename, columns=columns + ["geometry"], mask=read_mask, use_arrow=True)
+
+    if len(protected_areas) == 0:
+        return None
+
+    # find all protected areas polygons that intersect any part of the AOI
+    left, right = shapely.STRtree(protected_areas.geometry.values).query(tmp.geometry.values, predicate="intersects")
+
+    # no intersections
+    if len(left) == 0:
+        return None
+
+    pairs = gp.GeoDataFrame(
+        {
+            "geometry": tmp.geometry.values.take(left),
+            "index_right": protected_areas.index.values.take(right),
+            "geometry_right": protected_areas.geometry.values.take(right),
+        },
+        index=pd.Index(tmp.index.values.take(left), name=index_name),
+        geometry="geometry",
+        crs=df.crs,
+    )
+    shapely.prepare(pairs.geometry.values)
+    shapely.prepare(pairs.geometry_right.values)
+
+    # if left completely contains right, the right geometry is the intersection
+    left_contains = shapely.contains_properly(pairs.geometry.values, pairs.geometry_right.values)
+    pairs.loc[left_contains, "geometry"] = pairs.loc[left_contains].geometry_right.values
+
+    # if right completely contains the left, the left (geometry) are the intersection
+    right_contains = ~left_contains & shapely.contains_properly(pairs.geometry.values, pairs.geometry_right.values)
+
+    # any that aren't contained in either direction must be intersected
+    ix = ~(left_contains | right_contains)
+    pairs.loc[ix, "geometry"] = shapely.intersection(pairs.loc[ix].geometry.values, pairs.loc[ix].geometry_right.values)
+
+    # explode and only keep polygons
+    pairs = pairs.drop(columns=["geometry_right"]).explode(ignore_index=False, index_parts=False)
+    pairs = pairs.loc[shapely.get_type_id(pairs.geometry.values) == 3]
+
+    if len(pairs) == 0:
+        return None
+
+    # aggregate to multipolygons based on protected areas columns
+    protected_areas = gp.GeoDataFrame(
+        pairs.join(protected_areas[columns], on="index_right")
+        .groupby([index_name] + columns)
+        .agg({"geometry": shapely.multipolygons})
+        .reset_index()
+        .set_index(index_name),
+        geometry="geometry",
+        crs=df.crs,
+    )
+
+    protected_areas["acres"] = shapely.area(protected_areas.geometry.values) * M2_ACRES
+
+    # transform to dict per original row
+    protected_areas[out_name] = protected_areas[columns + ["acres"]].to_dict(orient="records")
+    protected_areas = protected_areas[out_name].groupby(index_name).apply(np.array)
+
+    out = df[[]].join(protected_areas)
+    # fill with empty arrays
+    out.loc[out[out_name].isnull(), out_name] = out[out_name].apply(lambda x: np.array([]))
+
+    return out[out_name]
+
+
 def summarize_protected_areas_by_units(df, units_grid, out_dir):
-    """Calculate overlap with protected areas
+    """Calculate overlap with protected areas for each of the analysis units
 
     Parameters
     ----------
@@ -232,7 +319,7 @@ def summarize_protected_areas_by_units(df, units_grid, out_dir):
     # intersect with polygons
     tmp = df.loc[df.index.isin(protected_areas.loc[protected_areas.protected_areas_1 > 0].index.values)].copy()
 
-    protected_areas_list = extract_protected_areas(tmp, use_bbox=False)
+    protected_areas_list = extract_protected_areas_in_aoi(tmp, use_bbox=False)
     index_name = df.index.name or "index"
     protected_areas_list = (
         protected_areas_list[protected_areas_list.acres >= 1]

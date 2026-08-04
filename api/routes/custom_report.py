@@ -49,7 +49,7 @@ router = APIRouter()
 
 
 @router.post("/custom_report/{report_type}")
-async def custom_report_endpoint(
+async def custom_report_create_endpoint(
     report_type: ReportType,
     file: UploadFile = File(...),
     name: Optional[str] = Form(None),
@@ -93,3 +93,39 @@ async def custom_report_endpoint(
 
     finally:
         await redis.aclose()
+
+
+@router.post("/custom_report/xlsx/{uuid}")
+async def custom_report_xlsx_finalize_endpoint(
+    uuid: str,
+    datasets: Optional[str] = Form(None),  # comma-delimited list
+    field: Optional[str] = Form(None),
+    name: Optional[str] = Form(None),
+    token: APIKey = Depends(validate_token),
+):
+    filename = (TEMP_DIR / f"{uuid}.feather").resolve()
+
+    # verify that file exists in temp directory, otherwise return 404;
+    # should only happen if there is too much delay between submitting initial
+    # task and this task
+    if not filename.exists():
+        raise HTTPException(status_code=404, detail="Dataset not found")
+
+    try:
+        redis = await arq.create_pool(REDIS)
+        job = await redis.enqueue_job(
+            "create_custom_xlsx_report",
+            uuid,
+            datasets,
+            field=field,
+            name=name,
+            _queue_name=REDIS_QUEUE,
+        )
+        return {"job": job.job_id}
+
+    except Exception as ex:
+        log.error(f"Error creating background task, is Redis offline?  {ex}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+    finally:
+        await redis.close()

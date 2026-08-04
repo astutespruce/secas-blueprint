@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import geopandas as gp
+import numpy as np
 import pandas as pd
 import shapely
 import rasterio
@@ -19,7 +20,7 @@ BINS = range(0, len(PARCAS["values"]))
 LABELS = {e["value"]: e["label"] for e in PARCAS["values"]}
 
 
-def extract_parcas(df):
+def extract_parcas_in_aoi(df):
     """Extract intersection with PARCAs
 
         Parameters
@@ -117,7 +118,7 @@ def summarize_parcas_in_aoi(rasterized_geometry, df):
         for i, acres in enumerate(parca_acres)
     ][::-1]
 
-    parcas = extract_parcas(df)
+    parcas = extract_parcas_in_aoi(df)
     if parcas is not None:
         parcas = parcas.to_dict(orient="records")
 
@@ -128,6 +129,90 @@ def summarize_parcas_in_aoi(rasterized_geometry, df):
         "outside_parca_percent": 100 * nodata_acres / rasterized_geometry.acres,
         "parcas": parcas,
     }
+
+
+def extract_parcas_in_analysis_units(df):
+    """Extract PARCAs and their area overlap with each analysis unit
+
+    Parameters
+    ----------
+    df : GeoDataFrame
+        uses index to aggregate results
+
+    Returns
+    -------
+    DataFrame
+        indexed on same index as df, returns list of dicts of name and acres per row in df
+    """
+
+    index_name = df.index.name or "index"
+    columns = ["parca_id", "name"]
+    tmp = df.explode(ignore_index=False, index_parts=False)
+    out_name = PARCAS["id"]
+
+    # NOTE: we are ignoring description for this usage
+    parcas = gp.read_feather(boundary_filename, columns=["geometry"] + columns)
+
+    # find all PARCA polygons that intersect any part of the AOI
+    left, right = shapely.STRtree(parcas.geometry.values).query(tmp.geometry.values, predicate="intersects")
+
+    # no intersections
+    if len(left) == 0:
+        return None
+
+    pairs = gp.GeoDataFrame(
+        {
+            "geometry": tmp.geometry.values.take(left),
+            "index_right": parcas.index.values.take(right),
+            "geometry_right": parcas.geometry.values.take(right),
+        },
+        index=pd.Index(tmp.index.values.take(left), name=index_name),
+        geometry="geometry",
+        crs=df.crs,
+    )
+    shapely.prepare(pairs.geometry.values)
+    shapely.prepare(pairs.geometry_right.values)
+
+    # if left completely contains right, the right geometry is the intersection
+    left_contains = shapely.contains_properly(pairs.geometry.values, pairs.geometry_right.values)
+    pairs.loc[left_contains, "geometry"] = pairs.loc[left_contains].geometry_right.values
+
+    # if right completely contains the left, the left (geometry) are the intersection
+    right_contains = ~left_contains & shapely.contains_properly(pairs.geometry.values, pairs.geometry_right.values)
+
+    # any that aren't contained in either direction must be intersected
+    ix = ~(left_contains | right_contains)
+    pairs.loc[ix, "geometry"] = shapely.intersection(pairs.loc[ix].geometry.values, pairs.loc[ix].geometry_right.values)
+
+    # explode and only keep polygons
+    pairs = pairs.drop(columns=["geometry_right"]).explode(ignore_index=False, index_parts=False)
+    pairs = pairs.loc[shapely.get_type_id(pairs.geometry.values) == 3]
+
+    if len(pairs) == 0:
+        return None
+
+    # aggregate to multipolygons based on PARCA columns
+    parcas = gp.GeoDataFrame(
+        pairs.join(parcas[columns], on="index_right")
+        .groupby([index_name] + columns)
+        .agg({"geometry": shapely.multipolygons})
+        .reset_index()
+        .set_index(index_name),
+        geometry="geometry",
+        crs=df.crs,
+    )
+
+    parcas["acres"] = shapely.area(parcas.geometry.values) * M2_ACRES
+
+    # transform to dict per original row
+    parcas[out_name] = parcas[["name", "acres"]].to_dict(orient="records")
+    parcas = parcas[out_name].groupby(index_name).apply(np.array)
+
+    out = df[[]].join(parcas)
+    # fill with empty arrays
+    out.loc[out[out_name].isnull(), out_name] = out[out_name].apply(lambda x: np.array([]))
+
+    return out[out_name]
 
 
 def summarize_parcas_by_units(df, units_grid, out_dir):
@@ -176,7 +261,7 @@ def summarize_parcas_by_units(df, units_grid, out_dir):
     # intersect with polygons
     tmp = df.loc[df.index.isin(parcas.loc[parcas.parca_1 > 0].index.values)].copy()
 
-    parca_list = extract_parcas(tmp)
+    parca_list = extract_parcas_in_aoi(tmp)
     parca_list.to_feather(out_dir / "parcas_list.feather")
 
 
