@@ -92,15 +92,18 @@ async def test_get_analysis_unit_results_single_area(format):
     assert np.isclose(row.rasterized_acres, 50.7059)
     assert np.isclose(row.outside_se_acres, 0)
 
-    assert np.allclose(row[PARCAS["id"]], [0, 50.705946])
+    assert np.allclose(row[BLUEPRINT["id"]], [0, 0, 0, 10.674936, 40.03101])
+    assert np.allclose(row[CORRIDORS["id"]], [0, 37.362276, 13.34367])
+    assert np.allclose(row["t_imperiledamphibiansandreptiles"], [0.6671835, 0, 0, 3.113523, 42.254955, 4.6702845])
+    assert np.allclose(row["f_permeablesurface"], [0, 0, 0, 0, 50.705946])
 
+    assert np.allclose(row[PARCAS["id"]], [0, 50.705946])
     parcas_poly = row[f"{PARCAS['id']}_poly"]
     assert len(parcas_poly) == 1
     assert parcas_poly[0]["name"] == "Talladega"
     assert np.isclose(parcas_poly[0]["acres"], 51.026)
 
     assert np.allclose(row[PROTECTED_AREAS["id"]], [16.6795875, 34.0263585])
-
     protected_areas_poly = row[f"{PROTECTED_AREAS['id']}_poly"]
     assert len(protected_areas_poly) == 1
     assert protected_areas_poly[0]["name"] == "Talladega National Forest"
@@ -112,7 +115,7 @@ async def test_get_analysis_unit_results_single_area(format):
     assert np.allclose(slr_depth, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50.705946, 0])
 
     urban = row[URBAN_BY_DECADE["id"]]
-    assert len(urban) == 10
+    assert len(urban) == 9
     assert np.allclose(urban, [0, 0, 0, 0, 0, 0, 0, 0, 0])
 
     assert np.allclose(row[WILDFIRE_RISK["id"]], [0, 0, 0, 0, 0, 50.705946, 0, 0, 0, 0, 0])
@@ -148,6 +151,21 @@ async def test_get_analysis_unit_results_multiple_areas(format):
     assert np.allclose(results["rasterized_acres"], [312.241878, 40.698, 99.187947, 147.0027645, 5386.1723955])
     assert np.allclose(results["outside_se_acres"], [0, 0, 0, 0, 0])
 
+    ga_poly = results.iloc[0]
+    fl_poly = results.iloc[1]
+    pr_poly = results.iloc[3]
+    marine_poly = results.iloc[4]
+
+    assert np.allclose(ga_poly[BLUEPRINT["id"]], [98.5207635, 0, 153.896994, 52.929891, 6.8942295])
+    assert np.allclose(marine_poly[BLUEPRINT["id"]], [0, 0, 3549.6386145000006, 1836.533781, 0])
+    assert np.allclose(ga_poly[CORRIDORS["id"]], [312.241878, 0.0, 0.0])
+    assert np.allclose(marine_poly[CORRIDORS["id"]], [4045.355955, 0, 1340.8164405])
+    assert np.allclose(
+        ga_poly["t_imperiledamphibiansandreptiles"], [40.03101, 20.460294, 73.834974, 3.113523, 171.9109485, 2.8911285]
+    )
+    assert np.allclose(ga_poly["f_permeablesurface"], [0, 0, 0, 0, 312.241878])
+    assert np.allclose(marine_poly["f_permeablesurface"], [0, 0, 0, 0, 0])
+
     assert np.allclose(
         np.array(results[PARCAS["id"]].values.tolist()),
         [
@@ -169,11 +187,6 @@ async def test_get_analysis_unit_results_multiple_areas(format):
             [5386.1723955, 0],
         ],
     )
-
-    ga_poly = results.iloc[0]
-    fl_poly = results.iloc[1]
-    pr_poly = results.iloc[3]
-    marine_poly = results.iloc[4]
 
     fl_protected_areas_poly = fl_poly[f"{PROTECTED_AREAS['id']}_poly"]
     assert len(fl_protected_areas_poly) == 3
@@ -232,7 +245,7 @@ async def test_get_analysis_unit_results_multiple_areas(format):
 
 @pytest.mark.anyio
 @pytest.mark.parametrize("format", ["shp", "gdb"])
-async def test_custom_xlsx_report_get_inputs_single_area(client, format):
+async def test_custom_xlsx_report_single_area(client, format):
     with open(f"tests/fixtures/{format}_poly_small.zip", "rb") as infile:
         response = await client.post(f"/custom_report/xlsx?token={API_TOKEN}", files={"file": infile})
 
@@ -243,14 +256,15 @@ async def test_custom_xlsx_report_get_inputs_single_area(client, format):
     assert result["status"] == "success"
 
     result_payload = result["result"]
-    assert "uuid" in result_payload
+    uuid = result_payload["uuid"]
+    assert uuid is not None
     assert result_payload["count"] == 1
 
     fields = result_payload["fields"]
     assert fields["ID"] == 1
     assert fields["Name"] == 1
 
-    datasets = result_payload["datasets"]
+    datasets = set(result_payload["datasets"])
     assert len(datasets) == 30
 
     expected_datasets = [
@@ -275,6 +289,17 @@ async def test_custom_xlsx_report_get_inputs_single_area(client, format):
     for dataset in unexpected_datasets:
         assert dataset not in datasets
 
+    ### submit finalize job
+    response = await client.post(
+        f"/custom_report/xlsx/{uuid}/finalize?token={API_TOKEN}", data={"datasets": ",".join(datasets)}
+    )
+    assert response.status_code == 200
+
+    job_id = response.json()["job"]
+
+    result = await poll_until_done(client, job_id)
+    assert result["status"] == "success"
+
 
 @pytest.mark.anyio
 @pytest.mark.parametrize("format", ["shp", "gdb"])
@@ -298,7 +323,7 @@ async def test_custom_xlsx_report_get_inputs_multiple_areas(client, format):
     assert fields["Region"] == 3
     assert fields["Common"] == 1
 
-    datasets = result_payload["datasets"]
+    datasets = set(result_payload["datasets"])
     assert len(datasets) == 57
 
     expected_datasets = [
@@ -337,7 +362,7 @@ async def test_custom_xlsx_report_get_inputs_multiple_areas_partial_overlap(clie
     assert fields["Blueprint"] == 3
     assert fields["Common"] == 1
 
-    datasets = result_payload["datasets"]
+    datasets = set(result_payload["datasets"])
     assert len(datasets) == 29
 
     expected_datasets = [

@@ -21,11 +21,11 @@ from analysis.constants import (
     REPORT_DATASETS,
     URBAN_YEARS,
 )
-from analysis.lib.stats.blueprint import summarize_blueprint_in_aoi
+from analysis.lib.stats.blueprint import BLUEPRINT_BINS, CORRIDOR_BINS
 from analysis.lib.stats.parcas import extract_parcas_in_analysis_units, BINS as PARCAS_BINS
 from analysis.lib.stats.protected_areas import extract_protected_areas_in_analysis_areas, BINS as PROTECTED_AREAS_BINS
 from analysis.lib.stats.rasterized_geometry import RasterizedGeometry
-from analysis.lib.stats.slr import summarize_slr_in_aoi, extract_slr_proj_in_analysis_areas, BINS as SLR_DEPTH_BINS
+from analysis.lib.stats.slr import extract_slr_proj_in_analysis_areas, BINS as SLR_DEPTH_BINS
 from analysis.lib.stats.urban import BINS as URBAN_BINS, PROBABILITIES as URBAN_PROBABILITIES
 from analysis.lib.stats.wildfire_risk import BINS as WILDFIRE_RISK_BINS
 
@@ -130,10 +130,16 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
                     files[PROTECTED_AREAS["id"]], PROTECTED_AREAS_BINS
                 )
 
-            #     # TODO: Extract Blueprint, corridors, indicators
-            #     if BLUEPRINT["id"] in datasets:
-            #         # FIXME: this needs a separate handler than below
-            #         result[BLUEPRINT["id"]] = summarize_blueprint_in_aoi(rasterized_geometry)
+            if BLUEPRINT["id"] in datasets:
+                result[BLUEPRINT["id"]] = rasterized_geometry.get_acres_by_bin(files[BLUEPRINT["id"]], BLUEPRINT_BINS)
+
+            if CORRIDORS["id"] in datasets:
+                result[CORRIDORS["id"]] = rasterized_geometry.get_acres_by_bin(files[CORRIDORS["id"]], CORRIDOR_BINS)
+
+            for indicator in INDICATORS:
+                if indicator["id"] in datasets:
+                    bins = range(0, indicator["values"][-1]["value"] + 1)
+                    result[indicator["id"]] = rasterized_geometry.get_acres_by_bin(files[indicator["id"]], bins)
 
             if SLR_DEPTH["id"] in datasets:
                 slr_acres = rasterized_geometry.get_acres_by_bin(files[SLR_DEPTH["id"]], SLR_DEPTH_BINS)

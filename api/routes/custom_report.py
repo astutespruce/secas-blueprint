@@ -1,5 +1,4 @@
 from pathlib import Path
-import secrets
 import shutil
 import tempfile
 from typing import Optional
@@ -72,14 +71,15 @@ async def custom_report_create_endpoint(
         kwargs = {"name": name}
     elif report_type == "xlsx":
         task = "get_xlsx_report_inputs"
-        kwargs = {"uuid": secrets.token_urlsafe(16)}
+        # use the temporary filename automatically assigned across multiple tasks
+        kwargs = {"uuid": filename.stem}
 
     # Create report task
     try:
         redis = await arq.create_pool(REDIS)
         job = await redis.enqueue_job(
             task,
-            filename,
+            str(filename),
             dataset,
             layer,
             **kwargs,
@@ -95,7 +95,7 @@ async def custom_report_create_endpoint(
         await redis.aclose()
 
 
-@router.post("/custom_report/xlsx/{uuid}")
+@router.post("/custom_report/xlsx/{uuid}/finalize")
 async def custom_report_xlsx_finalize_endpoint(
     uuid: str,
     datasets: Optional[str] = Form(None),  # comma-delimited list
@@ -128,4 +128,4 @@ async def custom_report_xlsx_finalize_endpoint(
         raise HTTPException(status_code=500, detail="Internal server error")
 
     finally:
-        await redis.close()
+        await redis.aclose()

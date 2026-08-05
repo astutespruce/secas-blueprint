@@ -1,3 +1,4 @@
+from pathlib import Path
 import tempfile
 
 import geopandas as gp
@@ -7,6 +8,7 @@ import shapely
 
 from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES, STANDARD_RESOLUTION
 from analysis.lib.geometry import dissolve
+from analysis.lib.stats.analysis_units import get_analysis_unit_results
 from analysis.lib.stats.prescreen import get_available_datasets
 from api.errors import DataError
 from api.settings import TEMP_DIR, CUSTOM_REPORT_MAX_ACRES, MAX_POLYGONS, MAX_VERTICES
@@ -19,6 +21,8 @@ VALID_ID_FIELD_DTYPES = {"object", "int8", "uint8", "int16", "uint16", "int32", 
 
 
 async def get_xlsx_report_inputs(ctx, zip_filename, dataset, layer, uuid):
+    zip_filename = Path(zip_filename)
+
     await set_progress(ctx["redis"], ctx["job_id"], 0, "Extracting analysis areas")
 
     path = f"/vsizip/{zip_filename}/{dataset}"
@@ -32,8 +36,7 @@ async def get_xlsx_report_inputs(ctx, zip_filename, dataset, layer, uuid):
     fields = {col: len(df[col].unique()) for col in id_fields if not df[col].isnull().all()}
 
     # Save as feather file for subsequent steps
-    outfilename = str(zip_filename).replace(".zip", ".feather")
-    df[["geometry"] + list(fields.keys())].to_feather(outfilename)
+    df[["geometry"] + list(fields.keys())].to_feather(zip_filename.with_suffix(".feather"))
 
     ### prescreen datasets available (using only analysis units that overlap)
     await set_progress(ctx["redis"], ctx["job_id"], 50, "Checking available datasets")
@@ -57,7 +60,7 @@ async def get_xlsx_report_inputs(ctx, zip_filename, dataset, layer, uuid):
     }, []
 
 
-# FIXME: use name in XLSX
+# FIXME: use name in XLSX file, metadata sheet
 async def create_custom_xlsx_report(ctx, uuid, datasets, field=None, name=None):
     datasets = datasets.split(",") if datasets else []
 
@@ -103,10 +106,13 @@ async def create_custom_xlsx_report(ctx, uuid, datasets, field=None, name=None):
             "Calculating statistics (may take a while)",
         )
 
+    results = await get_analysis_unit_results(df, datasets, progress_callback=progress_callback)
+    if results is None:
+        raise DataError("Dataset does not overlap Southeast states")
+
+    return {"payload": "not implemented"}, []
+
     # FIXME: enable
-    # results = await get_analysis_unit_results(df, datasets, progress_callback=progress_callback)
-    # if results is None:
-    #     raise DataError("Dataset does not overlap Southeast states")
 
     # await set_progress(ctx["redis"], ctx["job_id"], 75, "Creating XLSX file")
     # xlsx = create_xlsx(results, datasets)
