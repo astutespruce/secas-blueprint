@@ -6,6 +6,9 @@ import json
 # Make sure to set this here and in ui/src/lib/env.ts on each new Blueprint version
 BLUEPRINT_VERSION = "2025"
 
+# TODO: use this in errors and elsewhere in backend tasks
+ANALYSIS_REGION_NAME = "Southeast"
+
 # Set to True to output intermediate rasters for validation (uncomment in map.raster module)
 # Set to True to output /tmp/test.html for reports
 DEBUG = False
@@ -83,9 +86,12 @@ PROTECTED_AREAS_COLORS = {
     entry["value"]: entry["color"] for entry in PROTECTED_AREAS["values"] if entry.get("color", None) is not None
 }
 
+PROTECTED_AREAS_POLY = json.loads(open(json_dir / "protected_areas_poly.json").read())
+
 PARCAS = json.loads(open(json_dir / "parcas.json").read())
 PARCA_COLORS = {entry["value"]: entry["color"] for entry in PARCAS["values"] if entry.get("color", None) is not None}
 
+PARCAS_POLY = json.loads(open(json_dir / "parcas_poly.json").read())
 
 URBAN_YEARS = [2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100]
 
@@ -188,8 +194,10 @@ REPORT_DATASETS = {
         SLR_DEPTH,
         SLR_PROJ,  # NOTE: not present in filters
         PARCAS,
+        PARCAS_POLY,
         URBAN_BY_DECADE,  # NOTE: filter is just urban 2060
         PROTECTED_AREAS,
+        PROTECTED_AREAS_POLY,
         WILDFIRE_RISK,
     ]
 }

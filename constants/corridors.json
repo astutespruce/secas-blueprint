@@ -3,7 +3,7 @@
 	"filename": "corridors.tif",
 	"label": "Hubs and corridors",
 	"description": "The Blueprint uses a least-cost path connectivity analysis to identify corridors that link hubs across the shortest distance possible, while also routing through as much Blueprint priority as possible.",
-	"source": "Southeast Conservation Adaptation Strategy",
+	"source": "Southeast Conservation Blueprint",
 	"date": "2026",
 	"citation": "Southeast Conservation Adaptation Strategy (SECAS). 2025. Southeast Conservation Blueprint 2025.",
 	"url": "https://secas-fws.hub.arcgis.com/maps/47b7fd1a289e4fde873aeb10c510a437/explore",

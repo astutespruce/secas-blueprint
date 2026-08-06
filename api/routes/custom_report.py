@@ -98,7 +98,7 @@ async def custom_report_create_endpoint(
 @router.post("/custom_report/xlsx/{uuid}/finalize")
 async def custom_report_xlsx_finalize_endpoint(
     uuid: str,
-    datasets: Optional[str] = Form(None),  # comma-delimited list
+    datasets: str = Form(""),  # comma-delimited list
     field: Optional[str] = Form(None),
     name: Optional[str] = Form(None),
     token: APIKey = Depends(validate_token),

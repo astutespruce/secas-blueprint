@@ -10,6 +10,7 @@ from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES, STANDARD_RESOLUTION
 from analysis.lib.geometry import dissolve
 from analysis.lib.stats.analysis_units import get_analysis_unit_results
 from analysis.lib.stats.prescreen import get_available_datasets
+from analysis.lib.xlsx.report import create_report
 from api.errors import DataError
 from api.settings import TEMP_DIR, CUSTOM_REPORT_MAX_ACRES, MAX_POLYGONS, MAX_VERTICES
 from api.logger import log
@@ -61,8 +62,31 @@ async def get_xlsx_report_inputs(ctx, zip_filename, dataset, layer, uuid):
 
 
 # FIXME: use name in XLSX file, metadata sheet
-async def create_custom_xlsx_report(ctx, uuid, datasets, field=None, name=None):
-    datasets = datasets.split(",") if datasets else []
+async def create_custom_xlsx_report(
+    ctx, uuid: str, datasets: str, field: str | None = None, name: str | None = None
+) -> tuple[dict, list]:
+    """Create XLSX report for analysis areas specified by uuid for all listed
+    datasets, aggregated by field if provided.
+
+    Parameters
+    ----------
+    ctx : arq context
+    uuid : str
+        stem of temporary filename for feather file of input data
+    datasets : str
+        comma-delimited list of datasets to analyze
+    field : str or None, optional (default: None)
+        field to aggregate results by
+    name : str or None, optional (default: None)
+        name of area, to include in report
+
+    Returns
+    -------
+    tuple[dict, list]
+        [{"payload": <filename>}, errors]
+    """
+
+    datasets = set(datasets.split(","))
 
     await set_progress(ctx["redis"], ctx["job_id"], 0, "Reading dataset")
 
@@ -110,12 +134,12 @@ async def create_custom_xlsx_report(ctx, uuid, datasets, field=None, name=None):
     if results is None:
         raise DataError("Dataset does not overlap Southeast states")
 
+    await set_progress(ctx["redis"], ctx["job_id"], 75, "Creating XLSX file")
+    xlsx = create_report(results, datasets, name)
+
     return {"payload": "not implemented"}, []
 
     # FIXME: enable
-
-    # await set_progress(ctx["redis"], ctx["job_id"], 75, "Creating XLSX file")
-    # xlsx = create_xlsx(results, datasets)
 
     # await set_progress(ctx["redis"], ctx["job_id"], 95, "Nearly done")
 

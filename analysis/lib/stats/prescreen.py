@@ -3,7 +3,18 @@ from pathlib import Path
 import geopandas as gp
 import rasterio
 
-from analysis.constants import REPORT_DATASETS, BLUEPRINT, CORRIDORS, URBAN_BY_DECADE, SLR_DEPTH, SLR_PROJ
+from analysis.constants import (
+    REPORT_DATASETS,
+    BLUEPRINT,
+    CORRIDORS,
+    PARCAS,
+    PARCAS_POLY,
+    PROTECTED_AREAS,
+    PROTECTED_AREAS_POLY,
+    URBAN_BY_DECADE,
+    SLR_DEPTH,
+    SLR_PROJ,
+)
 
 from analysis.lib.geometry import to_dict_all
 from analysis.lib.raster import WindowGeometryMask, get_window, window_overlaps
@@ -13,7 +24,7 @@ from analysis.lib.stats.rasterized_geometry import extent_mask_filename
 data_dir = Path("data/inputs")
 
 
-def get_available_datasets(df: gp.GeoDataFrame) -> list[str]:
+def get_available_datasets(df: gp.GeoDataFrame) -> set[str]:
     """Find all datasets that overlap features in df
 
     NOTE: we use the raster versions of PARCAs and Protected Areas to determine
@@ -26,10 +37,10 @@ def get_available_datasets(df: gp.GeoDataFrame) -> list[str]:
 
     Returns
     -------
-    list[str]
+    set[str]
     """
 
-    datasets = []
+    datasets = set()
 
     with rasterio.open(extent_mask_filename) as src:
         window = get_window(src, df.total_bounds)
@@ -42,7 +53,7 @@ def get_available_datasets(df: gp.GeoDataFrame) -> list[str]:
 
         # use the lowres extent to determine overlap with blueprint
         if lowres_mask.detect_data(src):
-            datasets.extend([BLUEPRINT["id"], CORRIDORS["id"]])
+            datasets.update([BLUEPRINT["id"], CORRIDORS["id"]])
 
     for dataset_id, dataset in REPORT_DATASETS.items():
         if dataset_id in {BLUEPRINT["id"], CORRIDORS["id"]}:
@@ -56,10 +67,16 @@ def get_available_datasets(df: gp.GeoDataFrame) -> list[str]:
 
             with rasterio.open(data_dir / filename) as src:
                 if lowres_mask.detect_data(src):
-                    datasets.append(dataset_id)
+                    datasets.add(dataset_id)
 
-                    if dataset_id == SLR_DEPTH["id"]:
-                        # SLR projections available where SLR depth is available
-                        datasets.append(SLR_PROJ["id"])
+    # assume if presence rasters were detected that polygon versions are available too
+    if PARCAS["id"] in datasets:
+        datasets.add(PARCAS_POLY["id"])
+
+    if PROTECTED_AREAS["id"] in datasets:
+        datasets.add(PROTECTED_AREAS_POLY["id"])
+
+    if SLR_DEPTH["id"] in datasets:
+        datasets.add(SLR_PROJ["id"])
 
     return datasets

@@ -13,7 +13,9 @@ from analysis.constants import (
     CORRIDORS,
     INDICATORS,
     PARCAS,
+    PARCAS_POLY,
     PROTECTED_AREAS,
+    PROTECTED_AREAS_POLY,
     SLR_DEPTH,
     SLR_PROJ,
     URBAN_BY_DECADE,
@@ -53,8 +55,6 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
     DataFrame
     """
 
-    datasets = {id: REPORT_DATASETS[id] for id in datasets}
-
     # NOTE: states might be null if area is offshore marine
     states = gp.read_feather(states_filename, columns=["state", "id", "geometry"])
     states = states.loc[states.id.isin(SECAS_STATES)]
@@ -93,22 +93,29 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
     results = []
 
     try:
-        files = {
-            id: rasterio.open(data_dir / d["filename"])
-            for id, d in datasets.items()
-            if d["filename"].endswith(".tif") and id not in {URBAN_BY_DECADE["id"]}
-        }
-        for year in URBAN_YEARS:
-            files[f"{URBAN_BY_DECADE['id']}_{year}"] = rasterio.open(
-                data_dir / URBAN_BY_DECADE["filename"].format(year=year)
-            )
+        files = {}
+        for id in datasets:
+            dataset = REPORT_DATASETS[id]
+            if dataset["filename"].endswith(".tif") and id not in {}:
+                if id == URBAN_BY_DECADE["id"]:
+                    for year in URBAN_YEARS:
+                        files[f"{URBAN_BY_DECADE['id']}_{year}"] = rasterio.open(
+                            data_dir / URBAN_BY_DECADE["filename"].format(year=year)
+                        )
+                else:
+                    files[id] = rasterio.open(data_dir / dataset["filename"])
 
         # TODO: scale progress updates
         for i, (index, row) in enumerate(df.iterrows()):
             rasterized_geometry = RasterizedGeometry(row.geometry)
 
+            overlap = rasterized_geometry.acres - rasterized_geometry.outside_se_acres
+            if overlap < 1e-6:
+                overlap = 0
+
             result = {
                 "pixels": rasterized_geometry.pixels,
+                "overlap": overlap,
                 "rasterized_acres": rasterized_geometry.acres,
                 "outside_se_acres": rasterized_geometry.outside_se_acres,
             }
@@ -139,13 +146,15 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
             for indicator in INDICATORS:
                 if indicator["id"] in datasets:
                     bins = range(0, indicator["values"][-1]["value"] + 1)
-                    result[indicator["id"]] = rasterized_geometry.get_acres_by_bin(files[indicator["id"]], bins)
+                    indicator_acres = rasterized_geometry.get_acres_by_bin(files[indicator["id"]], bins)
+                    # Some indicators exclude 0 values, remove them from results
+                    if indicator["values"][0]["value"] > 0:
+                        indicator_acres = indicator_acres[1:]
+
+                    result[indicator["id"]] = indicator_acres
 
             if SLR_DEPTH["id"] in datasets:
                 slr_acres = rasterized_geometry.get_acres_by_bin(files[SLR_DEPTH["id"]], SLR_DEPTH_BINS)
-                # TODO: set NODATA into value 13 in XLSX sheet code (similar to other nodata handling for other sheets)
-                # slr_nodata_acres = rasterized_geometry.acres - rasterized_geometry.outside_se_acres - slr_acres.sum()
-                # slr_acres[13] += slr_nodata_acres
                 # accumulate values for depths 0-10ft
                 slr_acres[:11] = np.cumsum(slr_acres[:11])
                 result[SLR_DEPTH["id"]] = slr_acres
@@ -153,7 +162,8 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
             #     # Extract urban
             if URBAN_BY_DECADE["id"] in datasets:
                 # store already urban in index 0, then 2030-2100 from index 1 onward
-                urban_acres = np.zeros((len(URBAN_YEARS) + 1,))
+                # area outside urban is stored in last value
+                urban_acres = np.zeros((len(URBAN_YEARS) + 2,))
                 for i, year in enumerate(URBAN_YEARS):
                     urban_prob_acres = rasterized_geometry.get_acres_by_bin(
                         files[f"{URBAN_BY_DECADE['id']}_{year}"], URBAN_BINS
@@ -163,6 +173,15 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
 
                     if year == 2030:
                         urban_acres[0] = urban_prob_acres[51]
+                    elif year == 2100:
+                        # important: we calculate nodata area based on all pixels that had >= 0 probability;
+                        # for most other layer we just sum their acres to calculate this
+                        urban_nodata = (
+                            rasterized_geometry.acres - rasterized_geometry.outside_se_acres - urban_prob_acres.sum()
+                        )
+                        if urban_nodata < 1e-6:
+                            urban_nodata = 0.0
+                        urban_acres[-1] = urban_nodata
 
                 result[URBAN_BY_DECADE["id"]] = urban_acres
 
@@ -182,15 +201,15 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
 
     out = df[["states", "subregions", "regions", "count", "acres"]].join(pd.DataFrame(results, index=df.index))
 
-    if PARCAS["id"] in datasets:
+    if PARCAS_POLY["id"] in datasets:
         parcas = extract_parcas_in_analysis_units(df)
         if parcas is not None:
-            out = out.join(parcas.rename(f"{PARCAS['id']}_poly"))
+            out = out.join(parcas)  # .rename(f"{PARCAS['id']}_poly"))
 
-    if PROTECTED_AREAS["id"] in datasets:
+    if PROTECTED_AREAS_POLY["id"] in datasets:
         protected_areas = extract_protected_areas_in_analysis_areas(df)
         if protected_areas is not None:
-            out = out.join(protected_areas.rename(f"{PROTECTED_AREAS['id']}_poly"))
+            out = out.join(protected_areas)  # .rename(f"{PROTECTED_AREAS['id']}_poly"))
 
     if SLR_PROJ["id"] in datasets:
         slr_proj = extract_slr_proj_in_analysis_areas(df)

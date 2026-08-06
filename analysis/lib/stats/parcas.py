@@ -6,7 +6,7 @@ import pandas as pd
 import shapely
 import rasterio
 
-from analysis.constants import M2_ACRES, PARCAS
+from analysis.constants import M2_ACRES, PARCAS, PARCAS_POLY
 from analysis.lib.io import read_unit_from_feather
 from analysis.lib.raster import summarize_raster_by_units_grid
 
@@ -14,7 +14,7 @@ from analysis.lib.raster import summarize_raster_by_units_grid
 src_dir = Path("data/inputs")
 filename = src_dir / PARCAS["filename"]
 mask_filename = src_dir / PARCAS["filename"].replace(".tif", "_mask.tif")
-boundary_filename = src_dir / PARCAS["filename"].replace(".tif", ".feather")
+boundary_filename = src_dir / PARCAS_POLY["filename"]
 
 BINS = range(0, len(PARCAS["values"]))
 LABELS = {e["value"]: e["label"] for e in PARCAS["values"]}
@@ -146,9 +146,9 @@ def extract_parcas_in_analysis_units(df):
     """
 
     index_name = df.index.name or "index"
-    columns = ["parca_id", "name"]
+    columns = ["parca_id", "name", "description"]
     tmp = df.explode(ignore_index=False, index_parts=False)
-    out_name = PARCAS["id"]
+    out_name = PARCAS_POLY["id"]
 
     # NOTE: we are ignoring description for this usage
     parcas = gp.read_feather(boundary_filename, columns=["geometry"] + columns)
@@ -205,7 +205,7 @@ def extract_parcas_in_analysis_units(df):
     parcas["acres"] = shapely.area(parcas.geometry.values) * M2_ACRES
 
     # transform to dict per original row
-    parcas[out_name] = parcas[["name", "acres"]].to_dict(orient="records")
+    parcas[out_name] = parcas[["name", "description", "acres"]].to_dict(orient="records")
     parcas = parcas[out_name].groupby(index_name).apply(np.array)
 
     out = df[[]].join(parcas)

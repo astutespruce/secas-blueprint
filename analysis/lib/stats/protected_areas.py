@@ -7,7 +7,7 @@ from pyogrio import read_dataframe
 import rasterio
 import shapely
 
-from analysis.constants import M2_ACRES, PROTECTED_AREAS
+from analysis.constants import M2_ACRES, PROTECTED_AREAS, PROTECTED_AREAS_POLY
 from analysis.lib.io import read_unit_from_feather
 from analysis.lib.raster import summarize_raster_by_units_grid
 
@@ -15,7 +15,7 @@ from analysis.lib.raster import summarize_raster_by_units_grid
 src_dir = Path("data/inputs")
 filename = src_dir / PROTECTED_AREAS["filename"]
 mask_filename = src_dir / PROTECTED_AREAS["filename"].replace(".tif", "_mask.tif")
-boundary_filename = src_dir / PROTECTED_AREAS["filename"].replace(".tif", ".fgb")
+boundary_filename = src_dir / PROTECTED_AREAS_POLY["filename"]
 columns = ["name", "owner"]
 
 BINS = range(0, len(PROTECTED_AREAS["values"]))
@@ -201,7 +201,7 @@ def extract_protected_areas_in_analysis_areas(df: gp.GeoDataFrame) -> pd.DataFra
         indexed on same index as df, returns list of dicts of name and acres per row in df
     """
     index_name = df.index.name or "index"
-    out_name = PROTECTED_AREAS["id"]
+    out_name = PROTECTED_AREAS_POLY["id"]
 
     tmp = df.explode(ignore_index=False, index_parts=False)
     # use union of individual area bounding boxes to read features
