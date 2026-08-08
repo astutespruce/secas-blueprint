@@ -1,19 +1,19 @@
-from datetime import datetime
-from secrets import compare_digest
 import time
+from datetime import datetime
+from pathlib import Path
+from secrets import compare_digest
 
 import arq
 from arq.jobs import Job, JobStatus
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from analysis.constants import ReportType
 from api.errors import DataError
-from api.settings import REDIS, REDIS_QUEUE, API_SECRET
-from api.logger import log
 from api.lib.progress import get_progress
-
+from api.logger import log
+from api.settings import API_SECRET, REDIS, REDIS_QUEUE
 
 router = APIRouter()
 security = HTTPBasic()
@@ -126,19 +126,21 @@ async def job_status_endpoint(job_id: str):
 
             info = await job.result_info()
 
+            error = ""
             try:
-                if info.success:
-                    # this re-raises the underlying exception raised in the worker
-                    results, errors = await job.result()
+                # this re-raises the underlying exception raised in the worker
+                # we have to do this even if job not successful in order to get the errors
+                result, errors = await job.result()
 
+                if info.success:
                     return {
                         "status": "success",
-                        "result": results.get("payload", None),
+                        "result": result.get("payload", None),
                         "errors": errors,
                     }
 
             except DataError as ex:
-                message = str(ex)
+                error = str(ex)
 
             # raise timeout to outer retry loop
             except TimeoutError as ex:
@@ -146,13 +148,10 @@ async def job_status_endpoint(job_id: str):
 
             except Exception as ex:
                 log.error(ex)
-                message = "Internal server error"
-                raise HTTPException(
-                    status_code=500,
-                    detail="Internal server error",
-                )
+                error = "Internal server error"
+                raise HTTPException(status_code=500, detail="Internal server error")
 
-            return {"status": "failed", "detail": message}
+            return {"status": "failed", "detail": error}
 
         # in case we hit a Redis timeout while polling job status, make sure we don't break until connection cannot be re-established
         except TimeoutError as ex:
@@ -193,16 +192,21 @@ async def report_results_endpoint(job_id: str, report_type: ReportType):
                 detail="Job failed, cannot return results.  Please contact us to report an issue.",
             )
 
-        path, out_filename, errors = info.result
+        result, errors = await job.result()
+
+        local_filename = result["local_filename"]
+        download_filename = result["download_filename"]
+
+        if not Path(local_filename).exists():
+            raise HTTPException(status_code=404, detail="Output file does not exist, cannot return results.")
 
         if report_type == ReportType.pdf:
             media_type = "application/pdf"
 
         elif report_type == ReportType.xlsx:
-            # TODO: only supported for create_custom_report_xlsx
-            raise NotImplementedError("TODO: media type for xlsx")
+            media_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
-        return FileResponse(path, filename=out_filename, media_type=media_type)
+        return FileResponse(local_filename, filename=download_filename, media_type=media_type)
 
     finally:
         await redis.aclose()

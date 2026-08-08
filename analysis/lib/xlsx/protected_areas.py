@@ -1,7 +1,6 @@
 import pandas as pd
 
 from analysis.constants import PROTECTED_AREAS_POLY
-
 from analysis.lib.xlsx.style import set_cell_styles, set_column_widths
 
 
@@ -17,7 +16,7 @@ def add_protected_areas_poly_sheet(
     counter = 0
     col = dataset["id"]
     for id, row in df.iterrows():
-        if hasattr(row, col) and row[col]:
+        if len(row.get(col, [])):
             for pa in row[col]:
                 protected_areas.append([id, f"{row.acres:.2f}", pa["name"], pa["owner"], f"{pa['acres']:.2f}"])
         else:

@@ -1,10 +1,10 @@
 from openpyxl.styles import (
     Alignment,
+    Border,
     Font,
     NamedStyle,
-    Border,
-    Side,
     PatternFill,
+    Side,
 )
 from openpyxl.utils.cell import get_column_letter
 
@@ -41,6 +41,16 @@ center_header_style = NamedStyle(
     alignment=alignment_center_wrap,
     border=default_header_border,
 )
+
+good_condition_header_style = NamedStyle(
+    name="Good Condition Header Style",
+    alignment=alignment_center_wrap,
+    border=Border(
+        bottom=Side(border_style="thin", color="000000"),
+    ),
+    fill=PatternFill("solid", "EEEEEE"),
+)
+
 
 value_style = NamedStyle(
     name="Value Style",
@@ -98,3 +108,39 @@ def set_column_widths(ws, widths):
     for i, width in enumerate(widths):
         letter = get_column_letter(i + 1)
         ws.column_dimensions[letter].width = width
+
+
+def add_good_condition_row(ws, values_start_col, values_end_col, good_condition_col):
+    """Add header row with merged cells for not in good condition / in good condition
+
+    Parameters
+    ----------
+    ws : Worksheet
+    values_start_col : int
+        values start column index, 0-based
+    values_end_col : int
+        values end column index, 0-based
+    good_condition_col : int
+        good condition column index, 0-based
+    """
+    ws.insert_rows(idx=1)
+
+    start_col = get_column_letter(values_start_col + 1)
+    end_col = get_column_letter(values_start_col + good_condition_col)
+    cell = ws[f"{start_col}1"]
+    cell.value = "Not in good condition"
+    cell.style = good_condition_header_style
+    ws.merge_cells(f"{start_col}1:{end_col}1")
+
+    start_col = get_column_letter(values_start_col + good_condition_col + 1)
+    end_col = get_column_letter(values_end_col)
+    cell = ws[f"{start_col}1"]
+    cell.value = "In good condition"
+    cell.style = good_condition_header_style
+    ws.merge_cells(f"{start_col}1:{end_col}1")
+
+    for i in range(1, ws.max_row + 1):
+        cell = ws[f"{start_col}{i}"]
+        cell.border = Border(
+            left=Side(border_style="medium", color="666666"), bottom=cell.border.bottom, right=cell.border.right
+        )

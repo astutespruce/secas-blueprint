@@ -1,22 +1,17 @@
 from pathlib import Path
-import tempfile
 
 import geopandas as gp
-import numpy as np
-from pyogrio import read_dataframe, read_info
-import shapely
+from pyogrio import read_info
 
-from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES, STANDARD_RESOLUTION
 from analysis.lib.geometry import dissolve
 from analysis.lib.stats.analysis_units import get_analysis_unit_results
 from analysis.lib.stats.prescreen import get_available_datasets
 from analysis.lib.xlsx.report import create_report
 from api.errors import DataError
-from api.settings import TEMP_DIR, CUSTOM_REPORT_MAX_ACRES, MAX_POLYGONS, MAX_VERTICES
-from api.logger import log
 from api.lib.geo import extract_dataset
 from api.lib.progress import set_progress
-
+from api.logger import log
+from api.settings import TEMP_DIR
 
 VALID_ID_FIELD_DTYPES = {"object", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"}
 
@@ -61,7 +56,6 @@ async def get_xlsx_report_inputs(ctx, zip_filename, dataset, layer, uuid):
     }, []
 
 
-# FIXME: use name in XLSX file, metadata sheet
 async def create_custom_xlsx_report(
     ctx, uuid: str, datasets: str, field: str | None = None, name: str | None = None
 ) -> tuple[dict, list]:
@@ -90,7 +84,7 @@ async def create_custom_xlsx_report(
 
     await set_progress(ctx["redis"], ctx["job_id"], 0, "Reading dataset")
 
-    filename = (TEMP_DIR / f"{uuid}.feather").resolve()
+    filename = TEMP_DIR / f"{uuid}.feather"
 
     # double-check that it exists; this should not occur here
     # because we check for it before submitting job
@@ -137,19 +131,23 @@ async def create_custom_xlsx_report(
     await set_progress(ctx["redis"], ctx["job_id"], 75, "Creating XLSX file")
     xlsx = create_report(results, datasets, name)
 
-    return {"payload": "not implemented"}, []
+    await set_progress(ctx["redis"], ctx["job_id"], 95, "Nearly done")
 
-    # FIXME: enable
+    local_filename = str((TEMP_DIR / f"{uuid}.xlsx"))
 
-    # await set_progress(ctx["redis"], ctx["job_id"], 95, "Nearly done")
+    with open(local_filename, "wb") as out:
+        out.write(xlsx)
 
-    # fp, outfilename = tempfile.mkstemp(suffix=".xlsx", dir=TEMP_DIR)
-    # with open(fp, "wb") as out:
-    #     out.write(xlsx)
+    log.debug(f"Created XLSX at: {local_filename}")
 
-    # await set_progress(ctx["redis"], ctx["job_id"], 100, "All done!")
+    await set_progress(ctx["redis"], ctx["job_id"], 100, "All done!")
 
-    # return {
-    #     "filename": outfilename,
-    #     "payload": f"/api/jobs/{ctx['job_id']}/xlsx",
-    # }, []
+    download_filename = (
+        f"Southeast Blueprint Summary Report - {name}.xlsx" if name else "Southeast Blueprint Summary Report.xlsx"
+    )
+
+    return {
+        "local_filename": local_filename,
+        "download_filename": download_filename,
+        "payload": f"/api/jobs/{ctx['job_id']}/xlsx",
+    }, []

@@ -1,11 +1,10 @@
-from affine import Affine
 import numpy as np
 import pytest
-
+from affine import Affine
 from rasterio.windows import Window
 
-from analysis.lib.raster import count_values_inplace, unique, clip_window, shift_window
 from analysis.lib.pdf.map.raster import hex_to_rgb, hex_to_rgba, to_rgba
+from analysis.lib.raster import clip_window, count_values_inplace, shift_window, unique
 
 
 @pytest.mark.parametrize("color", [None, "", "#000"])
@@ -14,7 +13,7 @@ def test_hex_to_rgb_invalid_color(color):
         hex_to_rgb(color)
 
 
-@pytest.mark.parametrize("color,expected", [("#000000", [0, 0, 0]), ("#FF0000", [255, 0, 0])])
+@pytest.mark.parametrize("color,expected", [("#000000", (0, 0, 0)), ("#FF0000", (255, 0, 0))])
 def test_hex_to_rgb(color, expected):
     assert hex_to_rgb(color) == expected
 

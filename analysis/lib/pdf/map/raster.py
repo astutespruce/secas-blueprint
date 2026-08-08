@@ -1,21 +1,20 @@
 import math
-from pathlib import Path
 import warnings
+from pathlib import Path
 
-from affine import Affine
 import numba as nb
 import numpy as np
-from PIL import Image
 import rasterio
-from rasterio.enums import Resampling
+from affine import Affine
+from PIL import Image
 from rasterio import windows
-from rasterio.warp import transform_bounds, calculate_default_transform, reproject
+from rasterio.enums import Resampling
+from rasterio.warp import calculate_default_transform, reproject, transform_bounds
 
-from analysis.constants import DATA_CRS, MAP_CRS, GEO_CRS, STANDARD_RESOLUTION
-from analysis.lib.raster import get_window, window_overlaps, shift_window
+from analysis.constants import DATA_CRS, GEO_CRS, MAP_CRS, STANDARD_RESOLUTION
+from analysis.lib.raster import get_window, shift_window, window_overlaps
 
 from .mercator import get_map_scale
-
 
 type UInt8_2D_Array = np.ndarray[tuple[int, int], np.dtype[np.uint8]]
 
@@ -218,6 +217,7 @@ def hex_to_rgba(colors: dict[int, str], alpha: int = 0) -> np.ndarray:
             raise ValueError("Color must be in #112233 format")
 
         out_colors[value, :] = [int(color[i : i + 2], 16) for i in (1, 3, 5)] + [alpha]
+
     return out_colors
 
 

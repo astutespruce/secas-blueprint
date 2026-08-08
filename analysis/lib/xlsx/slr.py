@@ -1,7 +1,6 @@
 import pandas as pd
 
-from analysis.constants import SLR_YEARS, SLR_DEPTH, SLR_DEPTH_VALUES, SLR_NODATA_VALUES, SLR_PROJ
-
+from analysis.constants import SLR_DEPTH, SLR_DEPTH_VALUES, SLR_NODATA_VALUES, SLR_PROJ, SLR_YEARS
 from analysis.lib.xlsx.style import set_cell_styles, set_column_widths
 
 
@@ -70,12 +69,12 @@ def add_slr_projection_sheet(xlsx, df, name_col_width, area_col_width, area_labe
     counter = 0
     for id, row in df.iterrows():
         # must also have depth to show projection data
-        if row.overlap == 0 or row.get(SLR_DEPTH["id"], None) is None or row.get(SLR_PROJ["id"], None) is None:
+        if row.overlap == 0 or row.get(SLR_DEPTH["id"], None) is None or not len(row.get(SLR_PROJ["id"], [])):
             slr.append([id, row.overlap, "no", ""] + [""] * len(SLR_YEARS))
             counter += 1
         else:
-            for scenario, values in row.slr_proj.items():
-                slr.append([id, row.overlap, "yes", scenario] + list(values))
+            for scenario in row[SLR_PROJ["id"]]:
+                slr.append([id, row.overlap, "yes", scenario["scenario"]] + list(scenario["values"]))
                 counter += 1
 
             breaks.append(counter)
@@ -89,4 +88,5 @@ def add_slr_projection_sheet(xlsx, df, name_col_width, area_col_width, area_labe
     slr.to_excel(xlsx, sheet_name=sheet_name, index=False)
     ws = xlsx.sheets[sheet_name]
     set_column_widths(ws, [name_col_width, area_col_width, 10, 18] + ([8] * len(SLR_YEARS)))
-    set_cell_styles(ws, breaks=breaks, area_columns=[1])
+    # SLR values are not really areas but we want 2 decimal places
+    set_cell_styles(ws, breaks=breaks, area_columns=[1] + list(range(4, len(SLR_YEARS) + 5)))

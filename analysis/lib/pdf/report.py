@@ -1,18 +1,19 @@
+import sys
 from datetime import date, datetime, timezone
 from io import BytesIO
 from pathlib import Path
-import sys
 
-from weasyprint import HTML, default_url_fetcher
 from jinja2 import Environment, FileSystemLoader
+from weasyprint import HTML, default_url_fetcher
+from weasyprint.urls import URLFetcherResponse
 
 from analysis.constants import (
     BLUEPRINT,
     CORRIDORS,
-    URBAN,
-    SLR_DEPTH_VALUES,
     PARCAS,
     PROTECTED_AREAS,
+    SLR_DEPTH_VALUES,
+    URBAN,
     WILDFIRE_RISK_LEGEND,
 )
 from analysis.lib.pdf.format import format_number, format_percent
@@ -32,7 +33,8 @@ def load_asset(path):
     if path.startswith("assets:"):
         path = path.replace("assets:", "")
         if path in asset_cache:
-            return asset_cache[path]
+            value = asset_cache[path]
+            return URLFetcherResponse(url=path, body=value["body"], headers=value["headers"])
 
         mime_type = None
         if path.endswith(".png"):
@@ -44,10 +46,13 @@ def load_asset(path):
         else:
             raise NotImplementedError(f"{path} not a handled type")
 
-        value = {"string": open(assets_dir / path, "rb").read(), "mime_type": mime_type}
+        with open(assets_dir / path, "rb") as infile:
+            body = infile.read()
+
+        value = {"body": body, "headers": {"mime_type": mime_type}}
         asset_cache[path] = value
 
-        return value
+        return URLFetcherResponse(url=path, body=value["body"], headers=value["headers"])
 
     return default_url_fetcher(path)
 
@@ -130,14 +135,11 @@ def create_report(maps, results, name=None, area_type="custom"):
     css = css_template.render(**context)
     context["css"] = css
 
-    print("Creating report...")
-
     def url_fetcher(path):
         if path.startswith("maps:"):
-            return {
-                "string": maps[path.replace("maps:", "")],
-                "mime_type": "image/png",
-            }
+            return URLFetcherResponse(
+                url=path, body=maps[path.replace("maps:", "")], headers={"mime_type": "image/png"}
+            )
 
         return load_asset(path)
 

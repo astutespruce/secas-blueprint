@@ -8,10 +8,10 @@ from analysis.lib.pdf.map import render_maps
 from analysis.lib.pdf.report import create_report
 from analysis.lib.stats.aoi import get_aoi_results
 from api.errors import DataError
-from api.settings import TEMP_DIR
-from api.logger import log
 from api.lib.geo import extract_dataset
 from api.lib.progress import set_progress
+from api.logger import log
+from api.settings import TEMP_DIR
 
 
 async def create_custom_pdf_report(ctx, zip_filename, dataset, layer, name=""):
@@ -40,8 +40,6 @@ async def create_custom_pdf_report(ctx, zip_filename, dataset, layer, name=""):
     DataError
         Raised if bounds are too large or if area of interest doesn't overalap SA region
     """
-
-    filename = f"Southeast Blueprint Summary Report - {name}.pdf" if name else "Southeast Blueprint Summary Report.pdf"
 
     errors = []
 
@@ -126,16 +124,20 @@ async def create_custom_pdf_report(ctx, zip_filename, dataset, layer, name=""):
 
     await set_progress(ctx["redis"], ctx["job_id"], 95, "Nearly done", errors=errors)
 
-    fp, name = tempfile.mkstemp(suffix=".pdf", dir=TEMP_DIR)
-    with open(fp, "wb") as out:
+    local_filename = str((TEMP_DIR / zip_filename).with_suffix(".pdf"))
+    with open(local_filename, "wb") as out:
         out.write(pdf)
 
     await set_progress(ctx["redis"], ctx["job_id"], 100, "All done!", errors=errors)
 
-    log.debug(f"Created PDF at: {name}")
+    log.debug(f"Created PDF at: {local_filename}")
+
+    download_filename = (
+        f"Southeast Blueprint Summary Report - {name}.pdf" if name else "Southeast Blueprint Summary Report.pdf"
+    )
 
     return {
-        "name": name,
-        "filename": filename,
+        "local_filename": local_filename,
+        "download_filename": download_filename,
         "payload": f"/api/jobs/{ctx['job_id']}/pdf",
     }, errors

@@ -1,8 +1,6 @@
 import pandas as pd
 
-
-from analysis.constants import ANALYSIS_REGION_NAME, URBAN_YEARS, URBAN_BY_DECADE
-
+from analysis.constants import ANALYSIS_REGION_NAME, URBAN_BY_DECADE, URBAN_YEARS
 from analysis.lib.xlsx.style import set_cell_styles, set_column_widths
 
 
@@ -24,7 +22,7 @@ def add_urbanization_sheet(xlsx, df, name_col_width, area_col_width, area_label)
     sheet_name = dataset.get("sheet_name", dataset["label"])
     nodata_label = dataset.get(
         "nodata_label",
-        f"Area outside {sheet_name.lower()} data extent within {ANALYSIS_REGION_NAME} data extent",
+        f"Outside {sheet_name.lower()} data extent within {ANALYSIS_REGION_NAME} data extent (acres)",
     )
 
     # transform data into one row for high and low urbanization per analysis unit
@@ -45,4 +43,4 @@ def add_urbanization_sheet(xlsx, df, name_col_width, area_col_width, area_label)
 
     ws = xlsx.sheets[sheet_name]
     set_column_widths(ws, [name_col_width, area_col_width] + ([12] * (len(urban.columns) - 1)))
-    set_cell_styles(ws, area_columns=[1] + list(range(3, len(urban.columns) + 3)))
+    set_cell_styles(ws, area_columns=range(1, len(urban.columns) + 3))

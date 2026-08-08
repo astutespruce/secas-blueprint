@@ -3,17 +3,16 @@ import os
 from pathlib import Path
 from time import time
 
-from pyogrio.geopandas import read_dataframe
 import shapely
 from progress.bar import Bar
+from pyogrio.geopandas import read_dataframe
 
 from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES
 from analysis.lib.geometry import dissolve
-from analysis.lib.pdf.report import create_report
 from analysis.lib.pdf.map import render_maps
+from analysis.lib.pdf.report import create_report
 from analysis.lib.stats.aoi import get_aoi_results
 from analysis.lib.stats.summary_units import get_summary_unit_results
-
 
 ### Create reports for an AOI
 aois = [
@@ -68,7 +67,7 @@ aois = [
     # {"name": "FL test", "path": "EvergladesHeadwaterComplex_APPTYPE_0"},
     # {"name": "Guild Tracts", "path": "GuildTracts"}
     # {"name": "Florida Panhandle Boundary", "path": "FL_panhadle_boundary"},
-    # {"name": "Dell Murphy wetlands", "path": "Dell Murphy wetlands"},
+    {"name": "Dell Murphy wetlands", "path": "Dell Murphy wetlands"},
     # {"name": "TRB GA", "path": "TRB_GA"},
     # {"name": "Florida 5 Star County Boundary", "path": "FL_5StarCounty_Boundary"}
     # {"name": "Cumberland Plateau Focus Area", "path": "NFWF_Cumberland_Fund_TN"}

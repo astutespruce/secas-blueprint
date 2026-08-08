@@ -1,9 +1,8 @@
 import pandas as pd
+from openpyxl.utils import get_column_letter
 
 from analysis.constants import ANALYSIS_REGION_NAME
-
-
-from analysis.lib.xlsx.style import CHAR_PER_WIDTH_UNIT, set_cell_styles, set_column_widths
+from analysis.lib.xlsx.style import CHAR_PER_WIDTH_UNIT, add_good_condition_row, set_cell_styles, set_column_widths
 
 
 def add_basic_results_sheet(
@@ -27,8 +26,10 @@ def add_basic_results_sheet(
     values = dataset["values"]
     nodata_label = dataset.get(
         "nodata_label",
-        f"Area outside {sheet_name.lower()} data extent within {ANALYSIS_REGION_NAME} data extent",
+        f"Outside {sheet_name.lower()} data extent within {ANALYSIS_REGION_NAME} data extent (acres)",
     )
+    # good threshold is only applicable to indicators
+    good_threshold = dataset.get("goodThreshold", None)
 
     columns = [f"{v['label']} (acres)" for v in values]
     col_width = min(max([len(c) for c in columns]) * CHAR_PER_WIDTH_UNIT, 16)
@@ -56,3 +57,8 @@ def add_basic_results_sheet(
     ws = xlsx.sheets[sheet_name]
     set_column_widths(ws, [name_col_width] + ([col_width] * len(tmp.columns)))
     set_cell_styles(ws, area_columns=range(1, len(tmp.columns) + 3))
+
+    if good_threshold:
+        pos = [i for i, v in enumerate(values) if v["value"] == good_threshold][0]
+        offset = 3 if has_area_outside else 2
+        add_good_condition_row(ws, offset, offset + len(values), pos)

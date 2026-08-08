@@ -1,16 +1,15 @@
+import sentry_sdk
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse, Response
-import sentry_sdk
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
 from api.logger import log
-from api.settings import ENABLE_CORS, ALLOWED_ORIGINS, SENTRY_DSN
+from api.routes.custom_report import router as custom_report_router
 from api.routes.jobs import router as jobs_router
 from api.routes.summary_unit_report import router as summary_unit_report_router
-from api.routes.custom_report import router as custom_report_router
-
+from api.settings import ALLOWED_ORIGINS, ENABLE_CORS, SENTRY_DSN
 
 ### Create the main API app
 app = FastAPI(root_path="/api", redoc_url=None, docs_url=None)

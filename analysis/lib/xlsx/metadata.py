@@ -1,9 +1,9 @@
 from datetime import date
+
 import pandas as pd
+from openpyxl.styles import Color, Font
 
-from openpyxl.styles import Font, Color
-
-from analysis.constants import REPORT_DATASETS, INDICATORS, BLUEPRINT
+from analysis.constants import BLUEPRINT, INDICATORS, REPORT_DATASETS
 from analysis.lib.xlsx.style import set_cell_styles, set_column_widths
 
 
@@ -24,8 +24,10 @@ def add_data_details_sheet(xlsx: pd.ExcelWriter, datasets: set[str]):
     else:
         metadata["sheet_name"] = metadata.label
 
+    # fill info for indicators from Blueprint
     indicator_ids = [e["id"] for e in INDICATORS]
     ix = metadata.id.isin(indicator_ids)
+    metadata.loc[ix, "date"] = BLUEPRINT["date"]
     metadata.loc[ix, "source"] = BLUEPRINT["source"]
     metadata.loc[ix, "citation"] = BLUEPRINT["citation"]
     metadata.loc[ix, "url"] = BLUEPRINT["url"]

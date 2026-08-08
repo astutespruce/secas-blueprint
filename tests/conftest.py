@@ -26,6 +26,9 @@ def session_cleanup(request):
         for filename in TEMP_DIR.glob("*.zip"):
             filename.unlink()
 
+        for filename in TEMP_DIR.glob("*.feather"):
+            filename.unlink()
+
         for filename in TEMP_DIR.glob("*.pdf"):
             filename.unlink()
 

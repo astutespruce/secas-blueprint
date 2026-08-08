@@ -4,9 +4,9 @@ from analysis.lib.pdf.map import render_maps
 from analysis.lib.pdf.report import create_report
 from analysis.lib.stats.summary_units import get_summary_unit_results
 from api.errors import DataError
-from api.settings import TEMP_DIR
-from api.logger import log
 from api.lib.progress import set_progress
+from api.logger import log
+from api.settings import TEMP_DIR
 
 
 async def create_summary_unit_pdf_report(ctx, unit_type, unit_id):
@@ -29,11 +29,8 @@ async def create_summary_unit_pdf_report(ctx, unit_type, unit_id):
         raise DataError("Unit id is not valid (not an existing subwatershed or marine hex grid ID)")
 
     name = results["name"]
-    print("unit type", unit_type)
     if unit_type == "marine_hex":
         name = "Marine " + name.replace(":", " ")
-
-    filename = f"Southeast Blueprint Summary Report - {name}.pdf"
 
     await set_progress(ctx["redis"], ctx["job_id"], 50, "Creating maps (this might take a while)")
 
@@ -79,12 +76,18 @@ async def create_summary_unit_pdf_report(ctx, unit_type, unit_id):
 
     await set_progress(ctx["redis"], ctx["job_id"], 95, "Nearly done", errors=errors)
 
-    fp, name = tempfile.mkstemp(suffix=".pdf", dir=TEMP_DIR)
+    fp, local_filename = tempfile.mkstemp(suffix=".pdf", dir=TEMP_DIR)
     with open(fp, "wb") as out:
         out.write(pdf)
 
     await set_progress(ctx["redis"], ctx["job_id"], 100, "All done!", errors=errors)
 
-    log.debug(f"Created PDF at: {name}")
+    log.debug(f"Created PDF at: {local_filename}")
 
-    return name, filename, errors
+    download_filename = f"Southeast Blueprint Summary Report - {name}.pdf"
+
+    return {
+        "local_filename": local_filename,
+        "download_filename": download_filename,
+        "payload": f"/api/jobs/{ctx['job_id']}/pdf",
+    }, errors

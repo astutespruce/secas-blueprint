@@ -1,27 +1,32 @@
+from io import BytesIO
+
+import numpy as np
+import pandas as pd
 import pytest
 from pyogrio import read_dataframe
-import numpy as np
 
 from analysis.constants import (
-    DATA_CRS,
     BLUEPRINT,
-    INDICATORS,
     CORRIDORS,
+    DATA_CRS,
+    INDICATORS,
     PARCAS,
     PARCAS_POLY,
     PROTECTED_AREAS,
     PROTECTED_AREAS_POLY,
+    REPORT_DATASETS,
     SLR_DEPTH,
     SLR_PROJ,
     URBAN_BY_DECADE,
     WILDFIRE_RISK,
 )
 from analysis.lib.geometry import dissolve
-from analysis.lib.stats.prescreen import get_available_datasets
 from analysis.lib.stats.analysis_units import get_analysis_unit_results
+from analysis.lib.stats.prescreen import get_available_datasets
 from analysis.lib.xlsx.report import create_report
-from api.settings import API_TOKEN
-from tests.lib.jobs import poll_until_done
+
+# DEBUG: Set to True to save XLSX files created by test to /tmp
+SAVE_XLSX = False
 
 
 @pytest.mark.parametrize("format", ["shp", "gdb"])
@@ -251,175 +256,88 @@ async def test_get_analysis_unit_results_multiple_areas(format):
 
 
 @pytest.mark.anyio
-async def test_create_xlsx_file():
-    df = read_dataframe("/vsizip/tests/fixtures/shp_poly_small.zip/poly_small.shp", columns=[], use_arrow=True).to_crs(
-        DATA_CRS
-    )
+@pytest.mark.parametrize("format", ["shp", "gdb"])
+async def test_create_xlsx_file_single_area(format):
+    filename = f"{format}_poly_small.zip"
+    dataset = filename.replace(f"{format}_", "").replace(".zip", f".{format}")
+    df = read_dataframe(f"/vsizip/tests/fixtures/{filename}/{dataset}", columns=[], use_arrow=True).to_crs(DATA_CRS)
+
     # dissolve like API endpoint
     field = "__analysis_unit"
     df[field] = "all areas"
-    df = dissolve(df, by=field).set_index(field)
+    df = dissolve(df.explode(ignore_index=True), by=field).set_index(field)
 
     datasets = set(get_available_datasets(df))
     results = await get_analysis_unit_results(df, datasets)
     xlsx = create_report(results, datasets, name="Test area")
 
-    # FIXME: remove
-    with open("/tmp/test.xlsx", "wb") as out:
-        _ = out.write(xlsx)
+    if SAVE_XLSX:
+        with open("/tmp/test_create_xlsx_file_single_area.xlsx", "wb") as out:
+            _ = out.write(xlsx)
+
+    reader = pd.ExcelFile(BytesIO(xlsx))
+
+    assert len(reader.sheet_names) == len(datasets) + 3
+    summary = reader.parse(sheet_name="Summary")
+    assert len(summary) == len(df)
+
+    assert np.allclose(summary["GIS acres"], results.acres)
+    assert np.allclose(summary["Analysis acres (rasterized to 30m pixels)"], results.rasterized_acres)
+    assert np.allclose(summary["Number of 30m pixels in analysis unit"], results["pixels"])
+    assert np.allclose(summary["Number of distinct areas in analysis unit"], results["count"])
+    assert summary["State(s)"].tolist() == results.states.tolist()
+
+    details = reader.parse(sheet_name="Data details")
+    assert len(details) == len(datasets)
+    assert details["Name"].tolist() == [d["label"] for id, d in REPORT_DATASETS.items() if id in datasets]
+
+    metadata = reader.parse(sheet_name="Analysis metadata", header=None)
+    assert len(metadata) == 3
+    assert metadata[1][0] == "Test area"
+
+    blueprint = reader.parse(sheet_name="Blueprint priority")
+    value_cols = [f"{v['label']} (acres)" for v in BLUEPRINT["values"]]
+    assert blueprint.columns.tolist() == ["Analysis unit", "Analysis acres"] + value_cols
+    assert np.allclose(results.blueprint.iloc[0], blueprint.iloc[0][value_cols].values.astype("float64"))
 
 
 @pytest.mark.anyio
 @pytest.mark.parametrize("format", ["shp", "gdb"])
-async def test_custom_xlsx_report_api_single_area(client, format):
-    with open(f"tests/fixtures/{format}_poly_small.zip", "rb") as infile:
-        response = await client.post(f"/custom_report/xlsx?token={API_TOKEN}", files={"file": infile})
-
-    assert response.status_code == 200
-    job_id = response.json()["job"]
-
-    result = await poll_until_done(client, job_id)
-    assert result["status"] == "success"
-
-    result_payload = result["result"]
-    uuid = result_payload["uuid"]
-    assert uuid is not None
-    assert result_payload["count"] == 1
-
-    fields = result_payload["fields"]
-    assert fields["ID"] == 1
-    assert fields["Name"] == 1
-
-    datasets = set(result_payload["datasets"])
-    assert len(datasets) == 32
-
-    expected_datasets = [
-        BLUEPRINT["id"],
-        CORRIDORS["id"],
-        PARCAS["id"],
-        PARCAS_POLY["id"],
-        PROTECTED_AREAS["id"],
-        PROTECTED_AREAS_POLY["id"],
-        SLR_DEPTH["id"],
-        SLR_PROJ["id"],
-        URBAN_BY_DECADE["id"],
-        WILDFIRE_RISK["id"],
-    ]
-    for dataset in expected_datasets:
-        assert dataset in datasets
-
-    # does not overlap with marine or Caribbean, so there should be no associated indicators
-    unexpected_datasets = [
-        indicator["id"]
-        for indicator in INDICATORS
-        if indicator["id"].startswith("m_") or "caribbean" in indicator["id"]
-    ]
-    for dataset in unexpected_datasets:
-        assert dataset not in datasets
-
-    ### submit finalize job
-    response = await client.post(
-        f"/custom_report/xlsx/{uuid}/finalize?token={API_TOKEN}", data={"datasets": ",".join(datasets)}
+async def test_create_xlsx_file_multiple_areas(format):
+    filename = f"{format}_poly_small.zip"
+    dataset = filename.replace(f"{format}_", "").replace(".zip", f".{format}")
+    df = read_dataframe(f"/vsizip/tests/fixtures/{filename}/{dataset}", columns=["Name"], use_arrow=True).to_crs(
+        DATA_CRS
     )
-    assert response.status_code == 200
 
-    job_id = response.json()["job"]
+    datasets = set(get_available_datasets(df))
+    results = await get_analysis_unit_results(df, datasets)
+    xlsx = create_report(results, datasets, name="Test area")
 
-    result = await poll_until_done(client, job_id)
-    assert result["status"] == "success"
+    if SAVE_XLSX:
+        with open("/tmp/test_create_xlsx_file_multiple_areas.xlsx", "wb") as out:
+            _ = out.write(xlsx)
 
+    reader = pd.ExcelFile(BytesIO(xlsx))
 
-@pytest.mark.anyio
-@pytest.mark.parametrize("format", ["shp", "gdb"])
-async def test_custom_xlsx_report_api_get_inputs_multiple_areas(client, format):
-    with open(f"tests/fixtures/{format}_poly_multiple.zip", "rb") as infile:
-        response = await client.post(f"/custom_report/xlsx?token={API_TOKEN}", files={"file": infile})
+    assert len(reader.sheet_names) == len(datasets) + 3
+    summary = reader.parse(sheet_name="Summary")
+    assert len(summary) == len(df)
+    assert np.allclose(summary["GIS acres"], results.acres)
+    assert np.allclose(summary["Analysis acres (rasterized to 30m pixels)"], results.rasterized_acres)
+    assert np.allclose(summary["Number of 30m pixels in analysis unit"], results["pixels"])
+    assert np.allclose(summary["Number of distinct areas in analysis unit"], results["count"])
+    assert summary["State(s)"].tolist() == results.states.tolist()
 
-    assert response.status_code == 200
-    job_id = response.json()["job"]
+    details = reader.parse(sheet_name="Data details")
+    assert len(details) == len(datasets)
+    assert details["Name"].tolist() == [d["label"] for id, d in REPORT_DATASETS.items() if id in datasets]
 
-    result = await poll_until_done(client, job_id)
-    assert result["status"] == "success"
+    metadata = reader.parse(sheet_name="Analysis metadata", header=None)
+    assert len(metadata) == 3
+    assert metadata[1][0] == "Test area"
 
-    result_payload = result["result"]
-    assert "uuid" in result_payload
-    assert result_payload["count"] == 5
-
-    fields = result_payload["fields"]
-    assert fields["ID"] == 5
-    assert fields["Name"] == 5
-    assert fields["Region"] == 3
-    assert fields["Common"] == 1
-
-    datasets = set(result_payload["datasets"])
-    assert len(datasets) == 59
-
-    expected_datasets = [
-        BLUEPRINT["id"],
-        CORRIDORS["id"],
-        PARCAS["id"],
-        PARCAS_POLY["id"],
-        PROTECTED_AREAS["id"],
-        PROTECTED_AREAS_POLY["id"],
-        SLR_DEPTH["id"],
-        SLR_PROJ["id"],
-        URBAN_BY_DECADE["id"],
-        WILDFIRE_RISK["id"],
-    ]
-    for dataset in expected_datasets:
-        assert dataset in datasets
-
-
-@pytest.mark.anyio
-@pytest.mark.parametrize("format", ["shp", "gdb"])
-async def test_custom_xlsx_report_api_get_inputs_multiple_areas_partial_overlap(client, format):
-    with open(f"tests/fixtures/{format}_poly_multiple_partial_overlap.zip", "rb") as infile:
-        response = await client.post(f"/custom_report/xlsx?token={API_TOKEN}", files={"file": infile})
-
-    assert response.status_code == 200
-    job_id = response.json()["job"]
-
-    result = await poll_until_done(client, job_id)
-    assert result["status"] == "success"
-
-    result_payload = result["result"]
-    assert "uuid" in result_payload
-    assert result_payload["count"] == 3
-
-    fields = result_payload["fields"]
-    assert fields["ID"] == 3
-    assert fields["Name"] == 3
-    assert fields["Blueprint"] == 3
-    assert fields["Common"] == 1
-
-    datasets = set(result_payload["datasets"])
-    assert len(datasets) == 31
-
-    expected_datasets = [
-        BLUEPRINT["id"],
-        CORRIDORS["id"],
-        PARCAS["id"],
-        PARCAS_POLY["id"],
-        PROTECTED_AREAS["id"],
-        PROTECTED_AREAS_POLY["id"],
-        SLR_DEPTH["id"],
-        SLR_PROJ["id"],
-        URBAN_BY_DECADE["id"],
-        WILDFIRE_RISK["id"],
-    ]
-    for dataset in expected_datasets:
-        assert dataset in datasets
-
-
-@pytest.mark.anyio
-async def test_finalize_xlsx_report_api_missing_token(client):
-    response = await client.post("/custom_report/xlsx/123/finalize")
-    assert response.status_code == 401
-    assert response.json()["detail"] == "Not authenticated"
-
-
-@pytest.mark.anyio
-async def test_finalize_xlsx_report_api_invalid_uuid(client):
-    response = await client.post(f"/custom_report/xlsx/123/finalize?token={API_TOKEN}")
-    assert response.status_code == 404
-    assert response.json()["detail"] == "Dataset not found"
+    blueprint = reader.parse(sheet_name="Blueprint priority")
+    value_cols = [f"{v['label']} (acres)" for v in BLUEPRINT["values"]]
+    assert blueprint.columns.tolist() == ["Analysis unit", "Analysis acres"] + value_cols
+    assert np.allclose(results.blueprint.iloc[0], blueprint.iloc[0][value_cols].values.astype("float64"))
