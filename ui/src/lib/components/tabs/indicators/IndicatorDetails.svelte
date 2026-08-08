@@ -20,7 +20,7 @@
 		goodThreshold,
 		values,
 		valueLabel,
-		outsideSEPercent,
+		outside_se_percent,
 		icon
 	} = $props()
 
@@ -37,7 +37,7 @@
 			}))
 			.reverse()
 
-		const notEvaluatedPercent = 100 - outsideSEPercent - totalPercent
+		const notEvaluatedPercent = 100 - outside_se_percent - totalPercent
 		if (notEvaluatedPercent >= 1) {
 			tableValues.push({
 				value: -1,
@@ -46,11 +46,11 @@
 			})
 		}
 
-		if (outsideSEPercent >= 1) {
+		if (outside_se_percent >= 1) {
 			tableValues.push({
 				value: -3,
 				label: 'Outside Southeast Blueprint',
-				percent: outsideSEPercent
+				percent: outside_se_percent
 			})
 		}
 

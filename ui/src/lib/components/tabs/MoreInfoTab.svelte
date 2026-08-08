@@ -8,11 +8,11 @@
 		type,
 		slr,
 		urban,
-		wildfireRisk,
+		wildfire_risk,
 		regions,
-		protectedAreas,
-		protectedAreasList,
-		numProtectedAreas,
+		protected_areas,
+		protected_areas_list,
+		num_protected_areas,
 		parcas,
 		class: className = ''
 	} = $props()
@@ -23,14 +23,14 @@
 		<PARCAs {type} {parcas} />
 	{/if}
 
-	<ProtectedAreas {type} {protectedAreas} {protectedAreasList} {numProtectedAreas} />
+	<ProtectedAreas {type} {protected_areas} {protected_areas_list} {num_protected_areas} />
 
 	{#if type === 'pixel' || type === 'subwatershed'}
 		<SLR {type} {...slr} />
 
 		<Urban {type} {urban} {regions} />
 
-		<WildfireRisk {type} {wildfireRisk} {regions} />
+		<WildfireRisk {type} {wildfire_risk} {regions} />
 	{/if}
 
 	<NeedHelp />

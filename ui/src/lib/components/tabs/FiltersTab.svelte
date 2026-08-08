@@ -14,7 +14,7 @@
 	import { setIntersection } from '$lib/util/data'
 	import type { Filter } from '$lib/types'
 	import { cn } from '$lib/utils'
-	import { indicatorGroups, indicatorsIndex } from '$lib/config/constants'
+	import { indicatorGroups, urban, wildfireRisk } from '$lib/config/constants'
 	import {
 		priorityFilters as rawPriorityFilters,
 		indicatorGroupFilters as rawIndicatorGroupFilters,
@@ -76,11 +76,11 @@
 					...entry,
 					...mapState.filters[entry.id],
 					canBeVisible:
-						(entry.id !== 'urban' &&
-							entry.id !== 'wildfireRisk' &&
+						(entry.id !== urban.id &&
+							entry.id !== wildfireRisk.id &&
 							mapState.visibleRegions.size > 0) ||
 						// urban / wildfire not in Caribbean
-						((entry.id === 'urban' || entry.id === 'wildfireRisk') &&
+						((entry.id === urban.id || entry.id === wildfireRisk.id) &&
 							[...mapState.visibleRegions].filter((s) => s !== 'caribbean').length > 0)
 				}))
 				.filter(({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled) // mapState.filters[id].enabled)

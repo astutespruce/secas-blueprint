@@ -34,43 +34,43 @@ export const defaultFilters: Filters = Object.fromEntries(
 	})
 )
 
-defaultFilters.blueprint = {
+defaultFilters[blueprint.id] = {
 	enabled: false,
 	// skip not a priority class; values 1-4
 	activeValues: Object.fromEntries(range(1, 5).map((v) => [v, true]))
 }
 
-defaultFilters.corridors = {
+defaultFilters[corridors.id] = {
 	enabled: false,
 	// values 1-6
 	activeValues: Object.fromEntries(range(1, 7).map((v) => [v, true]))
 }
 
-defaultFilters.urban = {
+defaultFilters[urban.id] = {
 	enabled: false,
 	// values 1-5
 	activeValues: Object.fromEntries(range(1, 6).map((v) => [v, true]))
 }
 
-defaultFilters.slr = {
+defaultFilters[slrDepth.id] = {
 	enabled: false,
 	// hardcoded values to capture depth + nodata (values 0-13)
 	activeValues: Object.fromEntries(range(0, 14).map((v) => [v, true]))
 }
 
-defaultFilters.wildfireRisk = {
+defaultFilters[wildfireRisk.id] = {
 	enabled: false,
 	// values 0-10
 	activeValues: Object.fromEntries(range(0, 11).map((v) => [v, true]))
 }
 
-defaultFilters.parcas = {
+defaultFilters[parcas.id] = {
 	enabled: false,
 	// values 0-1
 	activeValues: { 0: false, 1: true }
 }
 
-defaultFilters.protectedAreas = {
+defaultFilters[protectedAreas.id] = {
 	enabled: false,
 	// values 0-1
 	activeValues: { 0: false, 1: true }
@@ -105,6 +105,7 @@ export const indicatorGroupFilters = Object.fromEntries(
 	])
 )
 
+// NOTE: these are ordered by alphabetical label
 export const otherInfoFilters = [
 	{
 		id: slrDepth.id,

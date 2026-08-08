@@ -4,12 +4,12 @@
 	import { wildfireRisk as wildfireRiskInfo } from '$lib/config/constants'
 	import { cn } from '$lib/utils'
 
-	const { type, wildfireRisk, regions } = $props()
+	const { type, wildfire_risk, regions } = $props()
 
 	const bars = $derived(
 		wildfireRiskInfo.values.map((category) => ({
 			...category,
-			percent: wildfireRisk ? wildfireRisk[category.value] || 0 : 0
+			percent: wildfire_risk ? wildfire_risk[category.value] || 0 : 0
 		}))
 	)
 </script>
@@ -18,7 +18,7 @@
 	<h3 class="text-2xl">Wildfire Likelihood</h3>
 
 	{#if type === 'pixel'}
-		{#if wildfireRisk === null || wildfireRisk === undefined}
+		{#if wildfire_risk === null || wildfire_risk === undefined}
 			<div class="text-grey-8">
 				Wildfire likelihood data is not currently available for this area.
 			</div>
@@ -32,13 +32,13 @@
 					>
 						<div
 							class={cn('flex-auto text-grey-8', {
-								'text-foreground font-bold': value === wildfireRisk
+								'text-foreground font-bold': value === wildfire_risk
 							})}
 						>
 							{label}
 						</div>
 						<CheckIcon
-							class={cn('size-4 flex-none invisible', { visible: value === wildfireRisk })}
+							class={cn('size-4 flex-none invisible', { visible: value === wildfire_risk })}
 						/>
 					</div>
 				{/each}
@@ -47,7 +47,7 @@
 	{/if}
 
 	{#if type !== 'pixel'}
-		{#if (regions && regions.has('caribbean')) || wildfireRisk === null}
+		{#if (regions && regions.has('caribbean')) || wildfire_risk === null}
 			<div class="text-grey-8">
 				Wildfire likelihood data is not currently available for this area.
 			</div>

@@ -186,7 +186,7 @@ export const extractPixelData = async (
 	// @ts-expect-error props is dynamically defined
 	const layers = map.__deck.layerManager.layers[0].props.layers
 
-	const data = {}
+	const data: Record<string, number> = {}
 
 	// layers will be empty array if there are no tiles for any of the pixel layers
 	layers.forEach(({ encoding }, i) => {
@@ -238,20 +238,20 @@ export const extractPixelData = async (
 	const subregions = new Set([subregion])
 	const regions = new Set([region])
 
-	// unpack indicators and indicator gruops
+	// unpack indicators and indicator groups
 	data.indicators = extractIndicators(data, indicatorGroupInfo, indicatorInfo, subregions)
 
 	// extract SLR
-	if (data.slr !== undefined && data.slr !== null) {
-		if (data.slr <= 10) {
+	if (data.slr_depth !== undefined && data.slr_depth !== null) {
+		if (data.slr_depth <= 10) {
 			data.slr = {
-				depth: data.slr,
+				depth: data.slr_depth,
 				nodata: null
 			}
 		} else {
 			data.slr = {
 				depth: null,
-				nodata: data.slr - 11
+				nodata: data.slr_depth - 11
 			}
 		}
 	} else {
@@ -262,16 +262,16 @@ export const extractPixelData = async (
 	}
 
 	// extract protected areas from vector tiles
-	const protectedAreasList: string[] = []
+	const protected_areas_list: string[] = []
 	// @ts-expect-error id is valid
 	const protectedAreasFeatures = features.filter(({ layer: { id } }) => id === 'protectedAreas')
 	if (protectedAreasFeatures.length > 0) {
 		// @ts-expect-error name and owner are valid
 		protectedAreasFeatures.forEach(({ properties: { name, owner } }) => {
 			if (owner) {
-				protectedAreasList.push(`${name} (${owner})`)
+				protected_areas_list.push(`${name} (${owner})`)
 			} else {
-				protectedAreasList.push(name)
+				protected_areas_list.push(name)
 			}
 		})
 	}
@@ -279,9 +279,9 @@ export const extractPixelData = async (
 	return {
 		subregions,
 		regions,
-		outsideSEPercent: 0,
+		outside_se_percent: 0,
 		...data,
-		protectedAreasList,
-		numProtectedAreas: protectedAreasList.length
+		protected_areas_list,
+		num_protected_areas: protected_areas_list.length
 	}
 }

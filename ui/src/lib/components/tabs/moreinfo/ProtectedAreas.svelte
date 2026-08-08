@@ -5,12 +5,12 @@
 	import { formatNumber } from '$lib/util/format'
 	import { cn } from '$lib/utils'
 
-	const { type, protectedAreas, protectedAreasList, numProtectedAreas } = $props()
+	const { type, protected_areas, protected_areas_list, num_protected_areas } = $props()
 
 	const bars = $derived(
 		protectedAreasInfo.values.map((category) => ({
 			...category,
-			percent: protectedAreas ? protectedAreas[category.value] || 0 : 0
+			percent: protected_areas ? protected_areas[category.value] || 0 : 0
 		}))
 	)
 </script>
@@ -26,14 +26,14 @@
 				>
 					<div
 						class={cn('flex-auto text-grey-8', {
-							'text-foreground font-bold': value === protectedAreas
+							'text-foreground font-bold': value === protected_areas
 						})}
 					>
 						{label}
 					</div>
 
 					<CheckIcon
-						class={cn('size-4 flex-none invisible', { visible: value === protectedAreas })}
+						class={cn('size-4 flex-none invisible', { visible: value === protected_areas })}
 					/>
 				</div>
 			{/each}
@@ -44,17 +44,17 @@
 		{/each}
 	{/if}
 
-	{#if protectedAreasList && protectedAreasList.length > 0}
+	{#if protected_areas_list && protected_areas_list.length > 0}
 		<div class="mt-6">
 			<div class="font-bold">Protected areas at this location</div>
 			<ul class="mt-2 list-disc ml-4 text-grey-9">
-				{#each protectedAreasList as name, i (`${name}-${i}`)}
+				{#each protected_areas_list as name, i (`${name}-${i}`)}
 					<li class="not-first:mt-2">{name}</li>
 				{/each}
 
-				{#if numProtectedAreas && numProtectedAreas - protectedAreasList.length > 0}
+				{#if num_protected_areas && num_protected_areas - protected_areas_list.length > 0}
 					<li class="not-first:mt-2">
-						...and {formatNumber(numProtectedAreas - protectedAreasList.length)} more...
+						...and {formatNumber(num_protected_areas - protected_areas_list.length)} more...
 					</li>
 				{/if}
 			</ul>
@@ -72,7 +72,7 @@
 		(PAD-US v4.1) and include Fee, Designation, Easement, Marine, and Proclamation (Dept. of Defense lands
 		only) boundaries.
 
-		{#if protectedAreasList && protectedAreasList.length > 0}
+		{#if protected_areas_list && protected_areas_list.length > 0}
 			Areas are listed based on name, ownership, and boundary information in the Protected Areas
 			Database of the United States, which may include overlapping and duplicate areas.
 		{/if}

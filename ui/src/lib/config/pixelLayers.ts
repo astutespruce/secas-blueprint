@@ -78,15 +78,15 @@ pixelLayers.forEach(({ encoding }, textureIndex) => {
 
 const coreLayers: PixelLayer[] = [
 	{
-		id: 'blueprint',
+		id: blueprint.id,
 		label: 'Blueprint priority',
 		valueLabel: 'for a connected network of lands and waters', // used in legend
 		colors: blueprint.values.map(({ color, value }) => (value === 0 ? null : color)),
 		categories: blueprint.values.filter(({ value }) => value > 0),
-		layer: pixelLayerIndex.blueprint
+		layer: pixelLayerIndex[blueprint.id]
 	},
 	{
-		id: 'corridors',
+		id: corridors.id,
 		label: 'Hubs and corridors',
 		colors: corridors.values.map(({ color }) => color),
 		categories: corridors.values
@@ -96,7 +96,7 @@ const coreLayers: PixelLayer[] = [
 				label,
 				color
 			})),
-		layer: pixelLayerIndex.corridors
+		layer: pixelLayerIndex[corridors.id]
 	}
 ]
 
@@ -113,14 +113,14 @@ const otherInfoLayers: PixelLayer[] = [
 				outlineWidth: 1,
 				outlineColor: 'grey.5'
 			})),
-		layer: pixelLayerIndex.slr
+		layer: pixelLayerIndex[slrDepth.id]
 	},
 	{
 		id: parcas.id,
 		label: parcas.label,
 		colors: parcas.values.map(({ color }) => color),
 		categories: parcas.values.filter(({ color }) => color !== null),
-		layer: pixelLayerIndex.parcas
+		layer: pixelLayerIndex[parcas.id]
 	},
 	{
 		id: urban.id,
@@ -132,14 +132,14 @@ const otherInfoLayers: PixelLayer[] = [
 			outlineWidth: 1,
 			outlineColor: 'grey.5'
 		})),
-		layer: pixelLayerIndex.urban
+		layer: pixelLayerIndex[urban.id]
 	},
 	{
 		id: protectedAreas.id,
 		label: protectedAreas.label,
 		colors: protectedAreas.values.map(({ color }) => color),
 		categories: protectedAreas.values.filter(({ color }) => color !== null),
-		layer: pixelLayerIndex.protectedAreas
+		layer: pixelLayerIndex[protectedAreas.id]
 	},
 	{
 		id: wildfireRisk.id,
@@ -162,7 +162,7 @@ const otherInfoLayers: PixelLayer[] = [
 					.reverse()
 			)
 		),
-		layer: pixelLayerIndex.wildfireRisk
+		layer: pixelLayerIndex[wildfireRisk.id]
 	}
 ]
 

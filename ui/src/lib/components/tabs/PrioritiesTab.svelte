@@ -10,7 +10,7 @@
 		blueprint: number[] | number | null
 		corridors: number[] | number | null
 		regions: Set<string>
-		outsideSEPercent: number
+		outside_se_percent: number
 		class: string | undefined
 	}
 
@@ -19,7 +19,7 @@
 		blueprint,
 		corridors,
 		regions,
-		outsideSEPercent,
+		outside_se_percent,
 		class: className = ''
 	}: Props = $props()
 
@@ -51,9 +51,9 @@
 			}))
 			.filter(({ value }) => value > 0)
 
-		if (outsideSEPercent) {
+		if (outside_se_percent) {
 			data.push({
-				value: outsideSEPercent,
+				value: outside_se_percent,
 				color: '#fde0dd',
 				label: 'Outside Southeast Blueprint'
 			})
@@ -98,9 +98,9 @@
 			}))
 			.filter(({ value }) => value > 0)
 
-		if (outsideSEPercent) {
+		if (outside_se_percent) {
 			data.push({
-				value: outsideSEPercent,
+				value: outside_se_percent,
 				color: '#fde0dd',
 				label: 'Outside Southeast Blueprint'
 			})
@@ -116,7 +116,7 @@
 		<PieChart categories={blueprintChartData} class="mt-6 mb-4" />
 	{/if}
 
-	{#if outsideSEPercent < 100}
+	{#if outside_se_percent < 100}
 		<div class="mt-2">
 			{#each blueprintInfo.values
 				.slice()
@@ -155,7 +155,7 @@
 		<PieChart categories={corridorChartData} class="mt-6 mb-4" radius={28} lineWidth={25} />
 	{/if}
 
-	{#if outsideSEPercent < 100}
+	{#if outside_se_percent < 100}
 		<div class="mt-2">
 			{#each availableCorridorCategories as { value, label, description } (value)}
 				<div

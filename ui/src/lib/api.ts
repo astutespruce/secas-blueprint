@@ -59,10 +59,10 @@ export const createSummaryUnitReport = async (
 	type: SummaryUnitType,
 	onProgress: ProgressCallback
 ) => {
-	const unitType = type === 'subwatershed' ? 'huc12' : 'marine_hex'
+	const unit_type = type === 'subwatershed' ? 'huc12' : 'marine_hex'
 
 	const response = await fetch(
-		`${API}/summary_unit_report/${unitType}/${id}/pdf?token=${API_TOKEN}`,
+		`${API}/summary_unit_report/${unit_type}/${id}/pdf?token=${API_TOKEN}`,
 		{
 			method: 'POST'
 		}

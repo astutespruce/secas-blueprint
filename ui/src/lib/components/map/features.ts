@@ -1,5 +1,3 @@
-import camelCase from 'camelcase'
-
 import {
 	applyFactor,
 	parsePipeEncodedValues,
@@ -9,6 +7,15 @@ import {
 	setIntersection,
 	sum
 } from '$lib/util/data'
+import {
+	blueprint,
+	corridors,
+	parcas,
+	protectedAreas,
+	slrDepth,
+	urban,
+	wildfireRisk
+} from '$lib/config/constants'
 import type { IndicatorValue } from '$lib/types'
 
 /**
@@ -128,9 +135,7 @@ export const unpackFeatureData = (
 	subregionIndex
 ) => {
 	const values = Object.entries(properties)
-		.map(([rawKey, value]) => {
-			const key = camelCase(rawKey)
-
+		.map(([key, value]) => {
 			if (!value || typeof value !== 'string' || key === 'name') {
 				return [key, value]
 			}
@@ -139,7 +144,7 @@ export const unpackFeatureData = (
 				return [key, null]
 			}
 
-			if (key === 'protectedAreasList') {
+			if (key === 'protected_areas_list') {
 				return [key, value ? value.split('|') : []]
 			}
 
@@ -162,21 +167,21 @@ export const unpackFeatureData = (
 		}, {})
 
 	// calculate area outside SE, rounded to 0 in case it is very small
-	values.outsideSEPercent = (100 * values.outsideSe) / values.rasterizedAcres
-	if (values.outsideSEPercent < 1) {
-		values.outsideSEPercent = 0
+	values.outside_se_percent = (100 * values.outside_se) / values.rasterized_acres
+	if (values.outside_se_percent < 1) {
+		values.outside_se_percent = 0
 	}
 
 	// rescale scaled values from percent * 10 back to percent
 	const scaledColumns = [
-		'blueprint',
-		'corridors',
-		'parcas',
-		'protectedAreas',
-		'slrDepth',
-		'slrNodata',
-		'urban',
-		'wildfireRisk'
+		blueprint.id,
+		corridors.id,
+		parcas.id,
+		protectedAreas.id,
+		slrDepth.id,
+		'slr_nodata',
+		urban.id,
+		wildfireRisk.id
 	]
 	scaledColumns.forEach((c) => {
 		values[c] = values[c] ? applyFactor(values[c], 0.1) : []
@@ -203,12 +208,12 @@ export const unpackFeatureData = (
 	)
 
 	// rename specific fields for easier use later
-	values.unitType = values.type
-	values.unitAcres = values.acres
+	values.unit_type = values.type
+	values.unit_acres = values.acres
 
 	values.slr = {
-		depth: values.slrDepth || [],
-		nodata: values.slrNodata || []
+		depth: values.slr_depth || [],
+		nodata: values.slr_nodata || []
 	}
 
 	return values
