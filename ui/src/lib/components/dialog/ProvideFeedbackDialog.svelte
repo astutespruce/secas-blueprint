@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Root, Trigger, Content, Header, Title } from '$lib/components/ui/dialog';
+	import { Root, Trigger, Content, Header, Title } from '$lib/components/ui/dialog'
 
-	let { children } = $props();
+	let { children } = $props()
 </script>
 
 <Root>
@@ -9,7 +9,7 @@
 		{@render children()}
 	</Trigger>
 	<Content class="pt-4 pb-6">
-		<Header class="border-b pb-4 border-b-grey-3">
+		<Header class="border-b pb-2 mb-2 border-b-grey-2">
 			<Title class="text-3xl">Give your feedback to Blueprint Staff</Title>
 		</Header>
 		<p class="text-lg">

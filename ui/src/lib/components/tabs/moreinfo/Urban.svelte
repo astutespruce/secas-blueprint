@@ -21,7 +21,7 @@
 		{:else}
 			<!-- show as list with checkmarks -->
 			<div class="text-grey-8">Probability of urbanization by 2060:</div>
-			{#each urbanCategories as { value, label }}
+			{#each urbanCategories as { value, label } (value)}
 				<div
 					class="flex items-baseline justify-between pl-2 border-b border-b-grey-2 pb-1 not-first:mt-1 gap-4"
 				>

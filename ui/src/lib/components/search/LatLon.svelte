@@ -192,12 +192,12 @@
 	<div class="flex items-center gap-2">
 		<div class="relative flex-auto group">
 			<SearchLocationIcon
-				class="flex-none size-4 absolute left-1.5 top-2.5 z-1 text-grey-4 group-focus-within:text-grey-9"
+				class="flex-none size-4 absolute left-1.5 top-2.5 z-1 text-grey-8/40 group-focus-within:text-grey-9"
 			/>
 			<Input
 				bind:ref
 				bind:value
-				class="relative w-full flex-auto border-grey-3 placeholder:text-grey-8 z-0 pl-7 pr-8"
+				class="relative w-full flex-auto border-grey-2 placeholder:text-grey-8 z-0 pl-7 pr-8"
 				placeholder="Enter latitude, longitude"
 				aria-invalid={!isValid}
 				onclick={handleClick}
@@ -206,7 +206,7 @@
 			/>
 			{#if value !== ''}
 				<Button
-					class="absolute right-1.5 top-2 z-1 bg-white hover:bg-white w-5 h-5 flex-none text-grey-5 hover:text-grey-9 shadow-none"
+					class="absolute right-1.5 top-2 z-1 bg-white hover:bg-white w-5 h-5 flex-none text-grey-8/50 hover:text-grey-9 shadow-none"
 					onclick={handleReset}
 				>
 					<TimesIcon class="" />

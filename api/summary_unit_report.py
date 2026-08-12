@@ -29,9 +29,7 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
 
     results = get_summary_unit_results(unit_type, unit_id)
     if results is None:
-        raise DataError(
-            "Unit id is not valid (not an existing subwatershed or marine hex grid ID)"
-        )
+        raise DataError("Unit id is not valid (not an existing subwatershed or marine hex grid ID)")
 
     name = results["name"]
     print("unit type", unit_type)
@@ -40,14 +38,12 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
 
     filename = f"Southeast Blueprint Summary Report - {name}.pdf"
 
-    await set_progress(
-        ctx["redis"], ctx["job_id"], 50, "Creating maps (this might take a while)"
-    )
+    await set_progress(ctx["redis"], ctx["job_id"], 50, "Creating maps (this might take a while)")
 
-    # compile indicator IDs across all ecosystems
+    # compile indicator IDs across all indicator groups
     indicators = []
-    for ecosystem in results.get("ecosystems", []):
-        indicators.extend([i["id"] for i in ecosystem["indicators"]])
+    for group in results.get("indicator_groups", []):
+        indicators.extend([i["id"] for i in group["indicators"]])
 
     maps, scale, map_errors = await render_maps(
         results["bounds"],
@@ -82,9 +78,7 @@ async def create_summary_unit_report(ctx, unit_type, unit_id):
 
     results["scale"] = scale
 
-    pdf = create_report(
-        maps=maps, results=results, name=results["name"], area_type=unit_type
-    )
+    pdf = create_report(maps=maps, results=results, name=results["name"], area_type=unit_type)
 
     await set_progress(ctx["redis"], ctx["job_id"], 95, "Nearly done", errors=errors)
 

@@ -16,9 +16,7 @@ out_dir.mkdir(exist_ok=True)
 
 
 states = (
-    read_dataframe(
-        "source_data/boundaries/BlueprintStatesForReports/2023StatesForBrendan.shp"
-    )
+    read_dataframe("source_data/boundaries/BlueprintStatesForReports/2023StatesForBrendan.shp")
     .to_crs(DATA_CRS)
     .sort_values(by="NAME")
 )
@@ -42,10 +40,10 @@ for state in states.NAME.values:
 
     bar.finish()
 
-    # compile indicator IDs across all ecosystems
+    # compile indicator IDs across all indicator groups
     indicators = []
-    for ecosystem in results.get("ecosystems", []):
-        indicators.extend([i["id"] for i in ecosystem["indicators"]])
+    for group in results.get("indicator_groups", []):
+        indicators.extend([i["id"] for i in group["indicators"]])
 
     geo_df = df.to_crs(GEO_CRS)
     task = render_maps(
@@ -70,9 +68,7 @@ for state in states.NAME.values:
 
     pdf = create_report(maps=maps, results=results, name=state)
 
-    with open(
-        out_dir / f"{state.replace(' ', '_')}_Blueprint2025_report.pdf", "wb"
-    ) as out:
+    with open(out_dir / f"{state.replace(' ', '_')}_Blueprint2025_report.pdf", "wb") as out:
         out.write(pdf)
 
     print("Elapsed {:.2f}s".format(time() - start))

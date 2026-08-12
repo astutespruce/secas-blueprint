@@ -24,24 +24,10 @@
 	--grey-0: oklch(0.9824 0.0013 286.38);
 	--grey-1: oklch(0.9479 0.0025 228.79);
 	--grey-2: oklch(0.9083 0.0052 247.88);
-	--grey-3: oklch(0.8652 0.0082 253.86);
-	--grey-4: oklch(0.8195 0.0105 238.54);
-	--grey-5: oklch(0.7661 0.0145 248.02);
-	--grey-6: oklch(0.7042 0.0185 248.09);
-	--grey-7: oklch(0.6299 0.0225 243.6);
 	--grey-8: oklch(0.5312 0.0266 246.33);
 	--grey-9: oklch(0.3673 0.0174 248.3);
 	--black: oklch(0 0 0);
 
-	--blue-0: oklch(0.9825 0.0075 241.66);
-	--blue-1: oklch(0.9461 0.0243 238.4);
-	--blue-2: oklch(0.9067 0.0428 238.51);
-	--blue-3: oklch(0.8636 0.0629 237.65);
-	--blue-4: oklch(0.8154 0.0853 238.59);
-	--blue-5: oklch(0.7621 0.1108 239.93);
-	--blue-6: oklch(0.6997 0.1255 241.55);
-	--blue-7: oklch(0.6272 0.1112 241.1);
-	--blue-8: oklch(0.5273 0.0914 241.52);
 	--blue-9: oklch(0.3673 0.0593 239.59);
 
 	--radius: 0.5rem;
@@ -69,22 +55,9 @@
 	--color-grey-0: var(--grey-0);
 	--color-grey-1: var(--grey-1);
 	--color-grey-2: var(--grey-2);
-	--color-grey-3: var(--grey-3);
-	--color-grey-4: var(--grey-4);
-	--color-grey-5: var(--grey-5);
-	--color-grey-6: var(--grey-6);
-	--color-grey-7: var(--grey-7);
 	--color-grey-8: var(--grey-8);
 	--color-grey-9: var(--grey-9);
 
-	--color-blue-0: var(--blue-0);
-	--color-blue-1: var(--blue-1);
-	--color-blue-2: var(--blue-2);
-	--color-blue-3: var(--blue-3);
-	--color-blue-4: var(--blue-4);
-	--color-blue-5: var(--blue-5);
-	--color-blue-6: var(--blue-6);
-	--color-blue-7: var(--blue-7);
 	--color-blue-8: var(--blue-8);
 	--color-blue-9: var(--blue-9);
 
@@ -94,6 +67,9 @@
 	--color-secondary: var(--grey-1);
 	--color-secondary-foreground: var(--secondary-grey-8);
 	--color-destructive: var(--error);
+
+	--color-popover: var(--white);
+	--color-popover-foreground: var(--foreground);
 
 	--radius-sm: calc(var(--radius) - 4px);
 	--radius-md: calc(var(--radius) - 2px);
@@ -133,7 +109,7 @@
 	}
 
 	hr {
-		@apply my-12 border-grey-3;
+		@apply my-12 border-grey-2;
 	}
 
 	.mapboxgl-ctrl-zoom-in,
@@ -141,20 +117,46 @@
 	.mapboxgl-ctrl-compass,
 	.mapboxgl-ctrl-logo,
 	.mapboxgl-ctrl-attrib {
-		@apply !hidden md:!block;
+		@apply hidden! md:block!;
 	}
 
 	.mapboxgl-ctrl-attrib.mapboxgl-compact {
-		@apply !min-h-[24px];
+		@apply min-h-[24px]!;
 	}
 
 	.mapboxgl-ctrl-top-right {
-		@apply !top-[50px];
+		@apply top-[50px]!;
 	}
 
-	/* canvas {
-		@apply md:border-l-2 border-l-grey-3 focus-visible:border-l-[blue];
-	} */
+	@media print {
+		@page :first {
+			counter-set: page 0;
+		}
+		@page {
+			size: letter portrait;
+			margin: 0.25in 0.25in 0.5in 0.25in;
+			@top-left {
+				content: '';
+			}
+			@top-right {
+				content: '';
+			}
+			@bottom-left {
+				content: '';
+			}
+			@bottom-right {
+				@apply text-xs text-muted-foreground;
+				counter-increment: page;
+				content: 'Page ' counter(page);
+			}
+		}
+		body {
+			margin: 0;
+			height: auto;
+			print-color-adjust: exact !important;
+			background: #fff;
+		}
+	}
 }
 
 @utility container {

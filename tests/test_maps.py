@@ -44,8 +44,8 @@ for aoi_name in aoi_names:
     results = get_custom_area_results(df)
     # compile indicator IDs across all inputs
     indicators = []
-    for ecosystem in results.get("ecosystems", []):
-        indicators.extend([i["id"] for i in ecosystem["indicators"]])
+    for group in results.get("indicator_groups", []):
+        indicators.extend([i["id"] for i in group["indicators"]])
 
     print("Creating maps...")
     geo_df = df.to_crs(GEO_CRS)
@@ -97,8 +97,8 @@ for summary_type in ids:
         # compile indicator IDs across all inputs
         indicators = []
         for input_area in results["inputs"]:
-            for ecosystem in input_area.get("ecosystems", []):
-                indicators.extend([i["id"] for i in ecosystem["indicators"]])
+            for group in input_area.get("indicator_groups", []):
+                indicators.extend([i["id"] for i in group["indicators"]])
 
         out_dir = Path(f"/tmp/{id}/maps")
         if not out_dir.exists():

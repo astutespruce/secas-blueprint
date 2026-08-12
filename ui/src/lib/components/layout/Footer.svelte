@@ -8,7 +8,7 @@
 </script>
 
 <footer
-	class="hidden md:flex flex-none gap-4 items-center justify-between py-1 px-2 leading-none text-sm"
+	class="hidden md:flex flex-none gap-4 items-center justify-between py-1 px-2 leading-none text-sm print:hidden"
 >
 	<div class="flex flex-none gap-3 items-center">
 		<div>Version: Southeast Blueprint 2025</div>

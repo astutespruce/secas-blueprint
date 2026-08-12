@@ -49,39 +49,24 @@ SECAS_HUC2 = [2, 3, 5, 6, 7, 8, 10, 11, 12, 13, 21]
 json_dir = Path("constants")
 
 BLUEPRINT = json.loads(open(json_dir / "blueprint.json").read())
-BLUEPRINT_COLORS = {
-    i: entry["color"]
-    for i, entry in enumerate(BLUEPRINT)
-    if "color" in entry and entry["value"] > 0
-}
+BLUEPRINT_COLORS = {i: entry["color"] for i, entry in enumerate(BLUEPRINT) if "color" in entry and entry["value"] > 0}
 
 
 CORRIDORS = json.loads(open(json_dir / "corridors.json").read())
-CORRIDORS_COLORS = {
-    entry["value"]: entry["color"]
-    for entry in CORRIDORS
-    if entry.get("color", None) is not None
-}
-ECOSYSTEMS = json.loads(open(json_dir / "ecosystems.json").read())
+CORRIDORS_COLORS = {entry["value"]: entry["color"] for entry in CORRIDORS if entry.get("color", None) is not None}
 
-
+INDICATOR_GROUPS = json.loads(open(json_dir / "indicator_groups.json").read())
 INDICATORS = json.loads(open(json_dir / "indicators.json").read())
 INDICATORS_INDEX = {indicator["id"]: indicator for indicator in INDICATORS}
 
 
 PROTECTED_AREAS = json.loads(open(json_dir / "protected_areas.json").read())
 PROTECTED_AREAS_COLORS = {
-    entry["value"]: entry["color"]
-    for entry in PROTECTED_AREAS
-    if entry.get("color", None) is not None
+    entry["value"]: entry["color"] for entry in PROTECTED_AREAS if entry.get("color", None) is not None
 }
 
 PARCAS = json.loads(open(json_dir / "parcas.json").read())
-PARCA_COLORS = {
-    entry["value"]: entry["color"]
-    for entry in PARCAS
-    if entry.get("color", None) is not None
-}
+PARCA_COLORS = {entry["value"]: entry["color"] for entry in PARCAS if entry.get("color", None) is not None}
 
 
 URBAN_YEARS = [2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100]
@@ -110,10 +95,7 @@ SLR_PROJ_SCENARIOS = {
     "ih": "Intermediate-high",
     "h": "High",
 }
-SLR_PROJ_COLUMNS = [
-    f"{decade}_{scenario}"
-    for decade, scenario in product(SLR_YEARS, SLR_PROJ_SCENARIOS)
-]
+SLR_PROJ_COLUMNS = [f"{decade}_{scenario}" for decade, scenario in product(SLR_YEARS, SLR_PROJ_SCENARIOS)]
 
 SLR = json.loads(open(json_dir / "slr.json").read())
 SLR_LEGEND = SLR[:11]
@@ -152,9 +134,7 @@ NLCD_LEGEND = list(NLCD_CODES.values())
 
 WILDFIRE_RISK = json.loads(open(json_dir / "wildfire_risk.json").read())
 WILDFIRE_RISK_COLORS = {
-    entry["value"]: entry["color"]
-    for entry in WILDFIRE_RISK
-    if entry.get("color", None) is not None
+    entry["value"]: entry["color"] for entry in WILDFIRE_RISK if entry.get("color", None) is not None
 }
 # NOTE: we use a simplified legend for this instead of all detailed categories;
 # saved in descending probability order
@@ -162,10 +142,7 @@ WILDFIRE_RISK_LEGEND = [
     dict([key, value])
     for key, value in (
         # this dict used to preserve original order and only keep unique label / colors
-        dict(
-            (("label", e["label"].split(" (")[0]), ("color", e["color"]))
-            for e in WILDFIRE_RISK
-        ).items()
+        dict((("label", e["label"].split(" (")[0]), ("color", e["color"])) for e in WILDFIRE_RISK).items()
     )
 ][::-1]
 

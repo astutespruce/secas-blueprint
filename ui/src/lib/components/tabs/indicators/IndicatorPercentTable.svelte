@@ -47,7 +47,7 @@
 
 <div class="my-8">
 	{#if goodThreshold === null}
-		{#each values.filter(({ value }: { value: number }) => value >= 0) as { label, percent, isHighValue, isLowValue }}
+		{#each values.filter(({ value }: { value: number }) => value >= 0) as { value, label, percent, isHighValue, isLowValue } (value)}
 			<div class={cn('flex not-first:mt-4 items-start', { 'items-end': isLowValue })}>
 				<div class="flex items-center gap-1 flex-none w-20 font-bold text-sm">
 					{#if isHighValue}
@@ -62,7 +62,7 @@
 			</div>
 		{/each}
 	{:else}
-		{#each goodPercents as { label, percent, isHighValue }}
+		{#each goodPercents as { value, label, percent, isHighValue } (value)}
 			<div class="flex not-first:mt-4">
 				<div class="flex items-center gap-1 flex-none w-20 font-bold text-sm">
 					{#if isHighValue}
@@ -81,7 +81,7 @@
 					{formatPercent(totalGoodPercent)}% in good condition
 				</div>
 			</div>
-			<div class="border-b border-dashed border-b-grey-6 h-[1px] my-2"></div>
+			<div class="border-b border-dashed border-b-grey-8/60 h-[1px] my-2"></div>
 			<div class="flex justify-center items-center gap-1">
 				<ArrowDownIcon class="size-4" />
 				<div class="w-[14em]">
@@ -90,7 +90,7 @@
 			</div>
 		</div>
 
-		{#each notGoodPercents as { label, percent, isLowValue }}
+		{#each notGoodPercents as { value, label, percent, isLowValue } (value)}
 			<div class="flex not-first:mt-4 items-end">
 				<div class="flex items-center gap-1 flex-none w-20 font-bold text-sm">
 					{#if isLowValue}
@@ -105,10 +105,9 @@
 
 	{#if remainders.length > 0}
 		<hr class="mb-6" />
-		{#each remainders as { label, percent }}
+		{#each remainders as { value, label, percent } (value)}
 			<div class="flex mt-4">
 				<div class="flex-none w-20 font-bold text-sm"></div>
-				<!-- TODO: grey-4 -->
 				<IndicatorPercentChart {label} {percent} />
 			</div>
 		{/each}

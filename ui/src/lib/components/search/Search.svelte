@@ -136,12 +136,12 @@
 	<div class="search-input-container">
 		<div class="relative group">
 			<SearchIcon
-				class="flex-none size-4 absolute left-1.5 top-2.5 z-1 text-grey-4 group-focus-within:text-grey-9"
+				class="flex-none size-4 absolute left-1.5 top-2.5 z-1 text-grey-8/40 group-focus-within:text-grey-9"
 			/>
 			<Input
 				bind:ref
 				bind:value
-				class={cn('relative w-full flex-auto border-grey-3 placeholder:text-grey-8 z-0 pl-7 pr-2', {
+				class={cn('relative w-full flex-auto border-grey-2 placeholder:text-grey-8 z-0 pl-7 pr-2', {
 					'pr-8': query && query.length > 0
 				})}
 				placeholder={isCompact ? 'Find a place' : 'Find a place by name / address'}
@@ -151,7 +151,7 @@
 			/>
 			{#if value !== ''}
 				<Button
-					class="absolute right-1.5 top-2 z-1 bg-white hover:bg-white w-5 h-5 flex-none text-grey-5 hover:text-grey-9 shadow-none"
+					class="absolute right-1.5 top-2 z-1 bg-white hover:bg-white w-5 h-5 flex-none text-grey-8/50 hover:text-grey-9 shadow-none"
 					onclick={handleReset}
 				>
 					<TimesIcon class="" />
@@ -179,7 +179,7 @@
 				</div>
 			{:else if suggestions.isLoading || place.isLoading}
 				<div class="flex gap-2 items-center justify-center px-4 py-8 text-grey-8">
-					<CompassIcon class="animate-spin size-8 text-grey-5" />
+					<CompassIcon class="animate-spin size-8 text-grey-8/50" />
 					Loading...
 				</div>
 			{:else if !(suggestions.data && suggestions.data.length > 0)}

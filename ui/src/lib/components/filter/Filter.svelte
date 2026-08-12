@@ -1,4 +1,6 @@
 <script lang="ts">
+	import ArrowUpIcon from '~icons/fa-solid/arrow-up'
+	import ArrowDownIcon from '~icons/fa-solid/arrow-down'
 	import ExclamationTriangle from '~icons/fa-solid/exclamation-triangle'
 	import FilterIcon from '~icons/fa-solid/filter'
 	import Plus from '~icons/fa-solid/plus'
@@ -15,6 +17,7 @@
 		description,
 		values,
 		valueLabel: indicatorValueLabel,
+		goodThreshold,
 		enabled,
 		activeValues,
 		canBeVisible,
@@ -45,7 +48,7 @@
 		logGAEvent('set-filter-values', {
 			filter: id,
 			values: `${id}:${Object.entries(newActiveValues)
-				.filter(([_, v]) => v)
+				.filter(([, v]) => v)
 				.map(([k]) => k.toString())
 				.join(',')}`
 		})
@@ -73,7 +76,7 @@
 			onclick={handleFilterToggle}
 			onkeydown={handleKeyDown}
 			class={cn(
-				'label flex-auto pl-4 py-1 border-2 border-transparent cursor-pointer group hover:bg-blue-0',
+				'label flex-auto pl-4 py-1 border-2 border-transparent cursor-pointer group hover:bg-grey-0',
 				{
 					'font-bold': enabled
 				}
@@ -82,14 +85,14 @@
 			<div class="flex flex-auto items-center gap-2">
 				<div class="relative">
 					<FilterIcon
-						class={cn('size-4 top-0 relative text-grey-4 group-hover:text-grey-9', {
+						class={cn('size-4 top-0 relative text-grey-8/40 group-hover:text-grey-9', {
 							'text-grey-9': enabled
 						})}
 						aria-hidden="true"
 					/>
 					<Plus
 						class={cn(
-							'size-[0.7em] absolute top-[0.1rem] -left-2 text-grey-4  group-hover:text-grey-9',
+							'size-[0.7em] absolute top-[0.1rem] -left-2 text-grey-8/40  group-hover:text-grey-9',
 							{
 								hidden: enabled
 							}
@@ -112,7 +115,21 @@
 					</div>
 				{/if}
 
-				{#each values as { value, label: valueLabel }}
+				{#each values as { value, label: valueLabel } (value)}
+					{#if goodThreshold !== null && value + 1 === goodThreshold}
+						<div class="mt-2 text-grey-8 text-xs">
+							<div class="flex justify-center items-center gap-1">
+								<ArrowUpIcon class="size-3" />
+								<div class="w-[14em]">good condition</div>
+							</div>
+							<div class="border-b border-dashed border-b-grey-8/60 h-[1px] my-2"></div>
+							<div class="flex justify-center items-center gap-1">
+								<ArrowDownIcon class="size-3" />
+								<div class="w-[14em]">not in good condition</div>
+							</div>
+						</div>
+					{/if}
+
 					<div class="flex gap-3 not-first:mt-2">
 						<Checkbox
 							bind:ref={checkboxNode}

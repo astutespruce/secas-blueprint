@@ -18,10 +18,13 @@
 		console.debug('setting up GTAG')
 
 		function gtag() {
+			// @ts-expect-error dataLayer is valid
 			dataLayer.push(arguments)
 		}
 
+		// @ts-expect-error gtag is valid
 		gtag('js', new Date())
+		// @ts-expect-error gtag is valid
 		gtag('config', GOOGLE_ANALYTICS_ID)
 		window.gtag = gtag
 	}
@@ -45,6 +48,6 @@
 	{/if}
 </svelte:head>
 
-<div class="flex flex-col h-full w-full overflow-none">
+<div class="flex flex-col h-full w-full overflow-none print:h-auto">
 	{@render children()}
 </div>
