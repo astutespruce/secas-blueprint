@@ -3,7 +3,21 @@ from datetime import date
 import pandas as pd
 from openpyxl.styles import Color, Font
 
-from analysis.constants import BLUEPRINT, INDICATORS, REPORT_DATASETS
+from analysis.constants import (
+    BLUEPRINT,
+    CORRIDORS,
+    INDICATOR_GROUPS,
+    INDICATORS,
+    PARCAS,
+    PARCAS_POLY,
+    PROTECTED_AREAS,
+    PROTECTED_AREAS_POLY,
+    REPORT_DATASETS,
+    SLR_DEPTH,
+    SLR_PROJ,
+    URBAN_BY_DECADE,
+    WILDFIRE_RISK,
+)
 from analysis.lib.xlsx.style import set_cell_styles, set_column_widths
 
 
@@ -24,6 +38,27 @@ def add_data_details_sheet(xlsx: pd.ExcelWriter, datasets: set[str]):
     else:
         metadata["sheet_name"] = metadata.label
 
+    metadata.loc[metadata.id.isin([BLUEPRINT["id"], CORRIDORS["id"]]), "category"] = "Priorities"
+
+    for group in INDICATOR_GROUPS:
+        metadata.loc[metadata.id.isin(group["indicators"]), "category"] = f"{group['label']} indicators"
+
+    metadata.loc[
+        metadata.id.isin(
+            [
+                SLR_DEPTH["id"],
+                SLR_PROJ["id"],
+                PARCAS["id"],
+                PARCAS_POLY["id"],
+                URBAN_BY_DECADE["id"],
+                PROTECTED_AREAS["id"],
+                PROTECTED_AREAS_POLY["id"],
+                WILDFIRE_RISK["id"],
+            ]
+        ),
+        "category",
+    ] = "More information"
+
     # fill info for indicators from Blueprint
     indicator_ids = [e["id"] for e in INDICATORS]
     ix = metadata.id.isin(indicator_ids)
@@ -32,8 +67,9 @@ def add_data_details_sheet(xlsx: pd.ExcelWriter, datasets: set[str]):
     metadata.loc[ix, "citation"] = BLUEPRINT["citation"]
     metadata.loc[ix, "url"] = BLUEPRINT["url"]
 
-    metadata = metadata[["label", "sheet_name", "source", "date", "description", "citation", "url"]].rename(
+    metadata = metadata[["category", "label", "sheet_name", "source", "date", "description", "citation", "url"]].rename(
         columns={
+            "category": "Category",
             "label": "Name",
             "sheet_name": "Sheet",
             "source": "Data source",
@@ -46,7 +82,7 @@ def add_data_details_sheet(xlsx: pd.ExcelWriter, datasets: set[str]):
 
     metadata.to_excel(xlsx, sheet_name="Data details", index=False)
     ws = xlsx.sheets["Data details"]
-    set_column_widths(ws, [24, 18, 24, 8, 64, 48, 40])
+    set_column_widths(ws, [18, 24, 18, 24, 8, 64, 48, 40])
     set_cell_styles(ws)
     for cell in list(ws.columns)[-1][1:]:
         cell.hyperlink = cell.value
