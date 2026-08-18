@@ -167,9 +167,9 @@ export const unpackFeatureData = (
 		}, {})
 
 	// calculate area outside SE, rounded to 0 in case it is very small
-	values.outside_se_percent = (100 * values.outside_se) / values.rasterized_acres
-	if (values.outside_se_percent < 1) {
-		values.outside_se_percent = 0
+	values.outside_extent_percent = (100 * values.outside_extent_acres) / values.rasterized_acres
+	if (values.outside_extent_percent < 1) {
+		values.outside_extent_percent = 0
 	}
 
 	// rescale scaled values from percent * 10 back to percent

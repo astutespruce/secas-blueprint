@@ -18,30 +18,29 @@ Areas where there were no values present were converted to empty strings.  Areas
 where there was no change from the baseline just include the baseline.
 """
 
-from pathlib import Path
-from itertools import product
 import warnings
+from itertools import product
+from pathlib import Path
 
 import geopandas as gp
 import pandas as pd
 
 from analysis.constants import (
     GEO_CRS,
-    SLR_DEPTH_VALUES,
-    SLR_NODATA_COLS,
     NLCD_INDEXES,
     NLCD_YEARS,
     PARCAS,
     PROTECTED_AREAS,
+    SLR_DEPTH_VALUES,
+    SLR_NODATA_COLS,
     URBAN_YEARS,
     WILDFIRE_RISK,
 )
 from analysis.lib.attribute_encoding import (
-    encode_values,
     delta_encode_values,
     encode_blueprint,
+    encode_values,
 )
-
 
 # ignore future warning about concat; this is because we join to empty data frames
 # with the full summary unit index
@@ -82,7 +81,7 @@ huc12 = (
             "subregions",
             "acres",
             "rasterized_acres",
-            "outside_se",
+            "outside_extent_acres",
             "minx",
             "miny",
             "maxx",
@@ -187,7 +186,7 @@ wildfire_risk = encode_values(wildfire_risk_results[cols], wildfire_risk_results
 
 huc12 = (
     huc12[["geometry", "name", "subregions", "type"]]
-    .join(huc12[["acres", "rasterized_acres", "outside_se"]].round().astype("int"))
+    .join(huc12[["acres", "rasterized_acres", "outside_extent_acres"]].round().astype("int"))
     .join(blueprint, how="left")
     .join(parcas, how="left")
     .join(protected_areas, how="left")
@@ -217,7 +216,7 @@ marine = (
             "subregions",
             "acres",
             "rasterized_acres",
-            "outside_se",
+            "outside_extent_acres",
         ],
     )
     .set_index("id")
@@ -260,7 +259,7 @@ protected_areas_list = (
 
 marine = (
     marine[["geometry", "name", "subregions", "type"]]
-    .join(marine[["acres", "rasterized_acres", "outside_se"]].round().astype("int"))
+    .join(marine[["acres", "rasterized_acres", "outside_extent_acres"]].round().astype("int"))
     .join(blueprint, how="left")
     .join(protected_areas, how="left")
     .join(protected_areas_list, how="left")

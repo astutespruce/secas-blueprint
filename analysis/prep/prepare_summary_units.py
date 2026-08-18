@@ -1,19 +1,19 @@
 import os
-from pathlib import Path
 import warnings
+from pathlib import Path
 
-from progress.bar import Bar
 import geopandas as gp
-import pandas as pd
-from pyogrio import read_dataframe, write_dataframe
 import numpy as np
+import pandas as pd
 import rasterio
-from rasterio.features import rasterize
 import shapely
+from progress.bar import Bar
+from pyogrio import read_dataframe, write_dataframe
+from rasterio.features import rasterize
 
 from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES, SECAS_HUC2
 from analysis.lib.geometry import make_valid, to_dict
-from analysis.lib.raster import write_raster, add_overviews, get_window
+from analysis.lib.raster import add_overviews, get_window, write_raster
 
 warnings.filterwarnings("ignore", message=".*polygon with more than 100 parts.*")
 
@@ -100,6 +100,8 @@ subregions = (
     .groupby(level=0)
     .agg({"subregions": "unique", "regions": "unique"})
 )
+subregions["subregions"] = subregions.subregions.apply(list)
+subregions["regions"] = subregions.regions.apply(list)
 
 huc12 = huc12.join(subregions, on="id")
 
@@ -204,6 +206,9 @@ subregions = (
     .groupby(level=0)
     .agg({"subregions": "unique", "regions": "unique"})
 )
+subregions["subregions"] = subregions.subregions.apply(list)
+subregions["regions"] = subregions.regions.apply(list)
+
 marine = marine.join(subregions, on="id")
 
 
@@ -231,19 +236,19 @@ with rasterio.open(blueprint_extent_filename) as src:
 
     # calculate pixel count of each unit
     counts = np.zeros((len(tmp_huc12),), dtype="uint")
-    outside_se_counts = np.zeros((len(tmp_huc12),), dtype="uint")
+    outside_extent_counts = np.zeros((len(tmp_huc12),), dtype="uint")
     for i, (_, row) in Bar("Rasterizing units", max=len(tmp_huc12)).iter(enumerate(tmp_huc12.iterrows())):
         unit_window = get_window(src, (row.minx, row.miny, row.maxx, row.maxy))
         in_unit = data[unit_window.toslices()] == row.value
         counts[i] = in_unit.sum().astype("uint")
 
-        outside_se = extent_data[unit_window.toslices()][in_unit] == nodata
-        outside_se_counts[i] = outside_se.sum().astype("uint")
+        outside_extent = extent_data[unit_window.toslices()][in_unit] == nodata
+        outside_extent_counts[i] = outside_extent.sum().astype("uint")
 
     huc12["pixels"] = counts
     cellsize = src.res[0] * src.res[0] * M2_ACRES
     huc12["rasterized_acres"] = counts * cellsize
-    huc12["outside_se"] = outside_se_counts * cellsize
+    huc12["outside_extent_acres"] = outside_extent_counts * cellsize
 
     outfilename = bnd_dir / "huc12.tif"
     write_raster(outfilename, data, transform=src.transform, crs=src.crs, nodata=0)
@@ -261,19 +266,19 @@ with rasterio.open(blueprint_extent_filename) as src:
 
     # calculate pixel count of each unit
     counts = np.zeros((len(tmp_marine),), dtype="uint")
-    outside_se_counts = np.zeros((len(tmp_marine),), dtype="uint")
+    outside_extent_counts = np.zeros((len(tmp_marine),), dtype="uint")
     for i, (_, row) in Bar("Rasterizing units", max=len(tmp_marine)).iter(enumerate(tmp_marine.iterrows())):
         unit_window = get_window(src, (row.minx, row.miny, row.maxx, row.maxy))
         in_unit = data[unit_window.toslices()] == row.value
         counts[i] = in_unit.sum().astype("uint")
 
-        outside_se = extent_data[unit_window.toslices()][in_unit] == nodata
-        outside_se_counts[i] = outside_se.sum().astype("uint")
+        outside_extent = extent_data[unit_window.toslices()][in_unit] == nodata
+        outside_extent_counts[i] = outside_extent.sum().astype("uint")
 
     marine["pixels"] = counts
     cellsize = src.res[0] * src.res[0] * M2_ACRES
     marine["rasterized_acres"] = counts * cellsize
-    marine["outside_se"] = outside_se_counts * cellsize
+    marine["outside_extent_acres"] = outside_extent_counts * cellsize
 
     outfilename = bnd_dir / "marine_hex.tif"
     write_raster(outfilename, data, transform=src.transform, crs=src.crs, nodata=0)

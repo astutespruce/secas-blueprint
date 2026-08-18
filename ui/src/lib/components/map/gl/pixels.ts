@@ -279,7 +279,7 @@ export const extractPixelData = async (
 	return {
 		subregions,
 		regions,
-		outside_se_percent: 0,
+		outside_extent_percent: 0,
 		...data,
 		protected_areas_list,
 		num_protected_areas: protected_areas_list.length

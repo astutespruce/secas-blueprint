@@ -17,22 +17,21 @@ from analysis.constants import (
     URBAN_BY_DECADE,
     WILDFIRE_RISK,
 )
-
-from analysis.lib.xlsx.metadata import add_data_details_sheet, add_metadata_sheet
 from analysis.lib.xlsx.basic import add_basic_results_sheet
+from analysis.lib.xlsx.metadata import add_data_details_sheet, add_metadata_sheet
 from analysis.lib.xlsx.parcas import add_parcas_poly_sheet
 from analysis.lib.xlsx.protected_areas import add_protected_areas_poly_sheet
 from analysis.lib.xlsx.slr import add_slr_depth_sheet, add_slr_projection_sheet
+from analysis.lib.xlsx.style import CHAR_PER_WIDTH_UNIT
 from analysis.lib.xlsx.summary import add_summary_sheet
 from analysis.lib.xlsx.urban import add_urbanization_sheet
-from analysis.lib.xlsx.style import CHAR_PER_WIDTH_UNIT
 
 basic_datasets = {d["id"] for d in [BLUEPRINT, CORRIDORS] + INDICATORS + [PARCAS, PROTECTED_AREAS, WILDFIRE_RISK]}
 
 
 def create_report(df: pd.DataFrame, datasets: set[str], name: str | None = None):
     df.index.name = "Analysis unit"
-    has_area_outside_region = df.outside_se_acres.sum() > 1e-2
+    has_area_outside_region = df.outside_extent_acres.sum() > 1e-2
 
     name_col_width = max(
         min(pd.Series(df.index).astype("str").apply(len).max() * CHAR_PER_WIDTH_UNIT, 28),

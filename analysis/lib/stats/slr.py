@@ -10,16 +10,15 @@ from analysis.constants import (
     M2_ACRES,
     SLR_DEPTH,
     SLR_DEPTH_VALUES,
-    SLR_NODATA_VALUES,
     SLR_NODATA_COLS,
+    SLR_NODATA_VALUES,
     SLR_PROJ,
     SLR_PROJ_COLUMNS,
-    SLR_YEARS,
     SLR_PROJ_SCENARIOS,
+    SLR_YEARS,
 )
 from analysis.lib.io import read_unit_from_feather
 from analysis.lib.raster import summarize_raster_by_units_grid
-
 
 BINS = [v["value"] for v in SLR_DEPTH["values"]]
 
@@ -70,7 +69,7 @@ def summarize_slr_in_aoi(rasterized_geometry, geometry):
         slr_acres = rasterized_geometry.get_acres_by_bin(src, bins=BINS)
 
     total_slr_acres = slr_acres.sum()
-    slr_nodata_acres = rasterized_geometry.acres - rasterized_geometry.outside_se_acres - total_slr_acres
+    slr_nodata_acres = rasterized_geometry.acres - rasterized_geometry.outside_extent_acres - total_slr_acres
 
     if slr_nodata_acres < 1e-6:
         slr_nodata_acres = 0
@@ -259,8 +258,8 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
     out_dir : str
     """
 
-    if not len(df.columns.intersection({"value", "rasterized_acres", "outside_se"})) == 3:
-        raise ValueError("GeoDataFrame for summary must include value, rasterized_acres, outside_se columns")
+    if not len(df.columns.intersection({"value", "rasterized_acres", "outside_extent_acres"})) == 3:
+        raise ValueError("GeoDataFrame for summary must include value, rasterized_acres, outside_extent_acres columns")
 
     with rasterio.open(depth_filename) as value_dataset:
         cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
@@ -278,7 +277,7 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
 
     total_slr_acres = slr_acres.sum(axis=1)
 
-    slr_nodata_acres = df.rasterized_acres - df.outside_se - total_slr_acres
+    slr_nodata_acres = df.rasterized_acres - df.outside_extent_acres - total_slr_acres
 
     slr_nodata_acres[slr_nodata_acres < 1e-6] = 0
 

@@ -4,10 +4,9 @@ import numpy as np
 import pandas as pd
 import rasterio
 
-from analysis.constants import URBAN_BY_DECADE, M2_ACRES, URBAN_YEARS
+from analysis.constants import M2_ACRES, URBAN_BY_DECADE, URBAN_YEARS
 from analysis.lib.io import read_unit_from_feather
 from analysis.lib.raster import summarize_raster_by_units_grid
-
 
 # values are number of runs out of 50 that are predicted to urbanize
 # 51 = urban as of 2021 (NLCD)
@@ -103,7 +102,7 @@ async def summarize_urban_in_aoi(rasterized_geometry, progress_callback=None):
     if noturban_2100_acres < 1e-6:
         noturban_2100_acres = 0
 
-    outside_urban_acres = rasterized_geometry.acres - rasterized_geometry.outside_se_acres - available_urban_acres
+    outside_urban_acres = rasterized_geometry.acres - rasterized_geometry.outside_extent_acres - available_urban_acres
     if outside_urban_acres < 1e-6:
         outside_urban_acres = 0
 
@@ -135,8 +134,8 @@ def summarize_urban_by_units_grid(df, units_grid, out_dir):
     out_dir : str
     """
 
-    if not len(df.columns.intersection({"value", "rasterized_acres", "outside_se"})) == 3:
-        raise ValueError("GeoDataFrame for summary must include value, rasterized_acres, outside_se columns")
+    if not len(df.columns.intersection({"value", "rasterized_acres", "outside_extent_acres"})) == 3:
+        raise ValueError("GeoDataFrame for summary must include value, rasterized_acres, outside_extent_acres columns")
 
     bins = np.arange(0, len(PROBABILITIES))
 
@@ -160,7 +159,7 @@ def summarize_urban_by_units_grid(df, units_grid, out_dir):
 
     already_urban_acres = urban_acres[:, 51]
     available_urban_acres = urban_acres.sum(axis=1)
-    outside_urban_acres = df.rasterized_acres - df.outside_se - available_urban_acres
+    outside_urban_acres = df.rasterized_acres - df.outside_extent_acres - available_urban_acres
     outside_urban_acres[outside_urban_acres < 1e-6] = 0
 
     urban = pd.DataFrame(

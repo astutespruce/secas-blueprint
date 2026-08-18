@@ -3,10 +3,9 @@ from pathlib import Path
 import pandas as pd
 import rasterio
 
-from analysis.constants import WILDFIRE_RISK, M2_ACRES
+from analysis.constants import M2_ACRES, WILDFIRE_RISK
 from analysis.lib.io import read_unit_from_feather
 from analysis.lib.raster import summarize_raster_by_units_grid
-
 
 src_dir = Path("data/inputs")
 filename = src_dir / WILDFIRE_RISK["filename"]
@@ -51,7 +50,7 @@ def summarize_wildfire_risk_in_aoi(rasterized_geometry):
         wildfire_risk_acres = rasterized_geometry.get_acres_by_bin(src, bins=BINS)
 
     total_acres = wildfire_risk_acres.sum()
-    nodata_acres = rasterized_geometry.acres - rasterized_geometry.outside_se_acres - total_acres
+    nodata_acres = rasterized_geometry.acres - rasterized_geometry.outside_extent_acres - total_acres
 
     if nodata_acres < 1e-6:
         nodata_acres = 0
@@ -86,8 +85,8 @@ def summarize_wildfire_risk_by_units_grid(df, units_grid, out_dir):
     out_dir : str
     """
 
-    if not len(df.columns.intersection({"value", "rasterized_acres", "outside_se"})) == 3:
-        raise ValueError("GeoDataFrame for summary must include value, rasterized_acres, outside_se columns")
+    if not len(df.columns.intersection({"value", "rasterized_acres", "outside_extent_acres"})) == 3:
+        raise ValueError("GeoDataFrame for summary must include value, rasterized_acres, outside_extent_acres columns")
 
     with rasterio.open(filename) as value_dataset:
         cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
@@ -104,7 +103,7 @@ def summarize_wildfire_risk_by_units_grid(df, units_grid, out_dir):
         )
 
     total_acres = wildfire_risk_acres.sum(axis=1)
-    nodata_acres = df.rasterized_acres - df.outside_se - total_acres
+    nodata_acres = df.rasterized_acres - df.outside_extent_acres - total_acres
     nodata_acres[nodata_acres < 1e-6] = 0
 
     wildfire_risk = pd.DataFrame(

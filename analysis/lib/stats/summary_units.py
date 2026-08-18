@@ -9,7 +9,6 @@ from analysis.lib.stats.slr import get_slr_unit_results
 from analysis.lib.stats.urban import get_urban_unit_results
 from analysis.lib.stats.wildfire_risk import get_wildfire_risk_unit_results
 
-
 data_dir = Path("data")
 
 
@@ -41,7 +40,7 @@ def get_summary_unit_results(unit_type: SummaryUnitType, unit_id: str) -> dict:
             "name",
             "acres",
             "rasterized_acres",
-            "outside_se",
+            "outside_extent_acres",
             "minx",
             "miny",
             "maxx",
@@ -67,8 +66,8 @@ def get_summary_unit_results(unit_type: SummaryUnitType, unit_id: str) -> dict:
         "name": name,
         "acres": unit.acres,
         "rasterized_acres": unit.rasterized_acres,
-        "outside_se_acres": unit.outside_se,
-        "outside_se_percent": 100 * unit.outside_se / unit.rasterized_acres,
+        "outside_extent_acres": unit.outside_extent_acres,
+        "outside_extent_percent": 100 * unit.outside_extent_acres / unit.rasterized_acres,
         "bounds": bounds,
         "subregions": unit.subregions,
         "regions": unit.regions,

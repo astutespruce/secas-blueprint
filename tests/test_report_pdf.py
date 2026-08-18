@@ -3,8 +3,8 @@ from pathlib import Path
 from zipfile import ZipFile
 
 import numpy as np
-from pyogrio import read_dataframe
 import pytest
+from pyogrio import read_dataframe
 
 from analysis.constants import DATA_CRS, GEO_CRS, INDICATORS
 from analysis.lib.pdf.map import render_maps
@@ -12,9 +12,7 @@ from analysis.lib.pdf.report import create_report
 from analysis.lib.stats.aoi import get_aoi_results
 from analysis.lib.stats.summary_units import get_summary_unit_results
 from api.lib.geo import get_dataset
-
 from tests.lib.image import image_matches
-
 
 fixture_dir = Path("tests/fixtures")
 
@@ -48,7 +46,7 @@ def test_summary_unit_results_huc12():
     assert results["name"] == "Clark Creek subwatershed"
     assert np.isclose(results["acres"], 33248.8807)
     assert np.isclose(results["rasterized_acres"], 33250.201695)
-    assert results["outside_se_acres"] == 0
+    assert results["outside_extent_acres"] == 0
     assert np.allclose(
         results["bounds"],
         [-82.88331988387216, 33.78085952464868, -82.74141409346743, 33.945315480643465],
@@ -100,7 +98,7 @@ def test_summary_unit_results_marine_hex():
     assert results["name"] == "Hex ID: 154309 "
     assert np.isclose(results["acres"], 9613.7778)
     assert np.isclose(results["rasterized_acres"], 9610.3335)
-    assert results["outside_se_acres"] == 0
+    assert results["outside_extent_acres"] == 0
     assert np.allclose(
         results["bounds"],
         [-89.8582540305896, 27.507620329841565, -89.78008262157722, 27.570339701836122],
@@ -218,7 +216,7 @@ async def test_aoi_results(format):
     assert results is not None
     assert np.isclose(results["acres"], 51.026)
     assert np.isclose(results["rasterized_acres"], 50.7059)
-    assert results["outside_se_acres"] == 0
+    assert results["outside_extent_acres"] == 0
 
     assert results["subregions"] == {"Piedmont"}
     assert results["regions"] == {"continental"}

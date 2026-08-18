@@ -61,8 +61,8 @@ async def get_aoi_results(df, progress_callback=None):
         "regions": set(subregion_df.region.unique()),
         "acres": acres,
         "rasterized_acres": rasterized_geometry.acres,
-        "outside_se_acres": rasterized_geometry.outside_se_acres,
-        "outside_se_percent": 100 * rasterized_geometry.outside_se_acres / rasterized_geometry.acres,
+        "outside_extent_acres": rasterized_geometry.outside_extent_acres,
+        "outside_extent_percent": 100 * rasterized_geometry.outside_extent_acres / rasterized_geometry.acres,
     }
 
     async def blueprint_progress_callback(percent):

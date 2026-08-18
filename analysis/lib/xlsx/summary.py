@@ -1,7 +1,7 @@
 import pandas as pd
 
 from analysis.constants import ANALYSIS_REGION_NAME
-from analysis.lib.xlsx.style import set_cell_styles, set_column_widths, CHAR_PER_WIDTH_UNIT
+from analysis.lib.xlsx.style import CHAR_PER_WIDTH_UNIT, set_cell_styles, set_column_widths
 
 
 def add_summary_sheet(
@@ -37,7 +37,7 @@ def add_summary_sheet(
     col_widths = [name_col_width, area_col_width, area_col_width]
     area_columns = [1, 2]
     if has_area_outside_region:
-        cols.append("outside_se_acres")
+        cols.append("outside_extent_acres")
         col_widths.append(16)
         area_columns.append(3)
 
@@ -51,7 +51,7 @@ def add_summary_sheet(
             "acres": "GIS acres",
             "pixels": "Number of 30m pixels in analysis unit",
             "overlap": area_label + " (rasterized to 30m pixels)",
-            "outside_se": f"Acres outside {ANALYSIS_REGION_NAME} data extent (rasterized to 30m pixels)",
+            "outside_extent_acres": f"Acres outside {ANALYSIS_REGION_NAME} data extent (rasterized to 30m pixels)",
             "count": "Number of distinct areas in analysis unit",
             "states": "State(s)",
         }

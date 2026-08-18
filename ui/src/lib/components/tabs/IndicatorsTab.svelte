@@ -14,7 +14,13 @@
 		t: TerrestrialIcon
 	}
 
-	const { type, indicators, outside_se_percent, rasterized_acres, class: className = '' } = $props()
+	const {
+		type,
+		indicators,
+		outside_extent_percent,
+		rasterized_acres,
+		class: className = ''
+	} = $props()
 
 	const mapState: MapState = getContext('map-state')
 </script>
@@ -24,7 +30,7 @@
 		<IndicatorDetails
 			{type}
 			{...indicators.indicators[mapState.selectedIndicator]}
-			{outside_se_percent}
+			{outside_extent_percent}
 			{rasterized_acres}
 			icon={indicatorGroupIcons[
 				indicators.indicators[mapState.selectedIndicator].group

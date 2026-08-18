@@ -82,11 +82,11 @@
                     </tr>
                 {% endfor %}
 
-                {% if results.outside_se_acres > 0 %}
+                {% if results.outside_extent_acres > 0 %}
                     <tr class="remainder-row">
                         <td class="label">Outside Southeast Blueprint</td>
-                        <td class="acres">{{results.outside_se_acres|format_number}}</td>
-                        <td class="percent">{{results.outside_se_percent|format_percent}}%</td>
+                        <td class="acres">{{results.outside_extent_acres|format_number}}</td>
+                        <td class="percent">{{results.outside_extent_percent|format_percent}}%</td>
                     </tr>
                 {% endif %}
 

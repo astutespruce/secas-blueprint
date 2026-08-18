@@ -3,13 +3,12 @@ from pathlib import Path
 import geopandas as gp
 import numpy as np
 import pandas as pd
-import shapely
 import rasterio
+import shapely
 
 from analysis.constants import M2_ACRES, PARCAS, PARCAS_POLY
 from analysis.lib.io import read_unit_from_feather
 from analysis.lib.raster import summarize_raster_by_units_grid
-
 
 src_dir = Path("data/inputs")
 filename = src_dir / PARCAS["filename"]
@@ -100,7 +99,7 @@ def summarize_parcas_in_aoi(rasterized_geometry, df):
     if total_acres == 0:
         return None
 
-    nodata_acres = rasterized_geometry.acres - rasterized_geometry.outside_se_acres - total_acres
+    nodata_acres = rasterized_geometry.acres - rasterized_geometry.outside_extent_acres - total_acres
     if nodata_acres < 1e-6:
         nodata_acres = 0
 
@@ -227,8 +226,8 @@ def summarize_parcas_by_units(df, units_grid, out_dir):
     """
     print("Calculating overlap with PARCAs")
 
-    if not len(df.columns.intersection({"value", "rasterized_acres", "outside_se"})) == 3:
-        raise ValueError("GeoDataFrame for summary must include value, rasterized_acres, outside_se columns")
+    if not len(df.columns.intersection({"value", "rasterized_acres", "outside_extent_acres"})) == 3:
+        raise ValueError("GeoDataFrame for summary must include value, rasterized_acres, outside_extent_acres columns")
 
     with rasterio.open(filename) as value_dataset:
         cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
@@ -245,7 +244,7 @@ def summarize_parcas_by_units(df, units_grid, out_dir):
         )
 
     total_acres = parca_acres.sum(axis=1)
-    nodata_acres = df.rasterized_acres - df.outside_se - total_acres
+    nodata_acres = df.rasterized_acres - df.outside_extent_acres - total_acres
     nodata_acres[nodata_acres < 1e-6] = 0
 
     parcas = pd.DataFrame(

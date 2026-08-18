@@ -43,9 +43,9 @@
                             <div>{{item.label}}</div>
                         </div>
                     {% endfor %}
-                    {% if results.outside_se_percent > 0 %}
+                    {% if results.outside_extent_percent > 0 %}
                         <div class="legend-element flex align-center">
-                            <div class="legend-patch outside-se {% if flip_crosshatch %}flip-x{% endif %}"></div>
+                            <div class="legend-patch outside-extent {% if flip_crosshatch %}flip-x{% endif %}"></div>
                             <div class="legend-label">Outside Southeast Blueprint</div>
                         </div>
                     {% endif %}
@@ -96,11 +96,11 @@
             {% endif %}
 
 
-            {% if results.outside_se_acres > 0 %}
+            {% if results.outside_extent_acres > 0 %}
                 <tr class="remainder-row">
                     <td class="label">Outside Southeast Blueprint</td>
-                    <td class="acres">{{results.outside_se_acres|format_number}}</td>
-                    <td class="percent">{{results.outside_se_percent|format_percent}}%</td>
+                    <td class="acres">{{results.outside_extent_acres|format_number}}</td>
+                    <td class="percent">{{results.outside_extent_percent|format_percent}}%</td>
                 </tr>
             {% endif %}
 

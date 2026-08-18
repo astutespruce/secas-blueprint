@@ -7,30 +7,33 @@ import rasterio
 import shapely
 
 from analysis.constants import (
-    M2_ACRES,
-    SECAS_STATES,
     BLUEPRINT,
     CORRIDORS,
     INDICATORS,
+    M2_ACRES,
     PARCAS,
     PARCAS_POLY,
     PROTECTED_AREAS,
     PROTECTED_AREAS_POLY,
+    REPORT_DATASETS,
+    SECAS_STATES,
     SLR_DEPTH,
     SLR_PROJ,
     URBAN_BY_DECADE,
-    WILDFIRE_RISK,
-    REPORT_DATASETS,
     URBAN_YEARS,
+    WILDFIRE_RISK,
 )
 from analysis.lib.stats.blueprint import BLUEPRINT_BINS, CORRIDOR_BINS
-from analysis.lib.stats.parcas import extract_parcas_in_analysis_units, BINS as PARCAS_BINS
-from analysis.lib.stats.protected_areas import extract_protected_areas_in_analysis_areas, BINS as PROTECTED_AREAS_BINS
+from analysis.lib.stats.parcas import BINS as PARCAS_BINS
+from analysis.lib.stats.parcas import extract_parcas_in_analysis_units
+from analysis.lib.stats.protected_areas import BINS as PROTECTED_AREAS_BINS
+from analysis.lib.stats.protected_areas import extract_protected_areas_in_analysis_areas
 from analysis.lib.stats.rasterized_geometry import RasterizedGeometry
-from analysis.lib.stats.slr import extract_slr_proj_in_analysis_areas, BINS as SLR_DEPTH_BINS
-from analysis.lib.stats.urban import BINS as URBAN_BINS, PROBABILITIES as URBAN_PROBABILITIES
+from analysis.lib.stats.slr import BINS as SLR_DEPTH_BINS
+from analysis.lib.stats.slr import extract_slr_proj_in_analysis_areas
+from analysis.lib.stats.urban import BINS as URBAN_BINS
+from analysis.lib.stats.urban import PROBABILITIES as URBAN_PROBABILITIES
 from analysis.lib.stats.wildfire_risk import BINS as WILDFIRE_RISK_BINS
-
 
 data_dir = Path("data/inputs")
 bnd_dir = data_dir / "boundaries"
@@ -109,7 +112,7 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
         for i, (index, row) in enumerate(df.iterrows()):
             rasterized_geometry = RasterizedGeometry(row.geometry)
 
-            overlap = rasterized_geometry.acres - rasterized_geometry.outside_se_acres
+            overlap = rasterized_geometry.acres - rasterized_geometry.outside_extent_acres
             if overlap < 1e-6:
                 overlap = 0
 
@@ -117,11 +120,11 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
                 "pixels": rasterized_geometry.pixels,
                 "overlap": overlap,
                 "rasterized_acres": rasterized_geometry.acres,
-                "outside_se_acres": rasterized_geometry.outside_se_acres,
+                "outside_extent_acres": rasterized_geometry.outside_extent_acres,
             }
 
             # short-circuit if there are no overlapping pixels
-            if np.isclose(rasterized_geometry.outside_se_acres, rasterized_geometry.acres):
+            if np.isclose(rasterized_geometry.outside_extent_acres, rasterized_geometry.acres):
                 results.append(result)
 
                 if progress_callback is not None:
@@ -177,7 +180,9 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
                         # important: we calculate nodata area based on all pixels that had >= 0 probability;
                         # for most other layer we just sum their acres to calculate this
                         urban_nodata = (
-                            rasterized_geometry.acres - rasterized_geometry.outside_se_acres - urban_prob_acres.sum()
+                            rasterized_geometry.acres
+                            - rasterized_geometry.outside_extent_acres
+                            - urban_prob_acres.sum()
                         )
                         if urban_nodata < 1e-6:
                             urban_nodata = 0.0

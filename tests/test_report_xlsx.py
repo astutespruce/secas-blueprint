@@ -101,7 +101,7 @@ async def test_get_analysis_unit_results_single_area(format):
     assert row["count"] == 1
     assert np.isclose(row.acres, 51.026)
     assert np.isclose(row.rasterized_acres, 50.7059)
-    assert np.isclose(row.outside_se_acres, 0)
+    assert np.isclose(row.outside_extent_acres, 0)
 
     assert np.allclose(row[BLUEPRINT["id"]], [0, 0, 0, 10.674936, 40.03101])
     assert np.allclose(row[CORRIDORS["id"]], [0, 37.362276, 13.34367])
@@ -160,7 +160,7 @@ async def test_get_analysis_unit_results_multiple_areas(format):
     assert results["count"].values.tolist() == [1] * 5
     assert np.allclose(results["acres"], [313.13876187, 40.55673456, 99.02771972, 147.19913421, 5386.09794185])
     assert np.allclose(results["rasterized_acres"], [312.241878, 40.698, 99.187947, 147.0027645, 5386.1723955])
-    assert np.allclose(results["outside_se_acres"], [0, 0, 0, 0, 0])
+    assert np.allclose(results["outside_extent_acres"], [0, 0, 0, 0, 0])
 
     ga_poly = results.iloc[0]
     fl_poly = results.iloc[1]

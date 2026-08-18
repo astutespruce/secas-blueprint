@@ -6,8 +6,7 @@ import shapely
 
 from analysis.constants import M2_ACRES
 from analysis.lib.geometry import to_dict
-from analysis.lib.raster import WindowGeometryMask, get_window, get_overlapping_windows
-
+from analysis.lib.raster import WindowGeometryMask, get_overlapping_windows, get_window
 
 data_dir = Path("data/inputs")
 bnd_dir = data_dir / "boundaries"
@@ -70,7 +69,7 @@ class RasterizedGeometry(object):
                 mask.get_pixel_count_by_bin(src, out=count)
 
             pixels_within_se = count[1]
-            self.outside_se_acres = (self.pixels - pixels_within_se) * self.cellsize
+            self.outside_extent_acres = (self.pixels - pixels_within_se) * self.cellsize
 
     def detect_data(self, dataset):
         """Detect if there are any non-NODATA pixel values in the dataset within
