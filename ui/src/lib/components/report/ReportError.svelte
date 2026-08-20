@@ -5,7 +5,7 @@
 	import { CONTACT_EMAIL } from '$lib/env'
 	import { cn } from '$lib/utils'
 
-	const { error, onReset = null, class: className = '' } = $props()
+	const { message = null, onReset = null, class: className = '' } = $props()
 </script>
 
 <div class={cn('container', className)}>
@@ -15,8 +15,8 @@
 			<Title class="text-2xl">Uh oh! There was an error!</Title>
 			<Description class="text-xl">
 				<p class="text-error">
-					{#if error}
-						The server says {error}
+					{#if message}
+						The server says {message}
 					{:else}
 						Please try again. If that does not work, try a different file or <a
 							href={`mailto:${CONTACT_EMAIL}`}>contact us</a

@@ -44,11 +44,11 @@ def create_report(df: pd.DataFrame, datasets: set[str], name: str | None = None)
     ### Create XLSX file and write to memory buffer
     buffer = BytesIO()
     with pd.ExcelWriter(buffer) as xlsx:
-        # Summary sheet
-        add_summary_sheet(xlsx, df, name_col_width, area_col_width, area_label, has_area_outside_region)
-
         # Data details sheet
         add_data_details_sheet(xlsx, datasets)
+
+        # Summary sheet
+        add_summary_sheet(xlsx, df, name_col_width, area_col_width, area_label, has_area_outside_region)
 
         for dataset_id, dataset in REPORT_DATASETS.items():
             if dataset_id not in datasets:

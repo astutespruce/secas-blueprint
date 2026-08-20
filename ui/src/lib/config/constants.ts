@@ -6,7 +6,9 @@ import corridors from '$constants/corridors.json'
 import indicatorGroups from '$constants/indicator_groups.json'
 import rawIndicators from '$constants/indicators.json'
 import parcas from '$constants/parcas.json'
+import parcasPoly from '$constants/parcas_poly.json'
 import protectedAreas from '$constants/protected_areas.json'
+import protectedAreasPoly from '$constants/protected_areas_poly.json'
 import slrDepth from '$constants/slr_depth.json'
 import slrProj from '$constants/slr_proj.json'
 import subregions from '$constants/subregions.json'
@@ -31,7 +33,9 @@ export {
 	corridors,
 	indicatorGroups,
 	parcas,
+	parcasPoly,
 	protectedAreas,
+	protectedAreasPoly,
 	slrDepth,
 	slrProj,
 	subregions,

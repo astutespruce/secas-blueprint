@@ -3,7 +3,7 @@ import type { Filters } from '$lib/types'
 import {
 	blueprint,
 	corridors,
-	indicatorGroups as rawIndicatorGroups,
+	indicatorGroups,
 	indicators,
 	indicatorsIndex,
 	urban,
@@ -92,7 +92,7 @@ export const priorityFilters = [
 ]
 
 export const indicatorGroupFilters = Object.fromEntries(
-	rawIndicatorGroups.map(({ indicators: groupIndicators, ...group }) => [
+	indicatorGroups.map(({ indicators: groupIndicators, ...group }) => [
 		group.id,
 		{
 			...group,

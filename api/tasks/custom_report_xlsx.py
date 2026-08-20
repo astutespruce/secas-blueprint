@@ -43,7 +43,7 @@ async def get_xlsx_report_inputs(ctx, zip_filename, dataset, layer, uuid):
             "area of interest does not overlap Southeast Blueprint or area of interest did not overlap with the center of at least one 30m pixel in the Southeast Blueprint"
         )
 
-    await set_progress(ctx["redis"], ctx["job_id"], 100, "All done!")
+    await set_progress(ctx["redis"], ctx["job_id"], 100, "Done checking available datasets")
 
     return {
         "payload": {

@@ -108,7 +108,7 @@ async def job_status_endpoint(job_id: str):
                 ]
 
                 return {
-                    "status": status,
+                    "status": "queued",
                     "progress": 0,
                     "queue_position": queued.index(job_id),
                     "elapsed_time": elapsed_time.seconds,
@@ -118,7 +118,7 @@ async def job_status_endpoint(job_id: str):
                 progress, message, errors = await get_progress(redis, job_id)
 
                 return {
-                    "status": status,
+                    "status": "in_progress",
                     "progress": progress,
                     "message": message,
                     "errors": errors,
@@ -126,7 +126,7 @@ async def job_status_endpoint(job_id: str):
 
             info = await job.result_info()
 
-            error = ""
+            error = None
             try:
                 # this re-raises the underlying exception raised in the worker
                 # we have to do this even if job not successful in order to get the errors

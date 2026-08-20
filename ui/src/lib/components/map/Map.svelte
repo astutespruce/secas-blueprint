@@ -65,8 +65,6 @@
 	const minSummaryZoom = layers.filter(({ id }) => id === 'unit-outline')[0].minzoom
 
 	const setPixelLayerProps = (newProps: object) => {
-		// FIXME:remove
-		console.log('set pixel layer props', newProps)
 		if (!map) return
 
 		// this happens in hot reload
