@@ -10,6 +10,9 @@ import {
 import {
 	blueprint,
 	corridors,
+	indicatorGroups as indicatorGroupInfo,
+	indicatorGroupIndex,
+	indicators as indicatorInfo,
 	parcas,
 	protectedAreas,
 	slrDepth,
@@ -36,18 +39,9 @@ const isEmpty = (text: string | null) => {
 /**
  * Extract dictionary-encoded counts and means
  * @param {Object} packedPercents
- * @param {Array} indicatorGroupInfo - array of indicator group info
- * @param {Array} indicatorInfo - array of indicator info
  * @param {Array} subregions - array of subregion names
  */
-const extractIndicators = (
-	packedPercents: string,
-	indicatorGroupInfo,
-	indicatorInfo,
-	subregions: Set<string>
-) => {
-	const indicatorGroupIndex = indexBy(indicatorGroupInfo, 'id')
-
+const extractIndicators = (packedPercents: Record<string, number[]>, subregions: Set<string>) => {
 	// merge incoming packed percents with indicator info
 	let indicators = indicatorInfo
 		// only show indicators that are either present or likely present based on
@@ -104,7 +98,9 @@ const extractIndicators = (
 	const indicatorGroups = indicatorGroupInfo
 		.filter(({ id }) => indicatorGroupsPresent.has(id))
 		.map(({ id: groupId, label, color, borderColor, indicators: groupIndicators, ...rest }) => {
-			const indicatorsPresent = groupIndicators.filter((indicatorId) => indicators[indicatorId])
+			const indicatorsPresent = groupIndicators.filter(
+				(indicatorId) => indicators[indicatorId as keyof typeof indicators]
+			)
 
 			return {
 				...rest,
@@ -124,16 +120,10 @@ const extractIndicators = (
 /**
  * Unpack encoded attributes in feature data.
  * @param {Object} properties
- * @param {Array} indicatorGroupInfo - array of indicator group info
- * @param {Array} indicatorInfo - array of indicator info
+
  * @param {Object} subregionIndex - lookup of subregions by value
  */
-export const unpackFeatureData = (
-	properties: object,
-	indicatorGroupInfo,
-	indicatorInfo,
-	subregionIndex
-) => {
+export const unpackFeatureData = (properties: object, subregionIndex) => {
 	const values = Object.entries(properties)
 		.map(([key, value]) => {
 			if (!value || typeof value !== 'string' || key === 'name') {
@@ -200,12 +190,7 @@ export const unpackFeatureData = (
 	values.subregions = subregions
 	values.regions = regions
 
-	values.indicators = extractIndicators(
-		values.indicators || {},
-		indicatorGroupInfo,
-		indicatorInfo,
-		values.subregions
-	)
+	values.indicators = extractIndicators(values.indicators || {}, values.subregions)
 
 	// rename specific fields for easier use later
 	values.unit_type = values.type

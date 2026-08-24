@@ -9,11 +9,7 @@
 	import CrosshairsIcon from '$images/CrosshairsIcon.svg'
 	import Spinner from '~icons/fa-solid/spinner'
 
-	import {
-		indicatorGroups as indicatorGroupInfo,
-		indicators as indicatorInfo,
-		subregionIndex
-	} from '$lib/config/constants'
+	import { subregionIndex } from '$lib/config/constants'
 	import { mapConfig as config, sources, layers } from '$lib/config/map'
 	import { pixelLayers } from '$lib/config/pixelLayers'
 	import { MAPBOX_TOKEN } from '$lib/env'
@@ -116,12 +112,7 @@
 			})
 		}
 
-		const pixelData = await extractPixelData(
-			map,
-			map.getCenter(),
-			indicatorGroupInfo,
-			indicatorInfo
-		)
+		const pixelData = await extractPixelData(map, map.getCenter())
 
 		if (pixelData === null) {
 			// tile data not yet loaded for correct zoom, try again after next deckGL
@@ -467,9 +458,7 @@
 			map.setFilter('unit-outline-highlight', ['==', 'id', properties!.id])
 
 			// @ts-expect-error properties is fine
-			mapState.setData(
-				unpackFeatureData(properties, indicatorGroupInfo, indicatorInfo, subregionIndex)
-			)
+			mapState.setData(unpackFeatureData(properties, subregionIndex))
 			resizeMap()
 		})
 

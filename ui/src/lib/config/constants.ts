@@ -58,31 +58,23 @@ export const indicatorGroupIndex = indexBy(indicatorGroups, 'id')
 export const subregionsIndex = indexBy(subregions, 'subregion')
 
 // select subset of fields and add position within list
-export const indicators: Indicator[] = rawIndicators.map(
-	(
-		{
-			id,
-			label,
-			url,
-			description,
-			goodThreshold,
-			values,
-			valueLabel,
-			subregions: indicatorSubregions
-		},
-		i
-	) => ({
-		id,
-		label,
-		url,
-		description,
-		goodThreshold,
-		values,
-		valueLabel,
-		subregions: new Set(indicatorSubregions),
-		pos: i // position within list of indicators, used to unpack packed indicator values
-	})
+// use the order as defined in the indicator groups
+const indicatorIds: string[] = []
+indicatorGroups.forEach(({ indicators: groupIndicators }) => {
+	indicatorIds.push(...groupIndicators)
+})
+const rawIndicatorsIndex = Object.fromEntries(
+	rawIndicators.map((indicator) => [indicator.id, indicator])
 )
+
+export const indicators: Indicator[] = indicatorIds.map((id, i) => {
+	const indicator = rawIndicatorsIndex[id]
+	return {
+		...indicator,
+		subregions: new Set(indicator.subregions),
+		pos: i
+	}
+})
 
 export const indicatorsIndex = indexBy(indicators, 'id')
 

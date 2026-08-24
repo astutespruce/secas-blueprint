@@ -186,8 +186,6 @@ for group in groups:
             .to_json(orient="records")
         )
 
-raise FOO
-
 ### determine the block windows that overlap bounds
 # everything else will be filled with 0
 # print("Calculating overlapping windows")

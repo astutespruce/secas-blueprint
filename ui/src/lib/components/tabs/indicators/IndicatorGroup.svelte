@@ -10,11 +10,9 @@
 		color: string
 		borderColor: string
 		indicators: Indicator[]
-		onSelectIndicator: Function
 	}
 
-	const { type, label, icon, color, borderColor, indicators, onSelectIndicator }: PropType =
-		$props()
+	const { type, label, icon, color, borderColor, indicators }: PropType = $props()
 </script>
 
 <div class="w-full grow shrink-0">
@@ -31,7 +29,7 @@
 	<div>
 		{#if type === 'pixel'}
 			{#each indicators as indicator (indicator.id)}
-				<PixelIndicatorListItem {indicator} onSelect={onSelectIndicator} />
+				<PixelIndicatorListItem {indicator} />
 			{/each}
 		{:else}
 			{#each indicators as indicator (indicator.id)}
