@@ -1,7 +1,7 @@
-from enum import StrEnum
-from pathlib import Path
-from itertools import product
 import json
+from enum import StrEnum
+from itertools import product
+from pathlib import Path
 
 # Make sure to set this here and in ui/src/lib/env.ts on each new Blueprint version
 BLUEPRINT_VERSION = "2025"
@@ -56,18 +56,23 @@ SECAS_HUC2 = [2, 3, 5, 6, 7, 8, 10, 11, 12, 13, 21]
 json_dir = Path("constants")
 
 
-BLUEPRINT = json.loads(open(json_dir / "blueprint.json").read())
+def read_json(filename):
+    with open(json_dir / filename) as infile:
+        return json.loads(infile.read())
+
+
+BLUEPRINT = read_json("blueprint.json")
 BLUEPRINT_COLORS = {
     i: entry["color"] for i, entry in enumerate(BLUEPRINT["values"]) if "color" in entry and entry["value"] > 0
 }
 
-CORRIDORS = json.loads(open(json_dir / "corridors.json").read())
+CORRIDORS = read_json("corridors.json")
 CORRIDORS_COLORS = {
     entry["value"]: entry["color"] for entry in CORRIDORS["values"] if entry.get("color", None) is not None
 }
 
-INDICATOR_GROUPS = json.loads(open(json_dir / "indicator_groups.json").read())
-raw_indicators = json.loads(open(json_dir / "indicators.json").read())
+INDICATOR_GROUPS = read_json("indicator_groups.json")
+raw_indicators = read_json("indicators.json")
 for indicator in raw_indicators:
     indicator["filename"] = f"indicators/{indicator['filename']}"
 
@@ -81,35 +86,35 @@ INDICATORS_INDEX = {indicator["id"]: indicator for indicator in INDICATORS}
 del raw_indicators_index
 
 
-PROTECTED_AREAS = json.loads(open(json_dir / "protected_areas.json").read())
+PROTECTED_AREAS = read_json("protected_areas.json")
 PROTECTED_AREAS_COLORS = {
     entry["value"]: entry["color"] for entry in PROTECTED_AREAS["values"] if entry.get("color", None) is not None
 }
 
-PROTECTED_AREAS_POLY = json.loads(open(json_dir / "protected_areas_poly.json").read())
+PROTECTED_AREAS_POLY = read_json("protected_areas_poly.json")
 
-PARCAS = json.loads(open(json_dir / "parcas.json").read())
+PARCAS = read_json("parcas.json")
 PARCA_COLORS = {entry["value"]: entry["color"] for entry in PARCAS["values"] if entry.get("color", None) is not None}
 
-PARCAS_POLY = json.loads(open(json_dir / "parcas_poly.json").read())
+PARCAS_POLY = read_json("parcas_poly.json")
 
 URBAN_YEARS = [2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100]
 
 # Urban probabilities by decade
-URBAN_BY_DECADE = json.loads(open(json_dir / "urban_by_decade.json").read())
+URBAN_BY_DECADE = read_json("urban_by_decade.json")
 
 # Classified Urban 2060
 # NOTE: value 5 is not urbanized
-URBAN = json.loads(open(json_dir / "urban.json").read())
+URBAN = read_json("urban.json")
 URBAN_COLORS = {e["value"]: e["color"] for e in URBAN["values"] if e["color"] is not None}
 
-SLR_DEPTH = json.loads(open(json_dir / "slr_depth.json").read())
+SLR_DEPTH = read_json("slr_depth.json")
 # depth in 1 foot increments from 0
 SLR_DEPTH_VALUES = [v for v in SLR_DEPTH["values"] if v["value"] < 11]
 SLR_NODATA_VALUES = [v for v in SLR_DEPTH["values"] if v["value"] >= 11]
 SLR_NODATA_COLS = ["not_inundated", "not_applicable", "nodata"]
 
-SLR_PROJ = json.loads(open(json_dir / "slr_proj.json").read())
+SLR_PROJ = read_json("slr_proj.json")
 SLR_YEARS = [2020, 2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100]
 SLR_PROJ_SCENARIOS = {
     "l": "Low",
@@ -151,7 +156,7 @@ NLCD_COLORS = landcover_colormap = {k: v["color"] for k, v in NLCD_INDEXES.items
 NLCD_LEGEND = list(NLCD_CODES.values())
 
 
-WILDFIRE_RISK = json.loads(open(json_dir / "wildfire_risk.json").read())
+WILDFIRE_RISK = read_json("wildfire_risk.json")
 WILDFIRE_RISK_COLORS = {
     entry["value"]: entry["color"] for entry in WILDFIRE_RISK["values"] if entry.get("color", None) is not None
 }
