@@ -15,8 +15,7 @@ export type InspectResult = {
 
 export type Result = null | string | InspectResult
 
-export type ReportState = {
-	view: View
+type ReportStateCore = {
 	status: JobStatus
 	progress: number
 	queuePosition?: number
@@ -25,6 +24,12 @@ export type ReportState = {
 	result?: Result
 	errors?: string[] | null // non-fatal errors
 }
+
+export type ReportState = {
+	view: View
+} & ReportStateCore
+
+export type SummaryUnitReportState = ReportStateCore
 
 export type ReportJobResult = {
 	status: JobStatus

@@ -53,6 +53,8 @@ class RasterizedGeometry(object):
                     self.masks.append(mask)
 
             else:
+                # NOTE: this includes features with no windows calculated above, because they are entirely outside
+                # the data extent
                 # print(f"Using single window for reading (overlapping windows: {num_windows}, ratio: {ratio:.3f})")
                 window = get_window(src, self.bounds)
                 mask = WindowGeometryMask(src, window, all_shapes)

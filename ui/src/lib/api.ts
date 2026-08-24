@@ -104,7 +104,7 @@ export const createSummaryUnitReport = async (
 	id: string,
 	type: SummaryUnitType,
 	onProgress: ProgressCallback
-) => {
+): Promise<ReportJobResult> => {
 	const unit_type = type === 'subwatershed' ? 'huc12' : 'marine_hex'
 
 	const response = await fetch(
@@ -124,7 +124,7 @@ export const createSummaryUnitReport = async (
 		console.error('Bad create summary report request', json)
 		captureException('Bad create summary report request', json)
 
-		return { status: 'failed', error: detail }
+		return { status: 'failed', message: detail }
 	}
 
 	if (response.status !== 200) {

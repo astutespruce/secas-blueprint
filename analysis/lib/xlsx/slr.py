@@ -38,7 +38,11 @@ def add_slr_depth_sheet(
     slr.columns = ["overlap"] + columns
 
     # reorder columns
-    slr = slr[["overlap", nodata_cols[2]] + depth_cols + nodata_cols[:2]].rename(columns={"overlap": area_label})
+    slr = (
+        slr[["overlap", nodata_cols[2]] + depth_cols + nodata_cols[:2]]
+        .rename(columns={"overlap": area_label})
+        .reset_index()
+    )
 
     # drop unnecessary nodata
     remove_cols = []

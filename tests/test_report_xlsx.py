@@ -10,14 +10,19 @@ from analysis.constants import (
     CORRIDORS,
     DATA_CRS,
     INDICATORS,
+    INDICATORS_INDEX,
     PARCAS,
     PARCAS_POLY,
     PROTECTED_AREAS,
     PROTECTED_AREAS_POLY,
     REPORT_DATASETS,
     SLR_DEPTH,
+    SLR_DEPTH_VALUES,
+    SLR_NODATA_VALUES,
     SLR_PROJ,
+    SLR_YEARS,
     URBAN_BY_DECADE,
+    URBAN_YEARS,
     WILDFIRE_RISK,
 )
 from analysis.lib.geometry import dissolve
@@ -30,17 +35,7 @@ SAVE_XLSX = False
 
 
 @pytest.mark.parametrize("format", ["shp", "gdb"])
-def test_get_available_datasets_no_overlap(format):
-    filename = f"{format}_poly_no_overlap.zip"
-    dataset = filename.replace(f"{format}_", "").replace(".zip", f".{format}")
-    df = read_dataframe(f"/vsizip/tests/fixtures/{filename}/{dataset}", columns=[], use_arrow=True).to_crs(DATA_CRS)
-
-    datasets = get_available_datasets(df)
-    assert len(datasets) == 0
-
-
-@pytest.mark.parametrize("format", ["shp", "gdb"])
-def test_get_available_datasets(format):
+def test_get_available_datasets_single_area(format):
     # NOTE: this needs to be updated for each blueprint version; this is just a
     # smoke test that values do not change except during Blueprint version updates
 
@@ -75,6 +70,38 @@ def test_get_available_datasets(format):
     ]
     for dataset in unexpected_datasets:
         assert dataset not in datasets
+
+
+@pytest.mark.parametrize("format", ["shp", "gdb"])
+def test_get_available_datasets_no_overlap(format):
+    filename = f"{format}_poly_no_overlap.zip"
+    dataset = filename.replace(f"{format}_", "").replace(".zip", f".{format}")
+    df = read_dataframe(f"/vsizip/tests/fixtures/{filename}/{dataset}", columns=[], use_arrow=True).to_crs(DATA_CRS)
+
+    datasets = get_available_datasets(df)
+    assert len(datasets) == 0
+
+
+@pytest.mark.parametrize("format", ["shp", "gdb"])
+def test_get_available_datasets_multiple_features_partial_overlap(format):
+    # just a test that this runs, not checking specific ones
+    filename = f"{format}_poly_multiple_partial_overlap.zip"
+    dataset = filename.replace(f"{format}_", "").replace(".zip", f".{format}")
+    df = read_dataframe(f"/vsizip/tests/fixtures/{filename}/{dataset}", columns=[], use_arrow=True).to_crs(DATA_CRS)
+
+    datasets = get_available_datasets(df)
+    assert len(datasets) == 31
+
+
+@pytest.mark.parametrize("format", ["shp", "gdb"])
+def test_get_available_datasets_multiple_features(format):
+    # just a test that this runs, not checking specific ones
+    filename = f"{format}_poly_multiple.zip"
+    dataset = filename.replace(f"{format}_", "").replace(".zip", f".{format}")
+    df = read_dataframe(f"/vsizip/tests/fixtures/{filename}/{dataset}", columns=[], use_arrow=True).to_crs(DATA_CRS)
+
+    datasets = get_available_datasets(df)
+    assert len(datasets) == 59
 
 
 @pytest.mark.anyio
@@ -130,6 +157,73 @@ async def test_get_analysis_unit_results_single_area(format):
     assert np.allclose(urban, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 
     assert np.allclose(row[WILDFIRE_RISK["id"]], [0, 0, 0, 0, 0, 50.705946, 0, 0, 0, 0, 0])
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("format", ["shp", "gdb"])
+async def test_get_analysis_unit_results_multiple_features_partial_overlap(format):
+    # NOTE: this needs to be updated for each blueprint version; this is just a
+    # smoke test that values do not change except during Blueprint version updates
+
+    filename = f"{format}_poly_multiple_partial_overlap.zip"
+    dataset = filename.replace(f"{format}_", "").replace(".zip", f".{format}")
+    df = read_dataframe(f"/vsizip/tests/fixtures/{filename}/{dataset}", columns=[], use_arrow=True).to_crs(DATA_CRS)
+    datasets = set(get_available_datasets(df))
+    results = await get_analysis_unit_results(df, datasets)
+
+    assert len(results) == len(df)
+    for col in ["states", "subregions", "regions", "count", "acres"]:
+        assert col in results.columns
+
+    # features cover Southeast, Midwest, both
+    assert results.states.fillna("").values.tolist() == ["North Carolina", "", "Missouri"]
+    assert results.regions.fillna("").values.tolist() == ["continental", "", "continental"]
+    assert results.subregions.fillna("").values.tolist() == ["Atlantic Coastal Plain", "", "Ozarks and Plains"]
+
+    assert results["count"].values.tolist() == [1] * 3
+    assert np.allclose(results["acres"], [280.4020, 394.7394, 68.8730])
+    assert np.allclose(results["rasterized_acres"], [280.6619, 397.4190, 69.6095])
+    assert np.allclose(results["outside_extent_acres"], [0, 397.4190, 0])
+
+    nc_poly = results.iloc[0]
+    mn_poly = results.iloc[1]
+    mo_poly = results.iloc[2]
+
+    assert np.allclose(nc_poly[BLUEPRINT["id"]], [0, 32.6920, 65.8288, 87.4010, 94.7401])
+    assert np.isnan(mn_poly[BLUEPRINT["id"]])
+    assert np.allclose(mo_poly[BLUEPRINT["id"]], [3.5583, 52.0403, 14.0109, 0, 0])
+
+    assert np.allclose(nc_poly["f_permeablesurface"], [0, 0, 0, 280.6619])
+    assert np.isnan(mn_poly["f_permeablesurface"])
+    assert np.allclose(mo_poly["f_permeablesurface"], [0, 0, 5.7823, 63.8272])
+
+    assert np.allclose(nc_poly[SLR_DEPTH["id"]], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 280.6619, 0])
+    assert np.isnan(mn_poly[SLR_DEPTH["id"]])
+    assert np.allclose(mo_poly[SLR_DEPTH["id"]], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 69.6095, 0])
+
+    assert np.allclose(
+        nc_poly[URBAN_BY_DECADE["id"]],
+        [42.4773, 42.4773, 42.4773, 42.4773, 42.4773, 42.4773, 42.4773, 42.4773, 42.4773, 0],
+    )
+    assert np.isnan(mn_poly[URBAN_BY_DECADE["id"]])
+    assert np.allclose(
+        mo_poly[URBAN_BY_DECADE["id"]], [5.5599, 5.5599, 5.5599, 5.5599, 5.5599, 5.5599, 5.5599, 5.5599, 5.5599, 0]
+    )
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("format", ["shp", "gdb"])
+async def test_get_analysis_unit_results_multiple_features_partial_overlap_dissolved(format):
+    # NOTE: this is just a smoke test to ensure it runs without failure
+
+    filename = f"{format}_poly_multiple_partial_overlap.zip"
+    dataset = filename.replace(f"{format}_", "").replace(".zip", f".{format}")
+    df = read_dataframe(f"/vsizip/tests/fixtures/{filename}/{dataset}", columns=[], use_arrow=True).to_crs(DATA_CRS)
+    df = dissolve(df.explode(ignore_index=True))
+    datasets = set(get_available_datasets(df))
+    results = await get_analysis_unit_results(df, datasets)
+
+    assert results["count"].values.tolist() == [3]
 
 
 @pytest.mark.anyio
@@ -267,7 +361,19 @@ async def test_create_xlsx_file_single_area(format):
     df[field] = "all areas"
     df = dissolve(df.explode(ignore_index=True), by=field).set_index(field)
 
-    datasets = set(get_available_datasets(df))
+    # representative sample of datasets
+    datasets = [
+        "blueprint",
+        "f_permeablesurface",
+        "t_imperiledamphibiansandreptiles",
+        "slr_depth",
+        "slr_proj",
+        "parcas_poly",
+        "protected_areas_poly",
+        "urban_by_decade",
+        "wildfire_risk",
+    ]
+
     results = await get_analysis_unit_results(df, datasets)
     xlsx = create_report(results, datasets, name="Test area")
 
@@ -298,19 +404,225 @@ async def test_create_xlsx_file_single_area(format):
     blueprint = reader.parse(sheet_name="Blueprint priority")
     value_cols = [f"{v['label']} (acres)" for v in BLUEPRINT["values"]]
     assert blueprint.columns.tolist() == ["Analysis unit", "Analysis acres"] + value_cols
-    assert np.allclose(results.blueprint.iloc[0], blueprint.iloc[0][value_cols].values.astype("float64"))
+    assert np.allclose(blueprint.iloc[0][value_cols].values.astype("float64"), results.blueprint.iloc[0])
+
+    indicator_id = "t_imperiledamphibiansandreptiles"
+    indicator = INDICATORS_INDEX[indicator_id]
+    sheet_name = indicator.get("sheet_name", indicator["label"])
+    indicator_sheet = reader.parse(sheet_name=sheet_name)
+    value_cols = [f"{v['label']} (acres)" for v in indicator["values"]]
+    assert indicator_sheet.columns.tolist() == ["Analysis unit", "Analysis acres"] + value_cols
+    assert np.allclose(indicator_sheet.iloc[0][value_cols].values.astype("float64"), results[indicator_id].iloc[0])
+
+    # this one has an extra row for good / not good condition
+    indicator_id = "f_permeablesurface"
+    indicator = INDICATORS_INDEX[indicator_id]
+    sheet_name = indicator.get("sheet_name", indicator["label"])
+    indicator_header = reader.parse(sheet_name=sheet_name, nrows=1)
+    assert [c for c in indicator_header.columns if "condition" in c] == ["Not in good condition", "In good condition"]
+    indicator_sheet = reader.parse(sheet_name=sheet_name, skiprows=1)
+    value_cols = [f"{v['label']} (acres)" for v in indicator["values"]]
+    assert indicator_sheet.columns.tolist() == ["Analysis unit", "Analysis acres"] + value_cols
+    assert np.allclose(indicator_sheet.iloc[0][value_cols].values.astype("float64"), results[indicator_id].iloc[0])
+
+    slr_depth = reader.parse(sheet_name="SLR inundation area")
+    value_cols = (
+        [f"Inundated at {v['label']} (acres)" for v in SLR_DEPTH_VALUES]
+        +
+        # only nodata is areas outside counties
+        [f"{v['label']} (acres)" for v in SLR_NODATA_VALUES[1:2]]
+    )
+    assert slr_depth.columns.tolist() == ["Analysis unit", "Analysis acres"] + value_cols
+    assert np.allclose(
+        slr_depth.iloc[0][value_cols].values.astype("float64"), results.slr_depth.iloc[0].take(list(range(11)) + [12])
+    )
+
+    # no projections here
+    slr_proj = reader.parse(sheet_name="Projected SLR")
+    value_cols = ["Has projected SLR?", "SLR scenario"] + [f"{year} (ft)" for year in SLR_YEARS]
+    assert slr_proj.columns.tolist() == ["Analysis unit", "Analysis acres"] + value_cols
+    assert slr_proj["Has projected SLR?"].tolist() == ["no"]
+
+    parcas_poly = reader.parse(sheet_name="PARCAs")
+    assert parcas_poly.columns.tolist() == ["Analysis unit", "GIS acres", "Overlap acres", "Name", "Description"]
+    assert np.allclose(parcas_poly["GIS acres"], results.acres, atol=0.01)
+    assert np.allclose(parcas_poly["Overlap acres"], results.acres, atol=0.01)
+    assert parcas_poly["Name"].values.tolist() == ["Talladega"]
+    assert parcas_poly["Description"].values[0].startswith("Talladega is the")
+
+    # protected_areas_poly = reader.parse("")
+    protected_areas_poly = reader.parse(sheet_name="Protected areas")
+    assert protected_areas_poly.columns.tolist() == ["Analysis unit", "GIS acres", "Overlap acres", "Name", "Owner"]
+    assert np.allclose(protected_areas_poly["GIS acres"], results.acres, atol=0.01)
+    assert np.allclose(protected_areas_poly["Overlap acres"], [34.55], atol=0.01)
+    assert protected_areas_poly["Name"].values.tolist() == ["Talladega National Forest"]
+    assert protected_areas_poly["Owner"].values.tolist() == ["USDA Forest Service"]
+
+    urban = reader.parse(sheet_name="Urban growth")
+    value_cols = ["2021 (acres)"] + [f"{year} (acres)" for year in URBAN_YEARS]
+    assert urban.columns.tolist() == ["Analysis unit", "Analysis acres"] + value_cols
+    # last column is nodata, omitted here
+    assert np.allclose(urban.iloc[0][value_cols].values.astype("float64"), results.urban_by_decade.iloc[0][:-1])
+
+    wildfire_risk = reader.parse(sheet_name="Wildfire likelihood")
+    value_cols = [f"{v['label']} (acres)" for v in WILDFIRE_RISK["values"]]
+    assert wildfire_risk.columns.tolist() == ["Analysis unit", "Analysis acres"] + value_cols
+    assert np.allclose(wildfire_risk.iloc[0][value_cols].values.astype("float64"), results.wildfire_risk.iloc[0])
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("format", ["shp", "gdb"])
+async def test_create_xlsx_file_multiple_areas_partial_overlap(format):
+    filename = f"{format}_poly_multiple_partial_overlap.zip"
+    dataset = filename.replace(f"{format}_", "").replace(".zip", f".{format}")
+    df = (
+        read_dataframe(f"/vsizip/tests/fixtures/{filename}/{dataset}", columns=["Blueprint"], use_arrow=True)
+        .to_crs(DATA_CRS)
+        .set_index("Blueprint")
+    )
+
+    # representative sample of datasets
+    datasets = [
+        "blueprint",
+        "t_imperiledamphibiansandreptiles",
+        "slr_depth",
+        "slr_proj",
+        "parcas_poly",
+        "protected_areas_poly",
+        "urban_by_decade",
+        "wildfire_risk",
+    ]
+
+    results = await get_analysis_unit_results(df, datasets)
+    xlsx = create_report(results, datasets, name="Test area")
+
+    if SAVE_XLSX:
+        with open("/tmp/test_create_xlsx_file_multiple_areas_partial_overlap.xlsx", "wb") as out:
+            _ = out.write(xlsx)
+
+    reader = pd.ExcelFile(BytesIO(xlsx))
+
+    assert len(reader.sheet_names) == len(datasets) + 3
+    summary = reader.parse(sheet_name="Summary")
+    assert len(summary) == len(df)
+
+    assert np.allclose(summary["GIS acres"], results.acres)
+    # when there is partial overlap, we have two rasterized area columns: within and outside
+    assert np.allclose(summary["Acres within Southeast data extent (rasterized to 30m pixels)"], results.overlap)
+    assert np.allclose(
+        summary["Acres outside Southeast data extent (rasterized to 30m pixels)"], results.outside_extent_acres
+    )
+    assert np.allclose(summary["Number of 30m pixels in analysis unit"], results.pixels)
+    assert np.allclose(summary["Number of distinct areas in analysis unit"], results["count"])
+    assert summary["State(s)"].tolist() == results.states.tolist()
+
+    details = reader.parse(sheet_name="Data details")
+    assert len(details) == len(datasets)
+    assert details["Name"].tolist() == [d["label"] for id, d in REPORT_DATASETS.items() if id in datasets]
+
+    metadata = reader.parse(sheet_name="Analysis metadata", header=None)
+    assert len(metadata) == 3
+    assert metadata[1][0] == "Test area"
+
+    blueprint = reader.parse(sheet_name="Blueprint priority")
+    value_cols = [f"{v['label']} (acres)" for v in BLUEPRINT["values"]]
+    # when we have partial overlap, we have to update the label of the analysis area column
+    assert blueprint.columns.tolist() == ["Analysis unit", "Acres within Southeast data extent"] + value_cols
+    assert np.allclose(blueprint.iloc[0][value_cols].values.astype("float64"), results.blueprint.iloc[0])
+    assert np.isclose(blueprint["Acres within Southeast data extent"].iloc[1], 0.0)
+    assert np.allclose(blueprint.iloc[2][value_cols].values.astype("float64"), results.blueprint.iloc[2])
+
+    indicator_id = "t_imperiledamphibiansandreptiles"
+    indicator = INDICATORS_INDEX[indicator_id]
+    sheet_name = indicator.get("sheet_name", indicator["label"])
+    indicator_sheet = reader.parse(sheet_name=sheet_name)
+    value_cols = [f"{v['label']} (acres)" for v in indicator["values"]]
+    assert indicator_sheet.columns.tolist() == ["Analysis unit", "Acres within Southeast data extent"] + value_cols
+    assert np.allclose(indicator_sheet.iloc[0][value_cols].values.astype("float64"), results[indicator_id].iloc[0])
+    assert np.isclose(indicator_sheet["Acres within Southeast data extent"].iloc[1], 0.0)
+    assert np.allclose(indicator_sheet.iloc[2][value_cols].values.astype("float64"), results[indicator_id].iloc[2])
+
+    slr_depth = reader.parse(sheet_name="SLR inundation area")
+    value_cols = [f"Inundated at {v['label']} (acres)" for v in SLR_DEPTH_VALUES] + [
+        f"{v['label']} (acres)" for v in SLR_NODATA_VALUES[1:2]
+    ]
+    assert slr_depth.columns.tolist() == ["Analysis unit", "Acres within Southeast data extent"] + value_cols
+    assert np.allclose(
+        slr_depth.iloc[0][value_cols].values.astype("float64"), results.slr_depth.iloc[0].take(list(range(11)) + [12])
+    )
+
+    # no projections here
+    slr_proj = reader.parse(sheet_name="Projected SLR")
+    value_cols = ["Has projected SLR?", "SLR scenario"] + [f"{year} (ft)" for year in SLR_YEARS]
+    assert slr_proj.columns.tolist() == ["Analysis unit", "Acres within Southeast data extent"] + value_cols
+    assert slr_proj["Has projected SLR?"].tolist() == ["no"] * 3
+
+    parcas_poly = reader.parse(sheet_name="PARCAs")
+    assert parcas_poly.columns.tolist() == ["Analysis unit", "GIS acres", "Overlap acres", "Name", "Description"]
+    assert np.allclose(parcas_poly["GIS acres"], results.acres, atol=0.01)
+    assert np.allclose(parcas_poly["Overlap acres"], [280.40, 0, 0], atol=0.01)
+    assert parcas_poly["Name"].values.tolist() == ["Sandhills"] + ["no PARCAs at this location"] * 2
+
+    # protected_areas_poly = reader.parse("")
+    protected_areas_poly = reader.parse(sheet_name="Protected areas")
+    assert protected_areas_poly.columns.tolist() == ["Analysis unit", "GIS acres", "Overlap acres", "Name", "Owner"]
+    assert protected_areas_poly["Analysis unit"].tolist() == ["Southeast"] * 3 + ["Midwest", "Southeast,Midwest"]
+    assert np.allclose(protected_areas_poly["GIS acres"], [280.40, 280.40, 280.40, 394.74, 68.87], atol=0.01)
+    assert np.allclose(protected_areas_poly["Overlap acres"], [20.48, 165.11, 167.83, 0, 0], atol=0.01)
+    assert (
+        protected_areas_poly["Name"].values.tolist()
+        == ["Bones Fork Pine and Shrub Community Registered Heritage Area"]
+        + ["Sandhills Game Land"] * 2
+        + ["no protected areas at this location"] * 2
+    )
+    assert protected_areas_poly["Owner"].fillna("").values.tolist() == [
+        "State Fish and Wildlife",
+        "NC Wildlife Resources Commission",
+        "State Fish and Wildlife",
+        "",
+        "",
+    ]
+
+    urban = reader.parse(sheet_name="Urban growth")
+    value_cols = ["2021 (acres)"] + [f"{year} (acres)" for year in URBAN_YEARS]
+    assert urban.columns.tolist() == ["Analysis unit", "Acres within Southeast data extent"] + value_cols
+    # last column is nodata, omitted here
+    assert np.allclose(urban.iloc[0][value_cols].values.astype("float64"), results.urban_by_decade.iloc[0][:-1])
+    assert np.isclose(urban["Acres within Southeast data extent"].iloc[1], 0.0)
+    assert np.allclose(urban.iloc[2][value_cols].values.astype("float64"), results.urban_by_decade.iloc[2][:-1])
+
+    wildfire_risk = reader.parse(sheet_name="Wildfire likelihood")
+    value_cols = [f"{v['label']} (acres)" for v in WILDFIRE_RISK["values"]]
+    assert wildfire_risk.columns.tolist() == ["Analysis unit", "Acres within Southeast data extent"] + value_cols
+    assert np.allclose(wildfire_risk.iloc[0][value_cols].values.astype("float64"), results.wildfire_risk.iloc[0])
+    assert np.isclose(wildfire_risk["Acres within Southeast data extent"].iloc[1], 0.0)
+    assert np.allclose(wildfire_risk.iloc[2][value_cols].values.astype("float64"), results.wildfire_risk.iloc[2])
 
 
 @pytest.mark.anyio
 @pytest.mark.parametrize("format", ["shp", "gdb"])
 async def test_create_xlsx_file_multiple_areas(format):
-    filename = f"{format}_poly_small.zip"
+    filename = f"{format}_poly_multiple.zip"
     dataset = filename.replace(f"{format}_", "").replace(".zip", f".{format}")
-    df = read_dataframe(f"/vsizip/tests/fixtures/{filename}/{dataset}", columns=["Name"], use_arrow=True).to_crs(
+    df = read_dataframe(f"/vsizip/tests/fixtures/{filename}/{dataset}", columns=["Region"], use_arrow=True).to_crs(
         DATA_CRS
     )
+    df = dissolve(df.explode(ignore_index=True), by="Region").set_index("Region")
 
-    datasets = set(get_available_datasets(df))
+    num_features = len(df)
+
+    # representative sample of datasets
+    datasets = [
+        "blueprint",
+        "t_imperiledamphibiansandreptiles",
+        "slr_depth",
+        "slr_proj",
+        "parcas_poly",
+        "protected_areas_poly",
+        "urban_by_decade",
+        "wildfire_risk",
+    ]
+
     results = await get_analysis_unit_results(df, datasets)
     xlsx = create_report(results, datasets, name="Test area")
 
@@ -341,3 +653,91 @@ async def test_create_xlsx_file_multiple_areas(format):
     value_cols = [f"{v['label']} (acres)" for v in BLUEPRINT["values"]]
     assert blueprint.columns.tolist() == ["Analysis unit", "Analysis acres"] + value_cols
     assert np.allclose(results.blueprint.iloc[0], blueprint.iloc[0][value_cols].values.astype("float64"))
+    for i in range(num_features):
+        assert np.allclose(blueprint.iloc[i][value_cols].values.astype("float64"), results.blueprint.iloc[i])
+
+    indicator_id = "t_imperiledamphibiansandreptiles"
+    indicator = INDICATORS_INDEX[indicator_id]
+    sheet_name = indicator.get("sheet_name", indicator["label"])
+    indicator_sheet = reader.parse(sheet_name=sheet_name)
+    value_cols = [f"{v['label']} (acres)" for v in indicator["values"]]
+    assert (
+        indicator_sheet.columns.tolist()
+        == [
+            "Analysis unit",
+            "Analysis acres",
+            "Outside imperiled amphibians & reptiles data extent within Southeast data extent (acres)",
+        ]
+        + value_cols
+    )
+    for i in range(num_features):
+        assert np.allclose(indicator_sheet.iloc[i][value_cols].values.astype("float64"), results[indicator_id].iloc[i])
+
+    slr_depth = reader.parse(sheet_name="SLR inundation area")
+    value_cols = (
+        [f"{v['label']} (acres)" for v in SLR_NODATA_VALUES[2:3]]
+        + [f"Inundated at {v['label']} (acres)" for v in SLR_DEPTH_VALUES]
+        +
+        # only nodata is areas outside counties
+        [f"{v['label']} (acres)" for v in SLR_NODATA_VALUES[:2]]
+    )
+    assert slr_depth.columns.tolist() == ["Analysis unit", "Analysis acres"] + value_cols
+    for i in range(num_features):
+        expected = results.slr_depth.iloc[i].take([13] + list(range(13)))
+        # area outside SLR is dynamically calculated as areas within the extent but with no SLR acres
+        outside = results.overlap.iloc[i] - expected.sum()
+        if outside > 0:
+            expected[0] = outside
+
+        assert np.allclose(slr_depth.iloc[i][value_cols].values.astype("float64"), expected)
+
+    parcas_poly = reader.parse(sheet_name="PARCAs")
+    assert parcas_poly.columns.tolist() == ["Analysis unit", "GIS acres", "Overlap acres", "Name", "Description"]
+    assert np.allclose(parcas_poly["GIS acres"], results.acres, atol=0.01)
+    assert np.allclose(parcas_poly["Overlap acres"], [0] * 3, atol=0.01)
+    assert parcas_poly["Name"].values.tolist() == ["no PARCAs at this location"] * 3
+
+    protected_areas_poly = reader.parse(sheet_name="Protected areas")
+    assert protected_areas_poly.columns.tolist() == ["Analysis unit", "GIS acres", "Overlap acres", "Name", "Owner"]
+    assert protected_areas_poly["Analysis unit"].tolist() == ["caribbean"] + ["continental"] * 3 + ["marine"]
+    assert np.allclose(protected_areas_poly["GIS acres"], [147.20, 452.72, 452.72, 452.72, 5386.10], atol=0.01)
+    assert np.allclose(protected_areas_poly["Overlap acres"], [66.03, 27.80, 30.39, 40.56, 0], atol=0.01)
+    assert protected_areas_poly["Name"].values.tolist() == ["Área Natural Protegida Río Encantado"] + [
+        "Crystal River Preserve State Park"
+    ] * 2 + ["St. Martins Marsh Aquatic Preserve", "no protected areas at this location"]
+    assert protected_areas_poly["Owner"].fillna("").values.tolist() == [
+        "Para la Naturaleza",
+        "",
+        "Trustees of the Internal Improvement Trust Fund",
+        "",
+        "",
+    ]
+
+    urban = reader.parse(sheet_name="Urban growth")
+    value_cols = ["2021 (acres)"] + [f"{year} (acres)" for year in URBAN_YEARS]
+    assert (
+        urban.columns.tolist()
+        == ["Analysis unit", "Analysis acres", "Outside urban growth data extent within Southeast data extent (acres)"]
+        + value_cols
+    )
+    compare_cols = ["Outside urban growth data extent within Southeast data extent (acres)"] + value_cols
+    for i in range(num_features):
+        assert np.allclose(
+            urban.iloc[i][compare_cols].values.astype("float64"),
+            # last value is nodata, shuffled to the beginning
+            results.urban_by_decade.iloc[i].take([len(value_cols)] + list(range(len(value_cols)))),
+        )
+
+    wildfire_risk = reader.parse(sheet_name="Wildfire likelihood")
+    value_cols = [f"{v['label']} (acres)" for v in WILDFIRE_RISK["values"]]
+    assert (
+        wildfire_risk.columns.tolist()
+        == [
+            "Analysis unit",
+            "Analysis acres",
+            "Outside wildfire likelihood data extent within Southeast data extent (acres)",
+        ]
+        + value_cols
+    )
+    for i in range(num_features):
+        assert np.allclose(wildfire_risk.iloc[i][value_cols].values.astype("float64"), results.wildfire_risk.iloc[i])

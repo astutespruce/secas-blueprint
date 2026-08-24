@@ -1,19 +1,18 @@
-from itertools import product
 import math
+from itertools import product
 
-from affine import Affine
 import numba as nb
 import numpy as np
-from progress.bar import Bar
 import rasterio
+import shapely
+from affine import Affine
+from progress.bar import Bar
 from rasterio.enums import Resampling
 from rasterio.mask import geometry_mask
 from rasterio.vrt import WarpedVRT
 from rasterio.windows import Window
-import shapely
 
-from analysis.constants import OVERVIEW_FACTORS, DATA_CRS
-
+from analysis.constants import DATA_CRS, OVERVIEW_FACTORS
 
 type UInt8_2D_Array = np.ndarray[tuple[int, int], np.dtype[np.uint8]]
 type Bool_2D_Array = np.ndarray[tuple[int, int], np.dtype[np.bool]]
@@ -511,6 +510,9 @@ def get_overlapping_windows(src, geometry, bounds, window_size):
     ]
 
     total_windows = len(windows)
+
+    if total_windows == 0:
+        return [], 0
 
     window_boxes = shapely.box(*np.array([src.window_bounds(w) for w in windows]).T)
     shapely.prepare(geometry)

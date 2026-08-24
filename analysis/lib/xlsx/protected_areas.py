@@ -18,19 +18,19 @@ def add_protected_areas_poly_sheet(
     for id, row in df.iterrows():
         if len(row.get(col, [])):
             for pa in row[col]:
-                protected_areas.append([id, f"{row.acres:.2f}", pa["name"], pa["owner"], f"{pa['acres']:.2f}"])
+                protected_areas.append([id, f"{row.acres:.2f}", f"{pa['acres']:.2f}", pa["name"], pa["owner"]])
         else:
-            protected_areas.append([id, f"{row.acres:.2f}", "no protected areas at this location", "", ""])
+            protected_areas.append([id, f"{row.acres:.2f}", "0", "no protected areas at this location", ""])
             counter += 1
 
         breaks.append(counter)
 
     protected_areas = pd.DataFrame(
         protected_areas,
-        columns=[df.index.name, "GIS Acres", "Protected area name", "Owner", "Overlap acres"],
+        columns=[df.index.name, "GIS acres", "Overlap acres", "Name", "Owner"],
     )
     protected_areas.to_excel(xlsx, sheet_name=sheet_name, index=False)
     ws = xlsx.sheets[sheet_name]
 
-    set_column_widths(ws, [name_col_width, area_col_width, 40, 30, area_col_width])
+    set_column_widths(ws, [name_col_width, area_col_width, area_col_width, 40, 30])
     set_cell_styles(ws)

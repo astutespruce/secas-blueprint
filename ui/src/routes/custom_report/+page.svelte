@@ -8,7 +8,7 @@
 		Done,
 		Progress,
 		Queued,
-		ReportError,
+		Error,
 		UploadForm
 	} from '$lib/components/report'
 	import type {
@@ -248,7 +248,7 @@
 	</div>
 
 	{#if reportState.status === 'failed'}
-		<ReportError message={reportState.message} onReset={handleReset} class="mt-8" />
+		<Error message={reportState.message} onReset={handleReset} class="mt-8" />
 	{:else if reportState.status === 'queued'}
 		<Queued
 			message={reportState.message}

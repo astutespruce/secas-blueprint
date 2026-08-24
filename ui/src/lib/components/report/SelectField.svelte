@@ -10,7 +10,7 @@
 
 	let { count, fields, selectedField = $bindable('') }: Props = $props()
 
-	const options = $derived(
+	const options: { value: string; label: string; count?: number }[] = $derived(
 		[{ value: '', label: '-- Group everything together --' }].concat(
 			Object.entries(fields)
 				.map(([value, count]) => ({

@@ -16,7 +16,7 @@
 			<Description class="text-xl">
 				<p class="text-error">
 					{#if message}
-						The server says {message}
+						The server says {message}{message.endsWith('.') ? '' : '.'}
 					{:else}
 						Please try again. If that does not work, try a different file or <a
 							href={`mailto:${CONTACT_EMAIL}`}>contact us</a
