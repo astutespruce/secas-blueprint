@@ -1,28 +1,28 @@
-from pathlib import Path
 from math import ceil, log2
+from pathlib import Path
 
-from affine import Affine
-from progress.bar import Bar
+import geopandas as gp
 import numpy as np
 import pandas as pd
 import rasterio
-from rasterio.windows import get_data_window, Window, transform as transform_for_window
-import geopandas as gp
 import shapely
-
+from affine import Affine
+from progress.bar import Bar
+from rasterio.windows import Window, get_data_window
+from rasterio.windows import transform as transform_for_window
 
 from analysis.constants import (
-    INDICATORS,
     BLUEPRINT,
     CORRIDORS,
-    URBAN,
-    SLR_DEPTH,
     DATA_CRS,
-    WILDFIRE_RISK,
-    PROTECTED_AREAS,
+    INDICATORS,
     PARCAS,
+    PROTECTED_AREAS,
+    SLR_DEPTH,
+    URBAN,
+    WILDFIRE_RISK,
 )
-from analysis.lib.raster import write_raster, shift_window, clip_window
+from analysis.lib.raster import clip_window, shift_window, write_raster
 
 data_dir = Path("data")
 inputs_dir = data_dir / "inputs"
@@ -140,6 +140,7 @@ df["box"] = df.bounds.apply(lambda x: shapely.box(*x))
 # tmp["group"] = ""
 # tmp.to_csv(out_dir / "layers.csv", index=True, index_label="id")
 
+
 # read manually assigned groups that are up to 24 bits each
 # Note: these are based loosely on overlapping spatial extent
 grouped = pd.read_csv(out_dir / "layers.csv").set_index("id")
@@ -149,8 +150,9 @@ print(grouped.groupby("group", dropna=False).bits.sum())
 if grouped.group.isnull().any():
     raise ValueError("All layers must be assigned to a group")
 
-df = df.join(grouped.group)
-df["orig_pos"] = np.arange(len(df))
+# use the order stored in layers.csv, in case df is reorded by other criteria
+grouped["orig_pos"] = np.arange(len(grouped))
+df = df.join(grouped[["group", "orig_pos"]])
 df = df.sort_values(by=["group", "orig_pos"])
 
 
@@ -183,6 +185,8 @@ for group in groups:
             .reset_index()
             .to_json(orient="records")
         )
+
+raise FOO
 
 ### determine the block windows that overlap bounds
 # everything else will be filled with 0
