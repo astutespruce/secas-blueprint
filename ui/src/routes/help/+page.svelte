@@ -282,39 +282,82 @@
 		<h2 class="text-4xl">Create a custom report for a specific area of interest:</h2>
 		<p class="mt-2">
 			Click on the <b>Upload a shapefile</b> button in the upper right. You will be able to upload
-			your area of interest and create a detailed PDF report of the Blueprint, hubs and corridors,
-			underlying indicators, and landscape-level threats in that area.
+			your area of interest and create a detailed PDF or XLSX report of the Blueprint, hubs and
+			corridors, underlying indicators, and other contextual information for your area of interest.
 			<br />
 			<br />
-			Examples of what is inside:
+
+			The PDF report includes a map and summary table for every indicator present in the area, as
+			well as additional information about urbanization and sea-level rise.
 		</p>
 
-		<div class="grid grid-cols-2 md:grid-cols-5 mt-2 gap-4">
-			<enhanced:img
-				src="$images/report/report_sm_1.png"
-				alt="Tool report example screenshot 1"
-				loading="lazy"
-			/>
-			<enhanced:img
-				src="$images/report/report_sm_2.png"
-				alt="Tool report example screenshot 2"
-				loading="lazy"
-			/>
-			<enhanced:img
-				src="$images/report/report_sm_3.png"
-				alt="Tool report example screenshot 3"
-				loading="lazy"
-			/>
-			<enhanced:img
-				src="$images/report/report_sm_4.png"
-				alt="Tool report example screenshot 4"
-				loading="lazy"
-			/>
-			<enhanced:img
-				src="$images/report/report_sm_5.png"
-				alt="Tool report example screenshot 5"
-				loading="lazy"
-			/>
+		<figure class="mt-4">
+			<div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+				<enhanced:img
+					src="$images/report/report_sm_1.png"
+					alt="Tool report example screenshot 1"
+					loading="lazy"
+				/>
+				<enhanced:img
+					src="$images/report/report_sm_2.png"
+					alt="Tool report example screenshot 2"
+					loading="lazy"
+				/>
+				<enhanced:img
+					src="$images/report/report_sm_3.png"
+					alt="Tool report example screenshot 3"
+					loading="lazy"
+				/>
+				<enhanced:img
+					src="$images/report/report_sm_4.png"
+					alt="Tool report example screenshot 4"
+					loading="lazy"
+				/>
+				<enhanced:img
+					src="$images/report/report_sm_5.png"
+					alt="Tool report example screenshot 5"
+					loading="lazy"
+				/>
+			</div>
+			<figcaption class="text-sm text-muted-foreground text-center mt-2">
+				Examples of what is inside the PDF report
+			</figcaption>
+		</figure>
+
+		<p class="mt-16">
+			The XLSX report includes detailed statistics for each of the analysis units in your area of
+			interest dataset, for all datasets that you choose to include in your analysis. Use the XLSX
+			report when you want statistics that are easier to analyze directly or copy and paste into
+			other formats for analysis and presentation.
+		</p>
+
+		<div class="grid grid-cols-0 md:grid-cols-[2fr_1fr] gap-8 mt-16">
+			<div class="flex flex-col justify-center">
+				<p>
+					You can configure the XLSX report to calculate statistics for different "analysis units"
+					in your uploaded file. If your file includes numeric or text attributes that identify your
+					analysis units, you can choose to create the report based on values of one of those
+					attributes. Each value present in that attribute in your uploaded file will be presented
+					as at least one row of results per dataset in your analysis.
+				</p>
+			</div>
+
+			<div>TODO: screenshot of attribute configuration section</div>
+		</div>
+
+		<div class="grid grid-cols-0 md:grid-cols-[2fr_1fr] gap-8 mt-16">
+			<div class="flex flex-col justify-center">
+				<p>
+					For the XLSX report, you can choose what datasets are included in your analysis. The
+					Blueprint Explorer first checks to see which datasets are available for any of your
+					analysis units. You are only able to choose from the datasets that overlap one or more of
+					your analysis units; other datasets are not available for analysis. By default, the XLSX
+					report will include all available datasets. However, if you are only interested in some of
+					these datasets, you can choose <b>select none</b> at the top of the list and then select the
+					datasets you are interested in.
+				</p>
+			</div>
+			<div>TODO: screenshot of dataset configuration section</div>
 		</div>
 
 		<hr />
