@@ -1,5 +1,4 @@
 import pandas as pd
-from openpyxl.utils import get_column_letter
 
 from analysis.constants import ANALYSIS_REGION_NAME
 from analysis.lib.xlsx.style import CHAR_PER_WIDTH_UNIT, add_good_condition_row, set_cell_styles, set_column_widths

@@ -1,27 +1,26 @@
 import json
-from pathlib import Path
 import re
+from pathlib import Path
 
-from affine import Affine
 import numpy as np
 import pandas as pd
-from pyogrio import read_dataframe
 import rasterio
-from rasterio.features import rasterize
-from rasterio import windows
 import shapely
+from affine import Affine
+from pyogrio import read_dataframe
+from rasterio import windows
+from rasterio.features import rasterize
 
-from analysis.constants import MASK_RESOLUTION, CORRIDORS, BLUEPRINT
+from analysis.constants import BLUEPRINT, CORRIDORS, MASK_RESOLUTION
 from analysis.lib.colors import hex_to_uint8
-from analysis.lib.geometry import to_dict, dissolve
+from analysis.lib.geometry import dissolve, to_dict
 from analysis.lib.raster import (
-    write_raster,
     add_overviews,
     create_lowres_mask,
     shift_window,
     unique,
+    write_raster,
 )
-
 
 NODATA = 255  # standardize NODATA of all indicators
 INDICATOR_GROUP_COLORS = {
@@ -327,7 +326,7 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
 indicator_df = merged
 
 with open(constants_dir / "indicator_groups.json", "w") as out:
-    res = out.write(json.dumps(indicator_groups, indent=2))
+    _ = out.write(json.dumps(indicator_groups, indent=2))
 
 
 # read indicator attribute tables

@@ -40,7 +40,6 @@ export default class StackedPNGTileLayer extends TileLayer {
 	initializeState() {
 		super.initializeState()
 
-		const { device } = this.context
 		// @ts-expect-error props defined dynamically
 		const { layers, filters, renderLayer } = this.props
 		const encodingSchemes = layers.map(({ encoding }) => encoding)

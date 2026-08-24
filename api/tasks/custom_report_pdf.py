@@ -1,7 +1,5 @@
 """Create a custom report for a user-uploaded area of interest."""
 
-import tempfile
-
 from analysis.constants import GEO_CRS
 from analysis.lib.geometry import dissolve
 from analysis.lib.pdf.map import render_maps

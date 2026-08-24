@@ -513,8 +513,6 @@
 		}
 
 		const updateStyle = () => {
-			const pixelLayer = map!.getLayer('pixelLayers')
-
 			map!.setStyle(`mapbox://styles/mapbox/${styleID}`)
 
 			map!.once('style.load', () => {
@@ -740,7 +738,7 @@
 		<img
 			src={CrosshairsIcon}
 			alt="Crosshairs icon"
-			class="absolute block z-0 right-0 bottom-0 left-[50%] top-[50%] ml-[-1rem] mt-[-1rem] pointer-events-none size-8 print:hidden"
+			class="absolute block z-0 right-0 bottom-0 left-[50%] top-[50%] -ml-4 -mt-4 pointer-events-none size-8 print:hidden"
 		/>
 	{/if}
 

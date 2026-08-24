@@ -4,11 +4,10 @@ from pathlib import Path
 import pandas as pd
 import rasterio
 
-from analysis.constants import BLUEPRINT, INDICATOR_GROUPS, INDICATORS, INDICATORS_INDEX, CORRIDORS, M2_ACRES
-from analysis.lib.raster import summarize_raster_by_units_grid
+from analysis.constants import BLUEPRINT, CORRIDORS, INDICATOR_GROUPS, INDICATORS, INDICATORS_INDEX, M2_ACRES
 from analysis.lib.io import read_unit_from_feather
+from analysis.lib.raster import summarize_raster_by_units_grid
 from analysis.lib.util import pluck
-
 
 data_dir = Path("data")
 src_dir = data_dir / "inputs"
@@ -149,8 +148,6 @@ async def summarize_blueprint_in_aoi(rasterized_geometry, subregions, progress_c
     indicator_groups_present = [deepcopy(e) for e in INDICATOR_GROUPS if e["id"] in indicator_group_ids]
     indicator_groups = []
     for group in indicator_groups_present:
-        id = group["id"]
-
         # include either indicators that are present or those expected based on
         # subregions
         expected_indicators = [
