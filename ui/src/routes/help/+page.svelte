@@ -170,10 +170,10 @@
 		</div>
 
 		<p class="mt-16">
-			You can select more than one layer. The filters are evaluated using AND logic, which means
-			that in order for a pixel to display on the map, it must meet all the selected criteria. If
-			you filter by layers that do not co-occur at the same location, such as estuarine coastal
-			condition and playas, nothing will display on the map.
+			You can select more than one layer. By default, filters are evaluated using AND logic, which
+			means that in order for a pixel to display on the map, it must meet <i>all</i> the selected criteria.
+			If you filter by layers that do not co-occur at the same location, such as estuarine coastal condition
+			and playas, nothing will display on the map.
 		</p>
 
 		<div class="grid grid-cols-0 md:grid-cols-2 gap-8 mt-16">
@@ -193,9 +193,88 @@
 			</div>
 		</div>
 
+		<p class="mt-16">
+			Alternatively, you can use OR logic to select all areas where <i>any</i> of your selected
+			criteria are present.
+			<br /><br />
+			Use the <b>Change filter overlay method</b> dropdown to change the logic being applied to your filters.
+			This can be especially helpful for identifying areas across indicators that do not spatially co-occur.
+			This mode starts from a blank map, and adds areas as you specify filters.
+		</p>
+
+		<div class="grid grid-cols-0 md:grid-cols-[1fr_2fr] gap-8 mt-16">
+			<div>
+				<enhanced:img
+					src="$images/help-filter-mode.png"
+					alt="Shows dropdown to select filter mode"
+					loading="lazy"
+				/>
+			</div>
+			<div>
+				<figure>
+					<enhanced:img
+						src="$images/help-filter-OR-after.png"
+						alt="Shows filtering the Blueprint with OR filter logic applied to indicators that do not co-occur"
+						loading="lazy"
+					/>
+					<figcaption class="text-sm text-muted-foreground">
+						Example showing OR logic applied to two indicators that do not spatially co-occur.
+					</figcaption>
+				</figure>
+			</div>
+		</div>
+
 		<p class="mt-8">
 			Note: pixel filters may take a few moments to display within your browser, especially as you
 			pan or zoom the map. You may need to zoom in to see areas that meet your filters.
+		</p>
+
+		<div class="grid grid-cols-0 md:grid-cols-[2fr_1fr] gap-8 mt-16">
+			<p>
+				You can save a PDF with a snapshot of your filtered map and information about the filters
+				you've selected using the <b>Print / save map to PDF</b> button. This will use your
+				browser's print dialog, where you can choose PDF as an option.
+				<br /><br />
+				The map snapshot is based on the dimensions of your browser window and the view of the map that
+				is currently visible in the Explorer. You may need to adjust the map or the size of your browser
+				window to better focus on your area of interest.
+			</p>
+			<div>
+				<enhanced:img
+					src="$images/help-filter-print-1.png"
+					alt="Filtered map print button"
+					loading="lazy"
+				/>
+			</div>
+		</div>
+
+		<div class="grid grid-cols-0 md:grid-cols-[2fr_1fr] gap-8 mt-16">
+			<div>
+				<enhanced:img
+					src="$images/help-filter-print-2.png"
+					alt="Browser print dialog"
+					loading="lazy"
+				/>
+			</div>
+			<div>
+				<figure>
+					<enhanced:img
+						src="$images/help-filter-print-3.png"
+						alt="Shows second page of filter PDF"
+						loading="lazy"
+					/>
+					<figcaption class="text-sm text-muted-foreground">
+						Example of information about active filters saved in the PDF.
+					</figcaption>
+				</figure>
+			</div>
+		</div>
+
+		<p class="mt-8">
+			Note: this PDF file is intended to help save information about your active filters for later
+			reference. It is entirely different from the data-rich PDF reports you can create by selecting
+			a watershed or by uploading a shapefile, which include maps of the Blueprint and all
+			indicators present in your area of interest.
 		</p>
 
 		<hr />
