@@ -1,18 +1,18 @@
-from pathlib import Path
 import shutil
 import tempfile
+from pathlib import Path
 from typing import Optional
 from zipfile import ZipFile
 
 import arq
-from fastapi import APIRouter, File, UploadFile, Form, HTTPException, Depends
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from fastapi.security.api_key import APIKey
 
 from analysis.constants import ReportType
 from api.lib.geo import get_dataset
+from api.lib.validation import validate_content_type, validate_token
 from api.logger import log
 from api.settings import REDIS, REDIS_QUEUE, TEMP_DIR
-from api.lib.validation import validate_content_type, validate_token
 
 
 def save_file(file: UploadFile) -> Path:
@@ -103,13 +103,17 @@ async def custom_report_xlsx_finalize_endpoint(
     name: Optional[str] = Form(None),
     token: APIKey = Depends(validate_token),
 ):
-    filename = (TEMP_DIR / f"{uuid}.feather").resolve()
+    base_path = TEMP_DIR.resolve()
+    filename = (base_path / f"{uuid}.feather").resolve()
+
+    if not filename.is_relative_to(base_path):
+        raise HTTPException(status_code=400, detail="invalid uuid")
 
     # verify that file exists in temp directory, otherwise return 404;
     # should only happen if there is too much delay between submitting initial
     # task and this task
     if not filename.exists():
-        raise HTTPException(status_code=404, detail="Dataset not found")
+        raise HTTPException(status_code=404, detail="dataset not found")
 
     try:
         redis = await arq.create_pool(REDIS)

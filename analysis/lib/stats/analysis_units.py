@@ -167,12 +167,12 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
                 # store already urban in index 0, then 2030-2100 from index 1 onward
                 # area outside urban is stored in last value
                 urban_acres = np.zeros((len(URBAN_YEARS) + 2,))
-                for i, year in enumerate(URBAN_YEARS):
+                for year_index, year in enumerate(URBAN_YEARS):
                     urban_prob_acres = rasterized_geometry.get_acres_by_bin(
                         files[f"{URBAN_BY_DECADE['id']}_{year}"], URBAN_BINS
                     )
                     # total urbanization is sum of acres by probability bin * probability
-                    urban_acres[i + 1] = (urban_prob_acres * URBAN_PROBABILITIES).sum()
+                    urban_acres[year_index + 1] = (urban_prob_acres * URBAN_PROBABILITIES).sum()
 
                     if year == 2030:
                         urban_acres[0] = urban_prob_acres[51]
