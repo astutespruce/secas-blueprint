@@ -89,5 +89,5 @@ async def create_summary_unit_pdf_report(ctx, unit_type, unit_id):
     return {
         "local_filename": local_filename,
         "download_filename": download_filename,
-        "payload": f"/api/jobs/{ctx['job_id']}/pdf",
+        "payload": f"/jobs/{ctx['job_id']}/pdf",
     }, errors

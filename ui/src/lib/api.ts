@@ -69,7 +69,7 @@ export const finalizeXLSXReport = async (
 	formData.append('datasets', datasets)
 
 	const response = await fetch(
-		`${API_HOST}/custom_report/xlsx/${uuid}/finalize?token=${API_TOKEN}`,
+		`${API_HOST}/api/custom_report/xlsx/${uuid}/finalize?token=${API_TOKEN}`,
 		{
 			method: 'POST',
 			body: formData

@@ -149,5 +149,5 @@ async def create_custom_xlsx_report(
     return {
         "local_filename": local_filename,
         "download_filename": download_filename,
-        "payload": f"/api/jobs/{ctx['job_id']}/xlsx",
+        "payload": f"/jobs/{ctx['job_id']}/xlsx",
     }, []

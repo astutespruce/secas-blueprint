@@ -99,7 +99,7 @@
 				errors: jobErrors
 			}
 
-			window.location.href = `${API_HOST}${jobResult}` as string
+			window.location.href = `${API_HOST}/api${jobResult}` as string
 		} catch (ex) {
 			captureException(`Create summary report for ${id} (${type}) failed`, ex)
 			console.error('Caught unhandled error from createSummaryUnitReport', ex)
@@ -156,7 +156,7 @@
 			<Close onclick={handleClose} class="text-lg cursor-pointer">Cancel</Close>
 
 			{#if reportState.status === 'success'}
-				<Button href={`${API_HOST}${reportState.result}`} class="text-lg no-underline">
+				<Button href={`${API_HOST}/api${reportState.result}`} class="text-lg no-underline">
 					<DownloadIcon class="size-4" />
 					Download report
 				</Button>

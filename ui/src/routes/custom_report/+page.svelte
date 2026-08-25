@@ -103,7 +103,7 @@
 					result: uploadJobResult,
 					errors: uploadJobErrors // there may be non-fatal errors (e.g., errors rendering maps)
 				}
-				window.location.href = `${API_HOST}${uploadJobResult}` as string
+				window.location.href = `${API_HOST}/api${uploadJobResult}` as string
 			} else {
 				configData = {
 					name: areaName,
@@ -193,7 +193,7 @@
 				result: finalizeJobResult
 			}
 
-			window.location.href = `${API_HOST}${finalizeJobResult}` as string
+			window.location.href = `${API_HOST}/api${finalizeJobResult}` as string
 		} catch (ex) {
 			captureException('finalize XLSX report failed', ex)
 			console.error('Caught unhandled error from finalize XLSX report', ex)
@@ -262,7 +262,7 @@
 		<ConfigXLSXReport {...configData} onStartOver={handleReset} onSubmit={handleSubmitXLSXReport} />
 	{:else if reportState.view === 'done'}
 		<Done
-			reportURL={`${API_HOST}${reportState.result}`}
+			reportURL={`${API_HOST}/api${reportState.result}`}
 			errors={reportState.errors}
 			onReset={handleReset}
 			class="mt-8"

@@ -137,5 +137,5 @@ async def create_custom_pdf_report(ctx, zip_filename, dataset, layer, name=""):
     return {
         "local_filename": local_filename,
         "download_filename": download_filename,
-        "payload": f"/api/jobs/{ctx['job_id']}/pdf",
+        "payload": f"/jobs/{ctx['job_id']}/pdf",
     }, errors
