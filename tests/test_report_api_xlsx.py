@@ -150,6 +150,13 @@ async def test_finalize_xlsx_report_api_missing_token(client):
 
 @pytest.mark.anyio
 async def test_finalize_xlsx_report_api_invalid_uuid(client):
+    response = await client.post(f"/custom_report/xlsx/123*..foo/finalize?token={API_TOKEN}")
+    assert response.status_code == 400
+    assert response.json()["detail"] == "invalid uuid"
+
+
+@pytest.mark.anyio
+async def test_finalize_xlsx_report_api_uuid_not_found(client):
     response = await client.post(f"/custom_report/xlsx/123/finalize?token={API_TOKEN}")
     assert response.status_code == 404
-    assert response.json()["detail"] == "Dataset not found"
+    assert response.json()["detail"] == "dataset not found"
