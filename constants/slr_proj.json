@@ -2,7 +2,7 @@
 	"id": "slr_proj",
 	"filename": "threats/slr/noaa_1deg_cells.feather",
 	"label": "Projected sea-level rise",
-	"sheet_name": "Projected SLR",
+	"sheet_name": "SLR - ft of SLR by year",
 	"description": "Sea-level rise projections are derived from 1-degree grid cells that accompany the 2022 Sea Level Rise Technical Report by NOAA.  Sea-level rise scenarios correspond to a global sea level rise of between 1, 1.64, 3.2, 4.9, and 6.56 feet.  Grid cells included in these results are limited to those that overlap with areas where sea-level rise inundation depth were modeled by NOAA.",
 	"source": "National Oceanic and Atmospheric Administration",
 	"date": "2022",

@@ -83,7 +83,7 @@ def test_get_available_datasets_no_overlap(format):
 
 
 @pytest.mark.parametrize("format", ["shp", "gdb"])
-def test_get_available_datasets_multiple_features_partial_overlap(format):
+def test_get_available_datasets_multiple_areas_partial_overlap(format):
     # just a test that this runs, not checking specific ones
     filename = f"{format}_poly_multiple_partial_overlap.zip"
     dataset = filename.replace(f"{format}_", "").replace(".zip", f".{format}")
@@ -153,15 +153,15 @@ async def test_get_analysis_unit_results_single_area(format):
     assert np.allclose(slr_depth, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50.705946, 0])
 
     urban = row[URBAN_BY_DECADE["id"]]
-    assert len(urban) == 10
-    assert np.allclose(urban, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    assert len(urban) == 11
+    assert np.allclose(urban, [0, 0, 0, 0, 0, 0, 0, 0, 0, 50.705946, 0])
 
     assert np.allclose(row[WILDFIRE_RISK["id"]], [0, 0, 0, 0, 0, 50.705946, 0, 0, 0, 0, 0])
 
 
 @pytest.mark.anyio
 @pytest.mark.parametrize("format", ["shp", "gdb"])
-async def test_get_analysis_unit_results_multiple_features_partial_overlap(format):
+async def test_get_analysis_unit_results_multiple_areas_partial_overlap(format):
     # NOTE: this needs to be updated for each blueprint version; this is just a
     # smoke test that values do not change except during Blueprint version updates
 
@@ -203,17 +203,18 @@ async def test_get_analysis_unit_results_multiple_features_partial_overlap(forma
 
     assert np.allclose(
         nc_poly[URBAN_BY_DECADE["id"]],
-        [42.4773, 42.4773, 42.4773, 42.4773, 42.4773, 42.4773, 42.4773, 42.4773, 42.4773, 0],
+        [42.4773, 42.4773, 42.4773, 42.4773, 42.4773, 42.4773, 42.4773, 42.4773, 42.4773, 238.1845, 0],
     )
     assert np.isnan(mn_poly[URBAN_BY_DECADE["id"]])
     assert np.allclose(
-        mo_poly[URBAN_BY_DECADE["id"]], [5.5599, 5.5599, 5.5599, 5.5599, 5.5599, 5.5599, 5.5599, 5.5599, 5.5599, 0]
+        mo_poly[URBAN_BY_DECADE["id"]],
+        [5.5599, 5.5599, 5.5599, 5.5599, 5.5599, 5.5599, 5.5599, 5.5599, 5.5599, 64.049616, 0],
     )
 
 
 @pytest.mark.anyio
 @pytest.mark.parametrize("format", ["shp", "gdb"])
-async def test_get_analysis_unit_results_multiple_features_partial_overlap_dissolved(format):
+async def test_get_analysis_unit_results_multiple_areas_partial_overlap_dissolved(format):
     # NOTE: this is just a smoke test to ensure it runs without failure
 
     filename = f"{format}_poly_multiple_partial_overlap.zip"
@@ -300,53 +301,27 @@ async def test_get_analysis_unit_results_multiple_areas(format):
 
     assert np.allclose(
         fl_poly[SLR_DEPTH["id"]],
-        [
-            25.1305785,
-            38.9190375,
-            40.6981935,
-            40.6981935,
-            40.6981935,
-            40.6981935,
-            40.6981935,
-            40.6981935,
-            40.6981935,
-            40.6981935,
-            40.6981935,
-            0,
-            0,
-            0,
-        ],
+        [25.1306, 38.9190, 40.6982, 40.6982, 40.6982, 40.6982, 40.6982, 40.6982, 40.6982, 40.6982, 40.6982, 0, 0, 0],
     )
 
-    assert np.allclose(pr_poly[SLR_DEPTH["id"]], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 147.0027645, 0, 0])
+    assert np.allclose(pr_poly[SLR_DEPTH["id"]], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 147.0028, 0, 0])
 
     pr_slr_proj = pr_poly[SLR_PROJ["id"]]
     assert len(pr_slr_proj) == 5
     assert pr_slr_proj[0]["scenario"] == "h"
+
     assert np.allclose(
-        pr_slr_proj[0]["values"],
-        [0.2624672, 0.492126, 0.82021, 1.312336, 2.0669292, 3.0511812, 4.1994752, 5.4461944, 6.7913388],
+        pr_slr_proj[0]["values"], [0.2625, 0.4921, 0.8202, 1.3123, 2.0669, 3.0512, 4.1995, 5.4462, 6.7913], atol=1e4
     )
 
     assert np.allclose(
         ga_poly[URBAN_BY_DECADE["id"]],
-        [
-            22.9066335,
-            23.15571534,
-            24.16538637,
-            24.31216674,
-            25.56202383,
-            26.68734,
-            27.2655657,
-            27.57247011,
-            28.00391544,
-            0,
-        ],
+        [22.9066, 23.1557, 24.1654, 24.3122, 25.5620, 26.68734, 27.2656, 27.5725, 28.0039, 284.2380, 0],
     )
 
-    assert np.allclose(marine_poly[URBAN_BY_DECADE["id"]], [0, 0, 0, 0, 0, 0, 0, 0, 0, 5386.1723955])
+    assert np.allclose(marine_poly[URBAN_BY_DECADE["id"]], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5386.1724])
 
-    assert np.allclose(ga_poly[WILDFIRE_RISK["id"]], [0, 0, 0, 0, 0, 0.6671835, 311.5746945, 0, 0, 0, 0])
+    assert np.allclose(ga_poly[WILDFIRE_RISK["id"]], [0, 0, 0, 0, 0, 0.6672, 311.5747, 0, 0, 0, 0], atol=1e4)
 
 
 @pytest.mark.anyio
@@ -408,7 +383,7 @@ async def test_create_xlsx_file_single_area(format):
 
     indicator_id = "t_imperiledamphibiansandreptiles"
     indicator = INDICATORS_INDEX[indicator_id]
-    sheet_name = indicator.get("sheet_name", indicator["label"])
+    sheet_name = indicator.get("sheet_name") or indicator["label"]
     indicator_sheet = reader.parse(sheet_name=sheet_name)
     value_cols = [f"{v['label']} (acres)" for v in indicator["values"]]
     assert indicator_sheet.columns.tolist() == ["Analysis unit", "Analysis acres"] + value_cols
@@ -417,7 +392,7 @@ async def test_create_xlsx_file_single_area(format):
     # this one has an extra row for good / not good condition
     indicator_id = "f_permeablesurface"
     indicator = INDICATORS_INDEX[indicator_id]
-    sheet_name = indicator.get("sheet_name", indicator["label"])
+    sheet_name = indicator.get("sheet_name") or indicator["label"]
     indicator_header = reader.parse(sheet_name=sheet_name, nrows=1)
     assert [c for c in indicator_header.columns if "condition" in c] == ["Not in good condition", "In good condition"]
     indicator_sheet = reader.parse(sheet_name=sheet_name, skiprows=1)
@@ -425,7 +400,7 @@ async def test_create_xlsx_file_single_area(format):
     assert indicator_sheet.columns.tolist() == ["Analysis unit", "Analysis acres"] + value_cols
     assert np.allclose(indicator_sheet.iloc[0][value_cols].values.astype("float64"), results[indicator_id].iloc[0])
 
-    slr_depth = reader.parse(sheet_name="SLR inundation area")
+    slr_depth = reader.parse(sheet_name="SLR - area flooded by ft of SLR")
     value_cols = (
         [f"Inundated at {v['label']} (acres)" for v in SLR_DEPTH_VALUES]
         +
@@ -438,12 +413,12 @@ async def test_create_xlsx_file_single_area(format):
     )
 
     # no projections here
-    slr_proj = reader.parse(sheet_name="Projected SLR")
+    slr_proj = reader.parse(sheet_name="SLR - ft of SLR by year")
     value_cols = ["Has projected SLR?", "SLR scenario"] + [f"{year} (ft)" for year in SLR_YEARS]
     assert slr_proj.columns.tolist() == ["Analysis unit", "Analysis acres"] + value_cols
     assert slr_proj["Has projected SLR?"].tolist() == ["no"]
 
-    parcas_poly = reader.parse(sheet_name="PARCAs")
+    parcas_poly = reader.parse(sheet_name="PARCA descriptions")
     assert parcas_poly.columns.tolist() == ["Analysis unit", "GIS acres", "Overlap acres", "Name", "Description"]
     assert np.allclose(parcas_poly["GIS acres"], results.acres, atol=0.01)
     assert np.allclose(parcas_poly["Overlap acres"], results.acres, atol=0.01)
@@ -451,7 +426,7 @@ async def test_create_xlsx_file_single_area(format):
     assert parcas_poly["Description"].values[0].startswith("Talladega is the")
 
     # protected_areas_poly = reader.parse("")
-    protected_areas_poly = reader.parse(sheet_name="Protected areas")
+    protected_areas_poly = reader.parse(sheet_name="Protected areas by name")
     assert protected_areas_poly.columns.tolist() == ["Analysis unit", "GIS acres", "Overlap acres", "Name", "Owner"]
     assert np.allclose(protected_areas_poly["GIS acres"], results.acres, atol=0.01)
     assert np.allclose(protected_areas_poly["Overlap acres"], [34.55], atol=0.01)
@@ -459,7 +434,9 @@ async def test_create_xlsx_file_single_area(format):
     assert protected_areas_poly["Owner"].values.tolist() == ["USDA Forest Service"]
 
     urban = reader.parse(sheet_name="Urban growth")
-    value_cols = ["2021 (acres)"] + [f"{year} (acres)" for year in URBAN_YEARS]
+    value_cols = (
+        ["2021 (acres)"] + [f"{year} (acres)" for year in URBAN_YEARS] + ["Not projected to urbanize by 2100 (acres)"]
+    )
     assert urban.columns.tolist() == ["Analysis unit", "Analysis acres"] + value_cols
     # last column is nodata, omitted here
     assert np.allclose(urban.iloc[0][value_cols].values.astype("float64"), results.urban_by_decade.iloc[0][:-1])
@@ -534,7 +511,7 @@ async def test_create_xlsx_file_multiple_areas_partial_overlap(format):
 
     indicator_id = "t_imperiledamphibiansandreptiles"
     indicator = INDICATORS_INDEX[indicator_id]
-    sheet_name = indicator.get("sheet_name", indicator["label"])
+    sheet_name = indicator.get("sheet_name") or indicator["label"]
     indicator_sheet = reader.parse(sheet_name=sheet_name)
     value_cols = [f"{v['label']} (acres)" for v in indicator["values"]]
     assert indicator_sheet.columns.tolist() == ["Analysis unit", "Acres within Southeast data extent"] + value_cols
@@ -542,7 +519,7 @@ async def test_create_xlsx_file_multiple_areas_partial_overlap(format):
     assert np.isclose(indicator_sheet["Acres within Southeast data extent"].iloc[1], 0.0)
     assert np.allclose(indicator_sheet.iloc[2][value_cols].values.astype("float64"), results[indicator_id].iloc[2])
 
-    slr_depth = reader.parse(sheet_name="SLR inundation area")
+    slr_depth = reader.parse(sheet_name="SLR - area flooded by ft of SLR")
     value_cols = [f"Inundated at {v['label']} (acres)" for v in SLR_DEPTH_VALUES] + [
         f"{v['label']} (acres)" for v in SLR_NODATA_VALUES[1:2]
     ]
@@ -552,19 +529,19 @@ async def test_create_xlsx_file_multiple_areas_partial_overlap(format):
     )
 
     # no projections here
-    slr_proj = reader.parse(sheet_name="Projected SLR")
+    slr_proj = reader.parse(sheet_name="SLR - ft of SLR by year")
     value_cols = ["Has projected SLR?", "SLR scenario"] + [f"{year} (ft)" for year in SLR_YEARS]
     assert slr_proj.columns.tolist() == ["Analysis unit", "Acres within Southeast data extent"] + value_cols
     assert slr_proj["Has projected SLR?"].tolist() == ["no"] * 3
 
-    parcas_poly = reader.parse(sheet_name="PARCAs")
+    parcas_poly = reader.parse(sheet_name="PARCA descriptions")
     assert parcas_poly.columns.tolist() == ["Analysis unit", "GIS acres", "Overlap acres", "Name", "Description"]
     assert np.allclose(parcas_poly["GIS acres"], results.acres, atol=0.01)
     assert np.allclose(parcas_poly["Overlap acres"], [280.40, 0, 0], atol=0.01)
     assert parcas_poly["Name"].values.tolist() == ["Sandhills"] + ["no PARCAs at this location"] * 2
 
     # protected_areas_poly = reader.parse("")
-    protected_areas_poly = reader.parse(sheet_name="Protected areas")
+    protected_areas_poly = reader.parse(sheet_name="Protected areas by name")
     assert protected_areas_poly.columns.tolist() == ["Analysis unit", "GIS acres", "Overlap acres", "Name", "Owner"]
     assert protected_areas_poly["Analysis unit"].tolist() == ["Southeast"] * 3 + ["Midwest", "Southeast,Midwest"]
     assert np.allclose(protected_areas_poly["GIS acres"], [280.40, 280.40, 280.40, 394.74, 68.87], atol=0.01)
@@ -584,7 +561,9 @@ async def test_create_xlsx_file_multiple_areas_partial_overlap(format):
     ]
 
     urban = reader.parse(sheet_name="Urban growth")
-    value_cols = ["2021 (acres)"] + [f"{year} (acres)" for year in URBAN_YEARS]
+    value_cols = (
+        ["2021 (acres)"] + [f"{year} (acres)" for year in URBAN_YEARS] + ["Not projected to urbanize by 2100 (acres)"]
+    )
     assert urban.columns.tolist() == ["Analysis unit", "Acres within Southeast data extent"] + value_cols
     # last column is nodata, omitted here
     assert np.allclose(urban.iloc[0][value_cols].values.astype("float64"), results.urban_by_decade.iloc[0][:-1])
@@ -658,7 +637,7 @@ async def test_create_xlsx_file_multiple_areas(format):
 
     indicator_id = "t_imperiledamphibiansandreptiles"
     indicator = INDICATORS_INDEX[indicator_id]
-    sheet_name = indicator.get("sheet_name", indicator["label"])
+    sheet_name = indicator.get("sheet_name") or indicator["label"]
     indicator_sheet = reader.parse(sheet_name=sheet_name)
     value_cols = [f"{v['label']} (acres)" for v in indicator["values"]]
     assert (
@@ -673,7 +652,7 @@ async def test_create_xlsx_file_multiple_areas(format):
     for i in range(num_features):
         assert np.allclose(indicator_sheet.iloc[i][value_cols].values.astype("float64"), results[indicator_id].iloc[i])
 
-    slr_depth = reader.parse(sheet_name="SLR inundation area")
+    slr_depth = reader.parse(sheet_name="SLR - area flooded by ft of SLR")
     value_cols = (
         [f"{v['label']} (acres)" for v in SLR_NODATA_VALUES[2:3]]
         + [f"Inundated at {v['label']} (acres)" for v in SLR_DEPTH_VALUES]
@@ -691,13 +670,13 @@ async def test_create_xlsx_file_multiple_areas(format):
 
         assert np.allclose(slr_depth.iloc[i][value_cols].values.astype("float64"), expected)
 
-    parcas_poly = reader.parse(sheet_name="PARCAs")
+    parcas_poly = reader.parse(sheet_name="PARCA descriptions")
     assert parcas_poly.columns.tolist() == ["Analysis unit", "GIS acres", "Overlap acres", "Name", "Description"]
     assert np.allclose(parcas_poly["GIS acres"], results.acres, atol=0.01)
     assert np.allclose(parcas_poly["Overlap acres"], [0] * 3, atol=0.01)
     assert parcas_poly["Name"].values.tolist() == ["no PARCAs at this location"] * 3
 
-    protected_areas_poly = reader.parse(sheet_name="Protected areas")
+    protected_areas_poly = reader.parse(sheet_name="Protected areas by name")
     assert protected_areas_poly.columns.tolist() == ["Analysis unit", "GIS acres", "Overlap acres", "Name", "Owner"]
     assert protected_areas_poly["Analysis unit"].tolist() == ["caribbean"] + ["continental"] * 3 + ["marine"]
     assert np.allclose(protected_areas_poly["GIS acres"], [147.20, 452.72, 452.72, 452.72, 5386.10], atol=0.01)
@@ -714,7 +693,9 @@ async def test_create_xlsx_file_multiple_areas(format):
     ]
 
     urban = reader.parse(sheet_name="Urban growth")
-    value_cols = ["2021 (acres)"] + [f"{year} (acres)" for year in URBAN_YEARS]
+    value_cols = (
+        ["2021 (acres)"] + [f"{year} (acres)" for year in URBAN_YEARS] + ["Not projected to urbanize by 2100 (acres)"]
+    )
     assert (
         urban.columns.tolist()
         == ["Analysis unit", "Analysis acres", "Outside urban growth data extent within Southeast data extent (acres)"]

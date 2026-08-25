@@ -14,13 +14,7 @@ from rasterio.features import rasterize
 from analysis.constants import BLUEPRINT, CORRIDORS, MASK_RESOLUTION
 from analysis.lib.colors import hex_to_uint8
 from analysis.lib.geometry import dissolve, to_dict
-from analysis.lib.raster import (
-    add_overviews,
-    create_lowres_mask,
-    shift_window,
-    unique,
-    write_raster,
-)
+from analysis.lib.raster import add_overviews, create_lowres_mask, shift_window, unique, write_raster
 
 NODATA = 255  # standardize NODATA of all indicators
 INDICATOR_GROUP_COLORS = {
@@ -211,6 +205,7 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
     ).rename(
         columns={
             "Indicator": "label",
+            "Abbreviated Layer Name for Excel (31 character limit)": "sheet_name",
             "Legend Subheader": "valueLabel",
             "Abbreviated indicator values": "valueLabels",
             'Blueprint Explorer "Good" threshold': "goodThreshold",
@@ -232,6 +227,12 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
 
     indicator_group_id = sheet_name.lower().split(" ")[-1][:1]
     df["id"] = indicator_group_id + "_" + key.str.lower()
+
+    df["sheet_name"] = df.sheet_name.fillna("").str.strip().replace("N/A", "")
+    ix = df.sheet_name.apply(len) > 31
+    if ix.any():
+        print(df.loc[ix, ["label", "sheet_name"]])
+        raise ValueError("Sheet name must be <= 31 chars, see failures above")
 
     indicator_groups.append(
         {
@@ -255,6 +256,8 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
         raise ValueError(f"Unable to find files for {', '.join(missing)}")
 
     # extract first value as integer; this is the threshold, set the rest to None
+    # NOTE: have to set as object type to allow splicing in int values below
+    df["goodThreshold"] = df.goodThreshold.astype("object")
     df.loc[df.goodThreshold.str.lower().str.contains("no"), "goodThreshold"] = None
     ix = df.goodThreshold.notnull()
     df.loc[ix, "goodThreshold"] = df.loc[ix].goodThreshold.str.extract(r"(\d)").astype("uint8").values[:, 0]
@@ -306,6 +309,7 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
             "id",
             "filename",
             "label",
+            "sheet_name",
             "description",
             "valueLabels",
             "values",
@@ -521,4 +525,5 @@ extent.close()
 
 
 with open(constants_dir / "indicators.json", "w") as out:
-    indicator_df.to_json(out, orient="records", indent=2, force_ascii=False)
+    content = indicator_df.to_json(orient="records", indent=2, force_ascii=False).replace(r"\/", "/")
+    _ = out.write(content)

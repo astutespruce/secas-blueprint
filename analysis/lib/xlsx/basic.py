@@ -21,7 +21,7 @@ def add_basic_results_sheet(
     area_label : str
         name of analysis area acres column
     """
-    sheet_name = dataset.get("sheet_name", dataset["label"])
+    sheet_name = dataset.get("sheet_name", None) or dataset["label"]
     values = dataset["values"]
     nodata_label = dataset.get(
         "nodata_label",

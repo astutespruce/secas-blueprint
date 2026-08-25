@@ -1,3 +1,4 @@
+import re
 import shutil
 import tempfile
 from pathlib import Path
@@ -103,6 +104,9 @@ async def custom_report_xlsx_finalize_endpoint(
     name: Optional[str] = Form(None),
     token: APIKey = Depends(validate_token),
 ):
+    if not re.fullmatch(r"[A-Za-z0-9_-]+", uuid):
+        raise HTTPException(status_code=400, detail="invalid uuid")
+
     base_path = TEMP_DIR.resolve()
     filename = (base_path / f"{uuid}.feather").resolve()
 

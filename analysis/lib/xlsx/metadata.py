@@ -33,7 +33,7 @@ def add_data_details_sheet(xlsx: pd.ExcelWriter, datasets: set[str]):
     # Keep original order so it matches sheets
     metadata = pd.DataFrame([dataset for dataset in REPORT_DATASETS.values() if dataset["id"] in datasets])
     if "sheet_name" in metadata.columns:
-        ix = metadata.sheet_name.isnull()
+        ix = metadata.sheet_name.isnull() | (metadata.sheet_name == "")
         metadata.loc[ix, "sheet_name"] = metadata.loc[ix].label
     else:
         metadata["sheet_name"] = metadata.label

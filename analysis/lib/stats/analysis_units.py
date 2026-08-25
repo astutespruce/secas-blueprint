@@ -165,8 +165,9 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
             #     # Extract urban
             if URBAN_BY_DECADE["id"] in datasets:
                 # store already urban in index 0, then 2030-2100 from index 1 onward
+                # not urban by 2100 stored in next to last value
                 # area outside urban is stored in last value
-                urban_acres = np.zeros((len(URBAN_YEARS) + 2,))
+                urban_acres = np.zeros((len(URBAN_YEARS) + 3,))
                 for year_index, year in enumerate(URBAN_YEARS):
                     urban_prob_acres = rasterized_geometry.get_acres_by_bin(
                         files[f"{URBAN_BY_DECADE['id']}_{year}"], URBAN_BINS
@@ -184,6 +185,12 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
                             - rasterized_geometry.outside_extent_acres
                             - urban_prob_acres.sum()
                         )
+
+                        noturban_2100 = urban_prob_acres.sum() - urban_acres[year_index + 1]
+                        if noturban_2100 < 1e-6:
+                            noturban_2100 = 0.0
+                        urban_acres[-2] = noturban_2100
+
                         if urban_nodata < 1e-6:
                             urban_nodata = 0.0
                         urban_acres[-1] = urban_nodata

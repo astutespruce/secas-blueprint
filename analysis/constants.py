@@ -187,7 +187,8 @@ WILDFIRE_RISK_BINS = [
 ]
 
 
-# this matches the overall order of filters
+# this follows a consistent ordering but does not match the frontend due to different
+# sheet names
 REPORT_DATASETS = {
     dataset["id"]: dataset
     for dataset in [
@@ -196,13 +197,13 @@ REPORT_DATASETS = {
     ]
     + INDICATORS
     + [
-        SLR_DEPTH,
-        SLR_PROJ,  # NOTE: not present in filters
         PARCAS,
         PARCAS_POLY,
-        URBAN_BY_DECADE,  # NOTE: filter is just urban 2060
         PROTECTED_AREAS,
         PROTECTED_AREAS_POLY,
+        SLR_DEPTH,
+        SLR_PROJ,  # NOTE: not present in filters
+        URBAN_BY_DECADE,  # NOTE: filter is just urban 2060
         WILDFIRE_RISK,
     ]
 }

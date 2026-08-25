@@ -13,6 +13,7 @@ import slrDepth from '$constants/slr_depth.json'
 import slrProj from '$constants/slr_proj.json'
 import subregions from '$constants/subregions.json'
 import urban from '$constants/urban.json'
+import urbanByDecade from '$constants/urban_by_decade.json'
 import wildfireRisk from '$constants/wildfire_risk.json'
 
 // import pixel layers
@@ -40,6 +41,7 @@ export {
 	slrProj,
 	subregions,
 	urban,
+	urbanByDecade,
 	wildfireRisk,
 	pixelLayers0,
 	pixelLayers1,

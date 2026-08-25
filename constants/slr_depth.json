@@ -2,7 +2,7 @@
 	"id": "slr_depth",
 	"filename": "threats/slr/slr.tif",
 	"label": "Flooding extent by projected sea-level rise",
-	"sheet_name": "SLR inundation area",
+	"sheet_name": "SLR - area flooded by ft of SLR",
 	"description": "Sea level rise estimates derived from the NOAA sea-level rise inundation data.  Sea-level rise polygons rasterized to 30m pixels aligned with the Blueprint and clipped to Southeastern states; polygons and holes within polygons smaller than 1/2 pixel were dropped.  Additional areas characterizing the sea-level rise modeling extent were obtained separately from NOAA and used to define areas where data are unavailable, areas where sea-level rise is unlikely to be a threat (inland counties), and areas not projected to be inundated by up to 10ft sea-level rise.",
 	"source": "National Oceanic and Atmospheric Administration",
 	"date": "2023",

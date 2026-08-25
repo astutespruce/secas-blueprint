@@ -13,7 +13,7 @@
 		corridors,
 		indicatorGroups,
 		indicatorsIndex,
-		urban,
+		urbanByDecade,
 		slrDepth,
 		slrProj,
 		wildfireRisk,
@@ -29,7 +29,7 @@
 	const priorityDatasets = [blueprint, corridors]
 	// polygon versions of PARCAs and protected areas are automatically included
 	// when their raster versions are included and not itemized individually
-	const otherInfoDatasets = [slrDepth, slrProj, parcas, urban, protectedAreas, wildfireRisk]
+	const otherInfoDatasets = [parcas, protectedAreas, slrDepth, slrProj, urbanByDecade, wildfireRisk]
 
 	const indicatorGroupIcons = {
 		f: FreshwaterIcon,
@@ -88,7 +88,6 @@
 				label: 'More info',
 				color: '#f3c6a830',
 				borderColor: '#f3c6a891',
-				// @ts-expect-error otherInfoDatsetsPresent is OK
 				datasets: otherInfoDatasetsPresent
 			})
 		}
