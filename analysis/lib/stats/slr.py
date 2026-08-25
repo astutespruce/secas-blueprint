@@ -235,6 +235,11 @@ def extract_slr_proj_in_analysis_areas(df: gp.GeoDataFrame) -> pd.DataFrame:
         projections.set_index("scenario", append=True).pivot(columns=["year"], values=["value"]).reset_index(-1)
     )
     projections.columns = ["scenario"] + projections.columns.get_level_values(-1)[1:].astype("int64").to_list()
+
+    # sort by same order as SLR_PROJ_SCENARIOS
+    projections["sort_order"] = projections.scenario.map({k: i for i, k in enumerate(SLR_PROJ_SCENARIOS)})
+    projections = projections.sort_values(by="sort_order")
+
     # transform in to dict of list of year values
     projections["values"] = projections[SLR_YEARS].apply(list, axis=1)
     projections[out_name] = projections[["scenario", "values"]].to_dict(orient="records")

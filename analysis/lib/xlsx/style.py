@@ -110,8 +110,11 @@ def set_column_widths(ws, widths):
         ws.column_dimensions[letter].width = width
 
 
-def add_good_condition_row(ws, values_start_col, values_end_col, good_condition_col):
+def add_good_condition_row(ws, values_start_col, values_end_col, break_col):
     """Add header row with merged cells for not in good condition / in good condition
+
+    Good conditions are only defined for indicators, which always have columns
+    ordered greatest to least (good condition on the left.
 
     Parameters
     ----------
@@ -120,22 +123,22 @@ def add_good_condition_row(ws, values_start_col, values_end_col, good_condition_
         values start column index, 0-based
     values_end_col : int
         values end column index, 0-based
-    good_condition_col : int
-        good condition column index, 0-based
+    break_col : int
+        the column index of the first value after the break between good and not good condition, 0-based
     """
     ws.insert_rows(idx=1)
 
     start_col = get_column_letter(values_start_col + 1)
-    end_col = get_column_letter(values_start_col + good_condition_col)
+    end_col = get_column_letter(values_start_col + break_col)
     cell = ws[f"{start_col}1"]
-    cell.value = "Not in good condition"
+    cell.value = "In good condition"
     cell.style = good_condition_header_style
     ws.merge_cells(f"{start_col}1:{end_col}1")
 
-    start_col = get_column_letter(values_start_col + good_condition_col + 1)
+    start_col = get_column_letter(values_start_col + break_col + 1)
     end_col = get_column_letter(values_end_col)
     cell = ws[f"{start_col}1"]
-    cell.value = "In good condition"
+    cell.value = "Not in good condition"
     cell.style = good_condition_header_style
     ws.merge_cells(f"{start_col}1:{end_col}1")
 

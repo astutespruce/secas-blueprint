@@ -345,8 +345,6 @@
 				loading="lazy"
 			/>
 		</div>
-	{:else}
-		TODO: screenshots of XLSX file
+		<p class="mt-2 text-lg">...and much more!</p>
 	{/if}
-	<p class="mt-2 text-lg">...and much more!</p>
 </div>

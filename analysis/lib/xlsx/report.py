@@ -28,6 +28,12 @@ from analysis.lib.xlsx.urban import add_urbanization_sheet
 
 basic_datasets = {d["id"] for d in [BLUEPRINT, CORRIDORS] + INDICATORS + [PARCAS, PROTECTED_AREAS, WILDFIRE_RISK]}
 
+# values in spreadsheet are least to greated by default; this provides custom
+# ordering
+get_value_order = {d["id"]: lambda x: x[::-1] for d in [BLUEPRINT] + INDICATORS}
+# corrdiors: move value 0 to end
+get_value_order[CORRIDORS["id"]] = lambda x: [x[1], x[2], x[0]]
+
 
 def create_report(df: pd.DataFrame, datasets: set[str], name: str | None = None):
     df.index.name = "Analysis unit"
@@ -57,7 +63,9 @@ def create_report(df: pd.DataFrame, datasets: set[str], name: str | None = None)
             # Blueprint, corridors, indicators sheets, PARCAs (presence),
             # protected areas (presence), wildfire risk
             if dataset_id in basic_datasets:
-                add_basic_results_sheet(xlsx, df, dataset, name_col_width, area_label)
+                add_basic_results_sheet(
+                    xlsx, df, dataset, name_col_width, area_label, get_value_order=get_value_order.get(dataset_id, None)
+                )
 
             elif dataset_id == PARCAS_POLY["id"]:
                 add_parcas_poly_sheet(xlsx, df, name_col_width, area_col_width)
