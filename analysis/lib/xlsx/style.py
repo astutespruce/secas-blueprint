@@ -11,7 +11,7 @@ from openpyxl.styles import (
 from openpyxl.utils.cell import get_column_letter
 
 # Guess at how many characters fit into a column width measurement
-CHAR_PER_WIDTH_UNIT = 1.7
+CHAR_PER_WIDTH_UNIT = 1.2
 
 ### Create named styles for formatting cells
 font_bold = Font(bold=True)
