@@ -18,10 +18,10 @@ from analysis.constants import (
     URBAN_BY_DECADE,
     WILDFIRE_RISK,
 )
-from analysis.lib.xlsx.style import set_cell_styles, set_column_widths
+from analysis.lib.xlsx.style import add_caption, set_cell_styles, set_column_widths
 
 
-def add_data_details_sheet(xlsx: pd.ExcelWriter, datasets: set[str]):
+def add_data_details_sheet(xlsx: pd.ExcelWriter, datasets: set[str], table_counter: int):
     """Create dataset details sheet.
 
     Parameters
@@ -88,8 +88,10 @@ def add_data_details_sheet(xlsx: pd.ExcelWriter, datasets: set[str]):
         cell.hyperlink = cell.value
         cell.font = Font(color=Color(index=4))
 
+    add_caption(ws, table_counter, "Details for datasets included in this analysis.")
 
-def add_metadata_sheet(xlsx: pd.ExcelWriter, name: str | None = None):
+
+def add_metadata_sheet(xlsx: pd.ExcelWriter, table_counter: int, name: str | None = None):
     """Add metadata sheet with analysis date and name, if applicable.
 
     Parameters
@@ -97,6 +99,7 @@ def add_metadata_sheet(xlsx: pd.ExcelWriter, name: str | None = None):
     xlsx : pd.ExcelWriter
     url : str
         URL to tool
+    table_counter : int
     name : str | None, optional (default None)
         Analysis area name, if any
     """
@@ -116,3 +119,5 @@ def add_metadata_sheet(xlsx: pd.ExcelWriter, name: str | None = None):
     ws = xlsx.sheets["Analysis metadata"]
 
     set_column_widths(ws, [24, 48])
+
+    add_caption(ws, table_counter, "Metadata for this analysis.")

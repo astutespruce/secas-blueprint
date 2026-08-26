@@ -1,7 +1,7 @@
 import pandas as pd
 
 from analysis.constants import ANALYSIS_REGION_NAME
-from analysis.lib.xlsx.style import CHAR_PER_WIDTH_UNIT, set_cell_styles, set_column_widths
+from analysis.lib.xlsx.style import CHAR_PER_WIDTH_UNIT, add_caption, set_cell_styles, set_column_widths
 
 
 def add_summary_sheet(
@@ -11,6 +11,7 @@ def add_summary_sheet(
     area_col_width: float,
     area_label: str,
     has_area_outside_region: bool,
+    table_counter: int,
 ):
     """Create summary sheet for XLSX report, with the area and other summary
     statistics for each analysis unit.
@@ -59,3 +60,5 @@ def add_summary_sheet(
     ws = xlsx.sheets[sheet_name]
     set_cell_styles(ws, area_columns=area_columns)
     set_column_widths(ws, col_widths)
+
+    add_caption(ws, table_counter, "Summary of analysis units included in this analysis.")

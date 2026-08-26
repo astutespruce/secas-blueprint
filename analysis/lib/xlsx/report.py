@@ -48,15 +48,17 @@ def create_report(df: pd.DataFrame, datasets: set[str], name: str | None = None)
     area_label = f"Acres within {ANALYSIS_REGION_NAME} data extent" if has_area_outside_region else "Analysis acres"
 
     ### Create XLSX file and write to memory buffer
+    table_counter = 1
     buffer = BytesIO()
     with pd.ExcelWriter(buffer) as xlsx:
         # Data details sheet
-        add_data_details_sheet(xlsx, datasets)
+        add_data_details_sheet(xlsx, datasets, table_counter)
+        table_counter += 1
 
         # Summary sheet
-        add_summary_sheet(xlsx, df, name_col_width, area_col_width, area_label, has_area_outside_region)
+        add_summary_sheet(xlsx, df, name_col_width, area_col_width, area_label, has_area_outside_region, table_counter)
+        table_counter += 1
 
-        table_counter = 1
         for dataset_id, dataset in REPORT_DATASETS.items():
             if dataset_id not in datasets:
                 continue
@@ -96,7 +98,7 @@ def create_report(df: pd.DataFrame, datasets: set[str], name: str | None = None)
             table_counter += 1
 
         # Analysis metadata sheet
-        add_metadata_sheet(xlsx, name)
+        add_metadata_sheet(xlsx, table_counter, name)
 
     # rewind buffer and read data
     buffer.seek(0)

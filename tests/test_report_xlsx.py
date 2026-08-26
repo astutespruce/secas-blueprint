@@ -371,7 +371,7 @@ async def test_create_xlsx_file_single_area(format):
     reader = pd.ExcelFile(BytesIO(xlsx))
 
     assert len(reader.sheet_names) == len(datasets) + 3
-    summary = reader.parse(sheet_name="Summary")
+    summary = reader.parse(sheet_name="Summary", skiprows=2)
     assert len(summary) == len(df)
 
     assert np.allclose(summary["GIS acres"], results.acres)
@@ -380,16 +380,16 @@ async def test_create_xlsx_file_single_area(format):
     assert np.allclose(summary["Number of distinct areas in analysis unit"], results["count"])
     assert summary["State(s)"].tolist() == results.states.tolist()
 
-    details = reader.parse(sheet_name="Data details")
+    details = reader.parse(sheet_name="Data details", skiprows=2)
     assert len(details) == len(datasets)
     assert details["Name"].tolist() == [d["label"] for id, d in REPORT_DATASETS.items() if id in datasets]
 
-    metadata = reader.parse(sheet_name="Analysis metadata", header=None)
+    metadata = reader.parse(sheet_name="Analysis metadata", header=None, skiprows=2)
     assert len(metadata) == 3
     assert metadata[1][0] == "Test area"
 
     header = reader.parse(sheet_name="Blueprint priority", nrows=1)
-    assert header.columns[0] == f"Table 1: {BLUEPRINT['caption']}."
+    assert header.columns[0] == f"Table 3: {BLUEPRINT['caption']}."
 
     blueprint = reader.parse(sheet_name="Blueprint priority", skiprows=2)
     assert blueprint.columns.tolist() == ["Analysis unit", "Analysis acres"] + blueprint_value_cols[::-1]
@@ -497,7 +497,7 @@ async def test_create_xlsx_file_multiple_areas_partial_overlap(format):
     reader = pd.ExcelFile(BytesIO(xlsx))
 
     assert len(reader.sheet_names) == len(datasets) + 3
-    summary = reader.parse(sheet_name="Summary")
+    summary = reader.parse(sheet_name="Summary", skiprows=2)
     assert len(summary) == len(df)
 
     assert np.allclose(summary["GIS acres"], results.acres)
@@ -510,11 +510,11 @@ async def test_create_xlsx_file_multiple_areas_partial_overlap(format):
     assert np.allclose(summary["Number of distinct areas in analysis unit"], results["count"])
     assert summary["State(s)"].tolist() == results.states.tolist()
 
-    details = reader.parse(sheet_name="Data details")
+    details = reader.parse(sheet_name="Data details", skiprows=2)
     assert len(details) == len(datasets)
     assert details["Name"].tolist() == [d["label"] for id, d in REPORT_DATASETS.items() if id in datasets]
 
-    metadata = reader.parse(sheet_name="Analysis metadata", header=None)
+    metadata = reader.parse(sheet_name="Analysis metadata", header=None, skiprows=2)
     assert len(metadata) == 3
     assert metadata[1][0] == "Test area"
 
@@ -640,7 +640,7 @@ async def test_create_xlsx_file_multiple_areas(format):
     reader = pd.ExcelFile(BytesIO(xlsx))
 
     assert len(reader.sheet_names) == len(datasets) + 3
-    summary = reader.parse(sheet_name="Summary")
+    summary = reader.parse(sheet_name="Summary", skiprows=2)
     assert len(summary) == len(df)
     assert np.allclose(summary["GIS acres"], results.acres)
     assert np.allclose(summary["Analysis acres (rasterized to 30m pixels)"], results.rasterized_acres)
@@ -648,11 +648,11 @@ async def test_create_xlsx_file_multiple_areas(format):
     assert np.allclose(summary["Number of distinct areas in analysis unit"], results["count"])
     assert summary["State(s)"].tolist() == results.states.tolist()
 
-    details = reader.parse(sheet_name="Data details")
+    details = reader.parse(sheet_name="Data details", skiprows=2)
     assert len(details) == len(datasets)
     assert details["Name"].tolist() == [d["label"] for id, d in REPORT_DATASETS.items() if id in datasets]
 
-    metadata = reader.parse(sheet_name="Analysis metadata", header=None)
+    metadata = reader.parse(sheet_name="Analysis metadata", header=None, skiprows=2)
     assert len(metadata) == 3
     assert metadata[1][0] == "Test area"
 

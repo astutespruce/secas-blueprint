@@ -329,7 +329,6 @@ async def test_create_pdf_single_area(format):
     for group in results.get("indicator_groups", []):
         indicators.extend([i["id"] for i in group["indicators"]])
 
-    geo_df = df.to_crs(GEO_CRS)
     maps, scale, map_errors = await render_maps(
         geo_df.total_bounds,
         geometry=geo_df.geometry.values[0],
