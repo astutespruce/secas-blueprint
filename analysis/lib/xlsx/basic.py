@@ -49,13 +49,13 @@ def add_basic_results_sheet(
     if dataset["id"] in INDICATORS_INDEX:
         good_threshold = dataset.get("goodThreshold", None)
         if good_threshold:
-            caption += "\nGood condition thresholds reflect the range of indicator values that occur in healthy, functioning ecosystems."
+            caption += "  Good condition thresholds reflect the range of indicator values that occur in healthy, functioning ecosystems."
         else:
-            caption += "\nA good condition threshold is not yet defined for this indicator."
+            caption += "  A good condition threshold is not yet defined for this indicator."
 
     value_label = dataset.get("valueLabel", None)
     if value_label:
-        caption += f"\nValues show {value_label[0].lower()}{value_label[1:]}."
+        caption += f"  Values show {value_label[0].lower()}{value_label[1:]}."
 
     nodata_label = dataset.get(
         "nodata_label",
