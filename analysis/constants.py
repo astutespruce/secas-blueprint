@@ -75,6 +75,7 @@ INDICATOR_GROUPS = read_json("indicator_groups.json")
 raw_indicators = read_json("indicators.json")
 for indicator in raw_indicators:
     indicator["filename"] = f"indicators/{indicator['filename']}"
+    indicator["caption"] = f"Indicator values for {indicator['captionLabel']}"
 
 raw_indicators_index = {indicator["id"]: indicator for indicator in raw_indicators}
 # order by indicator group to match order used elsewhere

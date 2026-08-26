@@ -65,9 +65,9 @@
 
     <section class="break-before">
 
-    {% with number=table.counter,label="Extent of hubs and corridors" %}
-        {% include "elements/table_caption.html" %}
-    {% endwith %}
+    <div class="caption">
+        Table {{table.counter}}: {{captions.corridors}}{% if name %} within {{name}}{% else %} in this area{% endif %}.
+    </div>
     {% set table.counter=table.counter+1 %}
 
     <table class="centered">

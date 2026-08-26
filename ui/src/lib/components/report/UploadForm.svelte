@@ -26,7 +26,8 @@
 	let isDragValid: boolean | null = $state(null)
 	const schema = z.object({
 		areaName: z.string().default('').optional(),
-		reportType: z.enum(['pdf', 'xlsx']),
+		reportType: z.enum(['simple', 'advanced']).default('simple'),
+		advancedReportFormat: z.enum(['pdf', 'xlsx']).default('xlsx'),
 		file: z
 			.instanceof(File, {
 				error: 'Please select a file'
@@ -41,14 +42,15 @@
 		onUpdate: function ({ form }) {
 			const {
 				valid,
-				data: { areaName = '', file, reportType }
+				data: { areaName = '', file, reportType, advancedReportFormat }
 			} = form
 
 			if (!valid) {
 				return
 			}
 
-			onSubmit(reportType, areaName, file)
+			const reportFormat = reportType === 'advanced' ? advancedReportFormat : 'pdf'
+			onSubmit(reportFormat, areaName, file)
 		}
 	})
 
@@ -133,162 +135,196 @@
 <div class="container text-lg pt-6 pb-16 leading-snug">
 	<p>
 		Upload a zipped shapefile or ESRI File Geodatabase Feature Class containing your area of
-		interest to generate a detailed PDF or XLSX report of the Blueprint, underlying indicators, and
-		other contextual information for your area of interest. The PDF report includes a map and
-		summary table for every indicator present in the area, as well as additional information about
-		urbanization and sea-level rise. The XLSX report includes detailed statistics for each of the
-		analysis units in your area of interest dataset, for all datasets that you choose to include in
-		your analysis.
+		interest to generate a detailed report of the Blueprint, underlying indicators, and other
+		contextual information for your area of interest.
 	</p>
 
-	<hr />
+	<form enctype="multipart/form-data" use:enhance class="mt-8">
+		<div class="grid sm:grid-cols-2 gap-16">
+			<div>
+				<Field {form} name="areaName">
+					<Control>
+						{#snippet children({ props })}
+							<Label for="areaName" class="text-2xl font-bold">Area Name (optional):</Label>
+							<Input {...props} bind:value={$formData.areaName} class="mt-2" />
+						{/snippet}
+					</Control>
+				</Field>
 
-	<form enctype="multipart/form-data" use:enhance class="grid sm:grid-cols-2 gap-16">
-		<div>
-			<Field {form} name="areaName">
-				<Control>
-					{#snippet children({ props })}
-						<Label for="areaName" class="text-2xl font-bold">Area Name (optional):</Label>
-						<Input {...props} bind:value={$formData.areaName} class="mt-2" />
-					{/snippet}
-				</Control>
-			</Field>
-
-			<Field {form} name="file" class="mt-6">
-				<Control>
-					{#snippet children({ props })}
-						<Label
-							for="file"
-							class="block"
-							ondragover={handleDragOver}
-							ondrop={handleDrop}
-							ondragleave={handleDragOut}
-						>
-							<div class="text-2xl font-bold">Area of Interest:</div>
-							<Input
-								type="file"
-								{...props}
-								id="file"
-								bind:files={$fileHandle}
-								accept={[...MIME_TYPES].join(',')}
-								multiple={false}
-								class="mt-2 hidden"
-							/>
-							<div
-								class={cn(
-									'border-2 border-grey-8/50 rounded-lg bg-grey-1/40 border-dashed p-6 flex flex-col justify-center cursor-pointer mt-2',
-									{
-										'border-error': isDragValid === false || $errors.file,
-										'bg-error/10': isDragValid === false || $errors.file,
-										'cursor-not-allowed': isDragValid === false,
-										'border-ok': isDragValid === true,
-										'bg-ok/10': isDragValid === true,
-										hidden: isFileValid
-									}
-								)}
-								onclick={handleDropZoneClick}
-								onkeydown={handleDropZoneKeyDown}
-								role="button"
-								aria-label="Click to browse for files or drop file over this area"
-								tabindex={0}
+				<Field {form} name="file" class="mt-6">
+					<Control>
+						{#snippet children({ props })}
+							<Label
+								for="file"
+								class="block"
+								ondragover={handleDragOver}
+								ondrop={handleDrop}
+								ondragleave={handleDragOut}
 							>
-								<div class="flex gap-2 items-center">
-									<ZipFileIcon class="size-6 flex-none" aria-hidden="true" />
-									<div class="text-2xl font-bold">Drop your zip file here</div>
-								</div>
-
-								<p class="text-base text-grey-8 leading-tight mt-4">
-									Your zip file must contain all associated files for a shapefile (at least .shp,
-									.prj, .shx) or file geodatabase (.gdb).
-									<br />
-									<br />
-									Max size: {MAXSIZE_MB} MB.
-								</p>
-							</div>
-
-							{#if isFileValid}
-								<div class="text-lg">
-									Selected: {$formData.file.name}
-								</div>
-							{/if}
-						</Label>
-
-						{#if $errors.file}
-							<div class="flex items-center gap-2 text-accent ml-2 mt-4 mb-8">
-								<ExclamationTriangle width="1em" height="1em" />
-								{$errors.file}
-							</div>
-						{/if}
-					{/snippet}
-				</Control>
-
-				{#if isFileValid}
-					<div class="flex justify-center mt-8">
-						<Button onclick={handleResetFile} variant="destructive" class="text-base"
-							>Choose a different file</Button
-						>
-					</div>
-				{:else}
-					<p class="text-sm text-grey-8 mx-4">
-						Note: your files must be in a zip file, and can include only one shapefile or Feature
-						Class, and should represent a relatively small area. For help analyzing larger areas,
-						please <ContactDialog>
-							<span class="text-link hover:underline cursor-pointer"> contact us</span>
-						</ContactDialog>.
-					</p>
-				{/if}
-			</Field>
-		</div>
-		<div>
-			<Field {form} name="reportType">
-				<div class="text-2xl font-bold">Report Type:</div>
-				<Control>
-					{#snippet children({ props })}
-						<RadioGroup
-							{...props}
-							bind:value={$formData.reportType}
-							class="space-y-4 [&_label]:text-base [&_label]:cursor-pointer [&>label]:flex [&>label]:gap-2"
-						>
-							<label for="reportType-pdf">
-								<RadioGroupItem id="reportType-pdf" value="pdf" />
-								<div class="-mt-1">
-									<div class="font-bold">PDF</div>
-									<div class="text-lg text-muted-foreground leading-tight">
-										Create a detailed report including a map and summary table for every indicator
-										present in the area as well as additional information about urbanization,
-										sea-level rise, and more. All uploaded areas will be treated as a single area of
-										interest.
+								<div class="text-2xl font-bold">Area of Interest:</div>
+								<Input
+									type="file"
+									{...props}
+									id="file"
+									bind:files={$fileHandle}
+									accept={[...MIME_TYPES].join(',')}
+									multiple={false}
+									class="mt-2 hidden"
+								/>
+								<div
+									class={cn(
+										'border-2 border-grey-8/50 rounded-lg bg-grey-1/40 border-dashed p-6 flex flex-col justify-center cursor-pointer mt-2',
+										{
+											'border-error': isDragValid === false || $errors.file,
+											'bg-error/10': isDragValid === false || $errors.file,
+											'cursor-not-allowed': isDragValid === false,
+											'border-ok': isDragValid === true,
+											'bg-ok/10': isDragValid === true,
+											hidden: isFileValid
+										}
+									)}
+									onclick={handleDropZoneClick}
+									onkeydown={handleDropZoneKeyDown}
+									role="button"
+									aria-label="Click to browse for files or drop file over this area"
+									tabindex={0}
+								>
+									<div class="flex gap-2 items-center">
+										<ZipFileIcon class="size-6 flex-none" aria-hidden="true" />
+										<div class="text-2xl font-bold">Drop your zip file here</div>
 									</div>
-								</div>
-							</label>
 
-							<label for="reportType-xlsx" class="flex gap-2">
-								<RadioGroupItem id="reportType-xlsx" value="xlsx" />
-								<div class="-mt-1">
-									<div class="font-bold">XLSX</div>
-									<p class="text-lg text-muted-foreground leading-tight">
-										Create a detailed data report including a summary table for each selected
-										dataset present in your areas of interest. You can select the datasets you are
-										interested in for your report. You can choose to treat each area you upload as
-										an individual area of interest for reporting results.
+									<p class="text-base text-grey-8 leading-tight mt-4">
+										Your zip file must contain all associated files for a shapefile (at least .shp,
+										.prj, .shx) or file geodatabase (.gdb).
+										<br />
+										<br />
+										Max size: {MAXSIZE_MB} MB.
 									</p>
 								</div>
-							</label>
-						</RadioGroup>
-					{/snippet}
-				</Control>
-			</Field>
-			<div class="flex justify-end mt-8">
-				<SubmitButton disabled={!isValid} class="text-xl gap-2">
-					<UploadIcon class="size-5" /> Upload file
-				</SubmitButton>
+
+								{#if isFileValid}
+									<div class="text-lg">
+										Selected: {$formData.file.name}
+									</div>
+								{/if}
+							</Label>
+
+							{#if $errors.file}
+								<div class="flex items-center gap-2 text-accent ml-2 mt-4 mb-8">
+									<ExclamationTriangle width="1em" height="1em" />
+									{$errors.file}
+								</div>
+							{/if}
+						{/snippet}
+					</Control>
+
+					{#if isFileValid}
+						<div class="flex justify-center mt-8">
+							<Button onclick={handleResetFile} variant="destructive" class="text-base"
+								>Choose a different file</Button
+							>
+						</div>
+					{:else}
+						<p class="text-sm text-grey-8 mx-4">
+							Note: your files must be in a zip file, and can include only one shapefile or Feature
+							Class, and should represent a relatively small area. For help analyzing larger areas,
+							please <ContactDialog>
+								<span class="text-link hover:underline cursor-pointer"> contact us</span>
+							</ContactDialog>.
+						</p>
+					{/if}
+				</Field>
 			</div>
+			<div>
+				<Field {form} name="reportType">
+					<div class="text-2xl font-bold">Report Type:</div>
+					<Control>
+						{#snippet children({ props })}
+							<RadioGroup
+								{...props}
+								bind:value={$formData.reportType}
+								class="space-y-4 [&_label]:text-base [&_label]:cursor-pointer [&>label]:flex [&>label]:gap-2"
+							>
+								<label for="reportType-simple">
+									<RadioGroupItem id="reportType-simple" value="simple" />
+									<div class="-mt-1">
+										<div class="font-bold">Simple PDF report</div>
+										<div class="text-muted-foreground leading-tight">
+											Create a detailed PDF report including a map and summary table for every
+											indicator present in the area as well as additional information about
+											urbanization, sea-level rise, and more.
+										</div>
+									</div>
+								</label>
+
+								<label for="reportType-advanced" class="flex gap-2">
+									<RadioGroupItem id="reportType-advanced" value="advanced" />
+									<div class="-mt-1">
+										<div class="font-bold">Advanced report</div>
+										<p class="text-muted-foreground leading-tight">
+											Create a detailed PDF or XLSX report that allows you to configure how your
+											report is created, such as the datasets are included in the report.
+										</p>
+									</div>
+								</label>
+							</RadioGroup>
+						{/snippet}
+					</Control>
+				</Field>
+				{#if $formData.reportType === 'advanced'}
+					<div class="ml-7 mt-4">
+						<div>Choose report format:</div>
+						<Field {form} name="advancedReportFormat" class="mt-2">
+							<Control>
+								{#snippet children({ props })}
+									<RadioGroup
+										{...props}
+										bind:value={$formData.advancedReportFormat}
+										class="[&_label]:text-base [&_label]:cursor-pointer [&>label]:flex [&>label]:gap-2 grid grid-cols-2 gap-8"
+									>
+										<label for="advancedReportFormat-pdf">
+											<RadioGroupItem id="advancedReportFormat-pdf" value="pdf" disabled />
+											<div class="-mt-1 font-bold">
+												PDF
+												<span class="class text-sm text-muted-foreground font-normal">
+													(under development)
+												</span>
+											</div>
+										</label>
+
+										<label for="advancedReportFormat-xlsx" class="flex gap-2">
+											<RadioGroupItem id="advancedReportFormat-xlsx" value="xlsx" />
+											<div class="-mt-1 font-bold">XLSX</div>
+										</label>
+									</RadioGroup>
+								{/snippet}
+							</Control>
+						</Field>
+						<div class="grid grid-cols-2 gap-8 text-muted-foreground leading-tight text-sm">
+							<p>
+								Includes a map and summary table for every indicator present in the area as well as
+								additional information about urbanization, sea-level rise, and more. All uploaded
+								areas will be treated as a single area of interest.
+							</p>
+							<p>
+								Includes detailed statistics for each selected dataset present in your areas of
+								interest. Choose to calculate statistics for individual areas or aggregate all areas
+								together.
+							</p>
+						</div>
+					</div>
+				{/if}
+			</div>
+		</div>
+		<div class="flex justify-center mt-4 border-t pt-4 border-t-grey-2">
+			<SubmitButton disabled={!isValid} class="text-xl gap-2">
+				<UploadIcon class="size-5" /> Upload file
+			</SubmitButton>
 		</div>
 	</form>
 
-	<hr />
-
-	<div>
+	<div class="mt-24">
 		<p>
 			Don't have a shapefile? You can create one using
 			<a href="https://geojson.io/" target="_blank"> geojson.io </a>
@@ -313,11 +349,9 @@
 		</p>
 	</div>
 
-	<hr />
-
-	<h2 class="text-2xl">Examples of what is inside</h2>
-
-	{#if $formData.reportType === 'pdf'}
+	{#if $formData.reportFormat === 'pdf'}
+		<hr />
+		<h2 class="text-2xl">Examples of what is inside</h2>
 		<div class="grid grid-cols-2 md:grid-cols-5 mt-2 gap-4 [&_img]:border [&_img]:border-grey-2">
 			<enhanced:img
 				src="$images/report/report_sm_1.png"

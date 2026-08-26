@@ -42,6 +42,12 @@ center_header_style = NamedStyle(
     border=default_header_border,
 )
 
+table_caption_style = NamedStyle(
+    name="Table Header Style",
+    font=font_bold,
+    alignment=alignment_left_wrap,
+)
+
 good_condition_header_style = NamedStyle(
     name="Good Condition Header Style",
     alignment=alignment_center_wrap,
@@ -110,6 +116,26 @@ def set_column_widths(ws, widths):
         ws.column_dimensions[letter].width = width
 
 
+def add_caption(ws, table_counter, caption):
+    """Add a table caption followed by a blank line
+
+    Parameters
+    ----------
+    ws : Worksheet
+    table_counter : int
+    caption : str
+    """
+
+    ws.insert_rows(idx=1, amount=2)
+
+    cell = ws["A1"]
+    cell.value = f"Table {table_counter}: {caption}"
+    cell.style = table_caption_style
+
+    end_col = get_column_letter(ws.max_column)
+    ws.merge_cells(f"A1:{end_col}1")
+
+
 def add_good_condition_row(ws, values_start_col, values_end_col, break_col):
     """Add header row with merged cells for not in good condition / in good condition
 
@@ -126,23 +152,25 @@ def add_good_condition_row(ws, values_start_col, values_end_col, break_col):
     break_col : int
         the column index of the first value after the break between good and not good condition, 0-based
     """
-    ws.insert_rows(idx=1)
+    row = 3
+
+    ws.insert_rows(idx=row)
 
     start_col = get_column_letter(values_start_col + 1)
     end_col = get_column_letter(values_start_col + break_col)
-    cell = ws[f"{start_col}1"]
+    cell = ws[f"{start_col}{row}"]
     cell.value = "In good condition"
     cell.style = good_condition_header_style
-    ws.merge_cells(f"{start_col}1:{end_col}1")
+    ws.merge_cells(f"{start_col}{row}:{end_col}{row}")
 
     start_col = get_column_letter(values_start_col + break_col + 1)
     end_col = get_column_letter(values_end_col)
-    cell = ws[f"{start_col}1"]
+    cell = ws[f"{start_col}{row}"]
     cell.value = "Not in good condition"
     cell.style = good_condition_header_style
-    ws.merge_cells(f"{start_col}1:{end_col}1")
+    ws.merge_cells(f"{start_col}{row}:{end_col}{row}")
 
-    for i in range(1, ws.max_row + 1):
+    for i in range(row, ws.max_row + row):
         cell = ws[f"{start_col}{i}"]
         cell.border = Border(
             left=Side(border_style="medium", color="666666"), bottom=cell.border.bottom, right=cell.border.right

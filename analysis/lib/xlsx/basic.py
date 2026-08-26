@@ -1,7 +1,13 @@
 import pandas as pd
 
-from analysis.constants import ANALYSIS_REGION_NAME
-from analysis.lib.xlsx.style import CHAR_PER_WIDTH_UNIT, add_good_condition_row, set_cell_styles, set_column_widths
+from analysis.constants import ANALYSIS_REGION_NAME, INDICATORS_INDEX
+from analysis.lib.xlsx.style import (
+    CHAR_PER_WIDTH_UNIT,
+    add_caption,
+    add_good_condition_row,
+    set_cell_styles,
+    set_column_widths,
+)
 
 
 def get_value_columns(values):
@@ -9,7 +15,13 @@ def get_value_columns(values):
 
 
 def add_basic_results_sheet(
-    xlsx: pd.ExcelWriter, df: pd.DataFrame, dataset: dict, name_col_width: float, area_label: str, get_value_order=None
+    xlsx: pd.ExcelWriter,
+    df: pd.DataFrame,
+    dataset: dict,
+    name_col_width: float,
+    area_label: str,
+    table_counter: int,
+    get_value_order=None,
 ):
     """Add a sheet for one of the Blueprint datasets (Blueprint, corridors, indicators)
     or other simple raster results dataset.
@@ -24,17 +36,31 @@ def add_basic_results_sheet(
         width of name column
     area_label : str
         name of analysis area acres column
+    table_counter : int
+        table counter for this table, 1-based
     get_value_order : function, optional (default: None)
         if defined, function that returns value columns in correct order
     """
     sheet_name = dataset.get("sheet_name", None) or dataset["label"]
     values = dataset["values"]
+    caption = dataset["caption"] + "."
+
+    # good threshold is only applicable to indicators
+    if dataset["id"] in INDICATORS_INDEX:
+        good_threshold = dataset.get("goodThreshold", None)
+        if good_threshold:
+            caption += "\nGood condition thresholds reflect the range of indicator values that occur in healthy, functioning ecosystems."
+        else:
+            caption += "\nA good condition threshold is not yet defined for this indicator."
+
+    value_label = dataset.get("valueLabel", None)
+    if value_label:
+        caption += f"\nValues show {value_label[0].lower()}{value_label[1:]}."
+
     nodata_label = dataset.get(
         "nodata_label",
         f"Outside extent of this dataset but within {ANALYSIS_REGION_NAME} data extent\n(acres)",
     )
-    # good threshold is only applicable to indicators
-    good_threshold = dataset.get("goodThreshold", None)
 
     value_columns = get_value_columns(values)
     col_width = min(max([len(c) for c in value_columns]) * CHAR_PER_WIDTH_UNIT, 18)
@@ -67,9 +93,10 @@ def add_basic_results_sheet(
     set_column_widths(ws, [name_col_width] + ([col_width] * len(tmp.columns)))
     set_cell_styles(ws, area_columns=range(1, len(tmp.columns) + 3))
 
-    if good_threshold:
+    add_caption(ws, table_counter, caption)
+
+    if dataset["id"] in INDICATORS_INDEX and good_threshold:
         # NOTE: this only applies to indicators, which are always in greatest to least order
         offset = 3 if has_area_outside else 2
-        # pos = [i for i, v in enumerate(values[::-1]) if v["value"] == good_threshold][0]
         pos = [v["value"] for v in values[::-1]].index(good_threshold) + 1
         add_good_condition_row(ws, offset, offset + len(values), break_col=pos)

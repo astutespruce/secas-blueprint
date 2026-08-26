@@ -1,8 +1,10 @@
+import os
 from pathlib import Path
 from zipfile import ZipFile
 
 import numpy as np
 import pytest
+from dotenv import load_dotenv
 from pyogrio import read_dataframe
 
 from analysis.constants import DATA_CRS, GEO_CRS, INDICATORS
@@ -14,6 +16,12 @@ from api.lib.geo import get_dataset
 from tests.lib.image import image_matches
 
 fixture_dir = Path("tests/fixtures")
+
+
+load_dotenv()
+
+# add to .env file to name saving test files
+SAVE_XLSX = bool(os.getenv("TEST_SAVE_XLSX", False))
 
 
 @pytest.mark.parametrize("unit_type", [None, "", "invalid_unit_type"])
@@ -170,6 +178,10 @@ async def test_summary_unit_pdf_huc12():
     pdf = create_report(maps=maps, results=results, name=results["name"], area_type="huc12")
     assert pdf is not None
 
+    if SAVE_XLSX:
+        with open("/tmp/test_create_pdf_huc12.pdf", "wb") as out:
+            _ = out.write(pdf)
+
 
 @pytest.mark.anyio
 @pytest.mark.parametrize("format", ["gdb", "shp"])
@@ -298,3 +310,44 @@ async def test_aoi_maps():
     assert "slr" in maps
     assert "urban" in maps
     assert "wildfire_risk" in maps
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("format", ["shp"])
+async def test_create_pdf_single_area(format):
+    """this is just a smoke test that PDF is created"""
+    zip_filename = fixture_dir / f"{format}_poly_small.zip"
+    with ZipFile(zip_filename) as zipfile:
+        dataset, layer = get_dataset(zipfile)
+
+    df = read_dataframe(f"/vsizip/{zip_filename}/{dataset}", layer=layer, columns=[]).to_crs(DATA_CRS)
+    geo_df = df.to_crs(GEO_CRS)
+
+    results = await get_aoi_results(df)
+
+    indicators = []
+    for group in results.get("indicator_groups", []):
+        indicators.extend([i["id"] for i in group["indicators"]])
+
+    geo_df = df.to_crs(GEO_CRS)
+    maps, scale, map_errors = await render_maps(
+        geo_df.total_bounds,
+        geometry=geo_df.geometry.values[0],
+        indicators=indicators,
+        corridors="corridors" in results,
+        parcas="parcas" in results,
+        protected_areas="protected_areas" in results,
+        slr="slr" in results,
+        urban="urban" in results,
+        wildfire_risk="wildfire_risk" in results,
+        add_mask=results["acres"] >= 1e9,
+    )
+
+    assert len(map_errors) == 0
+
+    results["scale"] = scale
+    pdf = create_report(maps=maps, results=results, name="Test area")
+
+    if SAVE_XLSX:
+        with open("/tmp/test_create_pdf_single_area.pdf", "wb") as out:
+            _ = out.write(pdf)

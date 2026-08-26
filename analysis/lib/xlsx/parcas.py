@@ -1,12 +1,15 @@
 import pandas as pd
 
 from analysis.constants import PARCAS_POLY
-from analysis.lib.xlsx.style import set_cell_styles, set_column_widths
+from analysis.lib.xlsx.style import add_caption, set_cell_styles, set_column_widths
 
 
-def add_parcas_poly_sheet(xlsx: pd.ExcelWriter, df: pd.DataFrame, name_col_width: float, area_col_width: float):
+def add_parcas_poly_sheet(
+    xlsx: pd.ExcelWriter, df: pd.DataFrame, name_col_width: float, area_col_width: float, table_counter: int
+):
     dataset = PARCAS_POLY
-    sheet_name = dataset.get("sheet_name", dataset["label"])
+    sheet_name = dataset["sheet_name"]
+    caption = dataset["caption"] + "."
 
     # transform data into one row per per protected area per analysis unit
     parcas = []
@@ -32,3 +35,5 @@ def add_parcas_poly_sheet(xlsx: pd.ExcelWriter, df: pd.DataFrame, name_col_width
 
     set_column_widths(ws, [name_col_width, area_col_width, area_col_width, 40, 64])
     set_cell_styles(ws)
+
+    add_caption(ws, table_counter, caption)

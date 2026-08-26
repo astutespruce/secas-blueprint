@@ -4,6 +4,7 @@
 	"label": "Wildfire likelihood (annual burn probability)",
 	"sheet_name": "Wildfire likelihood",
 	"description": "Wildfire likelihood data originate from the Wildfire Risk to Communities project developed by the U.S. Forest Service. This layer depicts the probability of wildfire burning in a specific location in any given year. Annual burn probabilities in the United States range from 0-14%, but do not exceed 8% in the Southeast. Wildfire likelihood is based on fire behavior modeling across thousands of simulations of possible fire seasons. In each simulation, factors contributing to the probability of a fire occurring (such as weather, topography, and ignitions) vary based on patterns derived from observations in recent decades. Wildfire likelihood is not predictive and does not reflect any forecasted future weather or fire danger conditions. It also does not say anything about the intensity of fire if it occurs.  Data were reprojected to align with the Blueprint.",
+	"caption": "Area in each wildfire probability category",
 	"source": "Wildfire Risk to Communities, USDA Forest Service",
 	"date": "2024",
 	"citation": "Wildfire Risk to Communities (2024)",

@@ -3,6 +3,7 @@
 	"filename": "blueprint.tif",
 	"label": "Blueprint priority",
 	"description": "The Blueprint identifies priority areas based on a suite of natural and cultural resource indicators representing terrestrial, freshwater, and marine ecosystems.",
+	"caption": "Extent of each Blueprint priority category",
 	"source": "Southeast Conservation Blueprint",
 	"date": "2026",
 	"citation": "Southeast Conservation Adaptation Strategy (SECAS). 2025. Southeast Conservation Blueprint 2025.",

@@ -12,8 +12,12 @@ from analysis.constants import (
     CORRIDORS,
     PARCAS,
     PROTECTED_AREAS,
+    SLR_DEPTH,
     SLR_DEPTH_VALUES,
+    SLR_PROJ,
     URBAN,
+    URBAN_BY_DECADE,
+    WILDFIRE_RISK,
     WILDFIRE_RISK_LEGEND,
 )
 from analysis.lib.pdf.format import format_number, format_percent
@@ -92,28 +96,31 @@ def create_report(maps, results, name=None, area_type="custom"):
 
     legends = {
         # sort Blueprint descending order
-        "blueprint": BLUEPRINT["values"][::-1]
+        "blueprint": BLUEPRINT["values"][::-1],
+        "corridors": CORRIDORS["values"][1:],
+        "parcas": PARCAS["values"][::-1],
+        "protected_areas": PROTECTED_AREAS["values"][::-1],
+        "slr": [{**v, "label": v["label"].replace(" foot", "").replace(" feet", "")} for v in SLR_DEPTH_VALUES],
+        "urban": URBAN["values"],
+        "wildfire_risk": WILDFIRE_RISK_LEGEND,
     }
 
-    if "corridors" in results:
-        legends["corridors"] = CORRIDORS["values"][1:]
-
-    if "parcas" in results:
-        legends["parcas"] = PARCAS["values"][::-1]
-
-    if "protected_areas" in results:
-        legends["protected_areas"] = PROTECTED_AREAS["values"][::-1]
-
-    if "slr" in results:
-        legends["slr"] = [
-            {**v, "label": v["label"].replace(" foot", "").replace(" feet", "")} for v in SLR_DEPTH_VALUES
+    # NOTE: full indicator objects are already in the results; no need to have caption entries
+    captions = {
+        dataset["id"]: dataset["caption"]
+        for dataset in [
+            BLUEPRINT,
+            CORRIDORS,
+            PARCAS,
+            PROTECTED_AREAS,
+            PROTECTED_AREAS,
+            SLR_DEPTH,
+            SLR_PROJ,
+            # NOTE: table entry is urban by decade
+            URBAN_BY_DECADE,
+            WILDFIRE_RISK,
         ]
-
-    if "urban" in results:
-        legends["urban"] = URBAN["values"]
-
-    if "wildfire_risk" in results:
-        legends["wildfire_risk"] = WILDFIRE_RISK_LEGEND
+    }
 
     context = {
         "date": date.today().strftime("%m/%d/%Y"),
@@ -125,6 +132,7 @@ def create_report(maps, results, name=None, area_type="custom"):
         "subtitle": subtitle,
         "maps": maps,
         "legends": legends,
+        "captions": captions,
         "results": results,
         "is_marine_only": results.get("regions") == {"marine"},
         # have to flip the crosshatch horizontally due to bug in WeasyPrint

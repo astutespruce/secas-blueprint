@@ -1,7 +1,7 @@
 import pandas as pd
 
 from analysis.constants import ANALYSIS_REGION_NAME, URBAN_BY_DECADE, URBAN_YEARS
-from analysis.lib.xlsx.style import set_cell_styles, set_column_widths
+from analysis.lib.xlsx.style import add_caption, set_cell_styles, set_column_widths
 
 value_columns = (
     ["Urban in 2021\n(acres)"]
@@ -10,7 +10,14 @@ value_columns = (
 )
 
 
-def add_urbanization_sheet(xlsx, df, name_col_width, area_col_width, area_label):
+def add_urbanization_sheet(
+    xlsx: pd.ExcelWriter,
+    df: pd.DataFrame,
+    name_col_width: float,
+    area_col_width: float,
+    area_label: str,
+    table_counter: int,
+):
     """Add urbanization sheet.
 
     Parameters
@@ -23,9 +30,11 @@ def add_urbanization_sheet(xlsx, df, name_col_width, area_col_width, area_label)
         width of area column
     area_label : str
         name of analysis area acres column
+    table_counter : int
     """
     dataset = URBAN_BY_DECADE
-    sheet_name = dataset.get("sheet_name", dataset["label"])
+    sheet_name = dataset["label"]
+    caption = dataset["caption"] + "."
     nodata_label = dataset.get(
         "nodata_label",
         f"Outside extent of this dataset but within {ANALYSIS_REGION_NAME} data extent\n(acres)",
@@ -49,3 +58,5 @@ def add_urbanization_sheet(xlsx, df, name_col_width, area_col_width, area_label)
     ws = xlsx.sheets[sheet_name]
     set_column_widths(ws, [name_col_width, area_col_width] + ([18] * (len(urban.columns) - 1)))
     set_cell_styles(ws, area_columns=range(1, len(urban.columns) + 3))
+
+    add_caption(ws, table_counter, caption)

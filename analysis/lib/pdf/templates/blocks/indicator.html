@@ -52,7 +52,7 @@
 
 <div class="no-break">
     <div class="caption">
-        Table {{table.counter}}: Indicator values for {{indicator.captionLabel or indicator.label}}{% if name %} within {{name}}{% else %} in this area{% endif %}.
+        Table {{table.counter}}: {{indicator.caption}}{% if name %} within {{name}}{% else %} in this area{% endif %}.
         {% if indicator.goodThreshold %}
             Good condition thresholds reflect the range of indicator values that occur in healthy, functioning ecosystems.
         {% else %}
