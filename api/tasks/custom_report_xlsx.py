@@ -3,6 +3,7 @@ from pathlib import Path
 import geopandas as gp
 from pyogrio import read_info
 
+from analysis.constants import DATA_CRS
 from analysis.lib.geometry import dissolve
 from analysis.lib.stats.analysis_units import get_analysis_unit_results
 from analysis.lib.stats.prescreen import get_available_datasets
@@ -26,7 +27,8 @@ async def get_xlsx_report_inputs(ctx, zip_filename, dataset, layer, uuid):
 
     # prescreen columns to read to exclude floating point, dates
     id_fields = [field for field, dtype in zip(info["fields"], info["dtypes"]) if dtype in VALID_ID_FIELD_DTYPES]
-    df = extract_dataset(path, layer=layer, columns=id_fields)
+
+    df = extract_dataset(path, layer=layer, columns=id_fields).to_crs(DATA_CRS)
 
     # drop any fields that are completely null
     fields = {col: len(df[col].unique()) for col in id_fields if not df[col].isnull().all()}
@@ -34,7 +36,7 @@ async def get_xlsx_report_inputs(ctx, zip_filename, dataset, layer, uuid):
     # Save as feather file for subsequent steps
     df[["geometry"] + list(fields.keys())].to_feather(zip_filename.with_suffix(".feather"))
 
-    ### prescreen datasets available (using only analysis units that overlap)
+    ### prescreen datasets available
     await set_progress(ctx["redis"], ctx["job_id"], 50, "Checking available datasets")
     datasets = get_available_datasets(df)
 

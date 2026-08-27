@@ -72,11 +72,11 @@ tree = shapely.STRtree(huc12.geometry.values)
 ix = tree.query(bnd, predicate="contains")
 
 edge_df = huc12.loc[~huc12.id.isin(huc12.iloc[ix].id)].copy()
-edge_df["overlap"] = (
+edge_df["overlap_acres"] = (
     100 * shapely.area(shapely.intersection(edge_df.geometry.values, bnd)) / shapely.area(edge_df.geometry.values)
 )
 
-drop_ids = edge_df.loc[edge_df.overlap < 50].id
+drop_ids = edge_df.loc[edge_df.overlap_acres < 50].id
 
 print(f"Dropping {len(drop_ids)} HUC12s that do not sufficiently overlap input areas")
 huc12 = huc12.loc[~huc12.id.isin(drop_ids)].copy()

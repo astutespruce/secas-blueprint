@@ -1,6 +1,6 @@
 import geopandas as gp
-import pandas as pd
 import numpy as np
+import pandas as pd
 import shapely
 
 from analysis.lib.graph import DirectedGraph
@@ -38,7 +38,7 @@ def dissolve(df, by=None, grid_size=None, agg=None, allow_multi=True, op="union"
     if by:
         dissolved = gp.GeoDataFrame(df.groupby(by).agg(agg).reset_index(), geometry="geometry", crs=df.crs)
     else:
-        dissolved = gp.GeoDataFrame(df.agg(agg).rename("geometry"), geometry="geometry", crs=df.crs)
+        dissolved = gp.GeoDataFrame(df.agg(agg).rename("geometry").reset_index(), geometry="geometry", crs=df.crs)
 
     if not allow_multi:
         # flatten any multipolygons

@@ -4,22 +4,20 @@ import geopandas as gp
 import rasterio
 
 from analysis.constants import (
-    REPORT_DATASETS,
     BLUEPRINT,
     CORRIDORS,
     PARCAS,
     PARCAS_POLY,
     PROTECTED_AREAS,
     PROTECTED_AREAS_POLY,
-    URBAN_BY_DECADE,
+    REPORT_DATASETS,
     SLR_DEPTH,
     SLR_PROJ,
+    URBAN_BY_DECADE,
 )
-
 from analysis.lib.geometry import to_dict_all
 from analysis.lib.raster import WindowGeometryMask, get_window, window_overlaps
 from analysis.lib.stats.rasterized_geometry import extent_mask_filename
-
 
 data_dir = Path("data/inputs")
 
@@ -54,6 +52,9 @@ def get_available_datasets(df: gp.GeoDataFrame) -> set[str]:
         # use the lowres extent to determine overlap with blueprint
         if lowres_mask.detect_data(src):
             datasets.update([BLUEPRINT["id"], CORRIDORS["id"]])
+
+        else:
+            return datasets
 
     for dataset_id, dataset in REPORT_DATASETS.items():
         if dataset_id in {BLUEPRINT["id"], CORRIDORS["id"]}:

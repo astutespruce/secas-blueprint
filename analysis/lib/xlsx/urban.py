@@ -41,17 +41,17 @@ def add_urbanization_sheet(
     )
 
     # transform data into one row for high and low urbanization per analysis unit
-    columns = value_columns + ["outside"]
+    columns = value_columns + ["outside_acres"]
 
     # convert values to columns
-    urban = df[["overlap"]].join(df[URBAN_BY_DECADE["id"]].apply(pd.Series))
-    urban.columns = ["overlap"] + columns
+    urban = df[["overlap_acres"]].join(df[URBAN_BY_DECADE["id"]].apply(pd.Series))
+    urban.columns = ["overlap_acres"] + columns
     # move nodata to left
-    urban = urban[["overlap", "outside"] + value_columns]
-    if urban.outside.max() < 1e-2:
-        urban = urban.drop(columns=["outside"])
+    urban = urban[["overlap_acres", "outside_acres"] + value_columns]
+    if urban.outside_acres.max() < 1e-2:
+        urban = urban.drop(columns=["outside_acres"])
 
-    urban.rename(columns={"overlap": area_label, "outside": nodata_label}).reset_index().to_excel(
+    urban.rename(columns={"overlap_acres": area_label, "outside_acres": nodata_label}).reset_index().to_excel(
         xlsx, sheet_name=sheet_name, index=False
     )
 

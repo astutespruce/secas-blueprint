@@ -40,17 +40,17 @@ def add_slr_depth_sheet(
     slr = df[SLR_DEPTH["id"]].apply(pd.Series)
 
     # set NODATA into value 13
-    outside = df.overlap - slr.sum(axis=1)
-    outside.loc[outside < 0] = 0
-    slr[13] += outside
+    outside_acres = df.overlap_acres - slr.sum(axis=1)
+    outside_acres.loc[outside_acres < 0] = 0
+    slr[13] += outside_acres
 
-    slr = df[["overlap"]].join(slr)
-    slr.columns = ["overlap"] + depth_value_columns
+    slr = df[["overlap_acres"]].join(slr)
+    slr.columns = ["overlap_acres"] + depth_value_columns
 
     # reorder columns so that SLR not available (last column) comes first
     slr = (
-        slr[["overlap", depth_value_columns[-1]] + depth_value_columns[:-1]]
-        .rename(columns={"overlap": area_label})
+        slr[["overlap_acres", depth_value_columns[-1]] + depth_value_columns[:-1]]
+        .rename(columns={"overlap_acres": area_label})
         .reset_index()
     )
 
@@ -95,13 +95,13 @@ def add_slr_projection_sheet(
     counter = 0
     for id, row in df.iterrows():
         # must also have depth to show projection data
-        if row.overlap == 0 or row.get(SLR_DEPTH["id"], None) is None or not len(row.get(SLR_PROJ["id"], [])):
-            slr.append([id, row.overlap, "no", ""] + [""] * len(SLR_YEARS))
+        if row.overlap_acres == 0 or row.get(SLR_DEPTH["id"], None) is None or not len(row.get(SLR_PROJ["id"], [])):
+            slr.append([id, row.overlap_acres, "no", ""] + [""] * len(SLR_YEARS))
             counter += 1
         else:
             for scenario in row[SLR_PROJ["id"]]:
                 slr.append(
-                    [id, row.overlap, "yes", SLR_PROJ_SCENARIOS[scenario["scenario"]]] + list(scenario["values"])
+                    [id, row.overlap_acres, "yes", SLR_PROJ_SCENARIOS[scenario["scenario"]]] + list(scenario["values"])
                 )
                 counter += 1
 

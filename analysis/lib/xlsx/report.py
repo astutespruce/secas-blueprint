@@ -43,7 +43,7 @@ def create_report(df: pd.DataFrame, datasets: set[str], name: str | None = None)
         min(pd.Series(df.index).astype("str").apply(len).max() * CHAR_PER_WIDTH_UNIT, 28),
         14,
     )
-    area_col_width = max(df.overlap.apply(lambda x: len("{x:,.2f}")).max() * CHAR_PER_WIDTH_UNIT, 10)
+    area_col_width = max(df.overlap_acres.apply(lambda x: len("{x:,.2f}")).max() * CHAR_PER_WIDTH_UNIT, 10)
 
     area_label = f"Acres within {ANALYSIS_REGION_NAME} data extent" if has_area_outside_region else "Analysis acres"
 

@@ -68,24 +68,24 @@ def add_basic_results_sheet(
     # split list into columns
     tmp = df[dataset["id"]].apply(pd.Series)
     tmp.columns = value_columns
-    tmp = df[["overlap"]].join(tmp)
+    tmp = df[["overlap_acres"]].join(tmp)
 
     # calculate area outside
-    tmp["outside"] = tmp.overlap - tmp[value_columns].sum(axis=1)
+    tmp["outside_acres"] = tmp.overlap_acres - tmp[value_columns].sum(axis=1)
     # remove small rounding-related errors
-    tmp.loc[tmp.outside < 0, "outside"] = 0
+    tmp.loc[tmp.outside_acres < 0, "outside_acres"] = 0
 
     # reorder columns
     if get_value_order is not None:
         value_columns = get_value_order(value_columns)
-    tmp = tmp[["overlap", "outside"] + value_columns]
+    tmp = tmp[["overlap_acres", "outside_acres"] + value_columns]
 
     # drop outside indicator col
-    has_area_outside = tmp.outside.max() > 1e-2
+    has_area_outside = tmp.outside_acres.max() > 1e-2
     if not has_area_outside:
-        tmp = tmp.drop(columns=["outside"])
+        tmp = tmp.drop(columns=["outside_acres"])
 
-    tmp.rename(columns={"overlap": area_label, "outside": nodata_label}).reset_index().to_excel(
+    tmp.rename(columns={"overlap_acres": area_label, "outside_acres": nodata_label}).reset_index().to_excel(
         xlsx, sheet_name=sheet_name, index=False
     )
 

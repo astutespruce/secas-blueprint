@@ -483,23 +483,10 @@ def get_overlapping_windows(src, geometry, bounds, window_size):
     # Select all windows that intersect geometry
     res = src.res[0]
     src_bounds = src.bounds
-    start_row = max(
-        math.floor(math.floor((src_bounds[3] - bounds[3]) / res) / window_size) * window_size,
-        0,
-    )
-    end_row = min(
-        math.ceil(math.ceil((src_bounds[3] - bounds[1]) / res) / window_size) * window_size + 1,
-        src.height,
-    )
-
-    start_col = max(
-        math.floor(math.floor((bounds[0] - src_bounds[0]) / res) / window_size) * window_size,
-        0,
-    )
-    end_col = min(
-        math.ceil(math.ceil((bounds[2] - src_bounds[0]) / res) / window_size) * window_size + 1,
-        src.width,
-    )
+    start_row = math.floor(math.floor((src_bounds[3] - bounds[3]) / res) / window_size) * window_size
+    end_row = math.ceil(math.ceil((src_bounds[3] - bounds[1]) / res) / window_size) * window_size + 1
+    start_col = math.floor(math.floor((bounds[0] - src_bounds[0]) / res) / window_size) * window_size
+    end_col = math.ceil(math.ceil((bounds[2] - src_bounds[0]) / res) / window_size) * window_size + 1
 
     windows = [
         Window(row_off=row_off, col_off=col_off, width=window_size, height=window_size)

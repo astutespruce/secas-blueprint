@@ -1,10 +1,17 @@
 import numpy as np
 import pytest
+import rasterio
 from affine import Affine
+from pyogrio import read_dataframe
 from rasterio.windows import Window
 
+from analysis.constants import DATA_CRS
+from analysis.lib.geometry import dissolve
 from analysis.lib.pdf.map.raster import hex_to_rgb, hex_to_rgba, to_rgba
-from analysis.lib.raster import clip_window, count_values_inplace, shift_window, unique
+from analysis.lib.raster import clip_window, count_values_inplace, get_overlapping_windows, shift_window, unique
+from analysis.lib.stats.rasterized_geometry import WINDOW_SIZE
+
+extent_filename = "data/inputs/boundaries/blueprint_extent.tif"
 
 
 @pytest.mark.parametrize("color", [None, "", "#000"])
@@ -116,3 +123,80 @@ def test_clip_window(window, max_width, max_height, expected):
 )
 def test_shift_window(window, window_transform, target_transform, expected):
     assert str(shift_window(window, window_transform, target_transform)) == str(expected)
+
+
+def test_overlapping_windows_single_area():
+    df = read_dataframe("/vsizip/tests/fixtures/shp_poly_small.zip/poly_small.shp", columns=[], use_arrow=True).to_crs(
+        DATA_CRS
+    )
+
+    with rasterio.open(extent_filename) as src:
+        windows, ratio = get_overlapping_windows(
+            src, df.geometry.values[0], bounds=df.geometry.values[0].bounds, window_size=WINDOW_SIZE
+        )
+
+    assert len(windows) == 1
+    assert windows[0] == Window(col_off=63488, row_off=28672, width=2048, height=2048)
+    assert np.isclose(ratio, 0.25)
+
+
+def test_overlapping_windows_no_overlap():
+    df = read_dataframe(
+        "/vsizip/tests/fixtures/shp_poly_no_overlap.zip/poly_no_overlap.shp", columns=[], use_arrow=True
+    ).to_crs(DATA_CRS)
+
+    with rasterio.open(extent_filename) as src:
+        windows, ratio = get_overlapping_windows(
+            src, df.geometry.values[0], bounds=df.geometry.values[0].bounds, window_size=WINDOW_SIZE
+        )
+
+    # this area is entirely outside, but still should get windows
+    assert len(windows) == 8
+
+
+def test_overlapping_windows_multiple_areas_partial_overlap():
+    df = read_dataframe(
+        "/vsizip/tests/fixtures/shp_poly_multiple_partial_overlap.zip/poly_multiple_partial_overlap.shp",
+        columns=[],
+        use_arrow=True,
+    ).to_crs(DATA_CRS)
+
+    with rasterio.open(extent_filename) as src:
+        windows, ratio = get_overlapping_windows(
+            src, df.geometry.values[0], bounds=df.geometry.values[0].bounds, window_size=WINDOW_SIZE
+        )
+        assert len(windows) == 1
+        assert np.isclose(ratio, 0.25)
+        assert windows[0] == Window(col_off=81920, row_off=18432, width=2048, height=2048)
+
+        # this area does not overlap; it needs a negative window
+        windows, ratio = get_overlapping_windows(
+            src, df.geometry.values[1], bounds=df.geometry.values[1].bounds, window_size=WINDOW_SIZE
+        )
+        assert len(windows) == 1
+        assert np.isclose(ratio, 0.25)
+        assert windows[0] == Window(col_off=36864, row_off=-24576, width=2048, height=2048)
+
+
+def test_overlapping_windows_multiple_areas_partial_overlap_dissolved():
+    df = read_dataframe(
+        "/vsizip/tests/fixtures/shp_poly_multiple_partial_overlap.zip/poly_multiple_partial_overlap.shp",
+        columns=[],
+        use_arrow=True,
+    ).to_crs(DATA_CRS)
+    df = dissolve(df)
+
+    with rasterio.open(extent_filename) as src:
+        windows, ratio = get_overlapping_windows(
+            src, df.geometry.values[0], bounds=df.geometry.values[0].bounds, window_size=WINDOW_SIZE
+        )
+
+        assert len(windows) == 3
+
+        # includes area outside, so it will have a negative
+        assert np.isclose(ratio, 0.00543, atol=1e-4)
+        assert windows.tolist() == [
+            Window(col_off=36864, row_off=-24576, width=2048, height=2048),
+            Window(col_off=45056, row_off=12288, width=2048, height=2048),
+            Window(col_off=81920, row_off=18432, width=2048, height=2048),
+        ]

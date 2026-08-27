@@ -10,10 +10,11 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from fastapi.security.api_key import APIKey
 
 from analysis.constants import ReportType
+from api.errors import DataError
 from api.lib.geo import get_dataset
 from api.lib.validation import validate_content_type, validate_token
 from api.logger import log
-from api.settings import REDIS, REDIS_QUEUE, TEMP_DIR
+from api.settings import MAX_FILE_SIZE, REDIS, REDIS_QUEUE, TEMP_DIR
 
 
 def save_file(file: UploadFile) -> Path:
@@ -34,7 +35,7 @@ def save_file(file: UploadFile) -> Path:
     try:
         suffix = Path(file.filename).suffix
 
-        fp, name = tempfile.mkstemp(suffix=suffix, dir=TEMP_DIR)
+        fp, outfilename = tempfile.mkstemp(suffix=suffix, dir=TEMP_DIR)
         with open(fp, "wb") as out:
             shutil.copyfileobj(file.file, out)
 
@@ -42,7 +43,15 @@ def save_file(file: UploadFile) -> Path:
         # always close the file handle from the API handler
         file.file.close()
 
-    return Path(name)
+    outfilename = Path(outfilename)
+
+    # if file is too big, immediately delete and raise exception
+    filesize_mb = outfilename.stat().st_size / (1024 * 1024)
+    if filesize_mb > MAX_FILE_SIZE:
+        outfilename.unlink()
+        raise DataError(f"Dataset is too large: {filesize_mb:.2f} MB")
+
+    return outfilename
 
 
 router = APIRouter()
@@ -57,8 +66,13 @@ async def custom_report_create_endpoint(
 ):
     validate_content_type(file)
 
-    filename = save_file(file)
-    log.debug(f"upload saved to: {filename}")
+    try:
+        filename = save_file(file)
+        log.debug(f"upload saved to: {filename}")
+
+    except DataError as ex:
+        log.error(ex)
+        raise HTTPException(status_code=400, detail=str(ex))
 
     # validate that upload has a shapefile or file geodatabase
     try:

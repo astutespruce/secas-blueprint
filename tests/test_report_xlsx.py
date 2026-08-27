@@ -236,6 +236,9 @@ async def test_get_analysis_unit_results_multiple_areas_partial_overlap_dissolve
     results = await get_analysis_unit_results(df, datasets)
 
     assert results["count"].values.tolist() == [3]
+    assert np.allclose(results["acres"], [744.0145])
+    assert np.allclose(results["rasterized_acres"], [747.6903])
+    assert np.allclose(results["outside_extent_acres"], [397.4190])
 
 
 @pytest.mark.anyio
@@ -502,7 +505,7 @@ async def test_create_xlsx_file_multiple_areas_partial_overlap(format):
 
     assert np.allclose(summary["GIS acres"], results.acres)
     # when there is partial overlap, we have two rasterized area columns: within and outside
-    assert np.allclose(summary["Acres within Southeast data extent (rasterized to 30m pixels)"], results.overlap)
+    assert np.allclose(summary["Acres within Southeast data extent (rasterized to 30m pixels)"], results.overlap_acres)
     assert np.allclose(
         summary["Acres outside Southeast data extent (rasterized to 30m pixels)"], results.outside_extent_acres
     )
@@ -683,7 +686,7 @@ async def test_create_xlsx_file_multiple_areas(format):
     for i in range(num_features):
         expected = results.slr_depth.iloc[i].take(slr_depth_col_ix)
         # area outside SLR is dynamically calculated as areas within the extent but with no SLR acres
-        outside = results.overlap.iloc[i] - expected.sum()
+        outside = results.overlap_acres.iloc[i] - expected.sum()
         if outside > 0:
             expected[0] = outside
 

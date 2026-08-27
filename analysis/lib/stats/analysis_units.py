@@ -108,17 +108,16 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
                 else:
                     files[id] = rasterio.open(data_dir / dataset["filename"])
 
-        # TODO: scale progress updates
         for i, (index, row) in enumerate(df.iterrows()):
             rasterized_geometry = RasterizedGeometry(row.geometry)
 
-            overlap = rasterized_geometry.acres - rasterized_geometry.outside_extent_acres
-            if overlap < 1e-6:
-                overlap = 0
+            overlap_acres = rasterized_geometry.acres - rasterized_geometry.outside_extent_acres
+            if overlap_acres < 1e-6:
+                overlap_acres = 0
 
             result = {
                 "pixels": rasterized_geometry.pixels,
-                "overlap": overlap,
+                "overlap_acres": overlap_acres,
                 "rasterized_acres": rasterized_geometry.acres,
                 "outside_extent_acres": rasterized_geometry.outside_extent_acres,
             }
