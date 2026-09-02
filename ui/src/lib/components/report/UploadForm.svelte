@@ -238,7 +238,7 @@
 								bind:checked={$formData.xlsxReport}
 							/>
 							Do you want to create a customizable XLSX spreadsheet with just the tabular results and
-							none of the maps? This is intended to compliment the PDF reports for advanced use cases.
+							none of the maps? This is intended to complement the PDF reports for advanced use cases.
 						</label>
 					</Control>
 				</Field>
