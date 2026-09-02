@@ -84,7 +84,6 @@ export default class StackedPNGTileLayer extends TileLayer {
 
 		// only update render target when these are different
 		if (oldRenderLayer && newRenderLayer.id !== oldRenderLayer.id) {
-			const { device } = this.context
 			// @ts-expect-error renderTarget is valid
 			newState.renderTarget = {
 				...newRenderLayer,

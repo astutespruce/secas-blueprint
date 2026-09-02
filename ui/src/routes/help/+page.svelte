@@ -8,8 +8,8 @@
 
 <Header />
 <main class="h-full w-full flex-auto overflow-auto">
-	<div class="relative z-0 w-full overflow-hidden h-60">
-		<div class="z-1 absolute top-[-50%]">
+	<div class="relative z-0 w-full md:overflow-hidden md:h-60">
+		<div class="z-1 absolute top-[-50%] hidden md:block">
 			<enhanced:img
 				src="$images/26871026541_48a8096dd9_o.jpg"
 				class="h-auto min-w-[720px] object-cover brightness-60"
@@ -18,12 +18,14 @@
 			/>
 		</div>
 		<div class="container mt-14">
-			<h1 class="text-7xl relative text-white z-2 text-shadow-sm text-shadow-black">
+			<h1
+				class="text-5xl md:text-7xl relative md:text-white z-2 md:text-shadow-sm md:text-shadow-black"
+			>
 				How to use this viewer
 			</h1>
 		</div>
 	</div>
-	<div class="text-sm text-grey-8 text-right pr-1">
+	<div class="text-sm text-grey-8 text-right pr-1 hidden md:block">
 		Photo: Black Skimmers, <a
 			href="https://www.flickr.com/photos/usfwssoutheast/26871026541/"
 			target="_blank"
@@ -72,7 +74,7 @@
 
 		<p class="mt-16">
 			You can download a detailed PDF report of the Blueprint, hubs and corridors, underlying
-			indicators, and landscape-level threats for the selected summary unit. Click the
+			indicators, and other contextual information for the selected summary unit. Click the
 			<b>Export detailed maps and analysis</b> link below the area name. To unselect the area, click
 			the <b>X</b> in the upper right of the sidebar.
 		</p>
@@ -81,9 +83,9 @@
 
 		<h2 class="text-4xl">View point data:</h2>
 		<p class="mt-2">
-			This mode allows you to show values at a specific point for the Blueprint, indicators,
-			threats, and more by drilling into a single 30 meter pixel, the smallest unit of the Blueprint
-			analysis.
+			This mode allows you to show values at a specific point for the Blueprint, indicators, and
+			other contextual information by drilling into a single 30 meter pixel, the smallest unit of
+			the Blueprint analysis.
 		</p>
 
 		<div class="grid grid-cols-0 md:grid-cols-2 gap-8 mt-16">
@@ -147,7 +149,7 @@
 			Filters can help you find the part of the Blueprint that aligns with your mission, interests,
 			or specific question. Use the filters to show areas on the map that fall within a range of
 			values for one or more layers, including the Blueprint, hubs and corridors, underlying
-			indicators, and threats.
+			indicators, and other contextual information.
 		</p>
 
 		<div class="grid grid-cols-0 md:grid-cols-2 gap-8 mt-16">

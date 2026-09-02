@@ -9,7 +9,7 @@
 	import UploadIcon from '~icons/fa-solid/upload'
 	import { cn } from '$lib/utils.js'
 	import { Field, Control, Label, Button as SubmitButton } from '$lib/components/ui/form'
-	import { RadioGroup, RadioGroupItem } from '$lib/components/ui/radio-group'
+	import { Checkbox } from '$lib/components/ui/checkbox'
 	import { Button } from '$lib/components/ui/button'
 	import { Input } from '$lib/components/ui/input'
 	import { ContactDialog } from '$lib/components/dialog'
@@ -26,8 +26,7 @@
 	let isDragValid: boolean | null = $state(null)
 	const schema = z.object({
 		areaName: z.string().default('').optional(),
-		reportType: z.enum(['simple', 'advanced']).default('simple'),
-		advancedReportFormat: z.enum(['pdf', 'xlsx']).default('xlsx'),
+		xlsxReport: z.boolean().default(false),
 		file: z
 			.instanceof(File, {
 				error: 'Please select a file'
@@ -42,14 +41,14 @@
 		onUpdate: function ({ form }) {
 			const {
 				valid,
-				data: { areaName = '', file, reportType, advancedReportFormat }
+				data: { areaName = '', file, xlsxReport }
 			} = form
 
 			if (!valid) {
 				return
 			}
 
-			const reportFormat = reportType === 'advanced' ? advancedReportFormat : 'pdf'
+			const reportFormat = xlsxReport ? 'xlsx' : 'pdf'
 			onSubmit(reportFormat, areaName, file)
 		}
 	})
@@ -132,14 +131,8 @@
 	const isValid = $derived(isFileValid && !$errors.areaName)
 </script>
 
-<div class="container text-lg pt-6 pb-16 leading-snug">
-	<p>
-		Upload a zipped shapefile or ESRI File Geodatabase Feature Class containing your area of
-		interest to generate a detailed report of the Blueprint, underlying indicators, and other
-		contextual information for your area of interest.
-	</p>
-
-	<form enctype="multipart/form-data" use:enhance class="mt-8">
+<div class="container text-lg pt-12 pb-16 leading-snug">
+	<form enctype="multipart/form-data" use:enhance>
 		<div class="grid sm:grid-cols-2 gap-16">
 			<div>
 				<Field {form} name="areaName">
@@ -151,7 +144,7 @@
 					</Control>
 				</Field>
 
-				<Field {form} name="file" class="mt-6">
+				<Field {form} name="file" class="mt-8">
 					<Control>
 						{#snippet children({ props })}
 							<Label
@@ -226,7 +219,7 @@
 							>
 						</div>
 					{:else}
-						<p class="text-sm text-grey-8 mx-4">
+						<p class="text-sm text-grey-8 leading-snug">
 							Note: your files must be in a zip file, and can include only one shapefile or Feature
 							Class, and should represent a relatively small area. For help analyzing larger areas,
 							please <ContactDialog>
@@ -235,150 +228,88 @@
 						</p>
 					{/if}
 				</Field>
-			</div>
-			<div>
-				<Field {form} name="reportType">
-					<div class="text-2xl font-bold">Report Type:</div>
+				<Field {form} name="xlsxReport" class="mt-8 border-t pt-7 border-t-grey-2">
 					<Control>
-						{#snippet children({ props })}
-							<RadioGroup
-								{...props}
-								bind:value={$formData.reportType}
-								class="space-y-4 [&_label]:text-base [&_label]:cursor-pointer [&>label]:flex [&>label]:gap-2"
-							>
-								<label for="reportType-simple">
-									<RadioGroupItem id="reportType-simple" value="simple" />
-									<div class="-mt-1">
-										<div class="font-bold">Simple PDF report</div>
-										<div class="text-muted-foreground leading-tight">
-											Create a detailed PDF report including a map and summary table for every
-											indicator present in the area as well as additional information about
-											urbanization, sea-level rise, and more.
-										</div>
-									</div>
-								</label>
-
-								<label for="reportType-advanced" class="flex gap-2">
-									<RadioGroupItem id="reportType-advanced" value="advanced" />
-									<div class="-mt-1">
-										<div class="font-bold">Advanced report</div>
-										<p class="text-muted-foreground leading-tight">
-											Create a detailed PDF or XLSX report that allows you to configure how your
-											report is created, such as the datasets are included in the report.
-										</p>
-									</div>
-								</label>
-							</RadioGroup>
-						{/snippet}
+						<label for="xlsx-checkbox" class="flex gap-2 text-base leading-tight">
+							<Checkbox
+								id="xlsx-checkbox"
+								aria-label="Create XLSX report instead of PDF"
+								class="cursor-pointer size-5 rounded-xs disabled:border-grey-8/50 border-2 [&_svg]:size-4"
+								bind:checked={$formData.xlsxReport}
+							/>
+							Do you want to create a customizable XLSX spreadsheet with just the tabular results and
+							none of the maps? This is intended to compliment the PDF reports for advanced use cases.
+						</label>
 					</Control>
 				</Field>
-				{#if $formData.reportType === 'advanced'}
-					<div class="ml-7 mt-4">
-						<div>Choose report format:</div>
-						<Field {form} name="advancedReportFormat" class="mt-2">
-							<Control>
-								{#snippet children({ props })}
-									<RadioGroup
-										{...props}
-										bind:value={$formData.advancedReportFormat}
-										class="[&_label]:text-base [&_label]:cursor-pointer [&>label]:flex [&>label]:gap-2 grid grid-cols-2 gap-8"
-									>
-										<label for="advancedReportFormat-pdf">
-											<RadioGroupItem id="advancedReportFormat-pdf" value="pdf" disabled />
-											<div class="-mt-1 font-bold">
-												PDF
-												<span class="class text-sm text-muted-foreground font-normal">
-													(under development)
-												</span>
-											</div>
-										</label>
 
-										<label for="advancedReportFormat-xlsx" class="flex gap-2">
-											<RadioGroupItem id="advancedReportFormat-xlsx" value="xlsx" />
-											<div class="-mt-1 font-bold">XLSX</div>
-										</label>
-									</RadioGroup>
-								{/snippet}
-							</Control>
-						</Field>
-						<div class="grid grid-cols-2 gap-8 text-muted-foreground leading-tight text-sm">
-							<p>
-								Includes a map and summary table for every indicator present in the area as well as
-								additional information about urbanization, sea-level rise, and more. All uploaded
-								areas will be treated as a single area of interest.
-							</p>
-							<p>
-								Includes detailed statistics for each selected dataset present in your areas of
-								interest. Choose to calculate statistics for individual areas or aggregate all areas
-								together.
-							</p>
-						</div>
-					</div>
-				{/if}
+				<div class="flex justify-end mt-8 border-t pt-8 border-t-grey-2">
+					<SubmitButton disabled={!isValid} class="text-xl gap-2">
+						<UploadIcon class="size-5" /> Upload file
+					</SubmitButton>
+				</div>
 			</div>
-		</div>
-		<div class="flex justify-center mt-4 border-t pt-4 border-t-grey-2">
-			<SubmitButton disabled={!isValid} class="text-xl gap-2">
-				<UploadIcon class="size-5" /> Upload file
-			</SubmitButton>
+			<div>
+				<p>
+					Upload a zipped shapefile or ESRI File Geodatabase Feature Class containing your area of
+					interest to generate a detailed PDF report of the Blueprint, underlying indicators, and
+					other contextual information for your area of interest. It includes a map and summary
+					table for every indicator present in the area, as well as additional information about
+					urbanization and sea-level rise.
+					<br /><br />
+					Don't have a shapefile? You can create one using
+					<a href="https://geojson.io/" target="_blank"> geojson.io </a>
+					to draw your area of interest, save as a shapefile, then upload here.
+					<br />
+					<br />
+					<ContactDialog>
+						<span class="text-link hover:underline cursor-pointer">We are here</span>
+					</ContactDialog>
+					to help you interpret and apply this information to your particular application!
+					<br />
+					<br />
+					We are working on resolving some technical challenges to make these these automatically generated
+					reports more accessible to people with disabilities. In the meantime, to request an accessible
+					PDF or other assistance, please contact Hilary Morris at
+					<a href="mailto:hilary_morris@fws.gov"> hilary_morris@fws.gov </a>.
+					<br />
+					<br />
+					You can help us improve the Blueprint and this report by helping us understand your use case:
+					we use this information to provide statistics about how the Blueprint is being used and to prioritize
+					improvements.
+				</p>
+			</div>
 		</div>
 	</form>
 
-	<div class="mt-24">
-		<p>
-			Don't have a shapefile? You can create one using
-			<a href="https://geojson.io/" target="_blank"> geojson.io </a>
-			to draw your area of interest, save as a shapefile, then upload here.
-			<br />
-			<br />
-			<ContactDialog>
-				<span class="text-link hover:underline cursor-pointer">We are here</span>
-			</ContactDialog>
-			to help you interpret and apply this information to your particular application!
-			<br />
-			<br />
-			We are working on resolving some technical challenges to make these these automatically generated
-			reports more accessible to people with disabilities. In the meantime, to request an accessible PDF
-			or other assistance, please contact Hilary Morris at
-			<a href="mailto:hilary_morris@fws.gov"> hilary_morris@fws.gov </a>.
-			<br />
-			<br />
-			You can help us improve the Blueprint and this report by helping us understand your use case: we
-			use this information to provide statistics about how the Blueprint is being used and to prioritize
-			improvements.
-		</p>
+	<hr />
+	<h2 class="text-2xl">Examples of what is inside</h2>
+	<div class="grid grid-cols-2 md:grid-cols-5 mt-2 gap-4 [&_img]:border [&_img]:border-grey-2">
+		<enhanced:img
+			src="$images/report/report_sm_1.png"
+			alt="Tool report example screenshot 1"
+			loading="lazy"
+		/>
+		<enhanced:img
+			src="$images/report/report_sm_2.png"
+			alt="Tool report example screenshot 2"
+			loading="lazy"
+		/>
+		<enhanced:img
+			src="$images/report/report_sm_3.png"
+			alt="Tool report example screenshot 3"
+			loading="lazy"
+		/>
+		<enhanced:img
+			src="$images/report/report_sm_4.png"
+			alt="Tool report example screenshot 4"
+			loading="lazy"
+		/>
+		<enhanced:img
+			src="$images/report/report_sm_5.png"
+			alt="Tool report example screenshot 5"
+			loading="lazy"
+		/>
 	</div>
-
-	{#if $formData.reportFormat === 'pdf'}
-		<hr />
-		<h2 class="text-2xl">Examples of what is inside</h2>
-		<div class="grid grid-cols-2 md:grid-cols-5 mt-2 gap-4 [&_img]:border [&_img]:border-grey-2">
-			<enhanced:img
-				src="$images/report/report_sm_1.png"
-				alt="Tool report example screenshot 1"
-				loading="lazy"
-			/>
-			<enhanced:img
-				src="$images/report/report_sm_2.png"
-				alt="Tool report example screenshot 2"
-				loading="lazy"
-			/>
-			<enhanced:img
-				src="$images/report/report_sm_3.png"
-				alt="Tool report example screenshot 3"
-				loading="lazy"
-			/>
-			<enhanced:img
-				src="$images/report/report_sm_4.png"
-				alt="Tool report example screenshot 4"
-				loading="lazy"
-			/>
-			<enhanced:img
-				src="$images/report/report_sm_5.png"
-				alt="Tool report example screenshot 5"
-				loading="lazy"
-			/>
-		</div>
-		<p class="mt-2 text-lg">...and much more!</p>
-	{/if}
+	<p class="mt-2 text-lg">...and much more!</p>
 </div>

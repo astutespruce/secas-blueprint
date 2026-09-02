@@ -120,7 +120,6 @@ const extractIndicators = (packedPercents: Record<string, number[]>, subregions:
 /**
  * Unpack encoded attributes in feature data.
  * @param {Object} properties
-
  * @param {Object} subregionIndex - lookup of subregions by value
  */
 export const unpackFeatureData = (properties: object, subregionIndex) => {

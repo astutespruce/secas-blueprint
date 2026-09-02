@@ -96,7 +96,7 @@
 		// If protected areas tiles aren't loaded yet, schedule a callback once tiles are loaded
 		if (!(
 			map?.style?._otherSourceCaches.protectedAreas &&
-			map?.style._otherSourceCaches.protectedAreas.loaded()
+			map.style._otherSourceCaches.protectedAreas.loaded()
 		)) {
 			mapState.setData({
 				type: 'pixel',
@@ -661,7 +661,7 @@
 		/* eslint-disable @typescript-eslint/no-unused-expressions */
 		mapState.mapMode
 		mapState.data
-		/* eslint-enable-next-line @typescript-eslint/no-unused-expressions */
+		/* eslint-enable @typescript-eslint/no-unused-expressions */
 
 		if (!untrack(() => isLoaded)) {
 			return
