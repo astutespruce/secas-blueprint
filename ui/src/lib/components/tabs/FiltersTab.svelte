@@ -14,7 +14,7 @@
 	import { setIntersection } from '$lib/util/data'
 	import type { Filter } from '$lib/types'
 	import { cn } from '$lib/utils'
-	import { indicatorGroups, indicatorsIndex } from '$lib/config/constants'
+	import { indicatorGroups, parcas, slrDepth, urban, wildfireRisk } from '$lib/config/constants'
 	import {
 		priorityFilters as rawPriorityFilters,
 		indicatorGroupFilters as rawIndicatorGroupFilters,
@@ -37,7 +37,23 @@
 		t: TerrestrialIcon
 	}
 
+	// PARCAs, urban, wildfire only available in the continental southeast
+	export const continentalOnlyDatasets = new Set([parcas.id, urban.id, wildfireRisk.id])
+
 	let { priorityFilters, otherInfoFilters, ...indicatorGroupFilters } = $derived.by(() => {
+		const otherInfoDatasetCanBeVisible = (id: string) => {
+			if (continentalOnlyDatasets.has(id)) {
+				return mapState.visibleRegions.has('continental')
+			}
+			// don't show SLR for marine areas
+			if (id === slrDepth.id) {
+				return (
+					mapState.visibleRegions.has('continental') || mapState.visibleRegions.has('caribbean')
+				)
+			}
+			return true
+		}
+
 		return {
 			priorityFilters: rawPriorityFilters
 				.map((entry) => ({
@@ -45,16 +61,12 @@
 					...mapState.filters[entry.id],
 					canBeVisible: mapState.visibleSubregions.size > 0
 				}))
-				.filter(
-					({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled // mapState.filters[id].enabled
-				),
+				.filter(({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled),
 
 			...Object.fromEntries(
 				Object.entries(rawIndicatorGroupFilters).map(([id, { indicators }]) => {
 					const indicatorFilters = indicators
 						.map(({ id, subregions: indicatorSubregions, ...rest }) => {
-							// const { subregions: indicatorSubregions, values, ...rest } = indicatorsIndex[id]
-
 							return {
 								id,
 								...rest,
@@ -75,13 +87,8 @@
 				.map((entry) => ({
 					...entry,
 					...mapState.filters[entry.id],
-					canBeVisible:
-						(entry.id !== 'urban' &&
-							entry.id !== 'wildfireRisk' &&
-							mapState.visibleRegions.size > 0) ||
-						// urban / wildfire not in Caribbean
-						((entry.id === 'urban' || entry.id === 'wildfireRisk') &&
-							[...mapState.visibleRegions].filter((s) => s !== 'caribbean').length > 0)
+
+					canBeVisible: otherInfoDatasetCanBeVisible(entry.id)
 				}))
 				.filter(({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled) // mapState.filters[id].enabled)
 		}

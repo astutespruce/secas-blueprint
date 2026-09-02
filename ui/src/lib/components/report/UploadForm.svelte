@@ -4,10 +4,12 @@
 	import { zod4, zod4Client } from 'sveltekit-superforms/adapters'
 	import { z } from 'zod'
 
-	import Download from '~icons/fa-solid/download'
+	import ZipFileIcon from '~icons/fa-solid/file-archive'
 	import ExclamationTriangle from '~icons/fa-solid/exclamation-triangle'
+	import UploadIcon from '~icons/fa-solid/upload'
 	import { cn } from '$lib/utils.js'
 	import { Field, Control, Label, Button as SubmitButton } from '$lib/components/ui/form'
+	import { Checkbox } from '$lib/components/ui/checkbox'
 	import { Button } from '$lib/components/ui/button'
 	import { Input } from '$lib/components/ui/input'
 	import { ContactDialog } from '$lib/components/dialog'
@@ -24,6 +26,7 @@
 	let isDragValid: boolean | null = $state(null)
 	const schema = z.object({
 		areaName: z.string().default('').optional(),
+		xlsxReport: z.boolean().default(false),
 		file: z
 			.instanceof(File, {
 				error: 'Please select a file'
@@ -38,14 +41,15 @@
 		onUpdate: function ({ form }) {
 			const {
 				valid,
-				data: { areaName = '', file }
+				data: { areaName = '', file, xlsxReport }
 			} = form
 
 			if (!valid) {
 				return
 			}
 
-			onSubmit(areaName, file)
+			const reportFormat = xlsxReport ? 'xlsx' : 'pdf'
+			onSubmit(reportFormat, areaName, file)
 		}
 	})
 
@@ -128,9 +132,9 @@
 </script>
 
 <div class="container text-lg pt-12 pb-16 leading-snug">
-	<div class="grid grid-cols-2 gap-16">
-		<div>
-			<form enctype="multipart/form-data" use:enhance>
+	<form enctype="multipart/form-data" use:enhance>
+		<div class="grid sm:grid-cols-2 gap-16">
+			<div>
 				<Field {form} name="areaName">
 					<Control>
 						{#snippet children({ props })}
@@ -140,7 +144,7 @@
 					</Control>
 				</Field>
 
-				<Field {form} name="file" class="mt-12">
+				<Field {form} name="file" class="mt-8">
 					<Control>
 						{#snippet children({ props })}
 							<Label
@@ -150,7 +154,7 @@
 								ondrop={handleDrop}
 								ondragleave={handleDragOut}
 							>
-								<div class="text-2xl font-bold">Choose Area of Interest:</div>
+								<div class="text-2xl font-bold">Area of Interest:</div>
 								<Input
 									type="file"
 									{...props}
@@ -162,7 +166,7 @@
 								/>
 								<div
 									class={cn(
-										'border-2 border-grey-8/50 rounded-lg bg-grey-1/40 border-dashed p-6 flex flex-col justify-center items-center text-center cursor-pointer mt-2',
+										'border-2 border-grey-8/50 rounded-lg bg-grey-1/40 border-dashed p-6 flex flex-col justify-center cursor-pointer mt-2',
 										{
 											'border-error': isDragValid === false || $errors.file,
 											'bg-error/10': isDragValid === false || $errors.file,
@@ -178,13 +182,14 @@
 									aria-label="Click to browse for files or drop file over this area"
 									tabindex={0}
 								>
-									<div>
-										<Download class="size-8" aria-hidden="true" />
+									<div class="flex gap-2 items-center">
+										<ZipFileIcon class="size-6 flex-none" aria-hidden="true" />
+										<div class="text-2xl font-bold">Drop your zip file here</div>
 									</div>
-									<p class="text-2xl font-bold mt-2">Drop your zip file here</p>
-									<p class="text-lg text-grey-8 leading-tight mt-4">
-										Zip file must contain all associated files for a shapefile (at least .shp, .prj,
-										.shx) <br />or file geodatabase (.gdb).
+
+									<p class="text-base text-grey-8 leading-tight mt-4">
+										Your zip file must contain all associated files for a shapefile (at least .shp,
+										.prj, .shx) or file geodatabase (.gdb).
 										<br />
 										<br />
 										Max size: {MAXSIZE_MB} MB.
@@ -192,7 +197,7 @@
 								</div>
 
 								{#if isFileValid}
-									<div class="text-lg ml-4">
+									<div class="text-lg">
 										Selected: {$formData.file.name}
 									</div>
 								{/if}
@@ -206,64 +211,79 @@
 							{/if}
 						{/snippet}
 					</Control>
-					<p class="text-sm text-grey-8 mx-4">
-						Note: your files must be in a zip file, and can include only one shapefile or Feature
-						Class, and should represent a relatively small area. For help analyzing larger areas,
-						please <ContactDialog>
-							<span class="text-link hover:underline cursor-pointer"> contact us</span>
-						</ContactDialog>.
-					</p>
-				</Field>
 
-				<div class="flex justify-between border-t border-t-grey-2 pt-8 mt-8">
-					<div>
-						{#if isFileValid}
-							<Button onclick={handleResetFile} variant="secondary" class="text-xl"
+					{#if isFileValid}
+						<div class="flex justify-center mt-8">
+							<Button onclick={handleResetFile} variant="destructive" class="text-base"
 								>Choose a different file</Button
 							>
-						{/if}
-					</div>
-					<SubmitButton disabled={!isValid} class="text-xl">Create Report</SubmitButton>
+						</div>
+					{:else}
+						<p class="text-sm text-grey-8 leading-snug">
+							Note: your files must be in a zip file, and can include only one shapefile or Feature
+							Class, and should represent a relatively small area. For help analyzing larger areas,
+							please <ContactDialog>
+								<span class="text-link hover:underline cursor-pointer"> contact us</span>
+							</ContactDialog>.
+						</p>
+					{/if}
+				</Field>
+				<Field {form} name="xlsxReport" class="mt-8 border-t pt-7 border-t-grey-2">
+					<Control>
+						<label for="xlsx-checkbox" class="flex gap-2 text-base leading-tight">
+							<Checkbox
+								id="xlsx-checkbox"
+								aria-label="Create XLSX report instead of PDF"
+								class="cursor-pointer size-5 rounded-xs disabled:border-grey-8/50 border-2 [&_svg]:size-4"
+								bind:checked={$formData.xlsxReport}
+							/>
+							Do you want to create a customizable XLSX spreadsheet with just the tabular results and
+							none of the maps? This is intended to complement the PDF reports for advanced use cases.
+						</label>
+					</Control>
+				</Field>
+
+				<div class="flex justify-end mt-8 border-t pt-8 border-t-grey-2">
+					<SubmitButton disabled={!isValid} class="text-xl gap-2">
+						<UploadIcon class="size-5" /> Upload file
+					</SubmitButton>
 				</div>
-			</form>
+			</div>
+			<div>
+				<p>
+					Upload a zipped shapefile or ESRI File Geodatabase Feature Class containing your area of
+					interest to generate a detailed PDF report of the Blueprint, underlying indicators, and
+					other contextual information for your area of interest. It includes a map and summary
+					table for every indicator present in the area, as well as additional information about
+					urbanization and sea-level rise.
+					<br /><br />
+					Don't have a shapefile? You can create one using
+					<a href="https://geojson.io/" target="_blank"> geojson.io </a>
+					to draw your area of interest, save as a shapefile, then upload here.
+					<br />
+					<br />
+					<ContactDialog>
+						<span class="text-link hover:underline cursor-pointer">We are here</span>
+					</ContactDialog>
+					to help you interpret and apply this information to your particular application!
+					<br />
+					<br />
+					We are working on resolving some technical challenges to make these these automatically generated
+					reports more accessible to people with disabilities. In the meantime, to request an accessible
+					PDF or other assistance, please contact Hilary Morris at
+					<a href="mailto:hilary_morris@fws.gov"> hilary_morris@fws.gov </a>.
+					<br />
+					<br />
+					You can help us improve the Blueprint and this report by helping us understand your use case:
+					we use this information to provide statistics about how the Blueprint is being used and to prioritize
+					improvements.
+				</p>
+			</div>
 		</div>
-		<div>
-			<p>
-				Upload a zipped shapefile or ESRI File Geodatabase Feature Class containing your area of
-				interest to generate a detailed PDF report of the Blueprint, underlying indicators, and
-				other contextual information for your area of interest. It includes a map and summary table
-				for every indicator present in the area, as well as additional information about
-				urbanization and sea-level rise.
-				<br />
-				<br />
-				Don&apos;t have a shapefile? You can create one using
-				<a href="https://geojson.io/" target="_blank"> geojson.io </a>
-				to draw your area of interest, save as a shapefile, then upload here.
-				<br />
-				<br />
-				<ContactDialog>
-					<span class="text-link hover:underline cursor-pointer">We are here</span>
-				</ContactDialog>
-				to help you interpret and apply this information to your particular application!
-				<br />
-				<br />
-				We are working on resolving some technical challenges to make these these automatically generated
-				reports more accessible to people with disabilities. In the meantime, to request an accessible
-				PDF or other assistance, please contact Hilary Morris at
-				<a href="mailto:hilary_morris@fws.gov"> hilary_morris@fws.gov </a>.
-				<br />
-				<br />
-				You can help us improve the Blueprint and this report by helping us understand your use case:
-				we use this information to provide statistics about how the Blueprint is being used and to prioritize
-				improvements.
-			</p>
-		</div>
-	</div>
+	</form>
 
 	<hr />
-
 	<h2 class="text-2xl">Examples of what is inside</h2>
-
 	<div class="grid grid-cols-2 md:grid-cols-5 mt-2 gap-4 [&_img]:border [&_img]:border-grey-2">
 		<enhanced:img
 			src="$images/report/report_sm_1.png"

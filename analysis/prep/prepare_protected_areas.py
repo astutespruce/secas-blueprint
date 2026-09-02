@@ -55,9 +55,7 @@ df = read_dataframe(
 df = df.loc[~df.Agg_Src.str.contains("_BOEM_")].drop(columns=["Agg_Src"])
 
 # drop proclamation boundaries but retain military lands that only show up as proclamation
-df = df.loc[(df.Category != "Proclamation") | (df.Des_Tp == "MIL")].reset_index(
-    drop=True
-)
+df = df.loc[(df.Category != "Proclamation") | (df.Des_Tp == "MIL")].reset_index(drop=True)
 
 df = df.drop_duplicates()
 
@@ -82,9 +80,7 @@ df = df.rename(columns={"Unit_Nm": "name", "Loc_Own": "owner"})
 df["name"] = df.name.str.replace(".Wilderness Area", " (Wilderness Area)", regex=False)
 
 
-df.loc[(df.owner == "Fee") & (df.Own_Name == "FWS"), "owner"] = (
-    "US Fish and Wildlife Service"
-)
+df.loc[(df.owner == "Fee") & (df.Own_Name == "FWS"), "owner"] = "US Fish and Wildlife Service"
 
 df["owner"] = (
     df.owner.replace("UNK", "")
@@ -96,9 +92,7 @@ df["owner"] = (
     .replace("Private Owners", "Private")
     .replace("NGO", "Non-Governmental Organization")
     .replace("UNITED STATES ARMY", "US Army")
-    .str.replace(
-        "United States of America", "US Federal Government", regex=False, case=False
-    )
+    .str.replace("United States of America", "US Federal Government", regex=False, case=False)
     .replace("United Sates of America", "US Federal Government")
     .replace("US Govt", "US Federal Government")
     .replace("United States Govt", "US Federal Government")
@@ -139,14 +133,16 @@ df.owner.drop_duplicates().to_csv("/tmp/names.csv", index=False)
 
 # Use FGB (instead of Feather) for more optimal reading by area of interest
 print("Writing files")
-write_dataframe(df[["name", "owner", "geometry"]], out_dir / "protected_areas.fgb")
+write_dataframe(
+    df[["name", "owner", "geometry"]], data_dir / "inputs" / PROTECTED_AREAS["filename"].replace(".tif", ".fgb")
+)
 
 
 ################################################################################
 ### Rasterize to protected (1) or not (0)
 ################################################################################
 
-protected_areas = pd.DataFrame(PROTECTED_AREAS)
+protected_areas = pd.DataFrame(PROTECTED_AREAS["values"])
 protected_areas_colormap = (
     protected_areas.set_index("value")
     .color.apply(lambda x: hex_to_uint8(x) + (255,) if x else (255, 255, 255, 0))
@@ -173,7 +169,7 @@ data = rasterize(
 
 data = np.where(extent_data == 1, data, NODATA)
 
-outfilename = out_dir / "protected_areas.tif"
+outfilename = data_dir / "inputs" / PROTECTED_AREAS["filename"]
 write_raster(
     outfilename,
     data,
@@ -191,7 +187,7 @@ add_overviews(outfilename)
 
 create_lowres_mask(
     outfilename,
-    out_dir / "protected_areas_mask.tif",
+    str(outfilename).replace(".tif", "_mask.tif"),
     resolution=MASK_RESOLUTION,
     ignore_zero=False,
 )

@@ -1,19 +1,19 @@
 import os
-from pathlib import Path
 import warnings
+from pathlib import Path
 
-from progress.bar import Bar
 import geopandas as gp
-import pandas as pd
-from pyogrio import read_dataframe, write_dataframe
 import numpy as np
+import pandas as pd
 import rasterio
-from rasterio.features import rasterize
 import shapely
+from progress.bar import Bar
+from pyogrio import read_dataframe, write_dataframe
+from rasterio.features import rasterize
 
 from analysis.constants import DATA_CRS, GEO_CRS, M2_ACRES, SECAS_HUC2
 from analysis.lib.geometry import make_valid, to_dict
-from analysis.lib.raster import write_raster, add_overviews, get_window
+from analysis.lib.raster import add_overviews, get_window, write_raster
 
 warnings.filterwarnings("ignore", message=".*polygon with more than 100 parts.*")
 
@@ -42,8 +42,7 @@ merged = None
 for huc2 in SECAS_HUC2:
     df = (
         read_dataframe(
-            src_dir
-            / f"summary_units/huc12/WBD_{huc2:02}_HU2_GDB/WBD_{huc2:02}_HU2_GDB.gdb",
+            src_dir / f"summary_units/huc12/WBD_{huc2:02}_HU2_GDB/WBD_{huc2:02}_HU2_GDB.gdb",
             layer="WBDHU12",
             use_arrow=True,
             mask=bnd_4326,
@@ -73,13 +72,11 @@ tree = shapely.STRtree(huc12.geometry.values)
 ix = tree.query(bnd, predicate="contains")
 
 edge_df = huc12.loc[~huc12.id.isin(huc12.iloc[ix].id)].copy()
-edge_df["overlap"] = (
-    100
-    * shapely.area(shapely.intersection(edge_df.geometry.values, bnd))
-    / shapely.area(edge_df.geometry.values)
+edge_df["overlap_acres"] = (
+    100 * shapely.area(shapely.intersection(edge_df.geometry.values, bnd)) / shapely.area(edge_df.geometry.values)
 )
 
-drop_ids = edge_df.loc[edge_df.overlap < 50].id
+drop_ids = edge_df.loc[edge_df.overlap_acres < 50].id
 
 print(f"Dropping {len(drop_ids)} HUC12s that do not sufficiently overlap input areas")
 huc12 = huc12.loc[~huc12.id.isin(drop_ids)].copy()
@@ -91,9 +88,7 @@ huc12 = huc12.join(huc12_wgs84.bounds)
 huc12["value"] = np.arange(1, len(huc12) + 1).astype("uint16")
 
 # get subregions list for each huc12
-left, right = shapely.STRtree(huc12.geometry.values).query(
-    subregion_df.geometry.values, predicate="intersects"
-)
+left, right = shapely.STRtree(huc12.geometry.values).query(subregion_df.geometry.values, predicate="intersects")
 subregions = (
     pd.DataFrame(
         {
@@ -105,6 +100,8 @@ subregions = (
     .groupby(level=0)
     .agg({"subregions": "unique", "regions": "unique"})
 )
+subregions["subregions"] = subregions.subregions.apply(list)
+subregions["regions"] = subregions.regions.apply(list)
 
 huc12 = huc12.join(subregions, on="id")
 
@@ -113,8 +110,7 @@ huc12 = huc12.join(subregions, on="id")
 print("Reading marine hexes...")
 
 conus = read_dataframe(
-    src_dir
-    / "summary_units/hex/EPA_Hexagons_40km_Unioned_w_GoMMAPPS_Hegagons_40km.shp",
+    src_dir / "summary_units/hex/EPA_Hexagons_40km_Unioned_w_GoMMAPPS_Hegagons_40km.shp",
     columns=["HEXID", "HEXID_1"],
     use_arrow=True,
 ).to_crs(DATA_CRS)
@@ -130,7 +126,7 @@ caribbean["id"] = caribbean.index + conus.id.max() + 1
 
 marine = pd.concat([conus, caribbean], ignore_index=True)
 marine["id"] = marine.id.astype(str)
-marine["name"] = "Hex ID: " + marine.id
+marine["name"] = ("Hex ID: " + marine.id).str.strip()
 
 
 # select out those within the marine subregions / Caribbean
@@ -146,9 +142,7 @@ print("Dissolving HUC12s")
 tree = shapely.STRtree(marine.geometry.values)
 left, right = tree.query(huc12.geometry.values, predicate="intersects")
 huc12_bnd = shapely.polygons(
-    shapely.get_exterior_ring(
-        shapely.get_parts(shapely.union_all(huc12.geometry.values.take(left)))
-    )
+    shapely.get_exterior_ring(shapely.get_parts(shapely.union_all(huc12.geometry.values.take(left))))
 )
 
 # drop any that are completely contained
@@ -180,22 +174,16 @@ clipped["overlap_acres"] = 0.0
 clipped.loc[ix, "overlap_acres"] = clipped.loc[ix].acres
 
 ix = clipped.overlap_acres == 0
-clipped.loc[ix, "overlap_acres"] = (
-    shapely.area(shapely.intersection(clipped.loc[ix].geometry.values, bnd)) * M2_ACRES
-)
+clipped.loc[ix, "overlap_acres"] = shapely.area(shapely.intersection(clipped.loc[ix].geometry.values, bnd)) * M2_ACRES
 
 # only keep those larger than a 30x30 m pixel
 clipped = clipped.loc[clipped.overlap_acres >= 0.222].drop(columns=["overlap_acres"])
 
-marine = pd.concat([marine.take(keep_ix), clipped], ignore_index=True).reset_index(
-    drop=True
-)
+marine = pd.concat([marine.take(keep_ix), clipped], ignore_index=True).reset_index(drop=True)
 
 # coerce all to multi
 ix = shapely.get_type_id(marine.geometry.values) == 3
-marine.loc[ix, "geometry"] = marine.loc[ix].geometry.apply(
-    lambda g: shapely.multipolygons([g])
-)
+marine.loc[ix, "geometry"] = marine.loc[ix].geometry.apply(lambda g: shapely.multipolygons([g]))
 
 marine_wgs84 = marine.to_crs(GEO_CRS)
 marine = marine.join(marine_wgs84.bounds)
@@ -218,6 +206,9 @@ subregions = (
     .groupby(level=0)
     .agg({"subregions": "unique", "regions": "unique"})
 )
+subregions["subregions"] = subregions.subregions.apply(list)
+subregions["regions"] = subregions.regions.apply(list)
+
 marine = marine.join(subregions, on="id")
 
 
@@ -245,21 +236,19 @@ with rasterio.open(blueprint_extent_filename) as src:
 
     # calculate pixel count of each unit
     counts = np.zeros((len(tmp_huc12),), dtype="uint")
-    outside_se_counts = np.zeros((len(tmp_huc12),), dtype="uint")
-    for i, (_, row) in Bar("Rasterizing units", max=len(tmp_huc12)).iter(
-        enumerate(tmp_huc12.iterrows())
-    ):
+    outside_extent_counts = np.zeros((len(tmp_huc12),), dtype="uint")
+    for i, (_, row) in Bar("Rasterizing units", max=len(tmp_huc12)).iter(enumerate(tmp_huc12.iterrows())):
         unit_window = get_window(src, (row.minx, row.miny, row.maxx, row.maxy))
         in_unit = data[unit_window.toslices()] == row.value
         counts[i] = in_unit.sum().astype("uint")
 
-        outside_se = extent_data[unit_window.toslices()][in_unit] == nodata
-        outside_se_counts[i] = outside_se.sum().astype("uint")
+        outside_extent = extent_data[unit_window.toslices()][in_unit] == nodata
+        outside_extent_counts[i] = outside_extent.sum().astype("uint")
 
     huc12["pixels"] = counts
     cellsize = src.res[0] * src.res[0] * M2_ACRES
     huc12["rasterized_acres"] = counts * cellsize
-    huc12["outside_se"] = outside_se_counts * cellsize
+    huc12["outside_extent_acres"] = outside_extent_counts * cellsize
 
     outfilename = bnd_dir / "huc12.tif"
     write_raster(outfilename, data, transform=src.transform, crs=src.crs, nodata=0)
@@ -277,21 +266,19 @@ with rasterio.open(blueprint_extent_filename) as src:
 
     # calculate pixel count of each unit
     counts = np.zeros((len(tmp_marine),), dtype="uint")
-    outside_se_counts = np.zeros((len(tmp_marine),), dtype="uint")
-    for i, (_, row) in Bar("Rasterizing units", max=len(tmp_marine)).iter(
-        enumerate(tmp_marine.iterrows())
-    ):
+    outside_extent_counts = np.zeros((len(tmp_marine),), dtype="uint")
+    for i, (_, row) in Bar("Rasterizing units", max=len(tmp_marine)).iter(enumerate(tmp_marine.iterrows())):
         unit_window = get_window(src, (row.minx, row.miny, row.maxx, row.maxy))
         in_unit = data[unit_window.toslices()] == row.value
         counts[i] = in_unit.sum().astype("uint")
 
-        outside_se = extent_data[unit_window.toslices()][in_unit] == nodata
-        outside_se_counts[i] = outside_se.sum().astype("uint")
+        outside_extent = extent_data[unit_window.toslices()][in_unit] == nodata
+        outside_extent_counts[i] = outside_extent.sum().astype("uint")
 
     marine["pixels"] = counts
     cellsize = src.res[0] * src.res[0] * M2_ACRES
     marine["rasterized_acres"] = counts * cellsize
-    marine["outside_se"] = outside_se_counts * cellsize
+    marine["outside_extent_acres"] = outside_extent_counts * cellsize
 
     outfilename = bnd_dir / "marine_hex.tif"
     write_raster(outfilename, data, transform=src.transform, crs=src.crs, nodata=0)

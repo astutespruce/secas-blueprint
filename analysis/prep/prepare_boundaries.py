@@ -48,15 +48,9 @@ subregion_df = (
     .sort_values(by="geometry")
 )
 
-subregion_df["geometry"] = shapely.make_valid(
-    shapely.force_2d(subregion_df.geometry.values)
-)
+subregion_df["geometry"] = shapely.make_valid(shapely.force_2d(subregion_df.geometry.values))
 
-subregion_df = (
-    dissolve(subregion_df, by="subregion")
-    .reset_index()
-    .rename(columns={"index": "value"})
-)
+subregion_df = dissolve(subregion_df, by="subregion").reset_index().rename(columns={"index": "value"})
 
 subregion_df["region"] = subregion_df.subregion.map(
     {
@@ -140,9 +134,7 @@ with rasterio.open(src_dir / "blueprint/SEBlueprintExtent2025.tif") as src:
     subregion_df.to_feather(out_dir / "subregions.feather")
     write_dataframe(subregion_df, bnd_dir / "subregions.fgb")
 
-    subregion_df[["value", "subregion", "region"]].to_json(
-        constants_dir / "subregions.json", orient="records"
-    )
+    subregion_df[["value", "subregion", "region"]].to_json(constants_dir / "subregions.json", orient="records")
 
     ### Rasterize subregions to 480m resolution to check against indicators
     subregion_transform = Affine(
@@ -283,7 +275,7 @@ df.to_feather(out_dir / "parcas.feather")
 
 ### Rasterize PARCAs to in PARCA (1) or not (0)
 parcas_colormap = (
-    pd.DataFrame(PARCAS)
+    pd.DataFrame(PARCAS["values"])
     .set_index("value")
     .color.apply(lambda x: hex_to_uint8(x) + (255,) if x else (255, 255, 255, 0))
     .to_dict()
@@ -310,7 +302,7 @@ data = rasterize(
 
 data = np.where(extent_data == 1, data, NODATA)
 
-outfilename = out_dir / "parcas.tif"
+outfilename = data_dir / "inputs" / PARCAS["filename"]
 write_raster(
     outfilename,
     data,
@@ -328,7 +320,7 @@ add_overviews(outfilename)
 
 create_lowres_mask(
     outfilename,
-    out_dir / "parcas_mask.tif",
+    str(outfilename).replace(".tif", "_mask.tif"),
     resolution=MASK_RESOLUTION,
     ignore_zero=False,
 )
@@ -347,10 +339,7 @@ box = shapely.box(*outer_box)
 df["geometry"] = shapely.difference(box, df.geometry.values)
 df = df.to_crs(DATA_CRS).explode(ignore_index=True)
 df = df.loc[
-    df.index.isin(
-        shapely.STRtree(df.geometry.values).query(bnd_geom, predicate="intersects")
-    )
-    | (df.area >= 1e10)
+    df.index.isin(shapely.STRtree(df.geometry.values).query(bnd_geom, predicate="intersects")) | (df.area >= 1e10)
 ].to_crs(GEO_CRS)
 
 df = gp.GeoDataFrame(geometry=[shapely.multipolygons(df.geometry.values)], crs=GEO_CRS)

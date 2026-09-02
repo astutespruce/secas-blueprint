@@ -1,4 +1,4 @@
-import { indexBy, sortByFunc } from '$lib/util/data'
+import { indexBy } from '$lib/util/data'
 import type {
 	Indicator,
 	PixelLayerBounds,
@@ -9,7 +9,6 @@ import type {
 
 import {
 	blueprint,
-	blueprintCategories,
 	corridors,
 	indicatorGroups,
 	indicatorsIndex,
@@ -17,7 +16,6 @@ import {
 	protectedAreas,
 	urban,
 	slrDepth,
-	slrNodata,
 	wildfireRisk,
 	pixelLayers0,
 	pixelLayers1,
@@ -80,86 +78,79 @@ pixelLayers.forEach(({ encoding }, textureIndex) => {
 
 const coreLayers: PixelLayer[] = [
 	{
-		id: 'blueprint',
+		id: blueprint.id,
 		label: 'Blueprint priority',
 		valueLabel: 'for a connected network of lands and waters', // used in legend
-		// sort colors in ascending value; blueprint is in descending order
-		colors: blueprint.map(({ color, value }) => (value === 0 ? null : color)).reverse(),
-		categories: blueprintCategories,
-		layer: pixelLayerIndex.blueprint
+		colors: blueprint.values.map(({ color, value }) => (value === 0 ? null : color)),
+		categories: blueprint.values.filter(({ value }) => value > 0),
+		layer: pixelLayerIndex[blueprint.id]
 	},
 	{
-		id: 'corridors',
+		id: corridors.id,
 		label: 'Hubs and corridors',
-		colors: corridors
-			.slice()
-			.sort(sortByFunc('value'))
-			.map(({ color }) => color),
-		categories: corridors
+		colors: corridors.values.map(({ color }) => color),
+		categories: corridors.values
 			.filter(({ value }) => value > 0)
 			.map(({ value, label, color }) => ({
 				value,
 				label,
 				color
-				// type: 'fill'
 			})),
-		layer: pixelLayerIndex.corridors
+		layer: pixelLayerIndex[corridors.id]
 	}
 ]
 
 const otherInfoLayers: PixelLayer[] = [
 	{
-		id: 'slr',
-		label: 'Flooding extent by projected sea-level rise',
-		colors: slrDepth.concat(slrNodata).map(({ color }) => color),
-		categories: slrDepth
-			.concat(slrNodata.filter(({ value }) => value !== 13))
-			.map(({ label, ...rest }, i) => ({
+		id: slrDepth.id,
+		label: slrDepth.label,
+		colors: slrDepth.values.map(({ color }) => color),
+		categories: slrDepth.values
+			.filter(({ value }) => value !== 13)
+			.map(({ label, ...rest }) => ({
 				...rest,
-				label:
-					/* eslint-disable-next-line no-nested-ternary */
-					i === 1 ? `${label} foot` : i <= 10 ? `${label} feet` : label,
+				label,
 				outlineWidth: 1,
 				outlineColor: 'grey.5'
 			})),
-		layer: pixelLayerIndex.slr
+		layer: pixelLayerIndex[slrDepth.id]
 	},
 	{
-		id: 'parcas',
-		label: 'Priority Amphibian and Reptile Conservation Areas',
-		colors: parcas.map(({ color }) => color),
-		categories: parcas.filter(({ color }) => color !== null),
-		layer: pixelLayerIndex.parcas
+		id: parcas.id,
+		label: parcas.label,
+		colors: parcas.values.map(({ color }) => color),
+		categories: parcas.values.filter(({ color }) => color !== null),
+		layer: pixelLayerIndex[parcas.id]
 	},
 	{
-		id: 'urban',
-		label: 'Probability of urbanization by 2060',
-		colors: urban.map(({ color }) => color),
-		categories: urban.map(({ color, ...rest }) => ({
+		id: urban.id,
+		label: urban.label,
+		colors: urban.values.map(({ color }) => color),
+		categories: urban.values.map(({ color, ...rest }) => ({
 			...rest,
 			color: color || '#FFFFFF',
 			outlineWidth: 1,
 			outlineColor: 'grey.5'
 		})),
-		layer: pixelLayerIndex.urban
+		layer: pixelLayerIndex[urban.id]
 	},
 	{
-		id: 'protectedAreas',
-		label: 'Protected areas',
-		colors: protectedAreas.map(({ color }) => color),
-		categories: protectedAreas.filter(({ color }) => color !== null),
-		layer: pixelLayerIndex.protectedAreas
+		id: protectedAreas.id,
+		label: protectedAreas.label,
+		colors: protectedAreas.values.map(({ color }) => color),
+		categories: protectedAreas.values.filter(({ color }) => color !== null),
+		layer: pixelLayerIndex[protectedAreas.id]
 	},
 	{
-		id: 'wildfireRisk',
-		label: 'Wildfire likelihood (annual burn probability)',
-		colors: wildfireRisk.map(({ color }) => color),
+		id: wildfireRisk.id,
+		label: wildfireRisk.label,
+		colors: wildfireRisk.values.map(({ color }) => color),
 		// sort in descending order
 		// NOTE: this uses a custom legend for simple label values, not the full
 		// set of categories
 		categories: Object.values(
 			Object.fromEntries(
-				wildfireRisk
+				wildfireRisk.values
 					.map(({ label, color, ...rest }) => ({
 						label: label.split(' (')[0],
 						color: color || '#FFFFFF',
@@ -171,7 +162,7 @@ const otherInfoLayers: PixelLayer[] = [
 					.reverse()
 			)
 		),
-		layer: pixelLayerIndex.wildfireRisk
+		layer: pixelLayerIndex[wildfireRisk.id]
 	}
 ]
 

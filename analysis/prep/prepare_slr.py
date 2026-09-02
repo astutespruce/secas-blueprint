@@ -22,14 +22,7 @@ from pyogrio import (
 import shapely
 
 
-from analysis.constants import (
-    DATA_CRS,
-    MASK_RESOLUTION,
-    SLR_YEARS,
-    SLR_PROJ_COLUMNS,
-    SLR_LEGEND,
-    SLR_NODATA,
-)
+from analysis.constants import DATA_CRS, MASK_RESOLUTION, SLR_YEARS, SLR_PROJ_COLUMNS, SLR_DEPTH, SLR_PROJ
 from analysis.lib.colors import hex_to_uint8
 from analysis.lib.raster import write_raster
 from analysis.lib.geometry import (
@@ -72,11 +65,7 @@ def rasterize_depth_polygons(gdb, layer, width, height, transform):
     """
 
     print(f"Reading and reprojecting {layer}")
-    df = (
-        read_dataframe(gdb, layer=layer, columns=[], force_2d=True)
-        .explode(index_parts=False)
-        .to_crs(DATA_CRS)
-    )
+    df = read_dataframe(gdb, layer=layer, columns=[], force_2d=True).explode(index_parts=False).to_crs(DATA_CRS)
 
     area = shapely.area(df.geometry.values)
     total_area = area.sum()
@@ -103,9 +92,7 @@ def rasterize_depth_polygons(gdb, layer, width, height, transform):
 
     holes = get_holes(df.geometry.values)[0]
     ix = shapely.area(holes) >= MIN_AREA
-    holes_mask = geometry_mask(
-        to_dict_all(holes[ix]), out_shape=(height, width), transform=transform
-    )
+    holes_mask = geometry_mask(to_dict_all(holes[ix]), out_shape=(height, width), transform=transform)
 
     fill_mask[holes_mask == 0] = 0
 
@@ -124,9 +111,7 @@ out_dir.mkdir(parents=True, exist_ok=True)
 start = time()
 
 
-colormap = {
-    int(e["value"]): hex_to_uint8(e["color"]) + (255,) for e in SLR_LEGEND + SLR_NODATA
-}
+colormap = {int(e["value"]): hex_to_uint8(e["color"]) + (255,) for e in SLR_DEPTH["values"]}
 
 
 # use the SE Blueprint extent grid to derive the master offset coordinates
@@ -135,16 +120,10 @@ extent_raster = rasterio.open(data_dir / "inputs/boundaries/blueprint_extent.tif
 align_ul = np.take(extent_raster.transform, [2, 5]).tolist()
 
 
-for infile in sorted(
-    list(src_dir.glob("*slr_data_dist/*.gdb"))
-    + list(src_dir.glob("*slr_data_dist/*.gpkg"))
-):
+for infile in sorted(list(src_dir.glob("*slr_data_dist/*.gdb")) + list(src_dir.glob("*slr_data_dist/*.gpkg"))):
     chunk_start = time()
 
-    outfilename = (
-        tmp_dir
-        / f"{infile.stem.replace('_slr_final_dist', '')}_{LEVELS[0]}_{LEVELS[-1]}ft.tif"
-    )
+    outfilename = tmp_dir / f"{infile.stem.replace('_slr_final_dist', '')}_{LEVELS[0]}_{LEVELS[-1]}ft.tif"
 
     if outfilename.exists():
         print(f"Skipping {infile} (outputs already exist)")
@@ -182,11 +161,7 @@ for infile in sorted(
         # WARNING: CRS is not consistent across the suite
         crs = read_info(infile, layer)["crs"]
         bounds = (
-            gp.GeoDataFrame(
-                geometry=shapely.box(*read_bounds(infile, layer)[1]), crs=crs
-            )
-            .to_crs(DATA_CRS)
-            .total_bounds
+            gp.GeoDataFrame(geometry=shapely.box(*read_bounds(infile, layer)[1]), crs=crs).to_crs(DATA_CRS).total_bounds
         )
         xmin = min(xmin, bounds[0])
         ymin = min(ymin, bounds[1])
@@ -244,9 +219,7 @@ for filename in files:
         bounds.append(shapely.box(*src.bounds))
 
 geometry = shapely.union_all(bounds)
-write_dataframe(
-    gp.GeoDataFrame(geometry=[geometry], crs=DATA_CRS), bnd_dir / "slr_data_bounds.fgb"
-)
+write_dataframe(gp.GeoDataFrame(geometry=[geometry], crs=DATA_CRS), bnd_dir / "slr_data_bounds.fgb")
 
 
 ### Build VRT using GDAL CLI
@@ -270,16 +243,12 @@ ret.check_returncode()
 
 ### Merge SLR data extent, areas not modeled, and veil datasets
 print("Rasterizing analysis areas")
-data_extent_df = read_dataframe(
-    src_dir / "SLRViewer_DataExtent.shp", columns=[]
-).to_crs(DATA_CRS)
+data_extent_df = read_dataframe(src_dir / "SLRViewer_DataExtent.shp", columns=[]).to_crs(DATA_CRS)
 data_extent_df["group"] = "data_extent"
 data_extent_df["geometry"] = make_valid(data_extent_df.geometry.values)
 
 # veil is inland counties where SLR isn't applicable
-not_applicable_df = read_dataframe(src_dir / "SLRViewer_Veil.shp", columns=[]).to_crs(
-    DATA_CRS
-)
+not_applicable_df = read_dataframe(src_dir / "SLRViewer_Veil.shp", columns=[]).to_crs(DATA_CRS)
 not_applicable_df["group"] = "not_applicable"
 not_applicable_df["geometry"] = make_valid(not_applicable_df.geometry.values)
 
@@ -309,7 +278,7 @@ _ = rasterize(
 
 ## Combine into a single raster and mask to SE Blueprint extent
 print("Combining into single raster")
-outfilename = out_dir / "slr.tif"
+outfilename = data_dir / "inputs" / SLR_DEPTH["filename"]
 with rasterio.open(vrt_filename) as vrt:
     # calculate write window
     left = int((vrt.transform[2] - extent_raster.transform[2]) / vrt.res[0])
@@ -350,16 +319,14 @@ with rasterio.open(vrt_filename) as vrt:
 print("Creating SLR mask")
 create_lowres_mask(
     outfilename,
-    out_dir / "slr_mask.tif",
+    str(outfilename).replace(".tif", "_mask.tif"),
     resolution=MASK_RESOLUTION,
     ignore_zero=False,
 )
 
 
 ### Clip SLR analysis areas to the Blueprint extent
-bnd = gp.read_feather(
-    data_dir / "inputs/boundaries/se_boundary.feather"
-).geometry.values[0]
+bnd = gp.read_feather(data_dir / "inputs/boundaries/se_boundary.feather").geometry.values[0]
 df["geometry"] = shapely.intersection(df.geometry.values, bnd)
 
 write_dataframe(df, tmp_dir / "slr_analysis_areas.fgb")
@@ -417,9 +384,7 @@ df = (
 # Only keep the 50th percentile of each scenario
 df = df.loc[
     df["PSMSL Site"].str.startswith("grid")
-    & df["Region"].isin(
-        ["Northeast", "Southeast", "Western Gulf", "Eastern Gulf", "Caribbean"]
-    )
+    & df["Region"].isin(["Northeast", "Southeast", "Western Gulf", "Eastern Gulf", "Caribbean"])
     & df.Scenario.str.contains("MED")
 ].set_index("PSMSL Site")
 
@@ -446,37 +411,17 @@ df["Scenario"] = df.Scenario.apply(lambda x: x.split(" - ")[0]).map(scenarios)
 df = (
     df.loc[df.Scenario == "l", ["Region", "Lat", "Long"] + decade_cols]
     .rename(columns={c: f"{c}_l" for c in decade_cols})
-    .join(
-        df.loc[df.Scenario == "il", decade_cols].rename(
-            columns={c: f"{c}_il" for c in decade_cols}
-        )
-    )
-    .join(
-        df.loc[df.Scenario == "i", decade_cols].rename(
-            columns={c: f"{c}_i" for c in decade_cols}
-        )
-    )
-    .join(
-        df.loc[df.Scenario == "ih", decade_cols].rename(
-            columns={c: f"{c}_ih" for c in decade_cols}
-        )
-    )
-    .join(
-        df.loc[df.Scenario == "h", decade_cols].rename(
-            columns={c: f"{c}_h" for c in decade_cols}
-        )
-    )
+    .join(df.loc[df.Scenario == "il", decade_cols].rename(columns={c: f"{c}_il" for c in decade_cols}))
+    .join(df.loc[df.Scenario == "i", decade_cols].rename(columns={c: f"{c}_i" for c in decade_cols}))
+    .join(df.loc[df.Scenario == "ih", decade_cols].rename(columns={c: f"{c}_ih" for c in decade_cols}))
+    .join(df.loc[df.Scenario == "h", decade_cols].rename(columns={c: f"{c}_h" for c in decade_cols}))
     .reset_index(drop=True)
 )
 
 
-cells = shapely.box(
-    *np.array([df.Long - 0.5, df.Lat - 0.5, df.Long + 0.5, df.Lat + 0.5])
-)
+cells = shapely.box(*np.array([df.Long - 0.5, df.Lat - 0.5, df.Long + 0.5, df.Lat + 0.5]))
 
-df = gp.GeoDataFrame(
-    df.drop(columns=["Lat", "Long"]), geometry=cells, crs="EPSG:4326"
-).to_crs(DATA_CRS)
+df = gp.GeoDataFrame(df.drop(columns=["Lat", "Long"]), geometry=cells, crs="EPSG:4326").to_crs(DATA_CRS)
 
 # only keep those that intersect the SLR data extent
 tree = shapely.STRtree(df.geometry.values)
@@ -488,10 +433,10 @@ df = df.take(ix).reset_index(drop=True)
 
 df = df[["geometry", "Region"] + SLR_PROJ_COLUMNS]
 
-df.to_feather(out_dir / "noaa_1deg_cells.feather")
+df.to_feather(data_dir / "inputs" / SLR_PROJ["filename"])
 
 # DEBUG
-write_dataframe(df, tmp_dir / "noaa_1deg_cells.fgb")
+# write_dataframe(df, tmp_dir / "noaa_1deg_cells.fgb")
 
 
 print(f"All done in {time() - start:.2f}s")

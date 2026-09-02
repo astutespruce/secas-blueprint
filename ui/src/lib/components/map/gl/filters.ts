@@ -34,7 +34,7 @@ export const getFilterValues = (encodingSchemes, filters) => {
 	const filterValues = []
 
 	encodingSchemes.forEach((layers) => {
-		layers.forEach(({ id, valueShift, bits }) => {
+		layers.forEach(({ id, valueShift }) => {
 			const activeValues = filters[id]
 			if (activeValues) {
 				const encodedFilterValue = parseInt(

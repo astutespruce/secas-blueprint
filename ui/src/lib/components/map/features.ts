@@ -1,5 +1,3 @@
-import camelCase from 'camelcase'
-
 import {
 	applyFactor,
 	parsePipeEncodedValues,
@@ -9,6 +7,18 @@ import {
 	setIntersection,
 	sum
 } from '$lib/util/data'
+import {
+	blueprint,
+	corridors,
+	indicatorGroups as indicatorGroupInfo,
+	indicatorGroupIndex,
+	indicators as indicatorInfo,
+	parcas,
+	protectedAreas,
+	slrDepth,
+	urban,
+	wildfireRisk
+} from '$lib/config/constants'
 import type { IndicatorValue } from '$lib/types'
 
 /**
@@ -29,18 +39,9 @@ const isEmpty = (text: string | null) => {
 /**
  * Extract dictionary-encoded counts and means
  * @param {Object} packedPercents
- * @param {Array} indicatorGroupInfo - array of indicator group info
- * @param {Array} indicatorInfo - array of indicator info
  * @param {Array} subregions - array of subregion names
  */
-const extractIndicators = (
-	packedPercents: string,
-	indicatorGroupInfo,
-	indicatorInfo,
-	subregions: Set<string>
-) => {
-	const indicatorGroupIndex = indexBy(indicatorGroupInfo, 'id')
-
+const extractIndicators = (packedPercents: Record<string, number[]>, subregions: Set<string>) => {
 	// merge incoming packed percents with indicator info
 	let indicators = indicatorInfo
 		// only show indicators that are either present or likely present based on
@@ -97,7 +98,9 @@ const extractIndicators = (
 	const indicatorGroups = indicatorGroupInfo
 		.filter(({ id }) => indicatorGroupsPresent.has(id))
 		.map(({ id: groupId, label, color, borderColor, indicators: groupIndicators, ...rest }) => {
-			const indicatorsPresent = groupIndicators.filter((indicatorId) => indicators[indicatorId])
+			const indicatorsPresent = groupIndicators.filter(
+				(indicatorId) => indicators[indicatorId as keyof typeof indicators]
+			)
 
 			return {
 				...rest,
@@ -117,20 +120,11 @@ const extractIndicators = (
 /**
  * Unpack encoded attributes in feature data.
  * @param {Object} properties
- * @param {Array} indicatorGroupInfo - array of indicator group info
- * @param {Array} indicatorInfo - array of indicator info
  * @param {Object} subregionIndex - lookup of subregions by value
  */
-export const unpackFeatureData = (
-	properties: object,
-	indicatorGroupInfo,
-	indicatorInfo,
-	subregionIndex
-) => {
+export const unpackFeatureData = (properties: object, subregionIndex) => {
 	const values = Object.entries(properties)
-		.map(([rawKey, value]) => {
-			const key = camelCase(rawKey)
-
+		.map(([key, value]) => {
 			if (!value || typeof value !== 'string' || key === 'name') {
 				return [key, value]
 			}
@@ -139,7 +133,7 @@ export const unpackFeatureData = (
 				return [key, null]
 			}
 
-			if (key === 'protectedAreasList') {
+			if (key === 'protected_areas_list') {
 				return [key, value ? value.split('|') : []]
 			}
 
@@ -162,21 +156,21 @@ export const unpackFeatureData = (
 		}, {})
 
 	// calculate area outside SE, rounded to 0 in case it is very small
-	values.outsideSEPercent = (100 * values.outsideSe) / values.rasterizedAcres
-	if (values.outsideSEPercent < 1) {
-		values.outsideSEPercent = 0
+	values.outside_extent_percent = (100 * values.outside_extent_acres) / values.rasterized_acres
+	if (values.outside_extent_percent < 1) {
+		values.outside_extent_percent = 0
 	}
 
 	// rescale scaled values from percent * 10 back to percent
 	const scaledColumns = [
-		'blueprint',
-		'corridors',
-		'parcas',
-		'protectedAreas',
-		'slrDepth',
-		'slrNodata',
-		'urban',
-		'wildfireRisk'
+		blueprint.id,
+		corridors.id,
+		parcas.id,
+		protectedAreas.id,
+		slrDepth.id,
+		'slr_nodata',
+		urban.id,
+		wildfireRisk.id
 	]
 	scaledColumns.forEach((c) => {
 		values[c] = values[c] ? applyFactor(values[c], 0.1) : []
@@ -195,20 +189,15 @@ export const unpackFeatureData = (
 	values.subregions = subregions
 	values.regions = regions
 
-	values.indicators = extractIndicators(
-		values.indicators || {},
-		indicatorGroupInfo,
-		indicatorInfo,
-		values.subregions
-	)
+	values.indicators = extractIndicators(values.indicators || {}, values.subregions)
 
 	// rename specific fields for easier use later
-	values.unitType = values.type
-	values.unitAcres = values.acres
+	values.unit_type = values.type
+	values.unit_acres = values.acres
 
 	values.slr = {
-		depth: values.slrDepth || [],
-		nodata: values.slrNodata || []
+		depth: values.slr_depth || [],
+		nodata: values.slr_nodata || []
 	}
 
 	return values

@@ -1,12 +1,24 @@
-[
-	{
-		"value": 0,
-		"label": "Not a PARCA (excluding Kentucky and Virginia)",
-		"color": null
-	},
-	{
-		"value": 1,
-		"label": "Priority Amphibian and Reptile Conservation Area (PARCA)",
-		"color": "#38A800"
-	}
-]
+{
+	"id": "parcas",
+	"filename": "boundaries/parcas.tif",
+	"label": "Priority Amphibian and Reptile Conservation Areas",
+	"sheet_name": "Priority herp areas (PARCAs)",
+	"description": "Priority Amphibian and Reptile Conservation Areas (PARCAs) are an expert-driven, nonregulatory designation that includes places capable of supporting viable amphibian and reptile populations, places occupied by rare or imperiled species, and places rich in biodiversity or species unique to that geographic area. Reptiles and amphibians are a critical part of the Southeast region’s rich biodiversity and many populations are declining in the face of threats like habitat loss, invasive species, and climate change.  Data are not yet available for Virginia or Kentucky.  Data were reprojected to the Albers Equal Area - Contiguous U.S. projection and rasterized to 30m pixels aligned with the Blueprint.",
+	"caption": "Extent of Priority Amphibian and Reptile Conservation Areas",
+	"source": "Amphibian and Reptile Conservancy",
+	"date": "2024",
+	"citation": "Amphibian and Reptile Conservancy 2024",
+	"url": "https://arcprotects.org/work/",
+	"values": [
+		{
+			"value": 0,
+			"label": "Not a PARCA (excluding Kentucky and Virginia)",
+			"color": null
+		},
+		{
+			"value": 1,
+			"label": "Priority Amphibian and Reptile Conservation Area (PARCA)",
+			"color": "#38A800"
+		}
+	]
+}

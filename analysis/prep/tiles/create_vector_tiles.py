@@ -1,12 +1,11 @@
-from pathlib import Path
 import subprocess
+from pathlib import Path
 
 import geopandas as gp
-from pyogrio import read_dataframe, write_dataframe
 import shapely
+from pyogrio import read_dataframe, write_dataframe
 
 from analysis.constants import GEO_CRS, SECAS_STATES
-
 
 data_dir = Path("data")
 tmp_dir = Path("/tmp")
@@ -37,7 +36,7 @@ def get_col_types(df, bool_cols=None):
 
         out.append("-T")
         out_type = dtype
-        if dtype == "object":
+        if dtype in {"object", "str"}:
             out_type = "string"
         elif "int" in dtype:
             out_type = "int"
@@ -85,9 +84,7 @@ infilename = tmp_dir / "secas_states.fgb"
 # simplify boundaries for cleaner rendering
 tmp = df.loc[df.id.isin(SECAS_STATES)].explode(ignore_index=True)
 geom = shapely.coverage_simplify(shapely.multipolygons(tmp.geometry.values), 0.1)
-write_dataframe(
-    gp.GeoDataFrame(geometry=shapely.get_parts(geom), crs=GEO_CRS), infilename
-)
+write_dataframe(gp.GeoDataFrame(geometry=shapely.get_parts(geom), crs=GEO_CRS), infilename)
 outfilename = tmp_dir / "secas_states.mbtiles"
 tilesets.append(outfilename)
 
@@ -129,9 +126,7 @@ create_tileset(
 
 
 outfilename = out_dir / "report_boundaries.mbtiles"
-ret = subprocess.run(
-    [tile_join, "-f", "-pg"] + ["-o", f"{str(outfilename)}"] + tilesets
-)
+ret = subprocess.run([tile_join, "-f", "-pg"] + ["-o", f"{str(outfilename)}"] + tilesets)
 ret.check_returncode()
 
 
@@ -206,9 +201,7 @@ tilesets = []
 print(
     "\n\n------------------------------------------------\nCreating boundary tiles\n------------------------------------------------\n"
 )
-bnd_df = gp.read_feather(data_dir / "inputs/boundaries/se_boundary.feather").to_crs(
-    GEO_CRS
-)
+bnd_df = gp.read_feather(data_dir / "inputs/boundaries/se_boundary.feather").to_crs(GEO_CRS)
 infilename = tmp_dir / "se_boundary.fgb"
 write_dataframe(bnd_df.explode(ignore_index=True), infilename)
 
@@ -244,9 +237,7 @@ print(
 
 
 outfilename = out_dir / "se_map_units.mbtiles"
-ret = subprocess.run(
-    [tile_join, "-f", "-pg"] + ["-o", f"{str(outfilename)}"] + tilesets
-)
+ret = subprocess.run([tile_join, "-f", "-pg"] + ["-o", f"{str(outfilename)}"] + tilesets)
 ret.check_returncode()
 
 

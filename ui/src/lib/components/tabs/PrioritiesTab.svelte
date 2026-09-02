@@ -1,9 +1,6 @@
 <script lang="ts">
 	import CheckIcon from '~icons/fa-solid/check'
-	import {
-		blueprint as blueprintCategories,
-		corridors as corridorCategories
-	} from '$lib/config/constants'
+	import { blueprint as blueprintInfo, corridors as corridorInfo } from '$lib/config/constants'
 	import { PieChart } from '$lib/components/chart'
 	import { cn } from '$lib/utils'
 	import { NeedHelp } from './general'
@@ -13,7 +10,7 @@
 		blueprint: number[] | number | null
 		corridors: number[] | number | null
 		regions: Set<string>
-		outsideSEPercent: number
+		outside_extent_percent: number
 		class: string | undefined
 	}
 
@@ -22,7 +19,7 @@
 		blueprint,
 		corridors,
 		regions,
-		outsideSEPercent,
+		outside_extent_percent,
 		class: className = ''
 	}: Props = $props()
 
@@ -43,7 +40,9 @@
 		}
 
 		const blueprintPercents = (blueprint as number[]).slice().reverse()
-		const data: Category[] = blueprintCategories
+		const data: Category[] = blueprintInfo.values
+			.slice()
+			.reverse()
 			.map(({ color, ...rest }, i) => ({
 				...rest,
 				// add transparency to match map
@@ -52,9 +51,9 @@
 			}))
 			.filter(({ value }) => value > 0)
 
-		if (outsideSEPercent) {
+		if (outside_extent_percent) {
 			data.push({
-				value: outsideSEPercent,
+				value: outside_extent_percent,
 				color: '#fde0dd',
 				label: 'Outside Southeast Blueprint'
 			})
@@ -65,7 +64,7 @@
 	// given a summary unit or pixel, there will only ever be continental
 	// or caribben corridors possible
 	const availableCorridorCategories = $derived(
-		corridorCategories
+		corridorInfo.values
 			.filter(({ value }) => value > 0 || type === 'pixel')
 			.map(({ value, description, ...rest }) => {
 				if (value === 1 && description) {
@@ -90,24 +89,18 @@
 			return []
 		}
 
-		// splice corridor percents into same order as corridor categories (0 at the end)
-
-		const corridorPercents = (corridors as number[])
-			.slice(1)
-			.concat((corridors as number[]).slice(0, 1))
 		// sort categories into ascending order
-		// @ts-expect-error data is OK
-		const data: Category[] = corridorCategories
+		const data: Category[] = corridorInfo.values
 			.map(({ value, color, ...rest }, i) => ({
 				...rest,
 				color: value === 0 ? '#ffebc2' : color,
-				value: corridorPercents[i]
+				value: (corridors as number[])[i]
 			}))
 			.filter(({ value }) => value > 0)
 
-		if (outsideSEPercent) {
+		if (outside_extent_percent) {
 			data.push({
-				value: outsideSEPercent,
+				value: outside_extent_percent,
 				color: '#fde0dd',
 				label: 'Outside Southeast Blueprint'
 			})
@@ -123,9 +116,11 @@
 		<PieChart categories={blueprintChartData} class="mt-6 mb-4" />
 	{/if}
 
-	{#if outsideSEPercent < 100}
+	{#if outside_extent_percent < 100}
 		<div class="mt-2">
-			{#each blueprintCategories as { value, label, percent, color, description } (value)}
+			{#each blueprintInfo.values
+				.slice()
+				.reverse() as { value, label, percent, color, description } (value)}
 				<div
 					class={cn(
 						'flex justify-between items-start gap-2 text-grey-8 border border-transparent py-2 px-4 rounded-[0.5rem] bg-white not-first:mt-2',
@@ -160,7 +155,7 @@
 		<PieChart categories={corridorChartData} class="mt-6 mb-4" radius={28} lineWidth={25} />
 	{/if}
 
-	{#if outsideSEPercent < 100}
+	{#if outside_extent_percent < 100}
 		<div class="mt-2">
 			{#each availableCorridorCategories as { value, label, description } (value)}
 				<div

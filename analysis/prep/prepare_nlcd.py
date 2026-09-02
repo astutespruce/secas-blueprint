@@ -31,12 +31,8 @@ bnd_raster = rasterio.open(bnd_dir / "contiguous_southeast_inland_mask.tif")
 print("Processing landcover")
 
 # values are remapped to contiguous integers starting from 0
-landcover_colormap = {
-    i: hex_to_uint8(e["color"]) + (255,) for i, e in enumerate(NLCD_INDEXES.values())
-}
-landcover_remap_table = np.array(
-    [(k, i) for i, k in enumerate(NLCD_CODES.keys())], dtype="uint8"
-)
+landcover_colormap = {i: hex_to_uint8(e["color"]) + (255,) for i, e in enumerate(NLCD_INDEXES.values())}
+landcover_remap_table = np.array([(k, i) for i, k in enumerate(NLCD_CODES.keys())], dtype="uint8")
 
 for infile in sorted(src_dir.glob("landcover/*/*.img")):
     year = int(infile.stem.split("_")[1])
@@ -101,18 +97,18 @@ for infile in sorted(src_dir.glob("landcover/*/*.img")):
 
         tmp_filename.unlink()
 
-        print(f"Done with {year} in {time()-year_start:.2f}s")
+        print(f"Done with {year} in {time() - year_start:.2f}s")
 
-
-outfilename = out_dir / "landcover_mask.tif"
-if not outfilename.exists():
-    print("Creating mask")
-    create_lowres_mask(
-        out_dir / "landcover_2021.tif",
-        outfilename,
-        resolution=MASK_RESOLUTION,
-        ignore_zero=False,
-    )
+# Not currently used
+# outfilename = out_dir / "landcover_mask.tif"
+# if not outfilename.exists():
+#     print("Creating mask")
+#     create_lowres_mask(
+#         out_dir / "landcover_2021.tif",
+#         outfilename,
+#         resolution=MASK_RESOLUTION,
+#         ignore_zero=False,
+#     )
 
 
 ### Extract percent impervious
@@ -154,9 +150,7 @@ for infile in sorted(src_dir.glob("impervious/*/*.img")):
         data = np.where(data == 127, NODATA, data)
 
         tmp_filename = tmp_dir / f"nlcd_impervious_{year}.tif"
-        write_raster(
-            tmp_filename, data, transform=transform, crs=src.crs, nodata=NODATA
-        )
+        write_raster(tmp_filename, data, transform=transform, crs=src.crs, nodata=NODATA)
 
     ### Warp to match the SE Blueprint
     # This is a very minor shift because projections are very similar (WGS84 => NAD83)
@@ -192,7 +186,7 @@ for infile in sorted(src_dir.glob("impervious/*/*.img")):
 
         tmp_filename.unlink()
 
-        print(f"Done with {year} in {time()-year_start:.2f}s")
+        print(f"Done with {year} in {time() - year_start:.2f}s")
 
 outfilename = out_dir / "impervious_mask.tif"
 if not outfilename.exists():

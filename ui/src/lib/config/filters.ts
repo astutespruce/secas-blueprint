@@ -1,14 +1,13 @@
-import { indexBy, range, sortByFunc } from '$lib/util/data'
+import { indexBy, range } from '$lib/util/data'
 import type { Filters } from '$lib/types'
 import {
 	blueprint,
 	corridors,
-	indicatorGroups as rawIndicatorGroups,
+	indicatorGroups,
 	indicators,
 	indicatorsIndex,
 	urban,
 	slrDepth,
-	slrNodata,
 	wildfireRisk,
 	protectedAreas,
 	parcas
@@ -35,43 +34,43 @@ export const defaultFilters: Filters = Object.fromEntries(
 	})
 )
 
-defaultFilters.blueprint = {
+defaultFilters[blueprint.id] = {
 	enabled: false,
 	// skip not a priority class; values 1-4
 	activeValues: Object.fromEntries(range(1, 5).map((v) => [v, true]))
 }
 
-defaultFilters.corridors = {
+defaultFilters[corridors.id] = {
 	enabled: false,
 	// values 1-6
 	activeValues: Object.fromEntries(range(1, 7).map((v) => [v, true]))
 }
 
-defaultFilters.urban = {
+defaultFilters[urban.id] = {
 	enabled: false,
 	// values 1-5
 	activeValues: Object.fromEntries(range(1, 6).map((v) => [v, true]))
 }
 
-defaultFilters.slr = {
+defaultFilters[slrDepth.id] = {
 	enabled: false,
 	// hardcoded values to capture depth + nodata (values 0-13)
 	activeValues: Object.fromEntries(range(0, 14).map((v) => [v, true]))
 }
 
-defaultFilters.wildfireRisk = {
+defaultFilters[wildfireRisk.id] = {
 	enabled: false,
 	// values 0-10
 	activeValues: Object.fromEntries(range(0, 11).map((v) => [v, true]))
 }
 
-defaultFilters.parcas = {
+defaultFilters[parcas.id] = {
 	enabled: false,
 	// values 0-1
 	activeValues: { 0: false, 1: true }
 }
 
-defaultFilters.protectedAreas = {
+defaultFilters[protectedAreas.id] = {
 	enabled: false,
 	// values 0-1
 	activeValues: { 0: false, 1: true }
@@ -79,23 +78,21 @@ defaultFilters.protectedAreas = {
 
 export const priorityFilters = [
 	{
-		id: 'blueprint',
-		label: 'Blueprint priority',
-		description:
-			'The Blueprint identifies priority areas based on a suite of natural and cultural resource indicators representing terrestrial, freshwater, and marine ecosystems.',
-		values: blueprint.slice().sort(sortByFunc('value')).slice(1, blueprint.length).reverse()
+		id: blueprint.id,
+		label: blueprint.label,
+		description: blueprint.description,
+		values: blueprint.values.filter(({ value }) => value > 0).reverse()
 	},
 	{
-		id: 'corridors',
-		label: 'Hubs and corridors',
-		values: corridors.filter(({ value }) => value > 0),
-		description:
-			'The Blueprint uses a least-cost path connectivity analysis to identify corridors that link hubs across the shortest distance possible, while also routing through as much Blueprint priority as possible.'
+		id: corridors.id,
+		label: corridors.label,
+		values: corridors.values.filter(({ value }) => value > 0),
+		description: corridors.description
 	}
 ]
 
 export const indicatorGroupFilters = Object.fromEntries(
-	rawIndicatorGroups.map(({ indicators: groupIndicators, ...group }) => [
+	indicatorGroups.map(({ indicators: groupIndicators, ...group }) => [
 		group.id,
 		{
 			...group,
@@ -108,48 +105,37 @@ export const indicatorGroupFilters = Object.fromEntries(
 	])
 )
 
+// NOTE: these are ordered by alphabetical label
 export const otherInfoFilters = [
 	{
-		id: 'slr',
-		label: 'Flooding extent by projected sea-level rise',
-		values: slrDepth
-			.map(({ label, ...rest }) => ({
-				...rest,
-				label: `${label} feet`
-			}))
-			.concat(slrNodata),
-		description: 'Sea level rise estimates derived from the NOAA sea-level rise inundation data.'
+		id: slrDepth.id,
+		label: slrDepth.label,
+		values: slrDepth.values,
+		description: slrDepth.description
 	},
 	{
-		id: 'parcas',
-		label: 'Priority Amphibian and Reptile Conservation Areas',
-		values: parcas,
-		description:
-			'Priority Amphibian and Reptile Areas derived from data provided by the Amphibian and Reptile Conservancy'
+		id: parcas.id,
+		label: parcas.label,
+		values: parcas.values,
+		description: parcas.description
 	},
 	{
-		id: 'urban',
-		label: 'Probability of urbanization by 2060',
-		values: urban
-			.slice()
-			// values are not in order and need to be sorted in ascending order
-			.sort(sortByFunc('value')),
-		description:
-			'Past and current (2021) urban levels based on developed land cover classes from the National Land Cover Database. Future urban growth estimates derived from the FUTURES model developed by the Center for Geospatial Analytics, NC State University.  Data extent limited to the inland continental Southeast.'
+		id: urban.id,
+		label: urban.label,
+		values: urban.values,
+		description: urban.description
 	},
 	{
-		id: 'protectedAreas',
-		label: 'Protected areas',
-		values: protectedAreas,
-		description:
-			'Protected areas information is derived from the Protected Areas Database of the United States (PAD-US v4.1).'
+		id: protectedAreas.id,
+		label: protectedAreas.label,
+		values: protectedAreas.values,
+		description: protectedAreas.description
 	},
 	{
-		id: 'wildfireRisk',
-		label: 'Wildfire likelihood (annual burn probability)',
-		values: wildfireRisk,
-		description:
-			'Wildfire likelihood data derived from the Wildfire Risk to Communities project by the USDA Forest Service.'
+		id: wildfireRisk.id,
+		label: wildfireRisk.label,
+		values: wildfireRisk.values,
+		description: wildfireRisk.description
 	}
 ]
 

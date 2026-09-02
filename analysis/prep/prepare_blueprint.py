@@ -1,27 +1,20 @@
 import json
-from pathlib import Path
 import re
+from pathlib import Path
 
-from affine import Affine
 import numpy as np
 import pandas as pd
-from pyogrio import read_dataframe
 import rasterio
-from rasterio.features import rasterize
-from rasterio import windows
 import shapely
+from affine import Affine
+from pyogrio import read_dataframe
+from rasterio import windows
+from rasterio.features import rasterize
 
-from analysis.constants import MASK_RESOLUTION, CORRIDORS, BLUEPRINT
+from analysis.constants import BLUEPRINT, CORRIDORS, MASK_RESOLUTION
 from analysis.lib.colors import hex_to_uint8
-from analysis.lib.geometry import to_dict, dissolve
-from analysis.lib.raster import (
-    write_raster,
-    add_overviews,
-    create_lowres_mask,
-    shift_window,
-    unique,
-)
-
+from analysis.lib.geometry import dissolve, to_dict
+from analysis.lib.raster import add_overviews, create_lowres_mask, shift_window, unique, write_raster
 
 NODATA = 255  # standardize NODATA of all indicators
 INDICATOR_GROUP_COLORS = {
@@ -57,11 +50,11 @@ extent = rasterio.open(out_dir / "boundaries/blueprint_extent.tif")
 ################################################################################
 ### Extract blueprint to data extent
 ################################################################################
-outfilename = out_dir / "blueprint.tif"
+outfilename = out_dir / BLUEPRINT["filename"]
 
 if not outfilename.exists():
     print("Extracting blueprint")
-    colormap = {e["value"]: hex_to_uint8(e["color"]) for e in BLUEPRINT}
+    colormap = {e["value"]: hex_to_uint8(e["color"]) for e in BLUEPRINT["values"]}
     colormap[0] = (255, 255, 255, 0)
 
     with rasterio.open(src_dir / "Blueprint2025.tif") as src:
@@ -103,7 +96,7 @@ if not outfilename.exists():
 ################################################################################
 ### Extract hubs and corridors
 ################################################################################
-outfilename = out_dir / "corridors.tif"
+outfilename = out_dir / CORRIDORS["filename"]
 if not outfilename.exists():
     print("Extracting hubs and corridors")
 
@@ -186,7 +179,8 @@ if not outfilename.exists():
         add_overviews(outfilename)
 
         colormap = {
-            e["value"]: hex_to_uint8(e["color"]) if e["color"] is not None else (255, 255, 255, 0) for e in CORRIDORS
+            e["value"]: hex_to_uint8(e["color"]) if e["color"] is not None else (255, 255, 255, 0)
+            for e in CORRIDORS["values"]
         }
 
         with rasterio.open(outfilename, "r+") as src:
@@ -211,6 +205,7 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
     ).rename(
         columns={
             "Indicator": "label",
+            "Abbreviated Layer Name for Excel (31 character limit)": "sheet_name",
             "Legend Subheader": "valueLabel",
             "Abbreviated indicator values": "valueLabels",
             'Blueprint Explorer "Good" threshold': "goodThreshold",
@@ -232,6 +227,12 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
 
     indicator_group_id = sheet_name.lower().split(" ")[-1][:1]
     df["id"] = indicator_group_id + "_" + key.str.lower()
+
+    df["sheet_name"] = df.sheet_name.fillna("").str.strip().replace("N/A", "")
+    ix = df.sheet_name.apply(len) > 31
+    if ix.any():
+        print(df.loc[ix, ["label", "sheet_name"]])
+        raise ValueError("Sheet name must be <= 31 chars, see failures above")
 
     indicator_groups.append(
         {
@@ -255,6 +256,8 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
         raise ValueError(f"Unable to find files for {', '.join(missing)}")
 
     # extract first value as integer; this is the threshold, set the rest to None
+    # NOTE: have to set as object type to allow splicing in int values below
+    df["goodThreshold"] = df.goodThreshold.astype("object")
     df.loc[df.goodThreshold.str.lower().str.contains("no"), "goodThreshold"] = None
     ix = df.goodThreshold.notnull()
     df.loc[ix, "goodThreshold"] = df.loc[ix].goodThreshold.str.extract(r"(\d)").astype("uint8").values[:, 0]
@@ -306,6 +309,7 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
             "id",
             "filename",
             "label",
+            "sheet_name",
             "description",
             "valueLabels",
             "values",
@@ -326,7 +330,7 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
 indicator_df = merged
 
 with open(constants_dir / "indicator_groups.json", "w") as out:
-    res = out.write(json.dumps(indicator_groups, indent=2))
+    _ = out.write(json.dumps(indicator_groups, indent=2))
 
 
 # read indicator attribute tables
@@ -354,7 +358,7 @@ for index, indicator_row in indicator_df.iterrows():
 
     # by default, use the value labels from the GeoTIFF files, but override where
     # necessary from indicators_df
-    if indicator_row.valueLabel:
+    if indicator_row.valueLabels:
         df["label"] = df["value"].map(indicator_row.valueLabels)
 
     else:
@@ -521,4 +525,5 @@ extent.close()
 
 
 with open(constants_dir / "indicators.json", "w") as out:
-    res = out.write(json.dumps(indicator_df.to_dict(orient="records"), indent=2, ensure_ascii=False))
+    content = indicator_df.to_json(orient="records", indent=2, force_ascii=False).replace(r"\/", "/")
+    _ = out.write(content)

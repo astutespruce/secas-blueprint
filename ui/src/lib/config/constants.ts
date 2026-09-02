@@ -1,15 +1,19 @@
 import { indexBy } from '$lib/util/data'
 import type { Indicator } from '$lib/types'
 
-import rawBlueprint from '$constants/blueprint.json'
-import rawCorridors from '$constants/corridors.json'
+import blueprint from '$constants/blueprint.json'
+import corridors from '$constants/corridors.json'
 import indicatorGroups from '$constants/indicator_groups.json'
 import rawIndicators from '$constants/indicators.json'
 import parcas from '$constants/parcas.json'
+import parcasPoly from '$constants/parcas_poly.json'
 import protectedAreas from '$constants/protected_areas.json'
-import rawSLR from '$constants/slr.json'
+import protectedAreasPoly from '$constants/protected_areas_poly.json'
+import slrDepth from '$constants/slr_depth.json'
+import slrProj from '$constants/slr_proj.json'
 import subregions from '$constants/subregions.json'
 import urban from '$constants/urban.json'
+import urbanByDecade from '$constants/urban_by_decade.json'
 import wildfireRisk from '$constants/wildfire_risk.json'
 
 // import pixel layers
@@ -26,11 +30,18 @@ import pixelLayers9 from '$constants/pixel_layers_9.json'
 
 // export unmodified values directly
 export {
+	blueprint,
+	corridors,
 	indicatorGroups,
 	parcas,
+	parcasPoly,
 	protectedAreas,
+	protectedAreasPoly,
+	slrDepth,
+	slrProj,
 	subregions,
 	urban,
+	urbanByDecade,
 	wildfireRisk,
 	pixelLayers0,
 	pixelLayers1,
@@ -48,47 +59,25 @@ export const indicatorGroupIndex = indexBy(indicatorGroups, 'id')
 
 export const subregionsIndex = indexBy(subregions, 'subregion')
 
-// Sort by descending value
-export const blueprint = rawBlueprint.sort(({ value: leftValue }, { value: rightValue }) =>
-	rightValue > leftValue ? 1 : -1
-)
-// skip the first value
-export const blueprintCategories = blueprint.slice(0, blueprint.length - 1)
-
-// put 0 value at end
-export const corridors = rawCorridors.slice(1).concat(rawCorridors.slice(0, 1))
-
 // select subset of fields and add position within list
-export const indicators: Indicator[] = rawIndicators.map(
-	(
-		{
-			id,
-			label,
-			url,
-			description,
-			goodThreshold,
-			values,
-			valueLabel,
-			subregions: indicatorSubregions
-		},
-		i
-	) => ({
-		id,
-		label,
-		url,
-		description,
-		goodThreshold,
-		values,
-		valueLabel,
-		subregions: new Set(indicatorSubregions),
-		pos: i // position within list of indicators, used to unpack packed indicator values
-	})
+// use the order as defined in the indicator groups
+const indicatorIds: string[] = []
+indicatorGroups.forEach(({ indicators: groupIndicators }) => {
+	indicatorIds.push(...groupIndicators)
+})
+const rawIndicatorsIndex = Object.fromEntries(
+	rawIndicators.map((indicator) => [indicator.id, indicator])
 )
+
+export const indicators: Indicator[] = indicatorIds.map((id, i) => {
+	const indicator = rawIndicatorsIndex[id]
+	return {
+		...indicator,
+		subregions: new Set(indicator.subregions),
+		pos: i
+	}
+})
 
 export const indicatorsIndex = indexBy(indicators, 'id')
-
-// split depth and NODATA values
-export const slrDepth = rawSLR.slice(0, 11)
-export const slrNodata = rawSLR.slice(11)
 
 export const subregionIndex = indexBy(subregions, 'value')

@@ -1,9 +1,8 @@
-from pathlib import Path
 import os
+from pathlib import Path
 
 from arq.connections import RedisSettings
 from dotenv import load_dotenv
-
 
 load_dotenv()
 TEMP_DIR = Path(os.getenv("TEMP_DIR", "/tmp/se-reports"))
@@ -29,9 +28,8 @@ REDIS_QUEUE = "southeast"
 
 MAP_RENDER_THREADS = int(os.getenv("MAP_RENDER_THREADS", 2))
 MAX_JOBS = int(os.getenv("MAX_JOBS", 2))
+MAX_FILE_SIZE = float(os.getenv("MAX_FILE_SIZE", 100))  # MB
 CUSTOM_REPORT_MAX_ACRES = int(os.getenv("CUSTOM_REPORT_MAX_ACRES", 50000000))
-
-
 MAX_POLYGONS = int(os.getenv("MAX_POLYGONS", 5000))
 MAX_VERTICES = int(os.getenv("MAX_VERTICES", 2500000))
 

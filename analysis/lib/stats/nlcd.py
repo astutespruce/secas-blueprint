@@ -5,8 +5,8 @@ import pandas as pd
 import rasterio
 
 from analysis.constants import M2_ACRES, NLCD_INDEXES, NLCD_YEARS
+from analysis.lib.io import read_unit_from_feather
 from analysis.lib.raster import summarize_raster_by_units_grid
-from analysis.lib.stats.summary_units import read_unit_from_feather
 
 src_dir = Path("data/inputs/nlcd")
 nlcd_filename = str(src_dir / "landcover_{year}.tif")
@@ -49,11 +49,7 @@ def summarize_nlcd_by_aoi(rasterized_geometry):
 
         if year == NLCD_YEARS[0]:
             total_nlcd_acres = nlcd_acres.sum()
-            outside_nlcd_acres = (
-                rasterized_geometry.acres
-                - rasterized_geometry.outside_se_acres
-                - total_nlcd_acres
-            )
+            outside_nlcd_acres = rasterized_geometry.acres - rasterized_geometry.outside_extent_acres - total_nlcd_acres
             if outside_nlcd_acres < 1e-6:
                 outside_nlcd_acres = 0
 
@@ -88,13 +84,8 @@ def summarize_nlcd_by_units_grid(df, units_grid, out_dir):
     out_dir : str
     """
 
-    if (
-        not len(df.columns.intersection({"value", "rasterized_acres", "outside_se"}))
-        == 3
-    ):
-        raise ValueError(
-            "GeoDataFrame for summary must include value, rasterized_acres, outside_se columns"
-        )
+    if not len(df.columns.intersection({"value", "rasterized_acres", "outside_extent_acres"})) == 3:
+        raise ValueError("GeoDataFrame for summary must include value, rasterized_acres, outside_extent_acres columns")
 
     bins = np.arange(len(NLCD_INDEXES))
 
@@ -116,14 +107,10 @@ def summarize_nlcd_by_units_grid(df, units_grid, out_dir):
 
             if year == NLCD_YEARS[0]:
                 total_nlcd_acres = nlcd_acres.sum(axis=1)
-                outside_nlcd_acres = (
-                    df.rasterized_acres - df.outside_se - total_nlcd_acres
-                )
+                outside_nlcd_acres = df.rasterized_acres - df.outside_extent_acres - total_nlcd_acres
 
             # transform so that columns are <year>_<index>
-            nlcd_year = pd.DataFrame(
-                nlcd_acres, columns=[f"{year}_{i}" for i in bins], index=df.index
-            )
+            nlcd_year = pd.DataFrame(nlcd_acres, columns=[f"{year}_{i}" for i in bins], index=df.index)
 
             # drop columns not present
             nlcd_year = nlcd_year.drop(columns=nlcd_year.columns[nlcd_year.sum() == 0])

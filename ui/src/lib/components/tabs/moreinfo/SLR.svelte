@@ -1,7 +1,9 @@
 <script lang="ts">
-	import { slrNodata } from '$lib/config/constants'
+	import { slrDepth } from '$lib/config/constants'
 	import { formatPercent } from '$lib/util/format'
 	import SLRChart from './SLRChart.svelte'
+
+	const slrNodata = slrDepth.values.filter(({ value }) => value >= 11)
 
 	const { type, depth, nodata } = $props()
 

@@ -6,6 +6,7 @@
 /dist/*
 /ui/public/*
 
+!/tests/fixtures/*.zip
 
 .env
 
@@ -21,14 +22,16 @@
 /source_data/urban/*
 /source_data/summary_units/*
 /source_data/wildfire_risk/*
-
+!/source_data/**/README.md
 
 /data/*
 /examples/*
-/for_tiles/*
 /tiles/*
 
 /scratch/*
 
+!/data/for_tiles
+/data/for_tiles/*
+!/data/for_tiles/layers.csv
 
-!/source_data/**/README.md
+
