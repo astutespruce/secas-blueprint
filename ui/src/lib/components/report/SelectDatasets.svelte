@@ -1,4 +1,5 @@
 <script lang="ts">
+	import CheckIcon from '@lucide/svelte/icons/check'
 	import CaretDown from '~icons/fa-solid/caret-down'
 	import CaretRight from '~icons/fa-solid/caret-right'
 	import BlueprintIcon from '$images/blueprint.svg'
@@ -6,7 +7,6 @@
 	import MarineIcon from '$images/m.svg'
 	import OtherInfoIcon from '$images/otherInfo.svg'
 	import TerrestrialIcon from '$images/t.svg'
-	import { cn } from '$lib/utils'
 
 	import {
 		blueprint,
@@ -102,9 +102,12 @@
 	}
 
 	const handleSelectNone = () => {
-		Object.entries(availableDatasets).forEach(([id]) => {
-			selectedDatasets[id] = false
-		})
+		// blueprint is always checked
+		Object.entries(availableDatasets)
+			.filter(([id]) => id !== blueprint.id)
+			.forEach(([id]) => {
+				selectedDatasets[id] = false
+			})
 	}
 </script>
 
@@ -147,24 +150,23 @@
 				<Collapsible.Content class="mt-2">
 					{#each category.datasets as dataset (dataset.id)}
 						<div class="flex items-center gap-2">
-							<Checkbox
-								id={dataset.id}
-								aria-label={`Select / deselect ${dataset.label}`}
-								class="cursor-pointer size-5 rounded-xs disabled:border-grey-8/50 border-2 [&_svg]:size-4"
-								bind:checked={selectedDatasets[dataset.id]}
-								disabled={!availableDatasets[dataset.id]}
-							/>
-							<Label
-								for={dataset.id}
-								class={cn('text-base cursor-pointer', {
-									'italic opacity-100! text-grey-8 cursor-not-allowed':
-										!availableDatasets[dataset.id]
-								})}
-								>{dataset.label}
-								{#if !availableDatasets[dataset.id]}
-									<span class="text-sm"> (no data available) </span>
-								{/if}
-							</Label>
+							{#if dataset.id === blueprint.id}
+								<CheckIcon class="size-5" />
+								<div>
+									{dataset.label}
+									<span class="text-sm text-muted-foreground">(always included)</span>
+								</div>
+							{:else}
+								<Checkbox
+									id={dataset.id}
+									aria-label={`Select / deselect ${dataset.label}`}
+									class="cursor-pointer size-5 rounded-xs disabled:border-grey-8/50 border-2 [&_svg]:size-4"
+									bind:checked={selectedDatasets[dataset.id]}
+								/>
+								<Label for={dataset.id} class="text-base cursor-pointer">
+									{dataset.label}
+								</Label>
+							{/if}
 							<div class="mt-2">
 								<InfoTooltip
 									title={dataset.label}

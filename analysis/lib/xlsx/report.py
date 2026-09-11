@@ -51,7 +51,7 @@ def create_report(df: pd.DataFrame, datasets: set[str], name: str | None = None)
     table_counter = 1
     buffer = BytesIO()
     with pd.ExcelWriter(buffer) as xlsx:
-        # Data details sheet
+        # Data descriptions sheet
         add_data_details_sheet(xlsx, datasets, table_counter)
         table_counter += 1
 

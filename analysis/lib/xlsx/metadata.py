@@ -80,8 +80,8 @@ def add_data_details_sheet(xlsx: pd.ExcelWriter, datasets: set[str], table_count
         }
     )
 
-    metadata.to_excel(xlsx, sheet_name="Data details", index=False)
-    ws = xlsx.sheets["Data details"]
+    metadata.to_excel(xlsx, sheet_name="Data descriptions", index=False)
+    ws = xlsx.sheets["Data descriptions"]
     set_column_widths(ws, [18, 24, 18, 24, 8, 64, 48, 40])
     set_cell_styles(ws)
     for cell in list(ws.columns)[-1][1:]:

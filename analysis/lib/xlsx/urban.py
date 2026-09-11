@@ -37,7 +37,7 @@ def add_urbanization_sheet(
     caption = dataset["caption"] + "."
     nodata_label = dataset.get(
         "nodata_label",
-        f"Outside extent of this dataset but within {ANALYSIS_REGION_NAME} data extent\n(acres)",
+        "Outside extent of this dataset",
     )
 
     # transform data into one row for high and low urbanization per analysis unit

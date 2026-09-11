@@ -57,10 +57,7 @@ def add_basic_results_sheet(
     if value_label:
         caption += f"  Values show {value_label[0].lower()}{value_label[1:]}."
 
-    nodata_label = dataset.get(
-        "nodata_label",
-        f"Outside extent of this dataset but within {ANALYSIS_REGION_NAME} data extent\n(acres)",
-    )
+    nodata_label = dataset.get("nodata_label", "Outside extent of this dataset")
 
     value_columns = get_value_columns(values)
     col_width = min(max([len(c) for c in value_columns]) * CHAR_PER_WIDTH_UNIT, 18)

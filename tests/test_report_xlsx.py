@@ -42,7 +42,7 @@ blueprint_value_cols = get_value_columns(BLUEPRINT["values"])
 corridor_value_cols = get_value_columns(CORRIDORS["values"])
 wildfire_risk_value_cols = get_value_columns(WILDFIRE_RISK["values"])
 
-outside_data_extent_col = "Outside extent of this dataset but within Southeast data extent\n(acres)"
+outside_data_extent_col = "Outside extent of this dataset"
 
 
 @pytest.mark.parametrize("format", ["shp", "gdb"])
@@ -383,7 +383,7 @@ async def test_create_xlsx_file_single_area(format):
     assert np.allclose(summary["Number of distinct areas in analysis unit"], results["count"])
     assert summary["State(s)"].tolist() == results.states.tolist()
 
-    details = reader.parse(sheet_name="Data details", skiprows=2)
+    details = reader.parse(sheet_name="Data descriptions", skiprows=2)
     assert len(details) == len(datasets)
     assert details["Name"].tolist() == [d["label"] for id, d in REPORT_DATASETS.items() if id in datasets]
 
@@ -513,7 +513,7 @@ async def test_create_xlsx_file_multiple_areas_partial_overlap(format):
     assert np.allclose(summary["Number of distinct areas in analysis unit"], results["count"])
     assert summary["State(s)"].tolist() == results.states.tolist()
 
-    details = reader.parse(sheet_name="Data details", skiprows=2)
+    details = reader.parse(sheet_name="Data descriptions", skiprows=2)
     assert len(details) == len(datasets)
     assert details["Name"].tolist() == [d["label"] for id, d in REPORT_DATASETS.items() if id in datasets]
 
@@ -651,7 +651,7 @@ async def test_create_xlsx_file_multiple_areas(format):
     assert np.allclose(summary["Number of distinct areas in analysis unit"], results["count"])
     assert summary["State(s)"].tolist() == results.states.tolist()
 
-    details = reader.parse(sheet_name="Data details", skiprows=2)
+    details = reader.parse(sheet_name="Data descriptions", skiprows=2)
     assert len(details) == len(datasets)
     assert details["Name"].tolist() == [d["label"] for id, d in REPORT_DATASETS.items() if id in datasets]
 
