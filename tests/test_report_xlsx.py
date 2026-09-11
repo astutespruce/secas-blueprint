@@ -1,4 +1,5 @@
 import os
+import shutil
 from io import BytesIO
 
 import numpy as np
@@ -31,11 +32,24 @@ from analysis.lib.xlsx.report import create_report, get_value_order
 from analysis.lib.xlsx.slr import depth_value_columns as slr_depth_value_cols
 from analysis.lib.xlsx.slr import proj_value_columns as slr_proj_value_cols
 from analysis.lib.xlsx.urban import value_columns as urban_value_cols
+from api.logger import log
+from api.settings import TEMP_DIR
+from api.tasks.custom_report_xlsx import get_xlsx_report_inputs
 
 load_dotenv()
 
 # add to .env file to name saving test files
 SAVE_XLSX = bool(os.getenv("TEST_SAVE_XLSX", False))
+
+
+# mock redis context for set progress
+class MockRedis(object):
+    async def setex(self, prefix, expiration, message):
+        log.info(f"{prefix}: {message}")
+
+
+mock_ctx = {"redis": MockRedis(), "job_id": 123}
+
 
 # value cols not provided by specific modules (these come from xlsx/basic.py)
 blueprint_value_cols = get_value_columns(BLUEPRINT["values"])
@@ -113,6 +127,47 @@ def test_get_available_datasets_multiple_features(format):
 
     datasets = get_available_datasets(df)
     assert len(datasets) == 59
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("format", ["shp", "gdb"])
+async def test_get_report_inputs_single_area(format):
+    filename = f"{format}_poly_small.zip"
+
+    # copy to a temp folder because the function below creates a corresponding
+    # *.feather file for the input
+    tmpfilename = TEMP_DIR / filename
+    shutil.copy(f"tests/fixtures/{filename}", tmpfilename)
+
+    dataset = filename.replace(f"{format}_", "").replace(".zip", f".{format}")
+    uuid = "123"
+
+    result, errors = await get_xlsx_report_inputs(mock_ctx, tmpfilename, dataset, layer="poly_small", uuid=uuid)
+
+    assert len(errors) == 0
+
+    payload = result["payload"]
+    assert payload["uuid"] == uuid
+    assert payload["count"] == 1
+    assert payload["fields"] == {"ID": 1, "Name": 1}
+
+    datasets = payload["datasets"]
+    assert len(datasets) == 32
+
+    expected_datasets = [
+        BLUEPRINT["id"],
+        CORRIDORS["id"],
+        PARCAS["id"],
+        PARCAS_POLY["id"],
+        PROTECTED_AREAS["id"],
+        PROTECTED_AREAS_POLY["id"],
+        SLR_DEPTH["id"],
+        SLR_PROJ["id"],
+        URBAN_BY_DECADE["id"],
+        WILDFIRE_RISK["id"],
+    ]
+    for dataset in expected_datasets:
+        assert dataset in datasets
 
 
 @pytest.mark.anyio
