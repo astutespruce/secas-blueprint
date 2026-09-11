@@ -1,6 +1,6 @@
 import pandas as pd
 
-from analysis.constants import ANALYSIS_REGION_NAME, INDICATORS_INDEX
+from analysis.constants import INDICATORS_INDEX
 from analysis.lib.xlsx.style import (
     CHAR_PER_WIDTH_UNIT,
     add_caption,

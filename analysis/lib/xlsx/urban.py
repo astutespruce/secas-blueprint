@@ -1,6 +1,6 @@
 import pandas as pd
 
-from analysis.constants import ANALYSIS_REGION_NAME, URBAN_BY_DECADE, URBAN_YEARS
+from analysis.constants import URBAN_BY_DECADE, URBAN_YEARS
 from analysis.lib.xlsx.style import add_caption, set_cell_styles, set_column_widths
 
 value_columns = (
