@@ -1,18 +1,18 @@
-from pathlib import Path
 import warnings
+from pathlib import Path
 
-import pandas as pd
 import geopandas as gp
 import numpy as np
-from pyogrio import read_dataframe, write_dataframe
+import pandas as pd
 import rasterio
-from rasterio.features import rasterize
 import shapely
+from pyogrio import read_dataframe, write_dataframe
+from rasterio.features import rasterize
 
-from analysis.constants import SECAS_STATES, PROTECTED_AREAS, MASK_RESOLUTION
+from analysis.constants import MASK_RESOLUTION, PROTECTED_AREAS, SECAS_STATES
 from analysis.lib.colors import hex_to_uint8
-from analysis.lib.geometry import make_valid, to_dict_all, dissolve
-from analysis.lib.raster import write_raster, add_overviews, create_lowres_mask
+from analysis.lib.geometry import dissolve, make_valid
+from analysis.lib.raster import add_overviews, create_lowres_mask, write_raster
 
 warnings.filterwarnings("ignore", message=".*polygon with more than 100 parts.*")
 
@@ -159,7 +159,7 @@ align_ul = np.take(extent.transform, [2, 5]).tolist()
 
 print("Rasterizing protected areas")
 data = rasterize(
-    to_dict_all(df.geometry.values),
+    df.geometry.apply(lambda g: g.__geo_interface__).values,
     transform=extent.transform,
     out_shape=extent.shape,
     fill=0,

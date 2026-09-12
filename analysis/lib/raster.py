@@ -284,8 +284,6 @@ def summarize_raster_by_units_grid(
     value_read_window = get_window(value_dataset, df.total_bounds, boundless=False)
     value_data = value_dataset.read(1, window=value_read_window)
 
-    # TODO: consider moving this loop to Cython or numba, but that would require
-    # jit-ifying the window operations
     out = np.zeros((len(df), len(bins)), dtype="uint64")
     for i, (_, row) in Bar(progress_label, max=len(df)).iter(enumerate(df.iterrows())):
         # get boundless window in order to calculate offset adjustments for

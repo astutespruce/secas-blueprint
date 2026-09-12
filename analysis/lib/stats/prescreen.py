@@ -15,7 +15,6 @@ from analysis.constants import (
     SLR_PROJ,
     URBAN_BY_DECADE,
 )
-from analysis.lib.geometry import to_dict_all
 from analysis.lib.raster import WindowGeometryMask, get_window, window_overlaps
 from analysis.lib.stats.rasterized_geometry import extent_mask_filename
 
@@ -46,7 +45,7 @@ def get_available_datasets(df: gp.GeoDataFrame) -> set[str]:
         if not window_overlaps(window, src):
             return datasets
 
-        shapes = to_dict_all(df.geometry.values)
+        shapes = df.geometry.apply(lambda g: g.__geo_interface__).values
         lowres_mask = WindowGeometryMask(src, window, shapes, all_touched=True)
 
         # use the lowres extent to determine overlap with blueprint

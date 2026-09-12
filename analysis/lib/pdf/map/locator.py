@@ -1,12 +1,10 @@
-from copy import deepcopy
 import json
+from copy import deepcopy
 
-from pymgl import Map
 import shapely
+from pymgl import Map
 
 from api.settings import MAPBOX_ACCESS_TOKEN, TILE_DIR
-from analysis.lib.geometry import to_dict
-
 
 CENTER = [-85.941, 29.283]
 ZOOM = 2.25
@@ -129,11 +127,11 @@ def get_locator_map_image(longitude, latitude, bounds, geometry=None):
     if xmax - xmin >= 0.5 or ymax - ymin >= 0.5:
         if geometry:
             if shapely.area(geometry) > 0.1:
-                geojson = to_dict(geometry)
+                geojson = geometry.__geo_interface__
             else:
-                geojson = to_dict(shapely.envelope(geometry))
+                geojson = shapely.envelope(geometry).__geo_interface__
         else:
-            geojson = to_dict(shapely.box(xmin, ymin, xmax, ymax))
+            geojson = shapely.box(xmin, ymin, xmax, ymax).__geo_interface__
 
         style["sources"]["feature"] = {"type": "geojson", "data": geojson}
 

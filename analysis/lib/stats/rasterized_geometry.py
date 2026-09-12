@@ -5,7 +5,6 @@ import rasterio
 import shapely
 
 from analysis.constants import M2_ACRES
-from analysis.lib.geometry import to_dict
 from analysis.lib.raster import WindowGeometryMask, get_overlapping_windows, get_window
 
 data_dir = Path("data/inputs")
@@ -29,7 +28,7 @@ class RasterizedGeometry(object):
         """
         self.bounds = shapely.bounds(geometry)
 
-        all_shapes = [to_dict(geometry)]
+        all_shapes = [geometry.__geo_interface__]
 
         # create lowres shape mask and window (used to presecreen some datasets)
         with rasterio.open(extent_mask_filename) as src:
@@ -49,7 +48,7 @@ class RasterizedGeometry(object):
                 for window in windows:
                     # clip geometry to window then rasterize
                     clipped = shapely.clip_by_rect(geometry, *src.window_bounds(window))
-                    mask = WindowGeometryMask(src, window, shapes=[to_dict(clipped)])
+                    mask = WindowGeometryMask(src, window, shapes=[clipped.__geo_interface__])
                     self.masks.append(mask)
 
             else:

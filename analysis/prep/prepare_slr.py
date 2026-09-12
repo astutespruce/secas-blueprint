@@ -1,39 +1,30 @@
 import math
-from pathlib import Path
 import re
 import subprocess
+from pathlib import Path
 from time import time
 
-import rasterio
-from rasterio.features import geometry_mask, rasterize
-from rasterio.windows import Window
-import pandas as pd
-import numpy as np
 import geopandas as gp
-from pyarrow.csv import read_csv, ReadOptions
+import numpy as np
+import pandas as pd
+import rasterio
+import shapely
+from pyarrow.csv import ReadOptions, read_csv
 from pyogrio import (
-    read_dataframe,
-    write_dataframe,
-    set_gdal_config_options,
     list_layers,
     read_bounds,
+    read_dataframe,
     read_info,
+    set_gdal_config_options,
+    write_dataframe,
 )
-import shapely
+from rasterio.features import geometry_mask, rasterize
+from rasterio.windows import Window
 
-
-from analysis.constants import DATA_CRS, MASK_RESOLUTION, SLR_YEARS, SLR_PROJ_COLUMNS, SLR_DEPTH, SLR_PROJ
+from analysis.constants import DATA_CRS, MASK_RESOLUTION, SLR_DEPTH, SLR_PROJ, SLR_PROJ_COLUMNS, SLR_YEARS
 from analysis.lib.colors import hex_to_uint8
-from analysis.lib.raster import write_raster
-from analysis.lib.geometry import (
-    to_dict_all,
-    get_holes,
-    drop_all_holes,
-    make_valid,
-    dissolve,
-)
-from analysis.lib.raster import add_overviews, create_lowres_mask
-
+from analysis.lib.geometry import dissolve, drop_all_holes, get_holes, make_valid
+from analysis.lib.raster import add_overviews, create_lowres_mask, write_raster
 
 set_gdal_config_options({"OGR_ORGANIZE_POLYGONS": "ONLY_CCW"})
 
@@ -84,7 +75,7 @@ def rasterize_depth_polygons(gdb, layer, width, height, transform):
     # original rings, yielding bays)
     polygons = drop_all_holes(df.geometry.values)
     fill_mask = geometry_mask(
-        to_dict_all(polygons),
+        [p.__geo_interface__ for p in polygons],
         out_shape=(height, width),
         transform=transform,
         invert=True,
@@ -92,7 +83,7 @@ def rasterize_depth_polygons(gdb, layer, width, height, transform):
 
     holes = get_holes(df.geometry.values)[0]
     ix = shapely.area(holes) >= MIN_AREA
-    holes_mask = geometry_mask(to_dict_all(holes[ix]), out_shape=(height, width), transform=transform)
+    holes_mask = geometry_mask([h.__geo_interface__ for h in holes[ix]], out_shape=(height, width), transform=transform)
 
     fill_mask[holes_mask == 0] = 0
 
@@ -258,7 +249,7 @@ df = dissolve(df.explode(ignore_index=True), by="group")
 # rasterize these stacked in the following decreasing precedence: data extent(11), veil(12)
 analysis_areas = np.zeros(shape=extent_raster.shape, dtype="uint8")
 _ = rasterize(
-    to_dict_all(not_applicable_df.geometry.values),
+    not_applicable_df.geometry.apply(lambda g: g.__geo_interface__).values,
     extent_raster.shape,
     transform=extent_raster.transform,
     dtype="uint8",
@@ -267,7 +258,7 @@ _ = rasterize(
 )
 
 _ = rasterize(
-    to_dict_all(data_extent_df.geometry.values),
+    data_extent_df.geometry.apply(lambda g: g.__geo_interface__).values,
     extent_raster.shape,
     transform=extent_raster.transform,
     dtype="uint8",

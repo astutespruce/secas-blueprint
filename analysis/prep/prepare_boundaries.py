@@ -1,21 +1,21 @@
 import math
-from pathlib import Path
 import warnings
+from pathlib import Path
 
-from affine import Affine
 import geopandas as gp
 import numpy as np
 import pandas as pd
-from pyogrio.geopandas import read_dataframe, write_dataframe
 import rasterio
-from rasterio.features import rasterize, dataset_features
-from rasterio import windows
 import shapely
+from affine import Affine
+from pyogrio.geopandas import read_dataframe, write_dataframe
+from rasterio import windows
+from rasterio.features import dataset_features, rasterize
 
-from analysis.constants import DATA_CRS, GEO_CRS, SECAS_STATES, MASK_RESOLUTION, PARCAS
+from analysis.constants import DATA_CRS, GEO_CRS, MASK_RESOLUTION, PARCAS, SECAS_STATES
 from analysis.lib.colors import hex_to_uint8
-from analysis.lib.geometry import make_valid, to_dict_all, to_dict, dissolve
-from analysis.lib.raster import write_raster, add_overviews, create_lowres_mask
+from analysis.lib.geometry import dissolve, make_valid
+from analysis.lib.raster import add_overviews, create_lowres_mask, write_raster
 
 warnings.filterwarnings("ignore", message=".*Measured 3D MultiPolygon.*")
 warnings.filterwarnings("ignore", message=".*polygon with more than 100 parts.*")
@@ -146,7 +146,7 @@ with rasterio.open(src_dir / "blueprint/SEBlueprintExtent2025.tif") as src:
         f=transform.f,
     )
     subregion_data = rasterize(
-        subregion_df.apply(lambda row: (to_dict(row.geometry), row.value), axis=1),
+        subregion_df.apply(lambda row: (row.geometry.__geo_interface__, row.value), axis=1),
         out_shape=(math.ceil(window.height / 16), math.ceil(window.width / 16)),
         transform=subregion_transform,
         fill=NODATA,
@@ -166,7 +166,8 @@ with rasterio.open(src_dir / "blueprint/SEBlueprintExtent2025.tif") as src:
     # this mask is used for NLCD and urban, which are currently limited to
     # the contiguous Southeast (so it is also a smaller size but same origin)
     inland_subregions = subregion_df.loc[subregion_df.region == "continental"].copy()
-    shapes = to_dict_all(inland_subregions.geometry.values)
+    shapes = inland_subregions.geometry.apply(lambda g: g.__geo_interface__).values
+
     bounds = inland_subregions.total_bounds
     rows = math.ceil((bounds[1] - transform.f) / transform.e)
     cols = math.ceil((bounds[2] - transform.c) / transform.a)
@@ -292,7 +293,7 @@ align_ul = np.take(extent.transform, [2, 5]).tolist()
 
 print("Rasterizing PARCAs")
 data = rasterize(
-    to_dict_all(df.geometry.values),
+    df.geometry.apply(lambda g: g.__geo_interface__).values,
     transform=extent.transform,
     out_shape=extent.shape,
     fill=0,

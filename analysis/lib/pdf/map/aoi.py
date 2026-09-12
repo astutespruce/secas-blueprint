@@ -1,16 +1,14 @@
+import json
 from base64 import b64decode
 from copy import deepcopy
 from io import BytesIO
-import json
 
+import shapely
 from PIL import Image
 from pymgl import Map
-import shapely
 
-from analysis.lib.geometry import to_dict
 from api.logger import log
 from api.settings import TILE_DIR
-
 
 STYLE = {
     "version": 8,
@@ -68,12 +66,12 @@ def get_aoi_map_image(geometry, center, zoom, width, height, add_mask=True):
     """
 
     style = deepcopy(STYLE)
-    style["sources"]["aoi"]["data"] = to_dict(geometry)
+    style["sources"]["aoi"]["data"] = geometry.__geo_interface__
 
     if add_mask:
         try:
             mask = shapely.difference(shapely.box(-180, -90, 180, 90), geometry)
-            style["sources"]["aoi_mask"] = {"type": "geojson", "data": to_dict(mask)}
+            style["sources"]["aoi_mask"] = {"type": "geojson", "data": mask.__geo_interface__}
             style["layers"].insert(
                 -1,  # make sure that boundary layer is on top
                 {

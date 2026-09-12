@@ -13,7 +13,7 @@ from rasterio.features import rasterize
 
 from analysis.constants import BLUEPRINT, CORRIDORS, MASK_RESOLUTION
 from analysis.lib.colors import hex_to_uint8
-from analysis.lib.geometry import dissolve, to_dict
+from analysis.lib.geometry import dissolve
 from analysis.lib.raster import add_overviews, create_lowres_mask, shift_window, unique, write_raster
 
 NODATA = 255  # standardize NODATA of all indicators
@@ -155,7 +155,7 @@ if not outfilename.exists():
 
         print("Rasterizing hubs")
         _ = rasterize(
-            hubs.apply(lambda row: (to_dict(row.geometry), row.value), axis=1),
+            hubs.apply(lambda row: (row.geometry.__geo_interface__, row.value), axis=1),
             transform=extent.transform,
             out=data,
         )
