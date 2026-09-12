@@ -4,8 +4,8 @@ from io import BytesIO
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
-from weasyprint import HTML, default_url_fetcher
-from weasyprint.urls import URLFetcherResponse
+from weasyprint import HTML
+from weasyprint.urls import URLFetcher, URLFetcherResponse
 
 from analysis.constants import (
     BLUEPRINT,
@@ -58,7 +58,7 @@ def load_asset(path):
 
         return URLFetcherResponse(url=path, body=value["body"], headers=value["headers"])
 
-    return default_url_fetcher(path)
+    return URLFetcher(path)
 
 
 template_path = Path(__file__).parent.resolve() / "templates"
