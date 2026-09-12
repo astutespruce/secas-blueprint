@@ -619,3 +619,48 @@ class WindowGeometryMask(object):
         # extract values inside geometry except where they are NODATA
         count_values_inplace(data, self.shape_mask, out, nodata)
         return out
+
+
+@nb.njit("uint8[:,:](uint8[:,:],uint8[:,:],uint8,uint8)", cache=True)
+def remap(arr, remap_table, nodata, fill):
+    """Remap a 2D array of values
+
+    Parameters
+    ----------
+    arr : array of shape [:,:]
+        array of values to remap
+    remap_table : array of shape [n,2], same dtype as arr
+        array of pairs of source value, target value
+    nodata : same dtype as arr
+        value to use for mapping nodata
+    fill : same dtype as arr
+        value to use for filling output array
+
+    Returns
+    -------
+    array of shape [:,:]
+        array is same shape as arr
+    """
+
+    i = 0
+    j = 0
+    rows = arr.shape[0]
+    cols = arr.shape[1]
+
+    # process potentially sparse remap table into indexed array
+    max_value = np.max(remap_table[:, 0])
+    table = np.ones(shape=(max_value + 1,), dtype=remap_table.dtype) * fill
+    for i in range(len(remap_table)):
+        table[remap_table[i][0]] = remap_table[i][1]
+
+    out = np.ones_like(arr) * fill
+
+    for i in range(rows):
+        for j in range(cols):
+            value = arr[i, j]
+            if value == nodata:
+                out[i, j] = nodata
+            elif value <= max_value:
+                out[i, j] = table[value]
+
+    return out

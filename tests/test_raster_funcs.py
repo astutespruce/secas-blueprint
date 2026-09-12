@@ -8,7 +8,7 @@ from rasterio.windows import Window
 from analysis.constants import DATA_CRS
 from analysis.lib.geometry import dissolve
 from analysis.lib.pdf.map.raster import hex_to_rgb, hex_to_rgba, to_rgba
-from analysis.lib.raster import clip_window, count_values_inplace, get_overlapping_windows, shift_window, unique
+from analysis.lib.raster import clip_window, count_values_inplace, get_overlapping_windows, remap, shift_window, unique
 from analysis.lib.stats.rasterized_geometry import WINDOW_SIZE
 
 extent_filename = "data/inputs/boundaries/blueprint_extent.tif"
@@ -200,3 +200,33 @@ def test_overlapping_windows_multiple_areas_partial_overlap_dissolved():
             Window(col_off=45056, row_off=12288, width=2048, height=2048),
             Window(col_off=81920, row_off=18432, width=2048, height=2048),
         ]
+
+
+@pytest.mark.parametrize(
+    "arr,remap_table,nodata,fill,expected",
+    [
+        [
+            np.array([[1, 2], [3, 255]], dtype="uint8"),
+            np.array([[1, 10], [2, 11], [3, 12]], dtype="uint8"),
+            np.uint8(255),
+            np.uint8(0),
+            np.array([[10, 11], [12, 255]], dtype="uint8"),
+        ],
+        [
+            np.array([[1, 2], [3, 4]], dtype="uint8"),
+            np.array([[1, 10], [2, 11], [3, 12]], dtype="uint8"),
+            np.uint8(255),
+            np.uint8(0),
+            np.array([[10, 11], [12, 0]], dtype="uint8"),
+        ],
+        [
+            np.array([[1, 2], [3, 4]], dtype="uint8"),
+            np.array([[1, 10], [2, 11], [3, 12]], dtype="uint8"),
+            np.uint8(255),
+            np.uint8(100),
+            np.array([[10, 11], [12, 100]], dtype="uint8"),
+        ],
+    ],
+)
+def test_remap(arr, remap_table, nodata, fill, expected):
+    assert np.array_equal(remap(arr, remap_table, nodata, fill), expected)
