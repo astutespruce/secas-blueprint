@@ -40,7 +40,6 @@ def add_urbanization_sheet(
         "Outside extent of this dataset",
     )
 
-    # transform data into one row for high and low urbanization per analysis unit
     columns = value_columns + ["outside_acres"]
 
     # convert values to columns

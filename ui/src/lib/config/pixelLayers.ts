@@ -69,7 +69,7 @@ export const pixelLayers = [...Array(10).keys()].map((i) => ({
 }))
 
 // create index of encoded layers
-export const pixelLayerIndex: PixelLayerIndex = {}
+const pixelLayerIndex: PixelLayerIndex = {}
 pixelLayers.forEach(({ encoding }, textureIndex) => {
 	encoding.forEach(({ id, bits, offset, valueShift }) => {
 		pixelLayerIndex[id] = { textureIndex, bits, offset, valueShift }

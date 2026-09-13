@@ -39,7 +39,6 @@ export {
 	protectedAreasPoly,
 	slrDepth,
 	slrProj,
-	subregions,
 	urban,
 	urbanByDecade,
 	wildfireRisk,
@@ -56,8 +55,6 @@ export {
 }
 
 export const indicatorGroupIndex = indexBy(indicatorGroups, 'id')
-
-export const subregionsIndex = indexBy(subregions, 'subregion')
 
 // select subset of fields and add position within list
 // use the order as defined in the indicator groups
