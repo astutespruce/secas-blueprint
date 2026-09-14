@@ -10,6 +10,11 @@ This tool is available at
 
 See [local development instructions](./Developing.md)
 
+## Creating large reports locally
+
+See [cmd/README.md](./cmd/README.md) for more information.
+
+
 ## Credits
 
 This project is developed under a grant from the U.S. Fish and Wildlife Service

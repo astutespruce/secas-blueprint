@@ -21,7 +21,7 @@ fixture_dir = Path("tests/fixtures")
 load_dotenv()
 
 # add to .env file to name saving test files
-SAVE_XLSX = bool(os.getenv("TEST_SAVE_XLSX", False))
+SAVE_PDF = bool(os.getenv("TEST_SAVE_PDF", False))
 
 
 @pytest.mark.parametrize("unit_type", [None, "", "invalid_unit_type"])
@@ -178,7 +178,7 @@ async def test_summary_unit_pdf_huc12():
     pdf = create_report(maps=maps, results=results, name=results["name"], area_type="huc12")
     assert pdf is not None
 
-    if SAVE_XLSX:
+    if SAVE_PDF:
         with open("/tmp/test_create_pdf_huc12.pdf", "wb") as out:
             _ = out.write(pdf)
 
@@ -347,6 +347,6 @@ async def test_create_pdf_single_area(format):
     results["scale"] = scale
     pdf = create_report(maps=maps, results=results, name="Test area")
 
-    if SAVE_XLSX:
+    if SAVE_PDF:
         with open("/tmp/test_create_pdf_single_area.pdf", "wb") as out:
             _ = out.write(pdf)
