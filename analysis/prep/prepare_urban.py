@@ -10,7 +10,7 @@ from rasterio.vrt import WarpedVRT
 from rasterio.windows import Window
 import shapely
 
-from analysis.constants import MASK_RESOLUTION, URBAN_YEARS, DATA_CRS, URBAN_COLORS
+from analysis.constants import MASK_RESOLUTION, URBAN_BY_DECADE, URBAN, URBAN_YEARS, DATA_CRS, URBAN_COLORS
 from analysis.lib.colors import interpolate_colormap, hex_to_uint8
 from analysis.lib.raster import add_overviews, create_lowres_mask, write_raster
 
@@ -24,9 +24,7 @@ colormap = {
     0: (255, 255, 255, 0),
     **{
         i + 1: hex_to_uint8(color) + (255,)
-        for i, color in enumerate(
-            interpolate_colormap({1: URBAN_COLORS[4], 50: URBAN_COLORS[2]})
-        )
+        for i, color in enumerate(interpolate_colormap({1: URBAN_COLORS[4], 50: URBAN_COLORS[2]}))
     },
     51: hex_to_uint8(URBAN_COLORS[1]),
 }
@@ -34,10 +32,11 @@ colormap = {
 
 start = time()
 
-bnd_dir = Path("data/inputs/boundaries")
+data_dir = Path("data")
+bnd_dir = data_dir / "inputs/boundaries"
 src_dir = Path("source_data/urban")
-nlcd_dir = Path("data/inputs/nlcd")
-out_dir = Path("data/inputs/threats/urban")
+nlcd_dir = data_dir / "data/inputs/nlcd"
+out_dir = data_dir / "data/inputs/threats/urban"
 tmp_dir = Path("/tmp")
 
 out_dir.mkdir(parents=True, exist_ok=True)
@@ -91,7 +90,8 @@ windows = [
 
 for year in URBAN_YEARS:
     year_start = time()
-    outfilename = out_dir / f"urban_{year}.tif"
+
+    outfilename = data_dir / "inputs" / URBAN_BY_DECADE["filename"].format(year=year)
 
     if outfilename.exists():
         print(f"Skipping {year} (already exists)")
@@ -149,7 +149,7 @@ for year in URBAN_YEARS:
     print("Adding overviews")
     add_overviews(outfilename)
 
-    print(f"Done with {year} in {time()-year_start:.2f}s")
+    print(f"Done with {year} in {time() - year_start:.2f}s")
 
 bnd_raster.close()
 
@@ -171,8 +171,7 @@ if not outfilename.exists():
 ### Reclassify 2060 into bins for report and tiles
 print("Reclassifying 2060 for mapping")
 colormap = {
-    k: hex_to_uint8(color) + (255,) if color is not None else (255, 255, 255, 0)
-    for k, color in URBAN_COLORS.items()
+    k: hex_to_uint8(color) + (255,) if color is not None else (255, 255, 255, 0) for k, color in URBAN_COLORS.items()
 }
 
 with rasterio.open(out_dir / "urban_2060.tif") as src:
@@ -188,7 +187,7 @@ with rasterio.open(out_dir / "urban_2060.tif") as src:
     binned[data == 51] = 1  # already urban
     binned[data == 255] = 0  # outside SE
 
-    outfilename = out_dir / "urban_2060_binned.tif"
+    outfilename = data_dir / "inputs" / URBAN["filename"]
     write_raster(
         outfilename,
         binned,
@@ -203,7 +202,7 @@ with rasterio.open(out_dir / "urban_2060.tif") as src:
     add_overviews(outfilename)
 
 
-print(f"All done in {time()-start:.2f}s")
+print(f"All done in {time() - start:.2f}s")
 
 # prev was
 #  BINS = [0, 0.9999, 12.5, 25] + 1

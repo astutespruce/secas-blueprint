@@ -13,8 +13,6 @@ out vec4 fragColor;
 // additional uniforms are injected by the caller; see
 // StackedPNGLayer.ts::stackedPNGLayerUniformBlock
 
-uniform sampler2D palette;
-
 // uniforms for textures for each layer
 uniform sampler2D layer0;
 uniform sampler2D layer1;

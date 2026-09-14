@@ -1,66 +1,58 @@
 <script lang="ts">
 	import DownloadIcon from '~icons/fa-solid/download'
 	import { createSummaryUnitReport } from '$lib/api'
+	import { API_HOST } from '$lib/env'
 	import { Root, Trigger, Close, Content, Footer, Header, Title } from '$lib/components/ui/dialog'
 	import { Button } from '$lib/components/ui/button'
 	import { captureException, logGAEvent } from '$lib/util/log'
 	import Done from './Done.svelte'
 	import Progress from './Progress.svelte'
 	import Queued from './Queued.svelte'
-	import ReportError from './ReportError.svelte'
-	import type { ReportState, ReportJobResult, ProgressCallbackParams } from './types'
+	import Error from './Error.svelte'
+	import type { SummaryUnitReportState, ReportJobResult, ProgressCallbackParams } from './types'
 
 	let open: boolean = $state(false)
 
-	const initState: ReportState = {
-		reportURL: null,
-		status: null,
+	const initState: SummaryUnitReportState = {
+		status: 'not_started',
 		progress: 0,
 		queuePosition: 0,
 		elapsedTime: null,
 		message: null,
-		errors: null, // non-fatal errors reported to user
-		inProgress: false,
-		error: null // if error is non-null, it indicates there was an error
+		result: null,
+		errors: null // non-fatal errors reported to user
 	}
 
 	const { id, type } = $props()
 
-	let reportState: ReportState = $state(initState)
+	let reportState: SummaryUnitReportState = $state(initState)
 
 	const handleModelOpenChange = () => {
 		if (!open) {
-			reportState = initState
+			reportState = { ...initState }
 		}
 	}
 
 	const handleClose = () => {
 		// TODO: cancel report on server
 		open = false
-		reportState = initState
+		reportState = { ...initState }
 	}
 
 	const handleCreateReport = async () => {
 		reportState = {
-			...reportState,
-			status: '',
-			inProgress: true,
-			progress: 0,
-			queuePosition: 0,
-			elapsedTime: null,
-			message: null,
-			errors: null,
-			error: null,
-			reportURL: null
+			...initState,
+			status: 'in_progress'
 		}
 
 		logGAEvent('create-summary-report', { type, id: `${type}:${id}` })
 
 		try {
 			const {
-				error: uploadError,
-				result,
-				errors: finalErrors
+				status: jobStatus,
+				result: jobResult,
+				message: jobErrorMessage,
+				errors: jobErrors
 			}: ReportJobResult = await createSummaryUnitReport(
 				id,
 				type,
@@ -69,38 +61,28 @@
 					progress: nextProgress,
 					queuePosition: nextQueuePosition,
 					elapsedTime: nextElapsedTime,
-					message: nextMessage = null,
-					errors: nextErrors = null
+					message: nextMessage = reportState.message,
+					errors: nextErrors = reportState.errors
 				}: ProgressCallbackParams) => {
 					reportState = {
 						...reportState,
 						status: nextStatus,
-						inProgress:
-							nextStatus === 'in_progress' ||
-							(nextStatus === 'queued' && nextElapsedTime !== undefined && nextElapsedTime < 5),
 						progress: nextProgress,
 						queuePosition: nextQueuePosition,
 						elapsedTime: nextElapsedTime,
-						message: nextMessage || reportState.message,
-						errors: nextErrors || reportState.errors
+						message: nextMessage,
+						errors: nextErrors
 					}
 				}
 			)
 
-			if (uploadError) {
-				console.error(uploadError)
+			if (jobStatus === 'failed') {
+				console.error(jobErrorMessage)
 
 				reportState = {
-					...reportState,
-					inProgress: false,
-					status: null,
-					progress: 0,
-					queuePosition: 0,
-					elapsedTime: null,
-					message: null,
-					errors: null,
-					error: uploadError,
-					reportURL: null
+					...initState,
+					status: 'failed',
+					message: jobErrorMessage
 				}
 
 				logGAEvent('summary-unit-report-error')
@@ -110,33 +92,22 @@
 
 			// upload and processing completed successfully
 			reportState = {
-				...reportState,
-				status: null,
+				...initState,
+				status: 'success',
 				progress: 100,
-				queuePosition: 0,
-				elapsedTime: null,
-				message: null,
-				errors: finalErrors, // there may be non-fatal errors (e.g., errors rendering maps)
-				inProgress: false,
-				reportURL: result as string
+				result: jobResult,
+				errors: jobErrors
 			}
 
-			window.location.href = result as string
+			window.location.href = `${API_HOST}/api${jobResult}` as string
 		} catch (ex) {
 			captureException(`Create summary report for ${id} (${type}) failed`, ex)
 			console.error('Caught unhandled error from createSummaryUnitReport', ex)
 
 			reportState = {
-				...reportState,
-				inProgress: false,
-				status: null,
-				progress: 0,
-				queuePosition: 0,
-				elapsedTime: null,
-				message: null,
-				errors: null,
-				error: '', // no meaningful error to show to user, but needs to be non-null}
-				reportURL: null
+				...initState,
+				status: 'failed'
+				// NOTE: no meaningful error to show to user
 			}
 		}
 	}
@@ -153,19 +124,19 @@
 		<Header class="border-b pb-2 mb-2 border-b-grey-2">
 			<Title class="text-3xl">Blueprint Summary Report</Title>
 		</Header>
-		{#if reportState.error !== null}
-			<ReportError error={reportState.error} />
-		{:else if reportState.reportURL !== null}
-			<Done errors={reportState.errors} />
-			<p class="text-lg">You can also click the button below to download your report.</p>
-		{:else if reportState.inProgress}
-			<Progress message={reportState.message} progress={reportState.progress} />
+		{#if reportState.status === 'failed'}
+			<Error message={reportState.message} />
 		{:else if reportState.status === 'queued'}
 			<Queued
 				message={reportState.message}
 				queuePosition={reportState.queuePosition}
 				elapsedTime={reportState.elapsedTime}
 			/>
+		{:else if reportState.status === 'in_progress'}
+			<Progress message={reportState.message} progress={reportState.progress} />
+		{:else if reportState.status === 'success'}
+			<Done errors={reportState.errors} />
+			<p class="text-lg">You can also click the button below to download your report.</p>
 		{:else}
 			<p class="text-xl">
 				Create and download a Blueprint summary report for this area. This detailed report includes
@@ -184,12 +155,12 @@
 		<Footer class="gap-4 border-t border-t-grey-2 pt-2 mt-2">
 			<Close onclick={handleClose} class="text-lg cursor-pointer">Cancel</Close>
 
-			{#if reportState.reportURL}
-				<Button href={reportState.reportURL} class="text-lg no-underline">
+			{#if reportState.status === 'success'}
+				<Button href={`${API_HOST}/api${reportState.result}`} class="text-lg no-underline">
 					<DownloadIcon class="size-4" />
 					Download report
 				</Button>
-			{:else if !reportState.inProgress && reportState.error === null}
+			{:else if reportState.status === 'not_started'}
 				<Button onclick={handleCreateReport} class="text-lg">Create report</Button>
 			{/if}
 		</Footer>

@@ -107,3 +107,18 @@ a vulnerability.
 Tilesets are created using `tippecanoe` (installed via homebrew) or
 [`rastertiler-rs`](https://github.com/brendan-ward/rastertiler-rs) built from
 source. See [analysis/prep/tiles/README](./analysis/prep/tiles/README.md) for more information
+
+## Testing
+
+Install test dependencies:
+
+```bash
+uv sync --all-extras --frozen
+```
+
+Some of the backend tests rely on `arq` and `redis` to be running; make sure
+they are running before running the test suite:
+
+```bash
+pytest tests
+```

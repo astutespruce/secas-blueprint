@@ -9,11 +9,7 @@
 	import CrosshairsIcon from '$images/CrosshairsIcon.svg'
 	import Spinner from '~icons/fa-solid/spinner'
 
-	import {
-		indicatorGroups as indicatorGroupInfo,
-		indicators as indicatorInfo,
-		subregionIndex
-	} from '$lib/config/constants'
+	import { subregionIndex } from '$lib/config/constants'
 	import { mapConfig as config, sources, layers } from '$lib/config/map'
 	import { pixelLayers } from '$lib/config/pixelLayers'
 	import { MAPBOX_TOKEN } from '$lib/env'
@@ -100,7 +96,7 @@
 		// If protected areas tiles aren't loaded yet, schedule a callback once tiles are loaded
 		if (!(
 			map?.style?._otherSourceCaches.protectedAreas &&
-			map?.style._otherSourceCaches.protectedAreas.loaded()
+			map.style._otherSourceCaches.protectedAreas.loaded()
 		)) {
 			mapState.setData({
 				type: 'pixel',
@@ -116,12 +112,7 @@
 			})
 		}
 
-		const pixelData = await extractPixelData(
-			map,
-			map.getCenter(),
-			indicatorGroupInfo,
-			indicatorInfo
-		)
+		const pixelData = await extractPixelData(map, map.getCenter())
 
 		if (pixelData === null) {
 			// tile data not yet loaded for correct zoom, try again after next deckGL
@@ -467,9 +458,7 @@
 			map.setFilter('unit-outline-highlight', ['==', 'id', properties!.id])
 
 			// @ts-expect-error properties is fine
-			mapState.setData(
-				unpackFeatureData(properties, indicatorGroupInfo, indicatorInfo, subregionIndex)
-			)
+			mapState.setData(unpackFeatureData(properties, subregionIndex))
 			resizeMap()
 		})
 
@@ -524,8 +513,6 @@
 		}
 
 		const updateStyle = () => {
-			const pixelLayer = map!.getLayer('pixelLayers')
-
 			map!.setStyle(`mapbox://styles/mapbox/${styleID}`)
 
 			map!.once('style.load', () => {
@@ -589,12 +576,6 @@
 					// @ts-expect-error layer is fine
 					map!.addLayer(layer, beforeLayer)
 				})
-
-				if (!map!.getLayer('pixelLayers')) {
-					// pixel layer appears to now be retained on style change
-					// @ts-expect-error layer is fine
-					map!.addLayer(pixelLayer, beforeLayer)
-				}
 			})
 		}
 
@@ -680,7 +661,7 @@
 		/* eslint-disable @typescript-eslint/no-unused-expressions */
 		mapState.mapMode
 		mapState.data
-		/* eslint-enable-next-line @typescript-eslint/no-unused-expressions */
+		/* eslint-enable @typescript-eslint/no-unused-expressions */
 
 		if (!untrack(() => isLoaded)) {
 			return
@@ -757,7 +738,7 @@
 		<img
 			src={CrosshairsIcon}
 			alt="Crosshairs icon"
-			class="absolute block z-0 right-0 bottom-0 left-[50%] top-[50%] ml-[-1rem] mt-[-1rem] pointer-events-none size-8 print:hidden"
+			class="absolute block z-0 right-0 bottom-0 left-[50%] top-[50%] -ml-4 -mt-4 pointer-events-none size-8 print:hidden"
 		/>
 	{/if}
 

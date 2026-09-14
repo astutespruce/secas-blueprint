@@ -1,21 +1,21 @@
 import math
-from pathlib import Path
 import warnings
+from pathlib import Path
 
-from affine import Affine
 import geopandas as gp
 import numpy as np
 import pandas as pd
-from pyogrio.geopandas import read_dataframe, write_dataframe
 import rasterio
-from rasterio.features import rasterize, dataset_features
-from rasterio import windows
 import shapely
+from affine import Affine
+from pyogrio.geopandas import read_dataframe, write_dataframe
+from rasterio import windows
+from rasterio.features import dataset_features, rasterize
 
-from analysis.constants import DATA_CRS, GEO_CRS, SECAS_STATES, MASK_RESOLUTION, PARCAS
+from analysis.constants import DATA_CRS, GEO_CRS, MASK_RESOLUTION, PARCAS, SECAS_STATES
 from analysis.lib.colors import hex_to_uint8
-from analysis.lib.geometry import make_valid, to_dict_all, to_dict, dissolve
-from analysis.lib.raster import write_raster, add_overviews, create_lowres_mask
+from analysis.lib.geometry import dissolve, make_valid
+from analysis.lib.raster import add_overviews, create_lowres_mask, write_raster
 
 warnings.filterwarnings("ignore", message=".*Measured 3D MultiPolygon.*")
 warnings.filterwarnings("ignore", message=".*polygon with more than 100 parts.*")
@@ -48,15 +48,9 @@ subregion_df = (
     .sort_values(by="geometry")
 )
 
-subregion_df["geometry"] = shapely.make_valid(
-    shapely.force_2d(subregion_df.geometry.values)
-)
+subregion_df["geometry"] = shapely.make_valid(shapely.force_2d(subregion_df.geometry.values))
 
-subregion_df = (
-    dissolve(subregion_df, by="subregion")
-    .reset_index()
-    .rename(columns={"index": "value"})
-)
+subregion_df = dissolve(subregion_df, by="subregion").reset_index().rename(columns={"index": "value"})
 
 subregion_df["region"] = subregion_df.subregion.map(
     {
@@ -140,9 +134,7 @@ with rasterio.open(src_dir / "blueprint/SEBlueprintExtent2025.tif") as src:
     subregion_df.to_feather(out_dir / "subregions.feather")
     write_dataframe(subregion_df, bnd_dir / "subregions.fgb")
 
-    subregion_df[["value", "subregion", "region"]].to_json(
-        constants_dir / "subregions.json", orient="records"
-    )
+    subregion_df[["value", "subregion", "region"]].to_json(constants_dir / "subregions.json", orient="records")
 
     ### Rasterize subregions to 480m resolution to check against indicators
     subregion_transform = Affine(
@@ -154,7 +146,7 @@ with rasterio.open(src_dir / "blueprint/SEBlueprintExtent2025.tif") as src:
         f=transform.f,
     )
     subregion_data = rasterize(
-        subregion_df.apply(lambda row: (to_dict(row.geometry), row.value), axis=1),
+        subregion_df.apply(lambda row: (row.geometry.__geo_interface__, row.value), axis=1),
         out_shape=(math.ceil(window.height / 16), math.ceil(window.width / 16)),
         transform=subregion_transform,
         fill=NODATA,
@@ -174,7 +166,8 @@ with rasterio.open(src_dir / "blueprint/SEBlueprintExtent2025.tif") as src:
     # this mask is used for NLCD and urban, which are currently limited to
     # the contiguous Southeast (so it is also a smaller size but same origin)
     inland_subregions = subregion_df.loc[subregion_df.region == "continental"].copy()
-    shapes = to_dict_all(inland_subregions.geometry.values)
+    shapes = inland_subregions.geometry.apply(lambda g: g.__geo_interface__).values
+
     bounds = inland_subregions.total_bounds
     rows = math.ceil((bounds[1] - transform.f) / transform.e)
     cols = math.ceil((bounds[2] - transform.c) / transform.a)
@@ -283,7 +276,7 @@ df.to_feather(out_dir / "parcas.feather")
 
 ### Rasterize PARCAs to in PARCA (1) or not (0)
 parcas_colormap = (
-    pd.DataFrame(PARCAS)
+    pd.DataFrame(PARCAS["values"])
     .set_index("value")
     .color.apply(lambda x: hex_to_uint8(x) + (255,) if x else (255, 255, 255, 0))
     .to_dict()
@@ -300,7 +293,7 @@ align_ul = np.take(extent.transform, [2, 5]).tolist()
 
 print("Rasterizing PARCAs")
 data = rasterize(
-    to_dict_all(df.geometry.values),
+    df.geometry.apply(lambda g: g.__geo_interface__).values,
     transform=extent.transform,
     out_shape=extent.shape,
     fill=0,
@@ -310,7 +303,7 @@ data = rasterize(
 
 data = np.where(extent_data == 1, data, NODATA)
 
-outfilename = out_dir / "parcas.tif"
+outfilename = data_dir / "inputs" / PARCAS["filename"]
 write_raster(
     outfilename,
     data,
@@ -328,7 +321,7 @@ add_overviews(outfilename)
 
 create_lowres_mask(
     outfilename,
-    out_dir / "parcas_mask.tif",
+    str(outfilename).replace(".tif", "_mask.tif"),
     resolution=MASK_RESOLUTION,
     ignore_zero=False,
 )
@@ -347,10 +340,7 @@ box = shapely.box(*outer_box)
 df["geometry"] = shapely.difference(box, df.geometry.values)
 df = df.to_crs(DATA_CRS).explode(ignore_index=True)
 df = df.loc[
-    df.index.isin(
-        shapely.STRtree(df.geometry.values).query(bnd_geom, predicate="intersects")
-    )
-    | (df.area >= 1e10)
+    df.index.isin(shapely.STRtree(df.geometry.values).query(bnd_geom, predicate="intersects")) | (df.area >= 1e10)
 ].to_crs(GEO_CRS)
 
 df = gp.GeoDataFrame(geometry=[shapely.multipolygons(df.geometry.values)], crs=GEO_CRS)

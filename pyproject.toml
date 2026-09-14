@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools", "Cython>=0.29", "numpy"]
-build-backend = "setuptools.build_meta"
+requires = ["uv_build", "numpy"]
+build-backend = "uv_build"
 
 [project]
 name = "secas-blueprint"
@@ -28,6 +28,7 @@ dependencies = [
     "Jinja2",
     "numba>=0.61.2",
     "numpy",
+    "openpyxl>=3.1.5",
     "pandas",
     "Pillow",
     "progress",
@@ -45,11 +46,25 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["cython", "httpx[http2]", "ruff", "setuptools", "watchgod", "watchfiles"]
+dev = [
+    "cython",
+    "httpx[http2]",
+    "ruff",
+    "setuptools",
+    "watchgod",
+    "watchfiles",
+    "typer>=0.27.2",
+]
+tests = ["httpx>=0.28.1", "pixelmatch>=0.4.0", "pytest>=9.1.1"]
 
-[tool.setuptools.packages.find]
-include = ["analysis", "api"]
+[project.scripts]
+create-report = "commands.report:app"
+filter-blueprint = "commands.filter:app"
+
+[tool.uv.build-backend]
+module-root = ""
+module-name = ["analysis", "api", "commands"]
+namespace = true
 
 [tool.ruff]
-exclude = ['.scratch']
 line-length = 120

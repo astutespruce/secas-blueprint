@@ -1,15 +1,15 @@
 <script lang="ts">
 	import CheckIcon from '~icons/fa-solid/check'
 	import { PercentBarChart } from '$lib/components/chart'
-	import { wildfireRisk as categories } from '$lib/config/constants'
+	import { wildfireRisk as wildfireRiskInfo } from '$lib/config/constants'
 	import { cn } from '$lib/utils'
 
-	const { type, wildfireRisk, regions } = $props()
+	const { type, wildfire_risk = null } = $props()
 
 	const bars = $derived(
-		categories.map((category) => ({
+		wildfireRiskInfo.values.map((category) => ({
 			...category,
-			percent: wildfireRisk ? wildfireRisk[category.value] || 0 : 0
+			percent: wildfire_risk ? wildfire_risk[category.value] || 0 : 0
 		}))
 	)
 </script>
@@ -18,7 +18,7 @@
 	<h3 class="text-2xl">Wildfire Likelihood</h3>
 
 	{#if type === 'pixel'}
-		{#if wildfireRisk === null || wildfireRisk === undefined}
+		{#if wildfire_risk === null}
 			<div class="text-grey-8">
 				Wildfire likelihood data is not currently available for this area.
 			</div>
@@ -26,19 +26,19 @@
 			<div class="text-grey-8">Annual burn probability:</div>
 
 			<div class="ml-2 mt-2">
-				{#each categories as { value, label } (value)}
+				{#each wildfireRiskInfo.values as { value, label } (value)}
 					<div
 						class="flex items-baseline justify-between pl-2 border-b border-b-grey-2 pb-1 not-first:mt-1 gap-4"
 					>
 						<div
 							class={cn('flex-auto text-grey-8', {
-								'text-foreground font-bold': value === wildfireRisk
+								'text-foreground font-bold': value === wildfire_risk
 							})}
 						>
 							{label}
 						</div>
 						<CheckIcon
-							class={cn('size-4 flex-none invisible', { visible: value === wildfireRisk })}
+							class={cn('size-4 flex-none invisible', { visible: value === wildfire_risk })}
 						/>
 					</div>
 				{/each}
@@ -47,7 +47,7 @@
 	{/if}
 
 	{#if type !== 'pixel'}
-		{#if (regions && regions.has('caribbean')) || wildfireRisk === null}
+		{#if wildfire_risk === null}
 			<div class="text-grey-8">
 				Wildfire likelihood data is not currently available for this area.
 			</div>
@@ -64,7 +64,7 @@
 	{/if}
 
 	<!-- don't show data info in Caribbean -->
-	{#if !(regions && regions.has('caribbean'))}
+	{#if wildfire_risk !== null}
 		<div class="mt-8 text-grey-8 leading-tight">
 			Wildfire likelihood data derived from the
 			<a href="https://wildfirerisk.org/" target="_blank"> Wildfire Risk to Communities </a>

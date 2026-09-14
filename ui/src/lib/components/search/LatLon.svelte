@@ -103,7 +103,7 @@
 			return { isValid: false }
 		}
 
-		const { lat: rawLat, lon: rawLon } = match.groups
+		const { lat: rawLat, lon: rawLon } = match.groups as { lat?: string; lon?: string }
 		if (rawLat === undefined || rawLon === undefined) {
 			return {
 				isValid: false

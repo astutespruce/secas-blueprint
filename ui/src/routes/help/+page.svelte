@@ -8,8 +8,8 @@
 
 <Header />
 <main class="h-full w-full flex-auto overflow-auto">
-	<div class="relative z-0 w-full overflow-hidden h-60">
-		<div class="z-1 absolute top-[-50%]">
+	<div class="relative z-0 w-full md:overflow-hidden md:h-60">
+		<div class="z-1 absolute top-[-50%] hidden md:block">
 			<enhanced:img
 				src="$images/26871026541_48a8096dd9_o.jpg"
 				class="h-auto min-w-[720px] object-cover brightness-60"
@@ -18,12 +18,14 @@
 			/>
 		</div>
 		<div class="container mt-14">
-			<h1 class="text-7xl relative text-white z-2 text-shadow-sm text-shadow-black">
+			<h1
+				class="text-5xl md:text-7xl relative md:text-white z-2 md:text-shadow-sm md:text-shadow-black"
+			>
 				How to use this viewer
 			</h1>
 		</div>
 	</div>
-	<div class="text-sm text-grey-8 text-right pr-1">
+	<div class="text-sm text-grey-8 text-right pr-1 hidden md:block">
 		Photo: Black Skimmers, <a
 			href="https://www.flickr.com/photos/usfwssoutheast/26871026541/"
 			target="_blank"
@@ -72,7 +74,7 @@
 
 		<p class="mt-16">
 			You can download a detailed PDF report of the Blueprint, hubs and corridors, underlying
-			indicators, and landscape-level threats for the selected summary unit. Click the
+			indicators, and other contextual information for the selected summary unit. Click the
 			<b>Export detailed maps and analysis</b> link below the area name. To unselect the area, click
 			the <b>X</b> in the upper right of the sidebar.
 		</p>
@@ -81,9 +83,9 @@
 
 		<h2 class="text-4xl">View point data:</h2>
 		<p class="mt-2">
-			This mode allows you to show values at a specific point for the Blueprint, indicators,
-			threats, and more by drilling into a single 30 meter pixel, the smallest unit of the Blueprint
-			analysis.
+			This mode allows you to show values at a specific point for the Blueprint, indicators, and
+			other contextual information by drilling into a single 30 meter pixel, the smallest unit of
+			the Blueprint analysis.
 		</p>
 
 		<div class="grid grid-cols-0 md:grid-cols-2 gap-8 mt-16">
@@ -147,7 +149,7 @@
 			Filters can help you find the part of the Blueprint that aligns with your mission, interests,
 			or specific question. Use the filters to show areas on the map that fall within a range of
 			values for one or more layers, including the Blueprint, hubs and corridors, underlying
-			indicators, and threats.
+			indicators, and other contextual information.
 		</p>
 
 		<div class="grid grid-cols-0 md:grid-cols-2 gap-8 mt-16">
@@ -197,9 +199,9 @@
 			Alternatively, you can use OR logic to select all areas where <i>any</i> of your selected
 			criteria are present.
 			<br /><br />
-			Use the <b>Change filter overlay method</b> dropdown to change the logic being applied to your filters.
-			This can be especially helpful for identifying areas across indicators that do not spatially co-occur.
-			This mode starts from a blank map, and adds areas as you specify filters.
+			Use the <b>Change filter overlay method</b> dropdown to change the logic being applied to your
+			filters. This can be especially helpful for identifying areas across indicators that do not spatially
+			co-occur. This mode starts from a blank map, and adds areas as you specify filters.
 		</p>
 
 		<div class="grid grid-cols-0 md:grid-cols-[1fr_2fr] gap-8 mt-16">
@@ -283,39 +285,46 @@
 		<p class="mt-2">
 			Click on the <b>Upload a shapefile</b> button in the upper right. You will be able to upload
 			your area of interest and create a detailed PDF report of the Blueprint, hubs and corridors,
-			underlying indicators, and landscape-level threats in that area.
+			underlying indicators, and other contextual information for your area of interest.
 			<br />
 			<br />
-			Examples of what is inside:
+
+			The PDF report includes a map and summary table for every indicator present in the area, as
+			well as additional information about urbanization and sea-level rise.
 		</p>
 
-		<div class="grid grid-cols-2 md:grid-cols-5 mt-2 gap-4">
-			<enhanced:img
-				src="$images/report/report_sm_1.png"
-				alt="Tool report example screenshot 1"
-				loading="lazy"
-			/>
-			<enhanced:img
-				src="$images/report/report_sm_2.png"
-				alt="Tool report example screenshot 2"
-				loading="lazy"
-			/>
-			<enhanced:img
-				src="$images/report/report_sm_3.png"
-				alt="Tool report example screenshot 3"
-				loading="lazy"
-			/>
-			<enhanced:img
-				src="$images/report/report_sm_4.png"
-				alt="Tool report example screenshot 4"
-				loading="lazy"
-			/>
-			<enhanced:img
-				src="$images/report/report_sm_5.png"
-				alt="Tool report example screenshot 5"
-				loading="lazy"
-			/>
-		</div>
+		<figure class="mt-4">
+			<div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+				<enhanced:img
+					src="$images/report/report_sm_1.png"
+					alt="Tool report example screenshot 1"
+					loading="lazy"
+				/>
+				<enhanced:img
+					src="$images/report/report_sm_2.png"
+					alt="Tool report example screenshot 2"
+					loading="lazy"
+				/>
+				<enhanced:img
+					src="$images/report/report_sm_3.png"
+					alt="Tool report example screenshot 3"
+					loading="lazy"
+				/>
+				<enhanced:img
+					src="$images/report/report_sm_4.png"
+					alt="Tool report example screenshot 4"
+					loading="lazy"
+				/>
+				<enhanced:img
+					src="$images/report/report_sm_5.png"
+					alt="Tool report example screenshot 5"
+					loading="lazy"
+				/>
+			</div>
+			<figcaption class="text-sm text-muted-foreground text-center mt-2">
+				Examples of what is inside the PDF report
+			</figcaption>
+		</figure>
 
 		<hr />
 

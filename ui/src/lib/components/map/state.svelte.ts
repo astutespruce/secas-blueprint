@@ -224,50 +224,48 @@ export class MapState {
 	}
 
 	restoreFromURL() {
-		if (browser) {
-			if (browser && window.location.search) {
-				// eslint-disable-next-line svelte/prefer-svelte-reactivity
-				const queryParams = Object.fromEntries([...new URLSearchParams(window.location.search)])
-				if (queryParams.version !== BLUEPRINT_VERSION) {
-					alert(
-						"Your URL includes filters based on a previous version of the Blueprint, which is not supported. We're clearing your filters and loading the latest Blueprint. Sorry about that!"
-					)
-					window.history.replaceState({}, '', `?${window.location.hash}`)
-					return
-				}
-				if (queryParams.mode) {
-					this.#mapMode = queryParams.mode as MapMode
-				}
-				if (queryParams.filterMode) {
-					this.#filterMode = queryParams.filterMode as FilterMode
-				}
-				const initFilters = Object.fromEntries(
-					Object.entries(defaultFilters).map(([id, { activeValues: defaultActiveValues }]) => {
-						const index = filterToIndex[id]
-
-						const activeValues =
-							// eslint-disable-next-line svelte/prefer-svelte-reactivity
-							queryParams[index] !== undefined ? new Set(queryParams[index]) : null
-
-						return [
-							id,
-							{
-								enabled: !!queryParams[index],
-								activeValues: Object.fromEntries(
-									Object.entries(defaultActiveValues).map(([v, defaultValueEnabled]) => [
-										v,
-										activeValues ? activeValues.has(v) : defaultValueEnabled
-									])
-								)
-							}
-						]
-					})
+		if (browser && window.location.search) {
+			// eslint-disable-next-line svelte/prefer-svelte-reactivity
+			const queryParams = Object.fromEntries([...new URLSearchParams(window.location.search)])
+			if (queryParams.version !== BLUEPRINT_VERSION) {
+				alert(
+					"Your URL includes filters based on a previous version of the Blueprint, which is not supported. We're clearing your filters and loading the latest Blueprint. Sorry about that!"
 				)
-				this.#filters = initFilters
-
-				// clear URL after loading
 				window.history.replaceState({}, '', `?${window.location.hash}`)
+				return
 			}
+			if (queryParams.mode) {
+				this.#mapMode = queryParams.mode as MapMode
+			}
+			if (queryParams.filterMode) {
+				this.#filterMode = queryParams.filterMode as FilterMode
+			}
+			const initFilters = Object.fromEntries(
+				Object.entries(defaultFilters).map(([id, { activeValues: defaultActiveValues }]) => {
+					const index = filterToIndex[id]
+
+					const activeValues =
+						// eslint-disable-next-line svelte/prefer-svelte-reactivity
+						queryParams[index] !== undefined ? new Set(queryParams[index]) : null
+
+					return [
+						id,
+						{
+							enabled: !!queryParams[index],
+							activeValues: Object.fromEntries(
+								Object.entries(defaultActiveValues).map(([v, defaultValueEnabled]) => [
+									v,
+									activeValues ? activeValues.has(v) : defaultValueEnabled
+								])
+							)
+						}
+					]
+				})
+			)
+			this.#filters = initFilters
+
+			// clear URL after loading
+			window.history.replaceState({}, '', `?${window.location.hash}`)
 		}
 	}
 }

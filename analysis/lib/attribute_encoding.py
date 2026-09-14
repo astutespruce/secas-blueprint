@@ -71,9 +71,7 @@ def delta_encode_values(df, total, scale=100):
     scaled = (scale * df.divide(total, axis=0)).round().astype("int")
 
     # calculate delta values
-    delta = scaled[scaled.columns[1:]].subtract(
-        scaled[scaled.columns[:-1]].values, axis=0
-    )
+    delta = scaled[scaled.columns[1:]].subtract(scaled[scaled.columns[:-1]].values, axis=0)
 
     # caret must be escaped
     # nochange = "\^" * len(delta.columns)
@@ -97,14 +95,14 @@ def encode_blueprint(df):
     -------
     DataFrame
     """
-    blueprint_cols = [f"blueprint_{v['value']}" for v in BLUEPRINT]
+    blueprint_cols = [f"blueprint_{v['value']}" for v in BLUEPRINT["values"]]
     blueprint = encode_values(
         df[blueprint_cols],
         df.rasterized_acres,
         1000,
     ).rename("blueprint")
 
-    corridor_cols = [f"corridors_{v['value']}" for v in CORRIDORS]
+    corridor_cols = [f"corridors_{v['value']}" for v in CORRIDORS["values"]]
     corridors = encode_values(
         df[corridor_cols],
         df.rasterized_acres,
@@ -112,9 +110,7 @@ def encode_blueprint(df):
     ).rename("corridors")
 
     # only check areas of indicators actually present in summaries for unit type
-    check_indicators = {
-        e["id"]: e for e in INDICATORS if f"{e['id']}_outside" in df.columns
-    }
+    check_indicators = {e["id"]: e for e in INDICATORS if f"{e['id']}_outside" in df.columns}
 
     # NOTE: serialized indicator ID is its position in full indicators list
     # join to empty data frame to have full index
@@ -132,19 +128,14 @@ def encode_blueprint(df):
         # drop any entries where they are not present or are only 0 values for
         # indicators with 0 values
         indicator_acres = indicator_acres.loc[
-            (total_acres > 0)
-            & ~(
-                (values[0]["value"] == 0) & (indicator_acres[cols[1:]].max(axis=1) == 0)
-            )
+            (total_acres > 0) & ~((values[0]["value"] == 0) & (indicator_acres[cols[1:]].max(axis=1) == 0))
         ]
 
         if len(indicator_acres) == 0:
             continue
 
         indicator_acres = indicator_acres.join(df.rasterized_acres)
-        encoded = encode_values(
-            indicator_acres[cols], indicator_acres.rasterized_acres, 1000
-        ).rename(i)
+        encoded = encode_values(indicator_acres[cols], indicator_acres.rasterized_acres, 1000).rename(i)
 
         indicators = indicators.join(encoded, how="left")
 

@@ -1,41 +1,52 @@
-[
-  {
-    "value": 0,
-    "label": "Lower priority",
-    "percent": 50,
-    "description": "Areas where conservation action would make a below-average impact, based on a suite of natural and cultural resource indicators.",
-    "color": "#ffebc2"
-  },
-  {
-    "value": 1,
-    "label": "Priority connections",
-    "shortLabel": "Connections",
-    "percent": 5,
-    "description": "Connections between priority areas that cover the shortest distance possible while routing through as much Blueprint priority as possible.",
-    "color": "#6C6C6C"
-  },
-  {
-    "value": 2,
-    "label": "Medium priority",
-    "shortLabel": "Medium",
-    "percent": 20,
-    "description": "Areas where conservation action would make an above-average impact, based on a suite of natural and cultural resource indicators.",
-    "color": "#8C96C6"
-  },
-  {
-    "value": 3,
-    "label": "High priority",
-    "shortLabel": "High",
-    "percent": 15,
-    "description": "Areas where conservation action would make a big impact, based on a suite of natural and cultural resource indicators.",
-    "color": "#843F98"
-  },
-  {
-    "value": 4,
-    "label": "Highest priority",
-    "shortLabel": "Highest",
-    "percent": 10,
-    "description": "Areas where conservation action would make the biggest impact, based on a suite of natural and cultural resource indicators.",
-    "color": "#4D004B"
-  }
-]
+{
+	"id": "blueprint",
+	"filename": "blueprint.tif",
+	"label": "Blueprint priority",
+	"description": "The Blueprint identifies priority areas based on a suite of natural and cultural resource indicators representing terrestrial, freshwater, and marine ecosystems.",
+	"caption": "Extent of each Blueprint priority category",
+	"source": "Southeast Conservation Blueprint",
+	"date": "2026",
+	"citation": "Southeast Conservation Adaptation Strategy (SECAS). 2025. Southeast Conservation Blueprint 2025.",
+	"url": "https://secas-fws.hub.arcgis.com/maps/fws::southeast-conservation-blueprint-2025/explore",
+	"values": [
+		{
+			"value": 0,
+			"label": "Lower priority",
+			"percent": 50,
+			"description": "Areas where conservation action would make a below-average impact, based on a suite of natural and cultural resource indicators.",
+			"color": "#ffebc2"
+		},
+		{
+			"value": 1,
+			"label": "Priority connections",
+			"shortLabel": "Connections",
+			"percent": 5,
+			"description": "Connections between priority areas that cover the shortest distance possible while routing through as much Blueprint priority as possible.",
+			"color": "#6C6C6C"
+		},
+		{
+			"value": 2,
+			"label": "Medium priority",
+			"shortLabel": "Medium",
+			"percent": 20,
+			"description": "Areas where conservation action would make an above-average impact, based on a suite of natural and cultural resource indicators.",
+			"color": "#8C96C6"
+		},
+		{
+			"value": 3,
+			"label": "High priority",
+			"shortLabel": "High",
+			"percent": 15,
+			"description": "Areas where conservation action would make a big impact, based on a suite of natural and cultural resource indicators.",
+			"color": "#843F98"
+		},
+		{
+			"value": 4,
+			"label": "Highest priority",
+			"shortLabel": "Highest",
+			"percent": 10,
+			"description": "Areas where conservation action would make the biggest impact, based on a suite of natural and cultural resource indicators.",
+			"color": "#4D004B"
+		}
+	]
+}
