@@ -35,4 +35,15 @@ def apply_filters(
         for index in filter_keys
     }
 
+    print(f"Applying the following filters to the Blueprint using {filter_mode} logic:")
+    for id, values in filters.items():
+        info = FILTER_DATASETS[id]
+        print(f"  {info['label']}")
+        values = set(values)
+        value_labels = [v["label"] for v in info["values"] if v["value"] in values]
+        for value in value_labels:
+            print(f"  [x] {value}")
+
+        print()
+
     save_to_geotiff(filter_mode, filters, outfilename)
