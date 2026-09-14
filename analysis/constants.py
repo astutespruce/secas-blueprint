@@ -209,6 +209,13 @@ REPORT_DATASETS = {
     ]
 }
 
+# this MUST match the order of all filters in the user interface
+# see ui/src/lib/config/filters.ts
+FILTER_DATASETS = {
+    dataset["id"]: dataset
+    for dataset in [BLUEPRINT, CORRIDORS] + INDICATORS + [SLR_DEPTH, PARCAS, URBAN, PROTECTED_AREAS, WILDFIRE_RISK]
+}
+
 
 class SummaryUnitType(StrEnum):
     huc12 = "huc12"

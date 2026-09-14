@@ -165,7 +165,7 @@ def info(filename: Annotated[str, typer.Argument(help="shapefile or FGDB filenam
             dataset, layer = get_dataset(zipfile)
             path = f"/vsizip/{filename}/{dataset}"
     else:
-        raise ValueError(f"ERROR: unsupported file type: {filename}")
+        raise typer.Exit(f"ERROR: unsupported file type: {filename}")
 
     info = read_info(path, layer=layer)
 

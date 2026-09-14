@@ -59,6 +59,7 @@ tests = ["httpx>=0.28.1", "pixelmatch>=0.4.0", "pytest>=9.1.1"]
 
 [project.scripts]
 create-report = "commands.report:app"
+filter-blueprint = "commands.filter:app"
 
 [tool.uv.build-backend]
 module-root = ""

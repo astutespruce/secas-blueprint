@@ -214,7 +214,7 @@
 		<div class="z-1 absolute top-[-20%]">
 			<enhanced:img
 				src="$images/usfws-candy-darter.jpg"
-				class="h-auto min-w-[720px] object-cover brightness-60"
+				class="h-auto min-w-[720px] object-cover"
 				alt=""
 				fetchpriority="high"
 			/>
