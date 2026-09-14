@@ -9,10 +9,10 @@
 	import UploadIcon from '~icons/fa-solid/upload'
 	import { cn } from '$lib/utils.js'
 	import { Field, Control, Label, Button as SubmitButton } from '$lib/components/ui/form'
-	import { Checkbox } from '$lib/components/ui/checkbox'
 	import { Button } from '$lib/components/ui/button'
 	import { Input } from '$lib/components/ui/input'
 	import { ContactDialog } from '$lib/components/dialog'
+	import { resolve } from '$app/paths'
 
 	const MAXSIZE_MB = 100
 	const MIME_TYPES = new Set([
@@ -22,11 +22,10 @@
 		'multipart/x-zip'
 	])
 
-	const { onSubmit } = $props()
+	const { reportFormat = 'pdf', onSubmit } = $props()
 	let isDragValid: boolean | null = $state(null)
 	const schema = z.object({
 		areaName: z.string().default('').optional(),
-		xlsxReport: z.boolean().default(false),
 		file: z
 			.instanceof(File, {
 				error: 'Please select a file'
@@ -41,14 +40,13 @@
 		onUpdate: function ({ form }) {
 			const {
 				valid,
-				data: { areaName = '', file, xlsxReport }
+				data: { areaName = '', file }
 			} = form
 
 			if (!valid) {
 				return
 			}
 
-			const reportFormat = xlsxReport ? 'xlsx' : 'pdf'
 			onSubmit(reportFormat, areaName, file)
 		}
 	})
@@ -228,20 +226,6 @@
 						</p>
 					{/if}
 				</Field>
-				<Field {form} name="xlsxReport" class="mt-8 border-t pt-7 border-t-grey-2">
-					<Control>
-						<label for="xlsx-checkbox" class="flex gap-2 text-base leading-tight">
-							<Checkbox
-								id="xlsx-checkbox"
-								aria-label="Create XLSX report instead of PDF"
-								class="cursor-pointer size-5 rounded-xs disabled:border-grey-8/50 border-2 [&_svg]:size-4"
-								bind:checked={$formData.xlsxReport}
-							/>
-							Do you want to create a customizable XLSX spreadsheet with just the tabular results and
-							none of the maps? This is intended to complement the PDF reports for advanced use cases.
-						</label>
-					</Control>
-				</Field>
 
 				<div class="flex justify-end mt-8 border-t pt-8 border-t-grey-2">
 					<SubmitButton disabled={!isValid} class="text-xl gap-2">
@@ -251,11 +235,30 @@
 			</div>
 			<div>
 				<p>
-					Upload a zipped shapefile or ESRI File Geodatabase Feature Class containing your area of
-					interest to generate a detailed PDF report of the Blueprint, underlying indicators, and
-					other contextual information for your area of interest. It includes a map and summary
-					table for every indicator present in the area, as well as additional information about
-					urbanization and sea-level rise.
+					{#if reportFormat === 'pdf'}
+						Upload a zipped shapefile or ESRI File Geodatabase Feature Class containing your area of
+						interest to generate a detailed PDF report of the Blueprint, underlying indicators, and
+						other contextual information for your area of interest. It includes a map and summary
+						table for every indicator present in the area, as well as additional information about
+						urbanization and sea-level rise.
+						<br /><br />
+						We're currently testing advanced reporting that complements this simple PDF report, including
+						the ability to choose specific datasets and save results to an XLSX file. This functionality
+						is not yet public. Contact
+						<a href="http://secassoutheast.org/staff" target="_blank">
+							Blueprint user support staff</a
+						> to find out more.
+					{:else}
+						Upload a zipped shapefile or ESRI File Geodatabase Feature Class containing your area of
+						interest to generate a detailed XLSX report of the Blueprint, underlying indicators, and
+						other contextual information for your area of interest. This report is intended to
+						complement the <a href={resolve('/custom_report/')}>PDF report</a>
+						and it is expected that you will have created that first and reviewed the results.
+						<br />
+						<br />
+						On the next step, you can select a field in the dataset to use for aggregating statistics
+						in your reportError. You can also choose which datasets to include in your report.
+					{/if}
 					<br /><br />
 					Don't have a shapefile? You can create one using
 					<a href="https://geojson.io/" target="_blank"> geojson.io </a>
@@ -266,50 +269,55 @@
 						<span class="text-link hover:underline cursor-pointer">We are here</span>
 					</ContactDialog>
 					to help you interpret and apply this information to your particular application!
-					<br />
-					<br />
-					We are working on resolving some technical challenges to make these these automatically generated
-					reports more accessible to people with disabilities. In the meantime, to request an accessible
-					PDF or other assistance, please contact Hilary Morris at
-					<a href="mailto:hilary_morris@fws.gov"> hilary_morris@fws.gov </a>.
+
+					{#if reportFormat === 'pdf'}
+						<br />
+						<br />
+						We are working on resolving some technical challenges to make these these automatically generated
+						reports more accessible to people with disabilities. In the meantime, to request an accessible
+						PDF or other assistance, please contact Hilary Morris at
+						<a href="mailto:hilary_morris@fws.gov"> hilary_morris@fws.gov </a>.
+					{/if}
 					<br />
 					<br />
 					You can help us improve the Blueprint and this report by helping us understand your use case:
-					we use this information to provide statistics about how the Blueprint is being used and to prioritize
-					improvements.
+					we use this information to provide statistics about how the Blueprint is being used and to
+					prioritize improvements.
 				</p>
 			</div>
 		</div>
 	</form>
 
-	<hr />
-	<h2 class="text-2xl">Examples of what is inside</h2>
-	<div class="grid grid-cols-2 md:grid-cols-5 mt-2 gap-4 [&_img]:border [&_img]:border-grey-2">
-		<enhanced:img
-			src="$images/report/report_sm_1.png"
-			alt="Tool report example screenshot 1"
-			loading="lazy"
-		/>
-		<enhanced:img
-			src="$images/report/report_sm_2.png"
-			alt="Tool report example screenshot 2"
-			loading="lazy"
-		/>
-		<enhanced:img
-			src="$images/report/report_sm_3.png"
-			alt="Tool report example screenshot 3"
-			loading="lazy"
-		/>
-		<enhanced:img
-			src="$images/report/report_sm_4.png"
-			alt="Tool report example screenshot 4"
-			loading="lazy"
-		/>
-		<enhanced:img
-			src="$images/report/report_sm_5.png"
-			alt="Tool report example screenshot 5"
-			loading="lazy"
-		/>
-	</div>
-	<p class="mt-2 text-lg">...and much more!</p>
+	{#if reportFormat === 'pdf'}
+		<hr />
+		<h2 class="text-2xl">Examples of what is inside</h2>
+		<div class="grid grid-cols-2 md:grid-cols-5 mt-2 gap-4 [&_img]:border [&_img]:border-grey-2">
+			<enhanced:img
+				src="$images/report/report_sm_1.png"
+				alt="Tool report example screenshot 1"
+				loading="lazy"
+			/>
+			<enhanced:img
+				src="$images/report/report_sm_2.png"
+				alt="Tool report example screenshot 2"
+				loading="lazy"
+			/>
+			<enhanced:img
+				src="$images/report/report_sm_3.png"
+				alt="Tool report example screenshot 3"
+				loading="lazy"
+			/>
+			<enhanced:img
+				src="$images/report/report_sm_4.png"
+				alt="Tool report example screenshot 4"
+				loading="lazy"
+			/>
+			<enhanced:img
+				src="$images/report/report_sm_5.png"
+				alt="Tool report example screenshot 5"
+				loading="lazy"
+			/>
+		</div>
+		<p class="mt-2 text-lg">...and much more!</p>
+	{/if}
 </div>
