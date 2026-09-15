@@ -5,7 +5,6 @@ import httpx
 
 from analysis.constants import SECAS_STATES
 
-
 # Data URLS are obtained by opening the Javascript console for
 # https://coast.noaa.gov/slrdata/, then running
 

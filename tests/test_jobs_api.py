@@ -1,5 +1,5 @@
-from httpx import BasicAuth
 import pytest
+from httpx import BasicAuth
 
 from api.settings import API_SECRET
 

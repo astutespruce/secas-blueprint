@@ -1,26 +1,26 @@
+import subprocess
 from itertools import product
 from pathlib import Path
-import subprocess
 
-from progress.bar import Bar
 import numpy as np
 import rasterio
-from rasterio.windows import Window
+from progress.bar import Bar
 from rasterio.enums import Resampling
 from rasterio.vrt import WarpedVRT
+from rasterio.windows import Window
 
 from analysis.constants import (
-    MASK_RESOLUTION,
     DATA_CRS,
-    WILDFIRE_RISK_BINS,
+    MASK_RESOLUTION,
     WILDFIRE_RISK,
+    WILDFIRE_RISK_BINS,
 )
 from analysis.lib.colors import hex_to_uint8
 from analysis.lib.raster import (
-    write_raster,
     add_overviews,
-    create_lowres_mask,
     clip_window,
+    create_lowres_mask,
+    write_raster,
 )
 
 # read window size in pixels

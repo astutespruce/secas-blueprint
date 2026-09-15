@@ -83,7 +83,7 @@ def get_aoi_map_image(geometry, center, zoom, width, height, add_mask=True):
                 },
             )
         except Exception as ex:
-            log.error(f"could not create mask around area of interest {str(ex)}")
+            log.error(f"could not create mask around area of interest {ex!s}")
 
     try:
         map = Map(json.dumps(style), width, height, 1, *center, zoom=zoom)

@@ -43,7 +43,7 @@ SAVE_XLSX = bool(os.getenv("TEST_SAVE_XLSX", False))
 
 
 # mock redis context for set progress
-class MockRedis(object):
+class MockRedis:
     async def setex(self, prefix, expiration, message):
         log.info(f"{prefix}: {message}")
 

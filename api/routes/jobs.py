@@ -192,7 +192,7 @@ async def report_results_endpoint(job_id: str, report_type: ReportType):
                 detail="Job failed, cannot return results.  Please contact us to report an issue.",
             )
 
-        result, errors = await job.result()
+        result, _ = await job.result()
 
         local_filename = result["local_filename"]
         download_filename = result["download_filename"]

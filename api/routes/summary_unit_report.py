@@ -1,12 +1,11 @@
 import arq
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security.api_key import APIKey
 
 from analysis.constants import SummaryUnitReportType, SummaryUnitType
-from api.settings import REDIS, REDIS_QUEUE
-from api.logger import log
 from api.lib.validation import validate_token
-
+from api.logger import log
+from api.settings import REDIS, REDIS_QUEUE
 
 router = APIRouter()
 

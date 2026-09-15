@@ -33,7 +33,7 @@ def test_summary_unit_results_invalid_type(unit_type):
 @pytest.mark.parametrize("unit_type", ["huc12", "marine_hex"])
 @pytest.mark.parametrize("unit_id", [None, 1])
 def test_summary_unit_results_invalid_id_type(unit_type, unit_id):
-    with pytest.raises(ValueError, match="unit_id must be a string"):
+    with pytest.raises(TypeError, match="unit_id must be a string"):
         get_summary_unit_results(unit_type, unit_id)
 
 

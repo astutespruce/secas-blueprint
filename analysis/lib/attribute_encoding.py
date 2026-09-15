@@ -1,8 +1,8 @@
 import pandas as pd
 
 from analysis.constants import (
-    CORRIDORS,
     BLUEPRINT,
+    CORRIDORS,
     INDICATORS,
 )
 

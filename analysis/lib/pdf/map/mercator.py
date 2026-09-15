@@ -2,7 +2,6 @@ import math
 
 from analysis.constants import M_MILES
 
-
 R2D = 180 / math.pi
 D2R = math.pi / 180
 A = 6378137.0
@@ -78,10 +77,8 @@ def to_tile_px(longitude, latitude, zoom, tile_size=256):
     x = zc + longitude * bc
     y = zc + 0.5 * math.log((1 + f) / (1 - f)) * -cc
 
-    if x > size:
-        x = size
-    if y > size:
-        y = size
+    x = min(x, size)
+    y = min(y, size)
 
     return x, y
 

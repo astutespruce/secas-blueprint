@@ -15,7 +15,7 @@ filename = src_dir / PARCAS["filename"]
 mask_filename = src_dir / PARCAS["filename"].replace(".tif", "_mask.tif")
 boundary_filename = src_dir / PARCAS_POLY["filename"]
 
-BINS = range(0, len(PARCAS["values"]))
+BINS = range(len(PARCAS["values"]))
 LABELS = {e["value"]: e["label"] for e in PARCAS["values"]}
 
 

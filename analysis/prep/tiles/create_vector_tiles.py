@@ -59,7 +59,7 @@ def create_tileset(infilename, outfilename, minzoom, maxzoom, layer_id, col_type
         + ["-l", layer_id]
         + ["-Z", str(minzoom), "-z", str(maxzoom)]
         + col_types
-        + ["-o", f"{str(outfilename)}", str(infilename)]
+        + ["-o", f"{outfilename!s}", str(infilename)]
     )
     ret.check_returncode()
 
@@ -126,7 +126,7 @@ create_tileset(
 
 
 outfilename = out_dir / "report_boundaries.mbtiles"
-ret = subprocess.run([tile_join, "-f", "-pg"] + ["-o", f"{str(outfilename)}"] + tilesets)
+ret = subprocess.run([tile_join, "-f", "-pg"] + ["-o", f"{outfilename!s}"] + tilesets)
 ret.check_returncode()
 
 
@@ -188,7 +188,7 @@ ret = subprocess.run(
         "-pg",
         "--no-tile-size-limit",
     ]
-    + ["-o", f"{str(outfilename)}"]
+    + ["-o", f"{outfilename!s}"]
     + tilesets
 )
 ret.check_returncode()
@@ -237,7 +237,7 @@ print(
 
 
 outfilename = out_dir / "se_map_units.mbtiles"
-ret = subprocess.run([tile_join, "-f", "-pg"] + ["-o", f"{str(outfilename)}"] + tilesets)
+ret = subprocess.run([tile_join, "-f", "-pg"] + ["-o", f"{outfilename!s}"] + tilesets)
 ret.check_returncode()
 
 

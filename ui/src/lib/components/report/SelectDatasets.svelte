@@ -181,32 +181,3 @@
 		{/each}
 	</div>
 </div>
-
-<!-- <FilterGroup
-					label="Filter by priorities"
-					icon={BlueprintIcon}
-					color="#4d004b0d"
-					borderColor="#4d004b2b"
-					entries={priorityFilters}
-					onChange={handleFilterChange}
-				/>
-
-				{#each indicatorGroups as { id, label, color, borderColor } (id)}
-					<FilterGroup
-						label={`Filter by ${label.toLowerCase()}`}
-						icon={indicatorGroupIcons[id as keyof typeof indicatorGroupIcons]}
-						{color}
-						{borderColor}
-						entries={indicatorGroupFilters[id as keyof typeof indicatorGroupFilters]}
-						onChange={handleFilterChange}
-					/>
-				{/each}
-
-				<FilterGroup
-					label="More filters"
-					icon={OtherInfoIcon}
-					color="#f3c6a830"
-					borderColor="#f3c6a891"
-					entries={otherInfoFilters}
-					onChange={handleFilterChange}
-				/> -->

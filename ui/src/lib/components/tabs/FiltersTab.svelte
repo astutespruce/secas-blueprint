@@ -90,7 +90,7 @@
 
 					canBeVisible: otherInfoDatasetCanBeVisible(entry.id)
 				}))
-				.filter(({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled) // mapState.filters[id].enabled)
+				.filter(({ canBeVisible, enabled }: FilterVisibilityStub) => canBeVisible || enabled)
 		}
 	})
 

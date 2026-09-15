@@ -16,7 +16,7 @@ extent_mask_filename = bnd_dir / "blueprint_extent_mask.tif"
 WINDOW_SIZE = 2048  # approx 16 MB for 8 bit data
 
 
-class RasterizedGeometry(object):
+class RasterizedGeometry:
     """Helper class to detect and extract data for a rasterized geometry"""
 
     def __init__(self, geometry):
@@ -69,8 +69,8 @@ class RasterizedGeometry(object):
             for mask in self.masks:
                 mask.get_pixel_count_by_bin(src, out=count)
 
-            pixels_within_se = count[1]
-            self.outside_extent_acres = (self.pixels - pixels_within_se) * self.cellsize
+            pixels_within_extent = count[1]
+            self.outside_extent_acres = (self.pixels - pixels_within_extent) * self.cellsize
 
     def detect_data(self, dataset):
         """Detect if there are any non-NODATA pixel values in the dataset within

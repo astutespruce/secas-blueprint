@@ -17,7 +17,7 @@ mask_filename = src_dir / PROTECTED_AREAS["filename"].replace(".tif", "_mask.tif
 boundary_filename = src_dir / PROTECTED_AREAS_POLY["filename"]
 columns = ["name", "owner"]
 
-BINS = range(0, len(PROTECTED_AREAS["values"]))
+BINS = range(len(PROTECTED_AREAS["values"]))
 LABELS = {e["value"]: e["label"] for e in PROTECTED_AREAS["values"]}
 
 

@@ -250,14 +250,14 @@
 						> to find out more.
 					{:else}
 						Upload a zipped shapefile or ESRI File Geodatabase Feature Class containing your area of
-						interest to generate a detailed XLSX report of the Blueprint, underlying indicators, and
-						other contextual information for your area of interest. This report is intended to
-						complement the <a href={resolve('/custom_report/')}>PDF report</a>
+						interest to generate a detailed Excel spreadsheet report (.xlsx) of the Blueprint,
+						underlying indicators, and other contextual information for your area of interest. This
+						report is intended to complement the <a href={resolve('/custom_report/')}>PDF report</a>
 						and it is expected that you will have created that first and reviewed the results.
 						<br />
 						<br />
-						On the next step, you can select a field in the dataset to use for aggregating statistics
-						in your reportError. You can also choose which datasets to include in your report.
+						On the next step, you can select a field in the dataset for aggregating statistics in your
+						report, or run the entire area as one unit.
 					{/if}
 					<br /><br />
 					Don't have a shapefile? You can create one using
@@ -280,7 +280,7 @@
 					{/if}
 					<br />
 					<br />
-					You can help us improve the Blueprint and this report by helping us understand your use case:
+					You can help us improve the Blueprint and this report by helping us understand your use case;
 					we use this information to provide statistics about how the Blueprint is being used and to
 					prioritize improvements.
 				</p>

@@ -1,16 +1,15 @@
 from glob import glob
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from zipfile import ZipFile, ZIP_DEFLATED
+from zipfile import ZIP_DEFLATED, ZipFile
 
 import geopandas as gp
 import numpy as np
-from pyogrio import write_dataframe
 import shapely
+from pyogrio import write_dataframe
 
 from analysis.constants import GEO_CRS
 from api.settings import MAX_POLYGONS
-
 
 drivers = {".geojson": "GeoJSON", ".shp": "ESRI Shapefile", ".gdb": "OpenFileGDB"}
 

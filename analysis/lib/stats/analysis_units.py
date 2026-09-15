@@ -89,6 +89,8 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
         return None
 
     df = df.join(state_join).join(subregion_join)
+    df["states"] = df.states.fillna("")
+    df["subregions"] = df.subregions.fillna("")
     df["count"] = shapely.get_num_geometries(df.geometry.values)
     df["acres"] = shapely.area(df.geometry.values) * M2_ACRES
     df["bounds"] = shapely.bounds(df.geometry.values).tolist()
@@ -147,7 +149,7 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
 
             for indicator in INDICATORS:
                 if indicator["id"] in datasets:
-                    bins = range(0, indicator["values"][-1]["value"] + 1)
+                    bins = range(indicator["values"][-1]["value"] + 1)
                     indicator_acres = rasterized_geometry.get_acres_by_bin(files[indicator["id"]], bins)
                     # Some indicators exclude 0 values, remove them from results
                     if indicator["values"][0]["value"] > 0:
@@ -215,12 +217,12 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
     if PARCAS_POLY["id"] in datasets:
         parcas = extract_parcas_in_analysis_units(df)
         if parcas is not None:
-            out = out.join(parcas)  # .rename(f"{PARCAS['id']}_poly"))
+            out = out.join(parcas)
 
     if PROTECTED_AREAS_POLY["id"] in datasets:
         protected_areas = extract_protected_areas_in_analysis_areas(df)
         if protected_areas is not None:
-            out = out.join(protected_areas)  # .rename(f"{PROTECTED_AREAS['id']}_poly"))
+            out = out.join(protected_areas)
 
     if SLR_PROJ["id"] in datasets:
         slr_proj = extract_slr_proj_in_analysis_areas(df)

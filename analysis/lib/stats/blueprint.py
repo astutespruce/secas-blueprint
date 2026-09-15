@@ -14,8 +14,8 @@ src_dir = data_dir / "inputs"
 blueprint_filename = src_dir / BLUEPRINT["filename"]
 corridors_filename = src_dir / CORRIDORS["filename"]
 
-BLUEPRINT_BINS = range(0, len(BLUEPRINT["values"]))
-CORRIDOR_BINS = range(0, len(CORRIDORS["values"]))
+BLUEPRINT_BINS = range(len(BLUEPRINT["values"]))
+CORRIDOR_BINS = range(len(CORRIDORS["values"]))
 
 
 async def summarize_blueprint_in_aoi(rasterized_geometry, subregions, progress_callback=None):
@@ -95,7 +95,7 @@ async def summarize_blueprint_in_aoi(rasterized_geometry, subregions, progress_c
     for i, indicator in enumerate(indicators_present):
         id = indicator["id"]
         filename = src_dir / indicator["filename"]
-        bins = range(0, indicator["values"][-1]["value"] + 1)
+        bins = range(indicator["values"][-1]["value"] + 1)
 
         with rasterio.open(filename) as src:
             indicator_acres = rasterized_geometry.get_acres_by_bin(src, bins)
@@ -106,7 +106,7 @@ async def summarize_blueprint_in_aoi(rasterized_geometry, subregions, progress_c
         # Some indicators exclude 0 values, their counts need to be zeroed out here
         min_value = indicator["values"][0]["value"]
         if min_value > 0:
-            indicator_acres[range(0, min_value)] = 0
+            indicator_acres[range(min_value)] = 0
 
         # if only 0 values are present, ignore this indicator
         if indicator_acres[1:].max() == 0:
@@ -143,7 +143,7 @@ async def summarize_blueprint_in_aoi(rasterized_geometry, subregions, progress_c
             await progress_callback(20 + (75 * (i + 1) / len(indicators_present)))
 
     ### aggregate indicators up to indicator groups
-    # determine indicator gruops present from indicators
+    # determine indicator groups present from indicators
     indicator_group_ids = {id.split("_")[0] for id in indicators}
     indicator_groups_present = [deepcopy(e) for e in INDICATOR_GROUPS if e["id"] in indicator_group_ids]
     indicator_groups = []
@@ -256,7 +256,7 @@ def summarize_blueprint_by_units_grid(df, units_grid, out_dir, marine=False):
                     df,
                     units_grid,
                     value_dataset,
-                    bins=range(0, values[-1] + 1),
+                    bins=range(values[-1] + 1),
                     progress_label=f"Summarizing {indicator['label']}",
                 )
                 * cellsize

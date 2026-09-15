@@ -2,7 +2,6 @@ import re
 import shutil
 import tempfile
 from pathlib import Path
-from typing import Optional
 from zipfile import ZipFile
 
 import arq
@@ -61,7 +60,7 @@ router = APIRouter()
 async def custom_report_create_endpoint(
     report_type: ReportType,
     file: UploadFile = File(...),
-    name: Optional[str] = Form(None),
+    name: str | None = Form(None),
     token: APIKey = Depends(validate_token),
 ):
     validate_content_type(file)
@@ -114,8 +113,8 @@ async def custom_report_create_endpoint(
 async def custom_report_xlsx_finalize_endpoint(
     uuid: str,
     datasets: str = Form(""),  # comma-delimited list
-    field: Optional[str] = Form(None),
-    name: Optional[str] = Form(None),
+    field: str | None = Form(None),
+    name: str | None = Form(None),
     token: APIKey = Depends(validate_token),
 ):
     if not re.fullmatch(r"[A-Za-z0-9_-]+", uuid):

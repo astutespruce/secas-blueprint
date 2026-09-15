@@ -1,28 +1,26 @@
 import asyncio
-from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
-
-from .aoi import get_aoi_map_image
-from .basemap import get_basemap_image
-from .locator import get_locator_map_image
-from .raster import render_raster, WebMercatorReader
-from .summary_unit import get_summary_unit_map_image
-from .mercator import get_zoom, get_map_bounds
-from .util import pad_bounds, get_center, merge_maps, to_png_bytes
-
+from pathlib import Path
 
 from analysis.constants import (
     BLUEPRINT_COLORS,
     CORRIDORS_COLORS,
+    INDICATORS_INDEX,
     PARCA_COLORS,
     PROTECTED_AREAS_COLORS,
-    URBAN_COLORS,
     SLR_DEPTH_VALUES,
-    INDICATORS_INDEX,
+    URBAN_COLORS,
     WILDFIRE_RISK_COLORS,
 )
 from api.settings import MAP_RENDER_THREADS
 
+from .aoi import get_aoi_map_image
+from .basemap import get_basemap_image
+from .locator import get_locator_map_image
+from .mercator import get_map_bounds, get_zoom
+from .raster import WebMercatorReader, render_raster
+from .summary_unit import get_summary_unit_map_image
+from .util import get_center, merge_maps, pad_bounds, to_png_bytes
 
 WIDTH = 740
 HEIGHT = 420
@@ -146,7 +144,7 @@ async def render_raster_maps(
         task_args.append(("wildfire_risk", wildfire_risk_filename, colors))
 
     # NOTE: have to have handle on pending or task loop gets closed too soon
-    completed, pending = await asyncio.wait(
+    completed, _ = await asyncio.wait(
         [loop.run_in_executor(executor, render_raster_map, *base_args, *args) for args in task_args]
     )
 

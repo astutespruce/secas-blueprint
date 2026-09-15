@@ -6,10 +6,9 @@ from progress.bar import Bar
 from pyogrio import read_dataframe
 
 from analysis.constants import DATA_CRS, GEO_CRS
-from analysis.lib.pdf.report import create_report
 from analysis.lib.pdf.map import render_maps
+from analysis.lib.pdf.report import create_report
 from analysis.lib.stats.aoi import get_aoi_results
-
 
 out_dir = Path("/tmp/secas")
 out_dir.mkdir(exist_ok=True)
@@ -71,4 +70,4 @@ for state in states.NAME.values:
     with open(out_dir / f"{state.replace(' ', '_')}_Blueprint2025_report.pdf", "wb") as out:
         out.write(pdf)
 
-    print("Elapsed {:.2f}s".format(time() - start))
+    print(f"Elapsed {time() - start:.2f}s")

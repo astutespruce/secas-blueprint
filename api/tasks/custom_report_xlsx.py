@@ -135,7 +135,7 @@ async def create_custom_xlsx_report(
 
     await set_progress(ctx["redis"], ctx["job_id"], 95, "Nearly done")
 
-    local_filename = str((TEMP_DIR / f"{uuid}.xlsx"))
+    local_filename = str(TEMP_DIR / f"{uuid}.xlsx")
 
     with open(local_filename, "wb") as out:
         out.write(xlsx)

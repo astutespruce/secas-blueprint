@@ -1,7 +1,7 @@
 from pathlib import Path
 
-import pyarrow.dataset as pa
 import pyarrow.compute as pc
+import pyarrow.dataset as pa
 
 data_dir = Path("data")
 huc12_filename = data_dir / "inputs/summary_units/huc12.feather"

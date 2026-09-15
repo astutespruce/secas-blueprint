@@ -175,10 +175,7 @@ def window_overlaps(window, dataset):
     bool
     """
     clipped_window = clip_window(window, dataset.width, dataset.height)
-    if clipped_window.width > 0 and clipped_window.height > 0:
-        return True
-
-    return False
+    return clipped_window.width > 0 and clipped_window.height > 0
 
 
 def create_lowres_mask(
@@ -244,7 +241,7 @@ def create_lowres_mask(
                 out.write(data)
 
 
-class SummaryUnitGrid(object):
+class SummaryUnitGrid:
     def __init__(self, dataset, bounds):
         self.dataset = dataset
         self.window = get_window(dataset, bounds, boundless=False)
@@ -507,7 +504,7 @@ def get_overlapping_windows(src, geometry, bounds, window_size):
     return windows, len(windows) / total_windows
 
 
-class WindowGeometryMask(object):
+class WindowGeometryMask:
     """Geometry mask with an associated read window for optimized
     reading from the dataset
 
@@ -571,10 +568,7 @@ class WindowGeometryMask(object):
         data = dataset.read(1, window=read_window, boundless=True)
 
         # if there are non-nodata values within geometry mask, then there are data
-        if (data[self.shape_mask] != nodata).any():
-            return True
-
-        return False
+        return bool((data[self.shape_mask] != nodata).any())
 
     def get_pixel_count_by_bin(self, dataset, num_values=None, out=None):
         """Get count of pixels in each bin

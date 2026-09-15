@@ -1,17 +1,17 @@
-from pathlib import Path
 import math
+from pathlib import Path
 from time import time
 
-from progress.bar import Bar
 import numpy as np
 import rasterio
+import shapely
+from progress.bar import Bar
 from rasterio.enums import Resampling
 from rasterio.vrt import WarpedVRT
 from rasterio.windows import Window
-import shapely
 
-from analysis.constants import MASK_RESOLUTION, URBAN_BY_DECADE, URBAN, URBAN_YEARS, DATA_CRS, URBAN_COLORS
-from analysis.lib.colors import interpolate_colormap, hex_to_uint8
+from analysis.constants import DATA_CRS, MASK_RESOLUTION, URBAN, URBAN_BY_DECADE, URBAN_COLORS, URBAN_YEARS
+from analysis.lib.colors import hex_to_uint8, interpolate_colormap
 from analysis.lib.raster import add_overviews, create_lowres_mask, write_raster
 
 CHUNK_SIZE = 500  # number of rows to read at a time
@@ -149,6 +149,8 @@ for year in URBAN_YEARS:
     print("Adding overviews")
     add_overviews(outfilename)
 
+    tmp_filename.unlink()
+
     print(f"Done with {year} in {time() - year_start:.2f}s")
 
 bnd_raster.close()
@@ -185,7 +187,7 @@ with rasterio.open(out_dir / "urban_2060.tif") as src:
     binned[(data > 12.5) & (data <= 25)] = 3  # high (>25-50%)
     binned[data > 25] = 2  # very high (>50%)
     binned[data == 51] = 1  # already urban
-    binned[data == 255] = 0  # outside SE
+    binned[data == 255] = 0  # outside Blueprint extent
 
     outfilename = data_dir / "inputs" / URBAN["filename"]
     write_raster(
@@ -203,18 +205,6 @@ with rasterio.open(out_dir / "urban_2060.tif") as src:
 
 
 print(f"All done in {time() - start:.2f}s")
-
-# prev was
-#  BINS = [0, 0.9999, 12.5, 25] + 1
-# 0: 0, 1: >0 to 0.125, 2: > 0.125 to 0.25, 3: >0.25, 4: already urban
-# 0,  346926511,   13613714,    4130676,  224396210,
-# 0,  0-0.125: 346926511,   13613714,    4130676,  224396210,
-
-# >>> np.bincount(binned.flat)
-# array([3844310825,   13146293,  346926511, 2216898601])
-
-# >>> np.bincount(binned2.flat, minlength=4)
-# array([3843843404,   13613714,  346926511,          0, 2216898601])
 
 # bins are 1: already urban, 2: >0.25, 3: > 0.125 to 0.25, 4: > 0 to 0.125, 5: 0
 BINS = [25, 12.5, 0.9999, 0]

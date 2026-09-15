@@ -1,16 +1,15 @@
-from pathlib import Path
 import re
+from pathlib import Path
 from zipfile import ZipFile
 
 import geopandas as gp
-from pyogrio import list_layers, read_info, read_dataframe
 import shapely
+from pyogrio import list_layers, read_dataframe, read_info
 
 from analysis.constants import DATA_CRS, M2_ACRES, STANDARD_RESOLUTION
 from api.errors import DataError
-from api.settings import CUSTOM_REPORT_MAX_ACRES, MAX_POLYGONS, MAX_VERTICES
 from api.logger import log
-
+from api.settings import CUSTOM_REPORT_MAX_ACRES, MAX_POLYGONS, MAX_VERTICES
 
 gdb_regex = re.compile(r"\.gdb\/.+$")
 
@@ -34,8 +33,8 @@ def get_dataset(zip: ZipFile) -> tuple[str]:
         tuple of geospatial file within zip file, name of layer
     """
     files = [f for f in zip.namelist() if "__MACOSX" not in f or ".DS_Store" in f]
-    shp_files = set(f for f in files if f.endswith(".shp"))
-    gdb_files = set(str(Path(f).parent) for f in files if gdb_regex.search(f))
+    shp_files = {f for f in files if f.endswith(".shp")}
+    gdb_files = {str(Path(f).parent) for f in files if gdb_regex.search(f)}
     geo_files = list(shp_files.union(gdb_files))
     num_files = len(geo_files)
 

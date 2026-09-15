@@ -168,7 +168,7 @@ for aoi in aois:
     with open(out_dir / f"{path}_report.pdf", "wb") as out:
         out.write(pdf)
 
-    print("Elapsed {:.2f}s".format(time() - start))
+    print(f"Elapsed {time() - start:.2f}s")
 
 ############################################################
 

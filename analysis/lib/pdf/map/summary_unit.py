@@ -1,13 +1,12 @@
+import json
 from base64 import b64decode
 from copy import deepcopy
 from io import BytesIO
-import json
 
 from PIL import Image
 from pymgl import Map
 
 from api.settings import TILE_DIR
-
 
 STYLE = {
     "version": 8,

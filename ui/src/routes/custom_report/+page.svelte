@@ -4,12 +4,7 @@
 	import { captureException, logGAEvent } from '$lib/util/log'
 	import { Footer, Header } from '$lib/components/layout'
 	import { Done, Progress, Queued, Error, UploadForm } from '$lib/components/report'
-	import type {
-		ReportState,
-		ReportJobResult,
-		ReportType,
-		InspectResult
-	} from '$lib/components/report/types'
+	import type { ReportState, ReportJobResult, ReportType } from '$lib/components/report/types'
 
 	const initState: ReportState = {
 		view: 'upload',

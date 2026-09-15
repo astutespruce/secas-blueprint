@@ -155,7 +155,7 @@ export const unpackFeatureData = (properties: object, subregionIndex) => {
 			return prev
 		}, {})
 
-	// calculate area outside SE, rounded to 0 in case it is very small
+	// calculate area outside Blueprint, rounded to 0 in case it is very small
 	values.outside_extent_percent = (100 * values.outside_extent_acres) / values.rasterized_acres
 	if (values.outside_extent_percent < 1) {
 		values.outside_extent_percent = 0

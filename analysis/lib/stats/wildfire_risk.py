@@ -11,7 +11,7 @@ src_dir = Path("data/inputs")
 filename = src_dir / WILDFIRE_RISK["filename"]
 mask_filename = src_dir / WILDFIRE_RISK["filename"].replace(".tif", "_mask.tif")
 
-BINS = range(0, len(WILDFIRE_RISK["values"]))
+BINS = range(len(WILDFIRE_RISK["values"]))
 VALUE_LABELS = {e["value"]: e["label"] for e in WILDFIRE_RISK["values"]}
 
 

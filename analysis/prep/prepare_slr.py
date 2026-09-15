@@ -31,7 +31,7 @@ set_gdal_config_options({"OGR_ORGANIZE_POLYGONS": "ONLY_CCW"})
 BLUEPRINT_RES = 30
 SLR_RES = 30
 MIN_AREA = SLR_RES * SLR_RES / 2  # must be at least 1/2 of 30m pixel
-LEVELS = list(range(0, 11))  # 0-10 feet inundation
+LEVELS = list(range(11))  # 0-10 feet inundation
 NODATA = 255
 
 
@@ -127,9 +127,9 @@ for infile in sorted(list(src_dir.glob("*slr_data_dist/*.gdb")) + list(src_dir.g
     # NOTE: newer SLR layers have 1/2 foot increments: *_slr_1_0ft
     # older ones have 1 foot increments: *_slr_1ft
     slr_layers = {}
-    for layer in [l[0] for l in list_layers(infile) if "_slr_" in l[0]]:  # noqa: E741
+    for layer in [l[0] for l in list_layers(infile) if "_slr_" in l[0]]:
         suffix = layer.split("_slr_")[1]
-        ft = int(re.findall("\d+", suffix)[0])
+        ft = int(re.findall(r"\d+", suffix)[0])
         if "_" in suffix:
             # only keep if whole feet
             if suffix.endswith("0ft"):
@@ -139,7 +139,7 @@ for infile in sorted(list(src_dir.glob("*slr_data_dist/*.gdb")) + list(src_dir.g
 
     slr_layers = [
         l[1]
-        for l in sorted(slr_layers.items(), key=lambda x: x[0], reverse=True)  # noqa: E741
+        for l in sorted(slr_layers.items(), key=lambda x: x[0], reverse=True)
     ]
 
     # calculate the outer bounds and dimensions
@@ -170,7 +170,7 @@ for infile in sorted(list(src_dir.glob("*slr_data_dist/*.gdb")) + list(src_dir.g
     out = np.ones((height, width), dtype="uint8") * np.uint8(NODATA)
 
     for layer in slr_layers:
-        depth = np.uint8((re.findall("\d+", layer.split("_slr_")[1])[0]))
+        depth = np.uint8(re.findall(r"\d+", layer.split("_slr_")[1])[0])
         mask = rasterize_depth_polygons(infile, layer, width, height, transform)
         depth = mask.astype("uint8") * depth
 

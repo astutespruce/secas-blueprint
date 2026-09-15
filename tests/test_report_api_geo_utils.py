@@ -26,9 +26,8 @@ fixture_dir = Path("tests/fixtures")
     ],
 )
 def test_get_dataset_invalid_inputs(zip_filename, error):
-    with ZipFile(fixture_dir / zip_filename) as zipfile:
-        with pytest.raises(ValueError, match=error):
-            get_dataset(zipfile)
+    with ZipFile(fixture_dir / zip_filename) as zipfile, pytest.raises(ValueError, match=error):
+        get_dataset(zipfile)
 
 
 @pytest.mark.parametrize(

@@ -1,5 +1,5 @@
 import sys
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from io import BytesIO
 from pathlib import Path
 
@@ -125,7 +125,7 @@ def create_report(maps, results, name=None, area_type="custom"):
     context = {
         "date": date.today().strftime("%m/%d/%Y"),
         # write date in ISO format for embedding in PDF metadata
-        "create_date": datetime.now(timezone.utc).isoformat(),
+        "create_date": datetime.now(UTC).isoformat(),
         "name": name,
         "area_type": area_type,
         "title": title,

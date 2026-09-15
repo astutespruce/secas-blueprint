@@ -26,7 +26,7 @@ data_dir = Path("data/inputs")
 extent_filename = data_dir / "boundaries/blueprint_extent.tif"
 
 
-class WebMercatorReader(object):
+class WebMercatorReader:
     def __init__(self, geo_bounds, width, height):
         """Construct WebMercatorReader for bounds and dimensions
 
@@ -243,8 +243,8 @@ def to_rgba(data: UInt8_2D_Array, colors: UInt8_2D_Array, nodata: np.uint8) -> n
     uint8 array of shape (rows, cols, 4)
     """
     rgba = np.zeros(shape=data.shape + (4,), dtype="uint8")
-    for i in range(0, data.shape[0]):
-        for j in range(0, data.shape[1]):
+    for i in range(data.shape[0]):
+        for j in range(data.shape[1]):
             value = data[i, j]
             if value != nodata:
                 color = colors[value]

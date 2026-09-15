@@ -40,8 +40,8 @@ async def summarize_urban_in_aoi(rasterized_geometry, progress_callback=None):
                 "acres": <acres>,
                 "percent": <percent>
             }, ... <for current urban, projected urban, and area not urbanized by 2100 (if any)>],
-            "outside_urban_acres": <acres outside this dataset but within SE>,
-            "outside_urban_percent": <percent outside this dataset but within SE>,
+            "outside_urban_acres": <acres outside this dataset but within extent>,
+            "outside_urban_percent": <percent outside this dataset but within extent>,
             "noturban_2100_acres": <acres not urbanized by 2100>,
             "noturban_2100_percent": <percent not urbanized by 2100>,
             "nonzero_urban_2060_percent": <percent of area urbanized at any probability not already urbanized in 2021>
@@ -204,7 +204,7 @@ def summarize_urban_by_units_grid(df, units_grid, out_dir):
 
     # if nothing is urban / projected to urbanize by 2100, return None
     if urban_acres[:, 1:].max() == 0:
-        return None
+        return
 
     urban.reset_index().to_feather(out_dir / "urban.feather")
 
@@ -228,8 +228,8 @@ def get_urban_unit_results(results_dir, unit):
                 "percent": <percent>
             }, ... <for current urban, projected urban, and area not urbanized by 2100 (if any)>],
             "available_urban_acres": <total urban acres>,
-            "outside_urban_acres": <acres outside this dataset but within SE>,
-            "outside_urban_percent": <percent outside this dataset but within SE>,
+            "outside_urban_acres": <acres outside this dataset but within extent>,
+            "outside_urban_percent": <percent outside this dataset but within extent>,
             "noturban_2100_acres": <acres not urbanized by 2100>,
             "noturban_2100_percent": <percent not urbanized by 2100>,
             "nonzero_urban_2060_percent": <percent of area urbanized at any probability not already urbanized in 2021>

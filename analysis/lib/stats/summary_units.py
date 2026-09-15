@@ -28,7 +28,7 @@ def get_summary_unit_results(unit_type: SummaryUnitType, unit_id: str) -> dict:
         raise ValueError(f"unit_type must be one of {', '.join([x.value for x in SummaryUnitType])}")
 
     if not isinstance(unit_id, str):
-        raise ValueError("unit_id must be a string")
+        raise TypeError("unit_id must be a string")
 
     results_dir = data_dir / "results" / unit_type
 
