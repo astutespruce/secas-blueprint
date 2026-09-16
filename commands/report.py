@@ -93,7 +93,7 @@ async def _create_xlsx_report(
         raise typer.Exit(f"ERROR: unsupported file type: {filename}")
 
     available_fields = set(read_info(path, layer=layer)["fields"])
-    if field not in available_fields:
+    if field is not None and field not in available_fields:
         raise typer.Exit(f"ERROR: field '{field}' is not present in dataset")
 
     df = read_dataframe(path, layer=layer, columns=columns, use_arrow=True).to_crs(DATA_CRS)
