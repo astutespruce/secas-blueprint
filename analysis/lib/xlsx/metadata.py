@@ -65,7 +65,6 @@ def add_data_details_sheet(xlsx: pd.ExcelWriter, datasets: set[str], table_count
     metadata.loc[ix, "date"] = BLUEPRINT["date"]
     metadata.loc[ix, "source"] = BLUEPRINT["source"]
     metadata.loc[ix, "citation"] = BLUEPRINT["citation"]
-    metadata.loc[ix, "url"] = BLUEPRINT["url"]
 
     metadata = metadata[["category", "label", "sheet_name", "source", "date", "description", "citation", "url"]].rename(
         columns={
@@ -84,11 +83,12 @@ def add_data_details_sheet(xlsx: pd.ExcelWriter, datasets: set[str], table_count
     ws = xlsx.sheets["Data descriptions"]
     set_column_widths(ws, [18, 24, 18, 24, 8, 64, 48, 40])
     set_cell_styles(ws)
+
+    add_caption(ws, table_counter, "Details for datasets included in this analysis.")
+
     for cell in list(ws.columns)[-1][1:]:
         cell.hyperlink = cell.value
         cell.font = Font(color=Color(index=4))
-
-    add_caption(ws, table_counter, "Details for datasets included in this analysis.")
 
 
 def add_metadata_sheet(xlsx: pd.ExcelWriter, table_counter: int, name: str | None = None):
