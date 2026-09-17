@@ -34,4 +34,4 @@
 /data/for_tiles/*
 !/data/for_tiles/layers.csv
 
-
+*.7z

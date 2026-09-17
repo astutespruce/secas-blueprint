@@ -195,12 +195,12 @@ with rasterio.open(src_dir / "blueprint/SEBlueprintExtent2025.tif") as src:
     add_overviews(outfilename)
 
 
-### Extract SECAS states and counties
-# print("Extracting states and counties...")
+### Extract SECAS states
+# print("Extracting states...")
 state_list = ",".join(f"'{state}'" for state in SECAS_STATES)
 states = (
     read_dataframe(
-        src_dir / "boundaries/tl_2024_us_state.zip",
+        src_dir / "boundaries/tl_2025_us_state.zip",
         columns=["STATEFP", "STUSPS", "NAME"],
         where=f""""STUSPS" in ({state_list})""",
         use_arrow=True,
@@ -210,23 +210,6 @@ states = (
 )
 write_dataframe(states, bnd_dir / "states.fgb")
 states.to_feather(out_dir / "states.feather")
-
-fips_list = ",".join(f"'{fips}'" for fips in states.STATEFP.unique())
-counties = (
-    read_dataframe(
-        src_dir / "boundaries/tl_2024_us_county.zip",
-        columns=["STATEFP", "GEOID", "NAME", "geometry"],
-        where=f""""STATEFP" in ({fips_list})""",
-        use_arrow=True,
-    )
-    .rename(columns={"GEOID": "FIPS", "NAME": "county"})
-    .to_crs(DATA_CRS)
-    .join(states.set_index("STATEFP").drop(columns=["geometry"]), on="STATEFP")
-    .drop(columns=["STATEFP"])
-    .rename(columns={"id": "state_id"})
-)
-write_dataframe(counties, bnd_dir / "counties.fgb")
-counties.to_feather(out_dir / "counties.feather")
 
 
 ################################################################################

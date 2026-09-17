@@ -4,7 +4,7 @@ from itertools import product
 from pathlib import Path
 
 # Make sure to set this here and in ui/src/lib/env.ts on each new Blueprint version
-BLUEPRINT_VERSION = "2025"
+BLUEPRINT_VERSION = "2026"
 
 # TODO: use this in errors and elsewhere in backend tasks
 ANALYSIS_REGION_NAME = "Southeast"
@@ -71,20 +71,26 @@ CORRIDORS_COLORS = {
     entry["value"]: entry["color"] for entry in CORRIDORS["values"] if entry.get("color", None) is not None
 }
 
-INDICATOR_GROUPS = read_json("indicator_groups.json")
-raw_indicators = read_json("indicators.json")
-for indicator in raw_indicators:
-    indicator["filename"] = f"indicators/{indicator['filename']}"
-    indicator["caption"] = f"Indicator values for {indicator['captionLabel']}"
+try:
+    INDICATOR_GROUPS = read_json("indicator_groups.json")
+    raw_indicators = read_json("indicators.json")
+    for indicator in raw_indicators:
+        indicator["filename"] = f"indicators/{indicator['filename']}"
+        indicator["caption"] = f"Indicator values for {indicator['captionLabel']}"
 
-raw_indicators_index = {indicator["id"]: indicator for indicator in raw_indicators}
-# order by indicator group to match order used elsewhere
-INDICATORS = []
-for group in INDICATOR_GROUPS:
-    INDICATORS.extend([raw_indicators_index[id] for id in group["indicators"]])
-INDICATORS_INDEX = {indicator["id"]: indicator for indicator in INDICATORS}
+    raw_indicators_index = {indicator["id"]: indicator for indicator in raw_indicators}
+    # order by indicator group to match order used elsewhere
+    INDICATORS = []
+    for group in INDICATOR_GROUPS:
+        INDICATORS.extend([raw_indicators_index[id] for id in group["indicators"]])
+    INDICATORS_INDEX = {indicator["id"]: indicator for indicator in INDICATORS}
 
-del raw_indicators_index
+    del raw_indicators_index
+
+except Exception:
+    print("ERROR: indicators data is not yet ready")
+    INDICATORS = []
+    INDICATORS_INDEX = {}
 
 
 PROTECTED_AREAS = read_json("protected_areas.json")

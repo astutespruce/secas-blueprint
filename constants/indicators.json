@@ -64,6 +64,73 @@
     ]
   },
   {
+    "id":"f_caribbeanimperiledaquaticspecies",
+    "filename":"CaribbeanImperiledAquaticSpecies.tif",
+    "label":"Caribbean imperiled aquatic species ",
+    "sheet_name":"Caribbean imperiled aquatics",
+    "description":"This indicator measures the number of aquatic animal Species of Greatest Conservation Need (SGCN) observed within each 12-digit HUC subwatershed in Puerto Rico and the U.S. Virgin Islands, including fish, shrimp, crabs, and crayfish. It captures patterns of rare and endemic aquatic species diversity. SGCN are identified in State Wildlife Action Plans as most in need of conservation action. This indicator originates from data compiled by the Southeast Aquatic Resources Partnership from university researchers. It applies to the floodplain predicted to be inundated by a 100-year flood (also known as the 1% annual chance flood), derived from the Federal Emergency Management Agency's National Flood Hazard Layer, and buffered flowlines representing other streams.",
+    "values":[
+      {
+        "value":0,
+        "label":"Not identified as a floodplain in surveyed watersheds",
+        "color":null
+      },
+      {
+        "value":1,
+        "label":"0 species",
+        "color":"#FFFFC0"
+      },
+      {
+        "value":2,
+        "label":"1 species",
+        "color":"#E9F898"
+      },
+      {
+        "value":3,
+        "label":"2 species",
+        "color":"#BBE9A1"
+      },
+      {
+        "value":4,
+        "label":"3 species",
+        "color":"#73CDB8"
+      },
+      {
+        "value":5,
+        "label":"4 species",
+        "color":"#39B5C4"
+      },
+      {
+        "value":6,
+        "label":"5 species",
+        "color":"#1990C0"
+      },
+      {
+        "value":7,
+        "label":"6 species",
+        "color":"#205DA8"
+      },
+      {
+        "value":8,
+        "label":"7 species",
+        "color":"#243394"
+      },
+      {
+        "value":9,
+        "label":"8+ species",
+        "color":"#081D58"
+      }
+    ],
+    "valueLabel":"Number of aquatic animal Species of Greatest Conservation Need (RSGCN) observed",
+    "captionLabel":"Caribbean imperiled aquatic species ",
+    "goodThreshold":null,
+    "url":"",
+    "subregions":[
+      "Puerto Rico",
+      "US Virgin Islands"
+    ]
+  },
+  {
     "id":"f_caribbeannaturallandcoverinfloodplains",
     "filename":"CaribbeanNaturalLandcoverInFloodplains.tif",
     "label":"Caribbean natural landcover in floodplains",
@@ -292,7 +359,7 @@
     "filename":"ImperiledAquaticSpecies.tif",
     "label":"Imperiled aquatic species",
     "sheet_name":"Imperiled aquatic spp",
-    "description":"This indicator measures the number of aquatic animal Regional Species of Greatest Conservation Need (RSGCN) observed within each 12-digit HUC subwatershed, including fish, mussels, snails, crayfish, and amphibians. RSGCN are regional priority species derived from the list of SGCN identified in Southeast State Wildlife Action Plans as most in need of need of conservation action. RSGCN were chosen based on consistent criteria, such as level of conservation concern, regional stewardship responsibility, and ecological significance. This indicator originates from state Natural Heritage Program data collected by the Southeast Aquatic Resources Partnership and applies to the Environmental Protection Agency's estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood (also known as the 1% annual chance flood).",
+    "description":"This indicator measures the number of aquatic animal Regional Species of Greatest Conservation Need (RSGCN) observed within each 12-digit HUC subwatershed, including fish, mussels, snails, crayfish, and amphibians. It captures patterns of rare and endemic aquatic species diversity. RSGCN are regional priority species derived from the list of SGCN identified in Southeast State Wildlife Action Plans as most in need of need of conservation action. RSGCN were chosen based on consistent criteria, such as level of conservation concern, regional stewardship responsibility, and ecological significance. This indicator originates from state Natural Heritage Program data collected by the Southeast Aquatic Resources Partnership and applies to the Environmental Protection Agency's estimated floodplain, which spatially defines areas estimated to be inundated by a 100-year flood (also known as the 1% annual chance flood).",
     "values":[
       {
         "value":0,
@@ -968,7 +1035,7 @@
     "filename":"CaribbeanCoastalShorelineCondition.tif",
     "label":"Caribbean coastal shoreline condition",
     "sheet_name":"Carib shoreline condition",
-    "description":"This indicator assesses shoreline alteration based on the presence of hardened structures like seawalls, groins, and riprap at the dynamic interface between land and water along the U.S. Caribbean coast. By restricting the natural movement of sediment, shoreline armoring increases erosion, prevents the inland migration of coastal ecosystems in response to sea-level rise, and degrades habitat for birds, sea turtles, fish, plants, and other species both on and offshore. This indicator originates from the National Oceanic and Atmospheric Administration's Continuously Updated Shoreline Product.",
+    "description":"This indicator assesses shoreline alteration based on the presence of hardened structures like seawalls, groins, and riprap at the dynamic interface between land and water along the U.S. Caribbean coast. By restricting the natural movement of sediment, shoreline armoring increases erosion, prevents the inland migration of coastal ecosystems in response to sea-level rise, and degrades habitat for birds, sea turtles, fish, plants, and other species both on and offshore. This indicator originates from the National Oceanic and Atmospheric Administration's Continually Updated Shoreline Product.",
     "values":[
       {
         "value":0,
@@ -1105,7 +1172,7 @@
     "id":"m_caribbeanseagrass",
     "filename":"CaribbeanSeagrass.tif",
     "label":"Caribbean seagrass",
-    "sheet_name":"",
+    "sheet_name":"Carib seagrass",
     "description":"This indicator represents the presence and density of seagrass at various depths in the U.S. Caribbean. Seagrasses provide food and habitat for a range of marine and estuarine wildlife. They also produce oxygen, filter water, sequester carbon, control erosion, and buffer storms. Seagrasses serve as an important indicator of the overall health of coastal ecosystems because they are sensitive to water quality and require sufficiently clear water for sunlight to penetrate. This indicator uses benthic habitat data from The Nature Conservancy and bathymetry data from the National Oceanic and Atmospheric Administration.",
     "values":[
       {
@@ -1155,8 +1222,8 @@
   },
   {
     "id":"m_caribbeanshallowhardbottomandcoral",
-    "filename":"CaribbeanShallowHardbottomAndCoral.tif",
-    "label":"Caribbean shallow hardbottom and coral",
+    "filename":"CaribbeanShallowHardbottomandCoral.tif",
+    "label":"Caribbean shallow hardbottom & coral",
     "sheet_name":"Carib hardbottom & coral",
     "description":"This indicator measures the presence of hardbottom habitat and coral in the U.S. Caribbean. It also predicts the ability of coral to survive the impacts of climate change based on reef locations, past and future thermal conditions, hurricane impacts, and coral larval connectivity. Hardbottom and coral serve as important habitat for many marine species and provide economic and cultural benefits to nearby coastal communities, such as supporting fisheries, filtering seawater, and buffering the impacts of storms. This indicator combines benthic habitat and coral climate refugia data from The Nature Conservancy.",
     "values":[
@@ -1192,7 +1259,7 @@
       }
     ],
     "valueLabel":"",
-    "captionLabel":"Caribbean shallow hardbottom and coral",
+    "captionLabel":"Caribbean shallow hardbottom & coral",
     "goodThreshold":3,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-shallow-hardbottom-coral-southeast-blueprint-indicator-2023/about",
     "subregions":[
@@ -1398,6 +1465,42 @@
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::gulf-deep-sea-coral-richness-southeast-blueprint-indicator-2023/about",
     "subregions":[
       "Gulf",
+      "South Florida Marine"
+    ]
+  },
+  {
+    "id":"m_gulfmarinebirds",
+    "filename":"GulfMarineBirds.tif",
+    "label":"Gulf marine birds",
+    "sheet_name":"",
+    "description":"This indicator identifies important areas in the Gulf of America for birds that feed exclusively or mainly at sea. It uses habitat suitability models for 24 species of marine birds (black-capped petrel, black tern, Bonaparte's gull, brown booby, brown noddy, brown pelican, bridled tern, band-rumped storm-petrel, Cory's shearwater, common loon, common tern, great shearwater, herring gull, laughing gull, masked booby, magnificent frigatebird, northern gannet, parasitic jaeger, royal tern, sandwich tern, sargasso shearwater, sooty tern, Wilson's storm-petrel, and pomarine jaeger) based on sightings from vessel-based and aerial surveys. This indicator originates from the Gulf of Mexico Marine Assessment Program for Protected Species (GoMMAPPS) seabird models.",
+    "values":[
+      {
+        "value":1,
+        "label":"Low marine bird richness (0-5 of 24 modeled species)",
+        "color":"#FEE825"
+      },
+      {
+        "value":2,
+        "label":"Medium marine bird richness (6-8 of 24 modeled species)",
+        "color":"#1F9E89"
+      },
+      {
+        "value":3,
+        "label":"High marine bird richness (9-16 of 24 modeled species)",
+        "color":"#482878"
+      }
+    ],
+    "valueLabel":"",
+    "captionLabel":"Gulf marine birds",
+    "goodThreshold":null,
+    "url":"",
+    "subregions":[
+      "East Gulf Coastal Plain",
+      "Florida Peninsula",
+      "Gulf",
+      "Gulf Coastal Prairies",
+      "Mississippi Alluvial Valley",
       "South Florida Marine"
     ]
   },
@@ -1767,7 +1870,7 @@
     "filename":"SouthAtlanticMaritimeForest.tif",
     "label":"South Atlantic maritime forest",
     "sheet_name":"S Atlantic maritime forest",
-    "description":"This indicator depicts the maritime forest currently present in the South Atlantic. Since maritime forest has been substantially reduced from its historic extent, protecting the remaining acreage is particularly important. This ecosystem supports a unique suite of plants that tolerate wind, salt, and flooding, as well as many species of birds, mammals, and reptiles. It also helps buffer the coastline from storms. This indicator originates from LANDFIRE landcover.",
+    "description":"This indicator depicts the maritime forest currently present in the South Atlantic. Since maritime forest has been substantially reduced from its historical extent, protecting the remaining acreage is particularly important. This ecosystem supports a unique suite of plants that tolerate wind, salt, and flooding, as well as many species of birds, mammals, and reptiles. It also helps buffer the coastline from storms. This indicator originates from LANDFIRE landcover.",
     "values":[
       {
         "value":0,
@@ -2030,7 +2133,7 @@
     "filename":"CaribbeanKarstHabitat.tif",
     "label":"Caribbean karst habitat",
     "sheet_name":"Carib karst habitat",
-    "description":"This indicator for the U.S. Caribbean represents natural karst areas with limited human alteration from activities such as urban development and intensive agriculture. Karst is a geologically unique landscape where the movement of water through easily dissolved bedrock, particularly limestone, produces distinctive features like caves, sinkholes, and underground rivers. Areas characterized by karst geology support many unique and endemic species, help recharge freshwater aquifers, and often contain significant cultural and historic sites. This indicator combines LANDFIRE land cover with karst datasets from the Puerto Rico Department of Natural and Environmental Resources, National Park Service, and U.S. Geological Survey.",
+    "description":"This indicator for the U.S. Caribbean represents natural karst areas with limited human alteration from activities such as urban development and intensive agriculture. Karst is a geologically unique landscape where the movement of water through easily dissolved bedrock, particularly limestone, produces distinctive features like caves, sinkholes, and underground rivers. Areas characterized by karst geology support many unique and endemic species, help recharge freshwater aquifers, and often contain significant cultural and historical sites. This indicator combines LANDFIRE land cover with karst datasets from the Puerto Rico Department of Natural and Environmental Resources, National Park Service, and U.S. Geological Survey.",
     "values":[
       {
         "value":0,
@@ -2109,7 +2212,7 @@
     "filename":"CaribbeanLowUrbanHistoricLandscapes.tif",
     "label":"Caribbean low-urban historic landscapes",
     "sheet_name":"Carib low-urban historic",
-    "description":"This cultural resource indicator is an index of sites on the National Register of Historic Places and other historic sites surrounded by limited urban development in the U.S. Caribbean. It identifies significant historic places that remain connected to their context in the natural world. This indicator uses LANDFIRE landcover and historic places data from the Puerto Rico State Historic Preservation Office, OpenStreetMap, and the University of the Virgin Islands.",
+    "description":"This cultural resource indicator is an index of sites on the National Register of Historic Places and other historic sites surrounded by limited urban development in the U.S. Caribbean. It identifies significant historical places that remain connected to their context in the natural world. This indicator uses LANDFIRE landcover and historic places data from the Puerto Rico State Historic Preservation Office, OpenStreetMap, and the University of the Virgin Islands.",
     "values":[
       {
         "value":0,
@@ -2235,7 +2338,7 @@
     "filename":"EastCoastalPlainOpenPineBirds.tif",
     "label":"East Coastal Plain open pine birds",
     "sheet_name":"EGCP open pine birds",
-    "description":"This indicator identifies areas within the historic longleaf pine range east of the Mississippi River where creating or maintaining open pine habitat would most benefit six focal species of birds (Bachman's sparrow, red-cockaded woodpecker, Henslow's sparrow, red-headed woodpecker, Northern bobwhite, brown-headed nuthatch). It prioritizes areas for open pine conservation based on suitability for longleaf pine, feasibility of prescribed burning, proximity to protected lands, habitat suitability for focal bird species, and proximity to bird source populations. It originates from the East Gulf Coastal Plain Joint Venture's prioritization of areas for open pine ecosystem restoration.",
+    "description":"This indicator identifies areas within the historical longleaf pine range east of the Mississippi River where creating or maintaining open pine habitat would most benefit six focal species of birds (Bachman's sparrow, red-cockaded woodpecker, Henslow's sparrow, red-headed woodpecker, Northern bobwhite, brown-headed nuthatch). It prioritizes areas for open pine conservation based on suitability for longleaf pine, feasibility of prescribed burning, proximity to protected lands, habitat suitability for focal bird species, and proximity to bird source populations. It originates from the East Gulf Coastal Plain Joint Venture's prioritization of areas for open pine ecosystem restoration.",
     "values":[
       {
         "value":0,
@@ -2285,33 +2388,48 @@
     "filename":"FireFrequency.tif",
     "label":"Fire frequency",
     "sheet_name":"",
-    "description":"This indicator uses remote sensing to estimate the number of times an area has been burned from 2013 to 2021. Many Southeastern ecosystems rely on regular, low-intensity fires to maintain habitat, encourage native plant growth, and reduce wildfire risk. This indicator combines burned area layers from U.S. Geological Survey Landsat data and the inter-agency Monitoring Trends in Burn Severity program. Landsat-based fire predictions within the range of longleaf pine are also available through Southeast FireMap.",
+    "description":"This indicator uses remote sensing, fire treatment data, and historical landcover models to assess whether an area matches its historical fire regime now and in the recent past (1984-2024). It focuses on fire-adapted forests and grasslands that historically burned at least once every 20 years, which rely on regular, low-intensity fires to maintain habitat, support native plant growth, and reduce wildfire risk. It evaluates departure from historical conditions based on the U.S. Forest Service's fire regime condition classes. This indicator combines Landsat-based fire history metrics from the U.S. Geological Survey, fire treatment data from LANDFIRE, and historical fire regime estimates from LANDFIRE. Development of fire history metrics was supported by Southeast FireMap.",
     "values":[
       {
         "value":0,
-        "label":"Not burned from 2013-2021 or row crop",
+        "label":"Urban, row crop, or not a fire-adapted area (>20-year fire regime)",
         "color":null
       },
       {
         "value":1,
-        "label":"Burned 1 time from 2013-2021",
-        "color":"#FDBE85"
+        "label":"Not currently in historical fire regime, high (>66%) departure in recent past",
+        "color":"#FFFFAD"
       },
       {
         "value":2,
-        "label":"Burned 2 times from 2013-2021",
-        "color":"#FD8D3C"
+        "label":"Not currently in historical fire regime, medium (33-66%) departure in recent past",
+        "color":"#FFF70D"
       },
       {
         "value":3,
-        "label":"Burned 3+ times from 2013-2021",
-        "color":"#D94701"
+        "label":"Not currently in historical fire regime, low (<33%) departure in recent past",
+        "color":"#FFD119"
+      },
+      {
+        "value":4,
+        "label":"Currently in historical fire regime, high (>66%) departure in recent past",
+        "color":"#FFA811"
+      },
+      {
+        "value":5,
+        "label":"Currently in historical fire regime, medium (33-66%) departure in recent past",
+        "color":"#FF7E0D"
+      },
+      {
+        "value":6,
+        "label":"Currently in historical fire regime, low (<33%) departure in recent past",
+        "color":"#FE5110"
       }
     ],
-    "valueLabel":"",
+    "valueLabel":"Fire regime departure for fire-adapted areas under current conditions vs. recent past (1984-2024):",
     "captionLabel":"fire frequency",
-    "goodThreshold":2,
-    "url":"https://secas-fws.hub.arcgis.com/maps/fws::fire-frequency-southeast-blueprint-indicator-2023/about",
+    "goodThreshold":5,
+    "url":"",
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -2338,7 +2456,7 @@
     "filename":"GrasslandandSavannaExtent.tif",
     "label":"Grassland & savanna extent",
     "sheet_name":"",
-    "description":"This indicator represents grasslands and savannas in the southeastern United States, which support important plants, reptiles, amphibians, mammals, birds, and pollinators. It considers known grassland and savanna locations, predicted locations within protected areas, and surrounding pollinator buffers. It also incorporates other potential grassland and savanna locations within natural and altered landscapes, and restoration opportunities within historic locations based on past fire intervals and historic ecosystem predictions. This indicator combines data from multiple sources, including the Southeastern Grasslands Institute, the National Land Cover Database, LANDFIRE, Oklahoma and Texas ecological systems maps, and more.",
+    "description":"This indicator represents grasslands and savannas in the southeastern United States, which support important plants, reptiles, amphibians, mammals, birds, and pollinators. It considers known grassland and savanna locations, predicted locations within protected areas, and surrounding pollinator buffers. It also incorporates other potential grassland and savanna locations within natural and altered landscapes, and restoration opportunities within historical locations based on past fire intervals and historic ecosystem predictions. This indicator combines data from multiple sources, including the Southeastern Grasslands Institute, the National Land Cover Database, LANDFIRE, Oklahoma and Texas ecological systems maps, and more.",
     "values":[
       {
         "value":0,
@@ -2411,7 +2529,7 @@
     "filename":"GrasslandandSavannaRestoration.tif",
     "label":"Grassland & savanna restoration",
     "sheet_name":"",
-    "description":"This indicator represents potential restoration opportunities for grasslands and savannas within their historic range in the southeastern United States. Grasslands support important plants, reptiles, amphibians, mammals, birds, and pollinators, but have significantly declined from their current extent. It considers proximity to clusters of existing grasslands and savannas, protected areas with management potential, landcover classes with good restoration potential, priority areas for restoration of longleaf and shortleaf pine, and historic grassland and savanna locations. This indicator combines data from multiple sources, including the Southeast Blueprint grassland and savanna extent indicator, the Longleaf Suitability Analysis, shortleaf pine suitability, landcover from the National Land Cover Database and LANDFIRE, and more.",
+    "description":"This indicator represents potential restoration opportunities for grasslands and savannas within their historical range in the southeastern United States. Grasslands support important plants, reptiles, amphibians, mammals, birds, and pollinators, but have significantly declined from their current extent. It considers proximity to clusters of existing grasslands and savannas, protected areas with management potential, landcover classes with good restoration potential, priority areas for restoration of longleaf and shortleaf pine, and historical grassland and savanna locations. This indicator combines data from multiple sources, including the Southeast Blueprint grassland and savanna extent indicator, the Longleaf Suitability Analysis, shortleaf pine suitability, landcover from the National Land Cover Database and LANDFIRE, and more.",
     "values":[
       {
         "value":0,
@@ -2552,7 +2670,7 @@
     "filename":"ImperiledAmphibiansandReptiles.tif",
     "label":"Imperiled amphibians & reptiles",
     "sheet_name":"",
-    "description":"This indicator identifies potential habitat to support amphibian and reptile Regional Species of Greatest Conservation Need (RSGCN). Using a rarity-weighted richness approach, it prioritizes places important for species that are restricted to smaller ranges, such as narrow endemics, which are therefore more vulnerable to habitat loss or change. RSGCN are regional priority species derived from the list of SGCN identified in Southeast State Wildlife Action Plans as most in need of conservation action. RSGCN were chosen based on consistent criteria, such as level of conservation concern, regional stewardship responsibility, and ecological significance. This indicator uses models from the U.S. Geological Survey Gap Analysis Project that are based on known species ranges, species-habitat relationships, and landcover.",
+    "description":"This indicator identifies potential habitat to support amphibian and reptile Regional Species of Greatest Conservation Need (RSGCN). Using a rarity-weighted richness approach, it prioritizes places important for species that are restricted to smaller ranges, such as narrow endemics, which are therefore more vulnerable to habitat loss or change. RSGCN are regional priority species derived from the list of SGCN identified in Southeast State Wildlife Action Plans as most in need of conservation action. RSGCN were chosen based on consistent criteria, such as level of conservation concern, regional stewardship responsibility, and ecological significance. This indicator uses 190 species and subspecies models from the U.S. Geological Survey Gap Analysis Project that are based on known ranges, habitat relationships, and LANDFIRE landcover.",
     "values":[
       {
         "value":0,
@@ -2561,34 +2679,34 @@
       },
       {
         "value":1,
-        "label":"Low importance (below average in larger analysis area)",
+        "label":"Low importance (below average)",
         "color":"#FFFCCD"
       },
       {
         "value":2,
-        "label":"Medium importance (above average in larger analysis area)",
+        "label":"Medium importance (above average)",
         "color":"#FFC8B7"
       },
       {
         "value":3,
-        "label":"High importance (upper 10-20% of larger analysis area)",
+        "label":"High importance (upper 10-20%)",
         "color":"#FF9696"
       },
       {
         "value":4,
-        "label":"Very high importance (upper 5-10% of larger analysis area)",
+        "label":"Very high importance (upper 5-10%)",
         "color":"#FF667E"
       },
       {
         "value":5,
-        "label":"Highest importance (top 5% of larger analysis area)",
+        "label":"Highest importance (top 5%)",
         "color":"#FC3255"
       }
     ],
     "valueLabel":"Importance for range-restricted species",
     "captionLabel":"imperiled amphibians & reptiles",
     "goodThreshold":null,
-    "url":"https://secas-fws.hub.arcgis.com/maps/aeeb7cbc30744b26b5e82cdf184da18a/about",
+    "url":"",
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -2615,7 +2733,7 @@
     "filename":"ImperiledMammals.tif",
     "label":"Imperiled mammals",
     "sheet_name":"",
-    "description":"This indicator identifies potential habitat to support mammal Regional Species of Greatest Conservation Need (RSGCN). Using a rarity-weighted richness approach, it prioritizes places important for species that are restricted to smaller ranges, such as narrow endemics, which are therefore more vulnerable to habitat loss or change. RSGCN are regional priority species derived from the list of SGCN identified in Southeast State Wildlife Action Plans as most in need of conservation action. RSGCN were chosen based on consistent criteria, such as level of conservation concern, regional stewardship responsibility, and ecological significance. This indicator uses models from the U.S. Geological Survey Gap Analysis Project that are based on known species ranges, species-habitat relationships, and LANDFIRE landcover.",
+    "description":"This indicator identifies potential habitat to support mammal Regional Species of Greatest Conservation Need (RSGCN). Using a rarity-weighted richness approach, it prioritizes places important for species that are restricted to smaller ranges, such as narrow endemics, which are therefore more vulnerable to habitat loss or change. RSGCN are regional priority species derived from the list of SGCN identified in Southeast State Wildlife Action Plans as most in need of conservation action. RSGCN were chosen based on consistent criteria, such as level of conservation concern, regional stewardship responsibility, and ecological significance. This indicator uses 58 species models from the U.S. Geological Survey Gap Analysis Project that are based on known ranges, habitat relationships, and LANDFIRE landcover.",
     "values":[
       {
         "value":0,
@@ -2624,34 +2742,34 @@
       },
       {
         "value":1,
-        "label":"Low importance (below average in larger analysis area)",
+        "label":"Low importance (below average)",
         "color":"#FFDCDC"
       },
       {
         "value":2,
-        "label":"Medium importance (above average in larger analysis area)",
+        "label":"Medium importance (above average)",
         "color":"#E6A4A4"
       },
       {
         "value":3,
-        "label":"High importance (upper 10-20% of larger analysis area)",
+        "label":"High importance (upper 10-20%)",
         "color":"#B66D7A"
       },
       {
         "value":4,
-        "label":"Very high importance (upper 5-10% of larger analysis area)",
+        "label":"Very high importance (upper 5-10%)",
         "color":"#844F6E"
       },
       {
         "value":5,
-        "label":"Highest importance (top 5% of larger analysis area)",
+        "label":"Highest importance (top 5%)",
         "color":"#603952"
       }
     ],
     "valueLabel":"Importance for range-restricted species",
     "captionLabel":"imperiled mammals",
     "goodThreshold":null,
-    "url":"https://secas-fws.hub.arcgis.com/maps/c8a03ac574764a0eb7795ee599bab02a/about",
+    "url":"",
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -3259,7 +3377,7 @@
     "filename":"SouthAtlanticLowUrbanHistoricLandscapes.tif",
     "label":"South Atlantic low-urban historic landscapes",
     "sheet_name":"S Atlantic low-urban historic",
-    "description":"This cultural resource indicator is an index of sites on the National Register of Historic Places surrounded by limited urban development. It identifies significant historic places that remain connected to their context in the natural world. It uses the National Land Cover Database and historic places data from the National Park Service and various state historic resource agencies.",
+    "description":"This cultural resource indicator is an index of sites on the National Register of Historic Places surrounded by limited urban development. It identifies significant historical places that remain connected to their context in the natural world. It uses the National Land Cover Database and historic places data from the National Park Service and various state historic resource agencies.",
     "values":[
       {
         "value":0,

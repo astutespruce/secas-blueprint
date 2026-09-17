@@ -71,7 +71,7 @@ print(
 )
 df = (
     read_dataframe(
-        "zip://source_data/boundaries/tl_2024_us_state.zip/tl_2024_us_state.shp",
+        "zip://source_data/boundaries/tl_2025_us_state.zip/tl_2025_us_state.shp",
         columns=["STUSPS"],
         use_arrow=True,
     )

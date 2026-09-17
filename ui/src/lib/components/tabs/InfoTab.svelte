@@ -25,8 +25,8 @@
 			Southeast Conservation Adaptation Strategy
 		</a>
 		(SECAS). It is a living, spatial plan to achieve the SECAS vision of a connected network of lands
-		and waters across the Southeast and Caribbean. The Blueprint is regularly updated to incorporate new
-		data, partner input, and information about on-the-ground conditions.
+		and waters across the Southeast and Caribbean. The Blueprint is regularly updated to incorporate
+		new data, partner input, and information about on-the-ground conditions.
 		<br />
 		<br />
 		For more information, visit the
@@ -47,8 +47,8 @@
 			<b>Summarize data</b> to show charts and information for a subwatershed or marine hexagon
 		</li>
 		<li>
-			<b>View point data</b> to discover what is driving the Blueprint priorities and show values at a
-			specific location for indicators, threats, and more
+			<b>View point data</b> to discover what is driving the Blueprint priorities and show values at
+			a specific location for indicators, threats, and more
 		</li>
 		<li>
 			<b>Filter the Blueprint</b> to find your part of the Blueprint by showing only areas that score
@@ -99,14 +99,14 @@
 			for priorities, indicators, threats, and partners.
 			<br />
 			<br />
-			The indicators tab shows the pixel value for each indicator present at that point. Click on an indicator
-			for more information about it.
+			The indicators tab shows the pixel value for each indicator present at that point. Click on an
+			indicator for more information about it.
 			<br />
 			<br />
 			Note: this approach uses pixels that have been resampled and reprojected for each zoom level. This
-			means that the values shown in the tool may not exactly match the Blueprint and indicator data for
-			that specific ground location, especially in areas of high variability in the data. To view and
-			/ or download more precise spatial data, please visit the
+			means that the values shown in the tool may not exactly match the Blueprint and indicator data
+			for that specific ground location, especially in areas of high variability in the data. To view
+			and / or download more precise spatial data, please visit the
 			<a href="https://secas-fws.hub.arcgis.com/pages/blueprint" target="_blank">
 				Blueprint page of the SECAS Atlas
 			</a>
@@ -133,8 +133,8 @@
 		</div>
 		<div class="flex-auto">
 			<p>
-				<b>Citation:</b> Southeast Conservation Adaptation Strategy (SECAS). 2025. Southeast
-				Conservation Blueprint 2025.
+				<b>Citation:</b> Southeast Conservation Adaptation Strategy (SECAS). 2026. Southeast
+				Conservation Blueprint 2026.
 				<a href="http://secassoutheast.org/blueprint" target="_blank">
 					http://secassoutheast.org/blueprint
 				</a>.

@@ -2,14 +2,12 @@
 
 Data are prepared using `analysis/prep/prepare_boundaries.py`.
 
-## States and Counties
+## States
 
-States are used for the locator image in downloadable reports and counties are
-used to lookup land trusts from the Land Trust Alliance that might be working
-in a given county.
+States are used for the locator image in downloadable reports.
 
-Downloaded 8/19/2025 from: https://www.census.gov/cgi-bin/geo/shapefiles/index.php
-(2024 versions)
+Downloaded 9/15/2026 from: https://www.census.gov/cgi-bin/geo/shapefiles/index.php
+(2025 versions)
 
 ## SECAS State boundaries for state reports
 

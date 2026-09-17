@@ -8,6 +8,8 @@ of depth between 0 and 10 feet.
 
 Updated data for Florida and Georgia were downloaded on 9/28/2023.
 
+Updated data for North Carolina and Florida were downloaded on 9/16/2026.
+
 Data are downloaded using `analysis/prep/download_slr.py`.
 
 The latest SLR projections by decade and scenario at 1 degree grid cell

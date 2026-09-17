@@ -1,6 +1,6 @@
 [project]
 name = "secas-blueprint"
-version = "1.2.0"
+version = "3.0.0"
 description = "SECAS Southeast Conservation Blueprint Explorer"
 readme = "README.md"
 authors = [{ name = "Brendan C. Ward", email = "bcward@astutespruce.com" }]
