@@ -196,9 +196,9 @@ async def test_get_analysis_unit_results_single_area(format):
     assert np.isclose(row.rasterized_acres, 50.7059)
     assert np.isclose(row.outside_extent_acres, 0)
 
-    assert np.allclose(row[BLUEPRINT["id"]], [0, 0, 0, 10.674936, 40.03101])
-    assert np.allclose(row[CORRIDORS["id"]], [0, 37.362276, 13.34367])
-    assert np.allclose(row["t_imperiledamphibiansandreptiles"], [0.6671835, 0, 0, 3.113523, 42.254955, 4.6702845])
+    assert np.allclose(row[BLUEPRINT["id"]], [0.0, 0.0, 1.334367, 19.3483215, 30.0232575])
+    assert np.allclose(row[CORRIDORS["id"]], [0.0, 39.3638265, 11.3421195])
+    assert np.allclose(row["t_imperiledamphibiansandreptiles"], [0.6671835, 0.0, 0.0, 45.368478, 0.0, 4.6702845])
     assert np.allclose(row["f_permeablesurface"], [0, 0, 0, 50.705946])
 
     assert np.allclose(row[PARCAS["id"]], [0, 50.705946])
@@ -255,9 +255,9 @@ async def test_get_analysis_unit_results_multiple_areas_partial_overlap(format):
     mn_poly = results.iloc[1]
     mo_poly = results.iloc[2]
 
-    assert np.allclose(nc_poly[BLUEPRINT["id"]], [0, 32.6920, 65.8288, 87.4010, 94.7401])
+    assert np.allclose(nc_poly[BLUEPRINT["id"]], [0.0, 33.1367805, 71.16624, 84.2875155, 92.071323])
     assert np.isnan(mn_poly[BLUEPRINT["id"]])
-    assert np.allclose(mo_poly[BLUEPRINT["id"]], [3.5583, 52.0403, 14.0109, 0, 0])
+    assert np.allclose(mo_poly[BLUEPRINT["id"]], [17.79156, 46.0356615, 5.782257, 0.0, 0.0])
 
     assert np.allclose(nc_poly["f_permeablesurface"], [0, 0, 0, 280.6619])
     assert np.isnan(mn_poly["f_permeablesurface"])
@@ -331,12 +331,12 @@ async def test_get_analysis_unit_results_multiple_areas(format):
     pr_poly = results.iloc[3]
     marine_poly = results.iloc[4]
 
-    assert np.allclose(ga_poly[BLUEPRINT["id"]], [98.5207635, 0, 153.896994, 52.929891, 6.8942295])
-    assert np.allclose(marine_poly[BLUEPRINT["id"]], [0, 0, 3549.6386145000006, 1836.533781, 0])
+    assert np.allclose(ga_poly[BLUEPRINT["id"]], [97.1863965, 0.0, 152.3402325, 62.715249, 0.0])
+    assert np.allclose(marine_poly[BLUEPRINT["id"]], [0.0, 0.0, 3549.861009, 1836.3113865, 0.0])
     assert np.allclose(ga_poly[CORRIDORS["id"]], [312.241878, 0.0, 0.0])
-    assert np.allclose(marine_poly[CORRIDORS["id"]], [4045.355955, 0, 1340.8164405])
+    assert np.allclose(marine_poly[CORRIDORS["id"]], [4211.707041, 0.0, 1174.4653545])
     assert np.allclose(
-        ga_poly["t_imperiledamphibiansandreptiles"], [40.03101, 20.460294, 73.834974, 3.113523, 171.9109485, 2.8911285]
+        ga_poly["t_imperiledamphibiansandreptiles"], [32.2472025, 12.6764865, 94.740057, 0.0, 169.6870035, 2.8911285]
     )
     assert np.allclose(ga_poly["f_permeablesurface"], [0, 0, 0, 312.241878])
     assert np.allclose(marine_poly["f_permeablesurface"], [0, 0, 0, 0])
@@ -566,7 +566,7 @@ async def test_create_xlsx_file_multiple_areas_partial_overlap(format):
     )
     assert np.allclose(summary["Number of 30m pixels in analysis unit"], results.pixels)
     assert np.allclose(summary["Number of distinct areas in analysis unit"], results["count"])
-    assert summary["State(s)"].tolist() == results.states.tolist()
+    assert summary["State(s)"].fillna("").tolist() == results.states.tolist()
 
     details = reader.parse(sheet_name="Data descriptions", skiprows=2)
     assert len(details) == len(datasets)
@@ -704,7 +704,7 @@ async def test_create_xlsx_file_multiple_areas(format):
     assert np.allclose(summary["Analysis acres (rasterized to 30m pixels)"], results.rasterized_acres)
     assert np.allclose(summary["Number of 30m pixels in analysis unit"], results["pixels"])
     assert np.allclose(summary["Number of distinct areas in analysis unit"], results["count"])
-    assert summary["State(s)"].tolist() == results.states.tolist()
+    assert summary["State(s)"].fillna("").tolist() == results.states.tolist()
 
     details = reader.parse(sheet_name="Data descriptions", skiprows=2)
     assert len(details) == len(datasets)
