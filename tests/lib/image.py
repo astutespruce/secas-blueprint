@@ -1,11 +1,12 @@
 from io import BytesIO
 from pathlib import Path
 
+import pytest
 from PIL import Image
 from pixelmatch.contrib.PIL import pixelmatch
 
 
-def image_matches(img_data, expected_filename, tolerance=0):
+def assert_image_matches(img_data, expected_filename, tolerance=0):
     """Compare image bytes to expected image file
 
     Parameters
@@ -29,9 +30,6 @@ def image_matches(img_data, expected_filename, tolerance=0):
         return False
 
     diff = pixelmatch(actual, expected, includeAA=False, threshold=0.1285)
-    matches = diff <= tolerance
 
-    if not matches:
-        print(f"{expected_filename} differs by {diff} pixels")
-
-    return matches
+    if diff > tolerance:
+        pytest.fail(f"{expected_filename} differs by {diff} pixels")

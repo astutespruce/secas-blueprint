@@ -13,7 +13,7 @@ from analysis.lib.pdf.report import create_report
 from analysis.lib.stats.aoi import get_aoi_results
 from analysis.lib.stats.summary_units import get_summary_unit_results
 from api.lib.geo import get_dataset
-from tests.lib.image import image_matches
+from tests.lib.image import assert_image_matches
 
 fixture_dir = Path("tests/fixtures")
 
@@ -159,13 +159,13 @@ async def test_summary_unit_maps_huc12():
     # with open(locator_img_filename, "wb") as outfile:
     #     _ = outfile.write(maps["locator"])
 
-    assert image_matches(maps["locator"], locator_img_filename)
+    assert_image_matches(maps["locator"], locator_img_filename)
 
     blueprint_img_filename = fixture_dir / f"maps/{unit_id}_blueprint.png"
     # with open(blueprint_img_filename, "wb") as outfile:
     #     _ = outfile.write(maps["blueprint"])
 
-    assert image_matches(maps["blueprint"], blueprint_img_filename)
+    assert_image_matches(maps["blueprint"], blueprint_img_filename)
 
 
 @pytest.mark.anyio
