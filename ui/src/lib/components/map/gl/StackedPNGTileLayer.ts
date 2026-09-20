@@ -49,9 +49,6 @@ export default class StackedPNGTileLayer extends TileLayer {
 			// sources: layers.map(({ url }) => new PMTiles(url))
 			sources: layers.map(({ url }) => createDataSource(url, [PMTilesSource], {}))
 		})
-
-		// FIXME: remove
-		window.sources = this.state.sources
 	}
 
 	updateState(props) {

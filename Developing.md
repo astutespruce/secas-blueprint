@@ -17,12 +17,16 @@ Python dependencies are managed using `uv`. First,
 uv venv .venv --python 3.12
 # <source it according to your shell, e.g., source .venv/bin/activate.fish>
 uv pip install -e [dev].
+
+# or
+uv sync --all-extras --frozen
+
 ```
 
 To check for outdated dependencies and upgrade them:
 
 ```bash
-uv pip list --outdated
+uv sync --upgrade --all-extras --dry-run
 
 # install latest version
 uv sync --upgrade --all-extras
@@ -34,6 +38,26 @@ Docker container for deployment, run:
 ```bash
 uv pip compile -U pyproject.toml -o ../secas-docker/docker/api/secas-blueprint-requirements.txt
 ```
+
+### Environment variables
+
+Create a `.env` file in the root of this repository with the following:
+
+```bash
+TEMP_DIR=/tmp/se-reports
+MAPBOX_ACCESS_TOKEN=<token>
+API_TOKEN=<create an arbitrary token and use same value in UI>
+API_SECRET=<secret value>
+LOGGING_LEVEL=DEBUG
+ENABLE_CORS=1
+MAP_RENDER_THREADS=6
+TILE_DIR=<path to folder containing pmtiles files>
+
+# to save PDF/XLSX files from tests for manual review
+TEST_SAVE_PDF=1
+TEST_SAVE_XLSX=1
+```
+
 
 ### Other dependencies
 
@@ -101,6 +125,40 @@ ncu -i --cooldown 3
 Note: this uses a 3 day "cooldown" to prevent upgrading to very recently released
 versions; modify this on a selective basis to pull in a newer version that resolves
 a vulnerability.
+
+
+### Environment variables
+
+#### Development mode
+
+Create a `ui/.env.development` file with the following:
+
+```bash
+PUBLIC_MAPBOX_TOKEN=<token>
+PUBLIC_GOOGLE_ANALYTICS_ID=
+PUBLIC_SENTRY_DSN=
+PUBLIC_API_TOKEN=<token set in .env file above>
+PUBLIC_DEPLOY_ENV="local"
+PUBLIC_DEPLOY_PATH=
+VITE_TILE_DIR=<path to directory containing pmtiles>
+PUBLIC_CONTACT_EMAIL="hilary_morris@fws.gov"
+```
+
+#### Build mode
+
+Create a `ui/.env.production` file with the following:
+
+```bash
+PUBLIC_MAPBOX_TOKEN=<token>
+PUBLIC_GOOGLE_ANALYTICS_ID=<can temporarily set value for testing>
+PUBLIC_SENTRY_DSN=<can temporarily set value for testing>
+PUBLIC_API_TOKEN=<token set in .env file above>
+PUBLIC_DEPLOY_ENV="local"
+PUBLIC_DEPLOY_PATH=<leave blank for vite preview server, set to /southeastblueprint for testing via Docker & Caddy>
+VITE_TILE_DIR=<path to directory containing pmtiles>
+PUBLIC_CONTACT_EMAIL="hilary_morris@fws.gov"
+```
+
 
 ## Other dependencies
 

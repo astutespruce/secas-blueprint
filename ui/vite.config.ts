@@ -62,6 +62,13 @@ export default defineConfig(({ command }) => {
 		server: {
 			fs: {
 				allow: servePMTiles ? [path.resolve(process.env.VITE_TILE_DIR as string)] : undefined
+			},
+			proxy: {
+				// proxy API endpoint to FastAPI
+				'/api': {
+					target: 'http://localhost:5000',
+					changeOrigin: true
+				}
 			}
 		},
 		plugins: [
@@ -69,8 +76,8 @@ export default defineConfig(({ command }) => {
 				manifest: {
 					name: 'Southeast Conservation Blueprint Explorer',
 					short_name: 'Southeast Blueprint Explorer',
-					start_url: process.env.DEPLOY_PATH || '/',
-					scope: process.env.DEPLOY_PATH || '/',
+					start_url: process.env.PUBLIC_DEPLOY_PATH || '/',
+					scope: process.env.PUBLIC_DEPLOY_PATH || '/',
 					background_color: '#4279A6',
 					theme_color: '#4279A6',
 					display: 'minimal-ui',

@@ -1,4 +1,4 @@
-import { TILE_HOST } from '$lib/env'
+import { TILES_URL } from '$lib/env'
 import type { MapConfig } from '$lib/types'
 
 export const mapConfig: MapConfig = {
@@ -13,7 +13,7 @@ export const mapConfig: MapConfig = {
 export const sources = {
 	blueprint: {
 		type: 'raster',
-		url: `${TILE_HOST}/tiles/blueprint.pmtiles`,
+		url: `${TILES_URL}/blueprint.pmtiles`,
 		provider: 'pmtiles',
 		// tiles are at 512, but using 256 forces higher resolution
 		tileSize: 256,
@@ -23,7 +23,7 @@ export const sources = {
 	},
 	mapUnits: {
 		type: 'vector',
-		url: `${TILE_HOST}/tiles/se_map_units.pmtiles`,
+		url: `${TILES_URL}/se_map_units.pmtiles`,
 		provider: 'pmtiles',
 		minzoom: 3,
 		maxzoom: 14,
@@ -33,7 +33,7 @@ export const sources = {
 	},
 	pixelFeatures: {
 		type: 'vector',
-		url: `${TILE_HOST}/tiles/se_other_features.pmtiles`,
+		url: `${TILES_URL}/se_other_features.pmtiles`,
 		provider: 'pmtiles',
 		minzoom: 3,
 		maxzoom: 14,

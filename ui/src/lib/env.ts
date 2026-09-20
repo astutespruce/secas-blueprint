@@ -6,13 +6,16 @@ export const BLUEPRINT_VERSION = '2026'
 export const SENTRY_DSN = env.PUBLIC_SENTRY_DSN || ''
 export const GOOGLE_ANALYTICS_ID = env.PUBLIC_GOOGLE_ANALYTICS_ID || ''
 export const MAPBOX_TOKEN = env.PUBLIC_MAPBOX_TOKEN
-export const API_HOST =
-	env.PUBLIC_API_HOST || (browser ? `${window.location.protocol}//${window.location.host}` : null)
-// tiles are served from a local folder on same host; must be full URL
-export const TILE_HOST = browser ? `${window.location.protocol}//${window.location.host}` : null
 export const API_TOKEN = env.PUBLIC_API_TOKEN
 export const CONTACT_EMAIL = env.PUBLIC_CONTACT_EMAIL
 export const DEPLOY_ENV = env.PUBLIC_DEPLOY_ENV
+
+const deploy_path = env.PUBLIC_DEPLOY_PATH || ''
+const root_url = browser
+	? `${window.location.protocol}//${window.location.host}${deploy_path}`
+	: deploy_path
+export const API_URL = `${root_url}/api`
+export const TILES_URL = `${root_url}/tiles`
 
 if (!MAPBOX_TOKEN) {
 	console.error('ERROR: Mapbox token is required in .env.* file')
