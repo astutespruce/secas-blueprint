@@ -1,12 +1,5 @@
-import { browser } from '$app/environment'
 import { TILE_HOST } from '$lib/env'
 import type { MapConfig } from '$lib/types'
-
-export let tileHost = TILE_HOST
-
-if (browser && !tileHost) {
-	tileHost = `//${window.location.host}`
-}
 
 export const mapConfig: MapConfig = {
 	// NOTE: these are not the data bounds, but ideal bounds to leave enough room
@@ -20,28 +13,31 @@ export const mapConfig: MapConfig = {
 export const sources = {
 	blueprint: {
 		type: 'raster',
+		url: `${TILE_HOST}/tiles/blueprint.pmtiles`,
+		provider: 'pmtiles',
 		// tiles are at 512, but using 256 forces higher resolution
 		tileSize: 256,
 		minzoom: 3,
 		maxzoom: 14,
-		bounds: [-108.0227, 16.97285, -57.03082, 41.58111],
-		tiles: [`${tileHost}/services/blueprint/tiles/{z}/{x}/{y}.png`]
+		bounds: [-108.0227, 16.97285, -57.03082, 41.58111]
 	},
 	mapUnits: {
 		type: 'vector',
+		url: `${TILE_HOST}/tiles/se_map_units.pmtiles`,
+		provider: 'pmtiles',
 		minzoom: 3,
 		maxzoom: 14,
 		bounds: [-180, -85, 180, 85],
-		tiles: [`${tileHost}/services/se_map_units/tiles/{z}/{x}/{y}.pbf`],
 		// note: can use promoteId: 'id' to promote feature properties ID to feature ID
 		promoteId: 'id'
 	},
 	pixelFeatures: {
 		type: 'vector',
+		url: `${TILE_HOST}/tiles/se_other_features.pmtiles`,
+		provider: 'pmtiles',
 		minzoom: 3,
 		maxzoom: 14,
-		bounds: [-106.655273, 17.623082, -64.423828, 40.647304],
-		tiles: [`${tileHost}/services/se_other_features/tiles/{z}/{x}/{y}.pbf`]
+		bounds: [-106.655273, 17.623082, -64.423828, 40.647304]
 	}
 }
 

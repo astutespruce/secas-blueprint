@@ -6,8 +6,10 @@ export const BLUEPRINT_VERSION = '2026'
 export const SENTRY_DSN = env.PUBLIC_SENTRY_DSN || ''
 export const GOOGLE_ANALYTICS_ID = env.PUBLIC_GOOGLE_ANALYTICS_ID || ''
 export const MAPBOX_TOKEN = env.PUBLIC_MAPBOX_TOKEN
-export const API_HOST = env.PUBLIC_API_HOST || (browser ? `//${window.location.host}` : null)
-export const TILE_HOST = env.PUBLIC_TILE_HOST
+export const API_HOST =
+	env.PUBLIC_API_HOST || (browser ? `${window.location.protocol}//${window.location.host}` : null)
+// tiles are served from a local folder on same host; must be full URL
+export const TILE_HOST = browser ? `${window.location.protocol}//${window.location.host}` : null
 export const API_TOKEN = env.PUBLIC_API_TOKEN
 export const CONTACT_EMAIL = env.PUBLIC_CONTACT_EMAIL
 export const DEPLOY_ENV = env.PUBLIC_DEPLOY_ENV

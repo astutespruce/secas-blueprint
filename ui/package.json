@@ -22,6 +22,7 @@
 		"knip": "^6.35.1",
 		"oxfmt": "^0.67.0",
 		"oxlint": "^1.82.0",
+		"send": "^1.2.1",
 		"typescript-eslint": "^8.70.0"
 	},
 	"dependencies": {
@@ -29,6 +30,7 @@
 		"@iconify-json/fa-regular": "^1.2.2",
 		"@iconify-json/fa-solid": "^1.2.2",
 		"@internationalized/date": "^3.12.4",
+		"@loaders.gl/pmtiles": "^4.5.1",
 		"@lucide/svelte": "^1.43.0",
 		"@placemarkio/geo-viewport": "^1.0.2",
 		"@sentry/svelte": "^10.74.0",
@@ -50,6 +52,7 @@
 		"formsnap": "^2.0.1",
 		"globals": "^17.12.0",
 		"mapbox-gl": "^3.30.0",
+		"pmtiles": "^4.5.0",
 		"svelte": "^5.57.0",
 		"svelte-check": "^4.7.6",
 		"sveltekit-superforms": "^2.30.2",
