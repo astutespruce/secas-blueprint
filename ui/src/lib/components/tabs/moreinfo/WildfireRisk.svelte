@@ -4,7 +4,7 @@
 	import { wildfireRisk as wildfireRiskInfo } from '$lib/config/constants'
 	import { cn } from '$lib/utils'
 
-	const { type, wildfire_risk = null } = $props()
+	const { type, regions, wildfire_risk = null } = $props()
 
 	const bars = $derived(
 		wildfireRiskInfo.values.map((category) => ({
@@ -18,7 +18,7 @@
 	<h3 class="text-2xl">Wildfire Likelihood</h3>
 
 	{#if type === 'pixel'}
-		{#if wildfire_risk === null}
+		{#if wildfire_risk === null || (regions && regions.has('caribbean'))}
 			<div class="text-grey-8">
 				Wildfire likelihood data is not currently available for this area.
 			</div>
@@ -47,7 +47,7 @@
 	{/if}
 
 	{#if type !== 'pixel'}
-		{#if wildfire_risk === null}
+		{#if wildfire_risk === null || wildfire_risk.length === 0 || (regions && regions.has('caribbean'))}
 			<div class="text-grey-8">
 				Wildfire likelihood data is not currently available for this area.
 			</div>
@@ -64,7 +64,7 @@
 	{/if}
 
 	<!-- don't show data info in Caribbean -->
-	{#if wildfire_risk !== null}
+	{#if !(regions && regions.has('caribbean'))}
 		<div class="mt-8 text-grey-8 leading-tight">
 			Wildfire likelihood data derived from the
 			<a href="https://wildfirerisk.org/" target="_blank"> Wildfire Risk to Communities </a>

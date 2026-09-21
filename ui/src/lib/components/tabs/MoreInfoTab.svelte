@@ -34,7 +34,7 @@
 
 		<Urban {type} {urban} {regions} />
 
-		<WildfireRisk {type} {wildfire_risk} />
+		<WildfireRisk {type} {wildfire_risk} {regions} />
 	{/if}
 
 	<NeedHelp />
