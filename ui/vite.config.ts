@@ -19,7 +19,9 @@ const proxyAPI = !!process.env.VITE_PROXY_API
 const servePMTiles = !!process.env.VITE_TILE_DIR
 let pmtilesServer = () => undefined
 if (servePMTiles) {
-	pmtilesServer = (await import(path.resolve(__dirname, './src/plugins/pmtilesServer.ts'))).default
+	pmtilesServer = (
+		await import(path.resolve(import.meta.dirname, './src/plugins/pmtilesServer.ts'))
+	).default
 }
 
 export default defineConfig({

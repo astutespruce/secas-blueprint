@@ -2,11 +2,13 @@ import path from 'path'
 
 import send from 'send'
 
+const basePath = process.env.PUBLIC_DEPLOY_PATH || ''
+
 /** This plugin serves PMTiles from VITE_TILE_DIR in development; they are served
  * by Caddy in production
  */
 const servePMTilesMiddleware = (server) => {
-	server.middlewares.use('/tiles', (req, res, next) => {
+	server.middlewares.use(`${basePath}/tiles`, (req, res, next) => {
 		// hardcode root to prevent traversal
 		const fileStream = send(req, req.url, {
 			root: path.resolve(process.env.VITE_TILE_DIR as string)

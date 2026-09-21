@@ -12,7 +12,7 @@
 		"format": "oxfmt .",
 		"lint": "oxfmt --check . && oxlint && eslint .",
 		"knip": "knip",
-		"deploy": "npm ci --no-audit --legacy-peer-deps && svelte-kit sync && npm run build"
+		"deploy": "npm ci --no-audit --legacy-peer-deps && svelte-kit sync && npm run build",
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
@@ -52,7 +52,6 @@
 		"formsnap": "^2.0.1",
 		"globals": "^17.12.0",
 		"mapbox-gl": "^3.30.0",
-		"pmtiles": "^4.5.0",
 		"svelte": "^5.57.0",
 		"svelte-check": "^4.7.6",
 		"sveltekit-superforms": "^2.30.2",

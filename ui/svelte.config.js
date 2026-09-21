@@ -18,7 +18,7 @@ const config = {
 			strict: true
 		}),
 		paths: {
-			base: process.env.DEPLOY_PATH || ''
+			base: process.env.PUBLIC_DEPLOY_PATH || ''
 		},
 		alias: {
 			$constants: '../constants',
