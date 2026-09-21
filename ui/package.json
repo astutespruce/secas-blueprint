@@ -12,7 +12,7 @@
 		"format": "oxfmt .",
 		"lint": "oxfmt --check . && oxlint && eslint .",
 		"knip": "knip",
-		"deploy": "npm ci --no-audit --legacy-peer-deps && svelte-kit sync && npm run build",
+		"deploy": "npm ci --no-audit --legacy-peer-deps && svelte-kit sync && npm run build"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
