@@ -12,7 +12,7 @@ TEMP_DIR.mkdir(exist_ok=True, parents=True)
 ENABLE_CORS = bool(os.getenv("ENABLE_CORS", "0"))
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*").split(",")
 
-TILE_DIR = Path(os.getenv("TILE_DIR", "./tiles")).resolve()
+TILE_DIR = Path(os.getenv("TILE_DIR", "/data/tiles")).resolve()
 
 MAPBOX_ACCESS_TOKEN = os.getenv("MAPBOX_ACCESS_TOKEN")
 API_TOKEN = os.getenv("API_TOKEN")
