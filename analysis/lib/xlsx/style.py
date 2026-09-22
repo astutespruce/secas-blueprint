@@ -53,6 +53,7 @@ good_condition_header_style = NamedStyle(
     name="Good Condition Header Style",
     alignment=alignment_center_wrap,
     border=Border(
+        top=Side(border_style="thin", color="000000"),
         bottom=Side(border_style="thin", color="000000"),
     ),
     fill=PatternFill("solid", "EEEEEE"),
@@ -154,7 +155,7 @@ def add_caption(ws, table_counter, caption):
     ws.row_dimensions[1].height = max(20, total_line_height)
 
 
-def add_good_condition_row(ws, values_start_col, values_end_col, break_col):
+def add_good_condition_row(ws, offset, num_good_values, num_not_good_values, num_outside_cols):
     """Add header row with merged cells for not in good condition / in good condition
 
     Good conditions are only defined for indicators, which always have columns
@@ -163,42 +164,63 @@ def add_good_condition_row(ws, values_start_col, values_end_col, break_col):
     Parameters
     ----------
     ws : Worksheet
-    values_start_col : int
-        values start column index, 0-based
-    values_end_col : int
-        values end column index, 0-based
-    break_col : int
-        the column index of the first value after the break between good and not good condition, 0-based
+    offset : int
+        number of columns to the left of the outside / value columns
+    num_good_values : int
+        number of values in good condition
+    num_not_good_values : int
+        number of values not in good condition
+    num_outside_cols : int
+        number of columns for area outside extent / dataset
     """
-    row = 3
+    start_row = 3
 
-    ws.insert_rows(idx=row)
+    ws.insert_rows(idx=start_row)
     max_row = ws.max_row
 
-    # repeat for acres and percents
-    for offset in [0, values_end_col - values_start_col]:
-        good_start_col = get_column_letter(offset + values_start_col + 1)
-        good_end_col = get_column_letter(offset + values_start_col + break_col)
-        cell = ws[f"{good_start_col}{row}"]
+    num_value_cols = num_good_values + num_not_good_values
+    num_cols = num_value_cols + num_outside_cols
+
+    to_merge = []
+
+    # NOTE: translate into 1-based indexes for specifying columns
+    for group_index, start_col in enumerate([offset + 1, offset + num_cols + 1]):
+        good_start_col = get_column_letter(start_col + num_outside_cols)
+        good_end_col = get_column_letter(start_col + num_outside_cols + num_good_values)
+        cell = ws[f"{good_start_col}{start_row}"]
         cell.value = "In good condition"
         cell.style = good_condition_header_style
-        ws.merge_cells(f"{good_start_col}{row}:{good_end_col}{row}")
+        to_merge.append(f"{good_start_col}{start_row}:{good_end_col}{start_row}")
 
-        not_good_start_col = get_column_letter(offset + values_start_col + break_col + 1)
-        not_good_end_col = get_column_letter(offset + values_end_col)
-        cell = ws[f"{not_good_start_col}{row}"]
+        not_good_start_col = get_column_letter(start_col + num_outside_cols + num_good_values + 1)
+        not_good_end_col = get_column_letter(start_col + num_value_cols)
+        cell = ws[f"{not_good_start_col}{start_row}"]
         cell.value = "Not in good condition"
         cell.style = good_condition_header_style
-        ws.merge_cells(f"{not_good_start_col}{row}:{not_good_end_col}{row}")
+        to_merge.append(f"{not_good_start_col}{start_row}:{not_good_end_col}{start_row}")
 
-        for i in range(row, max_row + 1):
-            cell = ws[f"{not_good_start_col}{i}"]
+        # set styling before merging cells
+        for row in range(start_row, max_row + 1):
+            # add divider between good / not good
+            cell = ws[f"{not_good_start_col}{row}"]
             cell.border = Border(
-                left=Side(border_style="medium", color="666666"), bottom=cell.border.bottom, right=cell.border.right
+                top=Side(border_style="thin", color="000000") if row == start_row else None,
+                left=Side(border_style="medium", color="666666"),
+                bottom=cell.border.bottom,
+                right=cell.border.right,
             )
 
-            if offset > 0:
-                cell = ws[f"{good_start_col}{i}"]
+            # add divider between acres and percents
+            if group_index > 0:
+                cell = ws[f"{get_column_letter(start_col)}{row}"]
                 cell.border = Border(
-                    left=Side(border_style="thick", color="666666"), bottom=cell.border.bottom, right=cell.border.right
+                    top=Side(border_style="thin", color="000000")
+                    if row == start_row and start_col == good_start_col
+                    else None,
+                    left=Side(border_style="thick", color="666666"),
+                    bottom=cell.border.bottom,
+                    right=cell.border.right,
                 )
+
+    for merge_range in to_merge:
+        ws.merge_cells(merge_range)

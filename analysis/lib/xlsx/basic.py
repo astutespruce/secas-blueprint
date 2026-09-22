@@ -135,6 +135,15 @@ def add_basic_results_sheet(
 
     if dataset["id"] in INDICATORS_INDEX and good_threshold:
         # NOTE: this only applies to indicators, which are always in greatest to least order
-        offset = 2 + int(has_area_outside_extent) | int(has_area_outside_dataset)
-        pos = [v["value"] for v in values[::-1]].index(good_threshold) + 1
-        add_good_condition_row(ws, offset, offset + len(values), break_col=pos)
+
+        offset = 2  # area name and overlap area
+        num_good_values = len([v for v in values if v["value"] > good_threshold])
+        num_not_good_values = len(values) - num_good_values
+
+        add_good_condition_row(
+            ws,
+            offset,
+            num_good_values,
+            num_not_good_values,
+            num_outside_cols=int(has_area_outside_extent) + int(has_area_outside_dataset),
+        )
