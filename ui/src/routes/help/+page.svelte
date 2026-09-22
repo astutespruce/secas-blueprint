@@ -290,7 +290,7 @@
 			<br />
 
 			The PDF report includes a map and summary table for every indicator present in the area, as
-			well as additional information about urbanization and sea-level rise.
+			well as additional information about urbanization and sea level rise.
 		</p>
 
 		<figure class="mt-4">

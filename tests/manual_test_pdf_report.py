@@ -16,6 +16,7 @@ from analysis.lib.stats.summary_units import get_summary_unit_results
 
 ### Create reports for an AOI
 aois = [
+    {"name": "", "path": "caribbean_slr_test"},
     # {"name": "", "path": "Forest_View_Road"}
     # {"name": "Gulf_SECAS_CBRS_Polygons", "path": "Gulf_SECAS_CBRS_Polygons"},
     # {"name": "Caribbean_SECAS_CBRS_Polygons", "path": "Caribbean_SECAS_CBRS_Polygons"},
@@ -67,7 +68,7 @@ aois = [
     # {"name": "FL test", "path": "EvergladesHeadwaterComplex_APPTYPE_0"},
     # {"name": "Guild Tracts", "path": "GuildTracts"}
     # {"name": "Florida Panhandle Boundary", "path": "FL_panhadle_boundary"},
-    {"name": "Dell Murphy wetlands", "path": "Dell Murphy wetlands"},
+    # {"name": "Dell Murphy wetlands", "path": "Dell Murphy wetlands"},
     # {"name": "TRB GA", "path": "TRB_GA"},
     # {"name": "Florida 5 Star County Boundary", "path": "FL_5StarCounty_Boundary"}
     # {"name": "Cumberland Plateau Focus Area", "path": "NFWF_Cumberland_Fund_TN"}
@@ -188,8 +189,8 @@ ids = {
         # "210100070101",  # in Caribbean
         #     #     # "031101020903",  # Florida with inland marine indicators
         # "031102050805",  # Florida gulf coast
-        #     #     # "030902061101"  # area with SLR not modeled
-        #     "030102051002"  # area with both marine and inland hubs / corridors
+        # "030902061101",  # area with SLR not modeled
+        # "030102051002",  # area with both marine and inland hubs / corridors
     ],
     "marine_hex": [
         # "154309",

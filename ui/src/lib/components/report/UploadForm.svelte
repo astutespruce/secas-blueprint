@@ -240,7 +240,7 @@
 						interest to generate a detailed PDF report of the Blueprint, underlying indicators, and
 						other contextual information for your area of interest. It includes a map and summary
 						table for every indicator present in the area, as well as additional information about
-						urbanization and sea-level rise.
+						urbanization and sea level rise.
 						<br /><br />
 						We're currently testing advanced reporting that complements this simple PDF report, including
 						the ability to choose specific datasets and save results to an XLSX file. This functionality

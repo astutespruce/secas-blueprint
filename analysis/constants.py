@@ -119,7 +119,7 @@ SLR_DEPTH = read_json("slr_depth.json")
 # depth in 1 foot increments from 0
 SLR_DEPTH_VALUES = [v for v in SLR_DEPTH["values"] if v["value"] < 11]
 SLR_NODATA_VALUES = [v for v in SLR_DEPTH["values"] if v["value"] >= 11]
-SLR_NODATA_COLS = ["not_inundated", "not_applicable", "nodata"]
+SLR_NODATA_COLS = ["not_inundated", "not_applicable"]
 
 SLR_PROJ = read_json("slr_proj.json")
 SLR_YEARS = [2020, 2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100]

@@ -38,45 +38,43 @@ def add_slr_depth_sheet(
     dataset = SLR_DEPTH
     sheet_name = dataset["sheet_name"]
     caption = dataset["caption"] + "."
+    nodata_label = "Outside extent of this dataset\n(acres)"
 
-    # split values into columns
-    slr = df[SLR_DEPTH["id"]].apply(pd.Series)
-
-    # set NODATA into value 13
-    outside_dataset_acres = df.overlap_acres - slr.sum(axis=1)
-    outside_dataset_acres.loc[outside_dataset_acres < 0] = 0
-    slr[13] += outside_dataset_acres
-
-    outside_dataset_col = depth_value_columns[-1]
-    outside_dataset_percent_col = outside_dataset_col.replace("(acres)", "(percent)")
-
-    slr = df[["rasterized_acres", "overlap_acres", "outside_extent_acres", "outside_extent_percent"]].join(slr)
-    slr.columns = [
-        "rasterized_acres",
-        "overlap_acres",
-        "outside_extent_acres",
-        "outside_extent_percent",
-    ] + depth_value_columns
+    slr = df[["rasterized_acres", "overlap_acres", "outside_extent_acres", "outside_extent_percent"]].join(
+        df[SLR_DEPTH["id"]].apply(pd.Series)
+    )
+    slr.columns = (
+        [
+            "rasterized_acres",
+            "overlap_acres",
+            "outside_extent_acres",
+            "outside_extent_percent",
+        ]
+        + depth_value_columns
+        + ["outside_dataset_acres"]
+    )
 
     # calculate percents
-    slr[outside_dataset_percent_col] = slr[outside_dataset_col] / slr.rasterized_acres
+    slr["outside_dataset_percent"] = slr.outside_dataset_acres / slr.rasterized_acres
     for col in depth_value_columns:
         slr[col.replace("(acres)", "(percent)")] = slr[col] / slr.rasterized_acres
 
     # reorder columns so that outside_dataset_col comes before other values
     slr = slr[
-        ["overlap_acres", "outside_extent_acres", outside_dataset_col]
-        + depth_value_columns[:-1]
-        + ["outside_extent_percent", outside_dataset_percent_col]
-        + [col.replace("(acres)", "(percent)") for col in depth_value_columns[:-1]]
+        ["overlap_acres", "outside_extent_acres", "outside_dataset_acres"]
+        + depth_value_columns
+        + ["outside_extent_percent", "outside_dataset_percent"]
+        + [col.replace("(acres)", "(percent)") for col in depth_value_columns]
     ]
 
     # drop unnecessary nodata
     remove_cols = []
-    for col in depth_value_columns[-3:]:
+    num_value_cols = len(depth_value_columns)
+    for col in depth_value_columns[-len(SLR_NODATA_VALUES) :]:
         if slr[col].sum() == 0:
             remove_cols.append(col)
             remove_cols.append(col.replace("(acres)", "(percent)"))
+            num_value_cols -= 1
     if remove_cols:
         slr = slr.drop(columns=remove_cols)
 
@@ -84,23 +82,27 @@ def add_slr_depth_sheet(
     if not has_area_outside_extent:
         slr = slr.drop(columns=["outside_extent_acres", "outside_extent_percent"])
 
-    has_area_outside_dataset = depth_value_columns[-1] in slr.columns
+    has_area_outside_dataset = slr.outside_dataset_acres.max() > 1e-2
+    if not has_area_outside_dataset:
+        slr = slr.drop(columns=["outside_dataset_acres", "outside_dataset_percent"])
 
     slr = slr.rename(
         columns={
             "overlap_acres": area_label,
             "outside_extent_acres": outside_area_label,
             "outside_extent_percent": outside_area_label.replace("(acres)", "(percent)"),
+            "outside_dataset_acres": nodata_label,
+            "outside_dataset_percent": nodata_label.replace("(acres)", "(percent)"),
         }
     ).reset_index()
 
     slr.to_excel(xlsx, sheet_name=sheet_name, index=False)
     ws = xlsx.sheets[sheet_name]
 
-    set_column_widths(ws, [name_col_width, area_col_width] + ([18] * (len(slr.columns) - 1)))
+    set_column_widths(ws, [name_col_width, area_col_width] + ([18] * (len(slr.columns) - 2)))
 
     area_col_offset = 1
-    num_area_cols = len(depth_value_columns) + 1 + int(has_area_outside_extent) | int(has_area_outside_dataset)
+    num_area_cols = num_value_cols + int(has_area_outside_extent) + int(has_area_outside_dataset) + 1
 
     set_cell_styles(
         ws,

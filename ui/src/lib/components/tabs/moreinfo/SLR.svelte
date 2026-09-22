@@ -40,7 +40,7 @@
 		{#if nodata !== null}
 			<div class="text-grey-8">{slrNodata[nodata].label}.</div>
 		{:else if depth === null}
-			<div class="text-grey-8">{slrNodata[2].label}.</div>
+			<div class="text-grey-8">Sea level rise data is not currently available for this area.</div>
 		{:else if depth === 0}
 			<div>This area is already inundated.</div>
 		{:else}
@@ -50,7 +50,7 @@
 					{depth}
 					{depth === 1 ? 'foot' : 'feet'}
 				</b>
-				of sea-level rise.
+				of sea level rise.
 			</div>
 		{/if}
 	{/if}
@@ -60,7 +60,7 @@
 		{#if nodataValue !== null}
 			<div class="text-grey-8">{slrNodata[nodataValue].label}.</div>
 		{:else if !(depth && depth.length > 0)}
-			<div class="text-grey-8">{slrNodata[2].label}.</div>
+			<div class="text-grey-8">Sea level rise data is not currently available for this area.</div>
 		{:else}
 			<div class="text-grey-8 leading-tight">
 				Extent of flooding by projected sea level rise within this subwatershed:
@@ -81,7 +81,7 @@
 		<div class="mt-8 text-grey-8 leading-tight">
 			Sea level rise estimates derived from the
 			<a href="https://coast.noaa.gov/digitalcoast/data/slr.html" target="_blank">
-				NOAA sea-level rise inundation data
+				NOAA sea level rise inundation data
 			</a>. To explore additional SLR information, please see NOAA&apos;s
 			<a href="https://coast.noaa.gov/slr/" target="_blank"> Sea Level Rise Viewer </a>.
 		</div>

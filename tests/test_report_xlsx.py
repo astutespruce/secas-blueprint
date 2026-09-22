@@ -844,20 +844,18 @@ async def test_create_xlsx_file_multiple_areas(format):
         )
 
     slr_depth = reader.parse(sheet_name="SLR - area flooded by ft of SLR", skiprows=2)
-    slr_depth_col_ix = [13] + list(range(13))
-    slr_value_cols = np.array(slr_depth_value_cols).take(slr_depth_col_ix).tolist()
+    slr_value_cols = slr_depth_value_cols
     slr_depth_percent_cols = [col.replace("(acres)", "(percent)") for col in slr_value_cols]
     assert (
         slr_depth.columns.tolist()
-        == ["Analysis unit", "Analysis area\n(acres)"] + slr_value_cols + slr_depth_percent_cols
+        == ["Analysis unit", "Analysis area\n(acres)", "Outside extent of this dataset\n(acres)"]
+        + slr_value_cols
+        + ["Outside extent of this dataset\n(percent)"]
+        + slr_depth_percent_cols
     )
     for i in range(num_features):
-        expected = results.slr_depth.iloc[i].take(slr_depth_col_ix)
-        # area outside SLR is dynamically calculated as areas within the extent but with no SLR acres
-        outside = results.overlap_acres.iloc[i] - expected.sum()
-        if outside > 0:
-            expected[0] = outside
-
+        # last value is nodata, ignore that for comparison because it is shuffled to a different column
+        expected = results.slr_depth.iloc[i][:-1]
         assert np.allclose(slr_depth.iloc[i][slr_value_cols].values.astype("float64"), expected)
 
     parcas_poly = reader.parse(sheet_name="PARCA descriptions", skiprows=2)

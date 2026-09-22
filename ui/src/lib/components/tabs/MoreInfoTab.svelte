@@ -18,7 +18,7 @@
 	} = $props()
 
 	const showTerrestrialDatasets = $derived(
-		regions && (regions.has('continental') || regions.has('caribbean'))
+		regions && (regions.has('continental') || regions.has('caribbean')) && type !== 'marine hex'
 	)
 </script>
 
