@@ -76,7 +76,7 @@ analysis_unit_divider = Border(
 description_font = Font(color="999999")
 
 
-def set_cell_styles(ws, breaks=None, area_columns=None, percent_columns=None):
+def set_cell_styles(ws, breaks=None, area_columns=None, percent_columns=None, add_percent_divider=False):
     area_columns = area_columns or []
     percent_columns = percent_columns or []
 
@@ -109,6 +109,15 @@ def set_cell_styles(ws, breaks=None, area_columns=None, percent_columns=None):
         for col in ws.columns:
             for line in breaks:
                 col[line].border = analysis_unit_divider
+
+    if add_percent_divider and len(percent_columns) > 0:
+        # add a line between areas and percents
+        percent_start_col = get_column_letter(percent_columns[0] + 1)
+        for i in range(1, ws.max_row + 1):
+            cell = ws[f"{percent_start_col}{i}"]
+            cell.border = Border(
+                left=Side(border_style="thick", color="666666"), bottom=cell.border.bottom, right=cell.border.right
+            )
 
 
 def set_column_widths(ws, widths):
@@ -164,23 +173,32 @@ def add_good_condition_row(ws, values_start_col, values_end_col, break_col):
     row = 3
 
     ws.insert_rows(idx=row)
+    max_row = ws.max_row
 
-    start_col = get_column_letter(values_start_col + 1)
-    end_col = get_column_letter(values_start_col + break_col)
-    cell = ws[f"{start_col}{row}"]
-    cell.value = "In good condition"
-    cell.style = good_condition_header_style
-    ws.merge_cells(f"{start_col}{row}:{end_col}{row}")
+    # repeat for acres and percents
+    for offset in [0, values_end_col - values_start_col]:
+        good_start_col = get_column_letter(offset + values_start_col + 1)
+        good_end_col = get_column_letter(offset + values_start_col + break_col)
+        cell = ws[f"{good_start_col}{row}"]
+        cell.value = "In good condition"
+        cell.style = good_condition_header_style
+        ws.merge_cells(f"{good_start_col}{row}:{good_end_col}{row}")
 
-    start_col = get_column_letter(values_start_col + break_col + 1)
-    end_col = get_column_letter(values_end_col)
-    cell = ws[f"{start_col}{row}"]
-    cell.value = "Not in good condition"
-    cell.style = good_condition_header_style
-    ws.merge_cells(f"{start_col}{row}:{end_col}{row}")
+        not_good_start_col = get_column_letter(offset + values_start_col + break_col + 1)
+        not_good_end_col = get_column_letter(offset + values_end_col)
+        cell = ws[f"{not_good_start_col}{row}"]
+        cell.value = "Not in good condition"
+        cell.style = good_condition_header_style
+        ws.merge_cells(f"{not_good_start_col}{row}:{not_good_end_col}{row}")
 
-    for i in range(row, ws.max_row + row):
-        cell = ws[f"{start_col}{i}"]
-        cell.border = Border(
-            left=Side(border_style="medium", color="666666"), bottom=cell.border.bottom, right=cell.border.right
-        )
+        for i in range(row, max_row + 1):
+            cell = ws[f"{not_good_start_col}{i}"]
+            cell.border = Border(
+                left=Side(border_style="medium", color="666666"), bottom=cell.border.bottom, right=cell.border.right
+            )
+
+            if offset > 0:
+                cell = ws[f"{good_start_col}{i}"]
+                cell.border = Border(
+                    left=Side(border_style="thick", color="666666"), bottom=cell.border.bottom, right=cell.border.right
+                )

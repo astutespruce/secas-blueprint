@@ -45,7 +45,12 @@ def create_report(df: pd.DataFrame, datasets: set[str], name: str | None = None)
     )
     area_col_width = max(df.overlap_acres.apply(lambda x: len("{x:,.2f}")).max() * CHAR_PER_WIDTH_UNIT, 10)
 
-    area_label = f"Acres within {ANALYSIS_REGION_NAME} data extent" if has_area_outside_region else "Analysis acres"
+    area_label = (
+        f"Area within {ANALYSIS_REGION_NAME} data extent\n(acres)"
+        if has_area_outside_region
+        else "Analysis area\n(acres)"
+    )
+    outside_area_label = f"Area outside {ANALYSIS_REGION_NAME} data extent\n(acres)"
 
     ### Create XLSX file and write to memory buffer
     table_counter = 1
@@ -56,7 +61,7 @@ def create_report(df: pd.DataFrame, datasets: set[str], name: str | None = None)
         table_counter += 1
 
         # Summary sheet
-        add_summary_sheet(xlsx, df, name_col_width, area_col_width, area_label, has_area_outside_region, table_counter)
+        add_summary_sheet(xlsx, df, name_col_width, has_area_outside_region, table_counter)
         table_counter += 1
 
         for dataset_id, dataset in REPORT_DATASETS.items():
@@ -71,7 +76,8 @@ def create_report(df: pd.DataFrame, datasets: set[str], name: str | None = None)
                     df,
                     dataset,
                     name_col_width,
-                    area_label,
+                    area_label=area_label,
+                    outside_area_label=outside_area_label,
                     table_counter=table_counter,
                     get_value_order=get_value_order.get(dataset_id, None),
                 )
@@ -83,7 +89,15 @@ def create_report(df: pd.DataFrame, datasets: set[str], name: str | None = None)
                 add_protected_areas_poly_sheet(xlsx, df, name_col_width, area_col_width, table_counter=table_counter)
 
             elif dataset_id == SLR_DEPTH["id"]:
-                add_slr_depth_sheet(xlsx, df, name_col_width, area_col_width, area_label, table_counter=table_counter)
+                add_slr_depth_sheet(
+                    xlsx,
+                    df,
+                    name_col_width,
+                    area_col_width,
+                    area_label=area_label,
+                    outside_area_label=outside_area_label,
+                    table_counter=table_counter,
+                )
 
             elif dataset_id == SLR_PROJ["id"]:
                 add_slr_projection_sheet(
@@ -92,7 +106,13 @@ def create_report(df: pd.DataFrame, datasets: set[str], name: str | None = None)
 
             elif dataset_id == URBAN_BY_DECADE["id"]:
                 add_urbanization_sheet(
-                    xlsx, df, name_col_width, area_col_width, area_label, table_counter=table_counter
+                    xlsx,
+                    df,
+                    name_col_width,
+                    area_col_width,
+                    area_label=area_label,
+                    outside_area_label=outside_area_label,
+                    table_counter=table_counter,
                 )
 
             table_counter += 1

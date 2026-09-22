@@ -152,8 +152,6 @@ def create_report(maps, results, name=None, area_type="custom"):
     css = css_template.render(**context)
     context["css"] = css
 
-    url_fetcher =
-
     # if DEBUG:
     # TODO: will need to fill in images / convert to base64
     # with open("/tmp/test.html", "w") as out:
