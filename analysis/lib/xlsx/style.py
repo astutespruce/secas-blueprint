@@ -186,18 +186,20 @@ def add_good_condition_row(ws, offset, num_good_values, num_not_good_values, num
     # NOTE: translate into 1-based indexes for specifying columns
     for group_index, start_col in enumerate([offset + 1, offset + num_cols + 1]):
         good_start_col = get_column_letter(start_col + num_outside_cols)
-        good_end_col = get_column_letter(start_col + num_outside_cols + num_good_values)
+        good_end_col = get_column_letter(start_col + num_outside_cols + num_good_values - 1)
         cell = ws[f"{good_start_col}{start_row}"]
         cell.value = "In good condition"
         cell.style = good_condition_header_style
-        to_merge.append(f"{good_start_col}{start_row}:{good_end_col}{start_row}")
+        if good_start_col != good_end_col:
+            to_merge.append(f"{good_start_col}{start_row}:{good_end_col}{start_row}")
 
-        not_good_start_col = get_column_letter(start_col + num_outside_cols + num_good_values + 1)
-        not_good_end_col = get_column_letter(start_col + num_value_cols)
+        not_good_start_col = get_column_letter(start_col + num_outside_cols + num_good_values)
+        not_good_end_col = get_column_letter(start_col + num_outside_cols + num_good_values + num_not_good_values - 1)
         cell = ws[f"{not_good_start_col}{start_row}"]
         cell.value = "Not in good condition"
         cell.style = good_condition_header_style
-        to_merge.append(f"{not_good_start_col}{start_row}:{not_good_end_col}{start_row}")
+        if not_good_start_col != not_good_end_col:
+            to_merge.append(f"{not_good_start_col}{start_row}:{not_good_end_col}{start_row}")
 
         # set styling before merging cells
         for row in range(start_row, max_row + 1):

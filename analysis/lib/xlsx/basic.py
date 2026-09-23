@@ -137,7 +137,7 @@ def add_basic_results_sheet(
         # NOTE: this only applies to indicators, which are always in greatest to least order
 
         offset = 2  # area name and overlap area
-        num_good_values = len([v for v in values if v["value"] > good_threshold])
+        num_good_values = len([v for v in values if v["value"] >= good_threshold])
         num_not_good_values = len(values) - num_good_values
 
         add_good_condition_row(
