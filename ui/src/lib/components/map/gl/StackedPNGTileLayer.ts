@@ -46,7 +46,6 @@ export default class StackedPNGTileLayer extends TileLayer {
 				// first color must always be null
 				palette: makeRGBAFloat32Palette([null, ...renderLayer.colors])
 			},
-			// sources: layers.map(({ url }) => new PMTiles(url))
 			sources: layers.map(({ url }) => createDataSource(url, [PMTilesSource], {}))
 		})
 	}

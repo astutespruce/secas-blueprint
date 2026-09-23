@@ -10,13 +10,13 @@ export const API_TOKEN = env.PUBLIC_API_TOKEN
 export const CONTACT_EMAIL = env.PUBLIC_CONTACT_EMAIL
 export const DEPLOY_ENV = env.PUBLIC_DEPLOY_ENV
 
+if (!MAPBOX_TOKEN) {
+	console.error('ERROR: Mapbox token is required in .env.* file')
+}
+
 const deploy_path = env.PUBLIC_DEPLOY_PATH || ''
 const root_url = browser
 	? `${window.location.protocol}//${window.location.host}${deploy_path}`
 	: deploy_path
 export const API_URL = `${root_url}/api`
 export const TILES_URL = `${root_url}/tiles`
-
-if (!MAPBOX_TOKEN) {
-	console.error('ERROR: Mapbox token is required in .env.* file')
-}

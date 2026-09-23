@@ -140,6 +140,7 @@ PUBLIC_SENTRY_DSN=
 PUBLIC_API_TOKEN=<token set in .env file above>
 PUBLIC_DEPLOY_ENV="local"
 PUBLIC_DEPLOY_PATH=
+VITE_API_PROX=1 # to proxy to API on port 5000 using vite
 VITE_TILE_DIR=<path to directory containing pmtiles>
 PUBLIC_CONTACT_EMAIL="hilary_morris@fws.gov"
 ```
@@ -155,8 +156,11 @@ PUBLIC_SENTRY_DSN=<can temporarily set value for testing>
 PUBLIC_API_TOKEN=<token set in .env file above>
 PUBLIC_DEPLOY_ENV="local"
 PUBLIC_DEPLOY_PATH=<leave blank for vite preview server, set to /southeastblueprint for testing via Docker & Caddy>
-VITE_TILE_DIR=<path to directory containing pmtiles>
 PUBLIC_CONTACT_EMAIL="hilary_morris@fws.gov"
+
+# only set the following if proxying via Vite's preview server
+VITE_API_PROX=1
+VITE_TILE_DIR=<path to directory containing pmtiles>
 ```
 
 
