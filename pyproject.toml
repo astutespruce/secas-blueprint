@@ -69,7 +69,7 @@ namespace = true
 line-length = 120
 
 [tool.ruff.lint]
-select = ["ERA001"]
+select = ["ERA001", "F401"]
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::PendingDeprecationWarning"]

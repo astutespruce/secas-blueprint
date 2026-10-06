@@ -1,6 +1,6 @@
 from math import ceil
 
-from openpyxl.styles import Alignment, Border, Color, Font, NamedStyle, PatternFill, Side
+from openpyxl.styles import Alignment, Border, Font, NamedStyle, PatternFill, Side
 from openpyxl.utils.cell import get_column_letter
 
 # Guess at how many characters fit into a column width measurement
