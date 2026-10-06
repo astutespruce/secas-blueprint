@@ -31,7 +31,6 @@ from analysis.lib.xlsx.basic import get_value_columns
 from analysis.lib.xlsx.report import create_report, get_value_order
 from analysis.lib.xlsx.slr import depth_value_columns as slr_depth_value_cols
 from analysis.lib.xlsx.slr import proj_value_columns as slr_proj_value_cols
-from analysis.lib.xlsx.urban import percent_columns as urban_percent_cols
 from analysis.lib.xlsx.urban import value_columns as urban_value_cols
 from api.logger import log
 from api.settings import TEMP_DIR
@@ -58,6 +57,8 @@ blueprint_percent_cols = [col.replace("(acres)", "(percent)") for col in bluepri
 
 corridor_value_cols = get_value_columns(CORRIDORS["values"])
 corridor_percent_cols = [col.replace("(acres)", "(percent)") for col in corridor_value_cols]
+
+urban_percent_cols = [col.replace("(acres)", "(percent)") for col in urban_value_cols]
 
 wildfire_risk_value_cols = get_value_columns(WILDFIRE_RISK["values"])
 wildfire_risk_percent_cols = [col.replace("(acres)", "(percent)") for col in wildfire_risk_value_cols]
@@ -449,21 +450,26 @@ async def test_create_xlsx_file_single_area(format):
     assert len(details) == len(datasets)
     assert details["Name"].tolist() == [d["label"] for id, d in REPORT_DATASETS.items() if id in datasets]
 
-    metadata = reader.parse(sheet_name="Analysis metadata", header=None, skiprows=2)
+    metadata = reader.parse(sheet_name="Analysis metadata", skiprows=2)
     assert len(metadata) == 3
-    assert metadata[1][0] == "Test area"
+    assert metadata.Value.values[0] == "Test area"
 
-    header = reader.parse(sheet_name="Blueprint priority", nrows=1)
-    assert header.columns[0] == f"Table 3: {BLUEPRINT['caption']}."
+    caption = reader.parse(sheet_name="Blueprint priority", nrows=1, header=None)
+    assert caption.values[0] == f"Table 3: {BLUEPRINT['caption']}."
 
-    blueprint = reader.parse(sheet_name="Blueprint priority", skiprows=2)
+    acres_percent_header = reader.parse(sheet_name="Blueprint priority", skiprows=2, nrows=1, header=None).dropna(
+        axis=1
+    )
+    assert acres_percent_header.values[0].tolist() == ["ACRES", "PERCENT"]
+
+    blueprint = reader.parse(sheet_name="Blueprint priority", skiprows=3).dropna(axis=1)
     assert (
         blueprint.columns.tolist()
         == ["Analysis unit", "Analysis area\n(acres)"] + blueprint_value_cols[::-1] + blueprint_percent_cols[::-1]
     )
     assert np.allclose(blueprint.iloc[0][blueprint_value_cols].values.astype("float64"), results.blueprint.iloc[0])
 
-    corridors = reader.parse(sheet_name="Hubs and corridors", skiprows=2)
+    corridors = reader.parse(sheet_name="Hubs and corridors", skiprows=3).dropna(axis=1)
     assert corridors.columns.tolist() == ["Analysis unit", "Analysis area\n(acres)"] + get_value_order[CORRIDORS["id"]](
         corridor_value_cols
     ) + get_value_order[CORRIDORS["id"]](corridor_percent_cols)
@@ -472,7 +478,7 @@ async def test_create_xlsx_file_single_area(format):
     indicator_id = "t_imperiledamphibiansandreptiles"
     indicator = INDICATORS_INDEX[indicator_id]
     sheet_name = indicator.get("sheet_name") or indicator["label"]
-    indicator_sheet = reader.parse(sheet_name=sheet_name, skiprows=2)
+    indicator_sheet = reader.parse(sheet_name=sheet_name, skiprows=3).dropna(axis=1)
     indicator_value_cols = get_value_columns(indicator["values"])
     indicator_percent_cols = [col.replace("(acres)", "(percent)") for col in indicator_value_cols]
     assert (
@@ -487,12 +493,16 @@ async def test_create_xlsx_file_single_area(format):
     indicator_id = "f_permeablesurface"
     indicator = INDICATORS_INDEX[indicator_id]
     sheet_name = indicator.get("sheet_name") or indicator["label"]
-    indicator_header = reader.parse(sheet_name=sheet_name, skiprows=2, nrows=1)
-    assert [c for c in indicator_header.columns if "condition" in c][:2] == [
-        "In good condition",
-        "Not in good condition",
+
+    good_condition_header = reader.parse(sheet_name=sheet_name, skiprows=3, nrows=1, header=None).dropna(axis=1)
+    assert good_condition_header.values[0].tolist() == [
+        "← In good condition",
+        "Not in good condition →",
+        "← In good condition",
+        "Not in good condition →",
     ]
-    indicator_sheet = reader.parse(sheet_name=sheet_name, skiprows=3)
+
+    indicator_sheet = reader.parse(sheet_name=sheet_name, skiprows=4).dropna(axis=1)
     indicator_value_cols = get_value_columns(indicator["values"])
     indicator_percent_cols = [col.replace("(acres)", "(percent)") for col in indicator_value_cols]
     assert (
@@ -503,7 +513,7 @@ async def test_create_xlsx_file_single_area(format):
         indicator_sheet.iloc[0][indicator_value_cols].values.astype("float64"), results[indicator_id].iloc[0]
     )
 
-    slr_depth = reader.parse(sheet_name="SLR - area flooded by ft of SLR", skiprows=2)
+    slr_depth = reader.parse(sheet_name="SLR - area flooded by ft of SLR", skiprows=3).dropna(axis=1)
     # only nodata is areas outside counties
     slr_depth_col_ix = list(range(11)) + [12]
     slr_value_cols = np.array(slr_depth_value_cols).take(slr_depth_col_ix).tolist()
@@ -549,12 +559,12 @@ async def test_create_xlsx_file_single_area(format):
     assert protected_areas_poly["Name"].values.tolist() == ["Talladega National Forest"]
     assert protected_areas_poly["Owner"].values.tolist() == ["USDA Forest Service"]
 
-    urban = reader.parse(sheet_name="Urban growth", skiprows=2)
+    urban = reader.parse(sheet_name="Urban growth", skiprows=3).dropna(axis=1)
     assert urban.columns.tolist() == ["Analysis unit", "Analysis area\n(acres)"] + urban_value_cols + urban_percent_cols
     # last column is nodata, omitted here
     assert np.allclose(urban.iloc[0][urban_value_cols].values.astype("float64"), results.urban_by_decade.iloc[0][:-1])
 
-    wildfire_risk = reader.parse(sheet_name="Wildfire likelihood", skiprows=2)
+    wildfire_risk = reader.parse(sheet_name="Wildfire likelihood", skiprows=3).dropna(axis=1)
     assert (
         wildfire_risk.columns.tolist()
         == ["Analysis unit", "Analysis area\n(acres)"] + wildfire_risk_value_cols + wildfire_risk_percent_cols
@@ -614,11 +624,7 @@ async def test_create_xlsx_file_multiple_areas_partial_overlap(format):
     assert len(details) == len(datasets)
     assert details["Name"].tolist() == [d["label"] for id, d in REPORT_DATASETS.items() if id in datasets]
 
-    metadata = reader.parse(sheet_name="Analysis metadata", header=None, skiprows=2)
-    assert len(metadata) == 3
-    assert metadata[1][0] == "Test area"
-
-    blueprint = reader.parse(sheet_name="Blueprint priority", skiprows=2)
+    blueprint = reader.parse(sheet_name="Blueprint priority", skiprows=3).dropna(axis=1, how="all")
     # when we have partial overlap, we have to update the label of the analysis area column
     assert (
         blueprint.columns.tolist()
@@ -638,7 +644,7 @@ async def test_create_xlsx_file_multiple_areas_partial_overlap(format):
     indicator_id = "t_imperiledamphibiansandreptiles"
     indicator = INDICATORS_INDEX[indicator_id]
     sheet_name = indicator.get("sheet_name") or indicator["label"]
-    indicator_sheet = reader.parse(sheet_name=sheet_name, skiprows=2)
+    indicator_sheet = reader.parse(sheet_name=sheet_name, skiprows=3).dropna(axis=1, how="all")
     indicator_value_cols = get_value_columns(indicator["values"])
     indicator_percent_cols = [col.replace("(acres)", "(percent)") for col in indicator_value_cols]
     assert (
@@ -660,7 +666,7 @@ async def test_create_xlsx_file_multiple_areas_partial_overlap(format):
         indicator_sheet.iloc[2][indicator_value_cols].values.astype("float64"), results[indicator_id].iloc[2]
     )
 
-    slr_depth = reader.parse(sheet_name="SLR - area flooded by ft of SLR", skiprows=2)
+    slr_depth = reader.parse(sheet_name="SLR - area flooded by ft of SLR", skiprows=3).dropna(axis=1, how="all")
     slr_depth_col_ix = list(range(11)) + [12]
     slr_value_cols = np.array(slr_depth_value_cols).take(slr_depth_col_ix).tolist()
     slr_depth_percent_cols = [col.replace("(acres)", "(percent)") for col in slr_value_cols]
@@ -728,7 +734,7 @@ async def test_create_xlsx_file_multiple_areas_partial_overlap(format):
         "",
     ]
 
-    urban = reader.parse(sheet_name="Urban growth", skiprows=2)
+    urban = reader.parse(sheet_name="Urban growth", skiprows=3).dropna(axis=1, how="all")
     assert (
         urban.columns.tolist()
         == [
@@ -745,7 +751,7 @@ async def test_create_xlsx_file_multiple_areas_partial_overlap(format):
     assert np.isclose(urban["Area within Southeast data extent\n(acres)"].iloc[1], 0.0)
     assert np.allclose(urban.iloc[2][urban_value_cols].values.astype("float64"), results.urban_by_decade.iloc[2][:-1])
 
-    wildfire_risk = reader.parse(sheet_name="Wildfire likelihood", skiprows=2)
+    wildfire_risk = reader.parse(sheet_name="Wildfire likelihood", skiprows=3).dropna(axis=1, how="all")
     assert (
         wildfire_risk.columns.tolist()
         == [
@@ -812,11 +818,7 @@ async def test_create_xlsx_file_multiple_areas(format):
     assert len(details) == len(datasets)
     assert details["Name"].tolist() == [d["label"] for id, d in REPORT_DATASETS.items() if id in datasets]
 
-    metadata = reader.parse(sheet_name="Analysis metadata", header=None, skiprows=2)
-    assert len(metadata) == 3
-    assert metadata[1][0] == "Test area"
-
-    blueprint = reader.parse(sheet_name="Blueprint priority", skiprows=2)
+    blueprint = reader.parse(sheet_name="Blueprint priority", skiprows=3).dropna(axis=1, how="all")
     assert (
         blueprint.columns.tolist()
         == ["Analysis unit", "Analysis area\n(acres)"] + blueprint_value_cols[::-1] + blueprint_percent_cols[::-1]
@@ -828,7 +830,7 @@ async def test_create_xlsx_file_multiple_areas(format):
     indicator_id = "t_imperiledamphibiansandreptiles"
     indicator = INDICATORS_INDEX[indicator_id]
     sheet_name = indicator.get("sheet_name") or indicator["label"]
-    indicator_sheet = reader.parse(sheet_name=sheet_name, skiprows=2)
+    indicator_sheet = reader.parse(sheet_name=sheet_name, skiprows=3).dropna(axis=1, how="all")
     indicator_value_cols = get_value_columns(indicator["values"])
     indicator_percent_cols = [col.replace("(acres)", "(percent)") for col in indicator_value_cols]
     assert (
@@ -843,7 +845,7 @@ async def test_create_xlsx_file_multiple_areas(format):
             indicator_sheet.iloc[i][indicator_value_cols].values.astype("float64"), results[indicator_id].iloc[i]
         )
 
-    slr_depth = reader.parse(sheet_name="SLR - area flooded by ft of SLR", skiprows=2)
+    slr_depth = reader.parse(sheet_name="SLR - area flooded by ft of SLR", skiprows=3).dropna(axis=1, how="all")
     slr_value_cols = slr_depth_value_cols
     slr_depth_percent_cols = [col.replace("(acres)", "(percent)") for col in slr_value_cols]
     assert (
@@ -894,7 +896,7 @@ async def test_create_xlsx_file_multiple_areas(format):
         "",
     ]
 
-    urban = reader.parse(sheet_name="Urban growth", skiprows=2)
+    urban = reader.parse(sheet_name="Urban growth", skiprows=3).dropna(axis=1, how="all")
     assert (
         urban.columns.tolist()
         == ["Analysis unit", "Analysis area\n(acres)", outside_data_extent_col]
@@ -910,7 +912,7 @@ async def test_create_xlsx_file_multiple_areas(format):
             results.urban_by_decade.iloc[i].take([len(urban_value_cols)] + list(range(len(urban_value_cols)))),
         )
 
-    wildfire_risk = reader.parse(sheet_name="Wildfire likelihood", skiprows=2)
+    wildfire_risk = reader.parse(sheet_name="Wildfire likelihood", skiprows=3).dropna(axis=1, how="all")
     assert (
         wildfire_risk.columns.tolist()
         == ["Analysis unit", "Analysis area\n(acres)", outside_data_extent_col]

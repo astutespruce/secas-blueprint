@@ -67,7 +67,7 @@
     "id":"f_caribbeanimperiledaquaticspecies",
     "filename":"CaribbeanImperiledAquaticSpecies.tif",
     "label":"Caribbean imperiled aquatic species ",
-    "sheet_name":"Caribbean imperiled aquatics",
+    "sheet_name":"Carib imperiled aquatic species",
     "description":"This indicator measures the number of aquatic animal Species of Greatest Conservation Need (SGCN) observed within each 12-digit HUC subwatershed in Puerto Rico and the U.S. Virgin Islands, including fish, shrimp, crabs, and crayfish. It captures patterns of rare and endemic aquatic species diversity. SGCN are identified in State Wildlife Action Plans as most in need of conservation action. This indicator originates from data compiled by the Southeast Aquatic Resources Partnership from university researchers. It applies to the floodplain predicted to be inundated by a 100-year flood (also known as the 1% annual chance flood), derived from the Federal Emergency Management Agency's National Flood Hazard Layer, and buffered flowlines representing other streams.",
     "values":[
       {
@@ -124,7 +124,7 @@
     "valueLabel":"Number of aquatic animal Species of Greatest Conservation Need (RSGCN) observed",
     "captionLabel":"Caribbean imperiled aquatic species ",
     "goodThreshold":null,
-    "url":"",
+    "url":"https://secas-fws.hub.arcgis.com/datasets/cbd5272920504b3daba64c8028134bb5",
     "subregions":[
       "Puerto Rico",
       "US Virgin Islands"
@@ -1003,7 +1003,7 @@
     "filename":"CaribbeanBeachHabitat.tif",
     "label":"Caribbean beach habitat",
     "sheet_name":"Carib beach habitat",
-    "description":"This indicator evaluates beach habitat for six species of birds and sea turtles that nest on beaches in the U.S. Caribbean (Wilson's plover, American oystercatcher, and hawksbill, leatherback, green, and loggerhead sea turtles). It includes beach locations, sea turtle nest observations, and predicted suitable habitat for birds and sea turtles. Beaches, especially those known to support beach-nesting species, are particularly important habitats due to their limited spatial extent and vulnerability to development and sea-level rise. This indicator combines multiple datasets from the Gap Analysis Project, State of the World's Sea Turtles, OpenStreetMap, and more.",
+    "description":"This indicator evaluates beach habitat for six species of birds and sea turtles that nest on beaches in the U.S. Caribbean (Wilson's plover, American oystercatcher, and hawksbill, leatherback, green, and loggerhead sea turtles). It includes beach locations, sea turtle nest observations, and predicted suitable habitat for birds and sea turtles. Beaches, especially those known to support beach-nesting species, are particularly important habitats due to their limited spatial extent and vulnerability to development and sea level rise. This indicator combines multiple datasets from the Gap Analysis Project, State of the World's Sea Turtles, OpenStreetMap, and more.",
     "values":[
       {
         "value":0,
@@ -1035,7 +1035,7 @@
     "filename":"CaribbeanCoastalShorelineCondition.tif",
     "label":"Caribbean coastal shoreline condition",
     "sheet_name":"Carib shoreline condition",
-    "description":"This indicator assesses shoreline alteration based on the presence of hardened structures like seawalls, groins, and riprap at the dynamic interface between land and water along the U.S. Caribbean coast. By restricting the natural movement of sediment, shoreline armoring increases erosion, prevents the inland migration of coastal ecosystems in response to sea-level rise, and degrades habitat for birds, sea turtles, fish, plants, and other species both on and offshore. This indicator originates from the National Oceanic and Atmospheric Administration's Continually Updated Shoreline Product.",
+    "description":"This indicator assesses shoreline alteration based on the presence of hardened structures like seawalls, groins, and riprap at the dynamic interface between land and water along the U.S. Caribbean coast. By restricting the natural movement of sediment, shoreline armoring increases erosion, prevents the inland migration of coastal ecosystems in response to sea level rise, and degrades habitat for birds, sea turtles, fish, plants, and other species both on and offshore. This indicator originates from the National Oceanic and Atmospheric Administration's Continually Updated Shoreline Product.",
     "values":[
       {
         "value":0,
@@ -1272,7 +1272,7 @@
     "filename":"CoastalShorelineCondition.tif",
     "label":"Coastal shoreline condition",
     "sheet_name":"",
-    "description":"This indicator assesses shoreline condition based on the presence of hardened structures like jetties, groins, and riprap, as well as other human development. By restricting the natural movement of sediment, shoreline armoring increases erosion, prevents the inland migration of coastal ecosystems in response to sea-level rise, and degrades habitat for birds, sea turtles, fish, plants, and other species both on and offshore. Natural shorelines in harder-to-develop coastal areas receive the highest shoreline condition scores, while hardened shorelines receive the lowest scores. This indicator originates from the National Oceanic and Atmospheric Administration's Environmental Sensitivity Index dataset.",
+    "description":"This indicator assesses shoreline condition based on the presence of hardened structures like jetties, groins, and riprap, as well as other human development. By restricting the natural movement of sediment, shoreline armoring increases erosion, prevents the inland migration of coastal ecosystems in response to sea level rise, and degrades habitat for birds, sea turtles, fish, plants, and other species both on and offshore. Natural shorelines in harder-to-develop coastal areas receive the highest shoreline condition scores, while hardened shorelines receive the lowest scores. This indicator originates from the National Oceanic and Atmospheric Administration's Environmental Sensitivity Index dataset.",
     "values":[
       {
         "value":0,
@@ -1494,7 +1494,7 @@
     "valueLabel":"",
     "captionLabel":"Gulf marine birds",
     "goodThreshold":null,
-    "url":"",
+    "url":"https://secas-fws.hub.arcgis.com/datasets/c4cc67c4979f41ee92631fabc27ef869",
     "subregions":[
       "East Gulf Coastal Plain",
       "Florida Peninsula",
@@ -1734,7 +1734,7 @@
     "filename":"ResilientCoastalSites.tif",
     "label":"Resilient coastal sites",
     "sheet_name":"",
-    "description":"This indicator depicts the capacity of coastal habitats to migrate to adjacent lowlands in order to sustain biodiversity and natural services under increasing inundation from sea-level rise. It is based on the physical and condition characteristics of current tidal complexes, their predicted migration space, and surrounding buffer areas. These characteristics include marsh complex size, shared edge with migration space, sediment balance, water quality, natural landcover, landform diversity, and more. This indicator originates from The Nature Conservancy's Resilient Coastal Sites project.",
+    "description":"This indicator depicts the capacity of coastal habitats to migrate to adjacent lowlands in order to sustain biodiversity and natural services under increasing inundation from sea level rise. It is based on the physical and condition characteristics of current tidal complexes, their predicted migration space, and surrounding buffer areas. These characteristics include marsh complex size, shared edge with migration space, sediment balance, water quality, natural landcover, landform diversity, and more. This indicator originates from The Nature Conservancy's Resilient Coastal Sites project.",
     "values":[
       {
         "value":0,
@@ -1898,7 +1898,7 @@
     "filename":"StableCoastalWetlands.tif",
     "label":"Stable coastal wetlands",
     "sheet_name":"",
-    "description":"This indicator uses remote sensing to calculate the unvegetated-vegetated ratio of tidal wetlands, which compares how much of a wetland is not covered by plants (e.g., sediment, rocks, open water) to how much is covered by plants. Marshes that maintain a higher proportion of vegetation tend to be more stable and resilient to threats like sea-level rise, erosion, and coastal development. This ratio, and how it changes over time, is a good surrogate for salt marsh degradation processes like sediment loss and conversion to open water. This indicator originates from a U.S. Geological Survey project on an unvegetated to vegetated ratio for coastal wetlands.",
+    "description":"This indicator uses remote sensing to calculate the unvegetated-vegetated ratio of tidal wetlands, which compares how much of a wetland is not covered by plants (e.g., sediment, rocks, open water) to how much is covered by plants. Marshes that maintain a higher proportion of vegetation tend to be more stable and resilient to threats like sea level rise, erosion, and coastal development. This ratio, and how it changes over time, is a good surrogate for salt marsh degradation processes like sediment loss and conversion to open water. This indicator originates from a U.S. Geological Survey project on an unvegetated to vegetated ratio for coastal wetlands.",
     "values":[
       {
         "value":0,
@@ -2429,7 +2429,7 @@
     "valueLabel":"Fire regime departure for fire-adapted areas under current conditions vs. recent past (1984-2024):",
     "captionLabel":"fire frequency",
     "goodThreshold":5,
-    "url":"",
+    "url":"https://secas-fws.hub.arcgis.com/datasets/3f19a2af24aa4a54b350896908911927",
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -2706,7 +2706,7 @@
     "valueLabel":"Importance for range-restricted species",
     "captionLabel":"imperiled amphibians & reptiles",
     "goodThreshold":null,
-    "url":"",
+    "url":"https://secas-fws.hub.arcgis.com/datasets/2f5a11a7d60445629530c75e025ea4f7",
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -2769,7 +2769,7 @@
     "valueLabel":"Importance for range-restricted species",
     "captionLabel":"imperiled mammals",
     "goodThreshold":null,
-    "url":"",
+    "url":"https://secas-fws.hub.arcgis.com/datasets/935a8c5af5484c1dabee6352809453ea",
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -2911,7 +2911,7 @@
     "id":"t_mississippialluvialvalleyforestbirdsprotection",
     "filename":"MississippiAlluvialValleyForestBirds_Protection.tif",
     "label":"Mississippi Alluvial Valley forest birds - protection",
-    "sheet_name":"MAV forest birds – protect",
+    "sheet_name":"MAV forest birds - protect",
     "description":"This indicator prioritizes areas for new land protection within the Mississippi Alluvial Valley (MAV) based on benefits to forest breeding birds that need large interior cores of bottomland hardwood habitat (Swainson's warbler, cerulean warbler, swallow-tailed kite). The model considers core size, the amount of existing protected land within a forest patch, proximity to reforestation priorities, and risk of conversion to agriculture based on flooding frequency. The highest scores go to drier, unprotected forest patches with cores at least 2,000 ha (~5,000 ac) in size that are adjacent to complementary reforestation priority areas also identified by the Lower Mississippi Valley Joint Venture (LMVJV). This indicator originates from the LMVJV MAV forest breeding bird protection priorities.",
     "values":[
       {

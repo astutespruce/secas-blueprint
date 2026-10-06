@@ -1,13 +1,6 @@
 from math import ceil
 
-from openpyxl.styles import (
-    Alignment,
-    Border,
-    Font,
-    NamedStyle,
-    PatternFill,
-    Side,
-)
+from openpyxl.styles import Alignment, Border, Color, Font, NamedStyle, PatternFill, Side
 from openpyxl.utils.cell import get_column_letter
 
 # Guess at how many characters fit into a column width measurement
@@ -20,12 +13,8 @@ alignment_left_wrap = Alignment(horizontal="left", wrap_text=True)
 alignment_center_wrap = Alignment(horizontal="center", wrap_text=True)
 
 default_header_border = Border(
+    top=Side(border_style="medium", color="000000"),
     bottom=Side(border_style="medium", color="000000"),
-)
-default_cell_border = Border(
-    bottom=Side(border_style="thin", color="AAAAAA"),
-    left=Side(border_style="thin", color="DDDDDD"),
-    right=Side(border_style="thin", color="DDDDDD"),
 )
 
 # Note: all cells are setup to wrap text
@@ -49,86 +38,56 @@ table_caption_style = NamedStyle(
     alignment=Alignment(vertical="top", horizontal="left", wrap_text=True),
 )
 
+acres_percent_header_style = NamedStyle(
+    name="Acres and Percent Header Style",
+    alignment=Alignment(horizontal="center", vertical="center", wrap_text=True),
+    font=Font(bold=True),
+    border=Border(
+        top=Side(border_style="medium", color="000000"),
+        left=Side(border_style="thin", color="000000"),
+        bottom=Side(border_style="medium", color="000000"),
+        right=Side(border_style="thin", color="000000"),
+    ),
+    fill=PatternFill("solid", "eceeef"),
+)
+
+
 good_condition_header_style = NamedStyle(
     name="Good Condition Header Style",
-    alignment=alignment_center_wrap,
+    alignment=Alignment(horizontal="center", vertical="center", wrap_text=True),
+    font=Font(italic=True, color="FFFFFF", bold=True),
     border=Border(
-        top=Side(border_style="thin", color="000000"),
+        top=Side(border_style="medium", color="000000"),
         bottom=Side(border_style="thin", color="000000"),
     ),
-    fill=PatternFill("solid", "EEEEEE"),
+    fill=PatternFill("solid", "333333"),
 )
 
-
-value_style = NamedStyle(
-    name="Value Style",
-    alignment=alignment_left_wrap,
-    border=default_cell_border,
+not_good_condition_header_style = NamedStyle(
+    name="Not Good Condition Header Style",
+    alignment=Alignment(horizontal="center", vertical="center", wrap_text=True),
+    font=Font(italic=True, color="333333"),
+    border=Border(
+        top=Side(border_style="medium", color="000000"),
+        bottom=Side(border_style="thin", color="000000"),
+    ),
+    fill=PatternFill("solid", "f9f9fa"),
 )
 
-even_row_bg = PatternFill("solid", fgColor="00F6F6F6")
+value_style = NamedStyle(name="Value Style", alignment=alignment_left_wrap, border=None)
 
-analysis_unit_divider = Border(
-    bottom=Side(border_style="medium", color="AAAAAA"),
-    left=Side(border_style="thin", color="DDDDDD"),
-    right=Side(border_style="thin", color="DDDDDD"),
+divider_col_style = NamedStyle(
+    name="Divider Column Style",
+    border=Border(
+        left=Side(border_style="thin", color="000000"),
+        right=Side(border_style="thin", color="000000"),
+    ),
 )
-
-description_font = Font(color="999999")
-
-
-def set_cell_styles(ws, breaks=None, area_columns=None, percent_columns=None, add_percent_divider=False):
-    area_columns = area_columns or []
-    percent_columns = percent_columns or []
-
-    for col_idx, col in enumerate(ws.columns):
-        col[0].style = center_header_style
-
-        for i, cell in enumerate(col[1:]):
-            cell.style = value_style
-            value = cell.value
-            is_int = isinstance(value, (float, int)) and int(value) == value
-
-            if col_idx in area_columns:
-                if is_int:
-                    cell.number_format = "#,##0"
-                else:
-                    cell.number_format = "#,##0.00"
-            elif col_idx in percent_columns:
-                if is_int:
-                    cell.number_format = "0%"
-                else:
-                    cell.number_format = "0.00%"
-
-            if i % 2 == 1:
-                cell.fill = even_row_bg
-
-    ws["A1"].style = left_header_style
-
-    if breaks is not None:
-        # add a stronger line between analysis units
-        for col in ws.columns:
-            for line in breaks:
-                col[line].border = analysis_unit_divider
-
-    if add_percent_divider and len(percent_columns) > 0:
-        # add a line between areas and percents
-        percent_start_col = get_column_letter(percent_columns[0] + 1)
-        for i in range(1, ws.max_row + 1):
-            cell = ws[f"{percent_start_col}{i}"]
-            cell.border = Border(
-                left=Side(border_style="thick", color="666666"), bottom=cell.border.bottom, right=cell.border.right
-            )
-
-
-def set_column_widths(ws, widths):
-    for i, width in enumerate(widths):
-        letter = get_column_letter(i + 1)
-        ws.column_dimensions[letter].width = width
 
 
 def add_caption(ws, table_counter, caption):
-    """Add a table caption followed by a blank line
+    """Add a table caption in the first cell of the table, and merge all cells
+    of that row together.
 
     Parameters
     ----------
@@ -136,8 +95,6 @@ def add_caption(ws, table_counter, caption):
     table_counter : int
     caption : str
     """
-
-    ws.insert_rows(idx=1, amount=2)
 
     cell = ws["A1"]
     cell.value = f"Table {table_counter}: {caption}"
@@ -155,7 +112,43 @@ def add_caption(ws, table_counter, caption):
     ws.row_dimensions[1].height = max(20, total_line_height)
 
 
-def add_good_condition_row(ws, offset, num_good_values, num_not_good_values, num_outside_cols):
+def add_acres_percent_header(ws, row_idx: int, area_columns: list[int], percent_columns: list[int]):
+    """Add a header row for the acres and percent sections
+
+    Parameters
+    ----------
+    ws : Worksheet
+    row_idx : int
+        1-based row index where header will be set
+    area_columns : list[int] | None, optional
+        0-based indexes of area columns within the columns of the dataframe.
+    percent_columns : list[int] | None, optional
+        0-based indexes of percent value columns within the columns of the dataframe.
+    """
+    ws.row_dimensions[row_idx].height = 32
+
+    start_cell = f"{get_column_letter(area_columns[0] + 1)}{row_idx}"
+    cell = ws[start_cell]
+    cell.value = "ACRES"
+    cell.style = acres_percent_header_style
+    ws.merge_cells(f"{start_cell}:{get_column_letter(area_columns[-1] + 1)}{row_idx}")
+
+    start_cell = f"{get_column_letter(percent_columns[0] + 1)}{row_idx}"
+    cell = ws[start_cell]
+    cell.value = "PERCENT"
+    cell.style = acres_percent_header_style
+    ws.merge_cells(f"{start_cell}:{get_column_letter(percent_columns[-1])}{row_idx}")
+
+    # set gap column between acres and percents
+    ws[f"{get_column_letter(percent_columns[0])}{row_idx}"].style = divider_col_style
+
+    # set borders for preceding columns
+    for col_idx in range(1, area_columns[0] + 1):
+        cell = ws[f"{get_column_letter(col_idx)}{row_idx}"]
+        cell.border = default_header_border
+
+
+def add_good_condition(ws, row_idx: int, info: dict):
     """Add header row with merged cells for not in good condition / in good condition
 
     Good conditions are only defined for indicators, which always have columns
@@ -164,65 +157,56 @@ def add_good_condition_row(ws, offset, num_good_values, num_not_good_values, num
     Parameters
     ----------
     ws : Worksheet
-    offset : int
-        number of columns to the left of the outside / value columns
-    num_good_values : int
-        number of values in good condition
-    num_not_good_values : int
-        number of values not in good condition
-    num_outside_cols : int
-        number of columns for area outside extent / dataset
+    row_idx : int
+        1-based row index where row will be set
+    info : dict
+        info for good condition columns
     """
-    start_row = 3
 
-    ws.insert_rows(idx=start_row)
-    max_row = ws.max_row
+    offset = info["offset"]
+    num_good_values = info["num_good_values"]
+    num_not_good_values = info["num_not_good_values"]
+    num_extra_columns = info["num_extra_columns"]
+
+    ws.row_dimensions[row_idx].height = 24
 
     num_value_cols = num_good_values + num_not_good_values
-    num_cols = num_value_cols + num_outside_cols
+    num_cols = num_value_cols + num_extra_columns
 
     to_merge = []
 
     # NOTE: translate into 1-based indexes for specifying columns
-    for group_index, start_col in enumerate([offset + 1, offset + num_cols + 1]):
-        good_start_col = get_column_letter(start_col + num_outside_cols)
-        good_end_col = get_column_letter(start_col + num_outside_cols + num_good_values - 1)
-        cell = ws[f"{good_start_col}{start_row}"]
-        cell.value = "In good condition"
+    # NOTE: these always have a spacer column before percents
+    for start_col in [offset + 1, offset + num_cols + 2]:
+        good_start_col = get_column_letter(start_col + num_extra_columns)
+        good_end_col = get_column_letter(start_col + num_extra_columns + num_good_values - 1)
+        cell = ws[f"{good_start_col}{row_idx}"]
+        cell.value = "← In good condition"
         cell.style = good_condition_header_style
         if good_start_col != good_end_col:
-            to_merge.append(f"{good_start_col}{start_row}:{good_end_col}{start_row}")
+            to_merge.append(f"{good_start_col}{row_idx}:{good_end_col}{row_idx}")
 
-        not_good_start_col = get_column_letter(start_col + num_outside_cols + num_good_values)
-        not_good_end_col = get_column_letter(start_col + num_outside_cols + num_good_values + num_not_good_values - 1)
-        cell = ws[f"{not_good_start_col}{start_row}"]
-        cell.value = "Not in good condition"
-        cell.style = good_condition_header_style
+        not_good_start_col = get_column_letter(start_col + num_extra_columns + num_good_values)
+        not_good_end_col = get_column_letter(start_col + num_extra_columns + num_good_values + num_not_good_values - 1)
+        cell = ws[f"{not_good_start_col}{row_idx}"]
+        cell.value = "Not in good condition →"
+        cell.style = not_good_condition_header_style
         if not_good_start_col != not_good_end_col:
-            to_merge.append(f"{not_good_start_col}{start_row}:{not_good_end_col}{start_row}")
+            to_merge.append(f"{not_good_start_col}{row_idx}:{not_good_end_col}{row_idx}")
 
         # set styling before merging cells
-        for row in range(start_row, max_row + 1):
+        for row in range(row_idx, ws.max_row + 1):
             # add divider between good / not good
             cell = ws[f"{not_good_start_col}{row}"]
             cell.border = Border(
-                top=Side(border_style="thin", color="000000") if row == start_row else None,
-                left=Side(border_style="medium", color="666666"),
+                top=cell.border.top,
+                left=Side(border_style="thin", color="666666"),
                 bottom=cell.border.bottom,
                 right=cell.border.right,
             )
 
-            # add divider between acres and percents
-            if group_index > 0:
-                cell = ws[f"{get_column_letter(start_col)}{row}"]
-                cell.border = Border(
-                    top=Side(border_style="thin", color="000000")
-                    if row == start_row and start_col == good_start_col
-                    else None,
-                    left=Side(border_style="thick", color="666666"),
-                    bottom=cell.border.bottom,
-                    right=cell.border.right,
-                )
+        # set gap column between acres and percents
+        ws[f"{get_column_letter(offset + num_cols + 1)}{row_idx}"].style = divider_col_style
 
     for merge_range in to_merge:
         ws.merge_cells(merge_range)

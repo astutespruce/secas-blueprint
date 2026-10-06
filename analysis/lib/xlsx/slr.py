@@ -1,7 +1,7 @@
 import pandas as pd
 
 from analysis.constants import SLR_DEPTH, SLR_DEPTH_VALUES, SLR_NODATA_VALUES, SLR_PROJ, SLR_PROJ_SCENARIOS, SLR_YEARS
-from analysis.lib.xlsx.style import add_caption, set_cell_styles, set_column_widths
+from analysis.lib.xlsx.writer import write_excel
 
 depth_value_columns = [f"Inundated at {v['label']}\n(acres)" for v in SLR_DEPTH_VALUES] + [
     f"{v['label']}\n(acres)" for v in SLR_NODATA_VALUES
@@ -17,7 +17,6 @@ def add_slr_depth_sheet(
     area_col_width: float,
     area_label: str,
     outside_area_label: str,
-    table_counter: int,
 ):
     """Add SLR inundation depth sheet.
 
@@ -33,11 +32,8 @@ def add_slr_depth_sheet(
         name of analysis area acres column
     outside_area_label : str
         name of outside analysis area acres column
-    table_counter : int
     """
     dataset = SLR_DEPTH
-    sheet_name = dataset["sheet_name"]
-    caption = dataset["caption"] + "."
     nodata_label = "Outside extent of this dataset\n(acres)"
 
     slr = df[["rasterized_acres", "overlap_acres", "outside_extent_acres", "outside_extent_percent"]].join(
@@ -96,37 +92,30 @@ def add_slr_depth_sheet(
         }
     ).reset_index()
 
-    slr.to_excel(xlsx, sheet_name=sheet_name, index=False)
-    ws = xlsx.sheets[sheet_name]
-
-    set_column_widths(ws, [name_col_width, area_col_width] + ([18] * (len(slr.columns) - 2)))
-
     area_col_offset = 1
     num_area_cols = num_value_cols + int(has_area_outside_extent) + int(has_area_outside_dataset) + 1
-
-    set_cell_styles(
-        ws,
-        area_columns=range(area_col_offset, area_col_offset + num_area_cols),
-        percent_columns=range(area_col_offset + num_area_cols, area_col_offset + num_area_cols + num_area_cols),
+    column_widths = [name_col_width, area_col_width] + ([18] * (len(slr.columns) - 2))
+    area_columns = range(area_col_offset, area_col_offset + num_area_cols)
+    percent_columns = range(area_col_offset + num_area_cols, area_col_offset + num_area_cols + num_area_cols)
+    write_excel(
+        xlsx,
+        slr,
+        sheet_name=dataset["sheet_name"],
+        caption=dataset["caption"] + ".",
+        column_widths=column_widths,
+        area_columns=area_columns,
+        percent_columns=percent_columns,
         add_percent_divider=True,
     )
 
-    add_caption(ws, table_counter, caption)
-
 
 def add_slr_projection_sheet(
-    xlsx: pd.ExcelWriter,
-    df: pd.DataFrame,
-    name_col_width: float,
-    area_col_width: float,
-    area_label: str,
-    table_counter: int,
+    xlsx: pd.ExcelWriter, df: pd.DataFrame, name_col_width: float, area_col_width: float, area_label: str
 ):
     """Add sheet with decadal projections for each analysis unit, only if
     there is SLR at 10ft within the analysis unit.
     """
     dataset = SLR_PROJ
-    sheet_name = dataset["sheet_name"]
     caption = dataset["caption"] + "."
     value_label = dataset["valueLabel"]
     caption += f"\nValues show {value_label[0].lower()}{value_label[1:]}."
@@ -154,10 +143,15 @@ def add_slr_projection_sheet(
         columns=[df.index.name, area_label] + proj_value_columns,
     )
 
-    slr.to_excel(xlsx, sheet_name=sheet_name, index=False)
-    ws = xlsx.sheets[sheet_name]
-    set_column_widths(ws, [name_col_width, area_col_width, 10, 18] + ([12] * len(SLR_YEARS)))
-    # SLR values are not really areas but we want 2 decimal places
-    set_cell_styles(ws, breaks=breaks, area_columns=[1] + list(range(4, len(SLR_YEARS) + 5)))
-
-    add_caption(ws, table_counter, caption)
+    column_widths = [name_col_width, area_col_width, 10, 18] + ([12] * len(SLR_YEARS))
+    area_columns = [1] + list(range(4, len(SLR_YEARS) + 5))
+    write_excel(
+        xlsx,
+        slr,
+        sheet_name=dataset["sheet_name"],
+        caption=caption,
+        column_widths=column_widths,
+        area_columns=area_columns,
+        # only include breaks if they are not incremental
+        breaks=None if breaks == list(range(len(df))) else breaks,
+    )

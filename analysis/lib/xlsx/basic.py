@@ -1,13 +1,8 @@
 import pandas as pd
 
 from analysis.constants import INDICATORS_INDEX
-from analysis.lib.xlsx.style import (
-    CHAR_PER_WIDTH_UNIT,
-    add_caption,
-    add_good_condition_row,
-    set_cell_styles,
-    set_column_widths,
-)
+from analysis.lib.xlsx.style import CHAR_PER_WIDTH_UNIT
+from analysis.lib.xlsx.writer import write_excel
 
 
 def get_value_columns(values):
@@ -21,7 +16,6 @@ def add_basic_results_sheet(
     name_col_width: float,
     area_label: str,
     outside_area_label: str,
-    table_counter: int,
     get_value_order=None,
 ):
     """Add a sheet for one of the Blueprint datasets (Blueprint, corridors, indicators)
@@ -39,8 +33,6 @@ def add_basic_results_sheet(
         name of analysis area acres column
     outside_area_label : str
         name of outside analysis area acres column
-    table_counter : int
-        table counter for this table, 1-based
     get_value_order : function, optional (default: None)
         if defined, function that returns value columns in correct order
     """
@@ -115,35 +107,35 @@ def add_basic_results_sheet(
         }
     )
 
-    tmp.reset_index().to_excel(xlsx, sheet_name=sheet_name, index=False)
-
-    ws = xlsx.sheets[sheet_name]
-
-    set_column_widths(ws, [name_col_width] + ([col_width] * len(tmp.columns)))
-
-    area_col_offset = 1
-    num_area_cols = len(value_columns) + int(has_area_outside_extent) + int(has_area_outside_dataset) + 1
-
-    set_cell_styles(
-        ws,
-        area_columns=range(area_col_offset, area_col_offset + num_area_cols),
-        percent_columns=range(area_col_offset + num_area_cols, area_col_offset + num_area_cols + num_area_cols),
-        add_percent_divider=True,
-    )
-
-    add_caption(ws, table_counter, caption)
-
+    good_condition_info = None
     if dataset["id"] in INDICATORS_INDEX and good_threshold:
         # NOTE: this only applies to indicators, which are always in greatest to least order
 
-        offset = 2  # area name and overlap area
         num_good_values = len([v for v in values if v["value"] >= good_threshold])
         num_not_good_values = len(values) - num_good_values
 
-        add_good_condition_row(
-            ws,
-            offset,
-            num_good_values,
-            num_not_good_values,
-            num_outside_cols=int(has_area_outside_extent) + int(has_area_outside_dataset),
-        )
+        good_condition_info = {
+            "offset": 2,  # area name and overlap area,
+            "num_good_values": num_good_values,
+            "num_not_good_values": num_not_good_values,
+            "num_extra_columns": int(has_area_outside_extent) + int(has_area_outside_dataset),
+        }
+
+    column_widths = [name_col_width] + ([col_width] * len(tmp.columns))
+
+    area_col_offset = 1
+    num_area_cols = len(value_columns) + int(has_area_outside_extent) + int(has_area_outside_dataset) + 1
+    area_columns = range(area_col_offset, area_col_offset + num_area_cols)
+    percent_columns = range(area_col_offset + num_area_cols, area_col_offset + num_area_cols + num_area_cols)
+
+    write_excel(
+        xlsx,
+        tmp.reset_index(),
+        sheet_name=sheet_name,
+        caption=caption,
+        column_widths=column_widths,
+        area_columns=area_columns,
+        percent_columns=percent_columns,
+        add_percent_divider=True,
+        good_condition_info=good_condition_info,
+    )

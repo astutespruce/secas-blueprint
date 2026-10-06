@@ -7,7 +7,8 @@ from pixelmatch.contrib.PIL import pixelmatch
 
 
 def assert_image_matches(img_data, expected_filename, tolerance=0):
-    """Compare image bytes to expected image file
+    """Compare image bytes to expected image file.  Raises a pytest error if
+    images do not sufficiently match.
 
     Parameters
     ----------
@@ -15,10 +16,6 @@ def assert_image_matches(img_data, expected_filename, tolerance=0):
     expected_filename : str
     tolerance : int
         number of pixels that are allowed to be different
-
-    Returns
-    -------
-    True if images match exactly, False otherwise
     """
     buffer = BytesIO(img_data)
     actual = Image.open(buffer)
@@ -27,7 +24,7 @@ def assert_image_matches(img_data, expected_filename, tolerance=0):
     actual.save(f"/tmp/{Path(expected_filename).name}")
 
     if actual.size != expected.size:
-        return False
+        pytest.fail("image size does not match")
 
     diff = pixelmatch(actual, expected, includeAA=False, threshold=0.1285)
 

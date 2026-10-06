@@ -89,9 +89,11 @@ with rasterio.open(src_dir / "blueprint/SEBlueprintExtent2025.tif") as src:
     nodata = int(src.nodata)
     data = src.read(1)
 
-    # # uncomment to recalculate
+    # ruff: disable[ERA001]
+    # uncomment to recalculate extent window
     # window = windows.get_data_window(data, nodata=nodata)
     # print(window)
+    # ruff: enable[ERA001]
 
     window = windows.Window(col_off=901, row_off=901, width=147307, height=71439)
     transform = windows.transform(window, src.transform)
@@ -196,7 +198,6 @@ with rasterio.open(src_dir / "blueprint/SEBlueprintExtent2025.tif") as src:
 
 
 ### Extract SECAS states
-# print("Extracting states...")
 state_list = ",".join(f"'{state}'" for state in SECAS_STATES)
 states = (
     read_dataframe(
