@@ -2426,7 +2426,7 @@
         "color":"#FE5110"
       }
     ],
-    "valueLabel":"Fire regime departure for fire-adapted areas under current conditions vs. recent past (1984-2024):",
+    "valueLabel":"How well fire-adapted areas match their historic fire regime under current conditions vs. recent past (1984-2024)",
     "captionLabel":"fire frequency",
     "goodThreshold":5,
     "url":"https://secas-fws.hub.arcgis.com/datasets/3f19a2af24aa4a54b350896908911927",

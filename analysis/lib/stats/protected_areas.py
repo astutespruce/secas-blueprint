@@ -21,15 +21,16 @@ BINS = range(len(PROTECTED_AREAS["values"]))
 LABELS = {e["value"]: e["label"] for e in PROTECTED_AREAS["values"]}
 
 
-def extract_protected_areas_in_aoi(df, use_bbox=False):
+def extract_protected_areas_in_aoi(df, use_mask=False):
     """Extract intersection with protected areas data
 
         Parameters
         ----------
     df : GeoDataFrame
         area of interest
-    use_bbox : bool, optional (default: False)
-        if True, will filter protected areas by bounds of df when reading features
+    use_mask : bool, optional (default: False)
+        if True, will filter protected areas by mask constructed from envelopes of
+        features in df
 
         Returns
         -------
@@ -42,12 +43,17 @@ def extract_protected_areas_in_aoi(df, use_bbox=False):
 
     index_name = df.index.name or "index"
 
+    if use_mask:
+        tmp = df.explode(ignore_index=False, index_parts=False)
+        # use union of individual area bounding boxes to read features
+        read_mask = shapely.union_all(shapely.envelope(tmp.geometry.values))
+    else:
+        read_mask = None
+
+    # NOTE: pyogrio does not currently work properly for use_arrow=True if the
+    # mask does not overlap and returns no features, so we can't use it here.
     protected_areas = read_dataframe(
-        boundary_filename,
-        columns=columns + ["geometry"],
-        bbox=tuple(df.total_bounds) if use_bbox else None,
-        # TODO: enable use_arrow once fixed in pyogrio
-        use_arrow=not use_bbox,
+        boundary_filename, columns=columns + ["geometry"], mask=read_mask, use_arrow=not read_mask
     )
 
     if len(protected_areas) == 0:
@@ -157,7 +163,7 @@ def summarize_protected_areas_in_aoi(rasterized_geometry, df):
     protected_areas = []
     num_protected_areas = 0
 
-    protected_areas = extract_protected_areas_in_aoi(df, use_bbox=True)
+    protected_areas = extract_protected_areas_in_aoi(df, use_mask=True)
     if protected_areas is not None:
         # only list areas >= 1 acre
         by_area = (
@@ -318,7 +324,7 @@ def summarize_protected_areas_by_units(df, units_grid, out_dir):
     # intersect with polygons
     tmp = df.loc[df.index.isin(protected_areas.loc[protected_areas.protected_areas_1 > 0].index.values)].copy()
 
-    protected_areas_list = extract_protected_areas_in_aoi(tmp, use_bbox=False)
+    protected_areas_list = extract_protected_areas_in_aoi(tmp, use_mask=False)
     index_name = df.index.name or "index"
     protected_areas_list = (
         protected_areas_list[protected_areas_list.acres >= 1]
