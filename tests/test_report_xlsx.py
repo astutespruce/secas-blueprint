@@ -462,7 +462,7 @@ async def test_create_xlsx_file_single_area(format):
     )
     assert acres_percent_header.values[0].tolist() == ["ACRES", "PERCENT"]
 
-    blueprint = reader.parse(sheet_name="Blueprint priority", skiprows=3).dropna(axis=1)
+    blueprint = reader.parse(sheet_name="Blueprint priority", skiprows=3).dropna(axis=1, how="all")
     assert (
         blueprint.columns.tolist()
         == ["Analysis unit", "Analysis area\n(acres)"] + blueprint_value_cols[::-1] + blueprint_percent_cols[::-1]
@@ -502,7 +502,7 @@ async def test_create_xlsx_file_single_area(format):
         "Not in good condition →",
     ]
 
-    indicator_sheet = reader.parse(sheet_name=sheet_name, skiprows=4).dropna(axis=1)
+    indicator_sheet = reader.parse(sheet_name=sheet_name, skiprows=4).dropna(axis=1, how="all")
     indicator_value_cols = get_value_columns(indicator["values"])
     indicator_percent_cols = [col.replace("(acres)", "(percent)") for col in indicator_value_cols]
     assert (

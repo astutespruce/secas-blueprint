@@ -2,7 +2,7 @@
 	import sourceSansPro from '@fontsource/source-sans-pro/files/source-sans-pro-latin-400-normal.woff2?url'
 	import sourceSansProBold from '@fontsource/source-sans-pro/files/source-sans-pro-latin-900-normal.woff2?url'
 
-	import { browser } from '$app/environment'
+	import { browser } from '$app/env'
 	import { GOOGLE_ANALYTICS_ID } from '$lib/env'
 
 	import '../app.css'
