@@ -14,12 +14,10 @@ def add_basic_results_sheet(
     df: pd.DataFrame,
     dataset: dict,
     name_col_width: float,
-    area_label: str,
     outside_area_label: str,
     get_value_order=None,
 ):
-    """Add a sheet for one of the Blueprint datasets (Blueprint, corridors, indicators)
-    or other simple raster results dataset.
+    """Add a sheet for one of the Blueprint datasets or other simple raster results dataset.
 
     Parameters
     ----------
@@ -29,8 +27,6 @@ def add_basic_results_sheet(
         dataset object with info
     name_col_width : float
         width of name column
-    area_label : str
-        name of analysis area acres column
     outside_area_label : str
         name of outside analysis area acres column
     get_value_order : function, optional (default: None)
@@ -82,7 +78,7 @@ def add_basic_results_sheet(
         tmp[percent_col] = tmp[value_col] / tmp.rasterized_acres
 
     tmp = tmp[
-        ["overlap_acres", "outside_extent_acres", "outside_dataset_acres"]
+        ["outside_extent_acres", "outside_dataset_acres"]
         + value_columns
         + ["outside_extent_percent", "outside_dataset_percent"]
         + percent_columns
@@ -99,7 +95,6 @@ def add_basic_results_sheet(
 
     tmp = tmp.rename(
         columns={
-            "overlap_acres": area_label,
             "outside_extent_acres": outside_area_label,
             "outside_extent_percent": outside_area_label.replace("(acres)", "(percent)"),
             "outside_dataset_acres": nodata_label,
@@ -115,7 +110,6 @@ def add_basic_results_sheet(
         num_not_good_values = len(values) - num_good_values
 
         good_condition_info = {
-            "offset": 2,  # area name and overlap area,
             "num_good_values": num_good_values,
             "num_not_good_values": num_not_good_values,
             "num_extra_columns": int(has_area_outside_extent) + int(has_area_outside_dataset),
@@ -123,10 +117,9 @@ def add_basic_results_sheet(
 
     column_widths = [name_col_width] + ([col_width] * len(tmp.columns))
 
-    area_col_offset = 1
     num_area_cols = len(value_columns) + int(has_area_outside_extent) + int(has_area_outside_dataset) + 1
-    area_columns = range(area_col_offset, area_col_offset + num_area_cols)
-    percent_columns = range(area_col_offset + num_area_cols, area_col_offset + num_area_cols + num_area_cols)
+    area_columns = list(range(num_area_cols))
+    percent_columns = list(range(num_area_cols, num_area_cols + num_area_cols))
 
     write_excel(
         xlsx,

@@ -45,11 +45,6 @@ def create_report(df: pd.DataFrame, datasets: set[str], name: str | None = None)
     )
     area_col_width = max(df.overlap_acres.apply(lambda x: len("{x:,.2f}")).max() * CHAR_PER_WIDTH_UNIT, 18)
 
-    area_label = (
-        f"Area within {ANALYSIS_REGION_NAME} data extent\n(acres)"
-        if has_area_outside_region
-        else "Analysis area\n(acres)"
-    )
     outside_area_label = f"Area outside {ANALYSIS_REGION_NAME} data extent\n(acres)"
 
     ### Create XLSX file and write to memory buffer
@@ -73,7 +68,6 @@ def create_report(df: pd.DataFrame, datasets: set[str], name: str | None = None)
                     df,
                     dataset,
                     name_col_width,
-                    area_label=area_label,
                     outside_area_label=outside_area_label,
                     get_value_order=get_value_order.get(dataset_id, None),
                 )
@@ -85,27 +79,13 @@ def create_report(df: pd.DataFrame, datasets: set[str], name: str | None = None)
                 add_protected_areas_poly_sheet(xlsx, df, name_col_width, area_col_width)
 
             elif dataset_id == SLR_DEPTH["id"]:
-                add_slr_depth_sheet(
-                    xlsx,
-                    df,
-                    name_col_width,
-                    area_col_width,
-                    area_label=area_label,
-                    outside_area_label=outside_area_label,
-                )
+                add_slr_depth_sheet(xlsx, df, name_col_width, outside_area_label=outside_area_label)
 
             elif dataset_id == SLR_PROJ["id"]:
-                add_slr_projection_sheet(xlsx, df, name_col_width, area_col_width, area_label)
+                add_slr_projection_sheet(xlsx, df, name_col_width)
 
             elif dataset_id == URBAN_BY_DECADE["id"]:
-                add_urbanization_sheet(
-                    xlsx,
-                    df,
-                    name_col_width,
-                    area_col_width,
-                    area_label=area_label,
-                    outside_area_label=outside_area_label,
-                )
+                add_urbanization_sheet(xlsx, df, name_col_width, outside_area_label=outside_area_label)
 
         # Analysis metadata sheet
         add_metadata_sheet(xlsx, name)

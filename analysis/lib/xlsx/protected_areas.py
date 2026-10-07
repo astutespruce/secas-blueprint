@@ -37,7 +37,7 @@ def add_protected_areas_poly_sheet(
         sheet_name=dataset["sheet_name"],
         caption=dataset["caption"] + ".",
         column_widths=column_widths,
-        area_columns=range(1, 3),
+        area_columns=[1, 2],
         percent_columns=[3],
         # only include breaks if they are not incremental
         breaks=None if breaks == list(range(len(df))) else breaks,

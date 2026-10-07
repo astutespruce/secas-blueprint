@@ -10,14 +10,7 @@ depth_value_columns = [f"Inundated at {v['label']}\n(acres)" for v in SLR_DEPTH_
 proj_value_columns = ["Has projected SLR?", "SLR scenario"] + [f"{year}\n(feet)" for year in SLR_YEARS]
 
 
-def add_slr_depth_sheet(
-    xlsx: pd.ExcelWriter,
-    df: pd.DataFrame,
-    name_col_width: float,
-    area_col_width: float,
-    area_label: str,
-    outside_area_label: str,
-):
+def add_slr_depth_sheet(xlsx: pd.ExcelWriter, df: pd.DataFrame, name_col_width: float, outside_area_label: str):
     """Add SLR inundation depth sheet.
 
     Parameters
@@ -26,23 +19,18 @@ def add_slr_depth_sheet(
     df : pd.DataFrame
     name_col_width : float
         width of name column
-    area_col_width : float
-        width of area column
-    area_label : str
-        name of analysis area acres column
     outside_area_label : str
         name of outside analysis area acres column
     """
     dataset = SLR_DEPTH
     nodata_label = "Outside extent of this dataset\n(acres)"
 
-    slr = df[["rasterized_acres", "overlap_acres", "outside_extent_acres", "outside_extent_percent"]].join(
+    slr = df[["rasterized_acres", "outside_extent_acres", "outside_extent_percent"]].join(
         df[SLR_DEPTH["id"]].apply(pd.Series)
     )
     slr.columns = (
         [
             "rasterized_acres",
-            "overlap_acres",
             "outside_extent_acres",
             "outside_extent_percent",
         ]
@@ -57,7 +45,7 @@ def add_slr_depth_sheet(
 
     # reorder columns so that outside_dataset_col comes before other values
     slr = slr[
-        ["overlap_acres", "outside_extent_acres", "outside_dataset_acres"]
+        ["outside_extent_acres", "outside_dataset_acres"]
         + depth_value_columns
         + ["outside_extent_percent", "outside_dataset_percent"]
         + [col.replace("(acres)", "(percent)") for col in depth_value_columns]
@@ -84,7 +72,6 @@ def add_slr_depth_sheet(
 
     slr = slr.rename(
         columns={
-            "overlap_acres": area_label,
             "outside_extent_acres": outside_area_label,
             "outside_extent_percent": outside_area_label.replace("(acres)", "(percent)"),
             "outside_dataset_acres": nodata_label,
@@ -92,11 +79,10 @@ def add_slr_depth_sheet(
         }
     ).reset_index()
 
-    area_col_offset = 1
     num_area_cols = num_value_cols + int(has_area_outside_extent) + int(has_area_outside_dataset) + 1
-    column_widths = [name_col_width, area_col_width] + ([18] * (len(slr.columns) - 2))
-    area_columns = range(area_col_offset, area_col_offset + num_area_cols)
-    percent_columns = range(area_col_offset + num_area_cols, area_col_offset + num_area_cols + num_area_cols)
+    column_widths = [name_col_width] + ([18] * (len(slr.columns) - 1))
+    area_columns = list(range(num_area_cols))
+    percent_columns = list(range(num_area_cols, num_area_cols + num_area_cols))
     write_excel(
         xlsx,
         slr,
@@ -109,9 +95,7 @@ def add_slr_depth_sheet(
     )
 
 
-def add_slr_projection_sheet(
-    xlsx: pd.ExcelWriter, df: pd.DataFrame, name_col_width: float, area_col_width: float, area_label: str
-):
+def add_slr_projection_sheet(xlsx: pd.ExcelWriter, df: pd.DataFrame, name_col_width: float):
     """Add sheet with decadal projections for each analysis unit, only if
     there is SLR at 10ft within the analysis unit.
     """
@@ -127,23 +111,21 @@ def add_slr_projection_sheet(
     for id, row in df.iterrows():
         # must also have depth to show projection data
         if row.overlap_acres == 0 or row.get(SLR_DEPTH["id"], None) is None or not len(row.get(SLR_PROJ["id"], [])):
-            slr.append([id, row.overlap_acres, "no", ""] + [""] * len(SLR_YEARS))
+            slr.append([id, "no", ""] + [""] * len(SLR_YEARS))
             counter += 1
         else:
             for scenario in row[SLR_PROJ["id"]]:
-                slr.append(
-                    [id, row.overlap_acres, "yes", SLR_PROJ_SCENARIOS[scenario["scenario"]]] + list(scenario["values"])
-                )
+                slr.append([id, "yes", SLR_PROJ_SCENARIOS[scenario["scenario"]]] + list(scenario["values"]))
                 counter += 1
 
             breaks.append(counter)
 
     slr = pd.DataFrame(
         slr,
-        columns=[df.index.name, area_label] + proj_value_columns,
+        columns=[df.index.name] + proj_value_columns,
     )
 
-    column_widths = [name_col_width, area_col_width, 10, 18] + ([12] * len(SLR_YEARS))
+    column_widths = [name_col_width, 10, 18] + ([12] * len(SLR_YEARS))
     area_columns = [1] + list(range(4, len(SLR_YEARS) + 5))
     write_excel(
         xlsx,

@@ -163,7 +163,7 @@ def add_good_condition(ws, row_idx: int, info: dict):
         info for good condition columns
     """
 
-    offset = info["offset"]
+    offset = 1  # start to the right of the analysis unit names
     num_good_values = info["num_good_values"]
     num_not_good_values = info["num_not_good_values"]
     num_extra_columns = info["num_extra_columns"]
