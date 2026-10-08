@@ -1,5 +1,5 @@
-import { TILES_URL } from '$lib/env'
-import type { MapConfig } from '$lib/types'
+import { TILES_URL } from '#lib/env.js'
+import type { MapConfig } from '#lib/types.js'
 
 export const mapConfig: MapConfig = {
 	// NOTE: these are not the data bounds, but ideal bounds to leave enough room

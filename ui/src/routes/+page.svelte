@@ -5,16 +5,16 @@
 	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query'
 
 	import ExclamationTriangleIcon from '~icons/fa-solid/exclamation-triangle'
-	import type { AppState, LocationData } from '$lib/types'
+	import type { AppState, LocationData } from '#lib/types.js'
 	import {
 		Footer,
 		Header,
 		MobileDetailsHeader,
 		MobileTabs,
 		SidebarDetailsHeader
-	} from '$lib/components/layout'
-	import { Map, MapState } from '$lib/components/map'
-	import { PrintContainer } from '$lib/components/print'
+	} from '#lib/components/layout/index.js'
+	import { Map, MapState } from '#lib/components/map/index.js'
+	import { PrintContainer } from '#lib/components/print/index.js'
 	import {
 		ContactTab,
 		FiltersTab,
@@ -23,8 +23,8 @@
 		InfoTab,
 		MoreInfoTab,
 		PrioritiesTab
-	} from '$lib/components/tabs'
-	import { cn } from '$lib/utils'
+	} from '#lib/components/tabs/index.js'
+	import { cn } from '#lib/utils.js'
 
 	const appState: AppState = $state({ isMobile: false, isPrint: false })
 	setContext('app-state', appState)

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Footer, Header } from '$lib/components/layout'
+	import { Footer, Header } from '#lib/components/layout/index.js'
 </script>
 
 <svelte:head>
@@ -11,7 +11,7 @@
 	<div class="relative z-0 w-full md:overflow-hidden md:h-60">
 		<div class="z-1 absolute top-[-50%] hidden md:block">
 			<enhanced:img
-				src="$images/26871026541_48a8096dd9_o.jpg"
+				src="#images/26871026541_48a8096dd9_o.jpg"
 				class="h-auto min-w-[720px] object-cover brightness-60"
 				alt=""
 				fetchpriority="high"
@@ -49,14 +49,14 @@
 				</p>
 			</div>
 			<div>
-				<enhanced:img src="$images/help-summarize.png" alt="Shows summarize data button" />
+				<enhanced:img src="#images/help-summarize.png" alt="Shows summarize data button" />
 			</div>
 		</div>
 
 		<div class="mt-16 grid grid-cols-0 md:grid-cols-[1fr_1.5fr] gap-8">
 			<div>
 				<enhanced:img
-					src="$images/help-summarize-tabs.png"
+					src="#images/help-summarize-tabs.png"
 					alt="Shows tabs in sidebar for a selected summary unit"
 				/>
 			</div>
@@ -103,7 +103,7 @@
 			</div>
 			<div>
 				<enhanced:img
-					src="$images/help-point-data.png"
+					src="#images/help-point-data.png"
 					alt="Shows point data mode"
 					loading="lazy"
 				/>
@@ -113,7 +113,7 @@
 		<div class="grid grid-cols-0 md:grid-cols-[1fr_2fr] mt-16 gap-8">
 			<div>
 				<enhanced:img
-					src="$images/help-point-data-tabs.png"
+					src="#images/help-point-data-tabs.png"
 					alt="Shows tabs when viewing point data"
 					loading="lazy"
 				/>
@@ -164,7 +164,7 @@
 			</div>
 			<div>
 				<enhanced:img
-					src="$images/help-filter.png"
+					src="#images/help-filter.png"
 					alt="Shows filtering the Blueprint"
 					loading="lazy"
 				/>
@@ -181,14 +181,14 @@
 		<div class="grid grid-cols-0 md:grid-cols-2 gap-8 mt-16">
 			<div>
 				<enhanced:img
-					src="$images/help-filter-before.png"
+					src="#images/help-filter-before.png"
 					alt="Shows filtering the Blueprint showing before filters are applied"
 					loading="lazy"
 				/>
 			</div>
 			<div>
 				<enhanced:img
-					src="$images/help-filter-after.png"
+					src="#images/help-filter-after.png"
 					alt="Shows filtering the Blueprint showing after filters are applied"
 					loading="lazy"
 				/>
@@ -207,7 +207,7 @@
 		<div class="grid grid-cols-0 md:grid-cols-[1fr_2fr] gap-8 mt-16">
 			<div>
 				<enhanced:img
-					src="$images/help-filter-mode.png"
+					src="#images/help-filter-mode.png"
 					alt="Shows dropdown to select filter mode"
 					loading="lazy"
 				/>
@@ -215,7 +215,7 @@
 			<div>
 				<figure>
 					<enhanced:img
-						src="$images/help-filter-OR-after.png"
+						src="#images/help-filter-OR-after.png"
 						alt="Shows filtering the Blueprint with OR filter logic applied to indicators that do not co-occur"
 						loading="lazy"
 					/>
@@ -243,7 +243,7 @@
 			</p>
 			<div>
 				<enhanced:img
-					src="$images/help-filter-print-1.png"
+					src="#images/help-filter-print-1.png"
 					alt="Filtered map print button"
 					loading="lazy"
 				/>
@@ -253,7 +253,7 @@
 		<div class="grid grid-cols-0 md:grid-cols-[2fr_1fr] gap-8 mt-16">
 			<div>
 				<enhanced:img
-					src="$images/help-filter-print-2.png"
+					src="#images/help-filter-print-2.png"
 					alt="Browser print dialog"
 					loading="lazy"
 				/>
@@ -261,7 +261,7 @@
 			<div>
 				<figure>
 					<enhanced:img
-						src="$images/help-filter-print-3.png"
+						src="#images/help-filter-print-3.png"
 						alt="Shows second page of filter PDF"
 						loading="lazy"
 					/>
@@ -296,27 +296,27 @@
 		<figure class="mt-4">
 			<div class="grid grid-cols-2 md:grid-cols-5 gap-4">
 				<enhanced:img
-					src="$images/report/report_sm_1.png"
+					src="#images/report/report_sm_1.png"
 					alt="Tool report example screenshot 1"
 					loading="lazy"
 				/>
 				<enhanced:img
-					src="$images/report/report_sm_2.png"
+					src="#images/report/report_sm_2.png"
 					alt="Tool report example screenshot 2"
 					loading="lazy"
 				/>
 				<enhanced:img
-					src="$images/report/report_sm_3.png"
+					src="#images/report/report_sm_3.png"
 					alt="Tool report example screenshot 3"
 					loading="lazy"
 				/>
 				<enhanced:img
-					src="$images/report/report_sm_4.png"
+					src="#images/report/report_sm_4.png"
 					alt="Tool report example screenshot 4"
 					loading="lazy"
 				/>
 				<enhanced:img
-					src="$images/report/report_sm_5.png"
+					src="#images/report/report_sm_5.png"
 					alt="Tool report example screenshot 5"
 					loading="lazy"
 				/>
@@ -338,14 +338,14 @@
 		<div class="grid grid-cols-0 md:grid-cols-[1.5fr_1fr] gap-8 mt-16">
 			<div>
 				<enhanced:img
-					src="$images/help-toggle-layers-button.png"
+					src="#images/help-toggle-layers-button.png"
 					alt="Shows toggle layers button"
 					loading="lazy"
 				/>
 			</div>
 			<div>
 				<enhanced:img
-					src="$images/help-toggle-layers-modal.png"
+					src="#images/help-toggle-layers-modal.png"
 					alt="Shows toggle layers modal popup"
 					loading="lazy"
 				/>
@@ -368,11 +368,11 @@
 				</p>
 			</div>
 			<div>
-				<enhanced:img src="$images/help-search-field.png" alt="Shows search field" loading="lazy" />
+				<enhanced:img src="#images/help-search-field.png" alt="Shows search field" loading="lazy" />
 			</div>
 			<div>
 				<enhanced:img
-					src="$images/help-search-options.png"
+					src="#images/help-search-options.png"
 					alt="Shows search field options"
 					loading="lazy"
 				/>
@@ -392,14 +392,14 @@
 			</div>
 			<div>
 				<enhanced:img
-					src="$images/help-search-results.png"
+					src="#images/help-search-results.png"
 					alt="Shows search results for placename search"
 					loading="lazy"
 				/>
 			</div>
 			<div>
 				<enhanced:img
-					src="$images/help-search-lat-long.png"
+					src="#images/help-search-lat-long.png"
 					alt="Shows latitude / longitude search"
 					loading="lazy"
 				/>

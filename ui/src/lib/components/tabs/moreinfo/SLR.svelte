@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { slrDepth } from '$lib/config/constants'
-	import { formatPercent } from '$lib/util/format'
+	import { slrDepth } from '#lib/config/constants.js'
+	import { formatPercent } from '#lib/util/format.js'
 	import SLRChart from './SLRChart.svelte'
 
 	const slrNodata = slrDepth.values.filter(({ value }) => value >= 11)

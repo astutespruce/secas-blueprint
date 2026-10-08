@@ -6,7 +6,7 @@ import {
 	indexBy,
 	setIntersection,
 	sum
-} from '$lib/util/data'
+} from '#lib/util/data.js'
 import {
 	blueprint,
 	corridors,
@@ -18,8 +18,8 @@ import {
 	slrDepth,
 	urban,
 	wildfireRisk
-} from '$lib/config/constants'
-import type { IndicatorValue } from '$lib/types'
+} from '#lib/config/constants.js'
+import type { IndicatorValue } from '#lib/types.js'
 
 /**
  * Return true if text is null or an empty string or single quote.

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import ArrowUpIcon from '~icons/fa-solid/arrow-up'
 	import ArrowDownIcon from '~icons/fa-solid/arrow-down'
-	import { cn } from '$lib/utils'
+	import { cn } from '#lib/utils.js'
 
 	import IndicatorPercentChart from './IndicatorPercentChart.svelte'
-	import { formatPercent } from '$lib/util/format'
+	import { formatPercent } from '#lib/util/format.js'
 	const { values, goodThreshold } = $props()
 	// remainder values, like area outside SE, are assigned values < 0
 	const remainders = $derived(values.filter(({ value }: { value: number }) => value < 0))

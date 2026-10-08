@@ -1,9 +1,9 @@
 <script lang="ts">
 	import CheckIcon from '~icons/fa-solid/check'
-	import { PercentBarChart } from '$lib/components/chart'
-	import { protectedAreas as protectedAreasInfo } from '$lib/config/constants'
-	import { formatNumber } from '$lib/util/format'
-	import { cn } from '$lib/utils'
+	import { PercentBarChart } from '#lib/components/chart/index.js'
+	import { protectedAreas as protectedAreasInfo } from '#lib/config/constants.js'
+	import { formatNumber } from '#lib/util/format.js'
+	import { cn } from '#lib/utils.js'
 
 	const { type, protected_areas, protected_areas_list, num_protected_areas } = $props()
 
@@ -69,8 +69,8 @@
 		>
 			Protected Areas Database of the United States
 		</a>
-		(PAD-US v4.1) and include Fee, Designation, Easement, Marine, and Proclamation (Dept. of Defense lands
-		only) boundaries.
+		(PAD-US v4.1) and include Fee, Designation, Easement, Marine, and Proclamation (Dept. of Defense
+		lands only) boundaries.
 
 		{#if protected_areas_list && protected_areas_list.length > 0}
 			Areas are listed based on name, ownership, and boundary information in the Protected Areas

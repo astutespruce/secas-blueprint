@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { resolve } from '$app/paths'
-	import { DEPLOY_ENV } from '$lib/env'
+	import { DEPLOY_ENV } from '#lib/env.js'
 	import TimesCircle from '~icons/fa-solid/times-circle'
-	import { Root as Alert } from '$lib/components/ui/alert'
-	import SECASLogo from '$images/SECAS_logo.svg'
-	import { cn } from '$lib/utils'
+	import { Root as Alert } from '#lib/components/ui/alert/index.js'
+	import SECASLogo from '#images/SECAS_logo.svg'
+	import { cn } from '#lib/utils.js'
 
 	const isStaging = DEPLOY_ENV === 'staging'
 

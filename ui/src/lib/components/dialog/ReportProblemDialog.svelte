@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { CONTACT_EMAIL } from '$lib/env'
-	import { Root, Trigger, Content, Header, Title } from '$lib/components/ui/dialog'
+	import { CONTACT_EMAIL } from '#lib/env.js'
+	import { Root, Trigger, Content, Header, Title } from '#lib/components/ui/dialog/index.js'
 
 	let { children } = $props()
 </script>

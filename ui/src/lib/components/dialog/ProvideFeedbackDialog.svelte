@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Root, Trigger, Content, Header, Title } from '$lib/components/ui/dialog'
+	import { Root, Trigger, Content, Header, Title } from '#lib/components/ui/dialog/index.js'
 
 	let { children } = $props()
 </script>

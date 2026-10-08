@@ -1,8 +1,8 @@
 <script lang="ts">
 	import CheckIcon from '~icons/fa-solid/check'
-	import { PercentBarChart } from '$lib/components/chart'
-	import { wildfireRisk as wildfireRiskInfo } from '$lib/config/constants'
-	import { cn } from '$lib/utils'
+	import { PercentBarChart } from '#lib/components/chart/index.js'
+	import { wildfireRisk as wildfireRiskInfo } from '#lib/config/constants.js'
+	import { cn } from '#lib/utils.js'
 
 	const { type, regions, wildfire_risk = null } = $props()
 

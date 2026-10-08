@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn } from '$lib/utils'
+	import { cn } from '#lib/utils.js'
 
 	import { PARCAs, ProtectedAreas, SLR, Urban, WildfireRisk } from './moreinfo'
 	import { NeedHelp } from './general'

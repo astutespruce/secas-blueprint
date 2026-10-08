@@ -41,6 +41,11 @@ export default defineConfig({
 			}
 		}
 	},
+	resolve: {
+		alias: {
+			$constants: path.resolve(import.meta.dirname, '../constants')
+		}
+	},
 	server: {
 		fs: {
 			allow: servePMTiles ? [path.resolve(process.env.VITE_TILE_DIR as string)] : undefined
@@ -122,12 +127,6 @@ export default defineConfig({
 			paths: {
 				// @ts-expect-error DEPLOY_PATH is valid
 				base: process.env.DEPLOY_PATH || ''
-			},
-			alias: {
-				$constants: '../constants',
-				$images: 'src/images',
-				// TODO: migrate to #lib: https://svelte.dev/docs/kit/migrating-to-sveltekit-3
-				$lib: 'src/lib'
 			}
 		}),
 		Icons({ compiler: 'svelte' }),

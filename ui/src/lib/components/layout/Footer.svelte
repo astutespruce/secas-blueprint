@@ -4,7 +4,11 @@
 	import ExclamationCircle from '~icons/fa-solid/ExclamationCircle'
 	import ExternalLinkAlt from '~icons/fa-solid/external-link-alt'
 
-	import { ContactDialog, ProvideFeedbackDialog, ReportProblemDialog } from '$lib/components/dialog'
+	import {
+		ContactDialog,
+		ProvideFeedbackDialog,
+		ReportProblemDialog
+	} from '#lib/components/dialog/index.js'
 </script>
 
 <footer
