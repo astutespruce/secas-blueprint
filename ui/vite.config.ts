@@ -1,13 +1,30 @@
-import { sveltekit } from '@sveltejs/kit/vite'
-import { defineConfig } from 'vite'
+import path from 'path'
+import adapter from '@sveltejs/adapter-static'
 import { enhancedImages } from '@sveltejs/enhanced-img'
-import Icons from 'unplugin-icons/vite'
+import { sveltekit } from '@sveltejs/kit/vite'
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
 import tailwindcss from '@tailwindcss/vite'
+import { SvelteKitPWA } from '@vite-pwa/sveltekit'
 import { config as dotEnvConfig } from 'dotenv'
-import { VitePWA } from 'vite-plugin-pwa'
+import Icons from 'unplugin-icons/vite'
+import { defineConfig } from 'vite'
 
 // have to configure dotenv to load correct .env file
 dotEnvConfig({ path: `.env.${process.env.NODE_ENV}` })
+
+// only proxy API in development; in production it is proxied by Caddy
+const proxyAPI = !!process.env.VITE_PROXY_API
+
+// only serve PMTiles through vite in local development; they are served
+// by Caddy in production.
+// NOTE: we dynamically import the plugin to ensure it is not available in production
+const servePMTiles = !!process.env.VITE_TILE_DIR
+let pmtilesServer = () => undefined
+if (servePMTiles) {
+	pmtilesServer = (
+		await import(path.resolve(import.meta.dirname, './src/plugins/pmtilesServer.ts'))
+	).default
+}
 
 export default defineConfig({
 	build: {
@@ -15,14 +32,36 @@ export default defineConfig({
 			output: {
 				codeSplitting: {
 					groups: [
-						{ test: (id) => id.includes('mapbox-gl') || id.includes('deck.gl'), name: 'map-vendor' }
+						{
+							test: (id) => id.includes('mapbox-gl') || id.includes('deck.gl'),
+							name: 'map-vendor'
+						}
 					]
 				}
 			}
 		}
 	},
+	resolve: {
+		alias: {
+			$constants: path.resolve(import.meta.dirname, '../constants')
+		}
+	},
+	server: {
+		fs: {
+			allow: servePMTiles ? [path.resolve(process.env.VITE_TILE_DIR as string)] : undefined
+		},
+		proxy: proxyAPI
+			? {
+					// proxy API endpoint to FastAPI
+					'/api': {
+						target: 'http://localhost:5000',
+						changeOrigin: true
+					}
+				}
+			: undefined
+	},
 	plugins: [
-		VitePWA({
+		SvelteKitPWA({
 			manifest: {
 				name: 'Southeast Conservation Blueprint Explorer',
 				short_name: 'Southeast Blueprint Explorer',
@@ -75,7 +114,23 @@ export default defineConfig({
 		}),
 		tailwindcss(),
 		enhancedImages(),
-		sveltekit(),
-		Icons({ compiler: 'svelte' })
+		sveltekit({
+			preprocess: vitePreprocess(),
+
+			adapter: adapter({
+				pages: 'public',
+				assets: 'public',
+				fallback: '404.html',
+				precompress: false,
+				strict: true
+			}),
+			paths: {
+				// @ts-expect-error DEPLOY_PATH is valid
+				base: process.env.DEPLOY_PATH || ''
+			}
+		}),
+		Icons({ compiler: 'svelte' }),
+		// middleware to serve PMTtiles in development mode
+		servePMTiles ? pmtilesServer() : undefined
 	]
 })

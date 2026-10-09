@@ -1,8 +1,6 @@
 <script lang="ts">
-	import { uploadFile, finalizeXLSXReport } from '$lib/api'
-	import { API_HOST } from '$lib/env'
-	import { captureException, logGAEvent } from '$lib/util/log'
-	import { Footer, Header } from '$lib/components/layout'
+	import { uploadFile, finalizeXLSXReport } from '#lib/api.js'
+	import { Footer, Header } from '#lib/components/layout/index.js'
 	import {
 		ConfigXLSXReport,
 		Done,
@@ -10,13 +8,15 @@
 		Queued,
 		Error,
 		UploadForm
-	} from '$lib/components/report'
+	} from '#lib/components/report/index.js'
 	import type {
 		ReportState,
 		ReportJobResult,
 		ReportType,
 		InspectResult
-	} from '$lib/components/report/types'
+	} from '#lib/components/report/types.js'
+	import { API_URL } from '#lib/env.js'
+	import { captureException, logGAEvent } from '#lib/util/log.js'
 
 	const initState: ReportState = {
 		view: 'upload',
@@ -180,7 +180,7 @@
 				result: finalizeJobResult
 			}
 
-			window.location.href = `${API_HOST}/api${finalizeJobResult}` as string
+			window.location.href = `${API_URL}${finalizeJobResult}` as string
 		} catch (ex) {
 			captureException('finalize XLSX report failed', ex)
 			console.error('Caught unhandled error from finalize XLSX report', ex)
@@ -213,7 +213,7 @@
 	<div class="relative z-0 w-full overflow-hidden h-56">
 		<div class="z-1 absolute top-[-20%]">
 			<enhanced:img
-				src="$images/usfws-candy-darter.jpg"
+				src="#images/usfws-candy-darter.jpg"
 				class="h-auto min-w-[720px] object-cover"
 				alt=""
 				fetchpriority="high"
@@ -249,7 +249,7 @@
 		<ConfigXLSXReport {...configData} onStartOver={handleReset} onSubmit={handleSubmitXLSXReport} />
 	{:else if reportState.view === 'done'}
 		<Done
-			reportURL={`${API_HOST}/api${reportState.result}`}
+			reportURL={`${API_URL}${reportState.result}`}
 			errors={reportState.errors}
 			onReset={handleReset}
 			class="mt-8"

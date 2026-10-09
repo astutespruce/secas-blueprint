@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { resolve } from '$app/paths'
-	import { DEPLOY_ENV } from '$lib/env'
 	import TimesCircle from '~icons/fa-solid/times-circle'
-	import { Root as Alert } from '$lib/components/ui/alert'
-	import SECASLogo from '$images/SECAS_logo.svg'
-	import { cn } from '$lib/utils'
+
+	import { resolve } from '$app/paths'
+	import SECASLogo from '#images/SECAS_logo.svg'
+	import { Root as Alert } from '#lib/components/ui/alert/index.js'
+	import { DEPLOY_ENV } from '#lib/env.js'
+	import { cn } from '#lib/utils.js'
 
 	const isStaging = DEPLOY_ENV === 'staging'
 
@@ -133,8 +134,8 @@
 		</div>
 		<div class="flex-auto">
 			<p>
-				<b>Citation:</b> Southeast Conservation Adaptation Strategy (SECAS). 2025. Southeast
-				Conservation Blueprint 2025.
+				<b>Citation:</b> Southeast Conservation Adaptation Strategy (SECAS). 2026. Southeast
+				Conservation Blueprint 2026.
 				<a href="http://secassoutheast.org/blueprint" target="_blank">
 					http://secassoutheast.org/blueprint
 				</a>.

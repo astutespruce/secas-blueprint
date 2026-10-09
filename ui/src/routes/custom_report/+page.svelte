@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { uploadFile } from '$lib/api'
-	import { API_HOST } from '$lib/env'
-	import { captureException, logGAEvent } from '$lib/util/log'
-	import { Footer, Header } from '$lib/components/layout'
-	import { Done, Progress, Queued, Error, UploadForm } from '$lib/components/report'
-	import type { ReportState, ReportJobResult, ReportType } from '$lib/components/report/types'
+	import { uploadFile } from '#lib/api.js'
+	import { Footer, Header } from '#lib/components/layout/index.js'
+	import { Done, Progress, Queued, Error, UploadForm } from '#lib/components/report/index.js'
+	import type { ReportState, ReportJobResult, ReportType } from '#lib/components/report/types.js'
+	import { API_URL } from '#lib/env.js'
+	import { captureException, logGAEvent } from '#lib/util/log.js'
 
 	const initState: ReportState = {
 		view: 'upload',
@@ -85,7 +85,7 @@
 				result: uploadJobResult,
 				errors: uploadJobErrors // there may be non-fatal errors (e.g., errors rendering maps)
 			}
-			window.location.href = `${API_HOST}/api${uploadJobResult}` as string
+			window.location.href = `${API_URL}${uploadJobResult}` as string
 		} catch (ex) {
 			captureException('File upload failed', ex)
 			console.error('Caught unhandled error from uploadFile', ex)
@@ -122,7 +122,7 @@
 	<div class="relative z-0 w-full overflow-hidden h-56">
 		<div class="z-1 absolute top-[-20%]">
 			<enhanced:img
-				src="$images/26871026541_48a8096dd9_o.jpg"
+				src="#images/26871026541_48a8096dd9_o.jpg"
 				class="h-auto min-w-[720px] object-cover brightness-60"
 				alt=""
 				fetchpriority="high"
@@ -156,7 +156,7 @@
 		<Progress message={reportState.message} progress={reportState.progress} class="mt-4" />
 	{:else if reportState.view === 'done'}
 		<Done
-			reportURL={`${API_HOST}/api${reportState.result}`}
+			reportURL={`${API_URL}${reportState.result}`}
 			errors={reportState.errors}
 			onReset={handleReset}
 			class="mt-8"

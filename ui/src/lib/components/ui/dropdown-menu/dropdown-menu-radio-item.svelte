@@ -1,8 +1,9 @@
 <script lang="ts">
+	import CheckIcon from '@lucide/svelte/icons/check'
 	// style override: focus & hover: bg-grey-1/50 cursor-pointer
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui'
-	import CheckIcon from '@lucide/svelte/icons/check'
-	import { cn, type WithoutChild } from '$lib/utils.js'
+
+	import { cn, type WithoutChild } from '#lib/utils.js'
 
 	let {
 		ref = $bindable(null),

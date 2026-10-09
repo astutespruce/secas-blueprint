@@ -13,7 +13,7 @@ from analysis.lib.pdf.report import create_report
 from analysis.lib.stats.aoi import get_aoi_results
 from analysis.lib.stats.summary_units import get_summary_unit_results
 from api.lib.geo import get_dataset
-from tests.lib.image import image_matches
+from tests.lib.image import assert_image_matches
 
 fixture_dir = Path("tests/fixtures")
 
@@ -65,12 +65,12 @@ def test_summary_unit_results_huc12():
     assert "blueprint" in results
     assert len(results["blueprint"]) == 5
     assert results["blueprint"][0]["value"] == 4
-    assert np.isclose(results["blueprint"][0]["acres"], 867.116)
+    assert np.isclose(results["blueprint"][0]["acres"], 741.01847)
 
     assert "corridors" in results
     assert len(results["corridors"]) == 3
     assert results["corridors"][0]["value"] == 1
-    assert np.isclose(results["corridors"][1]["acres"], 1408.424)
+    assert np.isclose(results["corridors"][1]["acres"], 1438.44762)
 
     assert len(results["indicator_groups"]) == 2
     assert len(results["indicator_groups"][0]["indicators"]) == 11
@@ -117,13 +117,13 @@ def test_summary_unit_results_marine_hex():
     assert "blueprint" in results
     assert len(results["blueprint"]) == 5
     assert results["blueprint"][0]["value"] == 4
-    assert np.isclose(results["blueprint"][0]["acres"], 18.4587)
+    assert np.isclose(results["blueprint"][0]["acres"], 17.1244)
 
     # no corridors in this particular area
     assert "corridors" not in results
 
     assert len(results["indicator_groups"]) == 1
-    assert len(results["indicator_groups"][0]["indicators"]) == 5
+    assert len(results["indicator_groups"][0]["indicators"]) == 6
 
     assert "protected_areas" in results
     assert len(results["protected_areas"]["entries"]) == 2
@@ -159,13 +159,13 @@ async def test_summary_unit_maps_huc12():
     # with open(locator_img_filename, "wb") as outfile:
     #     _ = outfile.write(maps["locator"])
 
-    assert image_matches(maps["locator"], locator_img_filename)
+    assert_image_matches(maps["locator"], locator_img_filename)
 
     blueprint_img_filename = fixture_dir / f"maps/{unit_id}_blueprint.png"
     # with open(blueprint_img_filename, "wb") as outfile:
     #     _ = outfile.write(maps["blueprint"])
 
-    assert image_matches(maps["blueprint"], blueprint_img_filename)
+    assert_image_matches(maps["blueprint"], blueprint_img_filename)
 
 
 @pytest.mark.anyio
@@ -174,6 +174,9 @@ async def test_summary_unit_pdf_huc12():
     unit_id = "030601040506"
     results = get_summary_unit_results("huc12", unit_id)
     maps, scale, map_errors = await render_maps(results["bounds"], summary_unit_id=unit_id)
+
+    assert len(map_errors) == 0
+
     results["scale"] = scale
     pdf = create_report(maps=maps, results=results, name=results["name"], area_type="huc12")
     assert pdf is not None
@@ -235,15 +238,15 @@ async def test_aoi_results(format):
     assert "blueprint" in results
     assert len(results["blueprint"]) == 5
     assert results["blueprint"][0]["value"] == 4
-    assert np.isclose(results["blueprint"][0]["acres"], 40.03101)
+    assert np.isclose(results["blueprint"][0]["acres"], 30.02326)
 
     assert "corridors" in results
     assert len(results["corridors"]) == 3
     assert results["corridors"][0]["value"] == 1
-    assert np.isclose(results["corridors"][1]["acres"], 13.34367)
+    assert np.isclose(results["corridors"][1]["acres"], 11.3421)
 
     assert len(results["indicator_groups"]) == 2
-    assert len(results["indicator_groups"][0]["indicators"]) == 8
+    assert len(results["indicator_groups"][0]["indicators"]) == 9
     assert len(results["indicator_groups"][1]["indicators"]) == 1
 
     assert "protected_areas" in results

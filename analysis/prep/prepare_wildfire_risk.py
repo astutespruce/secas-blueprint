@@ -69,6 +69,7 @@ windows = [
     )
 ]
 
+# ruff: disable[ERA001]
 # DEBUG: uncomment the following to output a GIS file of window boundaries
 # import geopandas as gp
 # from pyogrio import write_dataframe
@@ -80,6 +81,7 @@ windows = [
 #     ),
 #     "/tmp/windows.fgb",
 # )
+# ruff: enable[ERA001]
 
 
 out = np.ones(bnd_raster.shape, dtype="uint8") * np.uint8(255)

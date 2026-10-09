@@ -1,6 +1,6 @@
 [project]
 name = "secas-blueprint"
-version = "1.2.0"
+version = "3.0.0"
 description = "SECAS Southeast Conservation Blueprint Explorer"
 readme = "README.md"
 authors = [{ name = "Brendan C. Ward", email = "bcward@astutespruce.com" }]
@@ -16,7 +16,6 @@ classifiers = [
 requires-python = ">=3.12"
 dependencies = [
     "affine",
-    "aiofiles",
     "arq",
     "fastapi",
     "geopandas",
@@ -31,10 +30,12 @@ dependencies = [
     "pyarrow",
     "pymgl",
     "pyogrio",
+    "pyproj>=3.8.0",
     "python-calamine",
     "python-dotenv",
     "python-multipart",
     "rasterio",
+    "redis>=5.3.1",
     "sentry-sdk",
     "shapely",
     "uvicorn",
@@ -46,9 +47,8 @@ dev = [
     "httpx[http2]",
     "ruff",
     "setuptools",
-    "watchgod",
-    "watchfiles",
     "typer>=0.27.2",
+    "deptry>=0.25.1",
 ]
 tests = ["httpx>=0.28.1", "pixelmatch>=0.4.0", "pytest>=9.1.1"]
 
@@ -67,3 +67,9 @@ namespace = true
 
 [tool.ruff]
 line-length = 120
+
+[tool.ruff.lint]
+select = ["ERA001", "F401"]
+
+[tool.pytest.ini_options]
+filterwarnings = ["ignore::PendingDeprecationWarning"]

@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { getContext } from 'svelte'
-	import ArrowUpIcon from '~icons/fa-solid/arrow-up'
 	import ArrowDownIcon from '~icons/fa-solid/arrow-down'
+	import ArrowUpIcon from '~icons/fa-solid/arrow-up'
 
-	import AndLogicIcon from '$images/AndLogicIcon.svg'
-	import OrLogicIcon from '$images/OrLogicIcon.svg'
-	import { allFilters } from '$lib/config/filters'
-	import type { MapState } from '$lib/components/map'
+	import AndLogicIcon from '#images/AndLogicIcon.svg'
+	import OrLogicIcon from '#images/OrLogicIcon.svg'
+	import type { MapState } from '#lib/components/map/index.js'
+	import { allFilters } from '#lib/config/filters.js'
 
 	const mapState: MapState = getContext('map-state')
 

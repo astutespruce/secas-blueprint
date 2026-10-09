@@ -1,12 +1,12 @@
-import { captureException } from '$lib/util/log'
-import { API_TOKEN, API_HOST } from '$lib/env'
 import type {
 	JobStatus,
 	ProgressCallback,
 	ReportType,
 	ReportJobResult,
 	SummaryUnitType
-} from '$lib/components/report/types'
+} from '#lib/components/report/types.js'
+import { API_TOKEN, API_URL } from '#lib/env.js'
+import { captureException } from '#lib/util/log.js'
 
 const pollInterval = 1000 // milliseconds; 1 second
 const jobTimeout = 600000 // milliseconds; 10 minutes
@@ -23,7 +23,7 @@ export const uploadFile = async (
 	formData.append('file', file)
 	formData.append('name', name)
 
-	const response = await fetch(`${API_HOST}/api/custom_report/${reportType}?token=${API_TOKEN}`, {
+	const response = await fetch(`${API_URL}/custom_report/${reportType}?token=${API_TOKEN}`, {
 		method: 'POST',
 		body: formData
 	})
@@ -69,7 +69,7 @@ export const finalizeXLSXReport = async (
 	formData.append('datasets', datasets)
 
 	const response = await fetch(
-		`${API_HOST}/api/custom_report/xlsx/${uuid}/finalize?token=${API_TOKEN}`,
+		`${API_URL}/custom_report/xlsx/${uuid}/finalize?token=${API_TOKEN}`,
 		{
 			method: 'POST',
 			body: formData
@@ -108,7 +108,7 @@ export const createSummaryUnitReport = async (
 	const unit_type = type === 'subwatershed' ? 'huc12' : 'marine_hex'
 
 	const response = await fetch(
-		`${API_HOST}/api/summary_unit_report/${unit_type}/${id}/pdf?token=${API_TOKEN}`,
+		`${API_URL}/summary_unit_report/${unit_type}/${id}/pdf?token=${API_TOKEN}`,
 		{
 			method: 'POST'
 		}
@@ -146,7 +146,7 @@ const pollJob = async (jobId: string, onProgress: ProgressCallback): Promise<Rep
 
 	while (time < jobTimeout && failedRequests < failedFetchLimit) {
 		try {
-			response = await fetch(`${API_HOST}/api/jobs/${jobId}`, {
+			response = await fetch(`${API_URL}/jobs/${jobId}`, {
 				cache: 'no-cache'
 			})
 		} catch {

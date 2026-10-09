@@ -3,16 +3,16 @@
 	import { superForm, fileProxy, defaults } from 'sveltekit-superforms'
 	import { zod4, zod4Client } from 'sveltekit-superforms/adapters'
 	import { z } from 'zod'
-
-	import ZipFileIcon from '~icons/fa-solid/file-archive'
 	import ExclamationTriangle from '~icons/fa-solid/exclamation-triangle'
+	import ZipFileIcon from '~icons/fa-solid/file-archive'
 	import UploadIcon from '~icons/fa-solid/upload'
-	import { cn } from '$lib/utils.js'
-	import { Field, Control, Label, Button as SubmitButton } from '$lib/components/ui/form'
-	import { Button } from '$lib/components/ui/button'
-	import { Input } from '$lib/components/ui/input'
-	import { ContactDialog } from '$lib/components/dialog'
+
 	import { resolve } from '$app/paths'
+	import { ContactDialog } from '#lib/components/dialog/index.js'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import { Field, Control, Label, Button as SubmitButton } from '#lib/components/ui/form/index.js'
+	import { Input } from '#lib/components/ui/input/index.js'
+	import { cn } from '#lib/utils.js'
 
 	const MAXSIZE_MB = 100
 	const MIME_TYPES = new Set([
@@ -240,7 +240,7 @@
 						interest to generate a detailed PDF report of the Blueprint, underlying indicators, and
 						other contextual information for your area of interest. It includes a map and summary
 						table for every indicator present in the area, as well as additional information about
-						urbanization and sea-level rise.
+						urbanization and sea level rise.
 						<br /><br />
 						We're currently testing advanced reporting that complements this simple PDF report, including
 						the ability to choose specific datasets and save results to an XLSX file. This functionality
@@ -281,8 +281,8 @@
 					<br />
 					<br />
 					You can help us improve the Blueprint and this report by helping us understand your use case;
-					we use this information to provide statistics about how the Blueprint is being used and to
-					prioritize improvements.
+					we use this information to provide statistics about how the Blueprint is being used and to prioritize
+					improvements.
 				</p>
 			</div>
 		</div>
@@ -293,27 +293,27 @@
 		<h2 class="text-2xl">Examples of what is inside</h2>
 		<div class="grid grid-cols-2 md:grid-cols-5 mt-2 gap-4 [&_img]:border [&_img]:border-grey-2">
 			<enhanced:img
-				src="$images/report/report_sm_1.png"
+				src="#images/report/report_sm_1.png"
 				alt="Tool report example screenshot 1"
 				loading="lazy"
 			/>
 			<enhanced:img
-				src="$images/report/report_sm_2.png"
+				src="#images/report/report_sm_2.png"
 				alt="Tool report example screenshot 2"
 				loading="lazy"
 			/>
 			<enhanced:img
-				src="$images/report/report_sm_3.png"
+				src="#images/report/report_sm_3.png"
 				alt="Tool report example screenshot 3"
 				loading="lazy"
 			/>
 			<enhanced:img
-				src="$images/report/report_sm_4.png"
+				src="#images/report/report_sm_4.png"
 				alt="Tool report example screenshot 4"
 				loading="lazy"
 			/>
 			<enhanced:img
-				src="$images/report/report_sm_5.png"
+				src="#images/report/report_sm_5.png"
 				alt="Tool report example screenshot 5"
 				loading="lazy"
 			/>
