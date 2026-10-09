@@ -1,10 +1,12 @@
 <script lang="ts">
+	import XIcon from '@lucide/svelte/icons/x'
 	// style override: changed border and padding to p-6
 	import { Dialog as DialogPrimitive } from 'bits-ui'
-	import XIcon from '@lucide/svelte/icons/x'
-	import type { Snippet } from 'svelte'
-	import * as Dialog from './index.js'
+
 	import { cn, type WithoutChildrenOrChild } from '#lib/utils.js'
+	import * as Dialog from './index.js'
+
+	import type { Snippet } from 'svelte'
 
 	let {
 		ref = $bindable(null),

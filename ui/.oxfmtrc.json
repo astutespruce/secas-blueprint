@@ -8,14 +8,7 @@
 	"printWidth": 100,
 	"tabWidth": 2,
 	"sortPackageJson": false,
-	"ignorePatterns": [
-		"package-lock.json",
-		"pnpm-lock.yaml",
-		"yarn.lock",
-		"bun.lock",
-		"bun.lockb",
-		"src/lib/components/ui/**"
-	],
+	"ignorePatterns": ["package-lock.json", "pnpm-lock.yaml", "yarn.lock", "bun.lock", "bun.lockb"],
 	"sortImports": {
 		"newlinesBetween": false,
 		"customGroups": [
