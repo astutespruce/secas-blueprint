@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { resolve } from '$app/paths'
-
 	import FileUpload from '~icons/fa-solid/file-upload'
 	import QuestionCircle from '~icons/fa-solid/question-circle'
+
+	import { resolve } from '$app/paths'
 	import { cn } from '#lib/utils.js'
 
 	let { hasData = false } = $props()

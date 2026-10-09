@@ -4,8 +4,8 @@
 	import FreshwaterIcon from '#images/f.svg'
 	import MarineIcon from '#images/m.svg'
 	import TerrestrialIcon from '#images/t.svg'
-	import { cn } from '#lib/utils.js'
 	import type { MapState } from '#lib/components/map/index.js'
+	import { cn } from '#lib/utils.js'
 	import { IndicatorGroup, IndicatorDetails } from './indicators'
 
 	const indicatorGroupIcons = {

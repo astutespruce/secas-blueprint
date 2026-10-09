@@ -1,5 +1,6 @@
 <script lang="ts">
 	import CheckIcon from '~icons/fa-solid/check'
+
 	import { PercentBarChart } from '#lib/components/chart/index.js'
 	import { parcas as parcaInfo } from '#lib/config/constants.js'
 	import { cn } from '#lib/utils.js'

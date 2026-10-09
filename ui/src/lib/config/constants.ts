@@ -1,21 +1,9 @@
-import { indexBy } from '#lib/util/data.js'
-import type { Indicator } from '#lib/types.js'
-
 import blueprint from '$constants/blueprint.json'
 import corridors from '$constants/corridors.json'
 import indicatorGroups from '$constants/indicator_groups.json'
 import rawIndicators from '$constants/indicators.json'
 import parcas from '$constants/parcas.json'
 import parcasPoly from '$constants/parcas_poly.json'
-import protectedAreas from '$constants/protected_areas.json'
-import protectedAreasPoly from '$constants/protected_areas_poly.json'
-import slrDepth from '$constants/slr_depth.json'
-import slrProj from '$constants/slr_proj.json'
-import subregions from '$constants/subregions.json'
-import urban from '$constants/urban.json'
-import urbanByDecade from '$constants/urban_by_decade.json'
-import wildfireRisk from '$constants/wildfire_risk.json'
-
 // import pixel layers
 import pixelLayers0 from '$constants/pixel_layers_0.json'
 import pixelLayers1 from '$constants/pixel_layers_1.json'
@@ -27,6 +15,16 @@ import pixelLayers6 from '$constants/pixel_layers_6.json'
 import pixelLayers7 from '$constants/pixel_layers_7.json'
 import pixelLayers8 from '$constants/pixel_layers_8.json'
 import pixelLayers9 from '$constants/pixel_layers_9.json'
+import protectedAreas from '$constants/protected_areas.json'
+import protectedAreasPoly from '$constants/protected_areas_poly.json'
+import slrDepth from '$constants/slr_depth.json'
+import slrProj from '$constants/slr_proj.json'
+import subregions from '$constants/subregions.json'
+import urban from '$constants/urban.json'
+import urbanByDecade from '$constants/urban_by_decade.json'
+import wildfireRisk from '$constants/wildfire_risk.json'
+import type { Indicator } from '#lib/types.js'
+import { indexBy } from '#lib/util/data.js'
 
 // export unmodified values directly
 export {
