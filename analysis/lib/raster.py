@@ -646,3 +646,50 @@ def remap(arr, remap_table, nodata, fill):
                 out[i, j] = table[value]
 
     return out
+
+
+@nb.njit("(uint8[:,:],uint8)", cache=True)
+def get_data_window(arr, nodata):
+    """Get window indicating where non-nodata pixels are found.
+    About 4-5x faster than rasterio.windows.get_data_window.
+
+    Parameters
+    ----------
+    arr : 2D array (uint8)
+    nodata : uint8
+
+    Returns
+    -------
+    (col_off, row_off,  width, height)
+        in order to be used as a rasterio.window.Windows
+
+    """
+    if min(*arr.shape) == 0:
+        return (0, 0, 0, 0)
+
+    # record first i,j where value is not nodata
+    # track last i,j where value is nodata
+    start_row_off = arr.shape[0]
+    end_row_off = 0
+    start_col_off = arr.shape[1]
+    end_col_off = 0
+    for i in np.arange(arr.shape[0]):
+        for j in np.arange(arr.shape[1]):
+            if arr[i, j] != nodata:
+                if i < start_row_off:
+                    start_row_off = i
+                if i > end_row_off:
+                    end_row_off = i
+                if j < start_col_off:
+                    start_col_off = j
+                if j > end_col_off:
+                    end_col_off = j
+
+    # no non-nodata detected
+    if start_row_off == arr.shape[0]:
+        return (0, 0, 0, 0)
+
+    height = min(end_row_off - start_row_off + 1, arr.shape[0])
+    width = min(end_col_off - start_col_off + 1, arr.shape[1])
+
+    return (start_col_off, start_row_off, width, height)

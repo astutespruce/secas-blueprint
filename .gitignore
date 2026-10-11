@@ -22,7 +22,12 @@
 /source_data/urban/*
 /source_data/summary_units/*
 /source_data/wildfire_risk/*
+!/source_data/
 !/source_data/**/README.md
+
+!/source_data/blueprint/subindicators/
+/source_data/blueprint/subindicators/*
+!/source_data/blueprint/subindicators/README.md
 
 /data/*
 /examples/*
