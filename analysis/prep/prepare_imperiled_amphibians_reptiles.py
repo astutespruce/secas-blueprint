@@ -81,11 +81,17 @@ spp = (
     .rename(columns={"Scientific Name": "SNAME", "Common Name": "CNAME", "strUC GAP2016": "id"})
     .dropna(subset="id")
 )
+spp = spp.loc[spp.id.str.startswith(("a", "r"))].copy()
+spp["id"] = spp.id.fillna("").astype("str")
 
 # NOTE: there are 3 species listed for aDWSAx, 2 listed for aNPSAx; TODO: ask
 # NOTE: Lampropeltis occipitolineata is not included in the SECAS list but also not in tifs; TODO: ask
 # NOTE: several species in spreadsheet are not present in data folder; TODO: ask
-ids = sorted(spp.loc[spp.id.str.startswith(("a", "r"))].id.unique())
+
+# update names to combine multiple species
+spp["value"] = spp.CNAME + " (" + spp.SNAME + ")"
+spp = spp.groupby("id").agg({"SNAME": "first", "CNAME": "first", "value": lambda x: ", ".join(x)})
+ids = sorted(spp.index.values)
 
 
 ### extract read window based on overlapping extent with Southeast Blueprint extent
@@ -173,10 +179,6 @@ mask.close()
 ### Stack and encode data
 ################################################################################
 
-# TODO: transform species into one record per ID.  Need guidance from Rua.
-spp = spp.groupby("id").first()
-
-
 ### Extract bounding boxes
 boxes = []
 for id in ids:
@@ -202,12 +204,12 @@ for group in groups:
     ix = df.group == group
     df.loc[ix, "bit"] = np.arange(ix.sum()).astype("uint64")
 
-df[["group", "bit", "id", "SNAME", "CNAME"]].reset_index(drop=True).to_feather(
-    subindicators_out_dir / "imperiled_amphibians_reptiles_index.feather"
+df[["group", "bit", "id", "value"]].reset_index(drop=True).to_feather(
+    subindicators_out_dir / "t_imperiledamphibiansandreptiles_spp.feather"
 )
 
 for group in groups:
-    outfilename = subindicators_out_dir / f"imperiled_amphibians_reptiles_{group}.tif"
+    outfilename = subindicators_out_dir / f"t_imperiledamphibiansandreptiles_spp_{group}.tif"
     if outfilename.exists():
         continue
 
@@ -249,18 +251,3 @@ for group in groups:
     add_overviews(outfilename)
 
     rows.src.apply(lambda x: x.close())
-
-
-##### TODO:
-# to check values
-# reduce all to single value
-# t = np.bitwise_or.reduce(data.flat)
-# # number of species present is:
-# np.bitwise_count(t)
-# # extract specific bits that are set:
-# NOTE: this is only for 8 bits at a time
-# np.argwhere(np.unpackbits(t, bitorder="l") == 1).flatten()
-# have to reverse bit order
-# np.binary_repr(6922031441857478656)[::-1]
-# ix = [bool(int(x)) for x in np.binary_repr(int(4.615195676723118e+18),width=64)[::-1]]
-# np.arange(64)[ix]

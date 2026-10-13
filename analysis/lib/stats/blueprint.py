@@ -423,3 +423,20 @@ def get_blueprint_unit_results(results_dir, unit):
         results["corridors"] = corridors
 
     return results
+
+
+def extract_subindicator(subindicator, rasterized_geometry, files, table=None):
+    if subindicator["type"] == "stacked_bits":
+        if table is None:
+            raise ValueError(f"table must be set for subindicator type stacked_bits: {subindicator['id']}")
+
+        out = set()
+        for group in table.group.unique():
+            dataset = files[f"{subindicator['id']}_{group}"]
+            bits = rasterized_geometry.get_set_bits(dataset)
+            out.update(table.loc[(table.group == group) & table.bit.isin(bits)].value.tolist())
+
+        return sorted(out)
+
+    else:
+        raise NotImplementedError(f"subindicator type not supported: {subindicator['id']}")

@@ -77,6 +77,29 @@ def unique(arr: UInt8_2D_Array) -> set:
     return out
 
 
+def get_set_bits(arr):
+    """Extract the unique set of bit indexes that are set across all values in arr
+
+    Parameters
+    ----------
+    arr : 2D array
+        contains bit-packed values
+
+    Returns
+    -------
+    1D array
+        bit indexes that are set
+    """
+    # extract bitwise OR of all pixels together into a single value
+    total = np.bitwise_or.reduce(arr.flat)
+
+    # extract list of bit status
+    width = arr.dtype.itemsize * 8
+    # have to flip the bit order
+    ix = [bool(int(x)) for x in np.binary_repr(total, width=width)[::-1]]
+    return set(np.arange(width)[ix].tolist())
+
+
 def get_window(dataset, bounds, boundless=True):
     """Calculate the window into dataset that contains bounds, for boundless reading.
 
@@ -601,6 +624,36 @@ class WindowGeometryMask:
         # extract values inside geometry except where they are NODATA
         count_values_inplace(data, self.shape_mask, out, nodata)
         return out
+
+    def get_set_bits(self, dataset):
+        """Extract the unique set of bit indexes that are set across all values in arr
+
+        Parameters
+        ----------
+        arr : 2D array
+            contains bit-packed values
+
+        Returns
+        -------
+        1D array
+            bit indexes that are set
+        """
+
+        if dataset.transform.a != self.dataset_transform.a or dataset.transform.e != self.dataset_transform.e:
+            raise ValueError(f"{dataset.name} resolution does not match that used for mask windows")
+
+        read_window = clip_window(
+            self.window
+            if dataset.transform == self.dataset_transform
+            else shift_window(self.window, self.window_transform, dataset.transform),
+            max_width=dataset.width,
+            max_height=dataset.height,
+        )
+        if read_window.width == 0 or read_window.height == 0:
+            return set()
+
+        data = dataset.read(1, window=read_window)
+        return get_set_bits(data)
 
 
 @nb.njit("uint8[:,:](uint8[:,:],uint8[:,:],uint8,uint8)", cache=True)

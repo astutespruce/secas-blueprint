@@ -96,7 +96,7 @@ async def _create_xlsx_report(
     if field is not None and field not in available_fields:
         raise typer.Exit(f"ERROR: field '{field}' is not present in dataset")
 
-    df = read_dataframe(path, layer=layer, columns=columns, use_arrow=True).to_crs(DATA_CRS)
+    df = read_dataframe(path, layer=layer, columns=columns, use_arrow=True).to_crs(DATA_CRS).explode(ignore_index=True)
 
     with typer.progressbar(length=100, label="Creating report") as progress:
         if len(df) > 1:

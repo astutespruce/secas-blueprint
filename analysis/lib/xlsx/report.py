@@ -23,6 +23,7 @@ from analysis.lib.xlsx.parcas import add_parcas_poly_sheet
 from analysis.lib.xlsx.protected_areas import add_protected_areas_poly_sheet
 from analysis.lib.xlsx.slr import add_slr_depth_sheet, add_slr_projection_sheet
 from analysis.lib.xlsx.style import CHAR_PER_WIDTH_UNIT
+from analysis.lib.xlsx.subindicators import add_subindicator_sheet
 from analysis.lib.xlsx.summary import add_summary_sheet
 from analysis.lib.xlsx.urban import add_urbanization_sheet
 
@@ -86,6 +87,11 @@ def create_report(df: pd.DataFrame, datasets: set[str], name: str | None = None)
 
             elif dataset_id == URBAN_BY_DECADE["id"]:
                 add_urbanization_sheet(xlsx, df, name_col_width, outside_area_label=outside_area_label)
+
+            subindicator = dataset.get("subindicator")
+            if subindicator:
+                if subindicator["type"] == "stacked_bits":
+                    add_subindicator_sheet(xlsx, df, subindicator, name_col_width)
 
         # Analysis metadata sheet
         add_metadata_sheet(xlsx, name)

@@ -23,7 +23,7 @@ from analysis.constants import (
     URBAN_YEARS,
     WILDFIRE_RISK,
 )
-from analysis.lib.stats.blueprint import BLUEPRINT_BINS, CORRIDOR_BINS
+from analysis.lib.stats.blueprint import BLUEPRINT_BINS, CORRIDOR_BINS, extract_subindicator
 from analysis.lib.stats.parcas import BINS as PARCAS_BINS
 from analysis.lib.stats.parcas import extract_parcas_in_analysis_units
 from analysis.lib.stats.protected_areas import BINS as PROTECTED_AREAS_BINS
@@ -99,6 +99,7 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
 
     try:
         files = {}
+        tables = {}
         for id in datasets:
             dataset = REPORT_DATASETS[id]
             if dataset["filename"].endswith(".tif") and id not in {}:
@@ -109,6 +110,24 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
                         )
                 else:
                     files[id] = rasterio.open(data_dir / dataset["filename"])
+                    subindicator = dataset.get("subindicator")
+                    if subindicator:
+                        if "{" in subindicator["filename"]:
+                            key = subindicator["filename_params"]["key"]
+                            for value in subindicator["filename_params"]["values"]:
+                                files[f"{subindicator['id']}_{value}"] = rasterio.open(
+                                    data_dir / subindicator["filename"].format(**{key: value})
+                                )
+                        else:
+                            raise NotImplementedError(
+                                f"file opening not yet implemented for subindicator: {subindicator['id']}"
+                            )
+
+                        if "table_filename" in subindicator:
+                            table = pd.read_feather(
+                                data_dir / subindicator["table_filename"], columns=subindicator["table_columns"]
+                            )
+                            tables[subindicator["id"]] = table
 
         for i, (index, row) in enumerate(df.iterrows()):
             rasterized_geometry = RasterizedGeometry(row.geometry)
@@ -158,6 +177,12 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
                         indicator_acres = indicator_acres[1:]
 
                     result[indicator["id"]] = indicator_acres
+
+                    subindicator = indicator.get("subindicator")
+                    if subindicator:
+                        result[subindicator["id"]] = extract_subindicator(
+                            subindicator, rasterized_geometry, files, tables.get(subindicator["id"])
+                        )
 
             if SLR_DEPTH["id"] in datasets:
                 slr_acres = rasterized_geometry.get_acres_by_bin(files[SLR_DEPTH["id"]], SLR_DEPTH_BINS)
@@ -222,6 +247,8 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
     finally:
         for raster in files.values():
             raster.close()
+
+        del tables
 
     out = df[["states", "subregions", "regions", "count", "acres"]].join(pd.DataFrame(results, index=df.index))
 

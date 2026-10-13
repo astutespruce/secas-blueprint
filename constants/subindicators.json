@@ -1,0 +1,22 @@
+[
+  {
+    "id": "t_imperiledamphibiansandreptiles_spp",
+    "indicator_id": "t_imperiledamphibiansandreptiles",
+    "filename": "subindicators/t_imperiledamphibiansandreptiles_spp_{group}.tif",
+    "filename_params": { "key": "group", "values": [0, 1, 2] },
+    "table_filename": "subindicators/t_imperiledamphibiansandreptiles_spp.feather",
+    "table_columns": ["group", "bit", "value"],
+    "type": "stacked_bits",
+    "label": "Imperiled amphibian & reptile species list",
+    "sheet_name": "Imperiled herp species list",
+    "caption":"Imperiled amphibian & reptile species present based on USGS Southeast Gap Analysis Project species distribution models",
+    "source": "Southeast Conservation Blueprint",
+	"date": "2026",
+	"citation": "Southeast Conservation Adaptation Strategy (SECAS). 2026. Southeast Conservation Blueprint 2026.",
+    "description": "This dataset provides additional details for the Imperiled amphibians & reptiles indicator.  It provides a list of species present based on available USGS Southeast Gap Analysis Project species distribution models for species included in the indicator.  Data are limited to limited to non-urban, non-marine areas in the Continental U.S.",
+    "values": [
+        {"value": "count", "label": "Number of species present"},
+        {"value": "value", "label": "Species present"}
+    ]
+  }
+]

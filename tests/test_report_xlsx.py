@@ -207,6 +207,9 @@ async def test_get_analysis_unit_results_single_area(format):
     assert np.allclose(row[BLUEPRINT["id"]], [0.0, 0.0, 1.334367, 19.3483215, 30.0232575])
     assert np.allclose(row[CORRIDORS["id"]], [0.0, 39.3638265, 11.3421195])
     assert np.allclose(row["t_imperiledamphibiansandreptiles"], [0.6671835, 0.0, 0.0, 45.368478, 0.0, 4.6702845])
+    assert len(row["t_imperiledamphibiansandreptiles_spp"]) == 8
+    assert "Seepage Salamander (Desmognathus aeneus)" in row["t_imperiledamphibiansandreptiles_spp"]
+
     assert np.allclose(row["f_permeablesurface"], [0, 0, 0, 50.705946])
 
     assert np.allclose(row[PARCAS["id"]], [0, 50.705946])
@@ -270,6 +273,9 @@ async def test_get_analysis_unit_results_multiple_areas_partial_overlap(format):
     assert np.allclose(nc_poly["f_permeablesurface"], [0, 0, 0, 280.6619])
     assert np.isnan(mn_poly["f_permeablesurface"])
     assert np.allclose(mo_poly["f_permeablesurface"], [0, 0, 5.7823, 63.8272])
+
+    assert len(nc_poly["t_imperiledamphibiansandreptiles_spp"]) == 15
+    assert "Pine Barrens Treefrog (Hyla andersonii)" in nc_poly["t_imperiledamphibiansandreptiles_spp"]
 
     assert np.allclose(nc_poly[SLR_DEPTH["id"]], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 280.6619, 0])
     assert np.isnan(mn_poly[SLR_DEPTH["id"]])
@@ -436,7 +442,11 @@ async def test_create_xlsx_file_single_area(format):
 
     reader = pd.ExcelFile(BytesIO(xlsx))
 
-    assert len(reader.sheet_names) == len(datasets) + 3
+    # includes 1 subindicator for t_imperiledamphibiansandreptiles
+    num_subindicators = len(
+        [dataset for dataset in datasets if REPORT_DATASETS[dataset].get("subindicator") is not None]
+    )
+    assert len(reader.sheet_names) == len(datasets) + num_subindicators + 3
     summary = reader.parse(sheet_name="Summary", skiprows=2)
     assert len(summary) == len(df)
 
@@ -447,8 +457,16 @@ async def test_create_xlsx_file_single_area(format):
     assert summary["State(s)"].tolist() == results.states.tolist()
 
     details = reader.parse(sheet_name="Data descriptions", skiprows=2)
-    assert len(details) == len(datasets)
-    assert details["Name"].tolist() == [d["label"] for id, d in REPORT_DATASETS.items() if id in datasets]
+    assert len(details) == len(datasets) + num_subindicators
+    expected_names = []
+    for id, dataset in REPORT_DATASETS.items():
+        if id not in datasets:
+            continue
+        expected_names.append(dataset["label"])
+        subindicator = dataset.get("subindicator")
+        if subindicator is not None:
+            expected_names.append(subindicator["label"])
+    assert details["Name"].tolist() == expected_names
 
     metadata = reader.parse(sheet_name="Analysis metadata", skiprows=2)
     assert len(metadata) == 3
@@ -485,6 +503,13 @@ async def test_create_xlsx_file_single_area(format):
     assert np.allclose(
         indicator_sheet.iloc[0][indicator_value_cols].values.astype("float64"), results[indicator_id].iloc[0]
     )
+
+    subindicator = indicator["subindicator"]
+    sheet_name = subindicator.get("sheet_name") or indicator["label"]
+    subindicator_sheet = reader.parse(sheet_name=sheet_name, skiprows=2)
+    subindicator_value_cols = [v["label"] for v in subindicator["values"]]
+    assert subindicator_sheet.columns.tolist() == ["Analysis unit"] + subindicator_value_cols
+    assert subindicator_sheet.iloc[0][subindicator_value_cols[0]] == len(results[subindicator["id"]].iloc[0])
 
     # this one has an extra row for good / not good condition
     indicator_id = "f_permeablesurface"
@@ -597,7 +622,11 @@ async def test_create_xlsx_file_multiple_areas_partial_overlap(format):
 
     reader = pd.ExcelFile(BytesIO(xlsx))
 
-    assert len(reader.sheet_names) == len(datasets) + 3
+    # includes 1 subindicator for t_imperiledamphibiansandreptiles
+    num_subindicators = len(
+        [dataset for dataset in datasets if REPORT_DATASETS[dataset].get("subindicator") is not None]
+    )
+    assert len(reader.sheet_names) == len(datasets) + num_subindicators + 3
     summary = reader.parse(sheet_name="Summary", skiprows=2)
     assert len(summary) == len(df)
 
@@ -610,10 +639,6 @@ async def test_create_xlsx_file_multiple_areas_partial_overlap(format):
     assert np.allclose(summary["Number of 30m pixels in analysis unit"], results.pixels)
     assert np.allclose(summary["Number of distinct areas in analysis unit"], results["count"])
     assert summary["State(s)"].fillna("").tolist() == results.states.tolist()
-
-    details = reader.parse(sheet_name="Data descriptions", skiprows=2)
-    assert len(details) == len(datasets)
-    assert details["Name"].tolist() == [d["label"] for id, d in REPORT_DATASETS.items() if id in datasets]
 
     blueprint = reader.parse(sheet_name="Blueprint priority", skiprows=3).dropna(axis=1, how="all")
     # when we have partial overlap, we have to update the label of the analysis area column
@@ -690,7 +715,6 @@ async def test_create_xlsx_file_multiple_areas_partial_overlap(format):
     assert np.allclose(parcas_poly["Overlap acres"], [280.40, 0, 0], atol=0.01)
     assert parcas_poly["Name"].values.tolist() == ["Sandhills"] + ["no PARCAs at this location"] * 2
 
-    # protected_areas_poly = reader.parse("")
     protected_areas_poly = reader.parse(sheet_name="Protected areas by name", skiprows=2)
     assert protected_areas_poly.columns.tolist() == [
         "Analysis unit",
@@ -784,7 +808,11 @@ async def test_create_xlsx_file_multiple_areas(format):
 
     reader = pd.ExcelFile(BytesIO(xlsx))
 
-    assert len(reader.sheet_names) == len(datasets) + 3
+    # includes 1 subindicator for t_imperiledamphibiansandreptiles
+    num_subindicators = len(
+        [dataset for dataset in datasets if REPORT_DATASETS[dataset].get("subindicator") is not None]
+    )
+    assert len(reader.sheet_names) == len(datasets) + num_subindicators + 3
     summary = reader.parse(sheet_name="Summary", skiprows=2)
     assert len(summary) == len(df)
     assert np.allclose(summary["GIS acres"], results.acres)
@@ -792,10 +820,6 @@ async def test_create_xlsx_file_multiple_areas(format):
     assert np.allclose(summary["Number of 30m pixels in analysis unit"], results["pixels"])
     assert np.allclose(summary["Number of distinct areas in analysis unit"], results["count"])
     assert summary["State(s)"].fillna("").tolist() == results.states.tolist()
-
-    details = reader.parse(sheet_name="Data descriptions", skiprows=2)
-    assert len(details) == len(datasets)
-    assert details["Name"].tolist() == [d["label"] for id, d in REPORT_DATASETS.items() if id in datasets]
 
     blueprint = reader.parse(sheet_name="Blueprint priority", skiprows=3).dropna(axis=1, how="all")
     assert blueprint.columns.tolist() == ["Analysis unit"] + blueprint_value_cols[::-1] + blueprint_percent_cols[::-1]
