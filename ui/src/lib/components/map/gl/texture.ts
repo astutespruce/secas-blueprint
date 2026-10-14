@@ -1,5 +1,6 @@
 import { Device } from '@luma.gl/core'
 import { DynamicTexture } from '@luma.gl/engine'
+
 import type { ImageType } from '@loaders.gl/loader-utils'
 
 /**

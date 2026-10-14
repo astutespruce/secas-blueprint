@@ -104,18 +104,6 @@ for infile in sorted(src_dir.glob("landcover/*/*.img")):
         print(f"Done with {year} in {time() - year_start:.2f}s")
 
 
-# Not currently used
-# outfilename = out_dir / "landcover_mask.tif"
-# if not outfilename.exists():
-#     print("Creating mask")
-#     create_lowres_mask(
-#         out_dir / "landcover_2021.tif",
-#         outfilename,
-#         resolution=MASK_RESOLUTION,
-#         ignore_zero=False,
-#     )
-
-
 ### Extract percent impervious
 print("Processing percent impervious")
 
@@ -194,14 +182,3 @@ for infile in sorted(src_dir.glob("impervious/*/*.img")):
         tmp_filename.unlink()
 
         print(f"Done with {year} in {time() - year_start:.2f}s")
-
-# Not currently used
-# outfilename = out_dir / "impervious_mask.tif"
-# if not outfilename.exists():
-#     print("Creating mask")
-#     create_lowres_mask(
-#         out_dir / "impervious_2021.tif",
-#         outfilename,
-#         resolution=MASK_RESOLUTION,
-#         ignore_zero=False,
-#     )

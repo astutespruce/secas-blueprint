@@ -69,22 +69,18 @@ def summarize_slr_in_aoi(rasterized_geometry, geometry):
         slr_acres = rasterized_geometry.get_acres_by_bin(src, bins=BINS)
 
     total_slr_acres = slr_acres.sum()
-    slr_nodata_acres = rasterized_geometry.acres - rasterized_geometry.outside_extent_acres - total_slr_acres
 
-    if slr_nodata_acres < 1e-6:
-        slr_nodata_acres = 0
-
-    # set NODATA into value 13
-    slr_acres[13] += slr_nodata_acres
-
-    # if all areas in the polygon have no SLR data, return None
-    if np.allclose(slr_acres[13], rasterized_geometry.acres):
+    if total_slr_acres < 1e-6:
         return None
 
     # if the only value present is for inland areas where not applicable, show that message
     # also, if it is a mix of inland areas and nodata, just default to NA as well
     if np.allclose(slr_acres[12], rasterized_geometry.acres) or ((slr_acres[12] > 0) and slr_acres[:11].sum() == 0):
         return {"na": True}
+
+    outside_slr_acres = rasterized_geometry.acres - rasterized_geometry.outside_extent_acres - total_slr_acres
+    if outside_slr_acres < 1e-6:
+        outside_slr_acres = 0
 
     # accumulate values for 0-10ft
     slr_acres[:11] = np.cumsum(slr_acres[:11])
@@ -148,6 +144,8 @@ def summarize_slr_in_aoi(rasterized_geometry, geometry):
     return {
         "depth": slr_results,
         "total_slr_acres": total_slr_acres,
+        "outside_slr_acres": outside_slr_acres,
+        "outside_slr_percent": 100 * outside_slr_acres / rasterized_geometry.acres,
         "projections": projections,
     }
 
@@ -282,12 +280,8 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
 
     total_slr_acres = slr_acres.sum(axis=1)
 
-    slr_nodata_acres = df.rasterized_acres - df.outside_extent_acres - total_slr_acres
-
-    slr_nodata_acres[slr_nodata_acres < 1e-6] = 0
-
-    # set NODATA into value 13
-    slr_acres[:, 13] += slr_nodata_acres
+    outside_slr_acres = df.rasterized_acres - df.outside_extent_acres - total_slr_acres
+    outside_slr_acres[outside_slr_acres < 1e-6] = 0
 
     # accumulate values for bins 0-10
     slr_acres[:, :11] = np.cumsum(slr_acres[:, :11], axis=1)
@@ -301,6 +295,7 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
         index=df.index,
     )
     slr["total_slr_acres"] = total_slr_acres
+    slr["outside_slr_acres"] = outside_slr_acres
 
     # only calculate projections where there is data [:12]
     # (exclude not modeled / inland counties)
@@ -365,7 +360,7 @@ def get_slr_unit_results(results_dir, unit):
     slr_results = slr_results.iloc[0]
 
     # if all areas in the polygon have no SLR data, return None
-    if np.allclose(slr_results.nodata, unit.rasterized_acres):
+    if np.allclose(slr_results.outside_slr_acres, unit.rasterized_acres):
         return None
 
     # if the only value present is for inland areas where not applicable, show that message
@@ -404,5 +399,7 @@ def get_slr_unit_results(results_dir, unit):
     return {
         "depth": depth,
         "total_slr_acres": slr_results.total_slr_acres,
+        "outside_slr_acres": slr_results.outside_slr_acres,
+        "outside_slr_percent": 100 * slr_results.outside_slr_acres / unit.rasterized_acres,
         "projections": projections,
     }

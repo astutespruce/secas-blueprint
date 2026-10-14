@@ -22,10 +22,10 @@ On MacOS 12.4 (M1 / Arm64), start `redis`:
 redis-server /opt/homebrew/etc/redis.conf
 ```
 
-To start `arq` with reload capability:
+To start `arq`:
 
 ```
-arq api.worker.WorkerSettings --watch ./api
+arq api.worker.WorkerSettings
 ```
 
 To start the API in development mode:

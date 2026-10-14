@@ -46,6 +46,7 @@
     "borderColor": "#c3e3f4",
     "indicators": [
       "f_atlanticmigratoryfishhabitat",
+      "f_caribbeanimperiledaquaticspecies",
       "f_caribbeannaturallandcoverinfloodplains",
       "f_caribbeannetworkcomplexity",
       "f_caribbeanpermeablesurface",
@@ -80,6 +81,7 @@
       "m_estuarinecoastalcondition",
       "m_gulfcoralandhardbottom",
       "m_gulfdeepseacoralrichness",
+      "m_gulfmarinebirds",
       "m_gulfmarinemammals",
       "m_gulfseaturtles",
       "m_islandhabitat",

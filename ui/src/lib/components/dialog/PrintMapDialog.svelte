@@ -1,12 +1,21 @@
 <script lang="ts">
-	import Spinner from '~icons/fa-solid/spinner'
 	import { getContext } from 'svelte'
-	import { browser } from '$app/environment'
 	import PrintIcon from '~icons/fa-solid/file-import'
-	import { Root, Trigger, Content, Header, Title, Footer, Close } from '$lib/components/ui/dialog'
-	import { Button } from '$lib/components/ui/button'
-	import type { AppState } from '$lib/types'
-	import type { MapState } from '$lib/components/map'
+	import Spinner from '~icons/fa-solid/spinner'
+
+	import { browser } from '$app/env'
+	import type { MapState } from '#lib/components/map/index.js'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import {
+		Root,
+		Trigger,
+		Content,
+		Header,
+		Title,
+		Footer,
+		Close
+	} from '#lib/components/ui/dialog/index.js'
+	import type { AppState } from '#lib/types.js'
 
 	const appState: AppState = getContext('app-state')
 	const mapState: MapState = getContext('map-state')

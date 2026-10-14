@@ -57,7 +57,7 @@ if not outfilename.exists():
     colormap = {e["value"]: hex_to_uint8(e["color"]) for e in BLUEPRINT["values"]}
     colormap[0] = (255, 255, 255, 0)
 
-    with rasterio.open(src_dir / "Blueprint2025.tif") as src:
+    with rasterio.open(src_dir / "Blueprint2026.tif") as src:
         nodata = int(src.nodata)
 
         read_window = shift_window(
@@ -102,14 +102,14 @@ if not outfilename.exists():
 
     print("Reading hubs and making valid")
     continental_hubs = read_dataframe(
-        src_dir / "hubs_corridors/ContinentalHubs2025.shp",
+        src_dir / "hubs_corridors/ContinentalHubs2026.shp",
         columns=[],
         use_arrow=True,
     ).explode(ignore_index=True)
     continental_hubs["value"] = 1
 
     caribbean_hubs = read_dataframe(
-        src_dir / "hubs_corridors/CaribbeanHubs2025.shp",
+        src_dir / "hubs_corridors/CaribbeanHubs2026.shp",
         columns=[],
         use_arrow=True,
     ).explode(ignore_index=True)
@@ -122,8 +122,8 @@ if not outfilename.exists():
     hubs = dissolve(hubs, by="value").explode(ignore_index=True).sort_values(by="value", ascending=False)
 
     with (
-        rasterio.open(src_dir / "hubs_corridors/ContinentalCorridors2025.tif") as continental,
-        rasterio.open(src_dir / "hubs_corridors/CaribbeanCorridors2025.tif") as caribbean,
+        rasterio.open(src_dir / "hubs_corridors/ContinentalCorridors2026.tif") as continental,
+        rasterio.open(src_dir / "hubs_corridors/CaribbeanCorridors2026.tif") as caribbean,
     ):
         # consolidate all values into a single raster, writing hubs over corridors
         # see values in corridors.json
@@ -199,7 +199,7 @@ indicator_groups = []
 merged = None
 for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
     df = pd.read_excel(
-        indicators_dir / "Blueprint 2025 Indicator Thresholds.xlsx",
+        indicators_dir / "SoutheastBlueprint2026_IndicatorThresholds.xlsx",
         sheet_name=sheet_name,
         engine="calamine",
     ).rename(
@@ -407,10 +407,10 @@ for index, indicator_row in indicator_df.iterrows():
             data = data[data_window.toslices()]
 
             # check value range to make sure all are accounted for above, and raise error on unexpected values
-            values = unique(data)
+            values_present = unique(data)
             expected_values = set([e["value"] for e in indicator_row["values"]] + [NODATA])
-            unexpected = values.difference(expected_values)
-            missing = expected_values.difference(values)
+            unexpected = values_present.difference(expected_values)
+            missing = expected_values.difference(values_present)
             if unexpected:
                 raise ValueError(
                     f"Unexpected values present in {indicator_row.filename}: {','.join([str(v) for v in unexpected])}"
@@ -449,6 +449,7 @@ for index, indicator_row in indicator_df.iterrows():
             add_overviews(outfilename)
 
         values = pd.DataFrame(indicator_row["values"])
+        values["color"] = values.color.fillna("")
         has_zero = values.value.min() == 0
 
         colormap = (

@@ -1,13 +1,4 @@
 import {
-	applyFactor,
-	parsePipeEncodedValues,
-	parseDeltaEncodedValues,
-	parseDictEncodedValues,
-	indexBy,
-	setIntersection,
-	sum
-} from '$lib/util/data'
-import {
 	blueprint,
 	corridors,
 	indicatorGroups as indicatorGroupInfo,
@@ -18,8 +9,17 @@ import {
 	slrDepth,
 	urban,
 	wildfireRisk
-} from '$lib/config/constants'
-import type { IndicatorValue } from '$lib/types'
+} from '#lib/config/constants.js'
+import type { IndicatorValue } from '#lib/types.js'
+import {
+	applyFactor,
+	parsePipeEncodedValues,
+	parseDeltaEncodedValues,
+	parseDictEncodedValues,
+	indexBy,
+	setIntersection,
+	sum
+} from '#lib/util/data.js'
 
 /**
  * Return true if text is null or an empty string or single quote.

@@ -122,6 +122,8 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
                 "overlap_acres": overlap_acres,
                 "rasterized_acres": rasterized_geometry.acres,
                 "outside_extent_acres": rasterized_geometry.outside_extent_acres,
+                # NOTE: all percents are actually proportions formatted as percents in XLSX
+                "outside_extent_percent": rasterized_geometry.outside_extent_acres / rasterized_geometry.acres,
             }
 
             # short-circuit if there are no overlapping pixels
@@ -159,9 +161,17 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
 
             if SLR_DEPTH["id"] in datasets:
                 slr_acres = rasterized_geometry.get_acres_by_bin(files[SLR_DEPTH["id"]], SLR_DEPTH_BINS)
+                # important: we calculate nodata area before accumulating values
+                slr_nodata_acres = (
+                    rasterized_geometry.acres - rasterized_geometry.outside_extent_acres - slr_acres.sum()
+                )
+                if slr_nodata_acres < 1e-6:
+                    slr_nodata_acres = 0
+
                 # accumulate values for depths 0-10ft
                 slr_acres[:11] = np.cumsum(slr_acres[:11])
-                result[SLR_DEPTH["id"]] = slr_acres
+                # save NODATA in last value
+                result[SLR_DEPTH["id"]] = np.append(slr_acres, [slr_nodata_acres])
 
             #     # Extract urban
             if URBAN_BY_DECADE["id"] in datasets:
@@ -194,6 +204,7 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
 
                         if urban_nodata < 1e-6:
                             urban_nodata = 0.0
+                        # save NODATA in last value
                         urban_acres[-1] = urban_nodata
 
                 result[URBAN_BY_DECADE["id"]] = urban_acres

@@ -2,12 +2,17 @@
 	import CheckIcon from '@lucide/svelte/icons/check'
 	import CaretDown from '~icons/fa-solid/caret-down'
 	import CaretRight from '~icons/fa-solid/caret-right'
-	import BlueprintIcon from '$images/blueprint.svg'
-	import FreshwaterIcon from '$images/f.svg'
-	import MarineIcon from '$images/m.svg'
-	import OtherInfoIcon from '$images/otherInfo.svg'
-	import TerrestrialIcon from '$images/t.svg'
 
+	import BlueprintIcon from '#images/blueprint.svg'
+	import FreshwaterIcon from '#images/f.svg'
+	import MarineIcon from '#images/m.svg'
+	import OtherInfoIcon from '#images/otherInfo.svg'
+	import TerrestrialIcon from '#images/t.svg'
+	import { InfoTooltip } from '#lib/components/tooltip/index.js'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import { Checkbox } from '#lib/components/ui/checkbox/index.js'
+	import * as Collapsible from '#lib/components/ui/collapsible/index.js'
+	import { Label } from '#lib/components/ui/label/index.js'
 	import {
 		blueprint,
 		corridors,
@@ -19,12 +24,7 @@
 		wildfireRisk,
 		protectedAreas,
 		parcas
-	} from '$lib/config/constants'
-	import { Button } from '$lib/components/ui/button'
-	import { Checkbox } from '$lib/components/ui/checkbox'
-	import * as Collapsible from '$lib/components/ui/collapsible'
-	import { Label } from '$lib/components/ui/label'
-	import { InfoTooltip } from '$lib/components/tooltip'
+	} from '#lib/config/constants.js'
 
 	const priorityDatasets = [blueprint, corridors]
 	// polygon versions of PARCAs and protected areas are automatically included

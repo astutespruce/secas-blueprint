@@ -137,10 +137,7 @@ for infile in sorted(list(src_dir.glob("*slr_data_dist/*.gdb")) + list(src_dir.g
         else:
             slr_layers[ft] = layer
 
-    slr_layers = [
-        l[1]
-        for l in sorted(slr_layers.items(), key=lambda x: x[0], reverse=True)
-    ]
+    slr_layers = [l[1] for l in sorted(slr_layers.items(), key=lambda x: x[0], reverse=True)]
 
     # calculate the outer bounds and dimensions
     print("Calculating outer bounds")
@@ -176,6 +173,7 @@ for infile in sorted(list(src_dir.glob("*slr_data_dist/*.gdb")) + list(src_dir.g
 
         out = np.where(mask, depth, out)
 
+        # ruff: disable[ERA001]
         # DEBUG:
         # write_raster(
         #     f"/tmp/{layer}.tif",
@@ -184,6 +182,7 @@ for infile in sorted(list(src_dir.glob("*slr_data_dist/*.gdb")) + list(src_dir.g
         #     crs=DATA_CRS,
         #     nodata=0,
         # )
+        # ruff: enable[ERA001]
 
     print("Writing combined depth raster")
     # Output values are 0 - 10 and NODATA = 255
@@ -427,7 +426,7 @@ df = df[["geometry", "Region"] + SLR_PROJ_COLUMNS]
 df.to_feather(data_dir / "inputs" / SLR_PROJ["filename"])
 
 # DEBUG
-# write_dataframe(df, tmp_dir / "noaa_1deg_cells.fgb")
+# write_dataframe(df, tmp_dir / "noaa_1deg_cells.fgb") # noqa:ERA001
 
 
 print(f"All done in {time() - start:.2f}s")

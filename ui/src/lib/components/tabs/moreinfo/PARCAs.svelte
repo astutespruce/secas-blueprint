@@ -1,8 +1,9 @@
 <script lang="ts">
 	import CheckIcon from '~icons/fa-solid/check'
-	import { PercentBarChart } from '$lib/components/chart'
-	import { parcas as parcaInfo } from '$lib/config/constants'
-	import { cn } from '$lib/utils'
+
+	import { PercentBarChart } from '#lib/components/chart/index.js'
+	import { parcas as parcaInfo } from '#lib/config/constants.js'
+	import { cn } from '#lib/utils.js'
 
 	const { type, parcas = null } = $props()
 
@@ -41,7 +42,7 @@
 				{/each}
 			</div>
 		{/if}
-	{:else if parcas === null}
+	{:else if parcas === null || (parcas && parcas.length === 0)}
 		<div class="text-grey-8">
 			Priority Amphibian and Reptile Conservation Areas are not currently available for this area.
 		</div>
@@ -51,7 +52,7 @@
 		{/each}
 	{/if}
 
-	{#if parcas !== null}
+	{#if !(parcas === null || (parcas && parcas.length === 0))}
 		<div class="mt-8 text-grey-8 leading-snug">
 			Priority Amphibian and Reptile Conservation Areas are derived from data provided by the
 			<a href="https://arcprotects.org/work/" target="_blank">Amphibian and Reptile Conservancy</a>.

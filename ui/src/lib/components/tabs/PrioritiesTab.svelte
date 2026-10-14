@@ -1,8 +1,9 @@
 <script lang="ts">
 	import CheckIcon from '~icons/fa-solid/check'
-	import { blueprint as blueprintInfo, corridors as corridorInfo } from '$lib/config/constants'
-	import { PieChart } from '$lib/components/chart'
-	import { cn } from '$lib/utils'
+
+	import { PieChart } from '#lib/components/chart/index.js'
+	import { blueprint as blueprintInfo, corridors as corridorInfo } from '#lib/config/constants.js'
+	import { cn } from '#lib/utils.js'
 	import { NeedHelp } from './general'
 
 	type Props = {
@@ -110,7 +111,7 @@
 </script>
 
 <section class={cn('flex-auto overflow-y-auto h-full p-4', className)}>
-	<h3 class="text-2xl">Southeast Blueprint 2025 Priority</h3>
+	<h3 class="text-2xl">Southeast Blueprint 2026 Priority</h3>
 	<div class="text-grey-9">for a connected network of lands and waters</div>
 	{#if type !== 'pixel'}
 		<PieChart categories={blueprintChartData} class="mt-6 mb-4" />

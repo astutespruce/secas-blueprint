@@ -1,5 +1,5 @@
-import { indexBy, range } from '$lib/util/data'
-import type { Filters } from '$lib/types'
+import type { Filters } from '#lib/types.js'
+import { indexBy, range } from '#lib/util/data.js'
 import {
 	blueprint,
 	corridors,

@@ -17,15 +17,15 @@ LOCATOR_STYLE = {
     "sources": {
         "boundaries": {
             "type": "vector",
-            "url": f"mbtiles://{TILE_DIR}/report_boundaries.mbtiles",
+            "url": f"pmtiles://file://{TILE_DIR}/report_boundaries.pmtiles",
         },
         "map_units": {
             "type": "vector",
-            "url": f"mbtiles://{TILE_DIR}/se_map_units.mbtiles",
+            "url": f"pmtiles://file://{TILE_DIR}/se_map_units.pmtiles",
         },
         "mask": {
             "type": "vector",
-            "url": f"mbtiles://{TILE_DIR}/se_mask.mbtiles",
+            "url": f"pmtiles://file://{TILE_DIR}/se_mask.pmtiles",
         },
     },
     "layers": [

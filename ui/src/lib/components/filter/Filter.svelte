@@ -1,15 +1,15 @@
 <script lang="ts">
-	import ArrowUpIcon from '~icons/fa-solid/arrow-up'
 	import ArrowDownIcon from '~icons/fa-solid/arrow-down'
+	import ArrowUpIcon from '~icons/fa-solid/arrow-up'
 	import ExclamationTriangle from '~icons/fa-solid/exclamation-triangle'
 	import FilterIcon from '~icons/fa-solid/filter'
 	import Plus from '~icons/fa-solid/plus'
-	import { Checkbox } from '$lib/components/ui/checkbox'
-	import { Label } from '$lib/components/ui/label'
-	import { InfoTooltip } from '$lib/components/tooltip'
-	import { cn } from '$lib/utils'
 
-	import { logGAEvent } from '$lib/util/log'
+	import { InfoTooltip } from '#lib/components/tooltip/index.js'
+	import { Checkbox } from '#lib/components/ui/checkbox/index.js'
+	import { Label } from '#lib/components/ui/label/index.js'
+	import { logGAEvent } from '#lib/util/log.js'
+	import { cn } from '#lib/utils.js'
 
 	const {
 		id,

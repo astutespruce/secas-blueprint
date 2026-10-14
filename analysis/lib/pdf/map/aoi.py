@@ -16,7 +16,7 @@ STYLE = {
         "aoi": {"type": "geojson", "tolerance": 0.1, "data": ""},
         "mask": {
             "type": "vector",
-            "url": f"mbtiles://{TILE_DIR}/se_mask.mbtiles",
+            "url": f"pmtiles://file://{TILE_DIR}/se_mask.pmtiles",
             "maxzoom": 8,
         },
     },

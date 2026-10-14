@@ -131,15 +131,16 @@ df["bounds"] = df.src.apply(lambda x: x.bounds)
 df["box"] = df.bounds.apply(lambda x: shapely.box(*x))
 
 # DEBUG: look at spatial overlap within groups
-# write_dataframe(gp.GeoDataFrame(df[['box']].reset_index(),geometry='box', crs=DATA_CRS), '/tmp/indicator_boxes.fgb')
+# write_dataframe(gp.GeoDataFrame(df[['box']].reset_index(),geometry='box', crs=DATA_CRS), '/tmp/indicator_boxes.fgb') # noqa: ERA001
 
 
+# ruff: disable[ERA001]
 # # export for manual review and assignment of groups
 # # (enable when updating encoding)
 # tmp = df[["bits"]].copy()
 # tmp["group"] = ""
 # tmp.to_csv(out_dir / "layers.csv", index=True, index_label="id")
-
+# ruff: enable[ERA001]
 
 # read manually assigned groups that are up to 24 bits each
 # Note: these are based loosely on overlapping spatial extent
@@ -156,8 +157,10 @@ df = df.join(grouped[["group", "orig_pos"]])
 df = df.sort_values(by=["group", "orig_pos"])
 
 
+# ruff: disable[ERA001]
 # DEBUG: look at spatial overlap within groups
 # write_dataframe(gp.GeoDataFrame(df[['group', 'box']].reset_index(),geometry='box', crs=DATA_CRS), '/tmp/boxes.fgb')
+# ruff: enable[ERA001]
 
 groups = sorted(df.group.unique())
 
@@ -188,7 +191,6 @@ for group in groups:
 
 ### determine the block windows that overlap bounds
 # everything else will be filled with 0
-# print("Calculating overlapping windows")
 bnd = gp.read_feather(bnd_filename).geometry.values[0]
 extent = rasterio.open(extent_filename)
 windows = []
@@ -287,4 +289,4 @@ for group in groups:
 # to verify that values are encoded correctly
 # 1. cast encoded values to correct type (e.g., uint16): value = encoded[106,107].view('uint16')
 # 2. use bit shifting and bit AND logic to extract value, based on offset and nbits:
-# ((value >> offset) & ((2**nbits)-1)) - value_shift # => original value
+# ((value >> offset) & ((2**nbits)-1)) - value_shift # => original value  # noqa:ERA001

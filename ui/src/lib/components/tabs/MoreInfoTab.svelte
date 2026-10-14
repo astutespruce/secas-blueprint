@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { cn } from '$lib/utils'
-
-	import { PARCAs, ProtectedAreas, SLR, Urban, WildfireRisk } from './moreinfo'
+	import { cn } from '#lib/utils.js'
 	import { NeedHelp } from './general'
+	import { PARCAs, ProtectedAreas, SLR, Urban, WildfireRisk } from './moreinfo'
 
 	const {
 		type,
@@ -18,7 +17,7 @@
 	} = $props()
 
 	const showTerrestrialDatasets = $derived(
-		regions && (regions.has('continental') || regions.has('caribbean'))
+		regions && (regions.has('continental') || regions.has('caribbean')) && type !== 'marine hex'
 	)
 </script>
 
@@ -34,7 +33,7 @@
 
 		<Urban {type} {urban} {regions} />
 
-		<WildfireRisk {type} {wildfire_risk} />
+		<WildfireRisk {type} {wildfire_risk} {regions} />
 	{/if}
 
 	<NeedHelp />

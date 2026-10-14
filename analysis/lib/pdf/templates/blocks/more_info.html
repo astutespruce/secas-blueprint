@@ -10,7 +10,7 @@
     {% include "blocks/no_protected_areas.html" %}
 {% endif %}
 
-{% if results.slr and results.slr.depth %}
+{% if results.slr and results.slr.depth and results.slr.outside_slr_percent < 100 %}
     {% include "blocks/slr.html" %}
 {% elif not is_marine_only %}
     {% include "blocks/no_slr.html" %}

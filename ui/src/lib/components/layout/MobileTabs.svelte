@@ -1,17 +1,17 @@
 <script lang="ts">
 	import { getContext } from 'svelte'
-
+	import LineChartIcon from '~icons/fa-solid/chart-line'
+	import PieChartIcon from '~icons/fa-solid/chart-pie'
 	import EnvelopeIcon from '~icons/fa-solid/envelope'
 	import FilterIcon from '~icons/fa-solid/filter'
 	import InfoIcon from '~icons/fa-solid/info-circle'
-	import LineChartIcon from '~icons/fa-solid/chart-line'
 	import MapIcon from '~icons/fa-solid/map'
-	import PieChartIcon from '~icons/fa-solid/chart-pie'
 	import SearchIcon from '~icons/fa-solid/search-location'
 	import TasksIcon from '~icons/fa-solid/tasks'
-	import { Button } from '$lib/components/ui/button'
-	import { MapState } from '$lib/components/map'
-	import { cn } from '$lib/utils'
+
+	import { MapState } from '#lib/components/map/index.js'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import { cn } from '#lib/utils.js'
 
 	const mapState: MapState = getContext('map-state')
 	const { tab, onChange } = $props()

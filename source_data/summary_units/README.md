@@ -7,8 +7,10 @@ Processed using `analysis/prep/prepare_summary_units.py`.
 These are used for summarizing inland areas in the SE Blueprint.
 
 HUC2s that overlap the boundary (02, 03, 05, 06, 07, 08, 10, 11, 12, 13, 21)
-were downloaded 9/28/2023 (updated versions downloaded on 6/4/2024) from:
+were downloaded 9/15/2026 from:
 https://prd-tnm.s3.amazonaws.com/index.html?prefix=StagedProducts/Hydrography/WBD/HU2/GDB/
+(data were timestamped at 1/8/2025)
+
 
 ## 40km Hexagons
 
