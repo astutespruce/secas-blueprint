@@ -81,7 +81,7 @@ def add_slr_depth_sheet(xlsx: pd.ExcelWriter, df: pd.DataFrame, name_col_width: 
 
     num_area_cols = num_value_cols + int(has_area_outside_extent) + int(has_area_outside_dataset) + 1
     column_widths = [name_col_width] + ([18] * (len(slr.columns) - 1))
-    area_columns = list(range(num_area_cols))
+    area_columns = list(range(1, num_area_cols))
     percent_columns = list(range(num_area_cols, num_area_cols + num_area_cols))
     write_excel(
         xlsx,
