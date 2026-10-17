@@ -440,7 +440,7 @@ def write_raster(filename, data, transform, crs, nodata, compress=True):
         "count": 1,
         "crs": crs,
         "transform": transform,
-        "compress": "lzw" if compress else None,
+        "compress": "zstd" if compress else None,
         "tiled": True,
         "blockxsize": 256,
         "blockysize": 256,

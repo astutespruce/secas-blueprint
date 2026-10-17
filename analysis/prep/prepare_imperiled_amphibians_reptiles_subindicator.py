@@ -11,14 +11,16 @@ from progress.bar import Bar
 from rasterio.windows import Window
 from rasterio.windows import transform as transform_for_window
 
-from analysis.constants import DATA_CRS
+from analysis.constants import DATA_CRS, INDICATORS_INDEX
 from analysis.lib.raster import add_overviews, clip_window, get_data_window, shift_window, write_raster
 
 WINDOW_SIZE = 4096
 NODATA = np.uint8(0)
+OUT_DTYPE = "uint64"
+OUT_BITS = np.dtype(OUT_DTYPE).itemsize * 8
 
 
-src_dir = Path("source_data/blueprint/subindicators")
+src_dir = Path("source_data/subindicators")
 amphibians_dir = src_dir / "2023GAP_amphibianModels"
 reptiles_dir = src_dir / "2023GAP_reptileModels"
 
@@ -31,38 +33,23 @@ working_dir.mkdir(exist_ok=True)
 
 
 ################################################################################
-### Create combined extent, terrestrial, and non-urban mask
+### Use the indicator to derive a mask
 ################################################################################
-# use NLCD as the extraction extent; it is already masked to extent and it covers
-# a smaller extent closer to the species data
-mask_filename = working_dir / "amphibian_reptile_mask.tif"
+# the indicator has already been masked by NLCD 2024, terrestrial, and Blueprint
+# extent, so we mask using it here to match
+
+indicator_id = "t_imperiledamphibiansandreptiles"
+indicator = INDICATORS_INDEX[indicator_id]
+indicator_filename = out_dir / indicator["filename"]
+
+mask_filename = working_dir / f"{indicator_id}_mask.tif"
 if not mask_filename.exists():
-    with (
-        rasterio.open(src_dir / "ElevationBasedTerrestrialMarineMask.tif") as terrestrial_mask,
-        rasterio.open(out_dir / "nlcd/landcover_2021.tif") as nlcd,
-    ):
-        # nlcd already aligned to extent and has extent mask applied
-        nlcd_data = nlcd.read(1)
-        # mask out all nodata and existing urban (nlcd 2-5)
-        mask_data = np.where(
-            (nlcd_data == np.uint8(nlcd.nodata)) | ((nlcd_data >= np.uint8(2)) & (nlcd_data <= np.uint8(5))),
-            NODATA,
-            np.uint8(1),
-        )
-        del nlcd_data
-
-        ### terrestrial extent is pixel-aligned but doesn't have same origin
-        row_off = int((terrestrial_mask.transform.f - nlcd.transform.f) // nlcd.transform.a)
-        col_off = int((terrestrial_mask.transform.c - nlcd.transform.c) // nlcd.transform.e)
-        read_window = Window(row_off=row_off, col_off=col_off, width=nlcd.width, height=nlcd.height)
-        t_mask_data = terrestrial_mask.read(1, window=read_window)
-        mask_data *= t_mask_data
-        del t_mask_data
-
-        write_raster(mask_filename, mask_data, transform=nlcd.transform, crs=nlcd.crs, nodata=NODATA)
+    with rasterio.open(indicator_filename) as src:
+        data = src.read(1)
+        mask_data = np.where((data == np.uint8(0)) | (data == np.uint8(src.nodata)), NODATA, np.uint8(1))
+        write_raster(mask_filename, mask_data, transform=src.transform, crs=src.crs, nodata=NODATA)
         add_overviews(mask_filename)
         del mask_data
-
 
 mask = rasterio.open(mask_filename)
 mask_data = mask.read(1)
@@ -71,9 +58,6 @@ mask_data = mask.read(1)
 ################################################################################
 ### Extract Blueprint-aligned rasters at their data extent
 ################################################################################
-tifs = {filename.name.split("_")[0]: filename for filename in amphibians_dir.glob("*.tif")}
-tifs.update({filename.name.split("_")[0]: filename for filename in reptiles_dir.glob("*.tif")})
-
 spp = (
     pd.read_excel(src_dir / "RSGCN_list_3may21_status.xlsx", engine="calamine")[
         ["Scientific Name", "Common Name", "strUC GAP2016"]
@@ -95,6 +79,9 @@ ids = sorted(spp.index.values)
 
 
 ### extract read window based on overlapping extent with Southeast Blueprint extent
+tifs = {filename.name.split("_")[0]: filename for filename in amphibians_dir.glob("*.tif")}
+tifs.update({filename.name.split("_")[0]: filename for filename in reptiles_dir.glob("*.tif")})
+
 with rasterio.open(tifs[ids[0]]) as src:
     # calculate reference transform that shifts species data to exactly match Blueprint extent
     # NOTE: we can do this because they are the same CRS and cell size, just slighthly shifted (~1m)
@@ -195,9 +182,11 @@ bounds = shapely.bounds(df.geometry.values)
 df["point"] = gp.GeoSeries(shapely.points(bounds[:, 0], bounds[:, 3]), crs=DATA_CRS)
 df = df.sort_values(by="point").drop(columns=["point"]).reset_index(drop=True)
 
-# group into 64 bit chunks
-df["group"] = df.index // 64
+# group into OUT_BITS sized chunks
+df["group"] = df.index // OUT_BITS
 groups = sorted(df.group.unique())
+
+print(f"Creating {len(groups)} groups")
 
 df["bit"] = np.uint64(0)
 for group in groups:
@@ -205,13 +194,11 @@ for group in groups:
     df.loc[ix, "bit"] = np.arange(ix.sum()).astype("uint64")
 
 df[["group", "bit", "id", "value"]].reset_index(drop=True).to_feather(
-    subindicators_out_dir / "t_imperiledamphibiansandreptiles_spp.feather"
+    subindicators_out_dir / f"{indicator_id}_spp.feather"
 )
 
 for group in groups:
-    outfilename = subindicators_out_dir / f"t_imperiledamphibiansandreptiles_spp_{group}.tif"
-    if outfilename.exists():
-        continue
+    outfilename = subindicators_out_dir / f"{indicator_id}_spp_{group}.tif"
 
     rows = df.loc[df.group == group].copy()
     rows["src"] = rows.id.apply(lambda id: rasterio.open(working_dir / f"{id}.tif"))
@@ -225,29 +212,60 @@ for group in groups:
         for col_off in np.arange(width, step=WINDOW_SIZE):
             windows.append(Window(row_off=row_off, col_off=col_off, width=WINDOW_SIZE, height=WINDOW_SIZE))
 
-    out = np.zeros(shape=(height, width), dtype="uint64")
-    for _, row in rows.iterrows():
-        for window in Bar(f"Processing {row.id}", max=len(windows)).iter(windows):
-            window_transform = transform_for_window(window, transform)
-            raw_window = shift_window(window, window_transform, row.src.transform)
-            read_window = clip_window(
-                shift_window(window, window_transform, row.src.transform), row.src.width, row.src.height
-            )
-            # if window doesn't overlap then skip it
-            if read_window.width == 0 or read_window.height == 0:
-                continue
+    meta = {
+        "driver": "GTiff",
+        "dtype": OUT_DTYPE,
+        "nodata": NODATA,
+        "width": width,
+        "height": height,
+        "count": 1,
+        "crs": DATA_CRS,
+        "transform": transform,
+        "compress": "zstd",
+        "predictor": 2,  # use horizontal differencing
+        "tiled": True,
+        "blockxsize": 256,
+        "blockysize": 256,
+    }
 
-            data = row.src.read(1, window=read_window)
-            if data.max() == 0:
-                continue
+    out = np.zeros(shape=(WINDOW_SIZE, WINDOW_SIZE), dtype=OUT_DTYPE)
 
-            out_window = shift_window(read_window, transform_for_window(read_window, row.src.transform), transform)
-            out_ix = out_window.toslices()
-            out[out_ix] = np.bitwise_or(np.left_shift(data.astype("uint64"), row.bit), out[out_ix])
-            del data
+    with (
+        rasterio.Env(GDAL_CACHEMAX=2048, GDAL_NUM_THREADS="ALL_CPUS"),
+        rasterio.open(outfilename, "w", **meta) as outfile,
+    ):
+        # process data by window to avoid running out of memory
+        for window in Bar(message=f"Processing group {group}", max=len(windows)).iter(windows):
+            out.fill(0)
 
-    print(f"Saving output file")
-    write_raster(outfilename, out, transform=transform, crs=DATA_CRS, nodata=0)
-    add_overviews(outfilename)
+            # clip output window to output grid
+            out_window = clip_window(window, max_width=width, max_height=height)
+            out_window_transform = transform_for_window(out_window, transform)
+            out_data = out[: out_window.height, : out_window.width]
+
+            for _, row in rows.iterrows():
+                read_window = clip_window(
+                    shift_window(out_window, out_window_transform, row.src.transform),
+                    row.src.width,
+                    row.src.height,
+                )
+
+                # if window doesn't overlap then skip it
+                if read_window.width == 0 or read_window.height == 0:
+                    continue
+
+                data = row.src.read(1, window=read_window)
+                if data.max() == 0:
+                    continue
+
+                data_window = shift_window(
+                    read_window, transform_for_window(read_window, row.src.transform), out_window_transform
+                )
+
+                ix = data_window.toslices()
+                out_data[ix] = np.bitwise_or(np.left_shift(data.astype(OUT_DTYPE), row.bit), out_data[ix])
+                del data
+
+            outfile.write(out_data, 1, window=out_window)
 
     rows.src.apply(lambda x: x.close())

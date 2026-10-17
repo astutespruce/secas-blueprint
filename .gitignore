@@ -20,14 +20,14 @@
 /source_data/protected_areas/*
 /source_data/slr/*
 /source_data/urban/*
+/source_data/subindicators/*
 /source_data/summary_units/*
 /source_data/wildfire_risk/*
 !/source_data/
 !/source_data/**/README.md
 
-!/source_data/blueprint/subindicators/
-/source_data/blueprint/subindicators/*
-!/source_data/blueprint/subindicators/README.md
+!/source_data/subindicators/
+!/source_data/subindicators/README.md
 
 /data/*
 /examples/*
