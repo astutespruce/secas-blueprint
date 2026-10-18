@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import rasterio
 import shapely
+from pyogrio import read_dataframe
 
 from analysis.constants import (
     BLUEPRINT,
@@ -23,7 +24,7 @@ from analysis.constants import (
     URBAN_YEARS,
     WILDFIRE_RISK,
 )
-from analysis.lib.stats.blueprint import BLUEPRINT_BINS, CORRIDOR_BINS, extract_subindicator
+from analysis.lib.stats.blueprint import BLUEPRINT_BINS, CORRIDOR_BINS, extract_cores_in_analysis_areas
 from analysis.lib.stats.parcas import BINS as PARCAS_BINS
 from analysis.lib.stats.parcas import extract_parcas_in_analysis_units
 from analysis.lib.stats.protected_areas import BINS as PROTECTED_AREAS_BINS
@@ -112,16 +113,17 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
                     files[id] = rasterio.open(data_dir / dataset["filename"])
                     subindicator = dataset.get("subindicator")
                     if subindicator:
-                        if "{" in subindicator["filename"]:
-                            key = subindicator["filename_params"]["key"]
-                            for value in subindicator["filename_params"]["values"]:
-                                files[f"{subindicator['id']}_{value}"] = rasterio.open(
-                                    data_dir / subindicator["filename"].format(**{key: value})
+                        if subindicator["filename"].endswith(".tif"):
+                            if "{" in subindicator["filename"]:
+                                key = subindicator["filename_params"]["key"]
+                                for value in subindicator["filename_params"]["values"]:
+                                    files[f"{subindicator['id']}_{value}"] = rasterio.open(
+                                        data_dir / subindicator["filename"].format(**{key: value})
+                                    )
+                            else:
+                                raise NotImplementedError(
+                                    f"file opening not yet implemented for subindicator: {subindicator['id']}"
                                 )
-                        else:
-                            raise NotImplementedError(
-                                f"file opening not yet implemented for subindicator: {subindicator['id']}"
-                            )
 
                         if "table_filename" in subindicator:
                             table = pd.read_feather(
@@ -129,7 +131,7 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
                             )
                             tables[subindicator["id"]] = table
 
-        for i, (index, row) in enumerate(df.iterrows()):
+        for i, (_, row) in enumerate(df.iterrows()):
             rasterized_geometry = RasterizedGeometry(row.geometry)
 
             overlap_acres = rasterized_geometry.acres - rasterized_geometry.outside_extent_acres
@@ -180,9 +182,14 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
 
                     subindicator = indicator.get("subindicator")
                     if subindicator:
-                        result[subindicator["id"]] = extract_subindicator(
-                            subindicator, rasterized_geometry, files, tables.get(subindicator["id"])
-                        )
+                        if subindicator["type"] == "stacked_bits":
+                            out = set()
+                            for group in table.group.unique():
+                                dataset = files[f"{subindicator['id']}_{group}"]
+                                bits = rasterized_geometry.get_set_bits(dataset)
+                                out.update(table.loc[(table.group == group) & table.bit.isin(bits)].value.tolist())
+
+                            result[subindicator["id"]] = sorted(out)
 
             if SLR_DEPTH["id"] in datasets:
                 slr_acres = rasterized_geometry.get_acres_by_bin(files[SLR_DEPTH["id"]], SLR_DEPTH_BINS)
@@ -266,5 +273,14 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
         slr_proj = extract_slr_proj_in_analysis_areas(df)
         if slr_proj is not None:
             out = out.join(slr_proj)
+
+    for dataset_id in datasets:
+        dataset = REPORT_DATASETS[dataset_id]
+        subindicator = dataset.get("subindicator")
+        if subindicator is not None:
+            if subindicator["type"] == "cores":
+                cores = extract_cores_in_analysis_areas(subindicator, df)
+                if cores is not None:
+                    out = out.join(cores)
 
     return out

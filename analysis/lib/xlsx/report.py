@@ -90,8 +90,7 @@ def create_report(df: pd.DataFrame, datasets: set[str], name: str | None = None)
 
             subindicator = dataset.get("subindicator")
             if subindicator:
-                if subindicator["type"] == "stacked_bits":
-                    add_subindicator_sheet(xlsx, df, subindicator, name_col_width)
+                add_subindicator_sheet(xlsx, df, subindicator, name_col_width)
 
         # Analysis metadata sheet
         add_metadata_sheet(xlsx, name)

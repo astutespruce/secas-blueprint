@@ -3,6 +3,8 @@ from pathlib import Path
 
 import pandas as pd
 import rasterio
+import shapely
+from pyogrio import read_dataframe
 
 from analysis.constants import BLUEPRINT, CORRIDORS, INDICATOR_GROUPS, INDICATORS, INDICATORS_INDEX, M2_ACRES
 from analysis.lib.io import read_unit_from_feather
@@ -425,18 +427,47 @@ def get_blueprint_unit_results(results_dir, unit):
     return results
 
 
-def extract_subindicator(subindicator, rasterized_geometry, files, table=None):
-    if subindicator["type"] == "stacked_bits":
-        if table is None:
-            raise ValueError(f"table must be set for subindicator type stacked_bits: {subindicator['id']}")
+def extract_cores_in_analysis_areas(subindicator, df):
+    index_name = df.index.name or "index"
+    out_name = subindicator["id"]
 
-        out = set()
-        for group in table.group.unique():
-            dataset = files[f"{subindicator['id']}_{group}"]
-            bits = rasterized_geometry.get_set_bits(dataset)
-            out.update(table.loc[(table.group == group) & table.bit.isin(bits)].value.tolist())
+    tmp = df.explode(ignore_index=False, index_parts=False)
+    # use union of individual area bounding boxes to read features
+    read_mask = shapely.union_all(shapely.envelope(tmp.geometry.values))
+    # NOTE: pyogrio does not currently work properly for use_arrow=True if the
+    # mask does not overlap and returns no features, so we can't use it here.
+    cores = read_dataframe(src_dir / subindicator["filename"], columns=["acres", "size", "geometry"], mask=read_mask)
 
-        return sorted(out)
+    if len(cores) == 0:
+        return None
 
-    else:
-        raise NotImplementedError(f"subindicator type not supported: {subindicator['id']}")
+    # find all cores that intersect any part of the AOI
+    left, right = shapely.STRtree(cores.geometry.values).query(tmp.geometry.values, predicate="intersects")
+    cores = pd.DataFrame(
+        {
+            "size": cores["size"].values.take(right),
+            "acres": cores.acres.values.take(right),
+            index_name: tmp.index.take(left),
+        }
+    )
+
+    if len(cores) == 0:
+        return None
+
+    cores = cores.groupby(by=[index_name, "size"]).agg(
+        {
+            "acres": [
+                "count",
+                "min",
+                "mean",
+                "max",
+            ]
+        }
+    )
+    cores.columns = ["count", "min_acres", "mean_acres", "max_acres"]
+    return (
+        cores.reset_index(level=-1)
+        .groupby(level=0)
+        .apply(lambda row: row.set_index("size").to_dict(orient="index"))
+        .rename(out_name)
+    )

@@ -31,6 +31,7 @@ from analysis.lib.xlsx.basic import get_value_columns
 from analysis.lib.xlsx.report import create_report, get_value_order
 from analysis.lib.xlsx.slr import depth_value_columns as slr_depth_value_cols
 from analysis.lib.xlsx.slr import proj_value_columns as slr_proj_value_cols
+from analysis.lib.xlsx.subindicators import cores_value_columns
 from analysis.lib.xlsx.urban import value_columns as urban_value_cols
 from api.logger import log
 from api.settings import TEMP_DIR
@@ -209,6 +210,14 @@ async def test_get_analysis_unit_results_single_area(format):
     assert np.allclose(row["t_imperiledamphibiansandreptiles"], [0.6671835, 0.0, 0.0, 45.368478, 0.0, 4.6702845])
     assert len(row["t_imperiledamphibiansandreptiles_spp"]) == 8
     assert "Seepage Salamander (Desmognathus aeneus)" in row["t_imperiledamphibiansandreptiles_spp"]
+
+    assert np.allclose(row["t_intacthabitatcores"], [0.0, 0.0, 50.705946, 0.0])
+    core_sizes = row["t_intacthabitatcores_size"]
+    assert len(core_sizes) == 1
+    assert core_sizes["medium"]["count"] == 1
+    assert np.isclose(core_sizes["medium"]["min_acres"], 2400.9710)
+    assert np.isclose(core_sizes["medium"]["max_acres"], 2400.9710)
+    assert np.isclose(core_sizes["medium"]["mean_acres"], 2400.9710)
 
     assert np.allclose(row["f_permeablesurface"], [0, 0, 0, 50.705946])
 
@@ -425,6 +434,7 @@ async def test_create_xlsx_file_single_area(format):
         "corridors",
         "f_permeablesurface",
         "t_imperiledamphibiansandreptiles",
+        "t_intacthabitatcores",
         "slr_depth",
         "slr_proj",
         "parcas_poly",
@@ -505,7 +515,7 @@ async def test_create_xlsx_file_single_area(format):
     )
 
     subindicator = indicator["subindicator"]
-    sheet_name = subindicator.get("sheet_name") or indicator["label"]
+    sheet_name = subindicator.get("sheet_name") or subindicator["label"]
     subindicator_sheet = reader.parse(sheet_name=sheet_name, skiprows=2)
     subindicator_value_cols = [v["label"] for v in subindicator["values"]]
     assert subindicator_sheet.columns.tolist() == ["Analysis unit"] + subindicator_value_cols
@@ -534,6 +544,18 @@ async def test_create_xlsx_file_single_area(format):
     assert np.allclose(
         indicator_sheet.iloc[0][indicator_value_cols].values.astype("float64"), results[indicator_id].iloc[0]
     )
+
+    indicator_id = "t_intacthabitatcores"
+    indicator = INDICATORS_INDEX[indicator_id]
+    subindicator = indicator["subindicator"]
+    sheet_name = subindicator.get("sheet_name") or subindicator["label"]
+    subindicator_sheet = reader.parse(sheet_name=sheet_name, skiprows=2)
+    assert subindicator_sheet.columns.tolist() == ["Analysis unit"] + cores_value_columns
+    assert len(subindicator_sheet) == 1
+    assert subindicator_sheet.iloc[0]["Intact habitat core size"] == "Medium core (>1,000-10,000 acres)"
+    assert subindicator_sheet.iloc[0]["Number of overlapping cores"] == 1
+    for col in cores_value_columns[-3:]:
+        assert np.isclose(subindicator_sheet.iloc[0][col], 2400.9710)
 
     slr_depth = reader.parse(sheet_name="SLR - area flooded by ft of SLR", skiprows=3).dropna(axis=1)
     # only nodata is areas outside counties
@@ -605,6 +627,7 @@ async def test_create_xlsx_file_multiple_areas_partial_overlap(format):
     datasets = [
         "blueprint",
         "t_imperiledamphibiansandreptiles",
+        "t_intacthabitatcores",
         "slr_depth",
         "slr_proj",
         "parcas_poly",
@@ -791,6 +814,7 @@ async def test_create_xlsx_file_multiple_areas(format):
     datasets = [
         "blueprint",
         "t_imperiledamphibiansandreptiles",
+        "t_intacthabitatcores",
         "slr_depth",
         "slr_proj",
         "parcas_poly",

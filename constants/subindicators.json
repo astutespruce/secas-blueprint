@@ -9,14 +9,41 @@
     "type": "stacked_bits",
     "label": "Imperiled amphibian & reptile species list",
     "sheet_name": "Imperiled herp species list",
-    "caption":"Imperiled amphibian & reptile species present based on USGS Southeast Gap Analysis Project species distribution models",
+    "caption": "Imperiled amphibian & reptile species present based on USGS Southeast Gap Analysis Project species distribution models",
     "source": "Southeast Conservation Blueprint",
-	"date": "2026",
-	"citation": "Southeast Conservation Adaptation Strategy (SECAS). 2026. Southeast Conservation Blueprint 2026.",
+    "date": "2026",
+    "citation": "Southeast Conservation Adaptation Strategy (SECAS). 2026. Southeast Conservation Blueprint 2026.",
     "description": "This dataset provides additional details for the Imperiled amphibians & reptiles indicator.  It provides a list of species present based on available USGS Southeast Gap Analysis Project species distribution models for species included in the indicator.  Data are limited to limited to non-urban, non-marine areas in the Continental U.S.",
     "values": [
-        {"value": "count", "label": "Number of species present"},
-        {"value": "value", "label": "Species present"}
+      { "value": "count", "label": "Number of species present" },
+      { "value": "value", "label": "Species present" }
+    ]
+  },
+  {
+    "id": "t_intacthabitatcores_size",
+    "indicator_id": "t_intacthabitatcores",
+    "filename": "subindicators/t_intacthabitatcores_size.fgb",
+    "type": "cores",
+    "label": "Intact habitat core size",
+    "sheet_name": "",
+    "caption": "Intact habitat core size range by size class",
+    "source": "Southeast Conservation Blueprint",
+    "date": "2026",
+    "citation": "Southeast Conservation Adaptation Strategy (SECAS). 2026. Southeast Conservation Blueprint 2026.",
+    "description": "This dataset provides additional details for the Intact habitat cores indicator.  Itshows the size range of large, unfragmented patches of natural habitat. It identifies minimally disturbed natural areas at least 100 acres in size and greater than 200 meters wide. Large areas of intact natural habitat are important for many wildlife species, including reptiles and amphibians, birds, and large mammals. These data originate from Esri's green infrastructure data.",
+    "values": [
+      {
+        "value": "small",
+        "label": "Small core (>100-1,000 acres)"
+      },
+      {
+        "value": "medium",
+        "label": "Medium core (>1,000-10,000 acres)"
+      },
+      {
+        "value": "large",
+        "label": "Large core (>10,000 acres)"
+      }
     ]
   }
 ]
