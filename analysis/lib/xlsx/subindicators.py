@@ -1,5 +1,8 @@
 import pandas as pd
 
+from analysis.constants import INDICATORS_INDEX
+from analysis.lib.xlsx.basic import add_basic_results_sheet
+from analysis.lib.xlsx.style import CHAR_PER_WIDTH_UNIT
 from analysis.lib.xlsx.writer import write_excel
 
 cores_value_columns = [
@@ -11,10 +14,26 @@ cores_value_columns = [
 ]
 
 
-def add_subindicator_sheet(xlsx: pd.ExcelWriter, df: pd.DataFrame, subindicator: dict, name_col_width: int):
+def add_subindicator_sheet(
+    xlsx: pd.ExcelWriter, df: pd.DataFrame, subindicator: dict, name_col_width: int, outside_area_label: str
+):
+    """Add a sheet for one of the Blueprint subindicators.
+
+    Parameters
+    ----------
+    xlsx : pd.ExcelWriter
+    df : pd.DataFrame
+    dataset : dict
+        dataset object with info
+    name_col_width : float
+        width of name column
+    outside_area_label : str
+        name of outside analysis area acres column
+    """
     sheet_name = subindicator.get("sheet_name", None) or subindicator["label"]
     caption = subindicator["caption"] + "."
     values = subindicator["values"]
+    nodata_label = "Outside extent of this dataset\n(acres)"
 
     if subindicator["type"] == "stacked_bits":
         tmp = df[[subindicator["id"]]].rename(columns={subindicator["id"]: "value"})
@@ -64,6 +83,59 @@ def add_subindicator_sheet(xlsx: pd.ExcelWriter, df: pd.DataFrame, subindicator:
             area_columns=[3, 4, 5],
             # only include breaks if they are not incremental
             breaks=None if breaks == list(range(len(df))) else breaks,
+        )
+
+    elif subindicator["type"] == "lines":
+        good_threshold = INDICATORS_INDEX[subindicator["indicator_id"]].get("goodThreshold", None)
+        if good_threshold is not None:
+            caption += "  Good condition thresholds reflect the range of indicator values that occur in healthy, functioning ecosystems."
+
+        value_columns = [f"{v['label'].replace(' (', '\n(')}\n(miles)" for v in values]
+        col_width = min(max([len(c) for c in value_columns]) * CHAR_PER_WIDTH_UNIT, 18)
+        tmp = df[subindicator["id"]].apply(pd.Series).fillna(0)
+        tmp.columns = value_columns
+
+        # sort greatest to least
+        value_columns = value_columns[::-1]
+
+        percent_columns = [col.replace("(miles)", "(percent)") for col in value_columns]
+        tmp["total_miles"] = tmp[value_columns].sum(axis=1)
+        for value_col, percent_col in zip(value_columns, percent_columns):
+            tmp[percent_col] = (tmp[value_col] / tmp.total_miles).fillna(0)
+
+        tmp = tmp[value_columns + percent_columns]
+
+        good_condition_info = None
+        if good_threshold is not None:
+            # NOTE: this only applies to indicators, which are always in greatest to least order
+
+            num_good_values = len([v for v in values if v["value"] >= good_threshold])
+            num_not_good_values = len(values) - num_good_values
+
+            good_condition_info = {
+                "num_good_values": num_good_values,
+                "num_not_good_values": num_not_good_values,
+                "num_extra_columns": 0,
+            }
+
+        column_widths = [name_col_width] + ([col_width] * len(tmp.columns))
+
+        num_area_cols = len(value_columns) + 1
+        area_columns = list(range(num_area_cols))
+        percent_columns = list(range(num_area_cols, num_area_cols * 2))
+
+        write_excel(
+            xlsx,
+            tmp.reset_index(),
+            sheet_name=sheet_name,
+            caption=caption,
+            column_widths=column_widths,
+            area_columns=area_columns,
+            percent_columns=percent_columns,
+            add_percent_divider=True,
+            good_condition_info=good_condition_info,
+            area_header="MILES",
+            percent_header=subindicator.get("percent_header", "PERCENT"),
         )
 
     else:

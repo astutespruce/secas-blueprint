@@ -90,7 +90,7 @@ def create_report(df: pd.DataFrame, datasets: set[str], name: str | None = None)
 
             subindicator = dataset.get("subindicator")
             if subindicator:
-                add_subindicator_sheet(xlsx, df, subindicator, name_col_width)
+                add_subindicator_sheet(xlsx, df, subindicator, name_col_width, outside_area_label=outside_area_label)
 
         # Analysis metadata sheet
         add_metadata_sheet(xlsx, name)

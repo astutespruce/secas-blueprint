@@ -8,7 +8,7 @@ from analysis.constants import M2_ACRES
 
 warnings.filterwarnings("ignore", message=".*a polygon with more than 100 parts.*")
 
-src_dir = Path("source_data/blueprint/subindicators")
+src_dir = Path("source_data/subindicators")
 data_dir = Path("data")
 out_dir = data_dir / "inputs"
 subindicators_out_dir = out_dir / "subindicators"

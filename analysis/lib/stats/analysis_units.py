@@ -5,7 +5,6 @@ import numpy as np
 import pandas as pd
 import rasterio
 import shapely
-from pyogrio import read_dataframe
 
 from analysis.constants import (
     BLUEPRINT,
@@ -24,7 +23,7 @@ from analysis.constants import (
     URBAN_YEARS,
     WILDFIRE_RISK,
 )
-from analysis.lib.stats.blueprint import BLUEPRINT_BINS, CORRIDOR_BINS, extract_cores_in_analysis_areas
+from analysis.lib.stats.blueprint import BLUEPRINT_BINS, CORRIDOR_BINS
 from analysis.lib.stats.parcas import BINS as PARCAS_BINS
 from analysis.lib.stats.parcas import extract_parcas_in_analysis_units
 from analysis.lib.stats.protected_areas import BINS as PROTECTED_AREAS_BINS
@@ -32,6 +31,7 @@ from analysis.lib.stats.protected_areas import extract_protected_areas_in_analys
 from analysis.lib.stats.rasterized_geometry import RasterizedGeometry
 from analysis.lib.stats.slr import BINS as SLR_DEPTH_BINS
 from analysis.lib.stats.slr import extract_slr_proj_in_analysis_areas
+from analysis.lib.stats.subindicators import extract_cores_in_analysis_areas, extract_lines_in_analysis_areas
 from analysis.lib.stats.urban import BINS as URBAN_BINS
 from analysis.lib.stats.urban import PROBABILITIES as URBAN_PROBABILITIES
 from analysis.lib.stats.wildfire_risk import BINS as WILDFIRE_RISK_BINS
@@ -282,5 +282,9 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
                 cores = extract_cores_in_analysis_areas(subindicator, df)
                 if cores is not None:
                     out = out.join(cores)
+            elif subindicator["type"] == "lines":
+                lines = extract_lines_in_analysis_areas(subindicator, df)
+                if lines is not None:
+                    out = out.join(lines)
 
     return out

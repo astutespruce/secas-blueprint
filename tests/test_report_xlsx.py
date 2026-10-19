@@ -403,7 +403,7 @@ async def test_get_analysis_unit_results_multiple_areas(format):
     assert pr_slr_proj[0]["scenario"] == "l"
 
     assert np.allclose(
-        pr_slr_proj[0]["values"], [0.2625, 0.4921, 0.8202, 1.3123, 2.0669, 3.0512, 4.1995, 5.4462, 6.7913], atol=1e4
+        pr_slr_proj[0]["values"], [0.2625, 0.4921, 0.8202, 1.3123, 2.0669, 3.0512, 4.1995, 5.4462, 6.7913], atol=1e-4
     )
 
     assert np.allclose(
@@ -413,7 +413,25 @@ async def test_get_analysis_unit_results_multiple_areas(format):
 
     assert np.allclose(marine_poly[URBAN_BY_DECADE["id"]], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5386.1724])
 
-    assert np.allclose(ga_poly[WILDFIRE_RISK["id"]], [0, 0, 0, 0, 0, 0.6672, 311.5747, 0, 0, 0, 0], atol=1e4)
+    assert np.allclose(ga_poly[WILDFIRE_RISK["id"]], [0, 0, 0, 0, 0, 0.6672, 311.5747, 0, 0, 0, 0], atol=1e-4)
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("format", ["shp", "gdb"])
+async def test_get_analysis_unit_results_coastal(format):
+    filename = f"{format}_poly_coastal.zip"
+    dataset = filename.replace(f"{format}_", "").replace(".zip", f".{format}")
+    df = read_dataframe(f"/vsizip/tests/fixtures/{filename}/{dataset}", columns=[], use_arrow=True).to_crs(DATA_CRS)
+    datasets = set(get_available_datasets(df))
+    results = await get_analysis_unit_results(df, datasets)
+
+    assert len(results) == len(df)
+    for col in ["states", "subregions", "regions", "count", "acres"]:
+        assert col in results.columns
+
+    row = results.iloc[0]
+    assert np.allclose(row["m_coastalshorelinecondition"], [10.6749, 5.1151, 0.0, 967.4161, 618.4791])
+    assert np.allclose(row["m_coastalshorelinecondition_length"], [0.7358, 0.3372, 0.0, 74.8518, 58.2145], atol=1e-4)
 
 
 @pytest.mark.anyio
@@ -453,7 +471,7 @@ async def test_create_xlsx_file_single_area(format):
 
     reader = pd.ExcelFile(BytesIO(xlsx))
 
-    # includes 1 subindicator for t_imperiledamphibiansandreptiles
+    # includes subindicators for t_imperiledamphibiansandreptiles and t_intacthabitatcores
     num_subindicators = len(
         [dataset for dataset in datasets if REPORT_DATASETS[dataset].get("subindicator") is not None]
     )
@@ -964,3 +982,56 @@ async def test_create_xlsx_file_multiple_areas(format):
         assert np.allclose(
             wildfire_risk.iloc[i][wildfire_risk_value_cols].values.astype("float64"), results.wildfire_risk.iloc[i]
         )
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("format", ["shp", "gdb"])
+async def test_create_xlsx_file_coastal(format):
+    filename = f"{format}_poly_coastal.zip"
+    dataset = filename.replace(f"{format}_", "").replace(".zip", f".{format}")
+    df = read_dataframe(f"/vsizip/tests/fixtures/{filename}/{dataset}", columns=[], use_arrow=True).to_crs(DATA_CRS)
+
+    # dissolve like API endpoint
+    field = "__analysis_unit"
+    df[field] = "all areas"
+    df = dissolve(df.explode(ignore_index=True), by=field).set_index(field)
+
+    indicator_id = "m_coastalshorelinecondition"
+    datasets = [indicator_id]
+    results = await get_analysis_unit_results(df, datasets)
+    xlsx = create_report(results, datasets, name="Test area")
+
+    if SAVE_XLSX:
+        with open("/tmp/test_create_xlsx_file_coastal.xlsx", "wb") as out:
+            _ = out.write(xlsx)
+
+    reader = pd.ExcelFile(BytesIO(xlsx))
+
+    indicator = INDICATORS_INDEX[indicator_id]
+    sheet_name = indicator.get("sheet_name") or indicator["label"]
+    indicator_sheet = reader.parse(sheet_name=sheet_name, skiprows=4).dropna(axis=1)
+    indicator_value_cols = get_value_columns(indicator["values"])
+    indicator_percent_cols = [col.replace("(acres)", "(percent)") for col in indicator_value_cols]
+    assert (
+        indicator_sheet.columns.tolist()
+        == ["Analysis unit", "Outside extent of this dataset\n(acres)"]
+        + indicator_value_cols[::-1]
+        + ["Outside extent of this dataset\n(percent)"]
+        + indicator_percent_cols[::-1]
+    )
+    assert np.allclose(
+        indicator_sheet.iloc[0][indicator_value_cols].values.astype("float64"), results[indicator_id].iloc[0]
+    )
+
+    subindicator = indicator["subindicator"]
+    sheet_name = subindicator.get("sheet_name") or subindicator["label"]
+    good_condition_header = reader.parse(sheet_name=sheet_name, skiprows=3, nrows=1, header=None).dropna(axis=1)
+    assert good_condition_header.values[0].tolist() == ["← In good condition", "Not in good condition →"] * 2
+
+    subindicator_sheet = reader.parse(sheet_name=sheet_name, skiprows=4).dropna(axis=1, how="all")
+    subindicator_value_cols = [f"{v['label'].replace(' (', '\n(')}\n(miles)" for v in subindicator["values"][::-1]]
+    subindicator_percent_cols = [col.replace("(miles)", "(percent)") for col in subindicator_value_cols]
+    assert (
+        subindicator_sheet.columns.tolist() == ["Analysis unit"] + subindicator_value_cols + subindicator_percent_cols
+    )
+    assert np.allclose(subindicator_sheet.iloc[0][subindicator_value_cols], results[subindicator["id"]].iloc[0][::-1])

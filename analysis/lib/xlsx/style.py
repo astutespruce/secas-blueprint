@@ -116,9 +116,11 @@ def add_acres_percent_header(
     ws,
     row_idx: int,
     area_columns: list[int],
+    area_header: str,
     percent_columns: list[int],
-    extra_percent_columns: list[int] | None,
-    extra_percent_header: str | None,
+    percent_header: str,
+    extra_percent_columns: list[int] | None = None,
+    extra_percent_header: str | None = None,
 ):
     """Add a header row for the acres and percent sections
 
@@ -129,8 +131,12 @@ def add_acres_percent_header(
         1-based row index where header will be set
     area_columns : list[int] | None, optional
         0-based indexes of area columns within the columns of the dataframe.
+    area_header : str
+        header for area section
     percent_columns : list[int] | None, optional
         0-based indexes of percent value columns within the columns of the dataframe.
+    percent_header : str
+        header for percent section
     extra_percent_columns : list[int] | None, optional
         0-based indexes of extra percent value columns within the columns of the dataframe.
     extra_percent_header : str | None, optional
@@ -140,13 +146,13 @@ def add_acres_percent_header(
 
     start_cell = f"{get_column_letter(area_columns[0] + 1)}{row_idx}"
     cell = ws[start_cell]
-    cell.value = "ACRES"
+    cell.value = area_header
     cell.style = acres_percent_header_style
     ws.merge_cells(f"{start_cell}:{get_column_letter(area_columns[-1] + 1)}{row_idx}")
 
     start_cell = f"{get_column_letter(percent_columns[0] + 1)}{row_idx}"
     cell = ws[start_cell]
-    cell.value = "PERCENT OF AREA"
+    cell.value = percent_header
     cell.style = acres_percent_header_style
     ws.merge_cells(f"{start_cell}:{get_column_letter(percent_columns[-1])}{row_idx}")
 

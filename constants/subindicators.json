@@ -45,5 +45,65 @@
         "label": "Large core (>10,000 acres)"
       }
     ]
+  },
+  {
+    "id": "m_coastalshorelinecondition_length",
+    "indicator_id": "m_coastalshorelinecondition",
+    "filename": "subindicators/m_coastalshorelinecondition_length.fgb",
+    "type": "lines",
+    "label": "Coastal shoreline condition length",
+    "sheet_name": "Coastal shoreline cond. length",
+    "caption": "coastal shoreline condition length.  Note: this is calculated based on shoreline lines classified in the same way as the coastal shoreline condition indicator, but analyzed using the linework instead of the 30 meter pixels used by the indicator.",
+    "source": "Southeast Conservation Blueprint",
+    "date": "2026",
+    "citation": "Southeast Conservation Adaptation Strategy (SECAS). 2026. Southeast Conservation Blueprint 2026.",
+    "description": "This dataset supplements the coastal shoreline condition indicator by providing the length of each shoreline condition category present in the area of interest.  Coastal shoreline lines are classified into shoreline condition using the same critera as the indicator, but are analyzed using the linework instead of the 30 meter pixels used by the indicator.",
+    "percent_header": "PERCENT OF SHORELINE",
+    "values": [
+      {
+        "value": 0,
+        "label": "Armored"
+      },
+      {
+        "value": 1,
+        "label": "Partially armored"
+      },
+      {
+        "value": 2,
+        "label": "Partially armored and harder to develop"
+      },
+      {
+        "value": 3,
+        "label": "Natural"
+      },
+      {
+        "value": 4,
+        "label": "Natural and harder to develop"
+      }
+    ]
+  },
+  {
+    "id": "m_caribbeancoastalshorelinecondition_length",
+    "indicator_id": "m_caribbeancoastalshorelinecondition",
+    "filename": "subindicators/m_caribbeancoastalshorelinecondition_length.fgb",
+    "type": "lines",
+    "label": "Caribbean coastal shoreline condition length",
+    "sheet_name": "Carib. shoreline cond. length",
+    "caption": "coastal shoreline condition length.  Note: this is calculated based on shoreline lines classified in the same way as the coastal shoreline condition indicator, but analyzed using the linework instead of the 30 meter pixels used by the indicator.",
+    "source": "Southeast Conservation Blueprint",
+    "date": "2026",
+    "citation": "Southeast Conservation Adaptation Strategy (SECAS). 2026. Southeast Conservation Blueprint 2026.",
+    "description": "This dataset supplements the Caribbean coastal shoreline condition indicator by providing the length of each shoreline condition category present in the area of interest.  Coastal shoreline lines are classified into shoreline condition using the same critera as the indicator, but are analyzed using the linework instead of the 30 meter pixels used by the indicator.",
+    "percent_header": "PERCENT OF SHORELINE",
+    "values": [
+      {
+        "value": 0,
+        "label": "Armored"
+      },
+      {
+        "value": 1,
+        "label": "Natural"
+      }
+    ]
   }
 ]

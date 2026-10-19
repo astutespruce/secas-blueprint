@@ -41,12 +41,12 @@ def add_basic_results_sheet(
     caption = dataset["caption"] + "."
 
     # good threshold is only applicable to indicators
-    if dataset["id"] in INDICATORS_INDEX:
-        good_threshold = dataset.get("goodThreshold", None)
-        if good_threshold:
-            caption += "  Good condition thresholds reflect the range of indicator values that occur in healthy, functioning ecosystems."
-        else:
-            caption += "  A good condition threshold is not yet defined for this indicator."
+    good_threshold = dataset.get("goodThreshold", None)
+    if good_threshold is not None:
+        caption += "  Good condition thresholds reflect the range of indicator values that occur in healthy, functioning ecosystems."
+
+    elif dataset["id"] in INDICATORS_INDEX:
+        caption += "  A good condition threshold is not yet defined for this indicator."
 
     value_label = dataset.get("valueLabel", None)
     if value_label:
@@ -132,7 +132,7 @@ def add_basic_results_sheet(
     )
 
     good_condition_info = None
-    if dataset["id"] in INDICATORS_INDEX and good_threshold:
+    if good_threshold is not None:
         # NOTE: this only applies to indicators, which are always in greatest to least order
 
         num_good_values = len([v for v in values if v["value"] >= good_threshold])
