@@ -112,7 +112,14 @@ def add_caption(ws, table_counter, caption):
     ws.row_dimensions[1].height = max(20, total_line_height)
 
 
-def add_acres_percent_header(ws, row_idx: int, area_columns: list[int], percent_columns: list[int]):
+def add_acres_percent_header(
+    ws,
+    row_idx: int,
+    area_columns: list[int],
+    percent_columns: list[int],
+    extra_percent_columns: list[int] | None,
+    extra_percent_header: str | None,
+):
     """Add a header row for the acres and percent sections
 
     Parameters
@@ -124,6 +131,10 @@ def add_acres_percent_header(ws, row_idx: int, area_columns: list[int], percent_
         0-based indexes of area columns within the columns of the dataframe.
     percent_columns : list[int] | None, optional
         0-based indexes of percent value columns within the columns of the dataframe.
+    extra_percent_columns : list[int] | None, optional
+        0-based indexes of extra percent value columns within the columns of the dataframe.
+    extra_percent_header : str | None, optional
+        header for extra percent section
     """
     ws.row_dimensions[row_idx].height = 32
 
@@ -135,7 +146,7 @@ def add_acres_percent_header(ws, row_idx: int, area_columns: list[int], percent_
 
     start_cell = f"{get_column_letter(percent_columns[0] + 1)}{row_idx}"
     cell = ws[start_cell]
-    cell.value = "PERCENT"
+    cell.value = "PERCENT OF AREA"
     cell.style = acres_percent_header_style
     ws.merge_cells(f"{start_cell}:{get_column_letter(percent_columns[-1])}{row_idx}")
 
@@ -146,6 +157,14 @@ def add_acres_percent_header(ws, row_idx: int, area_columns: list[int], percent_
     for col_idx in range(1, area_columns[0] + 1):
         cell = ws[f"{get_column_letter(col_idx)}{row_idx}"]
         cell.border = default_header_border
+
+    if extra_percent_columns:
+        start_cell = f"{get_column_letter(extra_percent_columns[0] + 1)}{row_idx}"
+        cell = ws[start_cell]
+        cell.value = extra_percent_header
+        cell.style = acres_percent_header_style
+        ws.merge_cells(f"{start_cell}:{get_column_letter(extra_percent_columns[-1])}{row_idx}")
+        ws[f"{get_column_letter(extra_percent_columns[0])}{row_idx}"].style = divider_col_style
 
 
 def add_good_condition(ws, row_idx: int, info: dict):
@@ -167,6 +186,7 @@ def add_good_condition(ws, row_idx: int, info: dict):
     num_good_values = info["num_good_values"]
     num_not_good_values = info["num_not_good_values"]
     num_extra_columns = info["num_extra_columns"]
+    has_extra_percent = info.get("has_extra_percent", False)
 
     ws.row_dimensions[row_idx].height = 24
 
@@ -174,10 +194,13 @@ def add_good_condition(ws, row_idx: int, info: dict):
     num_cols = num_value_cols + num_extra_columns
 
     to_merge = []
+    start_cols = [offset + 1, offset + num_cols + 2]
+    if has_extra_percent:
+        start_cols += [offset + num_cols * 2 + 3]
 
     # NOTE: translate into 1-based indexes for specifying columns
     # NOTE: these always have a spacer column before percents
-    for start_col in [offset + 1, offset + num_cols + 2]:
+    for start_col in start_cols:
         good_start_col = get_column_letter(start_col + num_extra_columns)
         good_end_col = get_column_letter(start_col + num_extra_columns + num_good_values - 1)
         cell = ws[f"{good_start_col}{row_idx}"]

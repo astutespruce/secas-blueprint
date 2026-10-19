@@ -433,6 +433,7 @@ async def test_create_xlsx_file_single_area(format):
         "blueprint",
         "corridors",
         "f_permeablesurface",
+        "f_networkcomplexity",
         "t_imperiledamphibiansandreptiles",
         "t_intacthabitatcores",
         "slr_depth",
@@ -488,7 +489,7 @@ async def test_create_xlsx_file_single_area(format):
     acres_percent_header = reader.parse(sheet_name="Blueprint priority", skiprows=2, nrows=1, header=None).dropna(
         axis=1
     )
-    assert acres_percent_header.values[0].tolist() == ["ACRES", "PERCENT"]
+    assert acres_percent_header.values[0].tolist() == ["ACRES", "PERCENT OF AREA"]
 
     blueprint = reader.parse(sheet_name="Blueprint priority", skiprows=3).dropna(axis=1, how="all")
     assert blueprint.columns.tolist() == ["Analysis unit"] + blueprint_value_cols[::-1] + blueprint_percent_cols[::-1]
@@ -525,14 +526,8 @@ async def test_create_xlsx_file_single_area(format):
     indicator_id = "f_permeablesurface"
     indicator = INDICATORS_INDEX[indicator_id]
     sheet_name = indicator.get("sheet_name") or indicator["label"]
-
     good_condition_header = reader.parse(sheet_name=sheet_name, skiprows=3, nrows=1, header=None).dropna(axis=1)
-    assert good_condition_header.values[0].tolist() == [
-        "← In good condition",
-        "Not in good condition →",
-        "← In good condition",
-        "Not in good condition →",
-    ]
+    assert good_condition_header.values[0].tolist() == ["← In good condition", "Not in good condition →"] * 2
 
     indicator_sheet = reader.parse(sheet_name=sheet_name, skiprows=4).dropna(axis=1, how="all")
     indicator_value_cols = get_value_columns(indicator["values"])
@@ -544,6 +539,26 @@ async def test_create_xlsx_file_single_area(format):
     assert np.allclose(
         indicator_sheet.iloc[0][indicator_value_cols].values.astype("float64"), results[indicator_id].iloc[0]
     )
+
+    # this one has a percent of floodplain section
+    indicator_id = "f_networkcomplexity"
+    indicator = INDICATORS_INDEX[indicator_id]
+    sheet_name = indicator.get("sheet_name") or indicator["label"]
+    good_condition_header = reader.parse(sheet_name=sheet_name, skiprows=3, nrows=1, header=None).dropna(axis=1)
+    assert good_condition_header.values[0].tolist() == ["← In good condition", "Not in good condition →"] * 3
+
+    indicator_sheet = reader.parse(sheet_name=sheet_name, skiprows=4).dropna(axis=1, how="all")
+    indicator_value_cols = get_value_columns(indicator["values"])
+    indicator_percent_cols = [col.replace("(acres)", "(percent)") for col in indicator_value_cols]
+    percent_of_floodplain_cols = [f"{c}.1" for c in indicator_percent_cols[::-1]]
+    assert (
+        indicator_sheet.columns.tolist()
+        == ["Analysis unit"] + indicator_value_cols[::-1] + indicator_percent_cols[::-1] + percent_of_floodplain_cols
+    )
+    assert np.allclose(
+        indicator_sheet.iloc[0][indicator_value_cols].values.astype("float64"), results[indicator_id].iloc[0]
+    )
+    # all are 0 so this is not a good test area
 
     indicator_id = "t_intacthabitatcores"
     indicator = INDICATORS_INDEX[indicator_id]
@@ -815,6 +830,7 @@ async def test_create_xlsx_file_multiple_areas(format):
         "blueprint",
         "t_imperiledamphibiansandreptiles",
         "t_intacthabitatcores",
+        "f_networkcomplexity",
         "slr_depth",
         "slr_proj",
         "parcas_poly",

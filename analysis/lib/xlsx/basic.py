@@ -77,28 +77,57 @@ def add_basic_results_sheet(
     for value_col, percent_col in zip(value_columns, percent_columns):
         tmp[percent_col] = tmp[value_col] / tmp.rasterized_acres
 
+    ### Special logic to show percent of floodplain
+    extra_outside_columns = []
+    extra_percent_columns = []
+    extra_percent_header = None
+    if dataset.get("type") == "floodplain":
+        extra_percent_header = "PERCENT OF FLOODPLAIN"
+
+        # set NODATA columns to 0 because they are outside floodplains by definition
+        tmp["outside_extent_percent_1"] = 0
+        tmp["outside_dataset_percent_1"] = 0
+        extra_outside_columns = ["outside_extent_percent_1", "outside_dataset_percent_1"]
+        extra_percent_columns = [col.replace("(acres)", "(percent)_1") for col in value_columns]
+        # NOTE: value 0 (not a floodplain) is in last position
+        tmp["floodplain_acres"] = tmp[value_columns[:-1]].sum(axis=1)
+        for value_col, floodplain_percent_col in zip(value_columns, extra_percent_columns):
+            if value_col == value_columns[-1]:
+                tmp[floodplain_percent_col] = 0
+            else:
+                tmp[floodplain_percent_col] = (tmp[value_col] / tmp.floodplain_acres).fillna(0)
+
     tmp = tmp[
         ["outside_extent_acres", "outside_dataset_acres"]
         + value_columns
         + ["outside_extent_percent", "outside_dataset_percent"]
         + percent_columns
+        + extra_outside_columns
+        + extra_percent_columns
     ]
 
     # drop columns if no area present outside extent or dataset
     has_area_outside_extent = tmp.outside_extent_acres.max() > 1e-2
     if not has_area_outside_extent:
-        tmp = tmp.drop(columns=["outside_extent_acres", "outside_extent_percent"])
+        tmp = tmp.drop(
+            columns=["outside_extent_acres", "outside_extent_percent", "outside_extent_percent_1"], errors="ignore"
+        )
 
     has_area_outside_dataset = tmp.outside_dataset_acres.max() > 1e-2
     if not has_area_outside_dataset:
-        tmp = tmp.drop(columns=["outside_dataset_acres", "outside_dataset_percent"])
+        tmp = tmp.drop(
+            columns=["outside_dataset_acres", "outside_dataset_percent", "outside_dataset_percent_1"], errors="ignore"
+        )
 
     tmp = tmp.rename(
         columns={
             "outside_extent_acres": outside_area_label,
             "outside_extent_percent": outside_area_label.replace("(acres)", "(percent)"),
+            "outside_extent_percent_1": outside_area_label.replace("(acres)", "(percent)"),
             "outside_dataset_acres": nodata_label,
             "outside_dataset_percent": nodata_label.replace("(acres)", "(percent)"),
+            "outside_dataset_percent_1": nodata_label.replace("(acres)", "(percent)"),
+            **{c: c.replace("_1", "") for c in extra_percent_columns},
         }
     )
 
@@ -113,13 +142,15 @@ def add_basic_results_sheet(
             "num_good_values": num_good_values,
             "num_not_good_values": num_not_good_values,
             "num_extra_columns": int(has_area_outside_extent) + int(has_area_outside_dataset),
+            "has_extra_percent": len(extra_percent_columns) > 0,
         }
 
     column_widths = [name_col_width] + ([col_width] * len(tmp.columns))
 
     num_area_cols = len(value_columns) + int(has_area_outside_extent) + int(has_area_outside_dataset) + 1
     area_columns = list(range(num_area_cols))
-    percent_columns = list(range(num_area_cols, num_area_cols + num_area_cols))
+    percent_columns = list(range(num_area_cols, num_area_cols * 2))
+    extra_percent_columns = list(range(num_area_cols * 2, num_area_cols * 3)) if extra_percent_columns else None
 
     write_excel(
         xlsx,
@@ -129,6 +160,8 @@ def add_basic_results_sheet(
         column_widths=column_widths,
         area_columns=area_columns,
         percent_columns=percent_columns,
+        extra_percent_columns=extra_percent_columns,
+        extra_percent_header=extra_percent_header,
         add_percent_divider=True,
         good_condition_info=good_condition_info,
     )

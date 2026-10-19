@@ -78,6 +78,9 @@ try:
         indicator["filename"] = f"indicators/{indicator['filename']}"
         indicator["caption"] = f"Indicator values for {indicator['captionLabel']}"
 
+        if indicator["values"][0]["label"] == "Not identified as a floodplain":
+            indicator["type"] = "floodplain"
+
     raw_indicators_index = {indicator["id"]: indicator for indicator in raw_indicators}
     subindicators = read_json("subindicators.json")
     for subindicator in subindicators:

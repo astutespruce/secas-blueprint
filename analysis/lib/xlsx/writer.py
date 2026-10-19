@@ -22,6 +22,8 @@ def write_excel(
     column_widths: list[float] | None = None,
     area_columns: list[int] | None = None,
     percent_columns: list[int] | None = None,
+    extra_percent_columns: list[int] | None = None,
+    extra_percent_header: str | None = None,
     good_condition_info: dict | None = None,
     breaks: list[int] | None = None,
     add_percent_divider=False,
@@ -46,6 +48,12 @@ def write_excel(
     percent_columns : list[int] | None, optional
         0-based indexes of percent value columns within the columns of the dataframe.
         If provided, these will be formatted as percents.
+    extra_percent_columns : list[int] | None, optional
+        0-based indexes of extra percent value columns within the columns of the dataframe.
+        If provided, these will be formatted as percents.  These are presented as a
+        separate group from percent_columns.
+    extra_percent_header : str | None, optional
+        If provided, used as the header for the extra percent columns.
     breaks : list[int] | None, optional
         0-based indexes of the first row of each logical grouping of rows
         (e.g., if there are multiple rows per analysis unit).
@@ -57,6 +65,7 @@ def write_excel(
     column_widths = column_widths or []
     area_columns = area_columns or []
     percent_columns = percent_columns or []
+    extra_percent_columns = extra_percent_columns or []
     breaks = breaks or []
 
     if add_percent_divider and not (column_widths and area_columns and percent_columns):
@@ -92,13 +101,25 @@ def write_excel(
         percent_divider_col_index = percent_columns[0]
         ws.insert_cols(idx=percent_divider_col_index + 1, amount=1)
         column_widths.insert(percent_divider_col_index, 4)
-
         # shift percent columns to the right
         percent_columns = (np.array(percent_columns) + 1).tolist()
 
+        if extra_percent_columns:
+            extra_percent_divider_col_index = extra_percent_columns[0]
+            ws.insert_cols(idx=extra_percent_divider_col_index + 1, amount=1)
+            column_widths.insert(extra_percent_divider_col_index, 4)
+            extra_percent_columns = (np.array(extra_percent_columns) + 1).tolist()
+
     ### add acres / percent header
     if add_percent_divider:
-        add_acres_percent_header(ws, num_caption_rows + 1, area_columns=area_columns, percent_columns=percent_columns)
+        add_acres_percent_header(
+            ws,
+            num_caption_rows + 1,
+            area_columns=area_columns,
+            percent_columns=percent_columns,
+            extra_percent_columns=extra_percent_columns,
+            extra_percent_header=extra_percent_header,
+        )
 
     ### set column widths
     for i, width in enumerate(column_widths):
@@ -133,7 +154,7 @@ def write_excel(
                     cell.number_format = "#,##0"
                 else:
                     cell.number_format = "#,##0.00"
-            elif col_idx in percent_columns:
+            elif col_idx in percent_columns + extra_percent_columns:
                 if is_int:
                     cell.number_format = "0%"
                 else:
