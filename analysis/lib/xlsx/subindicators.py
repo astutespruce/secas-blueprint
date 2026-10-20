@@ -8,7 +8,6 @@ cores_value_columns = [
     "Intact habitat core size",
     "Number of overlapping cores",
     "Area of smallest overlapping core\n(acres)",
-    "Mean area of overlapping cores\n(acre)",
     "Area of largest overlapping core\n(acres)",
 ]
 
@@ -60,18 +59,16 @@ def add_subindicator_sheet(
                     if not core:
                         continue
 
-                    cores.append(
-                        [id, entry["label"], core["count"], core["min_acres"], core["mean_acres"], core["max_acres"]]
-                    )
+                    cores.append([id, entry["label"], core["count"], core["min_acres"], core["max_acres"]])
                     counter += 1
             else:
-                cores.append([id, "", "", "", "", ""])
+                cores.append([id, "", "", "", ""])
                 counter += 1
 
             breaks.append(counter)
 
         cores = pd.DataFrame(cores, columns=[df.index.name] + cores_value_columns)
-        column_widths = [name_col_width, 30, 12] + [16] * 3
+        column_widths = [name_col_width, 30, 12, 16, 16]
 
         write_excel(
             xlsx,
@@ -141,7 +138,7 @@ def add_subindicator_sheet(
         tmp = df[subindicator["id"]].apply(pd.Series)
         columns = {v["value"]: v["label"] for v in values}
         tmp = tmp.rename(columns={c: columns[c] for c in tmp.columns}).reset_index()
-        column_widths = [name_col_width, 16, 16, 16]
+        column_widths = [name_col_width, 16, 16]
         write_excel(xlsx, tmp, sheet_name=sheet_name, caption=caption, column_widths=column_widths, area_columns=[2])
 
     else:

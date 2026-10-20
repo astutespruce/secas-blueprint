@@ -99,6 +99,7 @@ def write_excel(
 
     ### Add percent divider column
     percent_divider_col_index = -1
+    extra_percent_divider_col_index = -1
     if add_percent_divider:
         percent_divider_col_index = percent_columns[0]
         ws.insert_cols(idx=percent_divider_col_index + 1, amount=1)
@@ -132,7 +133,7 @@ def write_excel(
 
     ### set cell styles
     for col_idx, col in enumerate(ws.columns):
-        is_divider = col_idx == percent_divider_col_index
+        is_divider = col_idx in {percent_divider_col_index, extra_percent_divider_col_index}
 
         if col_idx == 0:
             col[data_start_row].style = left_header_style
@@ -195,7 +196,7 @@ def write_excel(
             )
 
     for col_idx in range(1, ws.max_column + 1):
-        if col_idx - 1 == percent_divider_col_index:
+        if col_idx - 1 in {percent_divider_col_index, extra_percent_divider_col_index}:
             continue
 
         cell = ws[f"{get_column_letter(col_idx)}{ws.max_row}"]

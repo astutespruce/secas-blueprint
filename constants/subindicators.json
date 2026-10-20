@@ -119,7 +119,6 @@
     "citation": "Southeast Conservation Adaptation Strategy (SECAS). 2026. Southeast Conservation Blueprint 2026.",
     "description": "This dataset complements the imperiled aquatic species indicator.  This dataset measures the number of aquatic animal Regional Species of Greatest Conservation Need (RSGCN) observed within each 12-digit HUC subwatershed, including fish, mussels, snails, crayfish, and amphibians.  It accounts for species that occur in each subwatershed in order to calculate the count of unique species.",
     "values": [
-      { "value": "acres", "label": "Total area of overlapping subwatersheds\n(acres)" },
       { "value": "huc12_count", "label": "Total number of overlapping subwatersheds" },
       { "value": "count", "label": "Total number of species present" }
     ]

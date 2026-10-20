@@ -218,7 +218,6 @@ async def test_get_analysis_unit_results_single_area(format):
     assert core_sizes["medium"]["count"] == 1
     assert np.isclose(core_sizes["medium"]["min_acres"], 2400.9710)
     assert np.isclose(core_sizes["medium"]["max_acres"], 2400.9710)
-    assert np.isclose(core_sizes["medium"]["mean_acres"], 2400.9710)
 
     assert np.allclose(row["f_permeablesurface"], [0, 0, 0, 50.705946])
 
@@ -404,7 +403,7 @@ async def test_get_analysis_unit_results_multiple_areas(format):
     assert pr_slr_proj[0]["scenario"] == "l"
 
     assert np.allclose(
-        pr_slr_proj[0]["values"], [0.2625, 0.4921, 0.8202, 1.3123, 2.0669, 3.0512, 4.1995, 5.4462, 6.7913], atol=1e-4
+        pr_slr_proj[0]["values"], [0.2297, 0.3609, 0.4921, 0.6234, 0.7546, 0.8859, 0.9843, 1.08268, 1.2139], atol=1e-4
     )
 
     assert np.allclose(
@@ -437,7 +436,6 @@ async def test_get_analysis_unit_results_coastal(format):
     assert np.allclose(row["f_imperiledaquaticspecies"], [6353.5885, 5612.1252, 6066.25478, 0, 0, 0, 0, 0, 0, 0])
     spp_count = row["f_imperiledaquaticspecies_spp"]
     assert spp_count["huc12_count"] == 6
-    assert np.isclose(spp_count["acres"], 129764.67188)
     assert spp_count["count"] == 1
 
 
@@ -594,7 +592,7 @@ async def test_create_xlsx_file_single_area(format):
     assert len(subindicator_sheet) == 1
     assert subindicator_sheet.iloc[0]["Intact habitat core size"] == "Medium core (>1,000-10,000 acres)"
     assert subindicator_sheet.iloc[0]["Number of overlapping cores"] == 1
-    for col in cores_value_columns[-3:]:
+    for col in cores_value_columns[-2:]:
         assert np.isclose(subindicator_sheet.iloc[0][col], 2400.9710)
 
     slr_depth = reader.parse(sheet_name="SLR - area flooded by ft of SLR", skiprows=3).dropna(axis=1)

@@ -38,17 +38,8 @@ def extract_cores_in_analysis_areas(subindicator, df):
     if len(cores) == 0:
         return None
 
-    cores = cores.groupby(by=[index_name, "size"]).agg(
-        {
-            "acres": [
-                "count",
-                "min",
-                "mean",
-                "max",
-            ]
-        }
-    )
-    cores.columns = ["count", "min_acres", "mean_acres", "max_acres"]
+    cores = cores.groupby(by=[index_name, "size"]).agg({"acres": ["count", "min", "max"]})
+    cores.columns = ["count", "min_acres", "max_acres"]
     return (
         cores.reset_index(level=-1)
         .groupby(level=0)
@@ -122,7 +113,7 @@ def extract_huc12_species_counts_in_analysis_areas(subindicator, df):
     # NOTE: pyogrio does not currently work properly for use_arrow=True if the
     # mask does not overlap and returns no features, so we can't use it here.
     huc12 = read_dataframe(
-        src_dir / subindicator["filename"], columns=["HUC12", "acres", "species_ids", "geometry"], mask=read_mask
+        src_dir / subindicator["filename"], columns=["HUC12", "species_ids", "geometry"], mask=read_mask
     )
 
     if len(huc12) == 0:
@@ -134,7 +125,6 @@ def extract_huc12_species_counts_in_analysis_areas(subindicator, df):
         {
             index_name: tmp.index.take(left),
             "HUC12": huc12.HUC12.values.take(right),
-            "acres": huc12.acres.values.take(right),
             "species_ids": huc12.species_ids.take(right),
         }
     )
@@ -147,11 +137,11 @@ def extract_huc12_species_counts_in_analysis_areas(subindicator, df):
 
     huc12 = (
         huc12.groupby(by=[index_name])
-        .agg({"HUC12": "nunique", "acres": "sum", "species_ids": "sum"})
+        .agg({"HUC12": "nunique", "species_ids": "sum"})
         .rename(columns={"HUC12": "huc12_count", "species_ids": "count"})
     )
     huc12["huc12_count"] = huc12.huc12_count.astype("uint16")
     huc12["count"] = huc12["count"].apply(set).apply(len).astype("uint8")
-    huc12[out_name] = huc12[["huc12_count", "acres", "count"]].to_dict(orient="records")
+    huc12[out_name] = huc12[["huc12_count", "count"]].to_dict(orient="records")
 
     return huc12[out_name]

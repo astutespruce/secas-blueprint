@@ -234,8 +234,9 @@ def add_good_condition(ws, row_idx: int, info: dict):
                 right=cell.border.right,
             )
 
-        # set gap column between acres and percents
-        ws[f"{get_column_letter(offset + num_cols + 1)}{row_idx}"].style = divider_col_style
+        if start_col != start_cols[0]:
+            # set gap column between acres and percents
+            ws[f"{get_column_letter(start_col - 1)}{row_idx}"].style = divider_col_style
 
     for merge_range in to_merge:
         ws.merge_cells(merge_range)
