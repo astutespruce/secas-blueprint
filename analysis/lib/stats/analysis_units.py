@@ -31,7 +31,11 @@ from analysis.lib.stats.protected_areas import extract_protected_areas_in_analys
 from analysis.lib.stats.rasterized_geometry import RasterizedGeometry
 from analysis.lib.stats.slr import BINS as SLR_DEPTH_BINS
 from analysis.lib.stats.slr import extract_slr_proj_in_analysis_areas
-from analysis.lib.stats.subindicators import extract_cores_in_analysis_areas, extract_lines_in_analysis_areas
+from analysis.lib.stats.subindicators import (
+    extract_cores_in_analysis_areas,
+    extract_huc12_species_counts_in_analysis_areas,
+    extract_lines_in_analysis_areas,
+)
 from analysis.lib.stats.urban import BINS as URBAN_BINS
 from analysis.lib.stats.urban import PROBABILITIES as URBAN_PROBABILITIES
 from analysis.lib.stats.wildfire_risk import BINS as WILDFIRE_RISK_BINS
@@ -286,5 +290,9 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
                 lines = extract_lines_in_analysis_areas(subindicator, df)
                 if lines is not None:
                     out = out.join(lines)
+            elif subindicator["type"] == "huc12_species_count":
+                huc12_counts = extract_huc12_species_counts_in_analysis_areas(subindicator, df)
+                if huc12_counts is not None:
+                    out = out.join(huc12_counts)
 
     return out

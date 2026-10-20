@@ -207,6 +207,7 @@ async def test_get_analysis_unit_results_single_area(format):
 
     assert np.allclose(row[BLUEPRINT["id"]], [0.0, 0.0, 1.334367, 19.3483215, 30.0232575])
     assert np.allclose(row[CORRIDORS["id"]], [0.0, 39.3638265, 11.3421195])
+
     assert np.allclose(row["t_imperiledamphibiansandreptiles"], [0.6671835, 0.0, 0.0, 45.368478, 0.0, 4.6702845])
     assert len(row["t_imperiledamphibiansandreptiles_spp"]) == 8
     assert "Seepage Salamander (Desmognathus aeneus)" in row["t_imperiledamphibiansandreptiles_spp"]
@@ -422,7 +423,7 @@ async def test_get_analysis_unit_results_coastal(format):
     filename = f"{format}_poly_coastal.zip"
     dataset = filename.replace(f"{format}_", "").replace(".zip", f".{format}")
     df = read_dataframe(f"/vsizip/tests/fixtures/{filename}/{dataset}", columns=[], use_arrow=True).to_crs(DATA_CRS)
-    datasets = set(get_available_datasets(df))
+    datasets = ["m_coastalshorelinecondition", "f_imperiledaquaticspecies"]
     results = await get_analysis_unit_results(df, datasets)
 
     assert len(results) == len(df)
@@ -432,6 +433,12 @@ async def test_get_analysis_unit_results_coastal(format):
     row = results.iloc[0]
     assert np.allclose(row["m_coastalshorelinecondition"], [10.6749, 5.1151, 0.0, 967.4161, 618.4791])
     assert np.allclose(row["m_coastalshorelinecondition_length"], [0.7358, 0.3372, 0.0, 74.8518, 58.2145], atol=1e-4)
+
+    assert np.allclose(row["f_imperiledaquaticspecies"], [6353.5885, 5612.1252, 6066.25478, 0, 0, 0, 0, 0, 0, 0])
+    spp_count = row["f_imperiledaquaticspecies_spp"]
+    assert spp_count["huc12_count"] == 6
+    assert np.isclose(spp_count["acres"], 129764.67188)
+    assert spp_count["count"] == 1
 
 
 @pytest.mark.anyio
@@ -996,8 +1003,7 @@ async def test_create_xlsx_file_coastal(format):
     df[field] = "all areas"
     df = dissolve(df.explode(ignore_index=True), by=field).set_index(field)
 
-    indicator_id = "m_coastalshorelinecondition"
-    datasets = [indicator_id]
+    datasets = ["m_coastalshorelinecondition", "f_imperiledaquaticspecies"]
     results = await get_analysis_unit_results(df, datasets)
     xlsx = create_report(results, datasets, name="Test area")
 
@@ -1007,6 +1013,7 @@ async def test_create_xlsx_file_coastal(format):
 
     reader = pd.ExcelFile(BytesIO(xlsx))
 
+    indicator_id = "m_coastalshorelinecondition"
     indicator = INDICATORS_INDEX[indicator_id]
     sheet_name = indicator.get("sheet_name") or indicator["label"]
     indicator_sheet = reader.parse(sheet_name=sheet_name, skiprows=4).dropna(axis=1)
@@ -1035,3 +1042,7 @@ async def test_create_xlsx_file_coastal(format):
         subindicator_sheet.columns.tolist() == ["Analysis unit"] + subindicator_value_cols + subindicator_percent_cols
     )
     assert np.allclose(subindicator_sheet.iloc[0][subindicator_value_cols], results[subindicator["id"]].iloc[0][::-1])
+
+    indicator_id = "f_imperiledaquaticspecies"
+    subindicator = indicator["subindicator"]
+    sheet_name = subindicator.get("sheet_name") or subindicator["label"]

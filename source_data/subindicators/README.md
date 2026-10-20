@@ -86,3 +86,19 @@ and clipped again to the Blueprint extent.
 
 This subindicator is used to find the length by indicator value within an area
 of interest.
+
+### Continental imperiled aquatic species
+
+These data were prepared using `prepare_imperiled_aquatic_species_subindicator.py`.
+
+Data for imperiled aquatic species on the RSGCN list were extracted by SARP and
+assigned to randomized species IDs because underlying species data are protected
+according to data sharing agreements. Each HUC12 is assigned a count of unique
+RSGCN species and a comma-delimited list of randomized species IDs. These
+data were extracted on 10/19/2026 based on data last updated in May 2025. These
+data may not exactly match those used to construct the indicator.
+
+Data were assigned to the NHD 2025 version of HUC12 boundaries.
+
+This subindicator is used to find the unique count of species within an area of
+interest across all overlapping HUC12s.

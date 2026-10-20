@@ -1,7 +1,6 @@
 import pandas as pd
 
 from analysis.constants import INDICATORS_INDEX
-from analysis.lib.xlsx.basic import add_basic_results_sheet
 from analysis.lib.xlsx.style import CHAR_PER_WIDTH_UNIT
 from analysis.lib.xlsx.writer import write_excel
 
@@ -137,6 +136,13 @@ def add_subindicator_sheet(
             area_header="MILES",
             percent_header=subindicator.get("percent_header", "PERCENT"),
         )
+
+    elif subindicator["type"] == "huc12_species_count":
+        tmp = df[subindicator["id"]].apply(pd.Series)
+        columns = {v["value"]: v["label"] for v in values}
+        tmp = tmp.rename(columns={c: columns[c] for c in tmp.columns}).reset_index()
+        column_widths = [name_col_width, 16, 16, 16]
+        write_excel(xlsx, tmp, sheet_name=sheet_name, caption=caption, column_widths=column_widths, area_columns=[2])
 
     else:
         raise NotImplementedError(f"report not implemented for {subindicator['id']}")
