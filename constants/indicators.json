@@ -124,7 +124,7 @@
     "valueLabel":"Number of aquatic animal Species of Greatest Conservation Need (RSGCN) observed",
     "captionLabel":"Caribbean imperiled aquatic species ",
     "goodThreshold":null,
-    "url":"https://secas-fws.hub.arcgis.com/datasets/cbd5272920504b3daba64c8028134bb5",
+    "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-imperiled-aquatic-species-southeast-blueprint-indicator/about",
     "subregions":[
       "Puerto Rico",
       "US Virgin Islands"
@@ -186,7 +186,7 @@
     "values":[
       {
         "value":0,
-        "label":"Not identified as floodplain",
+        "label":"Not identified as a floodplain",
         "color":null
       },
       {
@@ -1494,7 +1494,7 @@
     "valueLabel":"",
     "captionLabel":"Gulf marine birds",
     "goodThreshold":null,
-    "url":"https://secas-fws.hub.arcgis.com/datasets/c4cc67c4979f41ee92631fabc27ef869",
+    "url":"https://secas-fws.hub.arcgis.com/maps/fws::gulf-marine-birds-southeast-blueprint-indicator/about",
     "subregions":[
       "East Gulf Coastal Plain",
       "Florida Peninsula",
@@ -2429,7 +2429,7 @@
     "valueLabel":"How well fire-adapted areas match their historic fire regime under current conditions vs. recent past (1984-2024)",
     "captionLabel":"fire frequency",
     "goodThreshold":5,
-    "url":"https://secas-fws.hub.arcgis.com/datasets/3f19a2af24aa4a54b350896908911927",
+    "url":"https://secas-fws.hub.arcgis.com/maps/fws::fire-frequency-southeast-blueprint-indicator/about",
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -2706,7 +2706,7 @@
     "valueLabel":"Importance for range-restricted species",
     "captionLabel":"imperiled amphibians & reptiles",
     "goodThreshold":null,
-    "url":"https://secas-fws.hub.arcgis.com/datasets/2f5a11a7d60445629530c75e025ea4f7",
+    "url":"https://secas-fws.hub.arcgis.com/maps/fws::imperiled-amphibians-reptiles-southeast-blueprint-indicator-1/about",
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -2769,7 +2769,7 @@
     "valueLabel":"Importance for range-restricted species",
     "captionLabel":"imperiled mammals",
     "goodThreshold":null,
-    "url":"https://secas-fws.hub.arcgis.com/datasets/935a8c5af5484c1dabee6352809453ea",
+    "url":"https://secas-fws.hub.arcgis.com/maps/fws::imperiled-mammals-southeast-blueprint-indicator-1/about",
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
