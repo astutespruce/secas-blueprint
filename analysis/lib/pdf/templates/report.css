@@ -235,6 +235,8 @@ table td.threshold {
 	border: none;
 	font-size: 10pt;
 	color: #666;
+	max-width: 10pt;
+	text-align: left;
 }
 
 table td.threshold.good {

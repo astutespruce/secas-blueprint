@@ -69,6 +69,21 @@ def add_basic_results_sheet(
     # NOTE: percents are actually proportions formatted as percents
     tmp["outside_dataset_percent"] = tmp.outside_dataset_acres / tmp.rasterized_acres
 
+    ### Special logic to show percent of floodplain
+    extra_outside_columns = []
+    extra_percent_columns = []
+    extra_percent_header = None
+    has_extra_percent_columns = False
+    data_value_columns = None
+    presence_type = dataset.get("presence_type")
+    if presence_type in {"floodplain", "shoreline"}:
+        has_extra_percent_columns = True
+        extra_percent_header = f"PERCENT OF {presence_type.upper()}"
+        data_value_columns = value_columns
+        if values[0]["label"].startswith("Not identified as"):
+            # exlude value 0
+            data_value_columns = value_columns[1:]
+
     # reorder columns
     if get_value_order is not None:
         value_columns = get_value_order(value_columns)
@@ -77,35 +92,17 @@ def add_basic_results_sheet(
     for value_col, percent_col in zip(value_columns, percent_columns):
         tmp[percent_col] = tmp[value_col] / tmp.rasterized_acres
 
-    ### Special logic to show percent of floodplain
-    extra_outside_columns = []
-    extra_percent_columns = []
-    extra_percent_header = None
-    has_extra_percent_columns = False
-    data_value_columns = None
-    if dataset.get("type") == "floodplain":
-        has_extra_percent_columns = True
-        extra_percent_header = "PERCENT OF FLOODPLAIN"
-        # NOTE: value 0 (not a floodplain) is in last position
-        data_value_columns = value_columns[:-1]
-
-    elif "coastalshorelinecondition" in dataset["id"]:
-        has_extra_percent_columns = True
-        extra_percent_header = "PERCENT OF SHORELINE"
-        # NOTE: we sum all values for these indicators; the 0 value is meaningful
-        data_value_columns = value_columns
-
     if has_extra_percent_columns:
         # set NODATA columns to 0 because they are outside dataset by definition
         tmp["outside_extent_percent_1"] = 0
         tmp["outside_dataset_percent_1"] = 0
         extra_outside_columns = ["outside_extent_percent_1", "outside_dataset_percent_1"]
         extra_percent_columns = [col.replace("(acres)", "(percent)_1") for col in value_columns]
-        tmp["dataset_acres"] = tmp[data_value_columns].sum(axis=1)
+        tmp["presence_acres"] = tmp[data_value_columns].sum(axis=1)
         tmp[extra_percent_columns] = 0
         for value_col, percent_col in zip(value_columns, extra_percent_columns):
             if value_col in data_value_columns:
-                tmp[percent_col] = (tmp[value_col] / tmp.dataset_acres).fillna(0)
+                tmp[percent_col] = (tmp[value_col] / tmp.presence_acres).fillna(0)
 
     tmp = tmp[
         ["outside_extent_acres", "outside_dataset_acres"]

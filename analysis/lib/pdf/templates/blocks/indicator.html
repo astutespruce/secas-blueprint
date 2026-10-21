@@ -69,6 +69,9 @@
                     <th class="label" scope="col">Indicator Values{% if indicator.valueLabel %}: {{indicator.valueLabel}}{% endif %}</th>
                     <th class="acres" scope="col">Acres</th>
                     <th class="percent" scope="col">Percent of Area</th>
+                    {% if indicator.presence_type %}
+                        <th class="percent" scope="col">Percent of {{indicator.presence_type|capitalize}}</th>
+                    {% endif %}
                     <th class="threshold" scope="col"></th>
                 </tr>
             </thead>
@@ -86,6 +89,9 @@
                         <td class="label">{{entry.label}}</td>
                         <td class="acres">{{entry.acres|format_number}}</td>
                         <td class="percent">{{entry.percent|format_percent}}%</td>
+                        {% if indicator.presence_type %}
+                            <td class="percent">{{entry.presence_percent|format_percent}}%</td>
+                        {% endif %}
 
                         {% if loop.first %}
                             <td class="threshold good" rowspan="{{((indicator["values"]|length) - indicator.goodThreshold) + indicator["values"][-1]["value"]}}">
@@ -105,6 +111,9 @@
                         <td class="label">Area not evaluated for this indicator</td>
                         <td class="acres">{{indicator.outside_indicator_acres|format_number}}</td>
                         <td class="percent">{{indicator.outside_indicator_percent|format_percent}}%</td>
+                        {% if indicator.presence_type %}
+                            <td class="percent">0%</td>
+                        {% endif %}
                     </tr>
                 {% endif %}
 
@@ -114,6 +123,9 @@
                         <td class="label">Outside Southeast Blueprint</td>
                         <td class="acres">{{results.outside_extent_acres|format_number}}</td>
                         <td class="percent">{{results.outside_extent_percent|format_percent}}%</td>
+                        {% if indicator.presence_type %}
+                            <td class="percent">0%</td>
+                        {% endif %}
                     </tr>
                 {% endif %}
 
@@ -122,6 +134,9 @@
                     <td class="label align-right">Total area</td>
                     <td class="acres">{{results.rasterized_acres|format_number}}</td>
                     <td class="percent">100%</td>
+                    {% if indicator.presence_type %}
+                        <td class="percent">100%</td>
+                    {% endif %}
                 </tr>
             </tbody>
         </table>
@@ -134,6 +149,9 @@
                     <th class="label" scope="col">Indicator Values{% if indicator.valueLabel %}: {{indicator.valueLabel}}{% endif %}</th>
                     <th class="acres" scope="col">Acres</th>
                     <th class="percent" scope="col">Percent of Area</th>
+                    {% if indicator.presence_type %}
+                        <th class="percent" scope="col">Percent of {{indicator.presence_type|capitalize}}</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -149,6 +167,9 @@
                         <td class="label">{{entry.label}}</td>
                         <td class="acres">{{entry.acres|format_number}}</td>
                         <td class="percent">{{entry.percent|format_percent}}%</td>
+                        {% if indicator.presence_type %}
+                            <td class="percent">{{entry.presence_percent|format_percent}}%</td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
 
@@ -158,6 +179,9 @@
                         <td class="label">Area not evaluated for this indicator</td>
                         <td class="acres">{{indicator.outside_indicator_acres|format_number}}</td>
                         <td class="percent">{{indicator.outside_indicator_percent|format_percent}}%</td>
+                        {% if indicator.presence_type %}
+                            <td class="percent">0%</td>
+                        {% endif %}
                     </tr>
                 {% endif %}
 
@@ -167,6 +191,9 @@
                         <td class="label">Outside Southeast Blueprint</td>
                         <td class="acres">{{results.outside_extent_acres|format_number}}</td>
                         <td class="percent">{{results.outside_extent_percent|format_percent}}%</td>
+                        {% if indicator.presence_type %}
+                            <td class="percent">0%</td>
+                        {% endif %}
                     </tr>
                 {% endif %}
 
@@ -175,6 +202,9 @@
                     <td class="align-right">Total area</td>
                     <td class="acres">{{results.rasterized_acres|format_number}}</td>
                     <td class="percent">100%</td>
+                    {% if indicator.presence_type %}
+                        <td class="percent">100%</td>
+                    {% endif %}
                 </tr>
             </tbody>
         </table>
