@@ -6,7 +6,7 @@
     "filename_params": { "key": "group", "values": [0, 1, 2] },
     "table_filename": "subindicators/t_imperiledamphibiansandreptiles_spp.feather",
     "table_columns": ["group", "bit", "value"],
-    "type": "stacked_bits",
+    "type": "stacked_bit_species",
     "label": "Imperiled amphibian & reptile species list",
     "sheet_name": "Imperiled herp species list",
     "caption": "imperiled amphibian & reptile species present based on USGS Southeast Gap Analysis Project species distribution models",

@@ -215,7 +215,7 @@ async def test_aoi_results_too_small(format):
 
 @pytest.mark.anyio
 @pytest.mark.parametrize("format", ["gdb", "shp"])
-async def test_aoi_results(format):
+async def test_aoi_results_single_area(format):
     # NOTE: this needs to be updated for each blueprint version; this is just a
     # smoke test that values do not change except during Blueprint version updates
 
@@ -267,6 +267,24 @@ async def test_aoi_results(format):
     assert np.isclose(results["wildfire_risk"]["entries"][0]["acres"], 0)
 
     assert "legend" in results
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("format", ["gdb", "shp"])
+async def test_aoi_results_coastal(format):
+    zip_filename = fixture_dir / f"{format}_poly_coastal.zip"
+    with ZipFile(zip_filename) as zipfile:
+        dataset, layer = get_dataset(zipfile)
+
+    df = read_dataframe(f"/vsizip/{zip_filename}/{dataset}", layer=layer, columns=[]).to_crs(DATA_CRS)
+
+    results = await get_aoi_results(df)
+
+    assert results is not None
+
+    assert "f_imperiledaquaticspecies_spp" in results
+    assert "t_imperiledamphibiansandreptiles_spp" in results
+    assert "m_coastalshorelinecondition_length" in results
 
 
 @pytest.mark.anyio

@@ -186,7 +186,8 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
 
                     subindicator = indicator.get("subindicator")
                     if subindicator:
-                        if subindicator["type"] == "stacked_bits":
+                        if subindicator["type"] == "stacked_bit_species":
+                            table = tables[subindicator["id"]]
                             out = set()
                             for group in table.group.unique():
                                 dataset = files[f"{subindicator['id']}_{group}"]

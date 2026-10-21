@@ -211,6 +211,13 @@
     {% endif %}
 </div>
 
+{% if indicator.subindicator and results[indicator.subindicator.id] and results[indicator.subindicator.id].footnote %}
+    <p class="no-break">
+        <br />
+        {{ results[indicator.subindicator.id].footnote }}
+    </p>
+{% endif %}
+
 <p>
     To learn more and explore the GIS data,
     <a href="{{indicator.url}}">view this indicator in the SECAS Atlas</a>.

@@ -33,7 +33,7 @@ def add_subindicator_sheet(
     values = subindicator["values"]
     nodata_label = "Outside extent of this dataset\n(acres)"
 
-    if subindicator["type"] == "stacked_bits":
+    if subindicator["type"] == "stacked_bit_species":
         tmp = df[[subindicator["id"]]].rename(columns={subindicator["id"]: "value"})
         tmp.loc[tmp.value.isnull(), "value"] = tmp.value.apply(lambda x: [])
         tmp["count"] = tmp.value.apply(len)
