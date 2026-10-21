@@ -1021,8 +1021,12 @@ async def test_create_xlsx_file_coastal(format):
         indicator_sheet.columns.tolist()
         == ["Analysis unit", "Outside extent of this dataset\n(acres)"]
         + indicator_value_cols[::-1]
+        # percent of area
         + ["Outside extent of this dataset\n(percent)"]
         + indicator_percent_cols[::-1]
+        # percent of shoreline
+        + ["Outside extent of this dataset\n(percent).1"]
+        + [f"{c}.1" for c in indicator_percent_cols[::-1]]
     )
     assert np.allclose(
         indicator_sheet.iloc[0][indicator_value_cols].values.astype("float64"), results[indicator_id].iloc[0]
