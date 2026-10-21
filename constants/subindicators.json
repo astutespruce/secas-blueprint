@@ -110,7 +110,7 @@
     "id": "f_imperiledaquaticspecies_spp",
     "indicator_id": "f_imperiledaquaticspecies",
     "filename": "subindicators/f_imperiledaquaticspecies_spp.fgb",
-    "type": "huc12_species_count",
+    "type": "huc12_species",
     "label": "Imperiled aquatic species count",
     "sheet_name": "Imperiled aquatic species count",
     "caption": "count of imperiled aquatic species",
@@ -119,8 +119,26 @@
     "citation": "Southeast Conservation Adaptation Strategy (SECAS). 2026. Southeast Conservation Blueprint 2026.",
     "description": "This dataset complements the imperiled aquatic species indicator.  This dataset measures the number of aquatic animal Regional Species of Greatest Conservation Need (RSGCN) observed within each 12-digit HUC subwatershed, including fish, mussels, snails, crayfish, and amphibians.  It accounts for species that occur in each subwatershed in order to calculate the count of unique species.",
     "values": [
-      { "value": "huc12_count", "label": "Total number of overlapping subwatersheds" },
-      { "value": "count", "label": "Total number of species present" }
+      { "value": "huc12_count", "label": "Number of overlapping subwatersheds" },
+      { "value": "count", "label": "Number of species present" }
+    ]
+  },
+  {
+    "id": "f_caribbeanimperiledaquaticspecies_spp",
+    "indicator_id": "f_caribbeanimperiledaquaticspecies",
+    "filename": "subindicators/f_caribbeanimperiledaquaticspecies_spp.fgb",
+    "type": "huc12_species",
+    "label": "Caribbean imperiled aquatic species list",
+    "sheet_name": "Carib imperiled aq. spp list",
+    "caption": "list of Caribbean imperiled aquatic species",
+    "source": "Southeast Conservation Blueprint",
+    "date": "2026",
+    "citation": "Southeast Conservation Adaptation Strategy (SECAS). 2026. Southeast Conservation Blueprint 2026.",
+    "description": "TODO:",
+    "values": [
+      { "value": "huc12_count", "label": "Number of overlapping subwatersheds" },
+      { "value": "count", "label": "Number of species present" },
+      { "value": "species", "label": "Species present" }
     ]
   }
 ]

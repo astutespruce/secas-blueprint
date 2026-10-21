@@ -103,7 +103,7 @@ def extract_lines_in_analysis_areas(subindicator, df):
     return lines[out_cols].apply(lambda x: x.values, axis=1).rename(out_name)
 
 
-def extract_huc12_species_counts_in_analysis_areas(subindicator, df):
+def extract_huc12_species_in_analysis_areas(subindicator, df):
     index_name = df.index.name or "index"
     out_name = subindicator["id"]
 
@@ -112,20 +112,18 @@ def extract_huc12_species_counts_in_analysis_areas(subindicator, df):
     read_mask = shapely.union_all(shapely.envelope(tmp.geometry.values))
     # NOTE: pyogrio does not currently work properly for use_arrow=True if the
     # mask does not overlap and returns no features, so we can't use it here.
-    huc12 = read_dataframe(
-        src_dir / subindicator["filename"], columns=["HUC12", "species_ids", "geometry"], mask=read_mask
-    )
+    huc12 = read_dataframe(src_dir / subindicator["filename"], columns=["HUC12", "species", "geometry"], mask=read_mask)
 
     if len(huc12) == 0:
         return None
 
-    # find all cores that intersect any part of the AOI
+    # find all HUC12 that intersect any part of the AOI
     left, right = shapely.STRtree(huc12.geometry.values).query(tmp.geometry.values, predicate="intersects")
     huc12 = pd.DataFrame(
         {
             index_name: tmp.index.take(left),
             "HUC12": huc12.HUC12.values.take(right),
-            "species_ids": huc12.species_ids.take(right),
+            "species": huc12.species.take(right),
         }
     )
 
@@ -133,15 +131,17 @@ def extract_huc12_species_counts_in_analysis_areas(subindicator, df):
         return None
 
     # convert species_ids to list
-    huc12["species_ids"] = huc12.species_ids.str.split(",").apply(lambda x: [int(v) for v in x if v != ""])
+    huc12["species"] = huc12.species.fillna("").str.split("|").apply(lambda x: [v for v in x if v != ""])
 
     huc12 = (
         huc12.groupby(by=[index_name])
-        .agg({"HUC12": "nunique", "species_ids": "sum"})
-        .rename(columns={"HUC12": "huc12_count", "species_ids": "count"})
+        .agg({"HUC12": "nunique", "species": "sum"})
+        .rename(columns={"HUC12": "huc12_count"})
     )
     huc12["huc12_count"] = huc12.huc12_count.astype("uint16")
-    huc12["count"] = huc12["count"].apply(set).apply(len).astype("uint8")
-    huc12[out_name] = huc12[["huc12_count", "count"]].to_dict(orient="records")
+    huc12["species"] = huc12.species.apply(set).apply(sorted)
+    huc12["count"] = huc12.species.apply(len).astype("uint8")
+    huc12["species"] = huc12.species.apply(", ".join)
+    huc12[out_name] = huc12[["huc12_count", "count", "species"]].to_dict(orient="records")
 
     return huc12[out_name]

@@ -76,7 +76,7 @@ def add_subindicator_sheet(
             sheet_name=sheet_name,
             caption=caption,
             column_widths=column_widths,
-            area_columns=[3, 4, 5],
+            area_columns=[3, 4],
             # only include breaks if they are not incremental
             breaks=None if breaks == list(range(len(df))) else breaks,
         )
@@ -134,12 +134,15 @@ def add_subindicator_sheet(
             percent_header=subindicator.get("percent_header", "PERCENT"),
         )
 
-    elif subindicator["type"] == "huc12_species_count":
-        tmp = df[subindicator["id"]].apply(pd.Series)
+    elif subindicator["type"] == "huc12_species":
+        tmp = df[subindicator["id"]].apply(pd.Series)[[v["value"] for v in values]]
         columns = {v["value"]: v["label"] for v in values}
-        tmp = tmp.rename(columns={c: columns[c] for c in tmp.columns}).reset_index()
+        tmp = tmp.rename(columns=columns).reset_index()
         column_widths = [name_col_width, 16, 16]
-        write_excel(xlsx, tmp, sheet_name=sheet_name, caption=caption, column_widths=column_widths, area_columns=[2])
+        if "species" in columns:
+            column_widths += [100]
+
+        write_excel(xlsx, tmp, sheet_name=sheet_name, caption=caption, column_widths=column_widths)
 
     else:
         raise NotImplementedError(f"report not implemented for {subindicator['id']}")

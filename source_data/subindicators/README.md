@@ -89,7 +89,7 @@ of interest.
 
 ### Continental imperiled aquatic species
 
-These data were prepared using `prepare_imperiled_aquatic_species_subindicator.py`.
+These data were prepared using `prepare_imperiled_aquatic_species_subindicators.py`.
 
 Data for imperiled aquatic species on the RSGCN list were extracted by SARP and
 assigned to randomized species IDs because underlying species data are protected
@@ -102,3 +102,14 @@ Data were assigned to the NHD 2025 version of HUC12 boundaries.
 
 This subindicator is used to find the unique count of species within an area of
 interest across all overlapping HUC12s.
+
+### Caribbean imperiled aquatic species
+
+These data were prepared using `prepare_imperiled_aquatic_species_subindicators.py`.
+
+Data for imperiled aquatic species were provided by Hilary Morris via email
+on 10/20/2026. These include a spreadsheet of point coordinates for species in
+Puerto Rico (CombinedKwakData_ForSARP.xlsx) and species by HUC12 for U.S. Virgin
+Islands.
+
+The point data were converted to lists of species per HUC12.

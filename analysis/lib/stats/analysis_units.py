@@ -33,7 +33,7 @@ from analysis.lib.stats.slr import BINS as SLR_DEPTH_BINS
 from analysis.lib.stats.slr import extract_slr_proj_in_analysis_areas
 from analysis.lib.stats.subindicators import (
     extract_cores_in_analysis_areas,
-    extract_huc12_species_counts_in_analysis_areas,
+    extract_huc12_species_in_analysis_areas,
     extract_lines_in_analysis_areas,
 )
 from analysis.lib.stats.urban import BINS as URBAN_BINS
@@ -290,9 +290,9 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
                 lines = extract_lines_in_analysis_areas(subindicator, df)
                 if lines is not None:
                     out = out.join(lines)
-            elif subindicator["type"] == "huc12_species_count":
-                huc12_counts = extract_huc12_species_counts_in_analysis_areas(subindicator, df)
-                if huc12_counts is not None:
-                    out = out.join(huc12_counts)
+            elif subindicator["type"] == "huc12_species":
+                huc12_species = extract_huc12_species_in_analysis_areas(subindicator, df)
+                if huc12_species is not None:
+                    out = out.join(huc12_species)
 
     return out

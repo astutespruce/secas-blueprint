@@ -319,7 +319,7 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
             "url",
         ]
     ]
-
+    df["label"] = df.label.str.strip()
     df["description"] = df["description"].str.replace("’", "'").str.replace("–", "-").str.strip()
 
     if merged is None:
