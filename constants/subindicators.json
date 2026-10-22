@@ -9,7 +9,7 @@
     "type": "stacked_bit_species",
     "label": "Imperiled amphibian & reptile species list",
     "sheet_name": "Imperiled herp species list",
-    "caption": "imperiled amphibian & reptile species present based on USGS Southeast Gap Analysis Project species distribution models",
+    "caption": "imperiled amphibian & reptile species present based on USGS Southeast Gap Analysis Project species distribution models.  Note: because some GAP models represent multiple species and/or subspecies, specific species listed for a given model may or may not occur in each area of interest.  Species counts are based on the number of models indicating presence in each area of interest",
     "source": "Southeast Conservation Blueprint",
     "date": "2026",
     "citation": "Southeast Conservation Adaptation Strategy (SECAS). 2026. Southeast Conservation Blueprint 2026.",

@@ -63,12 +63,12 @@ def extract_cores_in_analysis_areas(subindicator, df):
         return None
 
     # find all cores that intersect any part of the AOI
-    left, right = shapely.STRtree(cores.geometry.values).query(tmp.geometry.values, predicate="intersects")
+    left, right = shapely.STRtree(cores.geometry.values).query(df.geometry.values, predicate="intersects")
     cores = pd.DataFrame(
         {
             "size": cores["size"].values.take(right),
             "acres": cores.acres.values.take(right),
-            index_name: tmp.index.take(left),
+            index_name: df.index.take(left),
         }
     )
 
@@ -290,10 +290,10 @@ def extract_huc12_species_in_analysis_areas(subindicator, df):
         return None
 
     # find all HUC12 that intersect any part of the AOI
-    left, right = shapely.STRtree(huc12.geometry.values).query(tmp.geometry.values, predicate="intersects")
+    left, right = shapely.STRtree(huc12.geometry.values).query(df.geometry.values, predicate="intersects")
     huc12 = pd.DataFrame(
         {
-            index_name: tmp.index.take(left),
+            index_name: df.index.take(left),
             "HUC12": huc12.HUC12.values.take(right),
             "species": huc12.species.take(right),
         }
@@ -397,6 +397,6 @@ def summarize_stacked_bit_species_in_aoi(subindicator, rasterized_geometry):
     if not species:
         return None
 
-    label = subindicator["label"].lower().replace("caribbean", "").split("species")
+    label = subindicator["label"].lower().replace("caribbean", "").split("species")[0]
 
     return {"footnote": f"This area includes {format_number(len(species))} {label} species."}

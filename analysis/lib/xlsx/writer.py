@@ -94,9 +94,6 @@ def write_excel(
     df.to_excel(xlsx, sheet_name=sheet_name, startrow=data_start_row, index=False)
     ws = xlsx.sheets[sheet_name]
 
-    if caption is not None:
-        add_caption(ws, table_counter=len(xlsx.sheets), caption=caption)
-
     ### Add percent divider column
     percent_divider_col_index = -1
     extra_percent_divider_col_index = -1
@@ -130,6 +127,10 @@ def write_excel(
     for i, width in enumerate(column_widths):
         letter = get_column_letter(i + 1)
         ws.column_dimensions[letter].width = width
+
+    # add caption after setting widths
+    if caption is not None:
+        add_caption(ws, table_counter=len(xlsx.sheets), caption=caption)
 
     ### set cell styles
     for col_idx, col in enumerate(ws.columns):

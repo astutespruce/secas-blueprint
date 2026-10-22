@@ -74,7 +74,7 @@ spp["id"] = spp.id.fillna("").astype("str")
 
 # update names to combine multiple species
 spp["value"] = spp.CNAME + " (" + spp.SNAME + ")"
-spp = spp.groupby("id").agg({"SNAME": "first", "CNAME": "first", "value": lambda x: ", ".join(x)})
+spp = spp.groupby("id").agg({"SNAME": "first", "CNAME": "first", "value": " and/or ".join})
 ids = sorted(spp.index.values)
 
 
@@ -199,6 +199,8 @@ df[["group", "bit", "id", "value"]].reset_index(drop=True).to_feather(
 
 for group in groups:
     outfilename = subindicators_out_dir / f"{indicator_id}_spp_{group}.tif"
+    if outfilename.exists():
+        continue
 
     rows = df.loc[df.group == group].copy()
     rows["src"] = rows.id.apply(lambda id: rasterio.open(working_dir / f"{id}.tif"))

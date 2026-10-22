@@ -99,7 +99,7 @@ def add_subindicator_sheet(
         for value_col, percent_col in zip(value_columns, percent_columns):
             tmp[percent_col] = (tmp[value_col] / tmp.total_miles).fillna(0)
 
-        tmp = tmp[value_columns + percent_columns]
+        tmp = tmp[["total_miles"] + value_columns + percent_columns].rename(columns={"total_miles": f"Total miles"})
 
         good_condition_info = None
         if good_threshold is not None:
@@ -112,13 +112,14 @@ def add_subindicator_sheet(
                 "num_good_values": num_good_values,
                 "num_not_good_values": num_not_good_values,
                 "num_extra_columns": 0,
+                "offset": 2,
             }
 
         column_widths = [name_col_width] + ([col_width] * len(tmp.columns))
 
-        num_area_cols = len(value_columns) + 1
-        area_columns = list(range(num_area_cols))
-        percent_columns = list(range(num_area_cols, num_area_cols * 2))
+        num_area_cols = len(value_columns)
+        area_columns = list(range(1, num_area_cols + 2))
+        percent_columns = list(range(num_area_cols + 2, num_area_cols * 2 + 3))
 
         write_excel(
             xlsx,
