@@ -149,9 +149,8 @@ def extract_lines_in_analysis_areas(subindicator, df):
     index_name = df.index.name or "index"
     out_name = subindicator["id"]
 
-    tmp = df.explode(ignore_index=False, index_parts=False)
     # use union of individual area bounding boxes to read features
-    read_mask = shapely.union_all(shapely.envelope(tmp.geometry.values))
+    read_mask = shapely.union_all(shapely.envelope(df.explode(ignore_index=False, index_parts=False).geometry.values))
     # NOTE: pyogrio does not currently work properly for use_arrow=True if the
     # mask does not overlap and returns no features, so we can't use it here.
     lines = read_dataframe(data_dir / subindicator["filename"], columns=["value", "miles", "geometry"], mask=read_mask)
@@ -160,11 +159,11 @@ def extract_lines_in_analysis_areas(subindicator, df):
         return None
 
     # find all lines that intersect any part of the AOI
-    left, right = shapely.STRtree(lines.geometry.values).query(tmp.geometry.values, predicate="intersects")
+    left, right = shapely.STRtree(lines.geometry.values).query(df.geometry.values, predicate="intersects")
     lines = pd.DataFrame(
         {
-            index_name: tmp.index.take(left),
-            "clip_geometry": tmp.geometry.values.take(left),
+            index_name: df.index.take(left),
+            "clip_geometry": df.geometry.values.take(left),
             "geometry": lines.geometry.values.take(right),
             "value": lines["value"].values.take(right),
             "miles": lines.miles.values.take(right),

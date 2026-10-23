@@ -20,6 +20,26 @@
     ]
   },
   {
+    "id": "t_imperiledmammals_spp",
+    "indicator_id": "t_imperiledmammals",
+    "filename": "subindicators/t_imperiledmammals_spp_{group}.tif",
+    "filename_params": { "key": "group", "values": [0, 1] },
+    "table_filename": "subindicators/t_imperiledmammals_spp.feather",
+    "table_columns": ["group", "bit", "value"],
+    "type": "stacked_bit_species",
+    "label": "Imperiled mammals species list",
+    "sheet_name": "Imperiled mammals list",
+    "caption": "imperiled mammal species present based on USGS Southeast Gap Analysis Project species distribution models.  Note: because some GAP models represent multiple species and/or subspecies, specific species listed for a given model may or may not occur in each area of interest.  Species counts are based on the number of models indicating presence in each area of interest",
+    "source": "Southeast Conservation Blueprint",
+    "date": "2026",
+    "citation": "Southeast Conservation Adaptation Strategy (SECAS). 2026. Southeast Conservation Blueprint 2026.",
+    "description": "This dataset provides additional details for the Imperiled mammals indicator.  It provides a list of species present based on available USGS Southeast Gap Analysis Project species distribution models for species included in the indicator.  Data are limited to limited to non-urban, non-marine areas in the Continental U.S.",
+    "values": [
+      { "value": "count", "label": "Number of species present" },
+      { "value": "value", "label": "Species present" }
+    ]
+  },
+  {
     "id": "t_intacthabitatcores_size",
     "indicator_id": "t_intacthabitatcores",
     "filename": "subindicators/t_intacthabitatcores_size.fgb",

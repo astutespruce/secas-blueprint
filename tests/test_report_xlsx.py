@@ -212,6 +212,10 @@ async def test_get_analysis_unit_results_single_area(format):
     assert len(row["t_imperiledamphibiansandreptiles_spp"]) == 8
     assert "Seepage Salamander (Desmognathus aeneus)" in row["t_imperiledamphibiansandreptiles_spp"]
 
+    assert np.allclose(row["t_imperiledmammals"].tolist(), [0, 0, 39.8086, 10.8973, 0, 0])
+    assert len(row["t_imperiledmammals_spp"]) == 11
+    assert "Southern Appalachian Woodrat (Neotoma floridana haematoreia)" in row["t_imperiledmammals_spp"]
+
     assert np.allclose(row["t_intacthabitatcores"], [0.0, 0.0, 50.705946, 0.0])
     core_sizes = row["t_intacthabitatcores_size"]
     assert len(core_sizes) == 1
@@ -1041,7 +1045,8 @@ async def test_create_xlsx_file_coastal(format):
     subindicator_value_cols = [f"{v['label'].replace(' (', '\n(')}\n(miles)" for v in subindicator["values"][::-1]]
     subindicator_percent_cols = [col.replace("(miles)", "(percent)") for col in subindicator_value_cols]
     assert (
-        subindicator_sheet.columns.tolist() == ["Analysis unit"] + subindicator_value_cols + subindicator_percent_cols
+        subindicator_sheet.columns.tolist()
+        == ["Analysis unit", "Total miles"] + subindicator_value_cols + subindicator_percent_cols
     )
     assert np.allclose(subindicator_sheet.iloc[0][subindicator_value_cols], results[subindicator["id"]].iloc[0][::-1])
 

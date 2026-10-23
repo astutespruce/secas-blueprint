@@ -28,7 +28,7 @@ reptiles_dir = src_dir / "2023GAP_reptileModels"
 out_dir = Path("data/inputs")
 subindicators_out_dir = out_dir / "subindicators"
 subindicators_out_dir.mkdir(exist_ok=True)
-working_dir = src_dir / "derived"
+working_dir = src_dir / "extracted_amphibians_reptiles"
 working_dir.mkdir(exist_ok=True)
 
 
@@ -68,9 +68,9 @@ spp = (
 spp = spp.loc[spp.id.str.startswith(("a", "r"))].copy()
 spp["id"] = spp.id.fillna("").astype("str")
 
-# NOTE: there are 3 species listed for aDWSAx, 2 listed for aNPSAx; TODO: ask
-# NOTE: Lampropeltis occipitolineata is not included in the SECAS list but also not in tifs; TODO: ask
-# NOTE: several species in spreadsheet are not present in data folder; TODO: ask
+# NOTE: there are instances of multiple species rows being associated with the same model; these are lumped together with and/or
+# NOTE: models for some species have been removed from the folder by USFWS staff where they were found to represent too broad a range for the RSGCN species;
+# only the models present were used here.
 
 # update names to combine multiple species
 spp["value"] = spp.CNAME + " (" + spp.SNAME + ")"
