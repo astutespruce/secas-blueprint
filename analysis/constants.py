@@ -78,15 +78,6 @@ try:
         indicator["filename"] = f"indicators/{indicator['filename']}"
         indicator["caption"] = f"Indicator values for {indicator['captionLabel']}"
 
-        if (
-            indicator["values"][0]["label"].startswith("Not identified as")
-            and "floodplain" in indicator["values"][0]["label"]
-        ):
-            indicator["presence_type"] = "floodplain"
-
-        elif "coastalshorelinecondition" in indicator["id"]:
-            indicator["presence_type"] = "shoreline"
-
     raw_indicators_index = {indicator["id"]: indicator for indicator in raw_indicators}
     subindicators = read_json("subindicators.json")
     for subindicator in subindicators:

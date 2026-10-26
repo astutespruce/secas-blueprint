@@ -4,10 +4,12 @@ import numpy as np
 import pandas as pd
 import rasterio
 import shapely
+from progress.bar import Bar
 from pyogrio import read_dataframe
 
 from analysis.constants import M_MILES
 from analysis.lib.pdf.format import format_number, format_percent, pluralize
+from analysis.lib.raster import clip_window, get_set_bits, get_window, shift_window
 
 data_dir = Path("data/inputs")
 
@@ -104,17 +106,13 @@ def summarize_cores_in_aoi(subindicator, df):
     cores = cores.groupby("size").agg({"size": "count", "acres": ["min", "max"]})
     cores.columns = ["count", "min_acres", "max_acres"]
     cores = pd.DataFrame(subindicator["values"][::-1]).join(cores, on="value", how="inner")
-    cores["range"] = (
-        "(" + cores.min_acres.apply(format_number) + " to " + cores.max_acres.apply(format_number) + " acres)"
-    )
+    cores["range"] = cores.min_acres.apply(format_number) + " to " + cores.max_acres.apply(format_number)
     ix = cores.min_acres == cores.max_acres
     if ix.any():
         cores.loc[ix, "range"] = (
-            "("
-            + cores.loc[ix].min_acres.apply(format_number)
-            + " "
+            +cores.loc[ix].min_acres.apply(format_number)
+            + " to "
             + cores.loc[ix].min_acres.apply(lambda x: pluralize("acre", "acres", x))
-            + ")"
         )
 
     values = (
@@ -123,11 +121,12 @@ def summarize_cores_in_aoi(subindicator, df):
         + cores["value"]
         + " "
         + cores["count"].apply(lambda x: pluralize("core", "cores", x))
-        + " "
+        + " ranging from "
         + cores["range"]
+        + " acres in size"
     ).tolist()
 
-    return {"footnote": f"This area includes {values_list_to_sentence(values)}."}
+    return {"footnote": f"This area intersects {values_list_to_sentence(values)}."}
 
 
 def extract_lines_in_analysis_areas(subindicator, df):
@@ -250,7 +249,7 @@ def summarize_lines_in_aoi(subindicator, df):
     values = (lines.percent.apply(format_percent) + "% of which are " + lines.label.str.lower()).tolist()
 
     return {
-        "footnote": f"These results are based on approximately {format_number(total_miles)} {pluralize('mile', 'miles', total_miles)} of coastline, {values_list_to_sentence(values)}."
+        "footnote": f"These results are based on approximately {format_number(total_miles)} {pluralize('mile', 'miles', total_miles)} of coastal shoreline, {values_list_to_sentence(values)}."
     }
 
 
@@ -362,10 +361,14 @@ def summarize_huc12_species_in_aoi(subindicator, df):
     huc12_count = len(huc12)
     spp_count = len(set(huc12.species.sum()))
 
-    label = subindicator["label"].lower().replace("caribbean", "").split("species")[0]
+    if "caribbean" in subindicator["id"]:
+        return {
+            "footnote": f"This area overlaps with {format_number(huc12_count)} {pluralize('subwatershed', 'subwatersheds', huc12_count)} where a total of {format_number(spp_count)} unique aquatic animal SGCN have been observed."
+        }
 
     return {
-        "footnote": f"This area overlaps with {format_number(huc12_count)} {pluralize('subwatershed', 'subwatersheds', huc12_count)} with a total of {format_number(spp_count)} {label} species."
+        "footnote": f"This area overlaps with {format_number(huc12_count)} {pluralize('subwatershed', 'subwatersheds', huc12_count)} where a total of {format_number(spp_count)} unique aquatic animal RSGCN have been observed.",
+        "note": "You may see minor differences between the indicator results and this total reported count of unique species across all overlapping subwatersheds. This occurs because the indicator uses a slightly older version of the source data, so where they differ, we recommend using the count reported here. Future updates will synchronize both applications.",
     }
 
 
@@ -396,6 +399,57 @@ def summarize_stacked_bit_species_in_aoi(subindicator, rasterized_geometry):
     if not species:
         return None
 
-    label = subindicator["label"].lower().replace("caribbean", "").split("species")[0]
+    label = subindicator["label"].lower().replace("caribbean", "").split("species")[0].replace(" & ", " and ")
 
-    return {"footnote": f"This area includes {format_number(len(species))} {label} species."}
+    return {
+        "footnote": f"This area includes predicted suitable habitat for {format_number(len(species))} {label} species."
+    }
+
+
+def summarize_stacked_bit_species_by_units_grid(subindicator, df, units_grid, progress_label="Summarizing data..."):
+    table = pd.read_feather(data_dir / subindicator["table_filename"], columns=subindicator["table_columns"])
+    for group in table.group.unique():
+        with rasterio.open(data_dir / subindicator["filename"].format(group=group)) as src:
+            for i, (_, row) in Bar(progress_label, max=len(df)).iter(enumerate(df.iterrows())):
+                unit_window = get_window(units_grid.dataset, (row.minx, row.miny, row.maxx, row.maxy), boundless=False)
+                read_window = clip_window(
+                    shift_window(unit_window, units_grid.dataset.window_transform(unit_window), src.transform),
+                    max_width=src.width,
+                    max_height=src.height,
+                )
+
+                if unit_window.height != read_window.height or unit_window.width != read_window.width:
+                    # if read_window covered a smaller area then have to clip back to it
+                    unit_window = shift_window(
+                        read_window, src.window_transform(read_window), units_grid.dataset.transform
+                    )
+
+                if (
+                    read_window.width == 0
+                    or read_window.height == 0
+                    or unit_window.width == 0
+                    or unit_window.height == 0
+                ):
+                    continue
+
+                unit_mask = units_grid.dataset.read(1, window=unit_window) == row.value
+                data = src.read(1, window=read_window)
+                data = np.where(unit_mask == True, data, np.uint64(0))
+                bits = get_set_bits(data)
+
+                # DEBUG
+                # write_raster(
+                #     "/tmp/unit.tif",
+                #     unit_mask.astype("uint8"),
+                #     units_grid.dataset.window_transform(unit_window),
+                #     crs=src.crs,
+                #     nodata=255,
+                # )
+
+                # write_raster(
+                #     "/tmp/data.tif",
+                #     data,
+                #     src.window_transform(read_window),
+                #     crs=src.crs,
+                #     nodata=255,
+                # )

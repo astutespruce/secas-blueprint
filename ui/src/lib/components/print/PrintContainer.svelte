@@ -68,7 +68,7 @@
 
 					<br />
 					<span class="text-sm text-muted-foreground">
-						Note: these filters are only valid for Southeast Blueprint {BLUEPRINT_VERSION}.
+						Note: These filters are only valid for Southeast Blueprint {BLUEPRINT_VERSION}.
 					</span>
 				</p>
 			{:else}

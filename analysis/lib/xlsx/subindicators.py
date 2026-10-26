@@ -83,8 +83,6 @@ def add_subindicator_sheet(
 
     elif subindicator["type"] == "lines":
         good_threshold = INDICATORS_INDEX[subindicator["indicator_id"]].get("goodThreshold", None)
-        if good_threshold is not None:
-            caption += "  Good condition thresholds reflect the range of indicator values that occur in healthy, functioning ecosystems."
 
         value_columns = [f"{v['label'].replace(' (', '\n(')}\n(miles)" for v in values]
         col_width = min(max([len(c) for c in value_columns]) * CHAR_PER_WIDTH_UNIT, 18)

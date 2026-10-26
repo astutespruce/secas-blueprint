@@ -43,14 +43,14 @@ def add_basic_results_sheet(
     # good threshold is only applicable to indicators
     good_threshold = dataset.get("goodThreshold", None)
     if good_threshold is not None:
-        caption += "  Good condition thresholds reflect the range of indicator values that occur in healthy, functioning ecosystems."
+        caption += " Good condition thresholds reflect the range of indicator values that occur in healthy, functioning ecosystems."
 
     elif dataset["id"] in INDICATORS_INDEX:
-        caption += "  A good condition threshold is not yet defined for this indicator."
+        caption += " A good condition threshold is not yet defined for this indicator."
 
     value_label = dataset.get("valueLabel", None)
     if value_label:
-        caption += f"  Values show {value_label[0].lower()}{value_label[1:]}."
+        caption += f" Values show {value_label[0].lower()}{value_label[1:]}."
 
     nodata_label = "Outside extent of this dataset\n(acres)"
 
@@ -75,14 +75,15 @@ def add_basic_results_sheet(
     extra_percent_header = None
     has_extra_percent_columns = False
     data_value_columns = None
-    presence_type = dataset.get("presence_type")
-    if presence_type in {"floodplain", "shoreline"}:
+
+    data_extent_percent_label = dataset.get("data_extent_percent_label")
+    data_extent_exclude_values = dataset.get("data_extent_exclude_values", []) or []
+    if data_extent_percent_label:
         has_extra_percent_columns = True
-        extra_percent_header = f"PERCENT OF {presence_type.upper()}"
-        data_value_columns = value_columns
-        if values[0]["label"].startswith("Not identified as"):
-            # exlude value 0
-            data_value_columns = value_columns[1:]
+        extra_percent_header = data_extent_percent_label.upper()
+        data_value_columns = [
+            value_columns[i] for i, value in enumerate(values) if value["value"] not in data_extent_exclude_values
+        ]
 
     # reorder columns
     if get_value_order is not None:

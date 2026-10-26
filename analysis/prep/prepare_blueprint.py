@@ -304,6 +304,37 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
     df["valueLabels"] = df["valueLabels"].apply(parse_values)
     df["values"] = None  # filled below
 
+    ### Add extra info for percents within data extent
+    df["data_extent_percent_label"] = None
+    df["data_extent_exclude_values"] = None
+    ix = df.id.isin(
+        [
+            "f_caribbeannaturallandcoverinfloodplains",
+            "f_naturallandcoverinfloodplains",
+            "f_caribbeanimperiledaquaticspecies",
+            "f_imperiledaquaticspecies",
+            "f_floodplaininundation",
+            "f_caribbeannetworkcomplexity",
+            "f_networkcomplexity",
+        ]
+    )
+    df.loc[ix, "data_extent_percent_label"] = "percent of floodplain"
+    df.loc[ix, "data_extent_exclude_values"] = df.loc[ix].apply(lambda x: [0], axis=1)
+
+    ix = df.id == "f_atlanticmigratoryfishhabitat"
+    df.loc[ix, "data_extent_percent_label"] = "percent of floodplain"
+
+    ix = df.id == "m_stablecoastalwetlands"
+    df.loc[ix, "data_extent_percent_label"] = "percent of coastal wetlands"
+    df.loc[ix, "data_extent_exclude_values"] = df.loc[ix].apply(lambda x: [0], axis=1)
+
+    ix = df.id.isin(["m_caribbeancoastalshorelinecondition", "m_coastalshorelinecondition"])
+    df.loc[ix, "data_extent_percent_label"] = "percent of shoreline area"
+
+    ix = df.id == "f_lakesandreservoirs"
+    df.loc[ix, "data_extent_percent_label"] = "percent of lake/reservoir area"
+    df.loc[ix, "data_extent_exclude_values"] = df.loc[ix].apply(lambda x: [0], axis=1)
+
     df = df[
         [
             "id",
@@ -317,6 +348,8 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
             "captionLabel",
             "goodThreshold",
             "url",
+            "data_extent_percent_label",
+            "data_extent_exclude_values",
         ]
     ]
     df["label"] = df.label.str.strip()
