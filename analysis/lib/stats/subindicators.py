@@ -15,12 +15,13 @@ from analysis.lib.raster import get_aligned_windows
 data_dir = Path("data/inputs")
 
 
-def values_list_to_sentence(values):
+def values_list_to_sentence(values, delimiter=", "):
     """Convert a values list of >= 1 values into sentence form.
 
     Parameters
     ----------
     values : list-like of str
+    delimiter : str
 
     Returns
     -------
@@ -31,7 +32,7 @@ def values_list_to_sentence(values):
     elif len(values) == 2:
         return " and ".join(values)
 
-    return f"{', '.join(values[:-1])}, and {values[-1]}"
+    return f"{delimiter.join(values[:-1])}{delimiter}and {values[-1]}"
 
 
 def extract_cores_in_analysis_areas(subindicator, df):
@@ -144,7 +145,7 @@ def summarize_cores_in_aoi(subindicator, df):
             + " acres in size"
         )
 
-    return {"footnote": f"This area intersects {values_list_to_sentence(cores.label.tolist())}."}
+    return {"footnote": f"This area intersects {values_list_to_sentence(cores.label.tolist(), '; ')}."}
 
 
 def summarize_cores_in_summary_units(subindicator, df, out_dir):
@@ -535,10 +536,10 @@ def summarize_stacked_bit_species_in_aoi(subindicator, rasterized_geometry):
     if not species:
         return None
 
-    label = subindicator["label"].lower().split("species")[0].replace(" & ", " and ").strip()
+    spp_type_label = "mammal" if "mammal" in subindicator["id"] else "amphibian and reptile"
 
     return {
-        "footnote": f"This area includes predicted suitable habitat for {format_number(len(species))} {label} species."
+        "footnote": f"This area includes predicted suitable habitat for {format_number(len(species))} {spp_type_label} RSGCN."
     }
 
 
@@ -681,9 +682,9 @@ def get_subindicator_unit_results(results_dir, unit):
 
         if subindicator["type"] == "stacked_bit_species":
             unit_results = unit_results.iloc[0]
-            label = subindicator["label"].lower().split("species")[0].replace(" & ", " and ").strip()
+            spp_type_label = "mammal" if "mammal" in subindicator["id"] else "amphibian and reptile"
             results[subindicator["id"]] = {
-                "footnote": f"This area includes predicted suitable habitat for {format_number(unit_results['count'])} {label} species."
+                "footnote": f"This area includes predicted suitable habitat for {format_number(unit_results['count'])} {spp_type_label} RSGCN."
             }
 
         elif subindicator["type"] == "cores":
@@ -715,7 +716,7 @@ def get_subindicator_unit_results(results_dir, unit):
                 )
 
             results[subindicator["id"]] = {
-                "footnote": f"This area intersects {values_list_to_sentence(cores.label.tolist())}."
+                "footnote": f"This area intersects {values_list_to_sentence(cores.label.tolist(), '; ')}."
             }
 
         elif subindicator["type"] == "lines":

@@ -74,7 +74,7 @@
 			<g transform={`translate(0, ${height - margin.bottom})`}>
 				<XAxis ticks={xAxisTicks} label="Amount of sea level rise (feet)" labelOffset={40} />
 			</g>
-			<YAxis ticks={yAxisTicks} label="Percent of area" labelOffset={48} />
+			<YAxis ticks={yAxisTicks} label="Percent Of Area" labelOffset={48} />
 
 			<!-- line -->
 			<path
