@@ -6,6 +6,7 @@ from analysis.lib.stats.blueprint import get_blueprint_unit_results
 from analysis.lib.stats.parcas import get_parca_unit_results
 from analysis.lib.stats.protected_areas import get_protected_areas_unit_results
 from analysis.lib.stats.slr import get_slr_unit_results
+from analysis.lib.stats.subindicators import get_subindicator_unit_results
 from analysis.lib.stats.urban import get_urban_unit_results
 from analysis.lib.stats.wildfire_risk import get_wildfire_risk_unit_results
 
@@ -82,6 +83,9 @@ def get_summary_unit_results(unit_type: SummaryUnitType, unit_id: str) -> dict:
         results["protected_areas"] = protected_areas_results
 
     if unit_type == "huc12":
+        subindicator_results = get_subindicator_unit_results(results_dir, unit)
+        results.update(subindicator_results)
+
         parca_results = get_parca_unit_results(results_dir, unit)
         if parca_results is not None:
             results["parcas"] = parca_results

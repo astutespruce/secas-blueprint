@@ -95,6 +95,21 @@ def test_summary_unit_results_huc12():
 
     assert "legend" in results
 
+    expected_subindicators = [
+        "t_imperiledamphibiansandreptiles_spp",
+        "t_imperiledmammals_spp",
+        "t_intacthabitatcores_size",
+        "f_imperiledaquaticspecies_spp",
+    ]
+
+    for subindicator_id in expected_subindicators:
+        assert subindicator_id in results
+
+    assert "habitat for 6 imperiled" in results["t_imperiledamphibiansandreptiles_spp"]["footnote"]
+    assert "habitat for 11 imperiled" in results["t_imperiledmammals_spp"]["footnote"]
+    assert "intersects 1 large core that is 11,534 acres in size" in results["t_intacthabitatcores_size"]["footnote"]
+    assert "A total of 2 unique" in results["f_imperiledaquaticspecies_spp"]["footnote"]
+
 
 def test_summary_unit_results_marine_hex():
     # NOTE: this needs to be updated for each blueprint version; this is just a
@@ -268,6 +283,19 @@ async def test_aoi_results_single_area(format):
 
     assert "legend" in results
 
+    expected_subindicators = [
+        "t_imperiledamphibiansandreptiles_spp",
+        "t_imperiledmammals_spp",
+        "t_intacthabitatcores_size",
+    ]
+
+    for subindicator_id in expected_subindicators:
+        assert subindicator_id in results
+
+    assert "habitat for 8 imperiled" in results["t_imperiledamphibiansandreptiles_spp"]["footnote"]
+    assert "habitat for 11 imperiled" in results["t_imperiledmammals_spp"]["footnote"]
+    assert "intersects 1 medium core that is 2,401 acres in size" in results["t_intacthabitatcores_size"]["footnote"]
+
 
 @pytest.mark.anyio
 @pytest.mark.parametrize("format", ["gdb", "shp"])
@@ -285,6 +313,8 @@ async def test_aoi_results_coastal(format):
     assert "f_imperiledaquaticspecies_spp" in results
     assert "t_imperiledamphibiansandreptiles_spp" in results
     assert "m_coastalshorelinecondition_length" in results
+
+    assert "approximately 134 miles" in results["m_coastalshorelinecondition_length"]["footnote"]
 
 
 @pytest.mark.anyio

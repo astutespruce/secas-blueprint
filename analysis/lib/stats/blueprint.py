@@ -6,7 +6,7 @@ import rasterio
 
 from analysis.constants import BLUEPRINT, CORRIDORS, INDICATOR_GROUPS, INDICATORS, INDICATORS_INDEX, M2_ACRES
 from analysis.lib.io import read_unit_from_feather
-from analysis.lib.raster import summarize_raster_by_units_grid
+from analysis.lib.raster import summarize_raster_by_summary_units
 from analysis.lib.util import pluck
 
 data_dir = Path("data")
@@ -195,7 +195,7 @@ async def summarize_blueprint_in_aoi(rasterized_geometry, subregions, progress_c
     return results
 
 
-def summarize_blueprint_by_units_grid(df, units_grid, out_dir, marine=False):
+def summarize_blueprint_by_summary_units(df, units_dataset, out_dir, marine=False):
     """Summarize by HUC12 or marine hex grid cell
 
     Parameters
@@ -203,7 +203,7 @@ def summarize_blueprint_by_units_grid(df, units_grid, out_dir, marine=False):
     df : GeoDataFrame
         must have a "value" column with same values as used for corresponding units
         raster, and must have result of df.bounds joined in
-    units_grid : SummaryUnitGrid instance
+    units dataset : open rasterio dataset
     out_dir : str
     marine : bool, optional (default: False)
         if True, analysis is limited to marine indicators
@@ -216,9 +216,9 @@ def summarize_blueprint_by_units_grid(df, units_grid, out_dir, marine=False):
         cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
 
         blueprint_acres = (
-            summarize_raster_by_units_grid(
+            summarize_raster_by_summary_units(
                 df,
-                units_grid,
+                units_dataset,
                 value_dataset,
                 bins=BLUEPRINT_BINS,
                 progress_label="Summarizing Southeast Blueprint",
@@ -229,9 +229,9 @@ def summarize_blueprint_by_units_grid(df, units_grid, out_dir, marine=False):
 
     with rasterio.open(corridors_filename) as value_dataset:
         corridor_acres = (
-            summarize_raster_by_units_grid(
+            summarize_raster_by_summary_units(
                 df,
-                units_grid,
+                units_dataset,
                 value_dataset,
                 bins=CORRIDOR_BINS,
                 progress_label="Summarizing hubs & corridors",
@@ -264,9 +264,9 @@ def summarize_blueprint_by_units_grid(df, units_grid, out_dir, marine=False):
         values = [v["value"] for v in indicator["values"]]
         with rasterio.open(src_dir / indicator["filename"]) as value_dataset:
             indicator_acres = (
-                summarize_raster_by_units_grid(
+                summarize_raster_by_summary_units(
                     df,
-                    units_grid,
+                    units_dataset,
                     value_dataset,
                     bins=range(values[-1] + 1),
                     progress_label=f"Summarizing {indicator['label']}",

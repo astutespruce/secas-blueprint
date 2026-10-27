@@ -7,7 +7,7 @@ import pandas as pd
 import shapely
 from pyogrio import read_dataframe, write_dataframe
 
-from analysis.constants import DATA_CRS, INDICATORS_INDEX, M2_ACRES
+from analysis.constants import DATA_CRS, INDICATORS_INDEX
 
 warnings.filterwarnings("ignore", message=".*a polygon with more than 100 parts.*")
 
@@ -40,7 +40,7 @@ subregions = read_dataframe(
 )
 ix = np.unique(shapely.STRtree(df.geometry.values).query(subregions.geometry.values, predicate="intersects")[1])
 df = df.take(ix).reset_index(drop=True)
-df["species"] = df.species.fillna("").replace(",", "|")
+df["species"] = df.species.fillna("").str.replace(",", "|")
 df.loc[df.species == "", "species"] = None
 write_dataframe(df, out_dir / subindicator["filename"])
 

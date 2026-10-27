@@ -8,7 +8,7 @@ import shapely
 
 from analysis.constants import M2_ACRES, PARCAS, PARCAS_POLY
 from analysis.lib.io import read_unit_from_feather
-from analysis.lib.raster import summarize_raster_by_units_grid
+from analysis.lib.raster import summarize_raster_by_summary_units
 
 src_dir = Path("data/inputs")
 filename = src_dir / PARCAS["filename"]
@@ -214,14 +214,14 @@ def extract_parcas_in_analysis_units(df):
     return out[out_name]
 
 
-def summarize_parcas_by_units(df, units_grid, out_dir):
+def summarize_parcas_by_summary_units(df, units_dataset, out_dir):
     """Calculate overlap with PARCAs
 
     Parameters
     ----------
     df : GeoDataFrame
         contains unit boundaries, indexed by id
-    units_grid : SummaryUnitGrid instance
+    units_dataset : open rasterio dataset
     out_dir : str
     """
     print("Calculating overlap with PARCAs")
@@ -233,12 +233,8 @@ def summarize_parcas_by_units(df, units_grid, out_dir):
         cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
 
         parca_acres = (
-            summarize_raster_by_units_grid(
-                df,
-                units_grid,
-                value_dataset,
-                bins=BINS,
-                progress_label="Summarizing PARCAs",
+            summarize_raster_by_summary_units(
+                df, units_dataset, value_dataset, bins=BINS, progress_label="Summarizing PARCAs"
             )
             * cellsize
         )
