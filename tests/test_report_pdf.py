@@ -1,10 +1,8 @@
-import os
 from pathlib import Path
 from zipfile import ZipFile
 
 import numpy as np
 import pytest
-from dotenv import load_dotenv
 from pyogrio import read_dataframe
 
 from analysis.constants import DATA_CRS, GEO_CRS, INDICATORS
@@ -16,12 +14,6 @@ from api.lib.geo import get_dataset
 from tests.lib.image import assert_image_matches
 
 fixture_dir = Path("tests/fixtures")
-
-
-load_dotenv()
-
-# add to .env file to name saving test files
-SAVE_PDF = bool(os.getenv("TEST_SAVE_PDF", False))
 
 
 @pytest.mark.parametrize("unit_type", [None, "", "invalid_unit_type"])
@@ -196,9 +188,8 @@ async def test_summary_unit_pdf_huc12():
     pdf = create_report(maps=maps, results=results, name=results["name"], area_type="huc12")
     assert pdf is not None
 
-    if SAVE_PDF:
-        with open("/tmp/test_create_pdf_huc12.pdf", "wb") as out:
-            _ = out.write(pdf)
+    with open("/tmp/test_create_pdf_huc12.pdf", "wb") as out:
+        _ = out.write(pdf)
 
 
 @pytest.mark.anyio
@@ -398,6 +389,5 @@ async def test_create_pdf_single_area(format):
     results["scale"] = scale
     pdf = create_report(maps=maps, results=results, name="Test area")
 
-    if SAVE_PDF:
-        with open("/tmp/test_create_pdf_single_area.pdf", "wb") as out:
-            _ = out.write(pdf)
+    with open("/tmp/test_create_pdf_single_area.pdf", "wb") as out:
+        _ = out.write(pdf)
