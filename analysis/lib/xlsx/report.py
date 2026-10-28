@@ -89,7 +89,7 @@ def create_report(df: pd.DataFrame, datasets: set[str], name: str | None = None)
                 add_urbanization_sheet(xlsx, df, name_col_width, outside_area_label=outside_area_label)
 
             subindicator = dataset.get("subindicator")
-            if subindicator:
+            if subindicator and subindicator["id"] in df.columns:
                 add_subindicator_sheet(xlsx, df, subindicator, name_col_width, outside_area_label=outside_area_label)
 
         # Analysis metadata sheet

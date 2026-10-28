@@ -1058,3 +1058,64 @@ async def test_create_xlsx_file_coastal(format):
     indicator_id = "f_imperiledaquaticspecies"
     subindicator = indicator["subindicator"]
     sheet_name = subindicator.get("sheet_name") or subindicator["label"]
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("format", ["shp"])
+async def test_create_xlsx_file_usvi(format):
+    filename = f"{format}_poly_usvi.zip"
+    dataset = filename.replace(f"{format}_", "").replace(".zip", f".{format}")
+    df = read_dataframe(f"/vsizip/tests/fixtures/{filename}/{dataset}", columns=[], use_arrow=True).to_crs(DATA_CRS)
+
+    # dissolve like API endpoint
+    field = "__analysis_unit"
+    df[field] = "all areas"
+    df = dissolve(df.explode(ignore_index=True), by=field).set_index(field)
+
+    datasets = set(get_available_datasets(df))
+
+    results = await get_analysis_unit_results(df, datasets)
+    xlsx = create_report(results, datasets, name="Test area")
+
+    filename = "/tmp/test_create_xlsx_file_usvi.xlsx"
+    with open(filename, "wb") as out:
+        _ = out.write(xlsx)
+
+    reader = pd.ExcelFile(filename)
+
+    indicator_id = "m_caribbeancoastalshorelinecondition"
+    indicator = INDICATORS_INDEX[indicator_id]
+    sheet_name = indicator.get("sheet_name") or indicator["label"]
+    indicator_sheet = pd.read_excel(filename, sheet_name=sheet_name, skiprows=4).dropna(axis=1)
+    indicator_value_cols = get_value_columns(indicator["values"])
+    indicator_percent_cols = [col.replace("(acres)", "(percent)") for col in indicator_value_cols]
+    assert (
+        indicator_sheet.columns.tolist()
+        == ["Analysis unit", "Outside extent of this dataset\n(acres)"]
+        + indicator_value_cols[::-1]
+        # percent of area
+        + ["Outside extent of this dataset\n(percent)"]
+        + indicator_percent_cols[::-1]
+        # percent of shoreline
+        + ["Outside extent of this dataset\n(percent).1"]
+        + [f"{c}.1" for c in indicator_percent_cols[::-1]]
+    )
+    assert np.allclose(
+        indicator_sheet.iloc[0][indicator_value_cols].values.astype("float64"), results[indicator_id].iloc[0]
+    )
+
+    # associated subindicator is not present because area does not overlap the linework
+    subindicator = indicator["subindicator"]
+    sheet_name = subindicator.get("sheet_name") or subindicator["label"]
+    assert sheet_name not in reader.sheet_names
+
+    indicator_id = "f_caribbeanimperiledaquaticspecies"
+    indicator = INDICATORS_INDEX[indicator_id]
+    subindicator = indicator["subindicator"]
+    sheet_name = subindicator.get("sheet_name") or subindicator["label"]
+    subindicator_sheet = pd.read_excel(filename, sheet_name=sheet_name, skiprows=2)
+    assert subindicator_sheet.columns.tolist() == ["Analysis unit"] + [
+        value["label"] for value in subindicator["values"]
+    ]
+    assert subindicator_sheet["Number of overlapping subwatersheds"][0] == 1
+    assert subindicator_sheet["Number of unique species observed"][0] == 0

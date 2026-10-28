@@ -389,7 +389,7 @@ def extract_huc12_species_in_analysis_areas(subindicator, df):
     huc12["contained"] = shapely.contains_properly(huc12.clip_geom.values, huc12.geometry.values)
     huc12.loc[huc12.contained, "overlap"] = shapely.area(huc12.loc[huc12.contained].geometry.values)
     huc12.loc[~huc12.contained, "overlap"] = shapely.area(
-        shapely.intersection(huc12.clip_geom.values, huc12.loc[~huc12.contained].geometry.values)
+        shapely.intersection(huc12.loc[~huc12.contained].clip_geom.values, huc12.loc[~huc12.contained].geometry.values)
     )
     huc12 = huc12.loc[huc12.overlap > STANDARD_RESOLUTION * STANDARD_RESOLUTION].drop(columns=["contained", "overlap"])
 
@@ -438,9 +438,7 @@ def summarize_huc12_species_in_aoi(subindicator, df):
     read_mask = shapely.union_all(shapely.envelope(tmp.geometry.values))
     # NOTE: pyogrio does not currently work properly for use_arrow=True if the
     # mask does not overlap and returns no features, so we can't use it here.
-    huc12 = read_dataframe(
-        data_dir / subindicator["filename"], columns=["HUC12", "species"], mask=read_mask, where="species IS NOT NULL"
-    )
+    huc12 = read_dataframe(data_dir / subindicator["filename"], columns=["HUC12", "species"], mask=read_mask)
 
     if len(huc12) == 0:
         return None
@@ -499,6 +497,7 @@ def summarize_huc12_species_by_summary_units(subindicator, df, out_dir):
         columns=["HUC12", "species"],
         read_geometry=False,
         use_arrow=True,
+        # exclude where no species are present because we don't report results in this case
         where="species IS NOT NULL",
     ).set_index("HUC12")
 
