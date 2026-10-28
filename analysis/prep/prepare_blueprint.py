@@ -318,21 +318,21 @@ for sheet_name in ["Terrestrial", "Freshwater", "Coastal & Marine"]:
             "f_networkcomplexity",
         ]
     )
-    df.loc[ix, "data_extent_percent_label"] = "percent of floodplain"
+    df.loc[ix, "data_extent_percent_label"] = "Percent of floodplain"
     df.loc[ix, "data_extent_exclude_values"] = df.loc[ix].apply(lambda x: [0], axis=1)
 
     ix = df.id == "f_atlanticmigratoryfishhabitat"
-    df.loc[ix, "data_extent_percent_label"] = "percent of floodplain"
+    df.loc[ix, "data_extent_percent_label"] = "Percent of floodplain"
 
     ix = df.id == "m_stablecoastalwetlands"
-    df.loc[ix, "data_extent_percent_label"] = "percent of coastal wetlands"
+    df.loc[ix, "data_extent_percent_label"] = "Percent of coastal wetlands"
     df.loc[ix, "data_extent_exclude_values"] = df.loc[ix].apply(lambda x: [0], axis=1)
 
     ix = df.id.isin(["m_caribbeancoastalshorelinecondition", "m_coastalshorelinecondition"])
-    df.loc[ix, "data_extent_percent_label"] = "percent of shoreline area"
+    df.loc[ix, "data_extent_percent_label"] = "Percent of shoreline area"
 
     ix = df.id == "f_lakesandreservoirs"
-    df.loc[ix, "data_extent_percent_label"] = "percent of lake/reservoir area"
+    df.loc[ix, "data_extent_percent_label"] = "Percent of lake/reservoir area"
     df.loc[ix, "data_extent_exclude_values"] = df.loc[ix].apply(lambda x: [0], axis=1)
 
     df = df[

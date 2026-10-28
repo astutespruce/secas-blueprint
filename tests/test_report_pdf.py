@@ -97,8 +97,8 @@ def test_summary_unit_results_huc12():
     for subindicator_id in expected_subindicators:
         assert subindicator_id in results
 
-    assert "habitat for 6 imperiled" in results["t_imperiledamphibiansandreptiles_spp"]["footnote"]
-    assert "habitat for 11 imperiled" in results["t_imperiledmammals_spp"]["footnote"]
+    assert "habitat for 6 amphibian and reptile RSGCN" in results["t_imperiledamphibiansandreptiles_spp"]["footnote"]
+    assert "habitat for 11 mammal RSGCN" in results["t_imperiledmammals_spp"]["footnote"]
     assert "intersects 1 large core that is 11,534 acres in size" in results["t_intacthabitatcores_size"]["footnote"]
     assert "A total of 2 unique" in results["f_imperiledaquaticspecies_spp"]["footnote"]
 
@@ -180,7 +180,21 @@ async def test_summary_unit_pdf_huc12():
     """this is just a smoke test that PDF generates"""
     unit_id = "030601040506"
     results = get_summary_unit_results("huc12", unit_id)
-    maps, scale, map_errors = await render_maps(results["bounds"], summary_unit_id=unit_id)
+    indicators = []
+    for group in results.get("indicator_groups", []):
+        indicators.extend([i["id"] for i in group["indicators"]])
+
+    maps, scale, map_errors = await render_maps(
+        results["bounds"],
+        summary_unit_id=unit_id,
+        indicators=indicators,
+        corridors="corridors" in results,
+        parcas="parcas" in results,
+        protected_areas="protected_areas" in results,
+        slr="slr" in results,
+        urban="urban" in results,
+        wildfire_risk="wildfire_risk" in results,
+    )
 
     assert len(map_errors) == 0
 
@@ -283,8 +297,8 @@ async def test_aoi_results_single_area(format):
     for subindicator_id in expected_subindicators:
         assert subindicator_id in results
 
-    assert "habitat for 8 imperiled" in results["t_imperiledamphibiansandreptiles_spp"]["footnote"]
-    assert "habitat for 11 imperiled" in results["t_imperiledmammals_spp"]["footnote"]
+    assert "habitat for 8 amphibian and reptile RSGCN" in results["t_imperiledamphibiansandreptiles_spp"]["footnote"]
+    assert "habitat for 11 mammal RSGCN" in results["t_imperiledmammals_spp"]["footnote"]
     assert "intersects 1 medium core that is 2,401 acres in size" in results["t_intacthabitatcores_size"]["footnote"]
 
 

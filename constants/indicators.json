@@ -56,7 +56,7 @@
     "captionLabel":"Atlantic migratory fish habitat",
     "goodThreshold":7,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::atlantic-migratory-fish-habitat-southeast-blueprint-indicator-2023/about",
-    "data_extent_percent_label":"percent of floodplain",
+    "data_extent_percent_label":"Percent of floodplain",
     "data_extent_exclude_values":null,
     "subregions":[
       "Appalachians",
@@ -127,7 +127,7 @@
     "captionLabel":"Caribbean imperiled aquatic species ",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-imperiled-aquatic-species-southeast-blueprint-indicator/about",
-    "data_extent_percent_label":"percent of floodplain",
+    "data_extent_percent_label":"Percent of floodplain",
     "data_extent_exclude_values":[
       0
     ],
@@ -178,7 +178,7 @@
     "captionLabel":"Caribbean natural landcover in floodplains",
     "goodThreshold":4,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-natural-landcover-in-floodplains-southeast-blueprint-indicator-2023/about",
-    "data_extent_percent_label":"percent of floodplain",
+    "data_extent_percent_label":"Percent of floodplain",
     "data_extent_exclude_values":[
       0
     ],
@@ -224,7 +224,7 @@
     "captionLabel":"Caribbean network complexity",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-network-complexity-southeast-blueprint-indicator-2023/about",
-    "data_extent_percent_label":"percent of floodplain",
+    "data_extent_percent_label":"Percent of floodplain",
     "data_extent_exclude_values":[
       0
     ],
@@ -314,7 +314,7 @@
     "captionLabel":"floodplain inundation",
     "goodThreshold":4,
     "url":"https://secas-fws.hub.arcgis.com/maps/c58a64714a744ec9bddf8d7a4aaeff8c/about",
-    "data_extent_percent_label":"percent of floodplain",
+    "data_extent_percent_label":"Percent of floodplain",
     "data_extent_exclude_values":[
       0
     ],
@@ -438,7 +438,7 @@
     "captionLabel":"imperiled aquatic species",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::imperiled-aquatic-species-southeast-blueprint-indicator-2024/about",
-    "data_extent_percent_label":"percent of floodplain",
+    "data_extent_percent_label":"Percent of floodplain",
     "data_extent_exclude_values":[
       0
     ],
@@ -495,7 +495,7 @@
     "captionLabel":"lakes & reservoirs",
     "goodThreshold":3,
     "url":"https://secas-fws.hub.arcgis.com/maps/c376e924447c4875bbd15d17479accef/about",
-    "data_extent_percent_label":"percent of lake/reservoir area",
+    "data_extent_percent_label":"Percent of lake/reservoir area",
     "data_extent_exclude_values":[
       0
     ],
@@ -562,7 +562,7 @@
     "captionLabel":"natural landcover in floodplains",
     "goodThreshold":4,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::natural-landcover-in-floodplains-southeast-blueprint-indicator/about",
-    "data_extent_percent_label":"percent of floodplain",
+    "data_extent_percent_label":"Percent of floodplain",
     "data_extent_exclude_values":[
       0
     ],
@@ -639,7 +639,7 @@
     "captionLabel":"network complexity",
     "goodThreshold":4,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::network-complexity-southeast-blueprint-indicator-2024/about",
-    "data_extent_percent_label":"percent of floodplain",
+    "data_extent_percent_label":"Percent of floodplain",
     "data_extent_exclude_values":[
       0
     ],
@@ -1104,7 +1104,7 @@
     "captionLabel":"Caribbean coastal shoreline condition",
     "goodThreshold":1,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-coastal-shoreline-condition-southeast-blueprint-indicator-2023/about",
-    "data_extent_percent_label":"percent of shoreline area",
+    "data_extent_percent_label":"Percent of shoreline area",
     "data_extent_exclude_values":null,
     "subregions":[
       "Puerto Rico",
@@ -1368,7 +1368,7 @@
     "captionLabel":"coastal shoreline condition",
     "goodThreshold":3,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::coastal-shoreline-condition-southeast-blueprint-indicator-2023/about",
-    "data_extent_percent_label":"percent of shoreline area",
+    "data_extent_percent_label":"Percent of shoreline area",
     "data_extent_exclude_values":null,
     "subregions":[
       "Atlantic Coastal Plain",
@@ -2010,7 +2010,7 @@
     "captionLabel":"stable coastal wetlands",
     "goodThreshold":2,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::stable-coastal-wetlands-southeast-blueprint-indicator-2023/about",
-    "data_extent_percent_label":"percent of coastal wetlands",
+    "data_extent_percent_label":"Percent of coastal wetlands",
     "data_extent_exclude_values":[
       0
     ],

@@ -93,7 +93,7 @@
 			<g transform={`translate(0, ${height - margin.bottom})`}>
 				<XAxis ticks={xAxisTicks} label="Decade" labelOffset={40} />
 			</g>
-			<YAxis ticks={yAxisTicks} label="Percent Of Area" labelOffset={48} />
+			<YAxis ticks={yAxisTicks} label="Percent of area" labelOffset={48} />
 
 			<!-- lines -->
 			<path

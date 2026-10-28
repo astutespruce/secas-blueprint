@@ -77,7 +77,7 @@
     "source": "Southeast Conservation Blueprint",
     "date": "2026",
     "citation": "Southeast Conservation Adaptation Strategy (SECAS). 2026. Southeast Conservation Blueprint 2026.",
-    "description": "This dataset complements the coastal shoreline condition indicator by providing the length of each shoreline condition category present in the area of interest. Coastal shoreline lines are classified into shoreline condition using the same criteria as the indicator, but are analyzed using the linework instead of the 30 meter pixels used by the indicator.",
+    "description": "This dataset complements the coastal shoreline condition indicator by providing the length of each shoreline condition category present in the area of interest. Shoreline lines are classified into condition classes using the same criteria as the indicator, but are analyzed using the linework instead of the 30 meter pixels used by the indicator.",
     "percent_header": "PERCENT OF SHORELINE",
     "values": [
       {
@@ -108,8 +108,8 @@
     "filename": "subindicators/m_caribbeancoastalshorelinecondition_length.fgb",
     "type": "lines",
     "label": "Caribbean coastal shoreline condition length",
-    "sheet_name": "Carib. shoreline cond. length",
-    "caption": "coastal shoreline condition length. Note: This is calculated based on shoreline lines classified in the same way as the coastal shoreline condition indicator, but analyzed using the linework instead of the 30 meter pixels used by the indicator.",
+    "sheet_name": "Carib shoreline cond length",
+    "caption": "coastal shoreline condition length. Note: This is calculated based on shoreline lines classified in the same way as the coastal shoreline condition indicator, but analyzed using the linework instead of the 30 meter pixels used by the indicator",
     "source": "Southeast Conservation Blueprint",
     "date": "2026",
     "citation": "Southeast Conservation Adaptation Strategy (SECAS). 2026. Southeast Conservation Blueprint 2026.",
@@ -150,7 +150,7 @@
     "type": "huc12_species",
     "label": "Caribbean imperiled aquatic species list",
     "sheet_name": "Carib imperiled aq spp list",
-    "caption": "Total count of unique aquatic animal Species of Greatest Conservation Need observed in the overlapping subwatersheds.",
+    "caption": "Total count of unique aquatic animal Species of Greatest Conservation Need observed in the overlapping subwatersheds",
     "source": "Southeast Conservation Blueprint",
     "date": "2026",
     "citation": "Southeast Conservation Adaptation Strategy (SECAS). 2026. Southeast Conservation Blueprint 2026.",
