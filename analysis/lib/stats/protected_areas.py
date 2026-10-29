@@ -192,13 +192,17 @@ def summarize_protected_areas_in_aoi(rasterized_geometry, df):
     }
 
 
-def extract_protected_areas_in_analysis_areas(df: gp.GeoDataFrame) -> pd.DataFrame:
+def extract_protected_areas_in_analysis_areas(
+    df: gp.GeoDataFrame, read_mask: shapely.Polygon | shapely.MultiPolygon
+) -> pd.DataFrame:
     """Extract protected areas and their area overlap with each analysis unit
 
     Parameters
     ----------
     df : GeoDataFrame
         uses index to aggregate results
+    read_mask : Polygon or MultiPolygon
+        mask for reading features
 
     Returns
     -------
@@ -208,15 +212,14 @@ def extract_protected_areas_in_analysis_areas(df: gp.GeoDataFrame) -> pd.DataFra
     index_name = df.index.name or "index"
     out_name = PROTECTED_AREAS_POLY["id"]
 
-    tmp = df.explode(ignore_index=False, index_parts=False)
-    # use union of individual area bounding boxes to read features
-    read_mask = shapely.union_all(shapely.envelope(tmp.geometry.values))
     # NOTE: pyogrio does not currently work properly for use_arrow=True if the
     # mask does not overlap and returns no features, so we can't use it here.
     protected_areas = read_dataframe(boundary_filename, columns=columns + ["geometry"], mask=read_mask)
 
     if len(protected_areas) == 0:
         return None
+
+    tmp = df.explode(ignore_index=False, index_parts=False)
 
     # find all protected areas polygons that intersect any part of the AOI
     left, right = shapely.STRtree(protected_areas.geometry.values).query(tmp.geometry.values, predicate="intersects")

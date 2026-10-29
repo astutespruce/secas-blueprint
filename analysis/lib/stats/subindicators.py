@@ -35,7 +35,7 @@ def values_list_to_sentence(values, delimiter=", "):
     return f"{delimiter.join(values[:-1])}{delimiter}and {values[-1]}"
 
 
-def extract_cores_in_analysis_areas(subindicator, df):
+def extract_cores_in_analysis_areas(subindicator, df, read_mask):
     """Find all overlapping intact habitat cores and summarize their count, min,
     and max area by size class.
 
@@ -47,6 +47,8 @@ def extract_cores_in_analysis_areas(subindicator, df):
         subindicator info
     df : GeoDataFrame
         analysis units
+    read_mask : Polygon | MultiPolyon
+        mask for reading features
 
     Returns
     -------
@@ -56,9 +58,6 @@ def extract_cores_in_analysis_areas(subindicator, df):
     index_name = df.index.name or "index"
     out_name = subindicator["id"]
 
-    tmp = df.explode(ignore_index=False, index_parts=False)
-    # use union of individual area bounding boxes to read features
-    read_mask = shapely.union_all(shapely.envelope(tmp.geometry.values))
     # NOTE: pyogrio does not currently work properly for use_arrow=True if the
     # mask does not overlap and returns no features, so we can't use it here.
     cores = read_dataframe(data_dir / subindicator["filename"], columns=["acres", "size", "geometry"], mask=read_mask)
@@ -174,7 +173,7 @@ def summarize_cores_in_summary_units(subindicator, df, out_dir):
     cores.reset_index().to_feather(out_dir / f"{subindicator['id']}.feather")
 
 
-def extract_lines_in_analysis_areas(subindicator, df):
+def extract_lines_in_analysis_areas(subindicator, df, read_mask):
     """Extract length of linear features by value
 
     Parameters
@@ -183,6 +182,8 @@ def extract_lines_in_analysis_areas(subindicator, df):
         subindicator info
     df : GeoDataFrame
         analysis units
+    read_mask : Polygon | MultiPolyon
+        mask for reading features
 
     Returns
     -------
@@ -193,8 +194,6 @@ def extract_lines_in_analysis_areas(subindicator, df):
     index_name = df.index.name or "index"
     out_name = subindicator["id"]
 
-    # use union of individual area bounding boxes to read features
-    read_mask = shapely.union_all(shapely.envelope(df.explode(ignore_index=False, index_parts=False).geometry.values))
     # NOTE: pyogrio does not currently work properly for use_arrow=True if the
     # mask does not overlap and returns no features, so we can't use it here.
     lines = read_dataframe(data_dir / subindicator["filename"], columns=["value", "miles", "geometry"], mask=read_mask)
@@ -335,7 +334,7 @@ def summarize_lines_in_summary_units(subindicator, df, out_dir):
     lines.reset_index().to_feather(out_dir / f"{subindicator['id']}.feather")
 
 
-def extract_huc12_species_in_analysis_areas(subindicator, df):
+def extract_huc12_species_in_analysis_areas(subindicator, df, read_mask):
     """Extract count of subwatersheds and count and possibly list of unique species
     across all watersheds per analysis unit.
 
@@ -348,6 +347,8 @@ def extract_huc12_species_in_analysis_areas(subindicator, df):
         subindicator info
     df : GeoDataFrame
         analysis units
+    read_mask : Polygon | MultiPolyon
+        mask for reading features
 
     Returns
     -------
@@ -357,9 +358,6 @@ def extract_huc12_species_in_analysis_areas(subindicator, df):
     index_name = df.index.name or "index"
     out_name = subindicator["id"]
 
-    tmp = df.explode(ignore_index=False, index_parts=False)
-    # use union of individual area bounding boxes to read features
-    read_mask = shapely.union_all(shapely.envelope(tmp.geometry.values))
     # NOTE: pyogrio does not currently work properly for use_arrow=True if the
     # mask does not overlap and returns no features, so we can't use it here.
     huc12 = read_dataframe(

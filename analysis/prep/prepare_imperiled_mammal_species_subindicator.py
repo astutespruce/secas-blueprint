@@ -66,6 +66,9 @@ spp = (
 spp = spp.loc[spp.id.str.startswith("m")].copy()
 spp["id"] = spp.id.fillna("").astype("str")
 
+# drop Pungo Deermouse; it shares an ID with a species that was updated to a narrow range, but itself wasn't used in results
+spp = spp.loc[spp.SNAME != "Peromyscus leucopus easti"].copy()
+
 # update names to combine multiple species
 spp["value"] = spp.CNAME + " (" + spp.SNAME + ")"
 spp = spp.groupby("id").agg({"SNAME": "first", "CNAME": "first", "value": " and/or ".join})

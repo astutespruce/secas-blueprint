@@ -63,6 +63,9 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
     DataFrame
     """
 
+    # use union of individual area bounding boxes to read features
+    read_mask = shapely.union_all(shapely.envelope(df.explode(ignore_index=False, index_parts=False).geometry.values))
+
     # NOTE: states might be null if area is offshore marine
     states = gp.read_feather(states_filename, columns=["state", "id", "geometry"])
     states = states.loc[states.id.isin(SECAS_STATES)]
@@ -270,7 +273,7 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
             out = out.join(parcas)
 
     if PROTECTED_AREAS_POLY["id"] in datasets:
-        protected_areas = extract_protected_areas_in_analysis_areas(df)
+        protected_areas = extract_protected_areas_in_analysis_areas(df, read_mask)
         if protected_areas is not None:
             out = out.join(protected_areas)
 
@@ -284,15 +287,15 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
         subindicator = dataset.get("subindicator")
         if subindicator is not None:
             if subindicator["type"] == "cores":
-                cores = extract_cores_in_analysis_areas(subindicator, df)
+                cores = extract_cores_in_analysis_areas(subindicator, df, read_mask)
                 if cores is not None:
                     out = out.join(cores)
             elif subindicator["type"] == "lines":
-                lines = extract_lines_in_analysis_areas(subindicator, df)
+                lines = extract_lines_in_analysis_areas(subindicator, df, read_mask)
                 if lines is not None:
                     out = out.join(lines)
             elif subindicator["type"] == "huc12_species":
-                huc12_species = extract_huc12_species_in_analysis_areas(subindicator, df)
+                huc12_species = extract_huc12_species_in_analysis_areas(subindicator, df, read_mask)
                 if huc12_species is not None:
                     out = out.join(huc12_species)
 
