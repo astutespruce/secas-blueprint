@@ -31,7 +31,6 @@ def add_subindicator_sheet(
     sheet_name = subindicator.get("sheet_name", None) or subindicator["label"]
     caption = subindicator["caption"] + "."
     values = subindicator["values"]
-    nodata_label = "Outside extent of this dataset\n(acres)"
 
     if subindicator["type"] == "stacked_bit_species":
         tmp = df[[subindicator["id"]]].rename(columns={subindicator["id"]: "value"})

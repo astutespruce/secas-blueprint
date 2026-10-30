@@ -1055,10 +1055,6 @@ async def test_create_xlsx_file_coastal(format):
     )
     assert np.allclose(subindicator_sheet.iloc[0][subindicator_value_cols], results[subindicator["id"]].iloc[0][::-1])
 
-    indicator_id = "f_imperiledaquaticspecies"
-    subindicator = indicator["subindicator"]
-    sheet_name = subindicator.get("sheet_name") or subindicator["label"]
-
 
 @pytest.mark.anyio
 @pytest.mark.parametrize("format", ["shp"])

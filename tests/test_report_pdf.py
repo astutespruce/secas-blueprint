@@ -162,15 +162,19 @@ async def test_summary_unit_maps_huc12():
     assert "blueprint" in maps
 
     locator_img_filename = fixture_dir / f"maps/{unit_id}_locator.png"
+    # ruff: disable[ERA001]
     # uncomment this each Blueprint update
     # with open(locator_img_filename, "wb") as outfile:
     #     _ = outfile.write(maps["locator"])
+    # ruff: enable[ERA001]
 
     assert_image_matches(maps["locator"], locator_img_filename)
 
     blueprint_img_filename = fixture_dir / f"maps/{unit_id}_blueprint.png"
+    # ruff: disable[ERA001]
     # with open(blueprint_img_filename, "wb") as outfile:
     #     _ = outfile.write(maps["blueprint"])
+    # ruff: enable[ERA001]
 
     assert_image_matches(maps["blueprint"], blueprint_img_filename)
 
