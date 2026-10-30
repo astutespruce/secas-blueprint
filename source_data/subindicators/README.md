@@ -6,7 +6,7 @@ These are select datasets that add additional detail for select indicators.
 
 ### Imperiled amphibians and reptiles
 
-These data are preprared using `analysis/prep/prepare_imperiled_amphibians_reptiles_subindicator.py`.
+These data are prepared using `analysis/prep/prepare_imperiled_amphibians_reptiles_subindicator.py`.
 
 Amphibian GAP models were provided by Rua Mordecai via email on 9/2/2026 and
 reptiles on 10/6/2026. Rua also provided the RSGCN species list.
@@ -29,6 +29,16 @@ To calculate this value, we read the raw unsigned integer values and bitwise-OR
 them together to get a single value representing all bits turned on for every
 species present in that area. We then identify which bits are turned on and use
 that to look up the species by bit position for each group of species.
+
+### Imperiled amphibians and reptiles
+
+These data are prepared using `analysis/prep/prepare_imperiled_mammals_subindicator.py`.
+
+Imperiled mammal GAP models that were further modified by SECAS were provided by
+Rua Mordeca via email on 10/23/2026.
+
+These data are processed in the same manner as the imperiled amphibian & reptile
+data above.
 
 ### Intact habitat core size
 
