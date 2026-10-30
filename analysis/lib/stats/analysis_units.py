@@ -31,6 +31,11 @@ from analysis.lib.stats.protected_areas import extract_protected_areas_in_analys
 from analysis.lib.stats.rasterized_geometry import RasterizedGeometry
 from analysis.lib.stats.slr import BINS as SLR_DEPTH_BINS
 from analysis.lib.stats.slr import extract_slr_proj_in_analysis_areas
+from analysis.lib.stats.subindicators import (
+    extract_cores_in_analysis_areas,
+    extract_huc12_species_in_analysis_areas,
+    extract_lines_in_analysis_areas,
+)
 from analysis.lib.stats.urban import BINS as URBAN_BINS
 from analysis.lib.stats.urban import PROBABILITIES as URBAN_PROBABILITIES
 from analysis.lib.stats.wildfire_risk import BINS as WILDFIRE_RISK_BINS
@@ -57,6 +62,9 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
     -------
     DataFrame
     """
+
+    # use union of individual area bounding boxes to read features
+    read_mask = shapely.union_all(shapely.envelope(df.explode(ignore_index=False, index_parts=False).geometry.values))
 
     # NOTE: states might be null if area is offshore marine
     states = gp.read_feather(states_filename, columns=["state", "id", "geometry"])
@@ -99,6 +107,7 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
 
     try:
         files = {}
+        tables = {}
         for id in datasets:
             dataset = REPORT_DATASETS[id]
             if dataset["filename"].endswith(".tif") and id not in {}:
@@ -109,8 +118,27 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
                         )
                 else:
                     files[id] = rasterio.open(data_dir / dataset["filename"])
+                    subindicator = dataset.get("subindicator")
+                    if subindicator:
+                        if subindicator["filename"].endswith(".tif"):
+                            if "{" in subindicator["filename"]:
+                                key = subindicator["filename_params"]["key"]
+                                for value in subindicator["filename_params"]["values"]:
+                                    files[f"{subindicator['id']}_{value}"] = rasterio.open(
+                                        data_dir / subindicator["filename"].format(**{key: value})
+                                    )
+                            else:
+                                raise NotImplementedError(
+                                    f"file opening not yet implemented for subindicator: {subindicator['id']}"
+                                )
 
-        for i, (index, row) in enumerate(df.iterrows()):
+                        if "table_filename" in subindicator:
+                            table = pd.read_feather(
+                                data_dir / subindicator["table_filename"], columns=subindicator["table_columns"]
+                            )
+                            tables[subindicator["id"]] = table
+
+        for i, (_, row) in enumerate(df.iterrows()):
             rasterized_geometry = RasterizedGeometry(row.geometry)
 
             overlap_acres = rasterized_geometry.acres - rasterized_geometry.outside_extent_acres
@@ -158,6 +186,18 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
                         indicator_acres = indicator_acres[1:]
 
                     result[indicator["id"]] = indicator_acres
+
+                    subindicator = indicator.get("subindicator")
+                    if subindicator:
+                        if subindicator["type"] == "stacked_bit_species":
+                            table = tables[subindicator["id"]]
+                            out = set()
+                            for group in table.group.unique():
+                                dataset = files[f"{subindicator['id']}_{group}"]
+                                bits = rasterized_geometry.get_set_bits(dataset)
+                                out.update(table.loc[(table.group == group) & table.bit.isin(bits)].value.tolist())
+
+                            result[subindicator["id"]] = sorted(out)
 
             if SLR_DEPTH["id"] in datasets:
                 slr_acres = rasterized_geometry.get_acres_by_bin(files[SLR_DEPTH["id"]], SLR_DEPTH_BINS)
@@ -223,6 +263,8 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
         for raster in files.values():
             raster.close()
 
+        del tables
+
     out = df[["states", "subregions", "regions", "count", "acres"]].join(pd.DataFrame(results, index=df.index))
 
     if PARCAS_POLY["id"] in datasets:
@@ -231,7 +273,7 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
             out = out.join(parcas)
 
     if PROTECTED_AREAS_POLY["id"] in datasets:
-        protected_areas = extract_protected_areas_in_analysis_areas(df)
+        protected_areas = extract_protected_areas_in_analysis_areas(df, read_mask)
         if protected_areas is not None:
             out = out.join(protected_areas)
 
@@ -239,5 +281,22 @@ async def get_analysis_unit_results(df: gp.GeoDataFrame, datasets: set[str], pro
         slr_proj = extract_slr_proj_in_analysis_areas(df)
         if slr_proj is not None:
             out = out.join(slr_proj)
+
+    for dataset_id in datasets:
+        dataset = REPORT_DATASETS[dataset_id]
+        subindicator = dataset.get("subindicator")
+        if subindicator is not None:
+            if subindicator["type"] == "cores":
+                cores = extract_cores_in_analysis_areas(subindicator, df, read_mask)
+                if cores is not None:
+                    out = out.join(cores)
+            elif subindicator["type"] == "lines":
+                lines = extract_lines_in_analysis_areas(subindicator, df, read_mask)
+                if lines is not None:
+                    out = out.join(lines)
+            elif subindicator["type"] == "huc12_species":
+                huc12_species = extract_huc12_species_in_analysis_areas(subindicator, df, read_mask)
+                if huc12_species is not None:
+                    out = out.join(huc12_species)
 
     return out

@@ -4,11 +4,20 @@ import rasterio
 from affine import Affine
 from pyogrio import read_dataframe
 from rasterio.windows import Window
+from rasterio.windows import get_data_window as rasterio_get_data_window
 
 from analysis.constants import DATA_CRS
 from analysis.lib.geometry import dissolve
 from analysis.lib.pdf.map.raster import hex_to_rgb, hex_to_rgba, to_rgba
-from analysis.lib.raster import clip_window, count_values_inplace, get_overlapping_windows, remap, shift_window, unique
+from analysis.lib.raster import (
+    clip_window,
+    count_values_inplace,
+    get_data_window,
+    get_overlapping_windows,
+    remap,
+    shift_window,
+    unique,
+)
 from analysis.lib.stats.rasterized_geometry import WINDOW_SIZE
 
 extent_filename = "data/inputs/boundaries/blueprint_extent.tif"
@@ -230,3 +239,28 @@ def test_overlapping_windows_multiple_areas_partial_overlap_dissolved():
 )
 def test_remap(arr, remap_table, nodata, fill, expected):
     assert np.array_equal(remap(arr, remap_table, nodata, fill), expected)
+
+
+@pytest.mark.parametrize(
+    "arr,nodata,expected",
+    [
+        [np.array([[]], dtype="uint8"), np.uint8(0), (0, 0, 0, 0)],
+        [np.array([[], []], dtype="uint8"), np.uint8(0), (0, 0, 0, 0)],
+        [np.array([[0]], dtype="uint8"), np.uint8(0), (0, 0, 0, 0)],
+        [np.array([[1]], dtype="uint8"), np.uint8(0), (0, 0, 1, 1)],
+        [np.array([[0, 0, 0], [0, 1, 0], [0, 0, 0]], dtype="uint8"), np.uint8(0), (1, 1, 1, 1)],
+        [np.array([[1, 0, 0], [0, 1, 0], [0, 0, 0]], dtype="uint8"), np.uint8(0), (0, 0, 2, 2)],
+        [np.array([[1, 0, 0], [0, 0, 0], [0, 0, 1]], dtype="uint8"), np.uint8(0), (0, 0, 3, 3)],
+        [np.array([[0, 0, 0], [0, 0, 0], [0, 0, 1]], dtype="uint8"), np.uint8(0), (2, 2, 1, 1)],
+        [np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]], dtype="uint8"), np.uint8(0), (0, 0, 0, 0)],
+        [np.array([[1, 1, 1], [1, 1, 1], [1, 1, 1]], dtype="uint8"), np.uint8(0), (0, 0, 3, 3)],
+        [np.array([[0, 0, 0], [0, 1, 1], [0, 0, 1]], dtype="uint8"), np.uint8(0), (1, 1, 2, 2)],
+        [np.array([[0, 0, 0], [0, 0, 1], [0, 0, 1]], dtype="uint8"), np.uint8(0), (2, 1, 1, 2)],
+        [np.array([[0, 0, 0], [0, 0, 0], [0, 1, 1]], dtype="uint8"), np.uint8(0), (1, 2, 2, 1)],
+    ],
+)
+def test_get_data_window(arr, nodata, expected):
+    window_tuple = get_data_window(arr, nodata)
+    assert window_tuple == expected
+
+    assert Window(*window_tuple) == rasterio_get_data_window(arr, nodata)

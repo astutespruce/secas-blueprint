@@ -1,0 +1,164 @@
+[
+  {
+    "id": "t_imperiledamphibiansandreptiles_spp",
+    "indicator_id": "t_imperiledamphibiansandreptiles",
+    "filename": "subindicators/t_imperiledamphibiansandreptiles_spp_{group}.tif",
+    "filename_params": { "key": "group", "values": [0, 1, 2] },
+    "table_filename": "subindicators/t_imperiledamphibiansandreptiles_spp.feather",
+    "table_columns": ["group", "bit", "value"],
+    "type": "stacked_bit_species",
+    "label": "Imperiled amphibian & reptile species list",
+    "sheet_name": "Imperiled herp spp list",
+    "caption": "Amphibian & reptile Regional Species of Greatest Conservation Need with predicted suitable habitat present based on USGS Southeast Gap Analysis Project species distribution models",
+    "source": "Southeast Conservation Blueprint",
+    "date": "2026",
+    "citation": "Southeast Conservation Adaptation Strategy (SECAS). 2026. Southeast Conservation Blueprint 2026.",
+    "description": "This dataset provides additional details for the imperiled amphibians and reptiles indicator. It provides a list of species with predicted suitable habitat present based on available USGS Southeast Gap Analysis Project species distribution models for Regional Species of Greatest Conservation Need (RSGCN) included in the indicator. Data are limited to limited to non-urban, non-marine areas in the Continental U.S.",
+    "values": [
+      { "value": "count", "label": "Number of species with suitable habitat predicted" },
+      { "value": "value", "label": "Species with suitable habitat predicted" }
+    ]
+  },
+  {
+    "id": "t_imperiledmammals_spp",
+    "indicator_id": "t_imperiledmammals",
+    "filename": "subindicators/t_imperiledmammals_spp_{group}.tif",
+    "filename_params": { "key": "group", "values": [0, 1] },
+    "table_filename": "subindicators/t_imperiledmammals_spp.feather",
+    "table_columns": ["group", "bit", "value"],
+    "type": "stacked_bit_species",
+    "label": "Imperiled mammal species list",
+    "sheet_name": "Imperiled mammal spp list",
+    "caption": "Imperiled mammal Regional Species of Greatest Conservation Need with predicted suitable habitat present based on USGS Southeast Gap Analysis Project species distribution models",
+    "source": "Southeast Conservation Blueprint",
+    "date": "2026",
+    "citation": "Southeast Conservation Adaptation Strategy (SECAS). 2026. Southeast Conservation Blueprint 2026.",
+    "description": "This dataset provides additional details for the imperiled mammals indicator. It provides a list of species with predicted suitable habitat present based on available USGS Southeast Gap Analysis Project species distribution models for Regional Species of Greatest Conservation Need (RSGCN) included in the indicator. Data are limited to limited to non-urban, non-marine areas in the Continental U.S.",
+    "values": [
+      { "value": "count", "label": "Number of species with suitable habitat predicted" },
+      { "value": "value", "label": "Species with suitable habitat predicted" }
+    ]
+  },
+  {
+    "id": "t_intacthabitatcores_size",
+    "indicator_id": "t_intacthabitatcores",
+    "filename": "subindicators/t_intacthabitatcores_size.fgb",
+    "type": "cores",
+    "label": "Intact habitat core size",
+    "sheet_name": "",
+    "caption": "Intact habitat core size range by size class",
+    "source": "Southeast Conservation Blueprint",
+    "date": "2026",
+    "citation": "Southeast Conservation Adaptation Strategy (SECAS). 2026. Southeast Conservation Blueprint 2026.",
+    "description": "This dataset provides additional details for the intact habitat cores indicator. It shows the number of overlapping cores and the range of exact core sizes within the broad small, medium, and large indicator categories.",
+    "values": [
+      {
+        "value": "small",
+        "label": "Small core (>100-1,000 acres)"
+      },
+      {
+        "value": "medium",
+        "label": "Medium core (>1,000-10,000 acres)"
+      },
+      {
+        "value": "large",
+        "label": "Large core (>10,000 acres)"
+      }
+    ]
+  },
+  {
+    "id": "m_coastalshorelinecondition_length",
+    "indicator_id": "m_coastalshorelinecondition",
+    "filename": "subindicators/m_coastalshorelinecondition_length.fgb",
+    "type": "lines",
+    "label": "Coastal shoreline condition length",
+    "sheet_name": "Coastal shoreline cond length",
+    "caption": "Coastal shoreline condition length reported by length instead of area. Note: This is calculated using the original shoreline linework classified in the same way as the coastal shoreline condition indicator, but analyzed using the lines instead of the 30 m pixels used by the indicator. Good condition thresholds reflect the range of indicator values that occur in healthy, functioning ecosystems",
+    "source": "Southeast Conservation Blueprint",
+    "date": "2026",
+    "citation": "Southeast Conservation Adaptation Strategy (SECAS). 2026. Southeast Conservation Blueprint 2026.",
+    "description": "This dataset complements the coastal shoreline condition indicator by providing the length of each shoreline condition category present in the area of interest. Shoreline lines are classified into condition classes using the same criteria as the indicator, but are analyzed using the linework instead of the 30 meter pixels used by the indicator.",
+    "percent_header": "PERCENT OF SHORELINE",
+    "values": [
+      {
+        "value": 0,
+        "label": "Armored"
+      },
+      {
+        "value": 1,
+        "label": "Partially armored"
+      },
+      {
+        "value": 2,
+        "label": "Partially armored and harder to develop"
+      },
+      {
+        "value": 3,
+        "label": "Natural"
+      },
+      {
+        "value": 4,
+        "label": "Natural and harder to develop"
+      }
+    ]
+  },
+  {
+    "id": "m_caribbeancoastalshorelinecondition_length",
+    "indicator_id": "m_caribbeancoastalshorelinecondition",
+    "filename": "subindicators/m_caribbeancoastalshorelinecondition_length.fgb",
+    "type": "lines",
+    "label": "Caribbean coastal shoreline condition length",
+    "sheet_name": "Carib shoreline cond length",
+    "caption": "coastal shoreline condition length. Note: This is calculated based on shoreline lines classified in the same way as the coastal shoreline condition indicator, but analyzed using the linework instead of the 30 meter pixels used by the indicator",
+    "source": "Southeast Conservation Blueprint",
+    "date": "2026",
+    "citation": "Southeast Conservation Adaptation Strategy (SECAS). 2026. Southeast Conservation Blueprint 2026.",
+    "description": "This dataset complements the Caribbean coastal shoreline condition indicator by providing the length of each shoreline condition category present in the area of interest. Coastal shoreline lines are classified into shoreline condition using the same critera as the indicator, but are analyzed using the linework instead of the 30 meter pixels used by the indicator.",
+    "percent_header": "PERCENT OF SHORELINE",
+    "values": [
+      {
+        "value": 0,
+        "label": "Armored"
+      },
+      {
+        "value": 1,
+        "label": "Natural"
+      }
+    ]
+  },
+  {
+    "id": "f_imperiledaquaticspecies_spp",
+    "indicator_id": "f_imperiledaquaticspecies",
+    "filename": "subindicators/f_imperiledaquaticspecies_spp.fgb",
+    "type": "huc12_species",
+    "label": "Imperiled aquatic species count",
+    "sheet_name": "Imperiled aquatic spp count",
+    "caption": "Total count of unique aquatic animal Regional Species of Greatest Conservation Need observed across all overlapping subwatersheds. Note: You may see minor differences between this table and the indicator results. This occurs because the indicator uses a slightly older version of the source data, so where they differ, we recommend using the count reported here. Future updates will synchronize both applications",
+    "source": "Southeast Conservation Blueprint",
+    "date": "2026",
+    "citation": "Southeast Conservation Adaptation Strategy (SECAS). 2026. Southeast Conservation Blueprint 2026.",
+    "description": "This dataset complements the imperiled aquatic species indicator by measuring the total number of unique aquatic animal Regional Species of Greatest Conservation Need (RSGCN) observed across all overlapping 12-digit HUC subwatersheds. This dataset accounts for multiple subwatersheds sharing the same species in order to calculate the count of distinct species. ",
+    "values": [
+      { "value": "huc12_count", "label": "Number of overlapping subwatersheds" },
+      { "value": "count", "label": "Number of unique species observed" }
+    ]
+  },
+  {
+    "id": "f_caribbeanimperiledaquaticspecies_spp",
+    "indicator_id": "f_caribbeanimperiledaquaticspecies",
+    "filename": "subindicators/f_caribbeanimperiledaquaticspecies_spp.fgb",
+    "type": "huc12_species",
+    "label": "Caribbean imperiled aquatic species list",
+    "sheet_name": "Carib imperiled aq spp list",
+    "caption": "Total count of unique aquatic animal Species of Greatest Conservation Need observed in the overlapping subwatersheds",
+    "source": "Southeast Conservation Blueprint",
+    "date": "2026",
+    "citation": "Southeast Conservation Adaptation Strategy (SECAS). 2026. Southeast Conservation Blueprint 2026.",
+    "description": "This dataset complements the Caribbean imperiled aquatic species indicator by measuring the total number of unique aquatic animal Species of Greatest Conservation Need (SGCN) observed across all overlapping 12-digit HUC subwatersheds. This dataset accounts for multiple subwatersheds sharing the same species in order to calculate the count of distinct species.",
+    "values": [
+      { "value": "huc12_count", "label": "Number of overlapping subwatersheds" },
+      { "value": "count", "label": "Number of unique species observed" },
+      { "value": "species", "label": "Species observed" }
+    ]
+  }
+]

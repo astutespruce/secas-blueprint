@@ -52,12 +52,7 @@ LOGGING_LEVEL=DEBUG
 ENABLE_CORS=1
 MAP_RENDER_THREADS=6
 TILE_DIR=<path to folder containing pmtiles files>
-
-# to save PDF/XLSX files from tests for manual review
-TEST_SAVE_PDF=1
-TEST_SAVE_XLSX=1
 ```
-
 
 ### Other dependencies
 
@@ -126,7 +121,6 @@ Note: this uses a 3 day "cooldown" to prevent upgrading to very recently release
 versions; modify this on a selective basis to pull in a newer version that resolves
 a vulnerability.
 
-
 ### Environment variables
 
 #### Development mode
@@ -162,7 +156,6 @@ CONTACT_EMAIL="hilary_morris@fws.gov"
 VITE_API_PROX=1
 VITE_TILE_DIR=<path to directory containing pmtiles>
 ```
-
 
 ## Other dependencies
 

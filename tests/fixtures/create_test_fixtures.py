@@ -230,3 +230,17 @@ for format in ["shp", "gdb"]:
     save_to_zip(
         {f"poly_multiple_partial_overlap.{format}": df}, out_dir / f"{format}_poly_multiple_partial_overlap.zip"
     )
+
+
+# small coastal rect
+for format in ["shp", "gdb"]:
+    save_to_zip(
+        {
+            f"poly_coastal.{format}": gp.GeoDataFrame(
+                [{"ID": np.int8(1), "Name": "coastal"}],
+                geometry=[shapely.box(-80.55187, 32.38286117, -80.38034229, 32.45603885)],
+                crs=GEO_CRS,
+            )
+        },
+        out_dir / f"{format}_poly_coastal.zip",
+    )

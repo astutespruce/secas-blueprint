@@ -131,7 +131,7 @@
 		</div>
 
 		<p class="mt-16">
-			Note: this approach uses pixels that have been resampled and reprojected for each zoom level.
+			Note: This approach uses pixels that have been resampled and reprojected for each zoom level.
 			This means that the values shown in the tool may not exactly match the Blueprint and indicator
 			data for that specific ground location, especially in areas of high variability in the data.
 			<br />
@@ -199,9 +199,9 @@
 			Alternatively, you can use OR logic to select all areas where <i>any</i> of your selected
 			criteria are present.
 			<br /><br />
-			Use the <b>Change filter overlay method</b> dropdown to change the logic being applied to your filters.
-			This can be especially helpful for identifying areas across indicators that do not spatially co-occur.
-			This mode starts from a blank map, and adds areas as you specify filters.
+			Use the <b>Change filter overlay method</b> dropdown to change the logic being applied to your
+			filters. This can be especially helpful for identifying areas across indicators that do not spatially
+			co-occur. This mode starts from a blank map, and adds areas as you specify filters.
 		</p>
 
 		<div class="grid grid-cols-0 md:grid-cols-[1fr_2fr] gap-8 mt-16">
@@ -227,7 +227,7 @@
 		</div>
 
 		<p class="mt-8">
-			Note: pixel filters may take a few moments to display within your browser, especially as you
+			Note: Pixel filters may take a few moments to display within your browser, especially as you
 			pan or zoom the map. You may need to zoom in to see areas that meet your filters.
 		</p>
 
@@ -273,7 +273,7 @@
 		</div>
 
 		<p class="mt-8">
-			Note: this PDF file is intended to help save information about your active filters for later
+			Note: This PDF file is intended to help save information about your active filters for later
 			reference. It is entirely different from the data-rich PDF reports you can create by selecting
 			a watershed or by uploading a shapefile, which include maps of the Blueprint and all
 			indicators present in your area of interest.

@@ -10,6 +10,12 @@ from analysis.lib.stats.parcas import summarize_parcas_in_aoi
 from analysis.lib.stats.protected_areas import summarize_protected_areas_in_aoi
 from analysis.lib.stats.rasterized_geometry import RasterizedGeometry
 from analysis.lib.stats.slr import summarize_slr_in_aoi
+from analysis.lib.stats.subindicators import (
+    summarize_cores_in_aoi,
+    summarize_huc12_species_in_aoi,
+    summarize_lines_in_aoi,
+    summarize_stacked_bit_species_in_aoi,
+)
 from analysis.lib.stats.urban import summarize_urban_in_aoi
 from analysis.lib.stats.wildfire_risk import summarize_wildfire_risk_in_aoi
 
@@ -109,6 +115,26 @@ async def get_aoi_results(df, progress_callback=None):
     wildfire_risk = summarize_wildfire_risk_in_aoi(rasterized_geometry)
     if wildfire_risk is not None:
         results["wildfire_risk"] = wildfire_risk
+
+    for group in results.get("indicator_groups", []):
+        for indicator in group["indicators"]:
+            subindicator = indicator.get("subindicator")
+            if subindicator:
+                subindicator_results = None
+                # TODO: raster spp count
+                if subindicator["type"] == "cores":
+                    subindicator_results = summarize_cores_in_aoi(subindicator, df)
+                elif subindicator["type"] == "lines":
+                    subindicator_results = summarize_lines_in_aoi(subindicator, df)
+                elif subindicator["type"] == "huc12_species":
+                    subindicator_results = summarize_huc12_species_in_aoi(subindicator, df)
+
+                if subindicator["type"] == "stacked_bit_species":
+                    subindicator_results = summarize_stacked_bit_species_in_aoi(subindicator, rasterized_geometry)
+
+                if subindicator_results is not None:
+                    # NOTE: for convenience, we store subindicator results at the top level by their ID
+                    results[subindicator["id"]] = subindicator_results
 
     if progress_callback is not None:
         await progress_callback(100)
