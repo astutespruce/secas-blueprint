@@ -156,11 +156,11 @@ table {
 table thead th {
 	font-weight: bold;
 	text-align: center;
-	background: #eeeeee;
-	border-top: 1px solid #aaaaaa;
+	background: #f9f9fa;
+	border-top: 1px solid #cbced1;
 	border-left: 1px solid hsl(0, 0%, 67%);
-	border-right: 1px solid #aaaaaa;
-	border-bottom: 2px solid #333;
+	border-right: 1px solid #cbced1;
+	border-bottom: 2px solid #606e7b;
 	padding: 2pt 8pt;
 	line-height: 1.2;
 }
@@ -171,7 +171,7 @@ table th:first-child {
 
 table td {
 	padding: 2pt 4pt;
-	border: 1px solid #666;
+	border: 1px solid #cbced1;
 	text-align: center;
 }
 
@@ -186,8 +186,8 @@ table .remainder-row td {
 
 table .total-row td {
 	font-weight: bold;
-	background: #eee;
-	border-top: 2px solid #333;
+	background: #f9f9fa;
+	border-top: 2px solid #606e7b;
 }
 
 table .align-right {
@@ -195,9 +195,24 @@ table .align-right {
 }
 
 table th.acres,
-table th.percent {
-	width: 72pt;
+table th.percent,
+table td.acres,
+table td.percent {
+	font-variant-numeric: tabular-nums;
+	padding: 0 16pt;
+	text-align: right;
 }
+
+table th.acres,
+table td.acres {
+	width: 54pt;
+}
+
+table th.percent,
+table td.percent {
+	width: 46pt;
+}
+
 
 table td.label {
 	text-align: left;
@@ -240,7 +255,7 @@ table td.threshold {
 }
 
 table td.threshold.good {
-	border-bottom: 2px solid #333;
+	border-bottom: 2px solid #606e7b;
 	vertical-align: bottom;
 }
 
@@ -249,7 +264,7 @@ table td.threshold.not-good {
 }
 
 table tr.above-threshold td {
-	border-bottom: 2px solid #333;
+	border-bottom: 2px solid #606e7b;
 }
 
 table tr.highlight-row td,
