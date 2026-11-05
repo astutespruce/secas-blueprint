@@ -124,7 +124,7 @@
                     <tr>
                         <th>SLR Scenario</th>
                         {% for year in range(2020, 2105, 10) %}
-                            <th scope="col" {% if year == 2060 %}class="highlight-col"{% endif %}>{{year}} (ft)</th>
+                            <th scope="col" class="text-right {% if year == 2060 %}highlight-col{% endif %}">{{year}} (ft)</th>
                         {% endfor %}
 
                     </tr>
@@ -135,7 +135,7 @@
                     <tr>
                         <td>{{scenario}}</td>
                         {% for value in  results.slr.projections[scenario] %}
-                            <td {% if loop.index == 5 %}class="highlight-col"{% endif %}>
+                            <td class="text-right {% if loop.index == 5 %}highlight-col{% endif %}">
                                 {% if value == 0 %}
                                     0
                                 {% else %}

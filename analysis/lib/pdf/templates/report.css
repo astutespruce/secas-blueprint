@@ -153,9 +153,9 @@ table {
 	font-size: 12pt;
 }
 
-table thead th {
+table th {
 	font-weight: bold;
-	text-align: center;
+	text-align: left;
 	background: #f9f9fa;
 	border-top: 1px solid #cbced1;
 	border-left: 1px solid hsl(0, 0%, 67%);
@@ -165,17 +165,9 @@ table thead th {
 	line-height: 1.2;
 }
 
-table th:first-child {
-	text-align: left;
-}
-
 table td {
-	padding: 2pt 4pt;
+	padding: 2pt 8pt;
 	border: 1px solid #cbced1;
-	text-align: center;
-}
-
-table td:first-child {
 	text-align: left;
 }
 
@@ -199,7 +191,6 @@ table th.percent,
 table td.acres,
 table td.percent {
 	font-variant-numeric: tabular-nums;
-	padding: 0 16pt;
 	text-align: right;
 }
 
@@ -213,11 +204,6 @@ table td.percent {
 	width: 46pt;
 }
 
-
-table td.label {
-	text-align: left;
-}
-
 table td.no-border {
 	border: none !important;
 }
@@ -227,12 +213,15 @@ table td.no-background {
 }
 
 table th.level {
-	width: 22pt;
+	width: 28pt;
+	padding: 2pt 4pt;
 	border: none;
 	background: none;
 }
 
 table td.level {
+	width: 28pt;
+	padding: 2pt 4pt;
 	text-align: right;
 	border-top: none;
 	border-bottom: none;
@@ -242,13 +231,16 @@ table td.level {
 
 table th.threshold {
 	width: 52pt;
+	padding: 2pt 4pt;
 	border: none;
 	background: none;
 }
 
 table td.threshold {
-	border: none;
+	width: 52pt;
+	padding: 2pt 4pt;
 	font-size: 10pt;
+	border: none;
 	color: #666;
 	max-width: 10pt;
 	text-align: left;
