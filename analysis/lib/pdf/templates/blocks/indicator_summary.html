@@ -12,7 +12,7 @@
                 <thead>
                     <tr>
                         <th class="label" style="width: 100%;" scope="col">Indicator</th>
-                        <th class="" style="max-width: 100px;" scope="col">Present</th>
+                        <th class="text-center" style="max-width: 100px;" scope="col">Present</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -24,10 +24,10 @@
                                     <a href="#{{indicator.id}}">{{indicator.label}}</a>
                                 </div>
                             </td>
-                            <td>&check;</td>
+                            <td class="text-center">&check;</td>
                         {% else %}
                             <td class="label indicator-absent">{{indicator.label}}</td>
-                            <td class="indicator-absent">-</td>
+                            <td class="indicator-absent text-center">-</td>
                         {% endif %}
                         </tr>
                     {% endfor %}

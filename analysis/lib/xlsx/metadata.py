@@ -30,7 +30,16 @@ def add_data_details_sheet(xlsx: pd.ExcelWriter, datasets: set[str]):
         list of datasets included in report
     """
     # Keep original order so it matches sheets
-    metadata = pd.DataFrame([dataset for dataset in REPORT_DATASETS.values() if dataset["id"] in datasets])
+    included_datasets = []
+    for id, dataset in REPORT_DATASETS.items():
+        if id in datasets:
+            included_datasets.append(dataset)
+            subindicator = dataset.get("subindicator")
+            if subindicator:
+                # use id of indicator so that it is grouped properly below
+                included_datasets.append({**subindicator, "id": id})
+
+    metadata = pd.DataFrame(included_datasets)
     if "sheet_name" in metadata.columns:
         ix = metadata.sheet_name.isnull() | (metadata.sheet_name == "")
         metadata.loc[ix, "sheet_name"] = metadata.loc[ix].label

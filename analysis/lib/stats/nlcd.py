@@ -6,7 +6,7 @@ import rasterio
 
 from analysis.constants import M2_ACRES, NLCD_INDEXES, NLCD_YEARS
 from analysis.lib.io import read_unit_from_feather
-from analysis.lib.raster import summarize_raster_by_units_grid
+from analysis.lib.raster import summarize_raster_by_summary_units
 
 src_dir = Path("data/inputs/nlcd")
 nlcd_filename = str(src_dir / "landcover_{year}.tif")
@@ -73,14 +73,14 @@ def summarize_nlcd_by_aoi(rasterized_geometry):
     }
 
 
-def summarize_nlcd_by_units_grid(df, units_grid, out_dir):
+def summarize_nlcd_by_summary_units(df, units_dataset, out_dir):
     """Summarize NLCD classes by HUC12
     Parameters
     ----------
     df : GeoDataFrame
         must have a "value" column with same values as used for corresponding units
         raster, and must have result of df.bounds joined in
-    units_grid : SummaryUnitGrid instance
+    units_dataset : open rasterio dataset
     out_dir : str
     """
 
@@ -95,9 +95,9 @@ def summarize_nlcd_by_units_grid(df, units_grid, out_dir):
             cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
 
             nlcd_acres = (
-                summarize_raster_by_units_grid(
+                summarize_raster_by_summary_units(
                     df,
-                    units_grid,
+                    units_dataset,
                     value_dataset,
                     bins=bins,
                     progress_label=f"Summarizing NLCD {year}",

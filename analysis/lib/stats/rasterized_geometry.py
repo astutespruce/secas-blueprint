@@ -125,3 +125,22 @@ class RasterizedGeometry:
             Total number of acres for each bin
         """
         return self.get_pixel_count_by_bin(dataset, bins) * self.cellsize
+
+    def get_set_bits(self, dataset):
+        """Extract the unique set of bit indexes that are set across all pixels
+        read from dataset
+
+        Parameters
+        ----------
+        dataset : open rasterio dataset
+
+        Returns
+        -------
+        set
+        """
+
+        bits_set = set()
+        for mask in self.masks:
+            bits_set.update(mask.get_set_bits(dataset))
+
+        return bits_set

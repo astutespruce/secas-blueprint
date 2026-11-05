@@ -1,10 +1,8 @@
-import os
 from pathlib import Path
 from zipfile import ZipFile
 
 import numpy as np
 import pytest
-from dotenv import load_dotenv
 from pyogrio import read_dataframe
 
 from analysis.constants import DATA_CRS, GEO_CRS, INDICATORS
@@ -16,12 +14,6 @@ from api.lib.geo import get_dataset
 from tests.lib.image import assert_image_matches
 
 fixture_dir = Path("tests/fixtures")
-
-
-load_dotenv()
-
-# add to .env file to name saving test files
-SAVE_PDF = bool(os.getenv("TEST_SAVE_PDF", False))
 
 
 @pytest.mark.parametrize("unit_type", [None, "", "invalid_unit_type"])
@@ -95,6 +87,21 @@ def test_summary_unit_results_huc12():
 
     assert "legend" in results
 
+    expected_subindicators = [
+        "t_imperiledamphibiansandreptiles_spp",
+        "t_imperiledmammals_spp",
+        "t_intacthabitatcores_size",
+        "f_imperiledaquaticspecies_spp",
+    ]
+
+    for subindicator_id in expected_subindicators:
+        assert subindicator_id in results
+
+    assert "habitat for 6 amphibian and reptile RSGCN" in results["t_imperiledamphibiansandreptiles_spp"]["footnote"]
+    assert "habitat for 11 mammal RSGCN" in results["t_imperiledmammals_spp"]["footnote"]
+    assert "intersects 1 large core that is 11,534 acres in size" in results["t_intacthabitatcores_size"]["footnote"]
+    assert "A total of 2 unique" in results["f_imperiledaquaticspecies_spp"]["footnote"]
+
 
 def test_summary_unit_results_marine_hex():
     # NOTE: this needs to be updated for each blueprint version; this is just a
@@ -155,15 +162,19 @@ async def test_summary_unit_maps_huc12():
     assert "blueprint" in maps
 
     locator_img_filename = fixture_dir / f"maps/{unit_id}_locator.png"
+    # ruff: disable[ERA001]
     # uncomment this each Blueprint update
     # with open(locator_img_filename, "wb") as outfile:
     #     _ = outfile.write(maps["locator"])
+    # ruff: enable[ERA001]
 
     assert_image_matches(maps["locator"], locator_img_filename)
 
     blueprint_img_filename = fixture_dir / f"maps/{unit_id}_blueprint.png"
+    # ruff: disable[ERA001]
     # with open(blueprint_img_filename, "wb") as outfile:
     #     _ = outfile.write(maps["blueprint"])
+    # ruff: enable[ERA001]
 
     assert_image_matches(maps["blueprint"], blueprint_img_filename)
 
@@ -173,7 +184,21 @@ async def test_summary_unit_pdf_huc12():
     """this is just a smoke test that PDF generates"""
     unit_id = "030601040506"
     results = get_summary_unit_results("huc12", unit_id)
-    maps, scale, map_errors = await render_maps(results["bounds"], summary_unit_id=unit_id)
+    indicators = []
+    for group in results.get("indicator_groups", []):
+        indicators.extend([i["id"] for i in group["indicators"]])
+
+    maps, scale, map_errors = await render_maps(
+        results["bounds"],
+        summary_unit_id=unit_id,
+        indicators=indicators,
+        corridors="corridors" in results,
+        parcas="parcas" in results,
+        protected_areas="protected_areas" in results,
+        slr="slr" in results,
+        urban="urban" in results,
+        wildfire_risk="wildfire_risk" in results,
+    )
 
     assert len(map_errors) == 0
 
@@ -181,9 +206,8 @@ async def test_summary_unit_pdf_huc12():
     pdf = create_report(maps=maps, results=results, name=results["name"], area_type="huc12")
     assert pdf is not None
 
-    if SAVE_PDF:
-        with open("/tmp/test_create_pdf_huc12.pdf", "wb") as out:
-            _ = out.write(pdf)
+    with open("/tmp/test_create_pdf_huc12.pdf", "wb") as out:
+        _ = out.write(pdf)
 
 
 @pytest.mark.anyio
@@ -215,7 +239,7 @@ async def test_aoi_results_too_small(format):
 
 @pytest.mark.anyio
 @pytest.mark.parametrize("format", ["gdb", "shp"])
-async def test_aoi_results(format):
+async def test_aoi_results_single_area(format):
     # NOTE: this needs to be updated for each blueprint version; this is just a
     # smoke test that values do not change except during Blueprint version updates
 
@@ -267,6 +291,39 @@ async def test_aoi_results(format):
     assert np.isclose(results["wildfire_risk"]["entries"][0]["acres"], 0)
 
     assert "legend" in results
+
+    expected_subindicators = [
+        "t_imperiledamphibiansandreptiles_spp",
+        "t_imperiledmammals_spp",
+        "t_intacthabitatcores_size",
+    ]
+
+    for subindicator_id in expected_subindicators:
+        assert subindicator_id in results
+
+    assert "habitat for 8 amphibian and reptile RSGCN" in results["t_imperiledamphibiansandreptiles_spp"]["footnote"]
+    assert "habitat for 11 mammal RSGCN" in results["t_imperiledmammals_spp"]["footnote"]
+    assert "intersects 1 medium core that is 2,401 acres in size" in results["t_intacthabitatcores_size"]["footnote"]
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("format", ["gdb", "shp"])
+async def test_aoi_results_coastal(format):
+    zip_filename = fixture_dir / f"{format}_poly_coastal.zip"
+    with ZipFile(zip_filename) as zipfile:
+        dataset, layer = get_dataset(zipfile)
+
+    df = read_dataframe(f"/vsizip/{zip_filename}/{dataset}", layer=layer, columns=[]).to_crs(DATA_CRS)
+
+    results = await get_aoi_results(df)
+
+    assert results is not None
+
+    assert "f_imperiledaquaticspecies_spp" in results
+    assert "t_imperiledamphibiansandreptiles_spp" in results
+    assert "m_coastalshorelinecondition_length" in results
+
+    assert "approximately 134 miles" in results["m_coastalshorelinecondition_length"]["footnote"]
 
 
 @pytest.mark.anyio
@@ -350,6 +407,5 @@ async def test_create_pdf_single_area(format):
     results["scale"] = scale
     pdf = create_report(maps=maps, results=results, name="Test area")
 
-    if SAVE_PDF:
-        with open("/tmp/test_create_pdf_single_area.pdf", "wb") as out:
-            _ = out.write(pdf)
+    with open("/tmp/test_create_pdf_single_area.pdf", "wb") as out:
+        _ = out.write(pdf)

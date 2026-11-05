@@ -100,9 +100,9 @@ def add_slr_projection_sheet(xlsx: pd.ExcelWriter, df: pd.DataFrame, name_col_wi
     there is SLR at 10ft within the analysis unit.
     """
     dataset = SLR_PROJ
-    caption = dataset["caption"] + "."
+
     value_label = dataset["valueLabel"]
-    caption += f"\nValues show {value_label[0].lower()}{value_label[1:]}."
+    caption = dataset["caption"] + f". Values show {value_label[0].lower()}{value_label[1:]}."
 
     # transform data into one row per SLR scenario per analysis unit
     slr = []

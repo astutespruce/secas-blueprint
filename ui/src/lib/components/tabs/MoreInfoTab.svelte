@@ -12,6 +12,7 @@
 		protected_areas,
 		protected_areas_list,
 		num_protected_areas,
+		outside_extent_percent,
 		parcas,
 		class: className = ''
 	} = $props()
@@ -23,10 +24,16 @@
 
 <section class={cn('flex-auto overflow-y-auto h-full py-8 pl-4 pr-8', className)}>
 	{#if showTerrestrialDatasets}
-		<PARCAs {type} {parcas} />
+		<PARCAs {type} {parcas} {outside_extent_percent} />
 	{/if}
 
-	<ProtectedAreas {type} {protected_areas} {protected_areas_list} {num_protected_areas} />
+	<ProtectedAreas
+		{type}
+		{protected_areas}
+		{protected_areas_list}
+		{num_protected_areas}
+		{outside_extent_percent}
+	/>
 
 	{#if showTerrestrialDatasets}
 		<SLR {type} {...slr} />
