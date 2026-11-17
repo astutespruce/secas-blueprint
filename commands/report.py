@@ -36,7 +36,9 @@ async def _create_pdf_report(filename: str, outfilename: str, area_name: str | N
         df["geometry"] = shapely.force_2d(df.geometry.values)
 
     with typer.progressbar(length=100, label="Creating report") as progress:
-        df = dissolve(df)
+        if len(df) > 1:
+            df = dissolve(df.explode(ignore_index=True))
+
         geo_df = df.to_crs(GEO_CRS)
         progress.update(10)
 
