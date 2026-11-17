@@ -1,3 +1,5 @@
+# ruff: disable[ERA001]
+
 import asyncio
 import os
 from pathlib import Path

@@ -70,7 +70,7 @@
                 <tr>
                     <th class="label" scope="col">Feet of sea level rise</th>
                     <th class="acres" scope="col">Acres</th>
-                    <th class="percent" scope="col">Percent of Area</th>
+                    <th class="percent" scope="col">Percent of area</th>
                 </tr>
             </thead>
             <tbody>
@@ -99,7 +99,7 @@
                 {% endif %}
 
                 <tr class="total-row">
-                    <td class="align-right">Total area</td>
+                    <td class="label align-right">Total area</td>
                     <td class="acres">{{results.rasterized_acres|format_number}}</td>
                     <td class="percent">100%</td>
                 </tr>
@@ -124,7 +124,7 @@
                     <tr>
                         <th>SLR Scenario</th>
                         {% for year in range(2020, 2105, 10) %}
-                            <th scope="col" {% if year == 2060 %}class="highlight-col"{% endif %}>{{year}} (ft)</th>
+                            <th scope="col" class="text-right {% if year == 2060 %}highlight-col{% endif %}">{{year}} (ft)</th>
                         {% endfor %}
 
                     </tr>
@@ -135,7 +135,7 @@
                     <tr>
                         <td>{{scenario}}</td>
                         {% for value in  results.slr.projections[scenario] %}
-                            <td {% if loop.index == 5 %}class="highlight-col"{% endif %}>
+                            <td class="text-right {% if loop.index == 5 %}highlight-col{% endif %}">
                                 {% if value == 0 %}
                                     0
                                 {% else %}

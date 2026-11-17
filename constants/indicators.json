@@ -56,6 +56,8 @@
     "captionLabel":"Atlantic migratory fish habitat",
     "goodThreshold":7,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::atlantic-migratory-fish-habitat-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":"Percent of floodplain",
+    "data_extent_exclude_values":null,
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -66,7 +68,7 @@
   {
     "id":"f_caribbeanimperiledaquaticspecies",
     "filename":"CaribbeanImperiledAquaticSpecies.tif",
-    "label":"Caribbean imperiled aquatic species ",
+    "label":"Caribbean imperiled aquatic species",
     "sheet_name":"Carib imperiled aquatic species",
     "description":"This indicator measures the number of aquatic animal Species of Greatest Conservation Need (SGCN) observed within each 12-digit HUC subwatershed in Puerto Rico and the U.S. Virgin Islands, including fish, shrimp, crabs, and crayfish. It captures patterns of rare and endemic aquatic species diversity. SGCN are identified in State Wildlife Action Plans as most in need of conservation action. This indicator originates from data compiled by the Southeast Aquatic Resources Partnership from university researchers. It applies to the floodplain predicted to be inundated by a 100-year flood (also known as the 1% annual chance flood), derived from the Federal Emergency Management Agency's National Flood Hazard Layer, and buffered flowlines representing other streams.",
     "values":[
@@ -125,6 +127,10 @@
     "captionLabel":"Caribbean imperiled aquatic species ",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-imperiled-aquatic-species-southeast-blueprint-indicator/about",
+    "data_extent_percent_label":"Percent of floodplain",
+    "data_extent_exclude_values":[
+      0
+    ],
     "subregions":[
       "Puerto Rico",
       "US Virgin Islands"
@@ -172,6 +178,10 @@
     "captionLabel":"Caribbean natural landcover in floodplains",
     "goodThreshold":4,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-natural-landcover-in-floodplains-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":"Percent of floodplain",
+    "data_extent_exclude_values":[
+      0
+    ],
     "subregions":[
       "Puerto Rico",
       "US Virgin Islands"
@@ -214,6 +224,10 @@
     "captionLabel":"Caribbean network complexity",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-network-complexity-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":"Percent of floodplain",
+    "data_extent_exclude_values":[
+      0
+    ],
     "subregions":[
       "Puerto Rico",
       "US Virgin Islands"
@@ -251,6 +265,8 @@
     "captionLabel":"Caribbean permeable surface",
     "goodThreshold":4,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-permeable-surface-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Puerto Rico",
       "US Virgin Islands"
@@ -298,6 +314,10 @@
     "captionLabel":"floodplain inundation",
     "goodThreshold":4,
     "url":"https://secas-fws.hub.arcgis.com/maps/c58a64714a744ec9bddf8d7a4aaeff8c/about",
+    "data_extent_percent_label":"Percent of floodplain",
+    "data_extent_exclude_values":[
+      0
+    ],
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -346,6 +366,8 @@
     "captionLabel":"Gulf migratory fish connectivity",
     "goodThreshold":1,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::gulf-migratory-fish-connectivity-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Appalachians",
       "East Gulf Coastal Plain",
@@ -416,6 +438,10 @@
     "captionLabel":"imperiled aquatic species",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::imperiled-aquatic-species-southeast-blueprint-indicator-2024/about",
+    "data_extent_percent_label":"Percent of floodplain",
+    "data_extent_exclude_values":[
+      0
+    ],
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -469,6 +495,10 @@
     "captionLabel":"lakes & reservoirs",
     "goodThreshold":3,
     "url":"https://secas-fws.hub.arcgis.com/maps/c376e924447c4875bbd15d17479accef/about",
+    "data_extent_percent_label":"Percent of lake/reservoir area",
+    "data_extent_exclude_values":[
+      0
+    ],
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -532,6 +562,10 @@
     "captionLabel":"natural landcover in floodplains",
     "goodThreshold":4,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::natural-landcover-in-floodplains-southeast-blueprint-indicator/about",
+    "data_extent_percent_label":"Percent of floodplain",
+    "data_extent_exclude_values":[
+      0
+    ],
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -605,6 +639,10 @@
     "captionLabel":"network complexity",
     "goodThreshold":4,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::network-complexity-southeast-blueprint-indicator-2024/about",
+    "data_extent_percent_label":"Percent of floodplain",
+    "data_extent_exclude_values":[
+      0
+    ],
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -658,6 +696,8 @@
     "captionLabel":"permeable surface",
     "goodThreshold":4,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::permeable-surface-southeast-blueprint-indicator-2024/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -736,6 +776,8 @@
     "captionLabel":"Atlantic coral & hardbottom",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::atlantic-coral-hardbottom-southeast-blueprint-indicator-2024/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Atlantic",
       "Atlantic Coastal Plain",
@@ -780,6 +822,8 @@
     "captionLabel":"Atlantic deep-sea coral richness",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::atlantic-deep-sea-coral-richness-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Atlantic",
       "South Florida Marine"
@@ -842,6 +886,8 @@
     "captionLabel":"Atlantic estuarine fish habitat",
     "goodThreshold":7,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::atlantic-estuarine-fish-habitat-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Atlantic",
       "Atlantic Coastal Plain",
@@ -917,6 +963,8 @@
     "captionLabel":"Atlantic marine birds",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::atlantic-marine-birds-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Atlantic",
       "Atlantic Coastal Plain",
@@ -991,6 +1039,8 @@
     "captionLabel":"Atlantic marine mammals",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::atlantic-marine-mammals-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Atlantic",
       "Atlantic Coastal Plain",
@@ -1025,6 +1075,8 @@
     "captionLabel":"Caribbean beach habitat",
     "goodThreshold":2,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-beach-habitat-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Puerto Rico",
       "US Virgin Islands"
@@ -1052,6 +1104,8 @@
     "captionLabel":"Caribbean coastal shoreline condition",
     "goodThreshold":1,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-coastal-shoreline-condition-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":"Percent of shoreline area",
+    "data_extent_exclude_values":null,
     "subregions":[
       "Puerto Rico",
       "US Virgin Islands"
@@ -1094,6 +1148,8 @@
     "captionLabel":"Caribbean fish hotspots",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-fish-hotpots-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Puerto Rico",
       "US Virgin Islands"
@@ -1121,6 +1177,8 @@
     "captionLabel":"Caribbean fish nursery habitat",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-fish-nursery-habitat-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Puerto Rico",
       "US Virgin Islands"
@@ -1163,6 +1221,8 @@
     "captionLabel":"Caribbean mangrove migration",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/511312dc43d14e6b951f20e967dc763b/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Puerto Rico",
       "US Virgin Islands"
@@ -1215,6 +1275,8 @@
     "captionLabel":"Caribbean seagrass",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-seagrass-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Puerto Rico",
       "US Virgin Islands"
@@ -1262,6 +1324,8 @@
     "captionLabel":"Caribbean shallow hardbottom & coral",
     "goodThreshold":3,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-shallow-hardbottom-coral-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Puerto Rico",
       "US Virgin Islands"
@@ -1304,6 +1368,8 @@
     "captionLabel":"coastal shoreline condition",
     "goodThreshold":3,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::coastal-shoreline-condition-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":"Percent of shoreline area",
+    "data_extent_exclude_values":null,
     "subregions":[
       "Atlantic Coastal Plain",
       "East Gulf Coastal Plain",
@@ -1354,6 +1420,8 @@
     "captionLabel":"estuarine coastal condition",
     "goodThreshold":4,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::estuarine-coastal-condition-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Atlantic",
       "Atlantic Coastal Plain",
@@ -1417,6 +1485,8 @@
     "captionLabel":"Gulf coral & hardbottom",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::gulf-coral-hardbottom-southeast-blueprint-indicator/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "East Gulf Coastal Plain",
       "Florida Peninsula",
@@ -1463,6 +1533,8 @@
     "captionLabel":"Gulf deep-sea coral richness",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::gulf-deep-sea-coral-richness-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Gulf",
       "South Florida Marine"
@@ -1495,6 +1567,8 @@
     "captionLabel":"Gulf marine birds",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::gulf-marine-birds-southeast-blueprint-indicator/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "East Gulf Coastal Plain",
       "Florida Peninsula",
@@ -1571,6 +1645,8 @@
     "captionLabel":"Gulf marine mammals",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::gulf-marine-mammals-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "East Gulf Coastal Plain",
       "Florida Peninsula",
@@ -1622,6 +1698,8 @@
     "captionLabel":"Gulf sea turtles",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::gulf-sea-turtles-southeast-blueprint-indicator-2024/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "East Gulf Coastal Plain",
       "Florida Peninsula",
@@ -1658,6 +1736,8 @@
     "captionLabel":"island habitat",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::island-habitat-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Atlantic",
       "Atlantic Coastal Plain",
@@ -1723,6 +1803,8 @@
     "captionLabel":"marine highly migratory fish",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::marine-highly-migratory-fish-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Atlantic",
       "Gulf",
@@ -1781,6 +1863,8 @@
     "captionLabel":"resilient coastal sites",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/2ea2c0d83ec24c91b53a1179a5ce7b18/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Atlantic Coastal Plain",
       "East Gulf Coastal Plain",
@@ -1807,6 +1891,8 @@
     "captionLabel":"seagrass",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::seagrass-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Atlantic Coastal Plain",
       "East Gulf Coastal Plain",
@@ -1859,6 +1945,8 @@
     "captionLabel":"South Atlantic beach birds",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::south-atlantic-beach-birds-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Atlantic",
       "Atlantic Coastal Plain",
@@ -1887,6 +1975,8 @@
     "captionLabel":"South Atlantic maritime forest",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::south-atlantic-maritime-forest-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Atlantic Coastal Plain",
       "East Gulf Coastal Plain",
@@ -1920,6 +2010,10 @@
     "captionLabel":"stable coastal wetlands",
     "goodThreshold":2,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::stable-coastal-wetlands-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":"Percent of coastal wetlands",
+    "data_extent_exclude_values":[
+      0
+    ],
     "subregions":[
       "Atlantic Coastal Plain",
       "East Gulf Coastal Plain",
@@ -1978,6 +2072,8 @@
     "captionLabel":"Caribbean greenways & trails",
     "goodThreshold":4,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-greenways-trails-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Puerto Rico",
       "US Virgin Islands"
@@ -2025,6 +2121,8 @@
     "captionLabel":"Caribbean habitat patch size (large islands)",
     "goodThreshold":3,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-habitat-patch-size-large-islands-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Puerto Rico"
     ]
@@ -2066,6 +2164,8 @@
     "captionLabel":"Caribbean habitat patch size (small islands)",
     "goodThreshold":3,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-habitat-patch-size-small-islands-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Puerto Rico",
       "US Virgin Islands"
@@ -2123,6 +2223,8 @@
     "captionLabel":"Caribbean island habitat",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-island-habitat-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Puerto Rico",
       "US Virgin Islands"
@@ -2160,6 +2262,8 @@
     "captionLabel":"Caribbean karst habitat",
     "goodThreshold":3,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-karst-habitat-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Puerto Rico",
       "US Virgin Islands"
@@ -2202,6 +2306,8 @@
     "captionLabel":"Caribbean landscape condition",
     "goodThreshold":4,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-landscape-condition-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Puerto Rico",
       "US Virgin Islands"
@@ -2234,6 +2340,8 @@
     "captionLabel":"Caribbean low-urban historic landscapes",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-low-urban-historic-landscapes-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Puerto Rico",
       "US Virgin Islands"
@@ -2276,6 +2384,8 @@
     "captionLabel":"Caribbean reforestation potential",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-reforestation-potential-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Puerto Rico",
       "US Virgin Islands"
@@ -2328,6 +2438,8 @@
     "captionLabel":"Caribbean urban park size",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::caribbean-urban-park-size-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Puerto Rico",
       "US Virgin Islands"
@@ -2375,6 +2487,8 @@
     "captionLabel":"East Coastal Plain open pine birds",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::east-coastal-plain-open-pine-birds-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -2430,6 +2544,8 @@
     "captionLabel":"fire frequency",
     "goodThreshold":5,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::fire-frequency-southeast-blueprint-indicator/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -2503,6 +2619,8 @@
     "captionLabel":"grassland & savanna extent",
     "goodThreshold":5,
     "url":"https://secas-fws.hub.arcgis.com/maps/5b0041a3cd404735b2de319c97d563f5/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -2571,6 +2689,8 @@
     "captionLabel":"grassland & savanna restoration",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/93b553b59a4c44fdae74a1852fd7bd09/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -2644,6 +2764,8 @@
     "captionLabel":"greenways & trails",
     "goodThreshold":4,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::greenways-trails-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -2707,6 +2829,8 @@
     "captionLabel":"imperiled amphibians & reptiles",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::imperiled-amphibians-reptiles-southeast-blueprint-indicator-1/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -2770,6 +2894,8 @@
     "captionLabel":"imperiled mammals",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::imperiled-mammals-southeast-blueprint-indicator-1/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -2823,6 +2949,8 @@
     "captionLabel":"intact habitat cores",
     "goodThreshold":1,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::intact-habitat-cores-southeast-blueprint-indicator-2024/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -2886,6 +3014,8 @@
     "captionLabel":"landscape condition",
     "goodThreshold":4,
     "url":"https://secas-fws.hub.arcgis.com/maps/c259d72dba724a55aaa1c224416242f4/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -2974,6 +3104,8 @@
     "captionLabel":"Mississippi Alluvial Valley forest birds - protection",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::mississippi-alluvial-valley-forest-birds-protection-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "East Gulf Coastal Plain",
       "Gulf Coastal Prairies",
@@ -3049,6 +3181,8 @@
     "captionLabel":"Mississippi Alluvial Valley forest birds - reforestation",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::mississippi-alluvial-valley-forest-birds-reforestation-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "East Gulf Coastal Plain",
       "Gulf Coastal Prairies",
@@ -3089,6 +3223,8 @@
     "captionLabel":"playas",
     "goodThreshold":2,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::playas-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Chihuahuan Deserts",
       "Edwards Plateau",
@@ -3128,6 +3264,8 @@
     "captionLabel":"potential access to parks",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/557c331a10b24310b04d4fae4f1a1b24/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -3181,6 +3319,8 @@
     "captionLabel":"Puerto Rico potential access to parks",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/317654f0c9304a72a222c4a031950e9c/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Puerto Rico"
     ]
@@ -3237,6 +3377,8 @@
     "captionLabel":"resilient terrestrial sites",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/2db724a1cac14e43a2acc9bc0a33be47/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -3300,6 +3442,8 @@
     "captionLabel":"river cane restoration",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/d5e3b5bc3bfa46f1ab59dfbaca5178bb/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -3363,6 +3507,8 @@
     "captionLabel":"South Atlantic forest birds",
     "goodThreshold":2,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::south-atlantic-forest-birds-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Appalachians",
       "Atlantic",
@@ -3399,6 +3545,8 @@
     "captionLabel":"South Atlantic low-urban historic landscapes",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::south-atlantic-low-urban-historic-landscapes-southeast-blueprint-indicator/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Atlantic Coastal Plain",
       "East Gulf Coastal Plain",
@@ -3452,6 +3600,8 @@
     "captionLabel":"urban park size",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::urban-park-size-southeast-blueprint-indicator-2024/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Appalachians",
       "Atlantic Coastal Plain",
@@ -3512,6 +3662,8 @@
     "captionLabel":"U.S. Virgin Islands imperiled terrestrial species",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/2a253b40483d4bba96c34eebe740957f/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "US Virgin Islands"
     ]
@@ -3558,6 +3710,8 @@
     "captionLabel":"West Coastal Plain & Ouachitas forested wetland birds",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::west-coastal-plain-ouachitas-forested-wetland-birds-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Gulf Coastal Prairies",
       "Mississippi Alluvial Valley",
@@ -3612,6 +3766,8 @@
     "captionLabel":"West Coastal Plain & Ouachitas open pine birds",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::west-coastal-plain-ouachitas-open-pine-birds-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "Gulf Coastal Prairies",
       "Mississippi Alluvial Valley",
@@ -3686,6 +3842,8 @@
     "captionLabel":"West Gulf Coast mottled duck nesting",
     "goodThreshold":null,
     "url":"https://secas-fws.hub.arcgis.com/maps/fws::west-gulf-coast-mottled-duck-nesting-southeast-blueprint-indicator-2023/about",
+    "data_extent_percent_label":null,
+    "data_extent_exclude_values":null,
     "subregions":[
       "East Gulf Coastal Plain",
       "Gulf Coastal Prairies",

@@ -6,7 +6,7 @@ import rasterio
 
 from analysis.constants import BLUEPRINT, CORRIDORS, INDICATOR_GROUPS, INDICATORS, INDICATORS_INDEX, M2_ACRES
 from analysis.lib.io import read_unit_from_feather
-from analysis.lib.raster import summarize_raster_by_units_grid
+from analysis.lib.raster import summarize_raster_by_summary_units
 from analysis.lib.util import pluck
 
 data_dir = Path("data")
@@ -113,6 +113,14 @@ async def summarize_blueprint_in_aoi(rasterized_geometry, subregions, progress_c
             continue
 
         total_indicator_acres = indicator_acres[min_value:].sum()
+
+        min_presence_value = min_value
+        # some indicator 0 values are absence of the thing, so we have to exclude them here
+        if indicator["values"][0]["label"].startswith("Not identified as"):
+            min_presence_value = min_value + 1
+
+        presence_acres = indicator_acres[min_presence_value:].sum()
+
         outside_indicator_acres = total_acres - total_indicator_acres
         if outside_indicator_acres < 1e-6:
             outside_indicator_acres = 0
@@ -125,10 +133,14 @@ async def summarize_blueprint_in_aoi(rasterized_geometry, subregions, progress_c
                     **v,
                     "acres": indicator_acres[v["value"]],
                     "percent": 100 * indicator_acres[v["value"]] / rasterized_geometry.acres,
+                    "presence_percent": 100 * indicator_acres[v["value"]] / (presence_acres or 1)
+                    if v["value"] >= min_presence_value
+                    else 0,
                 }
                 for v in indicator["values"]
             ][::-1],
             "total_acres": total_indicator_acres,
+            "presence_acres": presence_acres,
             "outside_indicator_acres": outside_indicator_acres,
             "outside_indicator_percent": 100 * outside_indicator_acres / rasterized_geometry.acres,
         }
@@ -183,7 +195,7 @@ async def summarize_blueprint_in_aoi(rasterized_geometry, subregions, progress_c
     return results
 
 
-def summarize_blueprint_by_units_grid(df, units_grid, out_dir, marine=False):
+def summarize_blueprint_by_summary_units(df, units_dataset, out_dir, marine=False):
     """Summarize by HUC12 or marine hex grid cell
 
     Parameters
@@ -191,7 +203,7 @@ def summarize_blueprint_by_units_grid(df, units_grid, out_dir, marine=False):
     df : GeoDataFrame
         must have a "value" column with same values as used for corresponding units
         raster, and must have result of df.bounds joined in
-    units_grid : SummaryUnitGrid instance
+    units dataset : open rasterio dataset
     out_dir : str
     marine : bool, optional (default: False)
         if True, analysis is limited to marine indicators
@@ -204,9 +216,9 @@ def summarize_blueprint_by_units_grid(df, units_grid, out_dir, marine=False):
         cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
 
         blueprint_acres = (
-            summarize_raster_by_units_grid(
+            summarize_raster_by_summary_units(
                 df,
-                units_grid,
+                units_dataset,
                 value_dataset,
                 bins=BLUEPRINT_BINS,
                 progress_label="Summarizing Southeast Blueprint",
@@ -217,9 +229,9 @@ def summarize_blueprint_by_units_grid(df, units_grid, out_dir, marine=False):
 
     with rasterio.open(corridors_filename) as value_dataset:
         corridor_acres = (
-            summarize_raster_by_units_grid(
+            summarize_raster_by_summary_units(
                 df,
-                units_grid,
+                units_dataset,
                 value_dataset,
                 bins=CORRIDOR_BINS,
                 progress_label="Summarizing hubs & corridors",
@@ -252,9 +264,9 @@ def summarize_blueprint_by_units_grid(df, units_grid, out_dir, marine=False):
         values = [v["value"] for v in indicator["values"]]
         with rasterio.open(src_dir / indicator["filename"]) as value_dataset:
             indicator_acres = (
-                summarize_raster_by_units_grid(
+                summarize_raster_by_summary_units(
                     df,
-                    units_grid,
+                    units_dataset,
                     value_dataset,
                     bins=range(values[-1] + 1),
                     progress_label=f"Summarizing {indicator['label']}",
@@ -352,6 +364,13 @@ def get_blueprint_unit_results(results_dir, unit):
         indicator_acres = blueprint_results[cols].values
         total_acres = indicator_acres.sum()
 
+        min_presence_value = values[0]["value"]
+        # some indicator 0 values are absence of the thing, so we have to exclude them here
+        if values[0]["label"].startswith("Not identified as"):
+            min_presence_value += 1
+
+        presence_acres = indicator_acres[min_presence_value:].sum()
+
         # if only 0 values are present, ignore this indicator
         if total_acres == 0 or (values[0]["value"] == 0 and indicator_acres[1:].max() == 0):
             continue
@@ -366,10 +385,14 @@ def get_blueprint_unit_results(results_dir, unit):
                     **v,
                     "acres": indicator_acres[i],
                     "percent": 100 * indicator_acres[i] / unit.rasterized_acres,
+                    "presence_percent": 100 * indicator_acres[i] / (presence_acres or 1)
+                    if v["value"] >= min_presence_value
+                    else 0,
                 }
                 for i, v in enumerate(values)
             ][::-1],
             "total_acres": total_acres,
+            "presence_acres": presence_acres,
             "outside_indicator_acres": outside_acres,
             "outside_indicator_percent": 100 * outside_acres / unit.rasterized_acres,
         }

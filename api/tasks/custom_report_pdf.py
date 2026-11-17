@@ -51,7 +51,7 @@ async def create_custom_pdf_report(ctx, zip_filename, dataset, layer, name=""):
 
         except Exception:
             raise DataError(
-                "Could not dissolve features together for analysis.  Please make sure all features have valid geometries and are of the same type."
+                "Could not dissolve features together for analysis. Please make sure all features have valid geometries and are of the same type."
             )
 
     await set_progress(ctx["redis"], ctx["job_id"], 10, "Calculating results (this might take a while)")

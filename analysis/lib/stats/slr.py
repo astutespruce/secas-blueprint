@@ -18,7 +18,7 @@ from analysis.constants import (
     SLR_YEARS,
 )
 from analysis.lib.io import read_unit_from_feather
-from analysis.lib.raster import summarize_raster_by_units_grid
+from analysis.lib.raster import summarize_raster_by_summary_units
 
 BINS = [v["value"] for v in SLR_DEPTH["values"]]
 
@@ -249,7 +249,7 @@ def extract_slr_proj_in_analysis_areas(df: gp.GeoDataFrame) -> pd.DataFrame:
     return out[out_name]
 
 
-def summarize_slr_by_units_grid(df, units_grid, out_dir):
+def summarize_slr_by_summary_units(df, units_dataset, out_dir):
     """Summarize by SLR inundation depth and projections by HUC12
 
     Parameters
@@ -257,7 +257,7 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
     df : GeoDataFrame
         must have a "value" column with same values as used for corresponding units
         raster, and must have result of df.bounds joined in
-    units_grid : SummaryUnitGrid instance
+    units_dataset : open rasterio dataset
     out_dir : str
     """
 
@@ -268,9 +268,9 @@ def summarize_slr_by_units_grid(df, units_grid, out_dir):
         cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
 
         slr_acres = (
-            summarize_raster_by_units_grid(
+            summarize_raster_by_summary_units(
                 df,
-                units_grid,
+                units_dataset,
                 value_dataset,
                 bins=BINS,
                 progress_label="Summarizing SLR inundation depth",

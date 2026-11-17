@@ -79,6 +79,10 @@ try:
         indicator["caption"] = f"Indicator values for {indicator['captionLabel']}"
 
     raw_indicators_index = {indicator["id"]: indicator for indicator in raw_indicators}
+    subindicators = read_json("subindicators.json")
+    for subindicator in subindicators:
+        raw_indicators_index[subindicator["indicator_id"]]["subindicator"] = subindicator
+
     # order by indicator group to match order used elsewhere
     INDICATORS = []
     for group in INDICATOR_GROUPS:

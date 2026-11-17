@@ -41,16 +41,16 @@ def add_basic_results_sheet(
     caption = dataset["caption"] + "."
 
     # good threshold is only applicable to indicators
-    if dataset["id"] in INDICATORS_INDEX:
-        good_threshold = dataset.get("goodThreshold", None)
-        if good_threshold:
-            caption += "  Good condition thresholds reflect the range of indicator values that occur in healthy, functioning ecosystems."
-        else:
-            caption += "  A good condition threshold is not yet defined for this indicator."
+    good_threshold = dataset.get("goodThreshold", None)
+    if good_threshold is not None:
+        caption += " Good condition thresholds reflect the range of indicator values that occur in healthy, functioning ecosystems."
+
+    elif dataset["id"] in INDICATORS_INDEX:
+        caption += " A good condition threshold is not yet defined for this indicator."
 
     value_label = dataset.get("valueLabel", None)
     if value_label:
-        caption += f"  Values show {value_label[0].lower()}{value_label[1:]}."
+        caption += f" Values show {value_label[0].lower()}{value_label[1:]}."
 
     nodata_label = "Outside extent of this dataset\n(acres)"
 
@@ -69,6 +69,22 @@ def add_basic_results_sheet(
     # NOTE: percents are actually proportions formatted as percents
     tmp["outside_dataset_percent"] = tmp.outside_dataset_acres / tmp.rasterized_acres
 
+    ### Special logic to show percent of floodplain
+    extra_outside_columns = []
+    extra_percent_columns = []
+    extra_percent_header = None
+    has_extra_percent_columns = False
+    data_value_columns = None
+
+    data_extent_percent_label = dataset.get("data_extent_percent_label")
+    data_extent_exclude_values = dataset.get("data_extent_exclude_values", []) or []
+    if data_extent_percent_label:
+        has_extra_percent_columns = True
+        extra_percent_header = data_extent_percent_label.upper()
+        data_value_columns = [
+            value_columns[i] for i, value in enumerate(values) if value["value"] not in data_extent_exclude_values
+        ]
+
     # reorder columns
     if get_value_order is not None:
         value_columns = get_value_order(value_columns)
@@ -77,33 +93,54 @@ def add_basic_results_sheet(
     for value_col, percent_col in zip(value_columns, percent_columns):
         tmp[percent_col] = tmp[value_col] / tmp.rasterized_acres
 
+    if has_extra_percent_columns:
+        # set NODATA columns to 0 because they are outside dataset by definition
+        tmp["outside_extent_percent_1"] = 0
+        tmp["outside_dataset_percent_1"] = 0
+        extra_outside_columns = ["outside_extent_percent_1", "outside_dataset_percent_1"]
+        extra_percent_columns = [col.replace("(acres)", "(percent)_1") for col in value_columns]
+        tmp["presence_acres"] = tmp[data_value_columns].sum(axis=1)
+        tmp[extra_percent_columns] = 0
+        for value_col, percent_col in zip(value_columns, extra_percent_columns):
+            if value_col in data_value_columns:
+                tmp[percent_col] = (tmp[value_col] / tmp.presence_acres).fillna(0)
+
     tmp = tmp[
         ["outside_extent_acres", "outside_dataset_acres"]
         + value_columns
         + ["outside_extent_percent", "outside_dataset_percent"]
         + percent_columns
+        + extra_outside_columns
+        + extra_percent_columns
     ]
 
     # drop columns if no area present outside extent or dataset
     has_area_outside_extent = tmp.outside_extent_acres.max() > 1e-2
     if not has_area_outside_extent:
-        tmp = tmp.drop(columns=["outside_extent_acres", "outside_extent_percent"])
+        tmp = tmp.drop(
+            columns=["outside_extent_acres", "outside_extent_percent", "outside_extent_percent_1"], errors="ignore"
+        )
 
     has_area_outside_dataset = tmp.outside_dataset_acres.max() > 1e-2
     if not has_area_outside_dataset:
-        tmp = tmp.drop(columns=["outside_dataset_acres", "outside_dataset_percent"])
+        tmp = tmp.drop(
+            columns=["outside_dataset_acres", "outside_dataset_percent", "outside_dataset_percent_1"], errors="ignore"
+        )
 
     tmp = tmp.rename(
         columns={
             "outside_extent_acres": outside_area_label,
             "outside_extent_percent": outside_area_label.replace("(acres)", "(percent)"),
+            "outside_extent_percent_1": outside_area_label.replace("(acres)", "(percent)"),
             "outside_dataset_acres": nodata_label,
             "outside_dataset_percent": nodata_label.replace("(acres)", "(percent)"),
+            "outside_dataset_percent_1": nodata_label.replace("(acres)", "(percent)"),
+            **{c: c.replace("_1", "") for c in extra_percent_columns},
         }
     )
 
     good_condition_info = None
-    if dataset["id"] in INDICATORS_INDEX and good_threshold:
+    if good_threshold is not None:
         # NOTE: this only applies to indicators, which are always in greatest to least order
 
         num_good_values = len([v for v in values if v["value"] >= good_threshold])
@@ -113,13 +150,15 @@ def add_basic_results_sheet(
             "num_good_values": num_good_values,
             "num_not_good_values": num_not_good_values,
             "num_extra_columns": int(has_area_outside_extent) + int(has_area_outside_dataset),
+            "has_extra_percent": len(extra_percent_columns) > 0,
         }
 
     column_widths = [name_col_width] + ([col_width] * len(tmp.columns))
 
     num_area_cols = len(value_columns) + int(has_area_outside_extent) + int(has_area_outside_dataset) + 1
     area_columns = list(range(1, num_area_cols))
-    percent_columns = list(range(num_area_cols, num_area_cols + num_area_cols))
+    percent_columns = list(range(num_area_cols, num_area_cols * 2))
+    extra_percent_columns = list(range(num_area_cols * 2, num_area_cols * 3)) if extra_percent_columns else None
 
     write_excel(
         xlsx,
@@ -129,6 +168,8 @@ def add_basic_results_sheet(
         column_widths=column_widths,
         area_columns=area_columns,
         percent_columns=percent_columns,
+        extra_percent_columns=extra_percent_columns,
+        extra_percent_header=extra_percent_header,
         add_percent_divider=True,
         good_condition_info=good_condition_info,
     )

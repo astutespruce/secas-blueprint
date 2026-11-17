@@ -55,3 +55,8 @@ def format_percent(number):
         return "<0.1"
 
     return f"{min(round(number, 1), 100):.1f}"
+
+
+def pluralize(singular_label, plural_label, count):
+    """Return singular or plural label based on count"""
+    return singular_label if count == 1 else plural_label

@@ -9,7 +9,7 @@ from pyogrio import read_dataframe
 
 from analysis.constants import M2_ACRES, PROTECTED_AREAS, PROTECTED_AREAS_POLY
 from analysis.lib.io import read_unit_from_feather
-from analysis.lib.raster import summarize_raster_by_units_grid
+from analysis.lib.raster import summarize_raster_by_summary_units
 
 src_dir = Path("data/inputs")
 filename = src_dir / PROTECTED_AREAS["filename"]
@@ -192,13 +192,17 @@ def summarize_protected_areas_in_aoi(rasterized_geometry, df):
     }
 
 
-def extract_protected_areas_in_analysis_areas(df: gp.GeoDataFrame) -> pd.DataFrame:
+def extract_protected_areas_in_analysis_areas(
+    df: gp.GeoDataFrame, read_mask: shapely.Polygon | shapely.MultiPolygon
+) -> pd.DataFrame:
     """Extract protected areas and their area overlap with each analysis unit
 
     Parameters
     ----------
     df : GeoDataFrame
         uses index to aggregate results
+    read_mask : Polygon or MultiPolygon
+        mask for reading features
 
     Returns
     -------
@@ -208,13 +212,14 @@ def extract_protected_areas_in_analysis_areas(df: gp.GeoDataFrame) -> pd.DataFra
     index_name = df.index.name or "index"
     out_name = PROTECTED_AREAS_POLY["id"]
 
-    tmp = df.explode(ignore_index=False, index_parts=False)
-    # use union of individual area bounding boxes to read features
-    read_mask = shapely.union_all(shapely.envelope(tmp.geometry.values))
-    protected_areas = read_dataframe(boundary_filename, columns=columns + ["geometry"], mask=read_mask, use_arrow=True)
+    # NOTE: pyogrio does not currently work properly for use_arrow=True if the
+    # mask does not overlap and returns no features, so we can't use it here.
+    protected_areas = read_dataframe(boundary_filename, columns=columns + ["geometry"], mask=read_mask)
 
     if len(protected_areas) == 0:
         return None
+
+    tmp = df.explode(ignore_index=False, index_parts=False)
 
     # find all protected areas polygons that intersect any part of the AOI
     left, right = shapely.STRtree(protected_areas.geometry.values).query(tmp.geometry.values, predicate="intersects")
@@ -278,14 +283,14 @@ def extract_protected_areas_in_analysis_areas(df: gp.GeoDataFrame) -> pd.DataFra
     return out[out_name]
 
 
-def summarize_protected_areas_by_units(df, units_grid, out_dir):
+def summarize_protected_areas_by_summary_units(df, units_dataset, out_dir):
     """Calculate overlap with protected areas for each of the analysis units
 
     Parameters
     ----------
     df : GeoDataFrame
         contains unit boundaries, indexed by id
-    units_grid : SummaryUnitGrid instance
+    units_dataset : open rasterio dataset
     out_dir : str
     """
     print("Calculating overlap with protected areas")
@@ -297,9 +302,9 @@ def summarize_protected_areas_by_units(df, units_grid, out_dir):
         cellsize = value_dataset.res[0] * value_dataset.res[0] * M2_ACRES
 
         protected_areas_acres = (
-            summarize_raster_by_units_grid(
+            summarize_raster_by_summary_units(
                 df,
-                units_grid,
+                units_dataset,
                 value_dataset,
                 bins=BINS,
                 progress_label="Summarizing protected areas",

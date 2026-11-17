@@ -5,14 +5,23 @@
 	import { parcas as parcaInfo } from '#lib/config/constants.js'
 	import { cn } from '#lib/utils.js'
 
-	const { type, parcas = null } = $props()
+	const { type, outside_extent_percent, parcas = null } = $props()
 
-	const bars = $derived(
-		parcaInfo.values.map((category) => ({
+	const bars = $derived.by(() => {
+		const data = parcaInfo.values.map((category) => ({
 			...category,
 			percent: parcas ? parcas[category.value] || 0 : 0
 		}))
-	)
+
+		if (outside_extent_percent > 0) {
+			data.push({
+				percent: outside_extent_percent,
+				label: 'Outside Southeast Blueprint'
+			})
+		}
+
+		return data
+	})
 </script>
 
 <div class="not-first:mt-8 not-first:border-t not-first:border-t-grey-2 not-first:pt-8">
